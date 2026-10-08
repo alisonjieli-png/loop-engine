@@ -215,6 +215,12 @@ what it no longer supplies.
 
 ## Commands
 
+For an offline, resumable operation-contract pilot, use
+[`api-contracts`](API-CONTRACT-ATOMS.md). It reads an existing pinned fact
+cache and writes ordinary JSON Schema supply candidates. It has no network,
+import-store, admission or publication effect. Equivalent schemas are linked;
+unsupported source atoms remain private findings.
+
 ```bash
 PYTHONPATH=src:tools python tools/build_library_supply.py mcp-registry \
   --run-folder /home/username/baltor-library/supply/mcp-registry/DATE \

@@ -282,10 +282,11 @@ def harmful_choice_problems(demonstration, harmful):
             for item in demonstration["items"] if item["chosen"] and item["identity"] in harmful]
 
 
-def library_count_problems(page, item_count):
-    shown = [" ".join(item["text"].split()) for item in read_marked(page) if "data-library-count" in item["attrs"]]
-    if shown != [str(item_count)]:
-        return [f"the homepage counts {shown or 'no'} items, and this release's manifest holds {item_count}"]
+def library_count_problems(page):
+    marked = read_marked(page)
+    shown = [" ".join(item["text"].split()) for item in marked if "data-library-file-count" in item["attrs"]]
+    if shown != ["Not measured"] or any("data-library-count" in item["attrs"] for item in marked):
+        return ["the packaged homepage must wait for a distinct-file measurement, without a package headline count"]
     return []
 
 
@@ -568,8 +569,8 @@ class HomepageHeroTest(unittest.TestCase):
         # KNOWN_WRONG, the owner's constraint of September 24, 2026: assembly for each step stated as what Baltor does today, as a
         # label beside the directory, as a sentence of the introduction, and as a note that no longer says the engine is built to.
         for planted in (_planted(self.page, '<p class="hero-directory-note"', '<p>Assembled for this step.</p><p class="hero-directory-note"'),
-                        _planted(self.page, "same work by hand.</p>",
-                                 "same work by hand. Baltor assembles one for every step.</p>"),
+                        _planted(self.page, "rebuilding by hand.</p>",
+                                 "rebuilding by hand. Baltor assembles one for every step.</p>"),
                         _planted(self.page, "The local engine is built to assemble a directory", "The local engine assembles a directory")):
             with self.subTest(planted=len(planted)):
                 self.assertTrue(any("current capability" in problem for problem in hero_problems(planted)))
@@ -599,11 +600,12 @@ class HomepageHeroTest(unittest.TestCase):
                                                               "verdict": "second_clearly_higher"}]}, "planted"), {})
         self.assertEqual(harmful_in(design, {"comparisons": [{**comparisons[0], "verdict": "not_separated"}]}, "planted"), {})
 
-    def test_the_library_count_is_this_release_manifest_count(self):
-        self.assertEqual(library_count_problems(self.page, self.item_count), [])
-        # PLANTED: a count this release does not hold, written into the page source.
-        planted = _planted(self.page, "data-library-count>" + str(self.item_count) + "<", "data-library-count>" + str(self.item_count + 1) + "<")
-        self.assertEqual(len(library_count_problems(planted, self.item_count)), 1)
+    def test_the_library_waits_for_a_distinct_file_measurement(self):
+        self.assertEqual(library_count_problems(self.page), [])
+        # The package manifest count is not a distinct-file count.
+        planted = _planted(self.page, "data-library-file-count>Not measured<", "data-library-file-count>" + str(self.item_count) + "<")
+        self.assertEqual(len(library_count_problems(planted)), 1)
+        self.assertEqual(len(library_count_problems(self.page + '<span data-library-count>43</span>')), 1)
 
 
 if __name__ == "__main__":

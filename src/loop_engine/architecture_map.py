@@ -22,7 +22,7 @@ SUBPACKAGES = ("ontology", "loop", "strings", "code_nodes",
 PUBLIC_CORE_ARCHITECTURE_CAPABILITY_GROUPS = (
     ("Intelligence Search and Retrieval",
      ("intelligence_layers", "retrieval", "capability_directory")),
-    ("Web Research", ("brave_search",)),
+    ("Web Research", ("brave_search", "web_research_engines")),
     ("Custom Plugins", ("capability_directory", "brave_search")),
 )
 
@@ -253,7 +253,7 @@ MODULE_MAP = {
         "source_admission_checks",
         "api_quality", "asset_class", "component_contracts",
         "component_inventory",
-        "asset_lifecycle", "brave_search",
+        "asset_lifecycle", "brave_search", "web_research_engines", "web_research_quota",
         "capability_directory",
         "capability_rejection",
         "run_history", "run_history_authorship",

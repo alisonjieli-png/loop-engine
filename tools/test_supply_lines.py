@@ -70,6 +70,15 @@ def _package(**changes) -> SupplyPackage:
 
 
 class RecordsTest(unittest.TestCase):
+    def test_contract_and_case_scopes_have_separate_native_state(self):
+        contract = records.state_record_id(records.JSON_SCHEMAS, records.OPERATION_CONTRACT_SCOPE)
+        cases = records.state_record_id(records.JSON_SCHEMAS, records.OPERATION_CONSTRAINT_CASE_SCOPE)
+        self.assertNotEqual(contract, cases)
+        self.assertTrue(contract.endswith(".operation_contracts"))
+        self.assertTrue(cases.endswith(".operation_constraint_cases"))
+        with self.assertRaises(records.SupplyRecordError):
+            records.state_record_id(records.JSON_SCHEMAS, "unregistered_scope")
+
     def test_licence_expressions_follow_the_owner_allowlist(self):
         for allowed in ("MIT", "Apache-2.0", "MIT OR Apache-2.0", "(MIT OR Apache-2.0)", "MIT OR GPL-3.0-only",
                         "MIT AND BSD-3-Clause", "Unlicense OR MIT", "CC0-1.0"):

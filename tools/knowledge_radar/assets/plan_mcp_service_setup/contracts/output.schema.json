@@ -1,0 +1,45 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "MCP service setup plan result or refusal",
+  "oneOf": [
+    {
+      "type": "object", "additionalProperties": false,
+      "required": ["record_type", "code"],
+      "properties": {"record_type": {"const": "mcp_setup_plan_error/v1"}, "code": {"type": "string"}}
+    },
+    {
+      "type": "object", "additionalProperties": false,
+      "required": ["record_type", "on", "as_of", "valid_until", "state", "candidates", "withheld", "connection_attempted", "tool_calls_performed", "effects_authorized", "client_configuration_generated", "basis"],
+      "properties": {
+        "record_type": {"const": "mcp_setup_plan_result/v1"},
+        "on": {"type": "string", "format": "date"},
+        "as_of": {"type": "string", "format": "date"},
+        "valid_until": {"type": "string", "format": "date"},
+        "state": {"enum": ["source_candidates", "table_not_yet_current", "table_expired", "source_recheck_required", "no_matching_source"]},
+        "connection_attempted": {"const": false},
+        "tool_calls_performed": {"const": 0},
+        "effects_authorized": {"type": "array", "maxItems": 0},
+        "client_configuration_generated": {"const": false},
+        "basis": {"type": "string"},
+        "withheld": {"type": "array", "maxItems": 100, "items": {
+          "type": "object", "additionalProperties": false, "required": ["key", "reason", "documentation"],
+          "properties": {"key": {"type": "string"}, "reason": {"enum": ["source_review_due", "transport_conflict", "transport_not_matched"]}, "documentation": {"type": "string", "format": "uri"}}
+        }},
+        "candidates": {"type": "array", "maxItems": 20, "items": {
+          "type": "object", "additionalProperties": false,
+          "required": ["key", "title", "endpoint", "documentation", "publisher", "transport", "authentication", "compatibility_basis", "source_updated_at", "documentation_checked_on", "setup_state", "next_checks"],
+          "properties": {
+            "key": {"type": "string"}, "title": {"type": "string"}, "endpoint": {"type": "string", "format": "uri"},
+            "documentation": {"type": "string", "format": "uri"}, "publisher": {"type": "string"},
+            "transport": {"enum": ["streamable-http", "sse"]},
+            "authentication": {"enum": ["unknown", "none_declared", "oauth", "key", "oauth_or_key"]},
+            "compatibility_basis": {"enum": ["publisher_declared", "registry_declared"]},
+            "source_updated_at": {"type": ["string", "null"]}, "documentation_checked_on": {"type": "string", "format": "date"},
+            "setup_state": {"const": "not_connected_not_tested"},
+            "next_checks": {"type": "array", "items": {"type": "string"}, "minItems": 1}
+          }
+        }}
+      }
+    }
+  ]
+}

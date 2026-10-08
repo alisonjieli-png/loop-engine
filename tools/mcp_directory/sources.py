@@ -140,7 +140,8 @@ def declared_auth(remotes, packages) -> int:
             name = str((variable or {}).get("name") or "")
             if (variable or {}).get("isSecret") is True or _CREDENTIAL_NAME.search(name):
                 bits |= AUTH_BITS["key"]
-    return bits or AUTH_BITS["none"]
+    # A missing credential declaration does not establish anonymous access.
+    return bits
 
 
 def listing_origin(namespace: str, repository: str, hosts) -> str:
@@ -311,7 +312,7 @@ def docker_listing(server: dict, commit: str) -> "Listing | Exclusion":
     return Listing(
         source="docker", key=name, name=title if title and not starts_with_address(title) else name,
         description=description, publisher=owner, publisher_kind="repository" if owner else "unknown",
-        repository=repo, subfolder=subfolder, locations=tuple(locations), auth=auth or AUTH_BITS["none"],
+        repository=repo, subfolder=subfolder, locations=tuple(locations), auth=auth,
         category_hint=str(meta.get("category") or "").lower(), origin=ORIGIN_UNKNOWN,
         reference=f"{commit}:servers/{name}/server.yaml", identities=tuple(sorted(set(identities))))
 

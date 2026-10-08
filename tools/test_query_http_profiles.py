@@ -153,6 +153,9 @@ class WireProfileTests(Temporary):
             opener = RecordingOpener()
             method = "POST" if executor.access == "https_post_key" else "GET"
             request = executor.request("/probe", [], page=1, method=method, body={})
+            if name == "openalex_works":
+                # Exercise its real page-size contract as well as the selected headers.
+                request = executor.render({"licence": small_library().dimension("licence").value("spdx:CC0-1.0")}, {})
             answer = Transport(load_policy(), opener=opener, environment={"OLLAMA_API_KEY": "fixture-only"}).send(executor, request)
             sent = dict(opener.calls[0].header_items())
             self.assertEqual(sent["User-agent"], selected.user_agent)

@@ -27,7 +27,7 @@ const useCaseProblems=cards=>[...cardProblems(cards,["overnight","efficiency","l
 const heroActionProblems=state=>[...(JSON.stringify(state.primary)===JSON.stringify([["hero-primary","Get started","/get-started"]])?[]:["the hero's primary actions are "+JSON.stringify(state.primary)]),
   ...(JSON.stringify(state.secondary)===JSON.stringify([["hero-setup","Get set up","/setup"]])?[]:["the hero's secondary actions are "+JSON.stringify(state.secondary)]),...(state.journey===1?[]:[state.journey+" hero links lead into the access journey"]),
   ...(state.paths===""?[]:["the hero repeats its buttons in a line of text: "+JSON.stringify(state.paths)])];
-const pricingFacts=["Agent Feeds","Agent Feeds + Harness Files","Free preview","Agent Feeds + Harness Files","$29 a month","one downloaded item","Cancel from your account page."];
+const pricingFacts=["Agent Feeds","Agent Feeds + Harness Files","$4.99 a month","Free through December 31, 2026 (Eastern)","No automatic charge","opt-in","in development","$29 a month","one downloaded item","Cancel from your account page."];
 const pricingProblems=text=>[...pricingFacts.filter(fact=>!text.includes(fact)).map(fact=>"missing "+fact),...(/\bsearch(?:ing)? is free\b/i.test(text)?["free search"]:[]),...(/\binvited\b/i.test(text)?["free invited accounts"]:[]),
   ...(/United States dollars|per month/i.test(text)?["another way of writing the price"]:[])];
 const paymentWords={accountFirst:{note:"Create your account, then subscribe from your account page. Cancel any time."},
@@ -96,15 +96,14 @@ try{
   check("live_page_has_four_intelligence_layers",await page.locator('[data-view="about"] [data-intelligence-layer]').count()===4);
   if(rootIsHome){
   const population=liveReport.library?.file_population;
-  const matchesPopulation=(files,packages,value)=>value?.record_type==="catalogue_file_population/v1"&&value.complete===true
-    &&Number.isSafeInteger(value.distinct_files)&&value.distinct_files>=0&&Number.isSafeInteger(value.packages)&&value.packages>=0
-    &&files===value.distinct_files.toLocaleString("en-US")&&packages===value.packages.toLocaleString("en-US");
+  const matchesPopulation=(files,value)=>value?.record_type==="catalogue_file_population/v1"&&value.complete===true
+    &&Number.isSafeInteger(value.distinct_files)&&value.distinct_files>=0&&files===value.distinct_files.toLocaleString("en-US");
   const shownFiles=(await page.locator("[data-library-file-count]").first().textContent()).trim();
-  const shownPackages=(await page.locator("[data-library-count]").first().textContent()).trim();
-  check("live_homepage_separates_distinct_files_from_packages",matchesPopulation(shownFiles,shownPackages,population));
-  check("file_counter_refuses_placements_packages_and_incomplete_population",!matchesPopulation(shownFiles,shownPackages,{...population,complete:false})
-    &&!matchesPopulation(shownFiles,shownPackages,{...population,distinct_files:population.distinct_files+1})
-    &&!matchesPopulation(shownFiles,shownPackages,{...population,packages:population.packages+1}));
+  check("live_homepage_counts_distinct_files_without_a_package_headline",matchesPopulation(shownFiles,population)
+    &&await page.locator('[data-view="home"] [data-library-count]').count()===0);
+  check("file_counter_refuses_placements_packages_and_incomplete_population",!matchesPopulation(shownFiles,{...population,complete:false})
+    &&!matchesPopulation(shownFiles,{...population,distinct_files:population.distinct_files+1})
+    &&!matchesPopulation(String(population.packages),{...population,distinct_files:population.packages+1}));
   /* The hero, as the owner decided on September 23, 2026: it says what Baltor is, the library of everything a harness can use,
      placed where the harness reads it, and the work it removes, done by hand; it no longer promises a fresh harness for each step. */
   const liveHero=await page.locator('[data-view="home"] .hero-copy').evaluate(node=>({headline:node.querySelector("h1")?.textContent.replace(/\s+/g," ").trim()||"",

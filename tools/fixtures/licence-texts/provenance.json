@@ -1,0 +1,26 @@
+{
+  "record_type": "licence_recognition_fixture_provenance/v1",
+  "checked_at": "2026-10-08",
+  "source": "Previously saved public source cache; zero network reads for this repair.",
+  "files": [
+    {
+      "path": "apache-2.0-canonical.txt",
+      "repository": "github/choosealicense.com",
+      "revision": "58267f8f2c5c0099810849cfd7677f52ae0c0eb3",
+      "source_path": "_licenses/apache-2.0.txt",
+      "sha256": "609e2cb599f84aaa41d8ef29d8fdb04d164fab22e8d9292ca34a599d0f56a338",
+      "licence": "Apache-2.0 licence text with the source repository's catalogue frontmatter; source repository MIT"
+    },
+    {
+      "path": "google-api-client-LICENSE.txt",
+      "repository": "googleapis/google-api-python-client",
+      "revision": "feec89753f1e5b097f70d1c2fbd0231085714d70",
+      "source_path": "LICENSE",
+      "sha256": "c71d239df91726fc519c6eb72d318ec65820627232b2f796219e87dcf35d0ab4",
+      "licence": "Apache-2.0 licence text"
+    }
+  ],
+  "comparison": "Removing only the canonical file's YAML frontmatter and normalizing whitespace yields identical 1581-token sequences. No licence obligation differs.",
+  "defect": "The stored Apache template wordset predates the normalizer's preservation of legal copyright clauses. It omits attached, included and prepare, although all three occur in the pinned canonical text.",
+  "repair": "Regenerate those three Apache template words; no similarity threshold, added-condition check, allowed licence or GitHub-agreement requirement changes."
+}

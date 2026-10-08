@@ -170,6 +170,10 @@ class Executor:
         if params:
             raise ValueError("executor_params_unknown:" + self.executor_id)
 
+    def request_compatible(self, request: dict) -> bool:
+        """Whether a saved request still fits this engine's source-specific request contract."""
+        return True
+
     def render(self, assignment: dict, params: dict, *, page: int = 1):  # pragma: no cover - interface
         raise NotImplementedError
 
@@ -456,13 +460,24 @@ class HuggingFaceDatasets(HuggingFaceModels):
 # ---------------------------------------------------------------------------------------------------- OpenAlex
 class OpenAlexWorks(Executor):
     executor_id, host = "openalex_works", "api.openalex.org"
+    executor_version = "1.0.1"
     minimum_interval = 4.0
     daily_ceiling = 700  # credits; anonymous allowance is 1,000 a day, the rest stays for other agents
     cost_unit = "openalex_credit"
     refresh_days = 60
     follow_pages = 2
-    per_page = 200
+    # Provider guide updated August 19, observed October 8, 2026: at most 100 per page.
+    per_page = 100
     renders = frozenset(TOPIC_DIMENSIONS + ("licence", "openalex_type", "natural_language", "geography", "time_window"))
+
+    def request_compatible(self, request: dict) -> bool:
+        params = request.get("params")
+        if type(params) is not list or any(type(pair) is not list or len(pair) != 2 for pair in params):
+            return False
+        sizes = [value for key, value in params if key in ("per-page", "per_page")]
+        return (len(sizes) == 1 and type(sizes[0]) is str and 1 <= len(sizes[0]) <= 3
+                and sizes[0].isascii() and sizes[0].isdigit()
+                and 1 <= int(sizes[0]) <= 100)
 
     def accepts(self, dimension, value):
         if dimension.id in ("licence", "openalex_type"):

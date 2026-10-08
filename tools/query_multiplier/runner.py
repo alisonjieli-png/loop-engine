@@ -362,10 +362,16 @@ class Lane:
         for query_id, product_id, k, page, request, _ in ledger.due_queries(self.executor.executor_id, limit=5):
             if query_id in self.refreshed:
                 continue
+            saved_request = json.loads(request)
+            # Source limits can narrow after a successful historical read. Keep its bytes;
+            # the current product will plan a compatible request with its own identity.
+            if not self.executor.request_compatible(saved_request):
+                self.stats["refreshes_incompatible_request_skipped"] += 1
+                continue
             # A changed header profile never refreshes a saved request under
             # the previous profile's identity. The current product plans its
             # own profile-bound query; both still share this executor's quota.
-            if not request_profile_matches(self.executor, json.loads(request)):
+            if not request_profile_matches(self.executor, saved_request):
                 self.stats["refreshes_other_profile_skipped"] += 1
                 continue
             self.refreshed.add(query_id)
@@ -373,7 +379,7 @@ class Lane:
             if stream is None:
                 continue
             self.stats["refreshes_planned"] += 1
-            return PlannedQuery(product_id, self.executor.executor_id, k, {}, json.loads(request), query_id, page,
+            return PlannedQuery(product_id, self.executor.executor_id, k, {}, saved_request, query_id, page,
                                 origin="refresh"), stream
         return None
 

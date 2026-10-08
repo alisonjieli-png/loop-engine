@@ -256,11 +256,13 @@ class EngineRegistry:
 
 def default_registry(*, network_allowed: bool) -> EngineRegistry:
     """Every Baltor-native engine. Network engines are installed only when the run holds network authority."""
-    from . import engines_local, engines_network
+    from . import engines_local, engines_network, trendshift_engines
     registry = EngineRegistry()
     for engine in engines_local.ENGINES:
         registry.install(engine)
     if network_allowed:
         for engine in engines_network.ENGINES:
+            registry.install(engine)
+        for engine in trendshift_engines.ENGINES:
             registry.install(engine)
     return registry

@@ -19,6 +19,7 @@ makes no live request.
 from __future__ import annotations
 
 import hashlib
+import http.client
 import json
 import math
 import os
@@ -139,16 +140,30 @@ class _NoRedirect(urllib.request.HTTPRedirectHandler):
 
 
 class UrllibTransport:
-    """Fixed-host transport. The token-bearing request cannot redirect."""
+    """Bounded adapter transport. A token-bearing request cannot redirect."""
+    def __init__(self, maximum_bytes: int = 4_000_000, opener=None):
+        if type(maximum_bytes) is not int or not 1024 <= maximum_bytes <= 20_000_000:
+            raise BraveSearchError("invalid response byte bound")
+        self.maximum_bytes = maximum_bytes
+        self.opener = opener or urllib.request.build_opener(_NoRedirect)
+
     def get(self, url: str, *, headers: dict, timeout: float) -> HttpResponse:
-        request = urllib.request.Request(url, headers=headers, method="GET")
-        opener = urllib.request.build_opener(_NoRedirect)
+        return self._send(url, headers=headers, timeout=timeout, method="GET", body=None)
+
+    def post(self, url: str, *, headers: dict, timeout: float, body: bytes) -> HttpResponse:
+        return self._send(url, headers=headers, timeout=timeout, method="POST", body=body)
+
+    def _send(self, url, *, headers, timeout, method, body):
+        request = urllib.request.Request(url, headers=headers, method=method, data=body)
         try:
-            with opener.open(request, timeout=timeout) as response:
+            with self.opener.open(request, timeout=timeout) as response:
                 return HttpResponse(response.status, dict(response.headers),
-                                    response.read())
+                                    response.read(self.maximum_bytes + 1))
         except urllib.error.HTTPError as exc:
-            return HttpResponse(exc.code, dict(exc.headers or {}), exc.read())
+            try:
+                return HttpResponse(exc.code, dict(exc.headers or {}), exc.read(self.maximum_bytes + 1))
+            finally:
+                exc.close()
 
 
 class SequenceTransport:
@@ -233,7 +248,7 @@ class BraveSearchPlugin:
                  transport=None):
         self.config = config
         self.secret_provider = secret_provider
-        self.transport = transport or UrllibTransport()
+        self.transport = transport or UrllibTransport(config.max_response_bytes)
 
     def search(self, request: BraveWebSearchRequest, *,
                access_mode: str = "offline") -> dict:
@@ -252,6 +267,8 @@ class BraveSearchPlugin:
             return _failure(self.config, "missing_secret", attempt_count=0,
                             secret_ref=self.config.secret_ref)
         token = token.strip()
+        if token in request.q:
+            return _failure(self.config, "credential_in_search_request", attempt_count=0)
         url = BRAVE_WEB_SEARCH_URL + "?" + urllib.parse.urlencode(
             request.params())
         headers = {"Accept": "application/json",
@@ -261,10 +278,11 @@ class BraveSearchPlugin:
         try:
             response = self.transport.get(
                 url, headers=headers, timeout=self.config.timeout)
-        except (OSError, urllib.error.URLError) as exc:
+        except (OSError, http.client.HTTPException):
             return _failure(self.config, "transport_failure", attempt_count=1,
-                            error=type(exc).__name__)
+                            error="transport_error")
         if (not isinstance(response, HttpResponse)
+                or type(response.status) is not int or not 100 <= response.status <= 599
                 or not isinstance(response.headers, dict)
                 or not isinstance(response.body, bytes)):
             return _failure(self.config, "invalid_transport_response",
@@ -293,7 +311,7 @@ class BraveSearchPlugin:
                                      if response.status == 429 else None))
         try:
             body = json.loads(response.body)
-        except (json.JSONDecodeError, UnicodeDecodeError):
+        except (json.JSONDecodeError, UnicodeDecodeError, RecursionError):
             return _failure(
                 self.config, "invalid_provider_response", attempt_count=1,
                 http_status=200, rate_limit=rate, response_sha256=digest)
@@ -308,7 +326,7 @@ class BraveSearchPlugin:
             return _failure(
                 self.config, "invalid_provider_response", attempt_count=1,
                 http_status=200, rate_limit=rate, response_sha256=digest)
-        rows = web.get("results") or []
+        rows = web.get("results", [])
         if not isinstance(rows, list):
             return _failure(
                 self.config, "invalid_provider_response", attempt_count=1,
@@ -324,7 +342,7 @@ class BraveSearchPlugin:
                 if not title or not result_url:
                     raise BraveSearchError(
                         "provider Web results require non-empty title and url")
-                snippets = row.get("extra_snippets") or []
+                snippets = row.get("extra_snippets", [])
                 if (not isinstance(snippets, list)
                         or any(not isinstance(value, str)
                                for value in snippets)):

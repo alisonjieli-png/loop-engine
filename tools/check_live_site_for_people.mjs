@@ -11,6 +11,7 @@
 import {chromium} from "../showcase/node_modules/playwright-core/index.mjs";
 import {readFileSync,writeFileSync,existsSync,mkdirSync} from "node:fs";
 import {resolve} from "node:path";
+import {setRequestedAppearance,readRequestedAppearance,appearanceProblems,appearanceKnownWrongControls} from "./browser_appearance_checks.mjs";
 
 const origin=process.argv[2],folder=resolve(process.argv[3]||"");
 if(!origin||!origin.startsWith("https://")||new URL(origin).origin!==origin||!process.argv[3]||existsSync(folder))
@@ -38,6 +39,7 @@ const linkCheck=async(context,href)=>{
 for(const [sizeName,viewport] of Object.entries(sizes)){
   for(const scheme of ["light","dark"]){
     const context=await browser.newContext({viewport,colorScheme:scheme,userAgent:"Baltor live check for people"});
+    await setRequestedAppearance(context,origin,scheme);
     for(const address of pages){
       const page=await context.newPage(),scriptErrors=[];
       page.on("pageerror",error=>scriptErrors.push(String(error.message||error).slice(0,200)));
@@ -59,13 +61,16 @@ for(const [sizeName,viewport] of Object.entries(sizes)){
       if(!seen.heading)note(where,"shows no main heading");
       if(sizeName==="phone"&&seen.sideways>2)note(where,`scrolls sideways by ${seen.sideways} pixels on a phone`);
       if(scriptErrors.length)note(where,"script errors: "+scriptErrors.slice(0,3).join(" | "));
+      const appearance=await readRequestedAppearance(page).catch(()=>({theme:"unreadable"}));
+      for(const problem of appearanceProblems(appearance,scheme))note(where,problem);
+      if(appearanceProblems(appearance,scheme).length===0&&!appearanceKnownWrongControls(appearance,scheme))note(where,"appearance guard accepts a known-wrong choice or contrast");
       if(scheme==="light"&&sizeName==="desktop"){
         for(const href of seen.links){const answer=await linkCheck(context,href);if(answer!==200)note(where,`links to ${href.replace(origin,"")}, which answers ${answer}`);}
       }
       const shot=`${address==="/"?"home":address.replace(/^\//,"").replace(/[^a-z0-9]+/gi,"-")}-${sizeName}-${scheme}.png`;
       if((sizeName==="desktop"&&scheme==="light")||(sizeName==="phone"&&scheme==="dark"))
         await page.screenshot({path:resolve(folder,shot),fullPage:false}).catch(()=>{});
-      rows.push({address,size:sizeName,scheme,status,heading:seen.heading.slice(0,120),script_errors:scriptErrors.length});
+      rows.push({address,size:sizeName,scheme,appearance,status,heading:seen.heading.slice(0,120),script_errors:scriptErrors.length});
       await page.close();
     }
     await context.close();

@@ -1,5 +1,185 @@
 schema: hardcoding_allowlist/v1
 entries:
+- finding_id: hardcoding.b6a96f7b5c2c2304f032b741
+  owner: "tools.knowledge_radar.assets.plan_mcp_service_setup.contracts.input.schema.json:$schema"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed October 7, 2026: this is the JSON Schema 2020-12 dialect identifier of the self-contained MCP setup contract, not a network destination. Offline schema validation and wrong-authority controls check the contract; there are no external schema references."
+  created_on: '2026-10-07'
+  expires_on: '2027-01-07'
+- finding_id: hardcoding.026789c3f630afb8561f421d
+  owner: "tools.knowledge_radar.assets.plan_mcp_service_setup.contracts.output.schema.json:$schema"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed October 7, 2026: this is the JSON Schema 2020-12 dialect identifier of the self-contained MCP setup contract, not a network destination. Offline schema validation and wrong-authority controls check the contract; there are no external schema references."
+  created_on: '2026-10-07'
+  expires_on: '2027-01-07'
+- finding_id: hardcoding.edd00660b7d96dc930ac7aad
+  owner: "tools.resources.mcp-directory-publisher-documentation.json:offerings[0].documentation"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed October 7, 2026: this exact address is publisher-documentation or endpoint metadata in the existing MCP directory source file. It was checked against the publisher's own page on October 8 UTC. Normalization and candidate packaging do not connect, authenticate or invoke tools; account authority and live qualification remain separate. Future changed addresses remain new findings."
+  created_on: '2026-10-07'
+  expires_on: '2027-01-07'
+- finding_id: hardcoding.433555cd7b98b6737361f2fe
+  owner: "tools.resources.mcp-directory-publisher-documentation.json:offerings[0].locations[0].url"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed October 7, 2026: this exact address is publisher-documentation or endpoint metadata in the existing MCP directory source file. It was checked against the publisher's own page on October 8 UTC. Normalization and candidate packaging do not connect, authenticate or invoke tools; account authority and live qualification remain separate. Future changed addresses remain new findings."
+  created_on: '2026-10-07'
+  expires_on: '2027-01-07'
+- finding_id: hardcoding.dedc52cbc831a576a78b47ec
+  owner: "tools.resources.mcp-directory-publisher-documentation.json:offerings[1].documentation"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed October 7, 2026: this exact address is publisher-documentation or endpoint metadata in the existing MCP directory source file. It was checked against the publisher's own page on October 8 UTC. Normalization and candidate packaging do not connect, authenticate or invoke tools; account authority and live qualification remain separate. Future changed addresses remain new findings."
+  created_on: '2026-10-07'
+  expires_on: '2027-01-07'
+- finding_id: hardcoding.6e5856f21c8ef21e64df758a
+  owner: "tools.resources.mcp-directory-publisher-documentation.json:offerings[1].locations[0].url"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed October 7, 2026: this exact address is publisher-documentation or endpoint metadata in the existing MCP directory source file. It was checked against the publisher's own page on October 8 UTC. Normalization and candidate packaging do not connect, authenticate or invoke tools; account authority and live qualification remain separate. Future changed addresses remain new findings."
+  created_on: '2026-10-07'
+  expires_on: '2027-01-07'
+- finding_id: hardcoding.040c5d751994c106ac120392
+  owner: "tools.resources.mcp-directory-publisher-documentation.json:offerings[2].documentation"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed October 7, 2026: this exact address is publisher-documentation or endpoint metadata in the existing MCP directory source file. It was checked against the publisher's own page on October 8 UTC. Normalization and candidate packaging do not connect, authenticate or invoke tools; account authority and live qualification remain separate. Future changed addresses remain new findings."
+  created_on: '2026-10-07'
+  expires_on: '2027-01-07'
+- finding_id: hardcoding.e8dfe1324b8684f89506d143
+  owner: "tools.resources.mcp-directory-publisher-documentation.json:offerings[2].locations[0].url"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed October 7, 2026: this exact address is publisher-documentation or endpoint metadata in the existing MCP directory source file. It was checked against the publisher's own page on October 8 UTC. Normalization and candidate packaging do not connect, authenticate or invoke tools; account authority and live qualification remain separate. Future changed addresses remain new findings."
+  created_on: '2026-10-07'
+  expires_on: '2027-01-07'
+- finding_id: hardcoding.e2c80e40ef815a2822b840dd
+  owner: "tools.resources.mcp-directory-publisher-documentation.json:offerings[3].documentation"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed October 7, 2026: this exact address is publisher-documentation or endpoint metadata in the existing MCP directory source file. It was checked against the publisher's own page on October 8 UTC. Normalization and candidate packaging do not connect, authenticate or invoke tools; account authority and live qualification remain separate. Future changed addresses remain new findings."
+  created_on: '2026-10-07'
+  expires_on: '2027-01-07'
+- finding_id: hardcoding.a3cc48e2c8f2020a704fe03d
+  owner: "tools.resources.mcp-directory-publisher-documentation.json:offerings[3].locations[0].url"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed October 7, 2026: this exact address is publisher-documentation or endpoint metadata in the existing MCP directory source file. It was checked against the publisher's own page on October 8 UTC. Normalization and candidate packaging do not connect, authenticate or invoke tools; account authority and live qualification remain separate. Future changed addresses remain new findings."
+  created_on: '2026-10-07'
+  expires_on: '2027-01-07'
+- finding_id: hardcoding.4f4413f5d403f6c20b1897fc
+  owner: "tools.resources.satellite-embedding-source-table.json:rows[0].authentication_documentation"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed October 7, 2026: this exact Google documentation address supports the dated geospatial source facts or access prerequisites. It is a citation in an existing radar-table representation, not an activated Earth Engine or MCP adapter. No dataset, model weight, account or Cloud project request is made by reading or packaging this table."
+  created_on: '2026-10-07'
+  expires_on: '2027-01-07'
+- finding_id: hardcoding.8ce8af5058b341b03b00d42f
+  owner: "tools.resources.satellite-embedding-source-table.json:rows[0].url"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed October 7, 2026: this exact Google documentation address supports the dated geospatial source facts or access prerequisites. It is a citation in an existing radar-table representation, not an activated Earth Engine or MCP adapter. No dataset, model weight, account or Cloud project request is made by reading or packaging this table."
+  created_on: '2026-10-07'
+  expires_on: '2027-01-07'
+- finding_id: hardcoding.19b870c5040ce16505d28283
+  owner: tools.knowledge_radar.kaggle_engine
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed October 8, 2026: this canonical website origin constructs passive Kaggle metadata references. Dispatch is separately bound to the fixed API host and five documented read operations. Wrong-host and mismatched-reference tests prevent another source from claiming these identities. No link grants code-reuse or publication rights."
+  created_on: '2026-10-08'
+  expires_on: '2027-01-08'
+- finding_id: hardcoding.fae9638b13a0185aff55ce4f
+  owner: tools.knowledge_radar.kaggle_engine
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed October 8, 2026: the closed canonical competition-URL pattern validates source identity before private projection. It cannot select a network destination or follow a supplied link. Wrong-domain and inconsistent-identity fixtures exercise the refusal."
+  created_on: '2026-10-08'
+  expires_on: '2027-01-08'
+- finding_id: hardcoding.453a905806f3b5705244fb82
+  owner: "tools.knowledge_radar.kaggle_engine:notebook_url"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed October 8, 2026: this known Kaggle code-page prefix normalizes a passive notebook reference to the canonical website origin. It never downloads code or grants access. Missing per-row visibility and licences remain unknown; explicit private rows and unrelated URLs are refused."
+  created_on: '2026-10-08'
+  expires_on: '2027-01-08'
+- finding_id: hardcoding.76ff6568ffd671cef0620550
+  owner: "tools.knowledge_radar.kaggle_engine:page_references"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed October 8, 2026: this HTTPS token pattern locates possible passive links inside published-page content before strict host/path filtering. It performs no request. Queries, account routes, traversal and source prose are excluded by the parser and its adversarial fixture."
+  created_on: '2026-10-08'
+  expires_on: '2027-01-08'
+- finding_id: hardcoding.6b0a0d2ac8fe592eaf14c66f
+  owner: "tools.knowledge_radar.kaggle_engine:page_references"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed October 8, 2026: this canonical GitHub origin is a passive project-reference reconstruction after host/path checks. It is not a fetch destination, repository import or licence grant. The source result stays an unapproved private lead."
+  created_on: '2026-10-08'
+  expires_on: '2027-01-08'
+- finding_id: hardcoding.277e8d09f0ccc50bf3e6d805
+  owner: "tools.knowledge_radar.source-contracts-v1.json:contracts[18].terms_address"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed October 7, 2026: this is the Signal adapter's exact source-rights citation, not a runtime-selected endpoint. The existing source contract holds raw republication and permits only private research under an existing entitlement. Registry and private-record tests preserve that distinction."
+  created_on: '2026-10-07'
+  expires_on: '2027-01-07'
+- finding_id: hardcoding.79210eb831f51981a354328e
+  owner: "tools.knowledge_radar.source-contracts-v1.json:contracts[19].terms_address"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed October 7, 2026: this is the public-page adapter's exact source-rights citation. It grants no network access, code reuse, publication or account effect. The source registry and private-record tests retain the raw-data redistribution hold."
+  created_on: '2026-10-07'
+  expires_on: '2027-01-07'
+- finding_id: hardcoding.19baf5dd9bae19bddd26d02d
+  owner: "tools.knowledge_radar.trendshift_engines:TrendshiftPublic.parse_with_page"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed October 7, 2026: HTTPS is the fixed scheme for an evidence URL constructed from the validated Trendshift request host and path. This expression does not dispatch a request or choose a host. Fixed-selection and wrong-host tests cover the separately bounded transport."
+  created_on: '2026-10-07'
+  expires_on: '2027-01-07'
+- finding_id: hardcoding.98e487ccf536a1a4836c2f63
+  owner: tools.knowledge_radar.trendshift_network
+  classification: SECRET_OR_CREDENTIAL_REFERENCE
+  rationale: "Reviewed October 7, 2026: this is the documented environment reference for a host-injected existing Signal key, not a key value or a new secret store. Only the fixed API-host GET adapter reads it. Missing-key, wrong-host, header-only and reflected-secret tests prevent accidental dispatch or recording. No account lookup or purchase is authorized."
+  created_on: '2026-10-07'
+  expires_on: '2027-01-07'
+- finding_id: hardcoding.45d64e3ff1aebbbc640f0c01
+  owner: "tools.knowledge_radar.trendshift_parsing:repository"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed October 7, 2026: this canonical GitHub prefix constructs a passive source reference from a strictly validated owner/repository slug. It is never fetched here. Mismatched-URL, invalid-identity and rename fixtures cover its meaning; numeric identities remain provider claims."
+  created_on: '2026-10-07'
+  expires_on: '2027-01-07'
+- finding_id: hardcoding.71087540524dfe3912e63d4a
+  owner: "tools.knowledge_radar.trendshift_parsing:public_page"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed October 7, 2026: this exact public origin with trailing slash identifies the homepage JSON-LD list. It is a parser comparison, not a caller-selected fetch URL. Missing, ambiguous and advertising-link fixtures prove that unrelated page content cannot become ranking rows."
+  created_on: '2026-10-07'
+  expires_on: '2027-01-07'
+- finding_id: hardcoding.9bbc30f83eea1cf0ff144aa3
+  owner: "tools.knowledge_radar.trendshift_parsing:public_page"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed October 7, 2026: this exact public origin identifies the observed homepage JSON-LD list. It does not authorize fetching another page. Missing, ambiguous and mismatched-URL fixtures cover the parser's closed source selection."
+  created_on: '2026-10-07'
+  expires_on: '2027-01-07'
+- finding_id: hardcoding.016ea615b7059b285d813735
+  owner: "tools.knowledge_radar.trendshift_parsing:public_page"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed October 7, 2026: this JSON-LD context identifier with trailing slash is compared as data and is never fetched. It identifies the supported ItemList representation, not an execution provider. Parser fixtures reject missing and ambiguous lists without executing website scripts."
+  created_on: '2026-10-07'
+  expires_on: '2027-01-07'
+- finding_id: hardcoding.cbccb165489a2099b18982c9
+  owner: "tools.knowledge_radar.trendshift_parsing:public_page"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed October 7, 2026: this JSON-LD context identifier is passive schema vocabulary. It is not dereferenced and grants no effect. Parser fixtures bind the exact ItemList representation and exclude source prose, advertisements and scripts."
+  created_on: '2026-10-07'
+  expires_on: '2027-01-07'
+- finding_id: hardcoding.d650429e02fc4bcf50a27983
+  owner: "tools.knowledge_radar.trendshift_parsing:public_page"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed October 7, 2026: this pattern validates a passive Trendshift repository reference and a bounded positive numeric identifier. It accepts no arbitrary host or executable content and never fetches the reference. Wrong-URL and invalid-identity fixtures cover this source contract."
+  created_on: '2026-10-07'
+  expires_on: '2027-01-07'
+- finding_id: hardcoding.d61f6b1dd266fe8d18a987d9
+  owner: "tools.knowledge_radar.trendshift_parsing:signal_page"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed October 7, 2026: this fixed prefix constructs the source-evidence page for a validated provider identifier. No repository page is fetched here, and it grants neither code rights nor proof of adoption. Typed API fixtures verify the exact mapping."
+  created_on: '2026-10-07'
+  expires_on: '2027-01-07'
+- finding_id: hardcoding.b075ab055c8abafc4802f61e
+  owner: tools.knowledge_radar.trendshift_request
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed October 7, 2026: this constant binds the adapter's rights metadata to the terms actually read for qualification. It is a citation, not a dispatch target or authority grant. Rights remain private and unapproved in all stored observations."
+  created_on: '2026-10-07'
+  expires_on: '2027-01-07'
+- finding_id: hardcoding.aae831c0f3a17ddfb9c8e52d
+  owner: tools.knowledge_radar.trendshift_request
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed October 7, 2026: this is the provenance citation for the fully read, digest-pinned official API schema. Runtime parsing never fetches it or executes its contents. Unsupported request versions, endpoint selections and changed response shapes fail in offline contract tests."
+  created_on: '2026-10-07'
+  expires_on: '2027-01-07'
 - finding_id: hardcoding.8ddda2cf7db5dca1da653a0e
   owner: tools.query_multiplier.client_profiles
   classification: DEPLOYMENT_CONFIGURATION
@@ -10,6 +190,12 @@ entries:
   owner: tools.query_multiplier.install_schedule:require_stopped_schedule
   classification: CLOSED_CONTROLLED_VOCABULARY
   rationale: The equals sign is systemctl show's property/value wire separator, not a configurable lifecycle choice. The installer parses only LoadState and ActiveState and refuses missing, unknown or running states. Positive and wrong-state tests keep an active scheduler from being rewritten.
+  created_on: '2026-10-07'
+  expires_on: '2027-01-07'
+- finding_id: hardcoding.7795d467b6349540adf92e87
+  owner: loop_engine.core.service_runtime.web_assets.feed-specimen.js:url
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed October 7, 2026: this exact JSON Feed 1.1 identifier is a wire-format discriminator checked by the inline catalogue reader, not a network destination or selected provider. The browser fetches only the existing same-origin catalogue path with credentials omitted and redirects refused. Real-server record tests, unknown-version controls and browser failure tests cover this binding."
   created_on: '2026-10-07'
   expires_on: '2027-01-07'
 - finding_id: hardcoding.07833b15aafac1443935fa98
@@ -13356,6 +13542,36 @@ entries:
   classification: DEPLOYMENT_CONFIGURATION
   created_on: '2026-10-08'
   expires_on: '2027-10-08'
+- finding_id: hardcoding.a273c9a71397c400964339a0
+  owner: loop_engine.core.web_research_engines
+  rationale: Tavily's documented native search endpoint belongs to this immutable provider adapter declaration. Requests are checked against that exact endpoint before dispatch; arbitrary URL changes are refused by the owning tests. This is a protocol binding, not a query-specific choice.
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  created_on: '2026-10-07'
+  expires_on: '2027-10-07'
+- finding_id: hardcoding.25bda00f4b3c6b9ee37e8494
+  owner: loop_engine.core.web_research_engines
+  rationale: Exa's documented native search endpoint belongs to this immutable provider adapter declaration. The adapter sends only the declared search request and refuses an endpoint change before dispatch; it does not expose a free-form authenticated URL.
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  created_on: '2026-10-07'
+  expires_on: '2027-10-07'
+- finding_id: hardcoding.a2735ead6adb99a4999fe895
+  owner: tools.probe_web_research
+  rationale: Brave's environment-variable identity validates the selected non-secret operator manifest reference before the approved keyring resolver is called. The probe reads no raw environment key and refuses a foreign provider binding.
+  classification: SECRET_OR_CREDENTIAL_REFERENCE
+  created_on: '2026-10-07'
+  expires_on: '2027-10-07'
+- finding_id: hardcoding.b7a00548b907a6a841c7c158
+  owner: tools.probe_web_research
+  rationale: Exa's environment-variable identity is a provider-binding guard over a named operator reference, not a credential value. The existing operator resolver supplies the value only after the explicit network grant; plan checks never read it.
+  classification: SECRET_OR_CREDENTIAL_REFERENCE
+  created_on: '2026-10-07'
+  expires_on: '2027-10-07'
+- finding_id: hardcoding.efcb07a7b76648ee665f66f8
+  owner: tools.probe_web_research
+  rationale: Tavily's environment-variable identity is the expected public field in its operator reference. This prevents another provider's credential being routed to Tavily; values remain in the existing keyring and no candidate text enters probe output.
+  classification: SECRET_OR_CREDENTIAL_REFERENCE
+  created_on: '2026-10-07'
+  expires_on: '2027-10-07'
 excluded_paths:
 - path: src/loop_engine/core/service_runtime/web_assets/creative-arena/arena.js
   owner: examples.32_creative_arena

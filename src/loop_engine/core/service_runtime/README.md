@@ -1595,6 +1595,29 @@ personalized delivery or validated OKF files. Existing access rules remain
 unchanged. The candidate-only knowledge radar remains separate from this
 projection of already published catalogue records.
 
+The page shows an actual catalogue notice through one same-origin anonymous
+read of the JSON Feed endpoint. The small `feed-specimen.js` module omits
+credentials, refuses redirects, bounds the streamed response to the feed's
+32 KiB limit and gives the read a ten-second deadline. It validates the JSON
+Feed envelope and its versioned snapshot before showing counts, the state
+timestamp and the exact notice identity. A failed read hides the previous
+notice and never fabricates zero counts. Within one page, a lower state
+revision or changed bytes at the same revision are refused as stale or
+inconsistent; an actual zero population remains a valid notice.
+
+The two snapshot-download links use the same fetched JSON record shown on the
+page. JSON retains those exact fetched bytes. Markdown is rendered from that
+record and is checked against the server's Markdown renderer. Neither link
+refetches a newer notice on click. Stable polling URLs remain separate.
+The page stays statically exportable and loads no private account data.
+
+A separate research-decision specimen explains an architecture/provider-cost
+choice using the source collections. Scenario assumptions, publisher
+documentation, missing workload measurements, a provisional inference and
+review triggers have distinct labels. It reports no measured savings,
+benchmark score or automatic research run. The source documentation was
+checked on October 8, 2026 UTC; that date is not a workload measurement.
+
 `catalogue_feed_snapshot/v1` binds release, content digest, state revision,
 state-change time, served package/file counts and original publication change
 counts. The state record owns its timestamp; a restart does not invent a new

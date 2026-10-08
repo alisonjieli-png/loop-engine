@@ -19,9 +19,12 @@ No network, process or model is used.
 from __future__ import annotations
 
 import unittest
+import hashlib
+from pathlib import Path
+import re
 
 import test_licensed_import_support as support
-from loop_engine.core.library_ingestion.licences import LicencePolicy, licence_words, match_licence
+from loop_engine.core.library_ingestion.licences import LicencePolicy, licence_words, match_licence, load_templates
 from loop_engine.core.library_ingestion.provenance import OUTLINE_ONLY, REFUSED, VERBATIM
 
 from licensed_import.licensing import (
@@ -37,6 +40,31 @@ def _decide(members, licences, *, primary="skills/demo/SKILL.md", github="MIT", 
 
 
 class LicenceRuleChecks(unittest.TestCase):
+    def test_pinned_real_apache_text_reproduces_its_template_words(self):
+        root = Path(__file__).with_name("fixtures") / "licence-texts"
+        canonical = (root / "apache-2.0-canonical.txt").read_bytes()
+        google = (root / "google-api-client-LICENSE.txt").read_bytes()
+        self.assertEqual(hashlib.sha256(canonical).hexdigest(), load_templates()["Apache-2.0"].source_sha256)
+        self.assertEqual(hashlib.sha256(google).hexdigest(),
+                         "c71d239df91726fc519c6eb72d318ec65820627232b2f796219e87dcf35d0ab4")
+        canonical_text = re.sub(r"\A---\n.*?\n---\n", "", canonical.decode(), flags=re.S)
+        self.assertEqual(canonical_text.split(), google.decode().split())
+        self.assertEqual(licence_words(canonical.decode()), load_templates()["Apache-2.0"].words)
+        for raw in (canonical, google):
+            self.assertEqual(match_licence(raw.decode()).spdx, "Apache-2.0")
+            self.assertEqual(_decide({"skills/demo/SKILL.md": support.skill("demo")},
+                                    {"LICENSE": raw.decode()}, github="Apache-2.0").decision, VERBATIM)
+
+    def test_real_apache_with_altered_obligations_remains_refused(self):
+        text = (Path(__file__).with_name("fixtures") / "licence-texts/google-api-client-LICENSE.txt").read_text()
+        self.assertIn("perpetual", text)
+        for wrong in (text.replace("perpetual", "temporary", 1),
+                      text + "\nRedistribution is permitted for noncommercial evaluation only.\n",
+                      text + "\nCopyright 2026 Example. Commercial redistribution is prohibited.\n"):
+            self.assertIsNone(match_licence(wrong).spdx)
+            self.assertNotEqual(_decide({"skills/demo/SKILL.md": support.skill("demo")},
+                                       {"LICENSE": wrong}, github="Apache-2.0").decision, VERBATIM)
+
     def test_wrapped_copyright_disclaimer_is_not_a_holder_notice(self):
         # This wrapping occurs in python-validators/validators' MIT licence.
         text = support.MIT.replace("COPYRIGHT HOLDERS", "\nCOPYRIGHT HOLDERS")

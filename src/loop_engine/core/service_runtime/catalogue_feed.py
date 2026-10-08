@@ -141,28 +141,99 @@ def render(record, path, origin):
     return encoded, FORMATS[path]
 
 
+def live_specimen_body():
+    """Static shell for one anonymous catalogue read; failures never render a made-up zero."""
+    return ('<section class="md-band" id="live-catalogue"><p class="eyebrow">Working feed · live catalogue metadata</p>'
+            '<h2>Read an actual feed item.</h2><p class="md-reading">This notice comes from the catalogue Baltor serves now. '
+            'It reports a publication state, not current model news or benchmark results.</p>'
+            '<article class="feed-specimen" id="catalogue-specimen" data-state="loading" aria-labelledby="catalogue-specimen-heading">'
+            '<h3 id="catalogue-specimen-heading">Baltor component updates</h3>'
+            '<p id="catalogue-specimen-status" role="status" aria-live="polite">Reading the public catalogue notice…</p>'
+            '<div id="catalogue-specimen-content" hidden>'
+            '<p id="catalogue-specimen-summary"></p><dl class="md-dl">'
+            '<div><dt>Served packages</dt><dd id="catalogue-specimen-packages"></dd></div>'
+            '<div><dt>Distinct served files</dt><dd id="catalogue-specimen-files"></dd></div>'
+            '<div><dt>Catalogue state changed</dt><dd id="catalogue-specimen-changed"></dd></div>'
+            '<div><dt>This browser read it at</dt><dd id="catalogue-specimen-read"></dd></div>'
+            '<div><dt>Exact notice identity</dt><dd id="catalogue-specimen-notice"></dd></div></dl>'
+            '<p id="catalogue-specimen-limit" class="md-reading"></p>'
+            '<div class="md-actions"><a class="button secondary" id="catalogue-snapshot-json">Download this item as JSON</a>'
+            '<a class="button secondary" id="catalogue-snapshot-markdown">Download this item as Markdown</a></div>'
+            '<p class="md-reading">Both downloads use the same notice displayed here, even if the catalogue changes afterwards.</p>'
+            '</div><button class="button secondary" type="button" id="catalogue-specimen-refresh" disabled>Read the latest notice</button>'
+            '<noscript><p>JavaScript is needed for the inline notice. The public feed links below work without it.</p></noscript>'
+            '</article><p class="md-reading">For an agent that polls for changes, use these stable feed addresses:</p>'
+            '<div class="md-actions"><a class="button secondary" href="/feeds/catalogue.json">JSON Feed</a>'
+            '<a class="button secondary" href="/feeds/catalogue.rss">RSS</a>'
+            '<a class="button secondary" href="/feeds/catalogue.md">Markdown</a></div>'
+            '<p class="md-reading">This is one current-state notice in three formats, not a complete change history. '
+            'A failed refresh is not an empty catalogue. Markdown is not a claim of OKF compatibility.</p></section>')
+
+
+def decision_specimen_body():
+    """A labeled research example with source statements kept apart from unmeasured performance."""
+    from .feed_source_collections import directory
+    collections = {item.id: item for item in directory().collections}
+    chosen = ("founder-stack", "model-cost", "retrieval-benchmarks", "developer-releases")
+    _require(all(identity in collections for identity in chosen), "feed_specimen_source_missing")
+    links = "".join(f'<li><a href="#collection-{identity}">{escape(collections[identity].title)}</a>: '
+                    f'{escape(collections[identity].purpose)}</li>' for identity in chosen)
+    return ('<section class="md-band md-quiet" id="decision-specimen"><p class="eyebrow">Research-decision specimen · curated example</p>'
+            '<h2>Where should a research-feed product run?</h2>'
+            '<p class="md-reading">This example shows how an agent could use four of the source collections below. '
+            'It is a decision brief, not an automated investigation or a measured Baltor cost comparison.</p>'
+            '<article class="feed-specimen"><h3>The decision</h3>'
+            '<p>Choose where to serve public feeds, store artifacts and run a custom search index.</p>'
+            '<p><strong>Example assumptions:</strong> Public reads are frequent; source collection is periodic; '
+            'the search index uses a custom Python process and persistent local files. These are scenario inputs, not measured traffic.</p>'
+            '<div class="md-table-wrap"><table class="md-table feed-evidence-table"><caption>Source statements and missing measurements</caption>'
+            '<thead><tr><th scope="col">Evidence</th><th scope="col">What the source says</th><th scope="col">What is not measured here</th></tr></thead><tbody>'
+            '<tr><th scope="row">Publisher documentation</th><td><span class="feed-evidence-label">Source statement</span>'
+            '<a href="https://developers.cloudflare.com/workers/platform/limits/" '
+            'rel="noreferrer">Workers limits</a> define the runtime and resource constraints a collection job must fit.</td>'
+            '<td><span class="feed-evidence-label">Not measured here</span>Whether this job fits those limits; '
+            'its failure rate and end-to-end latency.</td></tr>'
+            '<tr><th scope="row">Publisher documentation</th><td><span class="feed-evidence-label">Source statement</span>'
+            '<a href="https://developers.cloudflare.com/r2/pricing/" '
+            'rel="noreferrer">R2 pricing</a> separates storage and operation charges from egress.</td>'
+            '<td><span class="feed-evidence-label">Not measured here</span>Actual requests, storage mix and monthly bill. '
+            'No savings percentage is established.</td></tr>'
+            '<tr><th scope="row">Publisher documentation</th><td><span class="feed-evidence-label">Source statement</span>'
+            '<a href="https://docs.fly.io/machines/overview/" '
+            'rel="noreferrer">Fly Machines</a> provide virtual machines for application processes.</td>'
+            '<td><span class="feed-evidence-label">Not measured here</span>Search recall, index rebuild time, '
+            'operating effort and cost for the same workload.</td></tr></tbody></table></div>'
+            '<p><strong>Provisional choice:</strong> Test Cloudflare for anonymous feed delivery and artifact storage. '
+            'Keep the custom search process on its existing host until an alternative passes the same workload and recovery checks. '
+            'This is an inference from the scenario and documentation, not a deployment instruction.</p>'
+            '<h3>Evidence that could change the choice</h3><ul class="md-plain">'
+            '<li>A fixed workload with actual request counts, storage operations, observed latency and a complete cost estimate.</li>'
+            '<li>The same search queries and relevance judgments on each engine, including failures and index rebuild time.</li>'
+            '<li>A restore and rollback test, with identity and access checks unchanged.</li></ul>'
+            '<p><strong>Review trigger:</strong> Revisit when traffic, provider pricing, runtime limits or the required search behavior changes. '
+            'An agent must collect new evidence before changing the decision; this page does not schedule that work.</p>'
+            '<p class="md-reading">Documentation checked 2026-10-08 (UTC). Workload measurements: not collected for this specimen.</p>'
+            '<h3>Collections that support this decision</h3><ul class="md-plain">' + links + '</ul>'
+            '<p class="md-reading">Agent Feeds supports the choice and its reasons. Harness Files supplies the parsers, '
+            'comparison scripts, deployment files and checks used to carry it out.</p></article></section>')
+
+
 def page_body():
     from .feed_source_collections import page_section
-    return ('<section class="md-band md-intro"><p class="eyebrow">Agent Feeds · free preview</p>'
+    return ('<section class="md-band md-intro"><p class="eyebrow">Agent Feeds</p>'
             '<h1 id="feeds-title">Updates your agents can use.</h1>'
+            '<p class="md-reading feed-offer-price"><strong>$4.99 a month.</strong> Free through December 31, 2026 (Eastern). '
+            'No automatic charge; a paid subscription will need your explicit opt-in. Paid feed-only enrollment is in development.</p>'
             '<p class="md-reading">Agent Feeds helps your agents decide what to do and why. Harness Files helps them carry it out. '
             'Use model releases, GitHub projects, benchmarks and services to compare options for a real decision. '
             'Start with a source collection for your agent and the live catalogue feed below. '
             'Choose Agent Feeds + Harness Files when you also need reusable code, tools and working files.</p>'
             '<div class="md-actions"><a class="button secondary" href="/pricing">Compare the two offerings</a>'
+            '<a class="button secondary" href="#live-catalogue">Read a live feed item</a>'
             '<a class="button secondary" href="#source-collections">Choose a source collection</a>'
             '<a class="button secondary" href="/library">Explore Harness Files</a></div></section>'
-            + page_section()
-            + '<section class="md-band"><h2>Live catalogue updates</h2><p class="md-reading">'
-            'This feed describes the currently served catalogue: its release, '
-            'state-change time, package count, distinct-file count and release changes. '
-            'An agent can poll it and compare the notice identity before searching the library again.</p>'
-            '<div class="md-actions"><a class="button primary" href="/feeds/catalogue.json">JSON Feed</a>'
-            '<a class="button secondary" href="/feeds/catalogue.rss">RSS</a>'
-            '<a class="button secondary" href="/feeds/catalogue.md">Markdown</a></div>'
-            '<p class="md-reading">This is one current-state notice in three formats, not a complete change history. '
-            'A failed refresh must not be read as an empty catalogue. Markdown is not a claim of OKF compatibility.</p>'
-            '</section><section class="md-band"><h2>Give different agents different sources</h2>'
+            + live_specimen_body() + decision_specimen_body() + page_section()
+            + '<section class="md-band"><h2>Give different agents different sources</h2>'
             '<p class="md-reading">Use a collection\'s JSON Feed or Markdown link in the agent that needs it. '
             'Give a coding agent Choose a coding model and Plan platform and tool upgrades; '
             'give a research agent Turn papers into practical tests and Review RAG and retrieval quality. '
@@ -174,10 +245,10 @@ def page_body():
             '<section class="md-band"><h2>Agent Feeds + Harness Files</h2><p class="md-reading">'
             'Agent Feeds supplies the public source collections and catalogue feed in this preview. '
             'Agent Feeds + Harness Files also gives you the reusable library through the existing paid plan. '
-            'There is no separate paid Feeds plan yet.</p><p class="md-reading">Harness Files are reusable components: '
+            'The full-library plan is $29 a month. Personalized feeds remain in development.</p><p class="md-reading">Harness Files are reusable components: '
             'reusable functions, code, tools, configurations, reference data and assets. Existing plan access and '
             'the account-required Public Good collection are unchanged.</p>'
-            '<p class="md-reading">A feed notice never installs or runs its contents. Package bodies still require their normal '
+            '<p class="md-reading">A feed notice never installs or runs its contents. Downloaded files still require their normal '
             'authorization, source and licence checks.</p><div class="md-actions">'
             '<a class="button secondary" href="/library">Explore Harness Files</a>'
             '<a class="button secondary" href="/public-good">Public Good</a></div></section>')
@@ -195,6 +266,7 @@ def rendered_page(path, method, display_name, host=None):
                   "breadcrumb": breadcrumbs(site, (("Home", "/"), ("Feeds", PAGE)))}
     body = frame(site, display_name, Page(PAGE, "feeds", entry.title, entry.description,
                                         page_body(), structured, "feeds-title")).encode()
+    body = body.replace(b'</head>', b'<script type="module" src="/assets/feed-specimen.js"></script>\n</head>', 1)
     head = web_pages.page_head(site, path, host, display_name)
     if head is not None:
         body = web_pages.with_page_head(body, head)

@@ -1702,7 +1702,8 @@ def read_specification(reader, source: dict, path: str, texts=None) -> dict:
         raise OperationRefused("specification_unreadable", f"{repository}/{path}: {type(error).__name__}") from None
     document = plain(document)  # YAML keys such as 200 become text, and dates become text
     from .swagger2 import is_swagger2, swagger2_to_openapi3  # the converter reads this module's vocabulary
-    if is_swagger2(document):
+    converted_from_swagger2 = is_swagger2(document)
+    if converted_from_swagger2:
         document = swagger2_to_openapi3(document)
     if not isinstance(document, dict) or not str(document.get("openapi", "")).startswith("3."):
         raise OperationRefused("specification_version_unsupported",
@@ -1710,6 +1711,7 @@ def read_specification(reader, source: dict, path: str, texts=None) -> dict:
     info = document.get("info") or {}
     declared = declared_beside(info, licence, texts or LicenceTexts(reader), f"{repository}/{path}")
     return {"document": document, "repository": repository, "commit": commit, "path": path, "blob": blob,
+            "converted_from_swagger2": converted_from_swagger2,
             "sha256": raw.sha256, "size_bytes": len(raw.body), "retrieved_at": raw.retrieved_at, "bytes": raw.body,
             "licence": licence, "declared_licence": declared,
             "notices": [repository_notice(reader, repository, commit, licence.spdx)],

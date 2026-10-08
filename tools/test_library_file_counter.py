@@ -29,7 +29,7 @@ class LibraryFileCounterTests(unittest.TestCase):
                       "distinct_files": 1010, "complete": True}
         page, _kind = web_pages.served_asset("/", "GET", "Baltor", library_population=lambda: population)
         self.assertIn(b"data-library-file-count>1,010<", page)
-        self.assertIn(b"data-library-count>20<", page)
+        self.assertNotIn(b"data-library-count>", page)
 
     def test_empty_catalogue_does_not_keep_the_packaged_seed_count(self):
         page = b'<b data-library-file-count>99</b><span data-library-count>43</span>'

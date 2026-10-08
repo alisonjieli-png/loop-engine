@@ -16,7 +16,7 @@ from loop_engine.core.web_fetch import WebHttpClientProfile
 CONFIGURATION = "research_query_http_profiles/v1"
 OBSERVATION = "research_query_http_client_observation/v1"
 ENVIRONMENT = "QUERY_MULTIPLIER_HTTP_PROFILES"
-HTTP_ACCESS = ("https_get", "https_post_key")
+HTTP_ACCESS = ("https_get", "https_post_key", "https_get_key")
 USER_AGENT = "loop-engine query-multiplier/1.0 (read-only research probes; https://github.com/alisonjieli-png/loop-engine)"
 DEFAULT_PROFILE = WebHttpClientProfile("baltor-query-multiplier", "1.0.0", USER_AGENT)
 MAXIMUM_CONFIGURATION_BYTES = 64 * 1024

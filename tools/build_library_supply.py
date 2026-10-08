@@ -467,6 +467,24 @@ def report(args) -> dict:
     return result
 
 
+def api_contracts(args) -> dict:
+    """Offline, bounded operation-contract pilot; ordinary supply candidate output only."""
+    import hashlib
+    from supply_lines import (api_contract_atoms, api_contract_run, api_contract_sources, api_schemas, declared_licences,
+                              licences, openapi_directory, openapi_operations, packaging, reading, schema_check, swagger2)
+    args.run_folder = _outside(args.run_folder)
+    if args.authorize_output_writes and free_gigabytes(args.run_folder) < args.minimum_free_gigabytes:
+        raise SystemExit("free_space_below_the_floor")
+    revision = code_revision(False)
+    paths = tuple(Path(module.__file__) for module in (api_contract_atoms, api_contract_run, api_contract_sources, api_schemas,
+        declared_licences, licences, openapi_directory, openapi_operations, packaging, reading, records, schema_check, swagger2)) + (Path(__file__),)
+    source_digest = hashlib.sha256(b"".join(path.read_bytes() for path in paths)).hexdigest()
+    result = api_contract_run.run_as_loop(args, revision=revision, licence_text=LICENCE_FILE.read_bytes(),
+                                          generator_digest=source_digest)
+    print(json.dumps(result, indent=1, sort_keys=True))
+    return result
+
+
 def parser() -> argparse.ArgumentParser:
     main = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     commands = main.add_subparsers(dest="command", required=True)
@@ -555,6 +573,27 @@ def parser() -> argparse.ArgumentParser:
     publisher.add_argument("--maximum-series", type=int, default=0, help="at most this many series, catalogue order")
     # The World Bank and the O*NET Resource Center publish no numeric request rate: one request a second, serial.
     publisher.set_defaults(pause_seconds=1.0)
+    contracts = commands.add_parser("api-contracts", help="offline operation-contract atoms from an existing pinned fact cache")
+    cache = contracts.add_mutually_exclusive_group(required=True)
+    cache.add_argument("--cache-folder", help="existing run folder containing a regular cache directory")
+    cache.add_argument("--cache-directory", help="explicit regular cache directory, without following an alias")
+    contracts.add_argument("--run-folder", required=True)
+    contracts.add_argument("--source", action="append", required=True)
+    from supply_lines.api_contract_sources import ApiContractSourceMode
+    contracts.add_argument("--source-mode", choices=tuple(mode.value for mode in ApiContractSourceMode),
+                           default=ApiContractSourceMode.CURATED.value)
+    contracts.add_argument("--maximum-source-specifications", type=int, default=25)
+    contracts.add_argument("--maximum-source-bytes", type=int, default=32 * 1024 * 1024,
+                           help="sum of eligible pinned source bodies loaded for one source plan")
+    contracts.add_argument("--maximum-atoms", type=int, required=True, help="whole-run candidate ceiling")
+    contracts.add_argument("--maximum-attempts", type=int, required=True, help="whole-run source-atom ceiling, findings included")
+    contracts.add_argument("--maximum-candidate-bytes", type=int, default=64 * 1024 * 1024,
+                           help="whole-run logical bytes of retained atoms and candidate files, excluding small run reports")
+    contracts.add_argument("--batch-size", type=int, default=200, help="source atoms attempted in this invocation")
+    contracts.add_argument("--maximum-seconds", type=float, default=60, help="checked between bounded atom builds")
+    contracts.add_argument("--authorize-output-writes", action="store_true",
+                           help="generate private candidates and run local checks (files/processes); no provider calls, admission or publication")
+    contracts.add_argument("--minimum-free-gigabytes", type=float, default=MINIMUM_FREE_GIGABYTES)
     five = commands.add_parser("report")
     five.add_argument("--store-root", default="/home/username/baltor-library/import-store")
     five.add_argument("--library-bundle", required=True, help="the served release bundle folder; a candidate whose "
@@ -577,6 +616,7 @@ def main(argv=None) -> int:
      "openapi-discovery": openapi_discovery, "programs": programs, "data-tables": data_tables,
      "publisher-tables": publisher_tables,
      "functions": functions, "schemas": schemas, "curated-schemas": curated_schemas, "api-schemas": api_schemas,
+     "api-contracts": api_contracts,
      "manim-scenes": manim_scenes, "api-tool-servers": api_tool_servers, "report": report}[args.command](args)
     return 0
 

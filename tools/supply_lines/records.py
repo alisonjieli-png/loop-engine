@@ -222,8 +222,11 @@ def record_id(line: str, key: str, package_digest: str) -> str:
 
 #: The state scopes of a line. A line written by two modes keeps one state per mode, so a complete run of one
 #: mode never withdraws what the other supplies (the curated and the directory mode of the API line).
+OPERATION_CONTRACT_SCOPE = "operation_contracts"
+OPERATION_CONSTRAINT_CASE_SCOPE = "operation_constraint_cases"
 STATE_SCOPES = ("", "apis_guru_directory", "google_discovery", "api_components", "curated_schemas",
-                "world_bank_wdi", "onet_database", "our_world_in_data")
+                "world_bank_wdi", "onet_database", "our_world_in_data",
+                OPERATION_CONTRACT_SCOPE, OPERATION_CONSTRAINT_CASE_SCOPE)
 
 
 def state_record_id(line: str, scope: str = "") -> str:

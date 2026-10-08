@@ -206,6 +206,7 @@ WEB_ASSETS = {
     # rendered by model_directory_pages.py from the records in model-directory/; the transport asks it for them.
     "/assets/model-directory.css": ("model-directory.css", "text/css"),
     "/assets/model-directory.js": ("model-directory.js", "text/javascript"),
+    "/assets/feed-specimen.js": ("feed-specimen.js", "text/javascript"),
     "/assets/model-directory/search-index.json": ("model-directory/search-index.json", "application/json"),
     "/assets/model-directory/fit-index.json": ("model-directory/fit-index.json", "application/json"),
 }
@@ -504,7 +505,7 @@ def served_asset(path, method, display_name, host=None, site_map=None, library_c
     body = read_packaged_asset(name)
     if media_type == HTML_MEDIA_TYPE:
         body = body.replace(SERVICE_NAME_PLACEHOLDER, escape(display_name, quote=True).encode("utf-8"))
-        if library_population is not None and LIBRARY_COUNT_MARK in body:
+        if library_population is not None and (LIBRARY_COUNT_MARK in body or b"data-library-file-count" in body):
             body = with_file_population(body, library_population())
         elif library_count is not None and LIBRARY_COUNT_MARK in body:
             body = with_library_count(body, library_count())

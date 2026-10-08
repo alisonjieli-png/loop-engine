@@ -3,12 +3,14 @@
 export const audienceDestinations={engineers:"/for/coding-agents",designers:"/for/designers","ai-agents":"/for/protocol-and-client"};
 export const keepsThePerStepOptionOut=copy=>!/fresh harness|harness (?:for|per) (?:each|every) step|one harness per step/i.test(copy.text);
 export const heroProblems=copy=>[
-  ...([/\bengineers\b/i,/\bdesigners\b/i,/\bAI agents\b/i].every(rule=>rule.test(copy.headline))?[]:["the hero must name all three audiences"]),
+  ...([/\bengineers\b/i,/\bdesigners\b/i,/\bAI agents\b/i].every(rule=>rule.test(copy.text))?[]:["the hero must name all three audiences"]),
+  ...(/\bagents\b/i.test(copy.headline)&&copy.headline.split(/\s+/).length<=12?[]:["the hero needs a short agent-facing headline"]),
   ...(/\blibrary\b/i.test(copy.subhead)&&/\bcode\b/i.test(copy.subhead)&&/\btools\b/i.test(copy.subhead)?[]:["the hero must explain the shared product"]),
   ...(/\bby hand\b|\brewriting\b/i.test(copy.subhead)?[]:["the hero must explain the repeated work it removes"]),
   ...(keepsThePerStepOptionOut(copy)?[]:["the hero promises a fresh harness for each step"])];
 export function heroCheckRejectsItsKnownWrongCases(copy){
-  return ["engineers","designers","AI agents"].every(word=>heroProblems({...copy,headline:copy.headline.replace(new RegExp(word,"i"),"")}).length>0)
+  return ["engineers","designers","AI agents"].every(word=>heroProblems({...copy,text:copy.text.replace(new RegExp(word,"ig"),"")}).length>0)
+    &&heroProblems({...copy,headline:""}).length>0
     &&heroProblems({...copy,subhead:""}).length>0
     &&heroProblems({...copy,text:copy.text+" Each step runs in a fresh harness."}).length>0;
 }
@@ -45,7 +47,8 @@ export function offeringProblems(cards){
     const [id,title,href]=expected[index],card=cards[index];
     if(card.id!==id||card.title!==title||card.href!==href)problems.push('offering identity or destination differs');
   }
-  if(!/Free preview/.test(cards[0].text)||!/in development/.test(cards[0].text))problems.push('feed availability is missing');
+  if(!/\$4\.99 a month/.test(cards[0].text)||!/Free through December 31, 2026 \(Eastern\)/.test(cards[0].text)
+    ||!/No automatic charge/.test(cards[0].text)||!/opt-in/.test(cards[0].text)||!/in development/.test(cards[0].text))problems.push('feed price, free period, consent or availability is missing');
   if(!/Agent Feeds \+ Harness Files/.test(cards[1].text)||!/\$29 a month/.test(cards[1].text))problems.push('full library price is missing');
   return problems;
 }

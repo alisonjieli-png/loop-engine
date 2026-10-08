@@ -6,6 +6,7 @@ send(executor, request)
 │   unavailable executor, missing key for a keyed engine
 ├── gh_api        `gh api --method GET --include <path>`: the gh login holds the GitHub credential, never this code
 ├── https_get     urllib GET, no redirect, bounded bytes and time, the executor's fixed public headers
+├── https_get_key the same fixed-host GET with a bearer header read only at send time
 └── https_post_key urllib POST of a JSON body; the bearer key is read from the environment at send time and
                    exists only in the outgoing header: it never enters the request record, the stored response,
                    the ledger or a report
@@ -129,6 +130,8 @@ class Transport:
             raise RequestRefused("host_forbidden")
         if not request.get("path", "").startswith("/") or ".." in request["path"].split("/"):
             raise RequestRefused("path_not_absolute")
+        if not executor.request_compatible(request):
+            raise RequestRefused("executor_request_incompatible")
         try:
             profile = selected_profile(executor)
             if not request_profile_matches(executor, request):
@@ -138,7 +141,7 @@ class Transport:
                 raise ValueError("query_http_profile_static_override")
         except ValueError as error:
             raise RequestRefused("http_client_profile_refused") from error
-        if executor.access == "https_post_key" and not self.environment.get(executor.key_variable):
+        if executor.access in ("https_post_key", "https_get_key") and not self.environment.get(executor.key_variable):
             raise RequestRefused("key_not_in_environment")
 
     def send(self, executor, request: dict) -> Answer:
@@ -147,6 +150,9 @@ class Transport:
             return self._gh(request)
         if executor.access == "https_get":
             return self._http(executor, request, "GET", None, {})
+        if executor.access == "https_get_key":
+            key = self.environment.get(executor.key_variable, "")
+            return self._http(executor, request, "GET", None, {"Authorization": "Bearer " + key})
         if executor.access == "https_post_key":
             key = self.environment.get(executor.key_variable, "")
             body = json.dumps(request["body"], sort_keys=True, separators=(",", ":")).encode()

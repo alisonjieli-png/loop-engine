@@ -35,6 +35,21 @@ covers quota-safe interchangeable search engines, a live feed specimen,
 Trendshift/Kaggle research, MCP setup and an atomic supply factory. Each is
 reviewed and checked on the exact integrated tree before release.
 
+The October 8 SDG publication is now live: release `1694fb4a...` adds 24
+original tools and 192 distinct file bodies, for 1,353,029 served files.
+All previous versions remain. The consequence check lost none of the
+previously found expectations across 354 judged queries and orphaned no
+Public Good grants. Its all-host pulse passed fifty checks; ordinary-customer
+use and new Public Good grants remain separate gates.
+
+The original R2 mirror completed at 06:11 UTC with all 1,352,837 bodies in
+its pinned catalogue verified. A separate delta must cover the new 192;
+neither completion switches the serving engine. The full route-map browser
+retry passed 67 pages, 277 views and 407 links after Cloudflare analytics
+injection was disabled for the nine product hosts. That older checker did
+not prove actual dark-theme selection; the next interface check selects
+and verifies the application's own theme rather than only the OS preference.
+
 The corrected long-pass scheduler passed its full twenty-minute service run
 from pinned `76ff12c2`: 282 Ollama searches returned 200 and the unit completed
 successfully. The earlier timer race remains recorded separately. Some other
@@ -162,9 +177,10 @@ than losing them to a similarity filter.
 
 - [x] Release 77 and all nine Cloudflare website routes are live; the previous
   direct paths remain recoverable without resource deletion.
-- [x] Twenty-four original SDG packages passed current admission with a named
-  non-producer reviewer. All passed fresh isolated tests on two Python versions
-  and a schema-instrumented pass. They remain unserved pending reconciliation.
+- [x] Twenty-four original SDG tools passed current admission with a named
+  non-producer reviewer, isolated tests on two Python versions and a
+  schema-instrumented pass. They are published with 192 net-new file bodies.
+  Free-access grants and ordinary-customer execution remain separate checks.
 - [x] Three additional original Kaggle-inspired candidates are prepared:
   observation gaps, locale-resource fallback and memory residency arithmetic.
   Their 25 distinct files include nine code/schema files; they are not admitted.
@@ -181,6 +197,72 @@ than losing them to a similarity filter.
   reconcile counts; retain every failed or interrupted publication attempt.
 - [ ] Finish R2 completeness and failure/revocation checks before selecting it;
   do not change its pinned inventory while its current mirror is running.
+
+### Proposed third offering: Supervised Runs
+
+The owner's October 8 question proposes overnight or unattended work using
+customers' own cheap or local model access. This is a product proposal, not
+an approved new price, entitlement, hosted feature or completion guarantee.
+Keep the existing two-offering launch work moving while proving the added
+value. Do not charge for the basic ability to run the local harness.
+
+| Offering | Customer purpose | Commercial state |
+| --- | --- | --- |
+| Agent Feeds | Decide what to build, use or improve from dated external evidence | Owner-set standard price $4.99/month, free through December 31, 2026 Eastern; future paid enrollment is opt-in |
+| Agent Feeds + Harness Files | Carry out the decision using reusable working files | Existing $29/month library plan; model access stays with the customer |
+| Supervised Runs | Keep a permitted job progressing, preserve checked work and explain what remains | Proposed pilot; hosted coordination and limits must be proven before choosing a price |
+
+The proposed paid value is hosted coordination, saved run state, notifications
+and recovery across a supported paired worker—not bundled model tokens or
+an unlimited cloud computer. A customer's localhost is reachable by their
+worker, not by a Cloudflare Worker on the public internet. Start with an
+authenticated outbound worker connection and keep model keys on that worker
+by default. The cloud should receive only the job state, evidence and
+artifacts the customer explicitly selects. New data collection or changed
+legal promises require their own approval.
+
+Existing owners supply parts of this design:
+`core/run_checkpoint.py` preserves attempt artifacts and checks their digests;
+it explicitly does not restore an interrupted model's internal state.
+`core/reactive_worker.py` binds work to leases and fencing tokens and can
+renew a lease. `core/adaptive_practitioner_recovery.py` proposes bounded
+responses to a stall through the normal capability checks.
+`core/overnight_outcome.py` separates a verified result, useful diagnosis,
+named blocker and no progress. These are foundations, not proof of a hosted
+customer supervision product.
+
+Use measured progress as well as heartbeats: completed checks, new verified
+artifacts, repeated error signatures and time since the last useful state
+change. A long legitimate render is not automatically a stall. On a stall,
+reconcile any uncertain external operation before retrying; preserve good
+artifacts; then select a permitted repair, smaller step or configured engine
+fallback. Changing a model or endpoint must preserve the customer's cost,
+privacy and capability restrictions. A recovery proposal grants no new effect.
+Irreversible or non-idempotent writes cannot be blindly replayed.
+
+Cloudflare is a candidate coordination host. Its
+[Workflows](https://developers.cloudflare.com/workflows/) supports durable
+steps and waits. [Durable Object alarms](https://developers.cloudflare.com/durable-objects/api/alarms/)
+can wake coordination logic, while the existing Loop remains the executable
+vertex. [Queues delivers at least once](https://developers.cloudflare.com/queues/reference/delivery-guarantees/),
+so duplicate delivery still needs exact operation identities and stale-worker
+fencing. The Cloudflare engine must pass the same edge checks as the existing
+engine; platform durability is not proof that application effects happen once.
+
+| Pilot phase | Evidence required before proceeding |
+| --- | --- |
+| One bounded task on this PC | Ordinary account, exact retrieved files, declared model/endpoint, hard usage limits, output checks and complete failure accounting |
+| Interruption and recovery | Kill worker, lose connection, time out provider, exhaust quota, duplicate a message and revoke a lease; retain checked artifacts and prevent repeated effects |
+| Several unattended nights | Completion and useful-partial rates, recovery time, false stall alarms, repeated-work cost and morning reports; retain failed attempts |
+| Small customer pilot | Isolation between accounts, paired-worker revocation, version negotiation, notifications and explicit stop/resume behavior |
+| Pricing and launch | Measured coordination/storage/support cost, defined concurrent-run and retention limits, separate customer model charges and no guaranteed-success claim |
+
+Begin with code repair and data cleanup where an independent check can judge
+the result. Treat creative taste and open-ended research as later cases with
+explicit review criteria. The working message is: “Let your agent work while
+you're away. Keep checked progress, recover from common failures and return
+to results—or a clear explanation of what blocked them.” This remains proposed
+copy until the corresponding customer journey has passed.
 
 ### Engine and transport programme
 

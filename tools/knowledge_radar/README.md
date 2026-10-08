@@ -27,6 +27,226 @@ Automated commercial Reddit access requires a platform-access review before
 activation. A public reply does not grant permission to redistribute its
 code, assets or prose. See [the source and engine record](../../docs/research/CREATIVE-COMPONENTS-AND-ENGINE-CONTROL-2026-09-29.md).
 
+## Private Kaggle metadata reads
+
+[`tools/read_kaggle.py`](../read_kaggle.py) reads competition metadata,
+published page names/references and notebook-list metadata. It implements the
+documented Kaggle service POSTs through the existing query `Executor`/`Parsed`
+and bounded Transport interfaces. The canonical Loop owns execution, and
+CommunityStore owns private run and lead records. It is deliberately absent
+from the bulk query runner, which stores raw responses. No scheduler or
+customer-facing endpoint is enabled by this command.
+
+The default is a plan, with no network or credential access:
+
+```sh
+PYTHONPATH=src:tools python tools/read_kaggle.py notebooks \
+  --competition gemma-4-good-hackathon --page-size 10
+```
+
+For a permitted read, the host supplies its existing private state root and
+credential-reference manifest. The named reference must bind service
+`kaggle`, purpose `bounded-research-read` and environment `KAGGLE_API_TOKEN`.
+The command resolves it from Secret Service in process; it accepts no token
+value, token file or caller-selected destination URL.
+
+```sh
+PYTHONPATH=src:tools python tools/read_kaggle.py notebooks \
+  --competition gemma-4-good-hackathon --page-size 10 \
+  --state /path/to/private/community-state \
+  --credential-manifest /path/to/host-managed/references.json \
+  --execute --enqueue --authorize-network-reads --authorize-local-writes
+```
+
+`competitions --query ...` searches the documented all-competition view;
+`competition --competition ...` reads one competition. `pages` projects
+published names and a bounded set of passive source links, discarding prose.
+`notebooks` always selects the SDK's `EVERYONE` view, never owned/private,
+collaborator or mixed-public/private views. A missing per-row visibility field
+is retained as unknown; an explicit private flag is rejected. All licence,
+code-reuse, execution and publication approval flags remain false. A reported
+licence is only a source claim. No notebook code, output, dataset, model or
+weight download is supported.
+
+`check_auth` performs the SDK-documented token introspection. The token is
+materialized only inside the fixed-host POST body/header; neither that body
+nor the returned identity is retained. An active token associated with an
+account is stronger evidence than a successful metadata HTTP response.
+Metadata reads themselves do not claim to re-prove authentication.
+
+Reuse the same state root across operations and credentials. Each execution
+reserves one request before dispatch, with a persistent session ceiling of
+at most twenty and at least one second after a completed read. Provider holds
+are shared. The response limit is one MiB; normalized items are bounded to
+32 KiB before managed-record storage. There are no retries, redirects or
+automatic pagination. A page without a returned cursor is not proof that
+the whole source was read.
+
+Unknown dispatch outcomes stay charged and held. `--reconcile-unknown` with
+local-write authority closes that uncertainty without sending a request,
+refunding the reservation or clearing provider holds. Exhausted quota without
+a usable future reset has a durable `unknown_provider_reset` hold, not an
+invented reset time. The CLI has no force-clear option. The host must reconcile
+provider evidence through the existing managed-record authority before any
+later dispatch; changing a credential or request does not bypass the hold.
+
+The JSON console result contains counts and request scope, not the saved
+metadata rows. `--enqueue` records existing `Lead` payloads as
+`needs_research`, with no workflow hints inferred from a title or vote count.
+The [qualification record](../../docs/research/KAGGLE-METADATA-CLI-QUALIFICATION-2026-10-08.md)
+separates transport, authentication, source evidence and rights. Offline
+checks: `PYTHONPATH=src:tools python -m unittest tools.test_kaggle_metadata`.
+
+## Private Trendshift reads
+
+[`tools/read_trendshift.py`](../read_trendshift.py) reads one source selection
+through this radar's source edge. Its default engine, `trendshift_signal`,
+implements the [documented API](https://api.trendshift.io/docs). It needs an
+existing subscription and a host-injected `TRENDSHIFT_API_KEY`. The command
+does not buy access, find credentials or accept a key in its arguments.
+`trendshift_public` reads only the current daily homepage's JSON-LD, without
+executing scripts. Neither engine falls back to the other after a refusal.
+
+Inspect a historical selection without making a request:
+
+```sh
+PYTHONPATH=src:tools python tools/read_trendshift.py \
+  --window weekly --period 2026-W40
+```
+
+Signal supports current and historical daily, weekly, monthly and yearly
+rankings, GitHub's captured daily ranking (`--kind github`), and bounded
+engagement windows (`--kind spikes --metric stars --start YYYY-MM-DD
+--end YYYY-MM-DD`). `--help` lists the accepted selections. A returned
+`next_cursor` permits a separately authorized next-page read; the command
+never paginates automatically. Cursor-page absolute rank remains unknown.
+
+An authorized public read into the host's existing private CommunityStore:
+
+```sh
+PYTHONPATH=src:tools python tools/read_trendshift.py \
+  --engine trendshift_public --state /path/to/private/community-state \
+  --execute --enqueue --authorize-network-reads --authorize-local-writes
+```
+
+Reuse that state root across engines, selections and credentials. The shared
+source record reserves one request before dispatch, enforces ten-second
+spacing and retains provider holds. A run reads at most one response of one
+MiB and records at most sixty observations. It never retries or follows a
+redirect. An interrupted dispatch stays held as an unknown outcome. Inspect
+its private run records, then use `--reconcile-unknown --state ...
+--authorize-local-writes` to close it without refunding the reservation.
+Reconciliation does not send a request or clear a rate hold. Another state
+directory is not an authorized way around the shared source allowance.
+
+An exhausted allowance with a missing, zero, past or malformed reset creates
+a durable `trendshift_quota_hold/v1`. Both engines then report
+`needs_verified_quota_reconciliation` without dispatch, even after the normal
+ten-second spacing has passed. Malformed remaining-allowance metadata is also
+held. No reset time is invented. The existing unknown-dispatch reconciliation
+retains this hold, the reservation count and the caller's budget reference.
+This increment has no force-clear, operator override or inferred-reset
+release path; verified provider/account evidence needs a separate host
+reconciliation. It adds no account allowance or daily Signal activation.
+The provider's published rate limit is not the caller's approved budget.
+
+`--input /path/to/capture --observed-at YYYY-MM-DDTHH:MM:SSZ` parses a local
+capture without network access. Its timestamp is operator-supplied, and its
+observations do not acquire transport verification. Add `--enqueue`, the
+same private state root and the local-write flag only when those record
+writes are authorized. The JSON report contains counts, exclusions,
+pagination, history/freshness labels and request accounting, not raw ranking
+rows. Unknown dispatches are separate from completed physical requests.
+
+Both engines retain the [source's terms](https://trendshift.io/tos) and refuse
+raw public redistribution. Private leads remain `needs_research`; no source
+content can approve publication, execute repository code or send outreach.
+API numeric GitHub identifiers are provider claims. The public page supplies
+slugs only, so rename-stable identity needs another source. Historical rank,
+windowed gain and query-time star/fork totals remain separate fields. A
+ranking is not evidence of adoption, quality or a qualified component.
+
+The generic radar cannot dispatch either engine without the bounded managed
+transport. This command creates no scheduler or feed package. The
+[qualification record](../../docs/research/TRENDSHIFT-CLI-QUALIFICATION-2026-10-07.md)
+separates the observed public read from API fixture coverage. Offline checks:
+`PYTHONPATH=src:tools python -m unittest tools.test_trendshift`.
+
+## Local per-agent reading profiles
+
+[`tools/build_feed_reading_profile.py`](../build_feed_reading_profile.py)
+creates a source-reading plan for one named agent. It reads the existing
+packaged `feed_source_collections` directory, not a second source registry.
+`--list` shows the current collection IDs and topic groups. Topics are the
+directory's existing group labels, such as `Compare models`; they are not
+free-text searches.
+
+A dry plan makes no files or network requests:
+
+```sh
+PYTHONPATH=src:tools python tools/build_feed_reading_profile.py \
+  --agent-label "Coding reviewer" \
+  --collection coding-benchmarks --collection retrieval-benchmarks \
+  --format json --mode both --max-items 8 --max-bytes 12000 --max-age-days 7
+```
+
+To write it, append `--output-root /path/to/existing/local-folder --name
+coding-review --authorize-local-writes`. The writer creates only that new
+child folder, mode 0700, containing mode-0600 `profile.json` and `READING.md`.
+Existing folders are never overwritten. Descriptor-relative operations refuse
+symlinks and traversal. Writing and folder checks require the supported POSIX
+filesystem operations; no unsafe fallback is used on another platform. A failed write can leave a partial new folder; retain
+it for inspection and use a new name, rather than assuming rollback occurred.
+
+The versioned JSON binds the agent label, choices and limits to the exact
+source-directory schema, digest and documentation-check date. The guide
+describes initial design and separately requested periodic reviews. `--format`
+chooses the desired review output, either JSON or Markdown; both profile
+files are always produced. The plan includes canonical `CataloguePackage`
+metadata for those passive files, with approval and publication false. It
+does not stage or admit a library package.
+The agent label describes the intended reader; it is not an authentication
+identity or an enforced account assignment. Digests bind content, not authorship.
+
+Collections and topic groups form an explicit union. Source references are
+deduplicated in selection order. `--max-items` limits distinct curated source
+references, not articles or benchmark results. The default rejects a selection
+larger than that limit. `--on-partial disclose` permits a deterministic subset
+and records the omitted count. `--max-bytes` bounds the combined UTF-8 bytes
+of the two files; exceeding it refuses the build without truncating JSON or
+instructions. These limits do not claim to enforce a future upstream collector.
+
+`--max-age-days` applies to the directory's documentation review. It cannot
+establish the age of upstream facts that were never collected. Stale input is
+refused by default; `--on-stale hold` permits a profile whose information
+still requires a documentation recheck. `--as-of` is an explicit reference
+date, defaulting to today's UTC date, not a new evidence-verification date.
+
+Check a saved folder without changing it:
+
+```sh
+PYTHONPATH=src:tools python tools/build_feed_reading_profile.py \
+  --check /path/to/existing/local-folder/coding-review
+```
+
+The check uses the saved policy and current packaged directory. Removed
+source IDs, a changed directory digest, edited instructions, unexpected files,
+unsupported fields or versions, and exceeded limits refuse reuse. Stale
+profiles using the hold policy return `needs_source_docs_recheck` and exit 2.
+Checks never renew dates or silently add newly listed sources. An authorized
+remote collection response must also match the pinned digest and data scope.
+
+Profiles contain registry IDs and supported relative collection paths, not
+external URLs, credentials or permission grants. Metadata is screened for
+common secret and instruction-steering patterns; this is not a complete
+semantic classifier. Source descriptions are untrusted data. No tool runs,
+timer, telemetry, subscription, billing change, hosted setting or push delivery
+is created. This is a usable local customization path, not saved account feeds.
+
+Offline checks: `PYTHONPATH=src:tools python -m unittest
+tools.test_feed_reading_profiles`. The module reuses the source-directory
+parser and canonical package owner; it copies no upstream research content.
+
 ## Private organization opportunity drafts
 
 `opportunities.py` is an offline projection of this radar's existing

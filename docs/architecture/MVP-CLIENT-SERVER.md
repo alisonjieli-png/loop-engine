@@ -73,10 +73,23 @@ evidence from illustrative worked examples and omits unsupported outcomes.
 The [release record](../../artifacts/architecture-audit-2026-09-19/pilot-release-77.json)
 binds the application, public export, cutovers, billing-label readback and
 their separate checks. Release 76 is the compatible image rollback.
-The catalogue still has 218,127 packages and 1,352,837 distinct files.
+The subsequent October 8 catalogue addition now serves 218,151 entries and
+1,353,029 distinct files, release `1694fb4a5b35...`. It adds 24 independently
+reviewed SDG tools and 192 distinct files, preserving every previous version.
+No previously found expected result was lost across 354 saved queries, and
+all 424 Public Good grants remain valid. The [publication record](../../artifacts/architecture-audit-2026-09-19/catalogue-original-sdg-2026-10-08.json)
+separates native tests, serving, and the still-pending ordinary-account use.
 Volume body storage, custom SQLite search and Supabase identity remain
-selected; the bounded R2 mirror is incomplete. The newly supplied research
-credentials and staged SDG packages do not change that live population.
+selected. R2 has verified all 1,352,837 files of the preceding snapshot; the
+192 new bodies must also be verified before the new release can use R2.
+
+The full route-map audit found a Cloudflare-injected analytics script blocked
+by the site's existing Content Security Policy. A narrow zone configuration
+now disables RUM injection on the nine product hostnames. No security policy
+was weakened or resource deleted. The repeat audit passed 67 pages, 277 views
+and 407 links without console errors or reported layout faults. That tool's
+OS-theme profiles did not prove the app's selected dark appearance; the next
+UI candidate tests actual theme selection and measured colours separately.
 
 ### Earlier deployment observations
 

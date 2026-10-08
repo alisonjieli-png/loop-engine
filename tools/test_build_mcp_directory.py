@@ -89,6 +89,26 @@ def build_rows(entries, relationships=None):
 class KnownWrongListings(unittest.TestCase):
     """A duplicate listing, a deprecated server and a listing without a location, each refused by name."""
 
+    def test_missing_authentication_is_unknown_not_anonymous_access(self):
+        row = entry("com.example/unknown-auth", remotes=[{"type": "streamable-http", "url": "https://mcp.example.com/mcp"}])
+        self.assertEqual(sources.registry_listing(row).auth, 0)
+        self.assertEqual(sources.docker_listing({"name": "example", "image": "example/mcp:1"}, "a" * 40).auth, 0)
+        with mock.patch.object(sources, "declared_auth", return_value=records.AUTH_BITS["none"]):
+            self.assertNotEqual(sources.registry_listing(row).auth, 0)
+
+    def test_publisher_documented_auth_remains_separate_from_unknown_or_explicit_none(self):
+        data = json.loads((Path(__file__).resolve().parent / "resources/mcp-directory-publisher-documentation.json").read_text())
+        self.assertEqual(len(data["offerings"]), 4)
+        for row in data["offerings"]:
+            listing = sources.publisher_listing(row)
+            self.assertNotIsInstance(listing, Exclusion)
+            self.assertTrue(listing.auth & records.AUTH_BITS["oauth"])
+            self.assertEqual(listing.locations[0].transport, records.STREAMABLE_HTTP)
+            self.assertEqual(listing.origin, records.ORIGIN_MAKER)
+            self.assertIn("developers.cloudflare.com/", listing.reference)
+        public = {**data["offerings"][0], "auth": ["none"]}
+        self.assertEqual(sources.publisher_listing(public).auth, records.AUTH_BITS["none"])
+
     def duplicate_problems(self, rows):
         names = [item.identity for item in rows]
         problems = []

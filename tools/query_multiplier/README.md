@@ -195,6 +195,24 @@ for a query whose first page was at least half new. A GraphQL lane reads, fifty
 repositories at a time, the licence GitHub detects for repositories that code
 search and web search name without one.
 
+## OpenAlex page-size contract
+
+The OpenAlex authentication guide, updated August 19, 2026 and read October 8,
+2026, documents a maximum of 100 results per page. Adapter version `1.0.1`
+therefore plans 100-row pages and refuses requests outside the 1-100 range,
+including ambiguous duplicate page-size fields. Historical 200-row requests
+are retained as evidence but skipped by refresh selection. Transport preflight
+also rejects them before an attempt or request is sent. The current planner
+creates distinct request/cursor identities; it does not rewrite prior evidence.
+[Provider contract](https://help.openalex.org/api/authentication/)
+
+The 700-credit daily ceiling, four-second interval, provider holds and
+source-level quota namespace remain unchanged. The smaller page size does not
+authorize more calls or a fresh quota. Offline checks live in
+`tools/test_openalex_page_contract.py`. No live source call or timer upgrade
+was performed to qualify this change; deployment and a bounded real pass
+remain separate acceptance steps.
+
 ## HTTP client profiles
 
 The eleven HTTP-backed executors accept a named User-Agent and

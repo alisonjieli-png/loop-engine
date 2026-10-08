@@ -1,6 +1,6 @@
 {
  "record_type": "knowledge_radar_source_contracts/v1",
- "revised_on": "2026-09-27",
+ "revised_on": "2026-10-08",
  "never_read_by_script": [
   {
    "host": "openrouter.ai",
@@ -444,6 +444,42 @@
    "excluded_upstreams": [
     "openrouter"
    ],
+   "excluded_publishers": []
+  },
+  {
+   "record_type": "knowledge_radar_source_contract/v1",
+   "engine_id": "trendshift_signal",
+   "parser_version": "1.0.0",
+   "access_method": "https_get",
+   "hosts": ["api.trendshift.io"],
+   "permitted_uses": "Private source references and ranking observations under the existing Signal entitlement. Derived analysis needs separate review.",
+   "never_used": "Raw redistribution, substantial reproduction, public ranking mirrors, source prose, profiles or account actions.",
+   "attribution": "Trendshift ranking, engagement signals or GitHub ranking captured by Trendshift, with exact selection and dates.",
+   "terms_address": "https://trendshift.io/tos",
+   "minimum_seconds_between_requests": 10.0,
+   "maximum_requests_per_run": 1,
+   "maximum_response_bytes": 1048576,
+   "failure_policy": "Record failure and provider hold. No retry, engine fallback or access bypass. Keep previous observations without renewing them.",
+   "republication": "live_lookup_only",
+   "excluded_upstreams": [],
+   "excluded_publishers": []
+  },
+  {
+   "record_type": "knowledge_radar_source_contract/v1",
+   "engine_id": "trendshift_public",
+   "parser_version": "1.0.0",
+   "access_method": "https_get",
+   "hosts": ["trendshift.io"],
+   "permitted_uses": "Bounded private discovery from the current public daily page's JSON-LD: repository names, links and positions.",
+   "never_used": "Raw redistribution, substantial reproduction, public ranking mirrors, source prose, profiles, scripts, login or account actions.",
+   "attribution": "Trendshift's current public daily list; repository numeric identities and ranking dates remain unknown unless supplied by another qualified source.",
+   "terms_address": "https://trendshift.io/tos",
+   "minimum_seconds_between_requests": 10.0,
+   "maximum_requests_per_run": 1,
+   "maximum_response_bytes": 1048576,
+   "failure_policy": "Record failure and provider hold. No retry, engine fallback or access bypass. Keep previous observations without renewing them.",
+   "republication": "live_lookup_only",
+   "excluded_upstreams": [],
    "excluded_publishers": []
   }
  ]

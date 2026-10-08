@@ -1,6 +1,47 @@
 {
   "record_type": "mcp_directory_publisher_documentation/v1",
-  "reviewed_on": "2026-09-24",
+  "reviewed_on": "2026-10-08",
   "rule": "Each offering names the publisher's own page that documents it, as an https address, and at least one remote endpoint, package, agent interface or code repository that the page names. A reviewer opens the page before an offering is added. Offerings here join the registry's rows by endpoint or package and mark them as listed by the publisher.",
-  "offerings": []
+  "offerings": [
+    {
+      "id": "cloudflare-api",
+      "name": "Cloudflare API MCP",
+      "description": "Cloudflare account API discovery and operations.",
+      "publisher": "cloudflare.com",
+      "documentation": "https://developers.cloudflare.com/agents/model-context-protocol/cloudflare/servers-for-cloudflare/",
+      "locations": [{"kind": "remote-http", "url": "https://mcp.cloudflare.com/mcp"}],
+      "auth": ["oauth", "key"],
+      "category": "cloud"
+    },
+    {
+      "id": "cloudflare-workers-bindings",
+      "name": "Cloudflare Workers Bindings MCP",
+      "description": "Workers bindings for application development.",
+      "publisher": "cloudflare.com",
+      "documentation": "https://developers.cloudflare.com/agents/model-context-protocol/cloudflare/servers-for-cloudflare/",
+      "locations": [{"kind": "remote-http", "url": "https://bindings.mcp.cloudflare.com/mcp"}],
+      "auth": ["oauth"],
+      "category": "cloud"
+    },
+    {
+      "id": "cloudflare-observability",
+      "name": "Cloudflare Observability MCP",
+      "description": "Cloudflare application logs and analytics.",
+      "publisher": "cloudflare.com",
+      "documentation": "https://developers.cloudflare.com/agents/model-context-protocol/cloudflare/servers-for-cloudflare/",
+      "locations": [{"kind": "remote-http", "url": "https://observability.mcp.cloudflare.com/mcp"}],
+      "auth": ["oauth"],
+      "category": "observability"
+    },
+    {
+      "id": "cloudflare-browser-run",
+      "name": "Cloudflare Browser Run MCP",
+      "description": "Web-page reading and screenshot operations.",
+      "publisher": "cloudflare.com",
+      "documentation": "https://developers.cloudflare.com/agents/model-context-protocol/cloudflare/servers-for-cloudflare/",
+      "locations": [{"kind": "remote-http", "url": "https://browser.mcp.cloudflare.com/mcp"}],
+      "auth": ["oauth"],
+      "category": "browser"
+    }
+  ]
 }

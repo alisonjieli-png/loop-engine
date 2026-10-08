@@ -1512,8 +1512,9 @@ slots:
     slot_version: 1.0.0
     title: Web Research port
     function: >-
-      The public capability group Web Research. It reports unavailable on the
-      main line; turning it on is a recorded owner decision.
+      The public capability group Web Research. Explicit operator bindings
+      can select ephemeral Brave, Exa or Tavily search through the existing
+      Capability Directory. Default customer runtime activation remains off.
     design_table: engine_side_run_time
     inventory_records: [E8]
     roadmap_steps: []
@@ -1524,7 +1525,7 @@ slots:
     release_edge: ""
     interactions: [core.interaction.port.web_research]
     unavailable_result: {form: result_status, value: unavailable, answer_exists: false}
-    conformance_suite: core.web_search
+    conformance_suite: core.web_research_engines
     component_folder: src/loop_engine/core
     folder_move_package: ""
     nested_under: []
@@ -1537,13 +1538,11 @@ slots:
                    harness_browser_plugin, custom_browser]
     engine_kind_groups: {}
     native_registry: loop.runtime_context.WebResearchPort
-    native_declaration: core.web_search.WebSearchAuthority
+    native_declaration: core.web_research_engines.WebResearchEngineConfig
     requirement_comparison: ""
     descriptor_projection: core.web_research_engines.describe_web_research_engine
     factory_table: core.web_research_engines
-    planned_symbols: [core.web_research_engines.WebResearchBackend,
-                      core.web_research_engines.describe_web_research_engine,
-                      core.web_research_engines]
+    planned_symbols: []
     selection_mode: one_of
     dispatch_key: ""
     derived_from: ""

@@ -1,0 +1,23 @@
+{
+  "record_type": "knowledge_radar_asset/v1",
+  "asset_id": "plan_mcp_service_setup",
+  "asset_version": "1.0.0",
+  "kind": "decision_helper",
+  "title": "Plan remote MCP discovery and setup without granting access",
+  "purpose": "Filter dated remote MCP source declarations and return missing compatibility, authentication and tool checks. An expired table, conflicting transport or unverified operation never becomes an authorized connection.",
+  "declared_effects": ["reads_fs", "spawns_process"],
+  "dependencies": ["python>=3.10"],
+  "styles": ["claude", "codex", "opencode", "pi"],
+  "entrypoint": "scripts/plan_mcp_service_setup.py",
+  "test": "scripts/test_plan_mcp_service_setup.py",
+  "data_file": "references/mcp-services-table.json",
+  "files": [
+    {"path":"SKILL.md","role":"skill_definition","media_type":"text/markdown"},
+    {"path":"LICENSE","role":"other","media_type":"text/plain"},
+    {"path":"references/setup.md","role":"skill_reference","media_type":"text/markdown"},
+    {"path":"scripts/plan_mcp_service_setup.py","role":"skill_script","media_type":"text/x-python"},
+    {"path":"scripts/test_plan_mcp_service_setup.py","role":"skill_script","media_type":"text/x-python"},
+    {"path":"contracts/input.schema.json","role":"configuration","media_type":"application/schema+json"},
+    {"path":"contracts/output.schema.json","role":"configuration","media_type":"application/schema+json"}
+  ]
+}

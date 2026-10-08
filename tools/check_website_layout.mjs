@@ -327,9 +327,7 @@ try{
       const edge=m.edges,edgeProblems=[];
       if(edge.brand===null||edge.h1===null)edgeProblems.push("no brand or no h1 to measure");
       else{
-        if(page.view==="home"){
-          if(!edge.centered_heading||Math.abs(edge.heading_center-viewport.width/2)>edgeTolerance)edgeProblems.push("the homepage heading is not centered in the viewport");
-        }else{
+        {
           const left=page.address.startsWith("/docs/")&&edge.documentation_frame!==null?edge.documentation_frame:edge.h1;
           if(Math.abs(left-edge.brand)>edgeTolerance)edgeProblems.push(`the heading's content frame starts at ${left} and the brand at ${edge.brand}`);
         }

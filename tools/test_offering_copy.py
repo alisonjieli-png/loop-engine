@@ -16,6 +16,7 @@ RUNTIME = ROOT / "src/loop_engine/core/service_runtime"
 ASSETS = RUNTIME / "web_assets"
 COMBINED = "Agent Feeds + Harness Files"
 RETIRED = re.compile(r"\bBaltor Pro\b|\bone plan\b|refresh(?:ing)? the context", re.I)
+FEED_FACTS = ("$4.99 a month", "Free through December 31, 2026 (Eastern)", "No automatic charge", "opt-in", "in development")
 
 
 def marketing_views(page):
@@ -26,6 +27,14 @@ def marketing_views(page):
 
 def retired_copy(text):
     return RETIRED.findall(text)
+
+
+def feed_price_problems(text):
+    text = re.sub(r"\s+", " ", text)
+    problems = ["missing " + fact for fact in FEED_FACTS if fact not in text]
+    if re.search(r"automatically (?:charged|billed)|free forever|personalized feeds are available now", text, re.I):
+        problems.append("unsupported enrollment or availability claim")
+    return problems
 
 
 class OfferingCopyTests(unittest.TestCase):
@@ -41,8 +50,36 @@ class OfferingCopyTests(unittest.TestCase):
         views = marketing_views((ASSETS / "index.html").read_text())
         for name in ("home", "pricing"):
             text = re.sub(r"\s+", " ", views[name])
-            for fact in ("Agent Feeds", COMBINED, "Free preview", "$29"):
+            for fact in ("Agent Feeds", COMBINED, "$29"):
                 self.assertIn(fact, text, (name, fact))
+            self.assertEqual(feed_price_problems(text), [], name)
+
+    def test_feed_price_period_consent_and_availability_are_not_optional(self):
+        from loop_engine.core.service_runtime.catalogue_feed import page_body
+        text = marketing_views('<section data-view="feeds">' + page_body() + '</section>')["feeds"]
+        self.assertEqual(feed_price_problems(text), [])
+        valid = " ".join(FEED_FACTS)
+        for fact in FEED_FACTS:
+            self.assertTrue(feed_price_problems(valid.replace(fact, "")), fact)
+        for wrong in ("Automatically charged in 2027", "Free forever", "Personalized feeds are available now"):
+            self.assertTrue(feed_price_problems(valid + " " + wrong), wrong)
+
+    def test_free_feed_actions_do_not_start_the_existing_paid_library_journey(self):
+        for row in read_marked((ASSETS / "index.html").read_text()):
+            if row["attrs"].get("data-offering") == "agent-feeds":
+                self.assertNotRegex(row["text"], r"\bSubscribe (?:now|for)\b")
+        source = (ASSETS / "index.html").read_text()
+        cards = re.findall(r'<(?:article|section)[^>]*data-offering="agent-feeds"[^>]*>(.*?)</(?:article|section)>', source, re.S)
+        self.assertEqual(len(cards), 2)
+        for card in cards:
+            self.assertEqual(re.findall(r'href="([^"]+)"', card), ["/feeds"])
+            self.assertNotIn("data-access-state", card)
+
+    def test_marketing_does_not_relabel_package_counts_as_files(self):
+        views = marketing_views((ASSETS / "index.html").read_text())
+        for name in ("home", "use-cases", "about", "setup"):
+            self.assertNotRegex(views[name], r"\bpackages?\b", name)
+        self.assertNotIn("data-library-count>", (ASSETS / "index.html").read_text())
 
     def test_generated_guides_have_no_retired_product_label(self):
         pages = list((ASSETS / "docs").glob("*.html"))

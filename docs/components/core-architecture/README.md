@@ -40,14 +40,17 @@ Read [Search and storage choices](SEARCH-AND-STORAGE.md) and
 
 Web Research covers permitted source discovery, fetching, extraction, and
 source checking. Discovery remains separate from a network effect. The
-current Brave example registers one typed capability and can run against an
-offline fixture.
+Brave example registers one typed capability and can run against an offline
+fixture. The optional `core.web_research_engines` binding selects Brave, Exa
+or Tavily behind the same versioned request/result edge for bounded operator
+research. It requires a shared run/provider-account policy, returns ephemeral
+source candidates and enables no recurring collector or customer runtime.
 
 The package does not claim that one search provider solves all Web Research.
 A research Loop may use a custom plugin, compare sources, download a selected
 document, or spawn another research Loop under its own contract.
 
-Read [Brave Web Search plugin](BRAVE-SEARCH-PLUGIN.md).
+Read [Brave Web Search plugin, selectable engines and durable account accounting](BRAVE-SEARCH-PLUGIN.md).
 
 The governed fetch API accepts a `WebHttpClientProfile`: a named revision of
 the User-Agent and Accept-Language headers. Its digest participates in the

@@ -57,6 +57,13 @@ It also checks system appearance, reload, tab synchronization, storage refusal
 and a known-wrong forced-dark hero. Colour contrast remains owned by
 `tools/test_design_tokens.py` and the website layout browser checks.
 
+The live people check selects the site's supported `baltor.appearance`
+preference in its isolated browser context. It verifies the applied document
+theme, control label, rendered ground and sampled body/headline contrast before
+labeling an image light or dark. Browser `colorScheme` alone does not override
+the site's light default. `tools/browser_appearance_checks.mjs` also refuses
+an ignored selection, a contradictory ground and low contrast.
+
 | Use | Tokens |
 |---|---|
 | Grounds | `--bg`, `--ground`, `--paper`, `--band`, `--panel-head`, `--soft` |
@@ -339,13 +346,31 @@ its content.
 
 - Short sentences in plain words, as the [writing context](../../humanizer-context.md)
   says.
-- The price is written "$29 a month". A customer page never writes "United
-  States dollars".
+- The full-library price is written "$29 a month". Agent Feeds has a standard
+  price of "$4.99 a month" and is free through December 31, 2026, in Eastern
+  time. No automatic charge follows that period; paid enrollment requires
+  explicit opt-in and is not open yet. The current source collections and
+  catalogue feed are distinct from personalized subscriptions still in
+  development. A customer page never writes "United States dollars".
 - The words terminology.yaml refuses on a surface do not appear there; the
   conformance gate already refuses them.
 - `tools/check_hosted_website.mjs` and `tools/check_service_workspace.mjs`
-  still expect the words "29 United States dollars". They change in the same
-  change as the copy.
+  check the full-library price and measured download unit separately from
+  the feed price, free period, consent and availability wording.
+
+The October 8 homepage opens with a short outcome-led heading and names the
+three audiences beside it. Get started still opens the existing account flow;
+Get set up still opens the connection guide. The two offer cards show their
+own prices and available scope. Marketing counts distinct files, not packages.
+Exact package groupings remain in technical retrieval records and the
+library's technical disclosure. An unmeasured file population stays unknown.
+
+`tools/check_offering_launch.mjs` measures header bounds and the two offers at
+80, 100 and 125 percent zoom-equivalent desktop layouts, tablet, phone and
+landscape sizes, in both actual appearances. It preserves screenshots and
+source digests, and rejects a deliberately clipped header and removed pricing
+or consent wording. These are headless viewport/density emulations, not a
+measurement of the owner's browser session.
 
 ## Regression rule
 

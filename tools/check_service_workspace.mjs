@@ -944,13 +944,16 @@ try {
      catalogue release published without a redeploy changes it at once. Until release 30 (September 25, 2026) the page
      printed the packaged manifest's count, and this check compared it with that manifest; it failed once the page went
      live, because this fixture serves fewer items than the manifest holds. */
-  const servedCount=(await (await page.request.get(fixture.base+"/api/v1/capabilities")).json()).result?.library?.served_items;
-  const shownCount=await page.locator("[data-library-count]").innerText();
-  const countAgrees=shown=>Number.isInteger(servedCount)&&shown.trim()===String(servedCount);
+  const servedPopulation=(await (await page.request.get(fixture.base+"/api/v1/capabilities")).json()).result?.library?.file_population;
+  const servedCount=servedPopulation?.distinct_files;
+  const shownCount=await page.locator("[data-library-file-count]").innerText();
+  const countAgrees=(shown,population=servedPopulation)=>shown.trim()===(population?.record_type==="catalogue_file_population/v1"
+    &&population.complete===true&&Number.isSafeInteger(population.distinct_files)&&population.distinct_files>=0?population.distinct_files.toLocaleString("en-US"):"Not measured");
   check("library_count_agrees_with_the_served_library",countAgrees(shownCount),{shown:shownCount,served:servedCount});
-  check("library_count_check_rejects_a_count_the_service_does_not_serve",countAgrees(String(servedCount))
-    &&!countAgrees(String(servedCount+1))&&!countAgrees("10,000")
-    &&(releasedItemCount===servedCount||!countAgrees(String(releasedItemCount))),{served:servedCount,released:releasedItemCount});
+  const countFixture={record_type:"catalogue_file_population/v1",complete:true,packages:3,distinct_files:5};
+  check("library_count_check_rejects_package_counts_and_unknown_measurement",countAgrees("5",countFixture)
+    &&!countAgrees("3",countFixture)&&!countAgrees("5",{...countFixture,complete:false})
+    &&!countAgrees("5",{...countFixture,record_type:"catalogue_file_population/v999"}),{served:servedCount,released:releasedItemCount});
   /* No page names the search backend (roadmap steps S-6.39 and S-6.184): the workspace printed "Installed vector method: ..."
      from the capabilities record until September 25, 2026. The note keeps its served words. */
   const retrieval=(await (await page.request.get(fixture.base+"/api/v1/capabilities")).json()).result?.retrieval||{};
@@ -1186,6 +1189,7 @@ try {
   servedFiles.push("/assets/procedural-bear-preview.svg","/assets/procedural-tree-preview.svg");
   servedFiles.push("/assets/worker-compose.yaml","/assets/docs/container-worker.html");
   servedFiles.push("/assets/oauth-consent.js","/assets/public-good.js","/assets/public-good.css","/assets/staff-work.js");
+  servedFiles.push("/assets/feed-specimen.js");
   servedFiles.push("/assets/top-mcps.json",...[
     "index.html","arena.js","arena.css","asset-briefs.json","blender-import.py","THREE-LICENSE.txt"
   ].map(name=>"/assets/creative-arena/"+name));
@@ -1459,7 +1463,7 @@ try {
   /* The published facts in the pricing view's words since September 23, 2026: one plan, Agent Feeds + Harness Files, "$29 a month", the download
      as the measured unit, and how to stop paying. The owner removed "Search is free" and the free invited accounts that day, and
      the price is written only "$29 a month", so each of those is a refused phrase with a known-wrong page of its own. */
-  const pricingFacts=[["feed offering","Agent Feeds"],["combined offering","Agent Feeds + Harness Files"],["feed availability","Free preview"],["plan name","Agent Feeds + Harness Files"],["price","$29 a month"],["measured unit","one downloaded item"],["how to stop paying","Cancel from your account page."]];
+  const pricingFacts=[["feed offering","Agent Feeds"],["combined offering","Agent Feeds + Harness Files"],["feed price","$4.99 a month"],["feed free period","Free through December 31, 2026 (Eastern)"],["feed consent","No automatic charge"],["feed opt-in","opt-in"],["feed availability","in development"],["plan name","Agent Feeds + Harness Files"],["price","$29 a month"],["measured unit","one downloaded item"],["how to stop paying","Cancel from your account page."]];
   const refusedPricingPhrases=[["free search",/\bsearch(?:ing)? is free\b/i],["free invited accounts",/\binvited\b/i],["another way of writing the price",/United States dollars|per month|\$29\s*\/\s*mo/i]];
   const missingFacts=text=>[...pricingFacts.filter(([,fact])=>!text.includes(fact)).map(([name])=>name),...refusedPricingPhrases.filter(([,rule])=>rule.test(text)).map(([name])=>name)];
   check("pricing_view_states_every_published_fact",missingFacts(pricingText).length===0,{missing:missingFacts(pricingText)});

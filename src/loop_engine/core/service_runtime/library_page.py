@@ -303,10 +303,9 @@ def library_body(view, rows=None) -> str:
     files = population.get("distinct_files")
     measured = (population.get("record_type") == "catalogue_file_population/v1" and population.get("complete") is True
                 and population.get("packages") == len(rows) and type(files) is int and files >= 0)
-    package_word = "package" if len(rows) == 1 else "packages"
-    total, unit = (files, "distinct component files") if measured else (len(rows), "reviewed packages")
-    population_note = (f"{files:,} distinct files delivered in {len(rows):,} {package_word}. Identical shared files are counted once."
-                       if measured else "The distinct file total is not measured for this catalogue. Packages and files are different units.")
+    total, unit = (f"{files:,}", "distinct component files") if measured else ("Reusable files", "for your harness")
+    population_note = (f"{files:,} distinct files. Identical shared files are counted once."
+                       if measured else "The distinct file total is not measured for this catalogue.")
     chosen, body = sample(view, rows)
     kind_names = ", ".join(_plural(harness_kind_label(kind)) for kind, _counts in kinds[:6])
     contents = [("counts", "What is in it")]
@@ -314,11 +313,11 @@ def library_body(view, rows=None) -> str:
         contents.append(("sample", "One component's details"))
     contents += [("browse", "Search it as a table"), ("releases", "Releases")]
     intro = ('<div class="md-band md-intro lib-hero"><div class="lib-hero-grid"><h1 id="library-title">'
-             f'<span class="lib-total">{total:,}</span> <span class="lib-title-words">{unit}, ready for '
-             'your harness</span></h1><div class="lib-hero-copy">'
-             f'<p class="lede">{len(rows):,} {package_word} a coding agent can fetch today, of {len(kinds)} kinds'
+             f'<span class="lib-total">{total}</span> <span class="lib-title-words">{unit}'
+             + (', ready for your harness' if measured else '') + '</span></h1><div class="lib-hero-copy">'
+             f'<p class="lede">Files your coding agent can use, across {len(kinds)} ' + ("kind" if len(kinds) == 1 else "kinds")
              + (f" ({escape(kind_names)}" + (", and more" if len(kinds) > 6 else "") + ")" if kinds else "")
-             + ". Every package names its source, its "
+             + ". Each download names its source, its "
              "licence and its review. Create an account to search the whole library as a table and download the "
              "exact version your agent chose.</p>"
              f'<p class="description" data-library-population>{population_note}</p>'
@@ -329,7 +328,9 @@ def library_body(view, rows=None) -> str:
     counts = ('<div class="md-band lib-band" id="counts" aria-labelledby="counts-title"><div class="lib-section-head">'
               '<h2 id="counts-title">What is in it</h2><p class="md-reading">Every kind of file a harness picks up from its '
               'working directory, together in one library.</p></div><div class="lib-counts">'
-              + _counts_table(rows) + "</div></div>")
+              + '<details data-technical-detail><summary>Technical grouping by kind</summary>'
+              '<p>Files travel together when dependencies require it. These package counts describe complete retrieval groups, '
+              'not distinct-file totals.</p>' + _counts_table(rows) + "</details></div></div>")
     price = _plan_price()
     table = ('<div class="md-band lib-band lib-cta-band" id="browse" aria-labelledby="browse-title"><div class="lib-cta">'
              '<div class="lib-cta-copy"><h2 id="browse-title">Search it as a table</h2><p class="md-reading">A signed-in '

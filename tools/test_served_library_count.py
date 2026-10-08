@@ -1,11 +1,8 @@
-"""The served homepage shows the count of packages the service serves now, not the count it was packaged with.
+"""The homepage serves a measured distinct-file count without a package headline.
 
-The homepage marks its library count with `data-library-count`. The packaged page holds 43, the count of the first
-release, and until September 27, 2026 the service sent it unchanged: only the page script wrote the live count, after
-asking the service. A shared-link preview, a crawler and a reader without the script therefore read 43 while the
-service served 12,191. The service now writes the count of the active catalogue into the page as it serves it
-(src/loop_engine/core/service_runtime/web_pages.py, called by the transport in http.py). Each rule has a known-wrong
-control. Nothing here reaches the network: the end-to-end rule runs the service on loopback over a temporary database.
+The generic technical package-counter projection remains supported. The
+public homepage uses the versioned file population instead. No JavaScript
+or external provider is needed; end-to-end checks use an owned loopback fixture.
 """
 from __future__ import annotations
 
@@ -27,14 +24,15 @@ PACKAGED_PAGE = ROOT / "src" / "loop_engine" / "core" / "service_runtime" / "web
 class _CountReader(HTMLParser):
     """The text of every element that carries the data-library-count attribute."""
 
-    def __init__(self):
+    def __init__(self, mark="data-library-count"):
         super().__init__(convert_charrefs=True)
+        self.mark = mark
         self.depth, self.shown, self.current = 0, [], None
 
     def handle_starttag(self, tag, attrs):
         if self.current is not None:
             self.depth += 1
-        elif "data-library-count" in dict(attrs):
+        elif self.mark in dict(attrs):
             self.current, self.depth = "", 0
 
     def handle_endtag(self, tag):
@@ -51,20 +49,22 @@ class _CountReader(HTMLParser):
             self.current += data
 
 
-def shown_counts(body):
-    reader = _CountReader()
+def shown_counts(body, mark="data-library-count"):
+    reader = _CountReader(mark)
     reader.feed(body.decode("utf-8") if isinstance(body, bytes) else body)
     return reader.shown
 
 
 class WrittenCountTests(unittest.TestCase):
     def setUp(self):
-        self.page = PACKAGED_PAGE.read_bytes()
+        self.page = b'<p><span data-library-count>43</span></p>'
         self.packaged = shown_counts(self.page)
 
-    def test_the_packaged_page_marks_one_count(self):
+    def test_the_generic_counter_marks_one_count_but_homepage_uses_files(self):
         self.assertEqual(len(self.packaged), 1, self.packaged)
         self.assertTrue(self.packaged[0].replace(",", "").isdigit(), self.packaged)
+        self.assertEqual(shown_counts(PACKAGED_PAGE.read_bytes()), [])
+        self.assertEqual(shown_counts(PACKAGED_PAGE.read_bytes(), "data-library-file-count"), ["Not measured"])
 
     def test_the_count_is_written_with_the_grouping_the_page_script_uses(self):
         self.assertEqual(shown_counts(web_pages.with_library_count(self.page, 12191)), ["12,191"])
@@ -88,15 +88,18 @@ class ServedPageTests(unittest.TestCase):
     def test_the_served_homepage_shows_the_count_served_now(self):
         asked = []
         body, media_type = web_pages.served_asset("/", "GET", "Fixture Service",
-                                                  library_count=lambda: asked.append(1) or 12191)
+            library_count=lambda: self.fail("no package-counter request for the file-only homepage"),
+            library_population=lambda: asked.append(1) or {"record_type": "catalogue_file_population/v1", "complete": True,
+                                                         "packages": 17, "distinct_files": 12191})
         self.assertEqual(media_type, web_pages.HTML_MEDIA_TYPE)
-        self.assertEqual(shown_counts(body), ["12,191"])
+        self.assertEqual(shown_counts(body, "data-library-file-count"), ["12,191"])
+        self.assertEqual(shown_counts(body), [])
         self.assertEqual(len(asked), 1)
 
     def test_known_wrong_a_page_served_without_the_count_keeps_the_packaged_number(self):
         body, _media_type = web_pages.served_asset("/", "GET", "Fixture Service")
-        self.assertEqual(shown_counts(body), shown_counts(PACKAGED_PAGE.read_bytes()))
-        self.assertNotEqual(shown_counts(body), ["12,191"])
+        self.assertEqual(shown_counts(body, "data-library-file-count"), ["Not measured"])
+        self.assertNotEqual(shown_counts(body, "data-library-file-count"), ["12,191"])
 
     def test_the_count_is_asked_only_for_a_page_that_shows_it(self):
         asked = []
@@ -115,7 +118,7 @@ class ServedPageTests(unittest.TestCase):
 class LoopbackServiceTests(unittest.TestCase):
     """The service writes the count its own capabilities record reports, on every address that shows the homepage."""
 
-    def test_the_page_and_the_capabilities_record_state_the_same_count(self):
+    def test_the_page_and_the_capabilities_record_agree_on_files_or_unknown(self):
         import httpx
         from loop_engine.core.service_runtime.http_test_fixtures import HttpDomainFixture, running_http
         with tempfile.TemporaryDirectory() as folder:
@@ -126,14 +129,16 @@ class LoopbackServiceTests(unittest.TestCase):
                 pages = {address: httpx.get(base + address, trust_env=False, timeout=5) for address in ("/", "/app")}
         self.assertEqual(capabilities.status_code, 200)
         self.assertEqual(capabilities.json()["result"]["library"]["served_items"], served)
+        population = capabilities.json()["result"]["library"]["file_population"]
         self.assertIsInstance(served, int)
         # The fixture approves three of its four items; the packaged page says 43, so the two cannot agree by chance.
         self.assertEqual(served, 3)
-        self.assertNotIn(f"{served:,}", shown_counts(PACKAGED_PAGE.read_bytes()))
+        expected = f"{population['distinct_files']:,}" if population["complete"] is True else "Not measured"
         for address, page in pages.items():
             with self.subTest(address=address):
                 self.assertEqual(page.status_code, 200)
-                self.assertEqual(shown_counts(page.text), [f"{served:,}"])
+                self.assertEqual(shown_counts(page.text), [])
+                self.assertEqual(shown_counts(page.text, "data-library-file-count"), [expected])
 
 
 class FilePopulationTests(unittest.TestCase):
@@ -175,12 +180,13 @@ class FilePopulationTests(unittest.TestCase):
         from loop_engine.core.service_runtime.library_page import library_body
         html = library_body(replace(self.view, body_reader=lambda _item: "Allowed fixture sample"))
         self.assertIn('<span class="lib-total">3</span> <span class="lib-title-words">distinct component files', html)
-        self.assertIn("3 distinct files delivered in 2 packages", html)
+        self.assertIn("3 distinct files. Identical shared files are counted once.", html)
+        self.assertIn("Technical grouping by kind", html)
         self.assertIn('<th scope="col" class="lib-num">Packages</th>', html)
         # Four placements share one exact file; the unapproved candidate stays out.
         changed = self.view.without({("beta", self.packages["beta"].served_digest)}, state_revision=1)
         html = library_body(replace(changed, body_reader=lambda _item: "Allowed fixture sample"))
-        self.assertIn("2 distinct files delivered in 1 package", html)
+        self.assertIn("2 distinct files. Identical shared files are counted once.", html)
 
     def test_withdrawal_removes_files_not_used_by_another_approved_package(self):
         self.view.file_population()
