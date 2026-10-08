@@ -51,6 +51,11 @@
    "since": "2026-10-05"
   },
   {
+   "address": "/models/alibaba-nlp-e2rank-8b",
+   "reason": "not_listed",
+   "since": "2026-10-08"
+  },
+  {
    "address": "/models/alibaba-nlp-gme-qwen2-vl-2b-instruct",
    "reason": "not_listed",
    "since": "2026-10-01"
@@ -101,6 +106,11 @@
    "since": "2026-09-27"
   },
   {
+   "address": "/models/ankur87-llama2-time-series-forecasting-4-0",
+   "reason": "not_listed",
+   "since": "2026-10-08"
+  },
+  {
    "address": "/models/anthropic-claude-opus-4-1",
    "reason": "refused_source",
    "since": "2026-09-27"
@@ -139,6 +149,11 @@
    "address": "/models/armurai-pentest-ai",
    "reason": "not_listed",
    "since": "2026-09-30"
+  },
+  {
+   "address": "/models/ateron-gemma-4-dark-thoughts-31b",
+   "reason": "not_listed",
+   "since": "2026-10-08"
   },
   {
    "address": "/models/baidu-ernie-4-5-vl-424b-a47b-pt",
@@ -231,6 +246,11 @@
    "since": "2026-10-05"
   },
   {
+   "address": "/models/castorini-wiki-all-8-4-multi-dpr2-query-encoder",
+   "reason": "not_listed",
+   "since": "2026-10-08"
+  },
+  {
    "address": "/models/ceia-rl-energy-exp1-dpo-offline",
    "reason": "not_listed",
    "since": "2026-09-29"
@@ -316,6 +336,11 @@
    "since": "2026-10-07"
   },
   {
+   "address": "/models/dancingiguana-music-generation",
+   "reason": "not_listed",
+   "since": "2026-10-08"
+  },
+  {
    "address": "/models/danielheinz-e5-base-sts-en-de",
    "reason": "not_listed",
    "since": "2026-09-30"
@@ -359,6 +384,11 @@
    "address": "/models/deeppavlov-rubert-base-cased-sentence",
    "reason": "not_listed",
    "since": "2026-10-02"
+  },
+  {
+   "address": "/models/deepseek-ai-deepseek-coder-v2-lite-base",
+   "reason": "not_listed",
+   "since": "2026-10-08"
   },
   {
    "address": "/models/deepseek-ai-deepseek-math-7b-instruct",
@@ -486,14 +516,19 @@
    "since": "2026-09-30"
   },
   {
-   "address": "/models/hai929-the-guagellm-23m",
-   "reason": "not_listed",
-   "since": "2026-10-03"
-  },
-  {
    "address": "/models/harry19081-wald-4b",
    "reason": "not_listed",
    "since": "2026-10-01"
+  },
+  {
+   "address": "/models/heoni-llama-3-koen-8b-sft-ep3-merged-red-teaming-20240614",
+   "reason": "not_listed",
+   "since": "2026-10-08"
+  },
+  {
+   "address": "/models/heoni-llama-3-koen-8b-sft-ep5-merged-red-teaming-20240623-final-data",
+   "reason": "not_listed",
+   "since": "2026-10-08"
   },
   {
    "address": "/models/heydariai-persian-embeddings",
@@ -619,6 +654,11 @@
    "address": "/models/junshim-when2think-thinkonly-1-5b",
    "reason": "not_listed",
    "since": "2026-10-02"
+  },
+  {
+   "address": "/models/juspay-xor",
+   "reason": "not_listed",
+   "since": "2026-10-08"
   },
   {
    "address": "/models/juspay-xor-lite",
@@ -896,14 +936,14 @@
    "since": "2026-09-30"
   },
   {
+   "address": "/models/numind-nuextract-2-0-2b",
+   "reason": "not_listed",
+   "since": "2026-10-08"
+  },
+  {
    "address": "/models/nvidia-deepseek-v3-2-nvfp4",
    "reason": "not_listed",
    "since": "2026-10-01"
-  },
-  {
-   "address": "/models/nvidia-nemotron-3-8b-chat-4k-rlhf",
-   "reason": "not_listed",
-   "since": "2026-10-07"
   },
   {
    "address": "/models/nvidia-nemotron-3-nano-omni-30b-a3b-reasoning-bf16",
@@ -1061,6 +1101,11 @@
    "since": "2026-10-05"
   },
   {
+   "address": "/models/opengvlab-internvl3-8b-hf",
+   "reason": "not_listed",
+   "since": "2026-10-08"
+  },
+  {
    "address": "/models/outeai-lite-oute-1-300m",
    "reason": "not_listed",
    "since": "2026-10-04"
@@ -1109,6 +1154,11 @@
    "address": "/models/pfnet-plamo-3-610m-fin-instruct",
    "reason": "not_listed",
    "since": "2026-10-01"
+  },
+  {
+   "address": "/models/pipizhao-skillrouter-embedding-0-6b",
+   "reason": "not_listed",
+   "since": "2026-10-08"
   },
   {
    "address": "/models/pocketdoc-dans-personalityengine-v1-3-0-24b",
@@ -1231,11 +1281,6 @@
    "since": "2026-09-27"
   },
   {
-   "address": "/models/raxcore-dev-rax-4-5",
-   "reason": "not_listed",
-   "since": "2026-10-03"
-  },
-  {
    "address": "/models/regnant-io-kw5-149m",
    "reason": "not_listed",
    "since": "2026-10-06"
@@ -1281,6 +1326,21 @@
    "since": "2026-09-30"
   },
   {
+   "address": "/models/rlhflow-pair-preference-model-llama3-8b",
+   "reason": "not_listed",
+   "since": "2026-10-08"
+  },
+  {
+   "address": "/models/rwkv-rwkv7-g1k-13-3b-20260930",
+   "reason": "not_listed",
+   "since": "2026-10-08"
+  },
+  {
+   "address": "/models/s-emanuilov-llmbg-llama-3-1-8b-bg-reasoning-v0-1",
+   "reason": "not_listed",
+   "since": "2026-10-08"
+  },
+  {
    "address": "/models/saicr-nacr",
    "reason": "not_listed",
    "since": "2026-10-02"
@@ -1306,6 +1366,11 @@
    "since": "2026-09-27"
   },
   {
+   "address": "/models/sbintuitions-sarashina-embedding-v1-1b",
+   "reason": "not_listed",
+   "since": "2026-10-08"
+  },
+  {
    "address": "/models/sdadas-polish-reranker-large-ranknet",
    "reason": "not_listed",
    "since": "2026-10-02"
@@ -1326,6 +1391,11 @@
    "since": "2026-10-05"
   },
   {
+   "address": "/models/shaleen123-medicaledi-llm-reasoning-final",
+   "reason": "not_listed",
+   "since": "2026-10-08"
+  },
+  {
    "address": "/models/skt-a-x-k2",
    "reason": "not_listed",
    "since": "2026-10-07"
@@ -1339,16 +1409,6 @@
    "address": "/models/slayerlab-pollock-mini-lm-125m",
    "reason": "not_listed",
    "since": "2026-09-27"
-  },
-  {
-   "address": "/models/speakleash-bielik-11b-v2-6-instruct",
-   "reason": "not_listed",
-   "since": "2026-10-07"
-  },
-  {
-   "address": "/models/speakleash-bielik-11b-v3-0-instruct",
-   "reason": "not_listed",
-   "since": "2026-10-07"
   },
   {
    "address": "/models/stardoc-ai-teleocr",
@@ -1391,9 +1451,9 @@
    "since": "2026-09-27"
   },
   {
-   "address": "/models/thesysdev-oui-1",
+   "address": "/models/togethercomputer-tev1-0-8b-experimental",
    "reason": "not_listed",
-   "since": "2026-09-30"
+   "since": "2026-10-08"
   },
   {
    "address": "/models/tomaarsen-ms-marco-ettin-17m-reranker",
@@ -1561,6 +1621,11 @@
    "since": "2026-10-03"
   },
   {
+   "address": "/models/yoon1v-apex-2-base",
+   "reason": "not_listed",
+   "since": "2026-10-08"
+  },
+  {
    "address": "/models/yqi0-petitgpt",
    "reason": "not_listed",
    "since": "2026-09-29"
@@ -1569,11 +1634,6 @@
    "address": "/models/yuhan123-vicuna-13b-self-consistency-neg-exp-var-1",
    "reason": "not_listed",
    "since": "2026-10-02"
-  },
-  {
-   "address": "/models/yuhan123-vicuna-13b-self-consistency-neg-exp-var-4",
-   "reason": "not_listed",
-   "since": "2026-10-07"
   },
   {
    "address": "/models/yuhan123-vicuna-13b-self-consistency-neg-exp-var-5",
