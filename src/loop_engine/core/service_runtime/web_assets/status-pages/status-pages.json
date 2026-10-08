@@ -5,6 +5,19 @@
   "releases": [
    {
     "kind": "service",
+    "number": 79,
+    "at": "2026-10-08T18:37:16Z",
+    "lines": [
+     "Integrate independently retested constraint-case construction and v2 event/source/accounting/path checks; private factory output is not automatically admitted.",
+     "Bound the existing local overnight operator by durable remaining-call reservations, a cumulative deadline and explicit unknown-effect reconciliation; no hosted customer-run claim.",
+     "Provide the account-transition handoff, current checklist and Gantt view, and references for owner-supplied credentials without storing values in source.",
+     "Deploy the previously committed model-directory refresh and updated source; the two live offerings and third-offering proposal remain distinct."
+    ],
+    "seen_after_release": "",
+    "not_shown": 0
+   },
+   {
+    "kind": "service",
     "number": 78,
     "at": "2026-10-08T07:27:53Z",
     "lines": [

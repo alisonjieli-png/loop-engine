@@ -1,0 +1,156 @@
+{
+  "record_type": "pilot_release_record/v1",
+  "release": 79,
+  "app": "baltor-pilot",
+  "source_revision": "dc7b3ccda007c1d44bfcbfb0a58f9b6be6d1f8c6",
+  "image": "registry.fly.io/baltor-pilot@sha256:38e2ac1be655c49fe4f51e1c2783c8f02f18ddbca5cfb0331d148919cb34b3ac",
+  "rollback_release": 78,
+  "rollback_image": "registry.fly.io/baltor-pilot@sha256:5e86ebd9ce9a835d7ba436d5ac29bb035450d7cb6ffabfd420733207c9efcc5d",
+  "owner_local_date": "2026-10-08",
+  "deployed_at": "2026-10-08T18:37:16Z",
+  "ci_run": 37824241860,
+  "ci_conclusion": "success",
+  "deploy_run": 37825297507,
+  "deploy_workflow_conclusion": "success",
+  "deployment_gate_after": false,
+  "catalogue": {
+    "release_id": "1694fb4a5b355fb2db15f4b815ccc8d34fc74e0f09707aa58804b3bcac4f3403",
+    "packages": 218151,
+    "distinct_files": 1353029,
+    "distinct_file_bytes": 7939862307,
+    "changed_by_this_application_release": false
+  },
+  "changes": [
+    "Integrate independently retested constraint-case construction and v2 event/source/accounting/path checks; private factory output is not automatically admitted.",
+    "Bound the existing local overnight operator by durable remaining-call reservations, a cumulative deadline and explicit unknown-effect reconciliation; no hosted customer-run claim.",
+    "Provide the account-transition handoff, current checklist and Gantt view, and references for owner-supplied credentials without storing values in source.",
+    "Deploy the previously committed model-directory refresh and updated source; the two live offerings and third-offering proposal remain distinct."
+  ],
+  "cloudflare": {
+    "worker": "baltor-web-edge",
+    "export_id": "3939bb95ddb5954ecd9faca02962c13812d456b3e7003e4479d21b01380311e5",
+    "worker_deployment": "a608a1e06dcb4e3f8a32894659c72740",
+    "static_files": 2544,
+    "static_bytes": 75685747,
+    "production_hostnames": [
+      "baltor.ai",
+      "www.baltor.ai",
+      "app.baltor.ai",
+      "docs.baltor.ai",
+      "status.baltor.ai",
+      "examples.baltor.ai",
+      "demo.baltor.ai",
+      "deck.baltor.ai",
+      "redteam.baltor.ai"
+    ],
+    "direct_fallback_hostname": "baltor-pilot.fly.dev",
+    "origin_tls": "strict",
+    "customer_identity": "Supabase",
+    "custom_search": "sqlite_disk_index",
+    "body_storage_selected": "Fly volume",
+    "production_routes_changed": false,
+    "rollback_export_id": "a93a90e664040013b23aedaf0ca228e965c639722786b962ab0ea524ed71315a",
+    "rollback_worker_deployment": "839522c5383041a79d58b73d5e849411",
+    "r2_limit": "Prior complete coverage in two verified scopes remains unchanged; R2 is not selected for serving."
+  },
+  "checks": {
+    "offline_self_test": {
+      "passed": 3948,
+      "total": 3948
+    },
+    "service_smoke": {
+      "passed": 766,
+      "total": 766
+    },
+    "inherited_supply_qualification": {
+      "passed": 318,
+      "total": 318
+    },
+    "combined_focused": {
+      "passed": 110,
+      "total": 110
+    },
+    "final_queue_credentials_context": {
+      "passed": 75,
+      "total": 75
+    },
+    "records_index_followup": {
+      "passed": 44,
+      "total": 44
+    },
+    "conformance": "All 32 gates pass.",
+    "hardcoding": "Full audit03 passed; four exact environment-variable references reviewed under the existing keyring contract; no baseline weakened.",
+    "live_host_browser": {
+      "hosts": 10,
+      "passed": 2126,
+      "total": 2126
+    },
+    "live_route_map": {
+      "pages": 67,
+      "views": 277,
+      "links": 436,
+      "problems": 0,
+      "actual_theme_selection_checked": true
+    },
+    "edge_readback_on_baltor_ai": {
+      "passed": 2544,
+      "total": 2544,
+      "scope": "exact bodies and required headers"
+    },
+    "pulse_during_qa": {
+      "hosts": 10,
+      "passed": 50,
+      "total": 50,
+      "slow_reads": 2
+    },
+    "pulse_after_qa": {
+      "hosts": 10,
+      "passed": 50,
+      "total": 50,
+      "slow_reads": 0,
+      "identity_provider_health": 200
+    }
+  },
+  "private_candidate_reconciliation": {
+    "cohorts": 47,
+    "candidates": 31474,
+    "payload_placements": 266797,
+    "distinct_payloads": 120131,
+    "exact_new_vs_live": 120090,
+    "prechecks": 220318,
+    "precheck_failures": 0,
+    "admission": false,
+    "publication": false,
+    "model_calls": 0,
+    "network_calls": 0,
+    "limits": "Supporting documentation and attribution are included; not a count of independent methods or new served files. Semantic comparison, generated execution and independent content admission remain open."
+  },
+  "attempts_and_limits": [
+    "Initial source CI37823334402 failed on the stale generated records index; the owning builder and 44 tests corrected it. Exact dc7b3ccd CI passed before deployment.",
+    "First private precheck attempt failed on a missing Python import path. Second stopped at its15minute ceiling after43complete cohorts. A separate four-cohort attempt completed; all47exact reports are reconciled. The old summary's fixed47cohort count is corrected in a separate record, with its original bytes retained.",
+    "Two health reads were slow during parallel live QA; the final separate all-host pulse had no slow reads. This is not a throughput or latency benchmark.",
+    "R2 delivery selection, hosted personalized feeds, new native/model customer execution, TensorArt history import, public ChatGPT publication and ten-million served files remain open.",
+    "Customer deterministic proofs from release78 remain historical evidence; they were not repeated or reclassified as model-driven proof in this release."
+  ],
+  "private_evidence_root": "/home/username/baltor-private/repo-disk-review-20261007-1uZpT8",
+  "evidence": [
+    "release79-deployment.json",
+    "cloudflare-site-deployment-07/events.jsonl",
+    "release79-edge-readback-01.json",
+    "release-79-browser/summary.json",
+    "release-79-all-pages-people-01/report.json",
+    "release-79-pulse-01.json",
+    "release-79-pulse-final.json",
+    "factory-morning-reconciliation-20261008/run-01/lineage-completion.json",
+    "factory-morning-reconciliation-20261008/run-02",
+    "factory-morning-reconciliation-20261008/run-03"
+  ],
+  "handoff_evidence_root": "/home/username/baltor-private/account-handoff-20261008-Hh3tJy",
+  "handoff_evidence": [
+    "HANDOFF.md",
+    "factory-distinct-files.json",
+    "factory-prechecks-reconciled.json",
+    "combined-hardcoding-03.json",
+    "CLOSING-CHECKPOINT.json"
+  ]
+}
