@@ -1,0 +1,157 @@
+{
+  "record_type": "pilot_release_record/v1",
+  "release": 82,
+  "app": "baltor-pilot",
+  "source_revision": "22b8f1463dcb05a3be6ac487437ac9ea74cd61d2",
+  "image": "registry.fly.io/baltor-pilot@sha256:6869edf6c244f5c1c0caa75017c9dcde5f8b6eaaf536c41c54e61d0bb1fffebc",
+  "rollback_release": 81,
+  "rollback_image": "registry.fly.io/baltor-pilot@sha256:825861e0044a016a8c9585f685de409411e24ddf2b6736c7a3df1a5f1fb5f5cb",
+  "owner_local_date": "2026-10-08",
+  "deployed_at": "2026-10-08T22:07:22Z",
+  "ci_run": 37849904645,
+  "ci_conclusion": "success",
+  "deploy_run": 37851063100,
+  "deploy_workflow_conclusion": "success",
+  "deployment_gate_after": false,
+  "catalogue": {
+    "release_id": "1694fb4a5b355fb2db15f4b815ccc8d34fc74e0f09707aa58804b3bcac4f3403",
+    "packages": 218151,
+    "distinct_files": 1353029,
+    "distinct_file_bytes": 7939862307,
+    "changed_by_this_application_release": false
+  },
+  "changes": [
+    "Publish the owner's October 8 flexible pricing amendment in Terms section6 and update its date. Other legal sections and privacy text remain unchanged.",
+    "Refer to price, currency, billing period and taxes shown before subscription; permit prospective plan/price changes with paid-period protection, notice, required consent, cancellation and explicit free-to-paid opt-in.",
+    "Read legal dates from canonical text and derive the removed-date browser control from current markup; add word-for-word legal checks to the viewport/theme matrix.",
+    "Record release81 and the subsequent three-product 14.99/29.99/49.99 direction. The private design is not a new purchasable third service or an activated price migration."
+  ],
+  "cloudflare": {
+    "worker": "baltor-web-edge",
+    "export_id": "7092e0ff098a66d009c08566e59a53984a6c463d26f18291cbc50d222904db10",
+    "worker_deployment": "d0e294543fd348aa977babca7310f2e6",
+    "static_files": 2544,
+    "static_bytes": 75777928,
+    "production_hostnames": [
+      "baltor.ai",
+      "www.baltor.ai",
+      "app.baltor.ai",
+      "docs.baltor.ai",
+      "status.baltor.ai",
+      "examples.baltor.ai",
+      "demo.baltor.ai",
+      "deck.baltor.ai",
+      "redteam.baltor.ai"
+    ],
+    "direct_fallback_hostname": "baltor-pilot.fly.dev",
+    "origin_tls": "strict",
+    "customer_identity": "Supabase",
+    "custom_search": "sqlite_disk_index",
+    "body_storage_selected": "Fly volume",
+    "production_routes_changed": false,
+    "rollback_export_id": "580ab3245bfb23e0abe657c762368d3326412bd99ccf5730fab9f13a5862f3a4",
+    "rollback_worker_deployment": "c17c5c4764c0438b9cf5ba6c15470b4c"
+  },
+  "checks": {
+    "focused": 44,
+    "service_smoke": {
+      "passed": 766,
+      "total": 766
+    },
+    "conformance": "All 32 gates pass.",
+    "exact_source_ci": "20 required jobs passed; live model job was not requested.",
+    "local_browser": {
+      "initial_passed": 973,
+      "initial_total": 976,
+      "initial_mutants_detected": 196,
+      "initial_mutants_total": 197,
+      "initial_failure": "Three stale-date assertions/control failures in the browser checker; retained as attempt02. Canonical legal text comparison itself passed.",
+      "final_passed": 976,
+      "final_total": 976,
+      "final_mutants_detected": 197,
+      "final_mutants_total": 197,
+      "evidence_sha256": "364958de5073bec9de9bb45641383f2bd87568dae6335527b880e2215228b4bf"
+    },
+    "local_offering_terms_matrix": {
+      "passed": 457,
+      "total": 457
+    },
+    "live_ten_host_terms": {
+      "hostnames": 10,
+      "views": 12,
+      "first_legal_assertions_passed": 96,
+      "first_wrong_health_route_failures": 12,
+      "first_failure": "The new private probe asked for /health instead of the declared /api/v1/health. All legal assertions passed. Probe corrected; original evidence retained.",
+      "final_passed": 108,
+      "final_total": 108
+    },
+    "live_offering_terms_matrix": {
+      "passed": 457,
+      "total": 457
+    },
+    "edge_readback_on_baltor_ai": {
+      "passed": 2544,
+      "total": 2544,
+      "scope": "exact bodies, required headers and export marker"
+    },
+    "final_pulse": {
+      "reads": 50,
+      "problems": 0,
+      "slow": 0
+    },
+    "prior_full_route_map": {
+      "release": 81,
+      "pages": 67,
+      "views": 277,
+      "links": 416,
+      "problems": 0,
+      "repeated_in_release82": false
+    }
+  },
+  "limits": [
+    "The new three-price design is private. Current checkout remains29 USD and public Feeds still carries the earlier4.99/free-through-2026 presentation until a separate reviewed migration.",
+    "Existing subscriptions and free grants were not changed; no new provider Price was created.",
+    "Hosted Overnight / AFK Work remains unimplemented and unsold.",
+    "Successful model generation remains unqualified because the recorded post-repair probe hit usage_limit_reached; no additional model call occurred.",
+    "Release82 QA focuses on this legal amendment plus exact public assets, current offering views and all-host health. The full67-page audit belongs to release81, not a new run."
+  ],
+  "private_evidence": [
+    "release82-deployment.json",
+    "cloudflare-site-deployment-10",
+    "release82-edge-readback-01.json",
+    "release-82-terms-live-01/report.json",
+    "release-82-terms-live-02/report.json",
+    "release-82-offerings-terms-live-01/report.json",
+    "release-82-pulse-final.json",
+    "account handoff/flexible-terms-browser-02.json",
+    "account handoff/flexible-terms-browser-03.json",
+    "account handoff/flexible-terms-layout-01/report.json"
+  ],
+  "provider_readiness": {
+    "previous_investigation": {
+      "model": "deepseek-v4-flash:0731",
+      "attempts": 2,
+      "outcome": "HTTP 410; retired September 25"
+    },
+    "post_repair": {
+      "model": "deepseek-v4-pro:0813",
+      "attempts": 1,
+      "outcome": "usage_limit_reached",
+      "elapsed_seconds": 0.396811
+    },
+    "total_attempts": 3,
+    "input_tokens": null,
+    "output_tokens": null,
+    "usage_accounting_complete": false,
+    "provider_integration_proven": false,
+    "retries": 0,
+    "failover": 0,
+    "new_purchase": false,
+    "earlier_customer_token_ceiling_unchanged": 120000
+  },
+  "legal_approval": {
+    "owner_local_date": "2026-10-08",
+    "owner_words": "Update the terms to be more flexible so we can have more pricing changes in the future",
+    "scope": "Section6 pricing and last-changed date only; no new privacy use, subscription mutation or live engineering charge."
+  }
+}

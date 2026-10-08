@@ -44,7 +44,7 @@ The next release cycle follows this checklist:
 - [x] Complete candidate prechecks and global exact-body comparison: 31,474
   candidates passed seven prechecks; 120,090 distinct payloads are absent from
   the live library. Semantic comparison and content admission remain open.
-- [x] Complete combined code checks, exact CI and guarded releases 79 through 81; all ten
+- [x] Complete combined code checks, exact CI and guarded releases 79 through 82; all ten
   hosts, 2,544 exported files and the full public route map pass.
 - [x] Publish available local overnight tools as Preview and remove future-feature
   marketing. The hosted Supervised Runs tier remains internal unfinished work.
@@ -56,7 +56,8 @@ The next release cycle follows this checklist:
   four desktop/mobile layouts. This is not live billing or hosted supervision.
 - [x] Record the owner's approval and prepare the flexible pricing clause;
   keep canonical and served text identical, with paid-period and consent guards.
-- [ ] Deploy that clause, then reconcile the new-signup Stripe Price, host policy and
+- [x] Deploy the flexible clause and verify exact wording on all ten hosts.
+- [ ] Reconcile the new-signup Stripe Price, host policy and
   public copy; preserve existing subscription prices and free grants.
 - [ ] Implement and qualify the third paid run service before publishing its
   purchase card. Keep the available local tools usable for free.
@@ -104,20 +105,22 @@ gantt
     Demo and founder-ready material :launch, after creative, 4d
 ```
 
-Release 81 is deployed from `e51c083b` and its gate is closed. The ten-host
-browser pass has 2,134 passing assertions. All nine product hostnames use
-the existing Cloudflare Worker. All 2,544 exported public files passed exact
-body/header readback on baltor.ai; the final all-host pulse passed fifty reads.
-The route-map audit passed 67 pages, 277 actual-theme views and 416 links.
-The release-81 focused offering/layout matrix passed 345 assertions. The first
-readback's seventeen mismatched export markers and one initial browser mutant
-failure are retained; complete repeats and atomic canary measurement pass.
+Release 82 is deployed from `22b8f146` and its gate is closed. All ten hosts
+passed the focused Terms/health check, 108 assertions including phone themes.
+All nine product hostnames use the existing Cloudflare Worker. All 2,544
+exported public files passed exact body/header/export-marker readback;
+fifty final pulse reads and 457 live offering/legal layout checks pass.
+The full local browser check passed 976 assertions and all 197 mutants.
+The broader 67-page/277-view/416-link audit is release-81 evidence, not a new
+release-82 run. Initial stale-date checks and the private probe's wrong health
+path are retained alongside their successful corrections.
 Local overnight tools use the owner's Preview label and link their runnable
 setup. Future-feature notices do not appear in marketing.
 
 The active offering labels, shared light/dark appearance and thirteen
-decision-source collections are live. Approved Terms keep their original
-wording; the existing full-library plan remains $29. Feeds shows the owner's
+decision-source collections are live. The flexible Terms price clause is now
+published; other legal wording is unchanged. The existing full-library plan
+remains $29. Feeds still shows the earlier
 $4.99 standard monthly price and free access through December 31, 2026 Eastern,
 without automatic charging or a new provider price. Personalized hosted feed
 delivery is unfinished. Release 78 includes interchangeable search engines
@@ -303,6 +306,32 @@ than losing them to a similarity filter.
 
 ### Three-product direction: Overnight / AFK Work
 
+The setup/control audit is now an explicit launch dependency. The deployed MCP
+declares twelve library, feedback and restricted staff-report tools; it is not
+an all-purpose administration or customer job-control service. The existing
+`plan_mcp_service_setup` candidate passes four builder and ten helper tests,
+but deliberately creates no client configuration or connection. The model
+directory's setup generation and local overnight CLI are separate capabilities.
+
+Add control through the existing typed API/CLI owners, in this order:
+
+- Inspect configuration, authentication, permissions and observed allowance
+  without equating credential presence with readiness.
+- Produce a versioned setup plan, then apply only an explicitly authorized,
+  state-bound plan through existing installers and operators.
+- Add account-isolated saved feed definitions, per-agent assignment, export,
+  independent cursors and revocation.
+- Add paired-worker/job submit, inspect, pause, resume and cancel, preserving
+  original budgets, fencing and unknown-effect reconciliation.
+- Keep infrastructure, billing, secrets and publication in a separate
+  internal/admin MCP. Customer library credentials cannot inherit those powers.
+
+Existing operator CLIs already manage GitHub, Fly and Cloudflare. Cloudflare's
+[official API MCP](https://github.com/cloudflare/mcp/blob/main/README.md) can
+reuse the provider's interface; its presence in documentation is not a current
+authenticated connection or permission to use every endpoint. Review scopes
+and qualify each selected operation. Do not expose a generic public shell.
+
 The owner's latest October 8 direction requires three distinct product cards,
 each with a different price and design. The third combines Agent Feeds,
 Harness Files and Overnight / AFK Work using customer-held model access.
@@ -336,9 +365,9 @@ Implementation order for the third offering:
 5. Publish the three differentiated cards and the matching signup/account
    surfaces together. Keep the local free tools and all existing grants intact.
 
-The owner has approved a flexible pricing clause for section 6; canonical and
-served text are updated and need the guarded release. No further price-clause
-approval is waiting. Other terms and privacy uses are unchanged.
+The owner-approved flexible pricing clause for section 6 is published in
+release 82 and matches the canonical text on all ten hosts. No further
+price-clause approval is waiting. Other terms and privacy uses are unchanged.
 
 The immediate price migration creates a new recurring Price for future library
 signups, retains the old Price in entitlement recognition, and changes no

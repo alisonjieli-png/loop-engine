@@ -5,6 +5,19 @@
   "releases": [
    {
     "kind": "service",
+    "number": 82,
+    "at": "2026-10-08T22:07:22Z",
+    "lines": [
+     "Publish the owner's October 8 flexible pricing amendment in Terms section6 and update its date. Other legal sections and privacy text remain unchanged.",
+     "Refer to price, currency, billing period and taxes shown before subscription; permit prospective plan/price changes with paid-period protection, notice, required consent, cancellation and explicit free-to-paid opt-in.",
+     "Read legal dates from canonical text and derive the removed-date browser control from current markup; add word-for-word legal checks to the viewport/theme matrix.",
+     "Record release81 and the subsequent three-product 14.99/29.99/49.99 direction. The private design is not a new purchasable third service or an activated price migration."
+    ],
+    "seen_after_release": "",
+    "not_shown": 0
+   },
+   {
+    "kind": "service",
     "number": 81,
     "at": "2026-10-08T21:14:14Z",
     "lines": [
