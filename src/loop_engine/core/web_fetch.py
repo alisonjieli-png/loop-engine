@@ -16,6 +16,8 @@ from __future__ import annotations
 
 import hashlib
 import ipaddress
+import json
+import re
 import socket
 import urllib.error
 import urllib.parse
@@ -38,6 +40,56 @@ class WebFetchError(ValueError):
 
 _MAXIMUM_REDIRECT_HOPS = 5
 _REDIRECT_STATUS_CODES = (301, 302, 303, 307, 308)
+WEB_FETCH_REQUEST = "web_fetch_request/v2"
+WEB_FETCH_RESULT = "web_fetch_result/v2"
+HTTP_CLIENT_PROFILE = "web_http_client_profile/v1"
+_PROFILE_ID = re.compile(r"[a-z][a-z0-9_-]{0,63}\Z")
+_PROFILE_REVISION = re.compile(r"[0-9]+\.[0-9]+\.[0-9]+\Z")
+_SENSITIVE_HEADER_TEXT = re.compile(r"(?i)bearer\s|(?:api[_-]?key|password|token)\s*[:=]|(?:sk[-_]|ghp_)[A-Za-z0-9_-]{16,}")
+
+
+@dataclass(frozen=True)
+class WebHttpClientProfile:
+    """A versioned HTTP header configuration, not a browser or a credential."""
+
+    profile_id: str
+    revision: str
+    user_agent: str
+    accept_language: str = ""
+
+    def __post_init__(self):
+        if (not isinstance(self.profile_id, str) or not _PROFILE_ID.fullmatch(self.profile_id)
+                or not isinstance(self.revision, str) or not _PROFILE_REVISION.fullmatch(self.revision)):
+            raise WebFetchError("invalid HTTP client profile identity")
+        for value, bound, required in ((self.user_agent, 512, True), (self.accept_language, 200, False)):
+            if (not isinstance(value, str) or len(value) > bound or (required and not value.strip())
+                    or any(ord(char) < 32 or ord(char) > 126 for char in value)
+                    or _SENSITIVE_HEADER_TEXT.search(value)):
+                raise WebFetchError("invalid or sensitive HTTP client profile value")
+
+    def to_record(self):
+        value = {"record_type": HTTP_CLIENT_PROFILE, "profile_id": self.profile_id,
+                 "revision": self.revision, "user_agent": self.user_agent,
+                 "accept_language": self.accept_language}
+        value["digest"] = hashlib.sha256(json.dumps(value, sort_keys=True, separators=(",", ":")).encode()).hexdigest()
+        return value
+
+    @classmethod
+    def from_record(cls, value):
+        fields = {"record_type", "profile_id", "revision", "user_agent", "accept_language", "digest"}
+        if not isinstance(value, dict) or set(value) != fields or value.get("record_type") != HTTP_CLIENT_PROFILE:
+            raise WebFetchError("unsupported HTTP client profile record")
+        profile = cls(value["profile_id"], value["revision"], value["user_agent"], value["accept_language"])
+        if profile.to_record() != value:
+            raise WebFetchError("HTTP client profile digest mismatch")
+        return profile
+
+    def headers(self):
+        return {"User-Agent": self.user_agent, **({"Accept-Language": self.accept_language} if self.accept_language else {})}
+
+
+DEFAULT_HTTP_CLIENT_PROFILE = WebHttpClientProfile(
+    "baltor-public-reader", "1.0.0", "loop-engine/0.1 adaptive-practitioner")
 
 
 class _RefusedRedirect(urllib.request.HTTPRedirectHandler):
@@ -55,8 +107,11 @@ class WebFetchRequest:
     purpose: str
     timeout_seconds: float = 30.0
     maximum_bytes: "int | None" = None
+    client_profile: "WebHttpClientProfile | None" = None
 
     def __post_init__(self) -> None:
+        if self.client_profile is not None and not isinstance(self.client_profile, WebHttpClientProfile):
+            raise WebFetchError("web fetch needs a typed HTTP client profile")
         if not self.purpose.strip():
             raise WebFetchError("web fetch needs a purpose")
         if (self.timeout_seconds <= 0
@@ -125,17 +180,18 @@ def _effect(request: WebFetchRequest) -> EffectSpec:
             "purpose_digest": hashlib.sha256(
                 request.purpose.encode("utf-8")).hexdigest(),
             "timeout_seconds": str(request.timeout_seconds),
+            "http_client_profile_digest": (request.client_profile or DEFAULT_HTTP_CLIENT_PROFILE).to_record()["digest"],
         }.items())),
     )
 
 
-def _open_without_redirects(url: str, timeout_seconds: float):
+def _open_without_redirects(url: str, timeout_seconds: float, client_profile=None):
     """Open one exact URL. Redirects surface as HTTPError, never followed."""
     handler = urllib.request.build_opener(_RefusedRedirect)
     return handler.open(
         urllib.request.Request(
             url,
-            headers={"User-Agent": "loop-engine/0.1 adaptive-practitioner"},
+            headers=(client_profile or DEFAULT_HTTP_CLIENT_PROFILE).headers(),
             method="GET"),
         timeout=timeout_seconds)
 
@@ -154,7 +210,8 @@ def _fetch_with_validated_hops(
     timeout_budget = request.timeout_seconds
     for _hop in range(_MAXIMUM_REDIRECT_HOPS + 1):
         try:
-            response = _open_without_redirects(url, timeout_budget)
+            response = (_open_without_redirects(url, timeout_budget) if request.client_profile is None
+                        else _open_without_redirects(url, timeout_budget, request.client_profile))
         except urllib.error.HTTPError as exc:
             if exc.code not in _REDIRECT_STATUS_CODES:
                 raise
@@ -199,8 +256,8 @@ def fetch_web_resource(
     parent = context.parent_loop
     _approve(request, authority, parent)
     contract = contract_for_code_loop(
-        "web_fetch", input_roles=("web_fetch_request/v1",),
-        output_roles=("web_fetch_result/v1",), effects=("network",),
+        "web_fetch", input_roles=(WEB_FETCH_REQUEST,),
+        output_roles=(WEB_FETCH_RESULT,), effects=("network",),
         role="intelligence")
     config = LoopConfig(
         framework="custom", custom_steps=("fetch",),
@@ -240,7 +297,9 @@ def fetch_web_resource(
             except LookupError:
                 text = body.decode("utf-8", errors="replace")
             holder["value"] = {
-                "record_type": "web_fetch_result/v1",
+                "record_type": WEB_FETCH_RESULT,
+                "http_client_profile": (request.client_profile or DEFAULT_HTTP_CLIENT_PROFILE).to_record(),
+                "client_realization": "http_headers_only",
                 "requested_url": request.url,
                 "final_url": final_url,
                 "redirect_hops": hop_chain,

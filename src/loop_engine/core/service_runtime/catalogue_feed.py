@@ -142,10 +142,12 @@ def render(record, path, origin):
 
 
 def page_body():
-    return ('<section class="md-band md-intro"><p class="eyebrow">Baltor Feeds · free preview</p>'
+    return ('<section class="md-band md-intro"><p class="eyebrow">Agent Feeds · free preview</p>'
             '<h1 id="feeds-title">Updates your agents can read.</h1>'
-            '<p class="md-reading">Feeds keep information current. Components give your harness reusable files. '
-            'They share the same Baltor library and account system.</p></section>'
+            '<p class="md-reading">Choose Agent Feeds for updates your agents can read, or Agent Feeds + Harness Files '
+            'for the preview and the full reusable library. Start with the free feed below.</p>'
+            '<div class="md-actions"><a class="button secondary" href="/pricing">Compare the two offerings</a>'
+            '<a class="button secondary" href="/library">Explore Harness Files</a></div></section>'
             '<section class="md-band"><h2>Component updates</h2><p class="md-reading">'
             'The first feed describes the currently served catalogue: its release, '
             'state-change time, package count, distinct-file count and release changes. '
@@ -155,15 +157,15 @@ def page_body():
             '<a class="button secondary" href="/feeds/catalogue.md">Markdown context</a></div>'
             '<p class="md-reading">This is one current-state notice in three formats, not a complete change history. '
             'A failed refresh must not be read as an empty catalogue. Markdown is not a claim of OKF compatibility.</p>'
-            '</section><section class="md-band"><h2>Feeds and Components</h2><p class="md-reading">'
+            '</section><section class="md-band"><h2>Agent Feeds + Harness Files</h2><p class="md-reading">'
             'The planned Feeds offering adds maintained research, tool and MCP service '
             'comparisons, and task-relevant briefings. Personalized daily delivery and opt-in push are not available yet; '
-            'there is no new paid Feeds plan in this preview.</p><p class="md-reading">The Components library remains the place to get '
+            'there is no new paid Feeds plan in this preview.</p><p class="md-reading">Harness Files are reusable components: '
             'reusable functions, code, tools, configurations, reference data and assets. Existing plan access and '
             'the account-required Public Good collection are unchanged.</p>'
             '<p class="md-reading">A feed notice never installs or runs its contents. Package bodies still require their normal '
             'authorization, source and licence checks.</p><div class="md-actions">'
-            '<a class="button secondary" href="/library">Explore Components</a>'
+            '<a class="button secondary" href="/library">Explore Harness Files</a>'
             '<a class="button secondary" href="/public-good">Public Good</a></div></section>')
 
 

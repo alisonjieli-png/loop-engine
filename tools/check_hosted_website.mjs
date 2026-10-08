@@ -27,7 +27,7 @@ const useCaseProblems=cards=>[...cardProblems(cards,["overnight","efficiency","l
 const heroActionProblems=state=>[...(JSON.stringify(state.primary)===JSON.stringify([["hero-primary","Get started","/get-started"]])?[]:["the hero's primary actions are "+JSON.stringify(state.primary)]),
   ...(JSON.stringify(state.secondary)===JSON.stringify([["hero-setup","Get set up","/setup"]])?[]:["the hero's secondary actions are "+JSON.stringify(state.secondary)]),...(state.journey===1?[]:[state.journey+" hero links lead into the access journey"]),
   ...(state.paths===""?[]:["the hero repeats its buttons in a line of text: "+JSON.stringify(state.paths)])];
-const pricingFacts=["One plan","Baltor Pro","$29 a month","one downloaded item","Cancel from your account page."];
+const pricingFacts=["Agent Feeds","Agent Feeds + Harness Files","Free preview","Baltor Pro","$29 a month","one downloaded item","Cancel from your account page."];
 const pricingProblems=text=>[...pricingFacts.filter(fact=>!text.includes(fact)).map(fact=>"missing "+fact),...(/\bsearch(?:ing)? is free\b/i.test(text)?["free search"]:[]),...(/\binvited\b/i.test(text)?["free invited accounts"]:[]),
   ...(/United States dollars|per month/i.test(text)?["another way of writing the price"]:[])];
 const paymentWords={accountFirst:{note:"Create your account, then subscribe from your account page. Cancel any time."},
@@ -196,7 +196,7 @@ try{
   /* Two actions in the hero: Get started, the one primary action, and Get set up, the guide. Since September 24, 2026 no line under
      them repeats what the two buttons say; the owner retired it as filler. */
   const liveHeroActions=await page.locator('[data-view="home"] .hero').evaluate(hero=>{const words=node=>node.textContent.replace(/[↗→]/g,"").replace(/\s+/g," ").trim(),shown=node=>node.getClientRects().length>0;
-    return {primary:[...hero.querySelectorAll(".button.primary")].filter(shown).map(node=>[node.id,words(node),node.getAttribute("href")]),secondary:[...hero.querySelectorAll(".button.secondary")].filter(shown).map(node=>[node.id,words(node),node.getAttribute("href")]),
+    return {primary:[...hero.querySelectorAll(".button.primary")].filter(shown).map(node=>[node.id,words(node),node.getAttribute("href")]),secondary:[...hero.querySelectorAll(".hero-copy .button.secondary")].filter(shown).map(node=>[node.id,words(node),node.getAttribute("href")]),
       journey:[...hero.querySelectorAll("a[href]")].filter(node=>/^\/(?:get-started|waitlist|signup|connect)(?:$|[/?#])/.test(node.getAttribute("href"))).length,paths:hero.querySelector(".hero-paths")?.textContent.replace(/\s+/g," ").trim()||""};});
   check("live_homepage_offers_get_started_and_get_set_up_and_says_how_they_differ",heroActionProblems(liveHeroActions).length===0&&["waiting","open"].includes(await page.locator("#hero-primary").getAttribute("data-access-state")));
   check("hero_action_check_rejects_a_second_primary_and_a_missing_guide",heroActionProblems({...liveHeroActions,primary:[...liveHeroActions.primary,["planted","Request an invitation","/waitlist"]]}).length>=1&&heroActionProblems({...liveHeroActions,secondary:[]}).length===1
@@ -429,7 +429,10 @@ try{
   const robots=await page.request.get(origin+"/robots.txt",{maxRedirects:0}),sitemap=await page.request.get(origin+"/sitemap.xml",{maxRedirects:0});
   const listed=[...(await sitemap.text()).matchAll(/<loc>([^<]+)<\/loc>/g)].map(found=>found[1]),listable=siteMap.pages.filter(item=>item.indexed).map(item=>canonicalOrigin+item.address);
   check("live_robots_and_sitemap_follow_the_site_map",robots.status()===200&&(await robots.text()).includes("Sitemap: "+canonicalOrigin+"/sitemap.xml")&&sitemap.status()===200&&JSON.stringify(listed)===JSON.stringify(listable));
-  const headAnswer=await page.request.fetch(origin+"/",{method:"HEAD",maxRedirects:0}),getAnswer=await page.request.get(origin+"/",{maxRedirects:0});
+  // Compare the identity representation. A CDN may legally omit Content-Length
+  // after selecting compression; its decoded body is not that wire length.
+  const representationHeaders={"Accept-Encoding":"identity"};
+  const headAnswer=await page.request.fetch(origin+"/",{method:"HEAD",maxRedirects:0,headers:representationHeaders}),getAnswer=await page.request.get(origin+"/",{maxRedirects:0,headers:representationHeaders});
   check("live_head_answers_like_get_without_a_body",headAnswer.status()===200&&(await headAnswer.body()).length===0&&headAnswer.headers()["content-type"]===getAnswer.headers()["content-type"]
     &&headAnswer.headers()["content-length"]===String((await getAnswer.body()).length));
   await page.goto(origin+"/status");await page.waitForFunction(()=>document.getElementById("status-summary")?.dataset.statusState!=="reading",null,{timeout:15000}).catch(()=>{});

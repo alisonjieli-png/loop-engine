@@ -28,7 +28,8 @@ from .generated_project import (
     sandbox_image,
     GeneratedProjectAuthority, GeneratedProjectError, GeneratedProjectExecutionContext, GeneratedProjectExecutionRequest,
     validate_generated_project_input_use)
-from .web_fetch import WebFetchAuthority, WebFetchContext, WebFetchRequest
+from .web_fetch import (WebFetchAuthority, WebFetchContext, WebFetchRequest,
+                        WebHttpClientProfile, WEB_FETCH_RESULT)
 from .web_search import (
     WebSearchAuthority, WebSearchContext, WebSearchRequest)
 from .adaptive_practitioner_orientation_capabilities import (
@@ -121,7 +122,9 @@ def _web_operation(arguments, services, owner):
             str(arguments.get("url") or ""),
             str(arguments.get("purpose") or ""),
             maximum_bytes=(None if maximum_bytes is None
-                           else int(maximum_bytes))),
+                           else int(maximum_bytes)),
+            client_profile=(WebHttpClientProfile.from_record(arguments["http_client_profile"])
+                            if "http_client_profile" in arguments else None)),
         WebFetchAuthority(
             services.run_id, services.request.allow_network_reads),
         WebFetchContext(owner, services.artifacts))
@@ -253,7 +256,7 @@ def execute_adaptive_capability(
             arguments, services, owner)
         input_value = arguments
         input_role = "next_action_decision/v1"
-        output_role = "web_fetch_result/v1"
+        output_role = WEB_FETCH_RESULT
     elif plan.handle == "core.verify.differential":
         operation = lambda _value, _params: differential_verification_operation(
             arguments, services)

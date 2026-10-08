@@ -28,6 +28,26 @@ export async function checkAudiences(page,check){
   check("audience_check_detects_missing_path_wrong_target_and_hidden_availability",audienceProblems(cards.slice(0,2)).length>0
     &&audienceProblems(cards.map(card=>({...card,href:"/"}))).length>0
     &&audienceProblems(cards.map(card=>({...card,text:""}))).length>0);
+  const offerings=await page.locator('[data-view="home"] [data-offering]').evaluateAll(items=>items.map(item=>({
+    id:item.dataset.offering,title:item.querySelector('h2')?.innerText.replace(/\s+/g,' ').trim(),
+    href:item.querySelector('a')?.getAttribute('href'),text:item.innerText.replace(/\s+/g,' ')})));
+  check('homepage_separates_agent_feeds_and_harness_files_with_working_paths',offeringProblems(offerings).length===0);
+  check('offering_check_refuses_missing_paths_wrong_destinations_and_hidden_availability',
+    offeringProblems(offerings.slice(1)).length>0&&offeringProblems(offerings.map(row=>({...row,href:'/'}))).length>0
+    &&offeringProblems(offerings.map(row=>({...row,text:''}))).length>0);
+}
+
+export function offeringProblems(cards){
+  const expected=[['agent-feeds','Agent Feeds','/feeds'],['agent-feeds-harness-files','Agent Feeds + Harness Files','/pricing']];
+  const problems=[];
+  if(cards.length!==expected.length)return ['two offerings are required'];
+  for(let index=0;index<expected.length;index++){
+    const [id,title,href]=expected[index],card=cards[index];
+    if(card.id!==id||card.title!==title||card.href!==href)problems.push('offering identity or destination differs');
+  }
+  if(!/Free preview/.test(cards[0].text)||!/in development/.test(cards[0].text))problems.push('feed availability is missing');
+  if(!/Baltor Pro/.test(cards[1].text)||!/\$29 a month/.test(cards[1].text))problems.push('full library price is missing');
+  return problems;
 }
 
 export function useCaseProblems(groups){

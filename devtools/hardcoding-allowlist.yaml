@@ -13092,6 +13092,18 @@ entries:
   classification: SECRET_OR_CREDENTIAL_REFERENCE
   created_on: '2026-10-07'
   expires_on: '2027-10-07'
+- finding_id: hardcoding.2db1b408594f9f416b4ad351
+  owner: tools.query_multiplier.install_schedule:validate_ollama_reference
+  rationale: Exact environment-variable name in the shared provider-binding validator. It validates a named Ollama keyring reference, never a credential value, for both timer installation and execution.
+  classification: SECRET_OR_CREDENTIAL_REFERENCE
+  created_on: '2026-10-07'
+  expires_on: '2027-10-07'
+- finding_id: hardcoding.0aa0d90ad7428adc7de98fd5
+  owner: tools.query_multiplier.scheduled_credentials:run
+  rationale: A failed selected-key resolution removes this inherited variable before public-only continuation. This prevents an ambient credential from silently replacing the selected reference; no value is stored or emitted.
+  classification: SECRET_OR_CREDENTIAL_REFERENCE
+  created_on: '2026-10-07'
+  expires_on: '2027-10-07'
 excluded_paths:
 - path: src/loop_engine/core/service_runtime/web_assets/creative-arena/arena.js
   owner: examples.32_creative_arena

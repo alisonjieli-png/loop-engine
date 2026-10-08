@@ -2,7 +2,7 @@
 
 Kind: product architecture with measured local implementation and proposed hosting.
 Date: 2026-09-19. The [current deployment](#current-deployment) section was
-added on 2026-09-20 and last checked on 2026-10-07, after Fly release 74.
+added on 2026-09-20 and last checked on 2026-10-07, after Fly release 75.
 
 The hosted product manages accounts, subscriptions, and access to intelligence.
 The customer runs Loop Engine and the selected harnesses. A hosted intelligence
@@ -47,7 +47,31 @@ from the newest release record, follow the release record and correct this
 section. Update this section in the same change that records a new release.
 It describes a private pilot. It does not describe a qualified paid service.
 
-The running image is Fly release 74, from
+The running image is Fly release 75, from
+`bc18a19f859bf691b97cba37666ecbd2b0163ec1`, image
+`sha256:5a3ba9481b479aec82b1712b4de90846faccc28fec78f7e29eb10f4b354aaf07`.
+Exact CI `37701122893` and guarded deployment `37702056291` passed; the gate
+is closed. All ten hosts passed 2,118 browser assertions before the first
+Cloudflare production cutover. `docs.baltor.ai` now serves public pages from
+Cloudflare Static Assets and forwards dynamic requests to Fly, with strict
+origin TLS. All 2,501 exported files match their bytes and required headers.
+The real owner-account catalogue check passes eleven checks through that
+hostname, and the all-host pulse passes fifty reads after the cutover.
+The [release record](../../artifacts/architecture-audit-2026-09-19/pilot-release-75.json)
+records the intermediate refusals, compressed-HEAD test correction and the
+overlapping two-network limiter proof.
+
+The edge skips Cloudflare's browser-header heuristic for public reads and
+the declared API/MCP paths on known Baltor hostnames. The standard Python
+client previously failed before reaching the application; it now succeeds.
+This rule grants no account access. Other firewall protections and the
+application's authentication and client-address limits remain enforced.
+R2 mirroring is supervised and incomplete. The volume body engine, custom
+SQLite search and Supabase customer identity remain selected. Release 74 is
+the compatible image rollback. Disable proxying on a hostname to restore its
+direct origin path; retain its route and resources for reconciliation.
+
+The preceding running image was Fly release 74, from
 `69ac103c53c800e96806f5c3f690f234ed6e19b6`, image
 `sha256:6dc54d00f4d41db737d176eee8de24d2da8148189bc26ef175d808b0847bcb06`.
 Exact CI `37692918322` and guarded deployment `37693844836` passed.

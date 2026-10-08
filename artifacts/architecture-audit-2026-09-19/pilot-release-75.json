@@ -1,0 +1,48 @@
+{
+  "record_type": "pilot_release_record/v1",
+  "release": 75,
+  "app": "baltor-pilot",
+  "source_revision": "bc18a19f859bf691b97cba37666ecbd2b0163ec1",
+  "image": "registry.fly.io/baltor-pilot@sha256:5a3ba9481b479aec82b1712b4de90846faccc28fec78f7e29eb10f4b354aaf07",
+  "rollback_release": 74,
+  "rollback_image": "registry.fly.io/baltor-pilot@sha256:6dc54d00f4d41db737d176eee8de24d2da8148189bc26ef175d808b0847bcb06",
+  "owner_local_date": "2026-10-07",
+  "ci_run": 37701122893,
+  "ci_conclusion": "success",
+  "deploy_run": 37702056291,
+  "deploy_workflow_conclusion": "success",
+  "deployment_gate_after": false,
+  "catalogue": {"release_id": "50b666f56b043ce085d20f46efed01444f257917467199992799ad49cdb03127", "packages": 218127, "distinct_files": 1352837, "distinct_file_bytes": 7938617324, "changed_by_this_application_release": false},
+  "changes": [
+    "Recovered private conversation intake, bounded vocabulary generation and the complete release-74 records.",
+    "Preview aliases preserve all existing robots directives and never forward writes, even when canonical hosts allow them.",
+    "Added explicit keyring binding for unattended Ollama search and a bounded separate-network acceptance observer. The first long scheduler activation exposed a separate helper-timeout incompatibility; that repair is the next candidate."
+  ],
+  "cloudflare": {
+    "worker": "baltor-web-edge",
+    "export_id": "738504ee79284b5213cfb203ccae228adeef5f7a64461781d9e0879e6725b09f",
+    "worker_deployment": "46265d2fd2ea432cb2f28cf97d69efd3",
+    "production_hostnames": ["docs.baltor.ai"],
+    "dns_records_deleted": 0,
+    "origin_tls": "strict",
+    "agent_compatibility_rule": "baltor_agent_http_clients_v1",
+    "compatibility_scope": "Skips only the browser-header heuristic on known Baltor hosts for GET/HEAD and the declared API/MCP paths. Managed WAF, DDoS protection and application authentication/rate controls remain selected.",
+    "rollback": "Set the recorded documentation DNS record back to proxied=false; retain the Worker, route and all source objects."
+  },
+  "checks": {
+    "live_browser_before_edge_cutover": {"hosts": 10, "passed": 2118, "total": 2118},
+    "live_pulse_after_documentation_cutover": {"passed": 50, "total": 50},
+    "edge_public_export": {"passed": 2501, "total": 2501, "scope": "exact bodies and required headers"},
+    "documentation_owner_catalogue": {"passed": 11, "planned": 11, "body_reads": 0, "usage_records_added": 0},
+    "edge_limiter": {"workstation_requests": 32, "last_status": 429, "peer_observations": 24, "peer_status": 401, "overlapping_observation_windows": true},
+    "retained_failed_attempts": [
+      "Default Python user agents were refused before reaching the application. The bounded agent-compatibility rule repaired this, and the owner catalogue and all-host pulse then passed.",
+      "The first documentation browser run passed 200 of 201 checks. Cloudflare legitimately omitted Content-Length for compressed HEAD responses. Explicit identity-encoding probes preserve the strict byte-length check and pass; the next checker source carries that request correction.",
+      "The first peer run finished before the successful local flood. A second run deliberately overlapped both networks and passed.",
+      "The first 20-minute keyring-wrapped scheduler invocation was refused by the general operator CLI's 300-second cap. A supervised two-minute proof passed with 29 real Ollama searches. The public-lane scheduler was restored while the fixed long-pass wrapper is reviewed."
+    ]
+  },
+  "limits": ["R2 mirroring remains supervised and incomplete; production bodies and custom search remain on Fly.", "Personalized feeds, the two-offering interface and a paid feed-only plan are not activated by this revision."],
+  "private_evidence_root": "/home/username/baltor-private/repo-disk-review-20261007-1uZpT8",
+  "evidence": ["third-deployment.json", "release-75-browser/summary.json", "release-75-pulse.json", "release-75-pulse-02.json", "cloudflare-site-readback-02.json", "edge-docs-catalogue-01.json", "edge-docs-catalogue-02.json", "edge-protocol-probe-01.json", "edge-peer-canary-02/edge-peer-observations.json", "edge-peer-canary-02-workstation.json", "edge-cutover-docs.baltor.ai/plan.json", "edge-agent-compatibility-applied-01.json"]
+}

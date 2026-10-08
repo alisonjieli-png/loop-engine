@@ -1012,6 +1012,11 @@ loop_dimensions:
     proposal_choice_requirements: required_per_dimension
     review_addendum: docs/context/CONFIGURATION-DIMENSION-DISCOVERY-ADDENDUM-2026-09-13.md
     proposed_dimensions:
+      http_client_identity_and_representation:
+        label: HTTP client identity and representation
+        relation_to_baseline: refinement
+        related_baseline_dimensions: [provider_and_route, tools, workspace_and_execution_environment]
+        boundary_to_inspect: src/loop_engine/core/web_fetch.py
       reasoning_and_action_method:
         label: Reasoning and action method
         relation_to_baseline: refinement

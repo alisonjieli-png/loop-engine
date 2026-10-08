@@ -280,13 +280,14 @@ dl.account-tiles>p{grid-column:1/-1;margin:0}
 
 main:has(> [data-view=pricing]:not([hidden])){max-width:none;padding:0}
 [data-view=pricing].pricing-page{padding:64px max(var(--band-gutter),calc((100% - var(--content-max)) / 2))}
-[data-view=pricing] .pricing-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,30rem);grid-template-rows:auto 1fr;grid-template-areas:"lead card" "notes card";gap:2.5rem 3rem;align-items:start}
+[data-view=pricing] .pricing-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));grid-template-areas:"lead lead" "feed card" "notes notes";gap:2.5rem 3rem;align-items:start}
 [data-view=pricing] .page-heading{grid-area:lead;display:flex;flex-direction:column;align-items:flex-start;gap:1.25rem;margin:0;padding:0}
 [data-view=pricing] .page-heading>*{margin:0}
 [data-view=pricing] .page-heading h1{margin:0;font-size:clamp(2.5rem,4.8vw,4.25rem);line-height:1;letter-spacing:-.045em;font-weight:600;text-wrap:balance}
 [data-view=pricing] .page-heading .intro{max-width:35rem;color:var(--muted);font-size:var(--text-lead);line-height:1.5}
 [data-view=pricing] .plan-card{grid-area:card;display:flex;flex-direction:column;gap:1.25rem;padding:2.5rem;background:var(--paper);border:1px solid var(--line-strong);border-radius:var(--radius-panel);box-shadow:var(--panel-shadow)}
 [data-view=pricing] .plan-card .section-heading{margin:0}
+[data-view=pricing] .plan-card.pricing-feed{grid-area:feed;border-color:var(--border)}
 [data-view=pricing] .plan-card .section-heading .eyebrow{margin:0 0 .25rem}
 [data-view=pricing] .plan-card h2{font-size:1.375rem;font-weight:600}
 [data-view=pricing] .plan-price{display:flex;flex-wrap:wrap;align-items:baseline;gap:0 .625rem;margin:0;font-size:4.5rem;line-height:1;letter-spacing:-.05em;font-weight:600}
@@ -313,7 +314,7 @@ main:has(> [data-view=pricing]:not([hidden])){max-width:none;padding:0}
 [data-view=pricing] .pricing-questions summary::after{content:"+";flex-shrink:0;color:var(--subtle);font-size:1.25rem;font-weight:400}
 [data-view=pricing] .pricing-questions details[open] summary::after{content:"\2212"}
 [data-view=pricing] .pricing-questions details p{max-width:40rem;margin:0 0 1.25rem;color:var(--muted);font-size:1rem;line-height:1.6}
-@media(max-width:980px){[data-view=pricing] .pricing-grid{grid-template-columns:minmax(0,1fr);grid-template-rows:none;grid-template-areas:"lead" "card" "notes"}
+@media(max-width:980px){[data-view=pricing] .pricing-grid{grid-template-columns:minmax(0,1fr);grid-template-rows:none;grid-template-areas:"lead" "feed" "card" "notes"}
   [data-view=pricing] .pricing-questions{grid-template-columns:minmax(0,1fr)}[data-view=pricing] .pricing-questions>h2{grid-row:auto;margin-bottom:1rem}[data-view=pricing] .pricing-questions details{grid-column:1}}
 @media(max-width:860px){[data-view=pricing].pricing-page{padding:40px 16px}[data-view=pricing] .plan-card{padding:1.5rem}[data-view=pricing] .plan-price{font-size:3.5rem}
   [data-view=pricing] .pricing-questions{margin-top:40px}}
@@ -766,3 +767,11 @@ html [data-view="home"] .hero-terminal-bar .hero-terminal-label{margin:.5rem .75
 #dot-work .workspace-grid>*{min-width:0}
 #dot-work-detail{overflow-wrap:anywhere}
 #dot-work-status{overflow-wrap:anywhere}
+.offering-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1.5rem;width:100%;max-width:1080px;margin:0 auto}
+.offering-card{display:flex;flex-direction:column;align-items:flex-start;gap:1rem;min-width:0;padding:2rem;border:1px solid var(--border);border-radius:var(--radius-panel);background:var(--paper);color:var(--ink);text-align:left}
+.offering-card>*{margin:0}.offering-card h2{font-size:clamp(1.5rem,2.3vw,2rem);line-height:1.15;letter-spacing:-.025em}.offering-card p:not(.eyebrow){color:var(--muted);max-width:34rem}.offering-card ul{padding-left:1.15rem;line-height:1.7}.offering-card .offering-availability{font-size:.875rem}.offering-card .button{margin-top:auto}
+html [data-view="home"] .offering-card{background:var(--night-card);border-color:var(--night-rule);color:var(--night-ink)}
+html [data-view="home"] .offering-card p:not(.eyebrow){color:var(--night-muted)}
+html [data-view="home"] .offering-card .eyebrow{color:var(--night-accent)}
+html [data-view="home"] .offering-combined{border-color:var(--night-accent)}
+@media(max-width:700px){.offering-grid{grid-template-columns:1fr}.offering-card{padding:1.5rem}.offering-card .button{width:100%;white-space:normal}}

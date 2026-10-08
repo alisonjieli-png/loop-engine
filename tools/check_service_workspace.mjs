@@ -837,7 +837,7 @@ try {
      No second way into the access journey anywhere in the hero. */
   const readHeroActions=target=>target.locator('[data-view="home"] .hero').evaluate(hero=>{const words=node=>node.textContent.replace(/[↗→]/g,"").replace(/\s+/g," ").trim(),shown=node=>node.getClientRects().length>0;
     return {primary:[...hero.querySelectorAll(".button.primary")].filter(shown).map(node=>[node.id,words(node),node.getAttribute("href")]),
-      secondary:[...hero.querySelectorAll(".button.secondary")].filter(shown).map(node=>[node.id,words(node),node.getAttribute("href")]),
+      secondary:[...hero.querySelectorAll(".hero-copy .button.secondary")].filter(shown).map(node=>[node.id,words(node),node.getAttribute("href")]),
       journey:[...hero.querySelectorAll("a[href]")].filter(node=>/^\/(?:get-started|waitlist|signup|connect)(?:$|[/?#])/.test(node.getAttribute("href"))).length,
       paths:hero.querySelector(".hero-paths")?.textContent.replace(/\s+/g," ").trim()||""};});
   const heroActions=await readHeroActions(page);
@@ -1456,14 +1456,14 @@ try {
   /* The published facts in the pricing view's words since September 23, 2026: one plan, Baltor Pro, "$29 a month", the download
      as the measured unit, and how to stop paying. The owner removed "Search is free" and the free invited accounts that day, and
      the price is written only "$29 a month", so each of those is a refused phrase with a known-wrong page of its own. */
-  const pricingFacts=[["one plan","One plan"],["plan name","Baltor Pro"],["price","$29 a month"],["measured unit","one downloaded item"],["how to stop paying","Cancel from your account page."]];
+  const pricingFacts=[["feed offering","Agent Feeds"],["combined offering","Agent Feeds + Harness Files"],["feed availability","Free preview"],["plan name","Baltor Pro"],["price","$29 a month"],["measured unit","one downloaded item"],["how to stop paying","Cancel from your account page."]];
   const refusedPricingPhrases=[["free search",/\bsearch(?:ing)? is free\b/i],["free invited accounts",/\binvited\b/i],["another way of writing the price",/United States dollars|per month|\$29\s*\/\s*mo/i]];
   const missingFacts=text=>[...pricingFacts.filter(([,fact])=>!text.includes(fact)).map(([name])=>name),...refusedPricingPhrases.filter(([,rule])=>rule.test(text)).map(([name])=>name)];
   check("pricing_view_states_every_published_fact",missingFacts(pricingText).length===0,{missing:missingFacts(pricingText)});
   check("pricing_fact_check_fails_when_one_fact_is_missing_or_a_retired_offer_returns",pricingFacts.every(([name,fact])=>missingFacts(pricingText.split(fact).join("")).includes(name))
     &&missingFacts(pricingText+"\nSearch is free.").includes("free search")&&missingFacts(pricingText+"\nInvited accounts are free.").includes("free invited accounts")
     &&missingFacts(pricingText+"\n29 United States dollars each month").includes("another way of writing the price"),{facts:pricingFacts.length});
-  check("pricing_view_offers_exactly_one_plan",await page.locator("[data-plan-point]").count()===5&&await page.locator('[data-view="pricing"] .plan-card').count()===1&&await page.locator('[data-view="pricing"] .button.primary').count()===1);
+  check("pricing_view_distinguishes_two_offerings_and_only_one_paid_plan",await page.locator("[data-plan-point]").count()===6&&await page.locator('[data-view="pricing"] .plan-card').count()===2&&await page.locator('[data-view="pricing"] .button.primary').count()===1&&await page.locator('[data-view="pricing"] .pricing-feed a[href="/feeds"]').count()===1);
   /* While the service reports no checkout, the pricing view may not carry a control that starts a payment. The guide states that rule, so a check owns it. */
   const purchaseWords={source:"\\b(?:buy|purchase|checkout|subscribe|subscription|pay|payment|card)\\b",flags:"i"};
   const purchaseControls=async opened=>opened.locator('[data-view="pricing"]').evaluate((node,pattern)=>{

@@ -49,6 +49,16 @@ document, or spawn another research Loop under its own contract.
 
 Read [Brave Web Search plugin](BRAVE-SEARCH-PLUGIN.md).
 
+The governed fetch API accepts a `WebHttpClientProfile`: a named revision of
+the User-Agent and Accept-Language headers. Its digest participates in the
+approved effect and the version-2 result reports the selected profile.
+Redirects preserve that profile and retain public-HTTPS validation. The strict
+record reader refuses unknown fields, changed digests, control characters and
+credential assignments. A header override is an HTTP configuration; it does
+not instantiate a browser or reproduce its fingerprint. This belongs to the
+parked governed-fetch integration; the scheduled query collectors retain their own
+declared transport until a corresponding binding is qualified.
+
 ## Custom Plugins
 
 Custom Plugins add typed capabilities through `CapabilityHandshake` and

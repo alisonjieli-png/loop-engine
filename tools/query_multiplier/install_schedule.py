@@ -78,6 +78,13 @@ def start_command(checkout, timeout, credential=None, *, references=None):
     command = f"/bin/bash {checkout}/tools/query_multiplier/scheduled-run.sh"
     if credential is None:
         return command
+    validate_ollama_reference(credential, references=references)
+    return (f"/usr/bin/python3 {checkout}/tools/query_multiplier/scheduled_credentials.py "
+            f"--ref {credential} --timeout {timeout}")
+
+
+def validate_ollama_reference(credential, *, references=None):
+    """One owner for the scheduler's provider/variable binding check."""
     if references is None:
         references = json.loads((REPOSITORY / "tools/operator_credentials.json").read_text())
     spec = references.get("api_keys", {}).get(credential)
@@ -86,8 +93,6 @@ def start_command(checkout, timeout, credential=None, *, references=None):
             or not isinstance(spec, dict) or spec.get("environment") != "OLLAMA_API_KEY"
             or spec.get("service") != "ollama-cloud"):
         raise ValueError("an explicit Ollama operator credential reference is required")
-    return (f"/usr/bin/python3 {checkout}/tools/operator_credentials.py run --ref {credential} "
-            f"--timeout {timeout} -- {command}")
 
 
 def pin(revision: str) -> Path:

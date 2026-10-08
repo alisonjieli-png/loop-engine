@@ -20,6 +20,18 @@ internal/customer separation behind this plan.
 
 ### Current position
 
+Release 75 is deployed and its gate is closed. The first production edge
+hostname is `docs.baltor.ai`: all 2,501 public export files passed exact
+readback, its real-account catalogue check passed eleven checks and the
+all-host pulse passed fifty reads. The next candidate contains the explicit
+Agent Feeds / Agent Feeds + Harness Files interface, the governed HTTP client
+profile contract and the long-pass scheduler correction. The latter follows
+a real failed activation: the short operator helper's 300-second ceiling
+could not wrap a twenty-minute pass. The original public-lane timer is restored
+while that correction is reviewed; a supervised two-minute credential proof
+completed 29 real Ollama searches. This does not claim that the full new
+unattended schedule is qualified yet.
+
 | Work | State | Evidence or remaining gate |
 | --- | --- | --- |
 | Payment and connection repairs | Live in release 70 | Ten hosts passed 2,118 browser checks; five token quickstarts and the 15-step real Claude Code OAuth journey passed. |
@@ -27,11 +39,11 @@ internal/customer separation behind this plan.
 | Million-file publication | Live; owner-account listing accepted after release 73 | Exact release `50b666f5...` serves 218,127 packages and 1,352,837 distinct files, with complete population and matching content digest. It adds 981,843 distinct files and preserves all prior versions. Final staging cleanup was reconciled after its client timeout; no publication was replayed. The release-73 owner-account catalogue diagnostic passes 11 checks. Earlier failed diagnostic attempts remain recorded. |
 | Storage headroom | Done | Existing Fly volume extended from 25 to 50 GB, with 39 GB free at readback and no restart. Added provisioned storage: $3.75/month; traffic and snapshots are separate. |
 | Empty Public Good goals | All 17 populated and new delivery verified | Policy `118639cb...` has 424 packages / 1,056 distinct useful files. Five additions preserve all 419 prior grants and limits. The 25 fresh sandbox methods, current licence checks, 64 no-plan delivery checks and 27 desktop/mobile browser checks passed. The no-plan account downloaded 25 exact files with no paid-usage increase. |
-| Cloudflare | Static Assets canary deployed; R2 mirror resumed | Release 74 carries the edge and D1 engines. The canary serves 2,501 public export files; four alias robots headers exposed a defect now repaired in the next candidate. The R2 recovery reserves unknown crash requests against the original ceiling and verifies stored bytes before conditional writes. Production body selection and D1 selection remain pending. |
+| Cloudflare | Documentation hostname at the edge; R2 mirror supervised | Release 75 fixes the alias headers. All 2,501 public export files pass exact readback, and docs.baltor.ai passes the real-account catalogue check. The narrow agent compatibility rule resolves standard Python client refusals. R2 recovery preserves the original ceiling and verifies bytes before conditional writes. Production body and D1 selection remain pending. |
 | Feeds and Components | Catalogue-state preview live in release 72 | JSON Feed, RSS and Markdown describe the same current served state. Customer-defined feeds, agent assignments, a paid Feeds plan and push delivery are not implemented by this preview. |
 | Repository reconciliation | Inventory and recovery copies complete; integration active | 190 registered worktrees, 180 existing, 72 dirty and two stashes were inspected. The shared checkout has 129 staged paths, of which 83 exactly match public main. Private history and unresolved merge stages are preserved outside public source. |
 | Workstation storage | Selected transfer complete | All 29 selected files, 75,444,467,760 bytes, have independent SHA-256 readback records. All original-path links and destination sizes were checked again after the crash. The OS filesystem has about 91 GiB free at recovery. |
-| Release follow-up | Release 74 verified live | Exact source `69ac103c`, CI `37692918322`, deployment `37693844836`; the recovery pass completed 2,118 browser assertions on ten hosts. Fifty pulse reads pass and the gate is closed. The interrupted four-host attempt remains preserved. |
+| Release follow-up | Release 75 verified live | Exact source `bc18a19f`, CI `37701122893`, deployment `37702056291`; 2,118 browser assertions passed before the documentation edge cutover. The post-cutover pulse passes fifty reads and the gate is closed. Intermediate failures remain in the release record. |
 
 ### Priority and phase-based Gantt view
 
@@ -45,13 +57,74 @@ delay a ready publication or exhaust memory, storage or provider allowances.
 | --- | --- | --- | --- | --- |
 | Ten-million-file supply | 1,352,837 distinct files live; listing repaired | NEXT: publish the next independently qualified family batch | Expand qualified code, data, native assets and source-backed feeds | GATE: 10,000,000 distinct served digests with preserved access and useful family coverage |
 | Public Good coverage | All 17 goals and no-plan delivery verified | DONE: additive 424-package policy | Preserve access through next release | Broaden useful coverage |
-| Cloudflare storage and delivery | Edge integration deployed in release 74 | ACTIVE: complete R2 mirroring, alias repair and live origin checks | Route qualified public pages and select verified bodies | GATE: live integrity, authorization, failure recovery and measured cost |
+| Cloudflare storage and delivery | Documentation pages and dynamic forwarding live | ACTIVE: complete R2 mirroring and qualify the remaining hostnames | Select verified bodies and measure the D1 alternative | GATE: live integrity, authorization, failure recovery and measured cost |
 | Internal repository and paper intelligence | Existing radar and query executor contracts | ACTIVE: pin sources, observations, ranking rules and worker deployment | Cloudflare acquisition, private raw storage and checked production | GATE: repeatable current-source results and recovery from duplicate delivery |
 | Feeds | Catalogue-state pull preview live | Implement saved definitions and per-agent assignments | Shared dated snapshots, filters, cursors and account controls | GATE: two customers and two agents remain isolated through edit and revocation |
 | Two offerings | One account and existing full access | Define Feeds membership separately from Components | Test the cheaper information plan and full library access | GATE: paid journeys and all alternate retrieval paths before pricing activation |
 | Customer identity | Existing Supabase sign-up and Baltor OAuth work | Compare a Cloudflare-hosted identity engine and migration burden | Qualify email ownership, recovery, sessions and existing accounts | GATE: migrate only after equivalent security and account-recovery checks |
 | OpenAI distribution | Candidate package preserved | Policy/UX findings remain | Test deployed presentation | Identity/legal/review gates |
 | Remaining handoffs | Bundles and patches preserved | Small tested fixes as capacity permits | Native examples and all-goal originals | Repeat the release cycle |
+
+### Engine and transport programme
+
+The October 7 owner direction reaffirms interchangeable engines for every
+functional component, including search providers, model and decision routes,
+backend production and Cloudflare services. The existing engine catalogue has
+55 slots: 39 candidate and 16 planned. These are design and qualification
+states, not 55 fully qualified production swaps. The current fixed-edge rule
+remains in the [functional component standard](../architecture/FUNCTIONAL-COMPONENT-STANDARD.md).
+
+| Existing component boundary | Engine choices and current work | Acceptance before selection |
+| --- | --- | --- |
+| `research_query_executor` and `web_research_port` | Existing specialist source adapters, Ollama search and the separate Brave capability; qualify SearXNG, exact RapidAPI products and other supplied APIs | Same source-result contract, request limits, rights and failure accounting; provider-specific fields remain explicit |
+| `model_access` and `typed_decision` | Existing provider routes, standard-harness responses, Jev, Circuit, System One and text-model decisions; evaluate Cloudflare Workers AI or Clef through adapters | Exact model and endpoint, supported output capacity, recorded usage, independent task results and qualified failure behavior |
+| `catalogue_search_index` | Current custom SQLite index, in-memory alternative and the D1 adapter; compare other engines only through the same search edge | The same access decisions and meaningful retrieval expectations at the full population, with measured latency and cost |
+| `catalogue_body_store` and `record_store` | Volume and R2 body engines; existing embedded record engines and proposed qualified D1 record projections | Exact bytes, immediate authorization/revocation where required, concurrency, recovery and rollback |
+| `web_page_delivery`, `edge_proxy` and `browser_identity_provider` | Fly pages or Cloudflare Static Assets; platform or content-network proxy; existing Supabase identity and a separately qualified Cloudflare-hosted alternative | Real customer journeys, correct client addresses, session/recovery behavior and no cached private responses |
+| Existing acquisition, generation and admission owners | Deterministic extraction, model-generated candidates, native renderers and independent review; Cloudflare queues or workflows may host the dispatch | Reuse existing implementations, preserve provenance, bound effects and require the producer/reviewer independence rule |
+
+A provider adapter is an engine. An account, API key or model deployment is
+an installation or route of that engine. Twenty keys do not by themselves
+create twenty independent capabilities or twenty independent quotas. Each
+installation needs its endpoint contract, credential reference, source rights,
+shared quota identity, cost limits and qualification record. Callers keep the
+same typed request/result edge when a qualified implementation changes.
+
+Initial choices and fallback priorities are separate. Pin a tested engine or
+use declared preferences until matched evidence supports automatic selection.
+Compare useful result quality, freshness, latency, reliability and cost;
+refusals, empty answers and unmeasured usage remain visible. A failed request
+does not reset its allowance or authorize a new recipient of private input.
+
+The first HTTP profile implementation binds a named User-Agent/language
+configuration to the governed fetch effect and result. Broader experiments
+should vary browser engine/version, header identity, client hints, viewport,
+device class, locale, timezone, rendering mode, session state and execution
+location independently where supported. Record actual applied settings.
+User-agent spoofing is a header override, not proof of a particular browser
+or authenticated identity. Preserve source access policy and shared quotas
+through every comparison.
+
+Cloudflare calls its browser service Browser Run. Quick Actions and CDP
+sessions support custom user agents; its crawl endpoint does not. Treat that
+as an explicit capability difference at the web-research edge. Ordinary
+Workers, browser sessions and native rendering environments have different
+capabilities and limits. [Browser Run header contract](https://developers.cloudflare.com/browser-run/reference/automatic-request-headers/),
+[limits](https://developers.cloudflare.com/browser-run/limits/)
+
+- [ ] Inventory and qualify the additional search and model installations
+  through the existing registries; store keys only through credential references.
+- [ ] Complete shared conformance kits for the planned research slots before
+  marking them active. Test each engine, compatible compositions and actual
+  feed/component production journeys.
+- [ ] Bind selected HTTP profiles to the periodic collector's execution and
+  reuse identities, without resetting shared source quotas or silently
+  reusing a response produced under another profile.
+- [ ] Qualify Cloudflare Browser Run, Workers AI and durable job dispatch
+  adapters within recorded budgets; keep native rendering as an eligible engine.
+- [ ] Add matched engine comparisons for source research, feed digestion,
+  file generation and package review, with independent acceptance and the
+  no-extra-material baseline.
 
 ### Working procedure for every iteration
 
@@ -174,8 +247,8 @@ gantt
     dateFormat YYYY-MM-DD
     axisFormat %b %d
     section Engineering
-    Release 73 and live checks       :done, r73, 2026-10-07, 1d
-    Cloudflare edge and R2 canaries  :active, edge, 2026-10-08, 5d
+    Releases 73 to 75 and live checks :done, r75, 2026-10-07, 1d
+    Cloudflare edge and R2 rollout   :active, edge, 2026-10-07, 5d
     Supported onboarding and demos  :onboard, 2026-10-08, 7d
     Saved feeds and agent isolation :feeds, 2026-10-13, 10d
     Creative import and media jobs  :creative, 2026-10-15, 14d
