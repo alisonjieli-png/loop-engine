@@ -1,0 +1,173 @@
+{
+ "description": "A daily maintenance log for two machines over 2026-10-01 to 2026-10-05. Expected: a missing technician and a missing reading, a repeated log id L6, an out-of-order entry for M1, a sequence gap (3 missing) for M1 and a sequence repeat for M2, an unreadable date, one missing day for M1 and two for M2; coverage 0.7.",
+ "input": {
+  "records": [
+   {
+    "log_id": "L1",
+    "machine": "M1",
+    "seq": 1,
+    "date": "2026-10-01",
+    "technician": "T. Ruiz",
+    "reading": 41.2
+   },
+   {
+    "log_id": "L2",
+    "machine": "M1",
+    "seq": 2,
+    "date": "2026-10-02",
+    "technician": "T. Ruiz",
+    "reading": 41.9
+   },
+   {
+    "log_id": "L3",
+    "machine": "M2",
+    "seq": 1,
+    "date": "2026-10-01",
+    "technician": "",
+    "reading": 38.0
+   },
+   {
+    "log_id": "L4",
+    "machine": "M1",
+    "seq": 4,
+    "date": "2026-10-05",
+    "technician": "J. Park",
+    "reading": 42.4
+   },
+   {
+    "log_id": "L5",
+    "machine": "M1",
+    "seq": 5,
+    "date": "2026-10-04",
+    "technician": "J. Park",
+    "reading": 42.0
+   },
+   {
+    "log_id": "L6",
+    "machine": "M2",
+    "seq": 2,
+    "date": "2026-10-02",
+    "technician": "A. Lee"
+   },
+   {
+    "log_id": "L6",
+    "machine": "M2",
+    "seq": 2,
+    "date": "2026-10-03",
+    "technician": "A. Lee",
+    "reading": 38.4
+   },
+   {
+    "log_id": "L8",
+    "machine": "M2",
+    "seq": 3,
+    "date": "10/04/2026",
+    "technician": "A. Lee",
+    "reading": 38.1
+   }
+  ],
+  "timestamp_field": "date",
+  "required_fields": [
+   "technician",
+   "reading"
+  ],
+  "id_field": "log_id",
+  "sequence_field": "seq",
+  "group_field": "machine",
+  "expected_interval": "day",
+  "period": {
+   "start": "2026-10-01",
+   "end": "2026-10-05"
+  }
+ },
+ "expected_output": {
+  "summary": {
+   "records": 8,
+   "groups": 2,
+   "missing_field": 2,
+   "unreadable_timestamp": 1,
+   "out_of_order": 1,
+   "duplicate_id": 1,
+   "sequence_gap": 1,
+   "sequence_repeat": 1,
+   "time_gap": 2,
+   "coverage_share": 0.7
+  },
+  "issues": [
+   {
+    "record": 2,
+    "group": "M2",
+    "kind": "missing_field",
+    "detail": "technician"
+   },
+   {
+    "record": 5,
+    "group": "M2",
+    "kind": "missing_field",
+    "detail": "reading"
+   },
+   {
+    "record": 6,
+    "group": "M2",
+    "kind": "duplicate_id",
+    "detail": "L6 also at record 5"
+   },
+   {
+    "record": 4,
+    "group": "M1",
+    "kind": "out_of_order",
+    "detail": "2026-10-04T00:00:00 before 2026-10-05T00:00:00"
+   },
+   {
+    "record": 3,
+    "group": "M1",
+    "kind": "sequence_gap",
+    "detail": "3 missing"
+   },
+   {
+    "record": null,
+    "group": "M1",
+    "kind": "time_gap",
+    "detail": "2026-10-03"
+   },
+   {
+    "record": 7,
+    "group": "M2",
+    "kind": "unreadable_timestamp",
+    "detail": "10/04/2026"
+   },
+   {
+    "record": 6,
+    "group": "M2",
+    "kind": "sequence_repeat",
+    "detail": "2"
+   },
+   {
+    "record": null,
+    "group": "M2",
+    "kind": "time_gap",
+    "detail": "2026-10-04 to 2026-10-05"
+   }
+  ],
+  "coverage": [
+   {
+    "group": "M1",
+    "records": 4,
+    "expected_slots": 5,
+    "present_slots": 4,
+    "share": 0.8,
+    "first": "2026-10-01T00:00:00",
+    "last": "2026-10-05T00:00:00"
+   },
+   {
+    "group": "M2",
+    "records": 4,
+    "expected_slots": 5,
+    "present_slots": 3,
+    "share": 0.6,
+    "first": "2026-10-01T00:00:00",
+    "last": "2026-10-03T00:00:00"
+   }
+  ]
+ }
+}

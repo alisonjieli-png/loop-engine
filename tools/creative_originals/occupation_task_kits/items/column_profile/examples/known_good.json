@@ -1,0 +1,249 @@
+{
+ "description": "Seven order rows with one exact duplicate row. Expected: order_id integer with 1002 twice; amount a number column with one missing value and 1000 as the only outlier outside the fences 33.71875 and 162.46875; express boolean after treating NA as missing; ordered_on dates from 2026-09-01 to 2026-09-05; one duplicate row.",
+ "input": {
+  "csv_text": "order_id,region,amount,ordered_on,express\n1001,North,120.50,2026-09-01,yes\n1002,South,80,2026-09-02,no\n1003,North,95.25,2026-09-02,no\n1004,East,,2026-09-03,NA\n1005,North,1000,2026-09-04,yes\n1006,South,88,2026-09-05,no\n1002,South,80,2026-09-02,no\n"
+ },
+ "expected_output": {
+  "table": {
+   "rows": 7,
+   "columns": 5,
+   "duplicate_rows": 1,
+   "constant_columns": [],
+   "mostly_missing_columns": []
+  },
+  "columns": [
+   {
+    "name": "order_id",
+    "inferred_type": "integer",
+    "present": 7,
+    "missing": 0,
+    "missing_share": 0.0,
+    "distinct": 6,
+    "top_values": [
+     {
+      "value": "1002",
+      "count": 2
+     },
+     {
+      "value": "1001",
+      "count": 1
+     },
+     {
+      "value": "1003",
+      "count": 1
+     },
+     {
+      "value": "1004",
+      "count": 1
+     },
+     {
+      "value": "1005",
+      "count": 1
+     }
+    ],
+    "shapes": [
+     {
+      "shape": "9999",
+      "count": 7
+     }
+    ],
+    "length": {
+     "min": 4,
+     "max": 4
+    },
+    "numeric": {
+     "min": 1001,
+     "q1": 1002,
+     "median": 1003,
+     "q3": 1004.5,
+     "max": 1006,
+     "mean": 1003.285714,
+     "std": 1.665986,
+     "outliers": 0,
+     "fences": [
+      998.25,
+      1008.25
+     ]
+    }
+   },
+   {
+    "name": "region",
+    "inferred_type": "string",
+    "present": 7,
+    "missing": 0,
+    "missing_share": 0.0,
+    "distinct": 3,
+    "top_values": [
+     {
+      "value": "North",
+      "count": 3
+     },
+     {
+      "value": "South",
+      "count": 3
+     },
+     {
+      "value": "East",
+      "count": 1
+     }
+    ],
+    "shapes": [
+     {
+      "shape": "Aaaaa",
+      "count": 6
+     },
+     {
+      "shape": "Aaaa",
+      "count": 1
+     }
+    ],
+    "length": {
+     "min": 4,
+     "max": 5
+    }
+   },
+   {
+    "name": "amount",
+    "inferred_type": "number",
+    "present": 6,
+    "missing": 1,
+    "missing_share": 0.1429,
+    "distinct": 5,
+    "top_values": [
+     {
+      "value": "80",
+      "count": 2
+     },
+     {
+      "value": "1000",
+      "count": 1
+     },
+     {
+      "value": "120.50",
+      "count": 1
+     },
+     {
+      "value": "88",
+      "count": 1
+     },
+     {
+      "value": "95.25",
+      "count": 1
+     }
+    ],
+    "shapes": [
+     {
+      "shape": "99",
+      "count": 3
+     },
+     {
+      "shape": "99.99",
+      "count": 1
+     },
+     {
+      "shape": "999.99",
+      "count": 1
+     },
+     {
+      "shape": "9999",
+      "count": 1
+     }
+    ],
+    "length": {
+     "min": 2,
+     "max": 6
+    },
+    "numeric": {
+     "min": 80,
+     "q1": 82,
+     "median": 91.625,
+     "q3": 114.1875,
+     "max": 1000,
+     "mean": 243.958333,
+     "std": 338.389027,
+     "outliers": 1,
+     "fences": [
+      33.71875,
+      162.46875
+     ]
+    }
+   },
+   {
+    "name": "ordered_on",
+    "inferred_type": "date",
+    "present": 7,
+    "missing": 0,
+    "missing_share": 0.0,
+    "distinct": 5,
+    "top_values": [
+     {
+      "value": "2026-09-02",
+      "count": 3
+     },
+     {
+      "value": "2026-09-01",
+      "count": 1
+     },
+     {
+      "value": "2026-09-03",
+      "count": 1
+     },
+     {
+      "value": "2026-09-04",
+      "count": 1
+     },
+     {
+      "value": "2026-09-05",
+      "count": 1
+     }
+    ],
+    "shapes": [
+     {
+      "shape": "9999-99-99",
+      "count": 7
+     }
+    ],
+    "length": {
+     "min": 10,
+     "max": 10
+    },
+    "date_range": {
+     "min": "2026-09-01",
+     "max": "2026-09-05"
+    }
+   },
+   {
+    "name": "express",
+    "inferred_type": "boolean",
+    "present": 6,
+    "missing": 1,
+    "missing_share": 0.1429,
+    "distinct": 2,
+    "top_values": [
+     {
+      "value": "no",
+      "count": 4
+     },
+     {
+      "value": "yes",
+      "count": 2
+     }
+    ],
+    "shapes": [
+     {
+      "shape": "aa",
+      "count": 4
+     },
+     {
+      "shape": "aaa",
+      "count": 2
+     }
+    ],
+    "length": {
+     "min": 2,
+     "max": 3
+    }
+   }
+  ]
+ }
+}

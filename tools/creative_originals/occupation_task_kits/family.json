@@ -1,0 +1,14 @@
+{
+  "record_type": "creative_original_family/v1",
+  "family": "occupation_task_kits",
+  "title": "Occupation task kits for shared O*NET work activities",
+  "description": "Each item is a kit for one information-work activity that O*NET 31.0 links to many occupations through its detailed work activities (DWAs). A kit holds a standard-library Python helper with typed JSON input and output (JSON Schema in the contract) that does the mechanical part of the activity and refuses bad input with a reason code, a procedure an agent follows (questions to ask first, steps, decision points, quality checks, scenario variants), a tools note that separates the software O*NET lists for the occupations from inferred tool choices, a known-good and a known-wrong example, and an O*NET attribution file naming the DWA, task and occupation identifiers used. The shared kit_schema.py validates a JSON Schema subset; the shared test_package.py runs both examples, checks the files against component.json and fails when the kit's public functions are replaced by ones that raise. There is no native engine check: the Python runs in the qualification sandbox. Activity selection, cue rules and tool notes are inference from O*NET data, stated as such in each kit.",
+  "engine": {"name": "python", "minimum_version": "3.10", "notes": "Standard library only; pure functions of JSON input; no network, file or process effects"},
+  "shared_files": [
+    {"path": "kit_schema.py", "role": "executable_tool"},
+    {"path": "test_package.py", "role": "executable_tool"}
+  ],
+  "native_verifier": null,
+  "generator_version": "1.0.0",
+  "default_dimension": "none"
+}

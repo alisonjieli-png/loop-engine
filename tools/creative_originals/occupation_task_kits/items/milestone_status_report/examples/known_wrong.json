@@ -1,0 +1,17 @@
+{
+ "description": "Milestone M1 reports an actual completion date after the report date, which cannot be true.",
+ "input": {
+  "as_of": "2026-10-09",
+  "milestones": [
+   {
+    "id": "M1",
+    "name": "Kickoff",
+    "baseline_date": "2026-10-01",
+    "actual_date": "2026-10-20"
+   }
+  ]
+ },
+ "expected_refusal": {
+  "reason": "actual_in_future"
+ }
+}

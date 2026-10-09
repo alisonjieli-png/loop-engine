@@ -1,0 +1,348 @@
+{
+ "record_type": "creative_original_item/v1",
+ "identity": "duplicate_record_finder",
+ "title": "Duplicate record finder with blocking and weighted similarity",
+ "purpose": "Find likely duplicate records by comparing only pairs that share a blocking key, scoring weighted field similarities (exact, normalized, token overlap, edit distance, digits, date) and grouping duplicates into clusters.",
+ "form": "library_module",
+ "asset_role": null,
+ "dimension": "none",
+ "engine": {
+  "name": "python",
+  "minimum_version": "3.10"
+ },
+ "tags": [
+  "deduplication",
+  "entity resolution",
+  "record matching",
+  "data quality",
+  "master data",
+  "soundex"
+ ],
+ "files": [
+  {
+   "path": "README.md",
+   "role": "other"
+  },
+  {
+   "path": "duplicate_record_finder.py",
+   "role": "executable_tool"
+  },
+  {
+   "path": "PROCEDURE.md",
+   "role": "skill_reference"
+  },
+  {
+   "path": "TOOLS.md",
+   "role": "other"
+  },
+  {
+   "path": "ONET-ATTRIBUTION.md",
+   "role": "other"
+  },
+  {
+   "path": "examples/known_good.json",
+   "role": "other"
+  },
+  {
+   "path": "examples/known_wrong.json",
+   "role": "other"
+  }
+ ],
+ "contract": {
+  "entry_points": {
+   "module": "duplicate_record_finder",
+   "function": "run",
+   "command": "python3 duplicate_record_finder.py < input.json",
+   "command_exit_codes": {
+    "0": "result",
+    "2": "refusal"
+   }
+  },
+  "input_schema": {
+   "type": "object",
+   "required": [
+    "records",
+    "fields",
+    "blocking"
+   ],
+   "additionalProperties": false,
+   "properties": {
+    "records": {
+     "type": "array",
+     "minItems": 2,
+     "maxItems": 100000,
+     "items": {
+      "type": "object"
+     },
+     "description": "records as objects; each has the id field"
+    },
+    "id_field": {
+     "type": "string",
+     "description": "field holding the record id (default id)"
+    },
+    "fields": {
+     "type": "array",
+     "minItems": 1,
+     "maxItems": 30,
+     "description": "compared fields with a weight and a method (exact, normalized, token_jaccard, edit_ratio, digits, date)",
+     "items": {
+      "type": "object",
+      "required": [
+       "name",
+       "method"
+      ],
+      "additionalProperties": false,
+      "properties": {
+       "name": {
+        "type": "string"
+       },
+       "method": {
+        "enum": [
+         "exact",
+         "normalized",
+         "token_jaccard",
+         "edit_ratio",
+         "digits",
+         "date"
+        ]
+       },
+       "weight": {
+        "type": "number",
+        "minimum": 0,
+        "maximum": 100
+       }
+      }
+     }
+    },
+    "blocking": {
+     "type": "array",
+     "minItems": 1,
+     "maxItems": 10,
+     "description": "keys that candidate pairs must share: a field and a transform (normalized, prefix3, soundex, digits, last4_digits)",
+     "items": {
+      "type": "object",
+      "required": [
+       "field",
+       "transform"
+      ],
+      "additionalProperties": false,
+      "properties": {
+       "field": {
+        "type": "string"
+       },
+       "transform": {
+        "enum": [
+         "normalized",
+         "prefix3",
+         "soundex",
+         "digits",
+         "last4_digits"
+        ]
+       }
+      }
+     }
+    },
+    "duplicate_threshold": {
+     "type": "number",
+     "minimum": 0,
+     "maximum": 1,
+     "description": "score at or above which a pair is a duplicate (default 0.85)"
+    },
+    "review_threshold": {
+     "type": "number",
+     "minimum": 0,
+     "maximum": 1,
+     "description": "score at or above which a pair is a possible duplicate (default 0.7)"
+    },
+    "max_pairs": {
+     "type": "integer",
+     "minimum": 1,
+     "maximum": 2000000,
+     "description": "refuse when blocking yields more candidate pairs (default 200000)"
+    }
+   }
+  },
+  "output_schema": {
+   "type": "object",
+   "required": [
+    "summary",
+    "pairs",
+    "clusters"
+   ],
+   "properties": {
+    "summary": {
+     "type": "object",
+     "description": "records, candidate pairs, duplicates, possible, clusters"
+    },
+    "pairs": {
+     "type": "array",
+     "description": "pairs at or above the review threshold, best first",
+     "items": {
+      "type": "object",
+      "required": [
+       "a",
+       "b",
+       "score",
+       "decision",
+       "field_scores"
+      ],
+      "properties": {
+       "decision": {
+        "enum": [
+         "duplicate",
+         "possible"
+        ]
+       }
+      }
+     }
+    },
+    "clusters": {
+     "type": "array",
+     "description": "groups of duplicates with the first id as representative",
+     "items": {
+      "type": "object",
+      "required": [
+       "representative",
+       "members"
+      ]
+     }
+    }
+   }
+  },
+  "refusal_reasons": [
+   "input_invalid",
+   "input_not_json",
+   "duplicate_id",
+   "field_absent",
+   "weights_invalid",
+   "thresholds_out_of_order",
+   "too_many_pairs"
+  ],
+  "examples": {
+   "known_good": "examples/known_good.json",
+   "known_wrong": "examples/known_wrong.json"
+  },
+  "effects": "none: a pure function of its JSON input; the command reads standard input and writes standard output",
+  "procedure": "PROCEDURE.md",
+  "tools": "TOOLS.md",
+  "attribution": "ONET-ATTRIBUTION.md",
+  "onet": {
+   "database": "O*NET 31.0",
+   "license": "CC BY 4.0",
+   "dwa_ids": [
+    "4.A.2.a.2.a.1",
+    "4.A.3.b.6.h.9",
+    "4.A.3.b.6.h.15"
+   ],
+   "task_ids": [
+    "1212",
+    "1265",
+    "1726",
+    "3967",
+    "3990",
+    "4004",
+    "4621",
+    "4622",
+    "4627",
+    "5302",
+    "5455",
+    "7366",
+    "8662",
+    "9354",
+    "10993",
+    "11019",
+    "11241",
+    "15228",
+    "15544",
+    "18863",
+    "20114",
+    "20619",
+    "20756",
+    "21089",
+    "21266",
+    "21428",
+    "21438",
+    "21461",
+    "21502",
+    "21512",
+    "21518",
+    "21558",
+    "21567",
+    "21647",
+    "21799",
+    "22621",
+    "23181",
+    "23233",
+    "24028"
+   ],
+   "occupation_codes": [
+    "11-3012.00",
+    "11-9179.01",
+    "11-9199.02",
+    "13-1031.00",
+    "13-1041.00",
+    "13-1071.00",
+    "13-1121.00",
+    "13-1199.07",
+    "13-2011.00",
+    "13-2023.00",
+    "13-2053.00",
+    "13-2072.00",
+    "13-2081.00",
+    "13-2082.00",
+    "15-1299.06",
+    "19-3034.00",
+    "27-1013.00",
+    "27-1023.00",
+    "27-1024.00",
+    "27-1026.00",
+    "27-2012.04",
+    "27-2022.00",
+    "27-2091.00",
+    "27-3042.00",
+    "27-3092.00",
+    "27-4011.00",
+    "27-4021.00",
+    "39-4012.00",
+    "41-3091.00",
+    "41-4011.00",
+    "41-9041.00"
+   ]
+  },
+  "activities": [
+   {
+    "dwa_id": "4.A.2.a.2.a.1",
+    "title": "Verify accuracy of records.",
+    "occupations": 13,
+    "rank": 115
+   },
+   {
+    "dwa_id": "4.A.3.b.6.h.9",
+    "title": "Maintain records, documents, or other files.",
+    "occupations": 17,
+    "rank": 71
+   },
+   {
+    "dwa_id": "4.A.3.b.6.h.15",
+    "title": "Maintain records of customer accounts.",
+    "occupations": 3,
+    "rank": 749
+   }
+  ],
+  "occupations_served": 31
+ },
+ "limits": "Pairs that share no blocking key are never compared, so weak blocking misses duplicates. Edit distance uses the first 200 characters. Similarity weights and thresholds are judgment; tune them on a labelled sample. Clusters chain pairs, so A like B and B like C puts A and C together even when A and C differ. The helper never merges records; it only proposes.",
+ "related": [
+  "record_entry_validator",
+  "multi_source_table_merge",
+  "column_profile"
+ ],
+ "technique_references": [
+  "Blocking for candidate pairs",
+  "Levenshtein edit distance ratio",
+  "Jaccard token similarity",
+  "American Soundex",
+  "Union-find clustering"
+ ],
+ "native_checks": []
+}

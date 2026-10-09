@@ -1,0 +1,157 @@
+{
+ "description": "Seven records under four retention rules on 2026-10-09 with a 90 day window. Expected: R1 due (destroy), R2, R3 and R7 due soon, R4 trigger missing (contract not closed), R5 on legal hold, R6 retained until 2029-02-28 (29 February start); R2's file name breaks the naming pattern.",
+ "input": {
+  "as_of": "2026-10-09",
+  "schedule": [
+   {
+    "record_class": "invoices",
+    "years": 7,
+    "trigger": "created",
+    "action": "destroy",
+    "citation": "Finance policy 4.2"
+   },
+   {
+    "record_class": "contracts",
+    "years": 6,
+    "trigger": "closed",
+    "action": "archive"
+   },
+   {
+    "record_class": "personnel",
+    "years": 3,
+    "months": 6,
+    "trigger": "event",
+    "action": "destroy"
+   },
+   {
+    "record_class": "incident_reports",
+    "years": 5,
+    "trigger": "created",
+    "action": "review"
+   }
+  ],
+  "records": [
+   {
+    "id": "R1",
+    "record_class": "invoices",
+    "created": "2019-03-15",
+    "file_name": "INV-2019-001_acme.pdf"
+   },
+   {
+    "id": "R2",
+    "record_class": "invoices",
+    "created": "2019-12-20",
+    "file_name": "inv 2019 77.pdf"
+   },
+   {
+    "id": "R3",
+    "record_class": "contracts",
+    "created": "2018-05-01",
+    "closed": "2020-11-30",
+    "file_name": "CON-2018-014_northwind.pdf"
+   },
+   {
+    "id": "R4",
+    "record_class": "contracts",
+    "created": "2024-02-01"
+   },
+   {
+    "id": "R5",
+    "record_class": "personnel",
+    "created": "2015-06-01",
+    "event_date": "2022-02-28",
+    "legal_hold": true
+   },
+   {
+    "id": "R6",
+    "record_class": "incident_reports",
+    "created": "2024-02-29"
+   },
+   {
+    "id": "R7",
+    "record_class": "personnel",
+    "created": "2020-01-10",
+    "event_date": "2023-04-30"
+   }
+  ],
+  "naming_pattern": "^[A-Z]{3}-\\d{4}-\\d{3}_[a-z0-9-]+\\.pdf$"
+ },
+ "expected_output": {
+  "as_of": "2026-10-09",
+  "records": [
+   {
+    "id": "R1",
+    "record_class": "invoices",
+    "status": "due",
+    "action": "destroy",
+    "trigger_date": "2019-03-15",
+    "disposition_date": "2026-03-15",
+    "naming_ok": true
+   },
+   {
+    "id": "R2",
+    "record_class": "invoices",
+    "status": "due_soon",
+    "action": "destroy",
+    "trigger_date": "2019-12-20",
+    "disposition_date": "2026-12-20",
+    "naming_ok": false
+   },
+   {
+    "id": "R3",
+    "record_class": "contracts",
+    "status": "due_soon",
+    "action": "archive",
+    "trigger_date": "2020-11-30",
+    "disposition_date": "2026-11-30",
+    "naming_ok": true
+   },
+   {
+    "id": "R4",
+    "record_class": "contracts",
+    "status": "trigger_missing",
+    "action": "archive",
+    "trigger_date": null,
+    "disposition_date": null
+   },
+   {
+    "id": "R5",
+    "record_class": "personnel",
+    "status": "on_hold",
+    "action": "destroy",
+    "trigger_date": "2022-02-28",
+    "disposition_date": "2025-08-28"
+   },
+   {
+    "id": "R6",
+    "record_class": "incident_reports",
+    "status": "retain",
+    "action": "review",
+    "trigger_date": "2024-02-29",
+    "disposition_date": "2029-02-28"
+   },
+   {
+    "id": "R7",
+    "record_class": "personnel",
+    "status": "due_soon",
+    "action": "destroy",
+    "trigger_date": "2023-04-30",
+    "disposition_date": "2026-10-30"
+   }
+  ],
+  "summary": {
+   "records": 7,
+   "on_hold": 1,
+   "trigger_missing": 1,
+   "due": 1,
+   "due_soon": 3,
+   "retain": 1,
+   "due_by_action": {
+    "destroy": 1
+   }
+  },
+  "naming_violations": [
+   "R2"
+  ]
+ }
+}

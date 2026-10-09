@@ -1,0 +1,445 @@
+{
+ "record_type": "creative_original_item/v1",
+ "identity": "appointment_slot_allocator",
+ "title": "Appointment slot allocator for providers and rooms",
+ "purpose": "Place appointment requests into providers' free time by priority, service, date window, duration, buffer and preferred provider, and report what could not be placed and why.",
+ "form": "library_module",
+ "asset_role": null,
+ "dimension": "none",
+ "engine": {
+  "name": "python",
+  "minimum_version": "3.10"
+ },
+ "tags": [
+  "scheduling",
+  "appointments",
+  "booking",
+  "calendar",
+  "capacity",
+  "front desk"
+ ],
+ "files": [
+  {
+   "path": "README.md",
+   "role": "other"
+  },
+  {
+   "path": "appointment_slot_allocator.py",
+   "role": "executable_tool"
+  },
+  {
+   "path": "PROCEDURE.md",
+   "role": "skill_reference"
+  },
+  {
+   "path": "TOOLS.md",
+   "role": "other"
+  },
+  {
+   "path": "ONET-ATTRIBUTION.md",
+   "role": "other"
+  },
+  {
+   "path": "examples/known_good.json",
+   "role": "other"
+  },
+  {
+   "path": "examples/known_wrong.json",
+   "role": "other"
+  }
+ ],
+ "contract": {
+  "entry_points": {
+   "module": "appointment_slot_allocator",
+   "function": "run",
+   "command": "python3 appointment_slot_allocator.py < input.json",
+   "command_exit_codes": {
+    "0": "result",
+    "2": "refusal"
+   }
+  },
+  "input_schema": {
+   "type": "object",
+   "required": [
+    "providers",
+    "requests"
+   ],
+   "additionalProperties": false,
+   "properties": {
+    "providers": {
+     "type": "array",
+     "minItems": 1,
+     "maxItems": 500,
+     "description": "people or rooms with availability blocks (date, start, end) and the services they offer",
+     "items": {
+      "type": "object",
+      "required": [
+       "id",
+       "availability"
+      ],
+      "additionalProperties": false,
+      "properties": {
+       "id": {
+        "type": "string",
+        "minLength": 1
+       },
+       "name": {
+        "type": "string"
+       },
+       "services": {
+        "type": "array",
+        "items": {
+         "type": "string"
+        }
+       },
+       "availability": {
+        "type": "array",
+        "items": {
+         "type": "object",
+         "required": [
+          "date",
+          "start",
+          "end"
+         ],
+         "additionalProperties": false,
+         "properties": {
+          "date": {
+           "type": "string"
+          },
+          "start": {
+           "type": "string"
+          },
+          "end": {
+           "type": "string"
+          }
+         }
+        },
+        "maxItems": 2000
+       }
+      }
+     }
+    },
+    "requests": {
+     "type": "array",
+     "minItems": 1,
+     "maxItems": 5000,
+     "description": "appointments to place: duration, optional service, priority, date window, preferred provider",
+     "items": {
+      "type": "object",
+      "required": [
+       "id",
+       "duration_minutes"
+      ],
+      "additionalProperties": false,
+      "properties": {
+       "id": {
+        "type": "string",
+        "minLength": 1
+       },
+       "service": {
+        "type": "string"
+       },
+       "duration_minutes": {
+        "type": "integer",
+        "minimum": 5,
+        "maximum": 720
+       },
+       "priority": {
+        "type": "integer",
+        "minimum": 1,
+        "maximum": 9
+       },
+       "earliest_date": {
+        "type": "string"
+       },
+       "latest_date": {
+        "type": "string"
+       },
+       "preferred_provider": {
+        "type": "string"
+       }
+      }
+     }
+    },
+    "existing_bookings": {
+     "type": "array",
+     "items": {
+      "type": "object",
+      "required": [
+       "provider",
+       "date",
+       "start",
+       "end"
+      ],
+      "additionalProperties": false,
+      "properties": {
+       "provider": {
+        "type": "string"
+       },
+       "date": {
+        "type": "string"
+       },
+       "start": {
+        "type": "string"
+       },
+       "end": {
+        "type": "string"
+       }
+      }
+     },
+     "description": "bookings already made; they block time like new ones"
+    },
+    "slot_step_minutes": {
+     "type": "integer",
+     "minimum": 5,
+     "maximum": 120,
+     "description": "grid for candidate start times (default 15)"
+    },
+    "buffer_minutes": {
+     "type": "integer",
+     "minimum": 0,
+     "maximum": 240,
+     "description": "gap kept free before and after each booking (default 0)"
+    }
+   }
+  },
+  "output_schema": {
+   "type": "object",
+   "required": [
+    "bookings",
+    "unplaced",
+    "utilization"
+   ],
+   "properties": {
+    "bookings": {
+     "type": "array",
+     "description": "one row per placed request, in placement order",
+     "items": {
+      "type": "object",
+      "required": [
+       "request",
+       "provider",
+       "date",
+       "start",
+       "end"
+      ],
+      "properties": {
+       "request": {
+        "type": "string"
+       },
+       "provider": {
+        "type": "string"
+       },
+       "date": {
+        "type": "string",
+        "format": "date"
+       },
+       "start": {
+        "type": "string",
+        "format": "time"
+       },
+       "end": {
+        "type": "string",
+        "format": "time"
+       },
+       "preferred_provider_used": {
+        "type": "boolean"
+       }
+      }
+     }
+    },
+    "unplaced": {
+     "type": "array",
+     "description": "requests that could not be placed, with the reason",
+     "items": {
+      "type": "object",
+      "required": [
+       "request",
+       "reason"
+      ],
+      "properties": {
+       "request": {
+        "type": "string"
+       },
+       "reason": {
+        "enum": [
+         "no_provider_offers_service",
+         "no_free_slot_in_window"
+        ]
+       }
+      }
+     }
+    },
+    "utilization": {
+     "type": "array",
+     "description": "available and booked minutes per provider, existing bookings included",
+     "items": {
+      "type": "object",
+      "required": [
+       "provider",
+       "available_minutes",
+       "booked_minutes",
+       "share"
+      ],
+      "properties": {
+       "provider": {
+        "type": "string"
+       },
+       "available_minutes": {
+        "type": "integer"
+       },
+       "booked_minutes": {
+        "type": "integer"
+       },
+       "share": {
+        "type": "number"
+       }
+      }
+     }
+    }
+   }
+  },
+  "refusal_reasons": [
+   "input_invalid",
+   "input_not_json",
+   "duplicate_id",
+   "invalid_date_or_time",
+   "empty_availability_block",
+   "overlapping_availability",
+   "unknown_provider",
+   "reversed_window"
+  ],
+  "examples": {
+   "known_good": "examples/known_good.json",
+   "known_wrong": "examples/known_wrong.json"
+  },
+  "effects": "none: a pure function of its JSON input; the command reads standard input and writes standard output",
+  "procedure": "PROCEDURE.md",
+  "tools": "TOOLS.md",
+  "attribution": "ONET-ATTRIBUTION.md",
+  "onet": {
+   "database": "O*NET 31.0",
+   "license": "CC BY 4.0",
+   "dwa_ids": [
+    "4.A.2.b.5.c.1",
+    "4.A.2.b.5.c.2"
+   ],
+   "task_ids": [
+    "448",
+    "528",
+    "563",
+    "638",
+    "744",
+    "751",
+    "766",
+    "775",
+    "837",
+    "2034",
+    "2037",
+    "2800",
+    "2801",
+    "4268",
+    "4327",
+    "4735",
+    "5074",
+    "8749",
+    "9407",
+    "9426",
+    "9740",
+    "11303",
+    "12968",
+    "15234",
+    "15251",
+    "17619",
+    "18379",
+    "18527",
+    "18534",
+    "18539",
+    "19235",
+    "20403",
+    "20408",
+    "20424",
+    "20429",
+    "20438",
+    "21014",
+    "21165",
+    "22753",
+    "22771",
+    "22824",
+    "22892",
+    "23265",
+    "23283",
+    "24037"
+   ],
+   "occupation_codes": [
+    "11-9179.02",
+    "13-2082.00",
+    "19-4061.00",
+    "29-1011.00",
+    "29-1124.00",
+    "29-1127.00",
+    "29-1131.00",
+    "29-1171.00",
+    "29-1242.00",
+    "29-1243.00",
+    "29-1292.00",
+    "29-2031.00",
+    "29-2032.00",
+    "29-2034.00",
+    "29-2035.00",
+    "29-2055.00",
+    "29-2056.00",
+    "29-2061.00",
+    "29-2072.00",
+    "31-2011.00",
+    "31-2012.00",
+    "31-2022.00",
+    "31-9091.00",
+    "31-9092.00",
+    "31-9094.00",
+    "31-9096.00",
+    "39-2021.00",
+    "39-5012.00",
+    "39-5092.00",
+    "43-2011.00",
+    "43-3021.00",
+    "43-4031.00",
+    "43-4061.00",
+    "43-4131.00",
+    "43-4141.00",
+    "43-4171.00",
+    "43-6012.00",
+    "43-6013.00",
+    "43-6014.00",
+    "43-9022.00",
+    "43-9061.00"
+   ]
+  },
+  "activities": [
+   {
+    "dwa_id": "4.A.2.b.5.c.1",
+    "title": "Schedule appointments.",
+    "occupations": 21,
+    "rank": 37
+   },
+   {
+    "dwa_id": "4.A.2.b.5.c.2",
+    "title": "Schedule patient procedures or appointments.",
+    "occupations": 23,
+    "rank": 119
+   }
+  ],
+  "occupations_served": 41
+ },
+ "limits": "Greedy first fit: a later high-value request can be blocked by an earlier lower-priority one in the same priority band, and no request is moved once placed. Times are local wall-clock times without time zones or daylight saving changes. A provider serves one appointment at a time. Patient or client consent, reminders and cancellations are out of scope.",
+ "related": [
+  "shift_roster_builder",
+  "critical_path_schedule",
+  "personal_data_masker"
+ ],
+ "technique_references": [
+  "Priority-ordered first-fit placement",
+  "Interval overlap test with buffers"
+ ],
+ "native_checks": []
+}

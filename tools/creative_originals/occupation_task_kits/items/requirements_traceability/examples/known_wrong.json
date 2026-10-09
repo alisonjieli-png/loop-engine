@@ -1,0 +1,22 @@
+{
+ "description": "Test T1 verifies requirement R9, which is not listed, so coverage would count a requirement nobody wrote.",
+ "input": {
+  "requirements": [
+   {
+    "id": "R1"
+   }
+  ],
+  "tests": [
+   {
+    "id": "T1",
+    "verifies": [
+     "R9"
+    ],
+    "status": "pass"
+   }
+  ]
+ },
+ "expected_refusal": {
+  "reason": "unknown_requirement"
+ }
+}

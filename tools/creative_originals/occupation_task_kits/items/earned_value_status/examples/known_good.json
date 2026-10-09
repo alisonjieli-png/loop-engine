@@ -1,0 +1,98 @@
+{
+ "description": "Three work packages. Expected: Design on schedule but over cost (CPI 0.9091, amber); Build behind (SPI 0.75, red, EAC 55555.56); Test not started; totals SPI 0.85, CPI 0.9043, EAC 94000, VAC -9000, amber.",
+ "input": {
+  "work_packages": [
+   {
+    "id": "WP1",
+    "name": "Design",
+    "budget": 20000,
+    "planned_percent": 100,
+    "earned_percent": 100,
+    "actual_cost": 22000
+   },
+   {
+    "id": "WP2",
+    "name": "Build",
+    "budget": 50000,
+    "planned_percent": 60,
+    "earned_percent": 45,
+    "actual_cost": 25000
+   },
+   {
+    "id": "WP3",
+    "name": "Test",
+    "budget": 15000,
+    "planned_percent": 0,
+    "earned_percent": 0,
+    "actual_cost": 0
+   }
+  ]
+ },
+ "expected_output": {
+  "packages": [
+   {
+    "id": "WP1",
+    "bac": 20000.0,
+    "pv": 20000.0,
+    "ev": 20000.0,
+    "ac": 22000.0,
+    "sv": 0.0,
+    "cv": -2000.0,
+    "spi": 1.0,
+    "cpi": 0.9091,
+    "eac": 22000.0,
+    "etc": 0.0,
+    "vac": -2000.0,
+    "tcpi": null,
+    "status": "amber"
+   },
+   {
+    "id": "WP2",
+    "bac": 50000.0,
+    "pv": 30000.0,
+    "ev": 22500.0,
+    "ac": 25000.0,
+    "sv": -7500.0,
+    "cv": -2500.0,
+    "spi": 0.75,
+    "cpi": 0.9,
+    "eac": 55555.56,
+    "etc": 30555.56,
+    "vac": -5555.56,
+    "tcpi": 1.1,
+    "status": "red"
+   },
+   {
+    "id": "WP3",
+    "bac": 15000.0,
+    "pv": 0.0,
+    "ev": 0.0,
+    "ac": 0.0,
+    "sv": 0.0,
+    "cv": 0.0,
+    "spi": null,
+    "cpi": null,
+    "eac": null,
+    "etc": null,
+    "vac": null,
+    "tcpi": 1.0,
+    "status": "not_started"
+   }
+  ],
+  "total": {
+   "bac": 85000.0,
+   "pv": 50000.0,
+   "ev": 42500.0,
+   "ac": 47000.0,
+   "sv": -7500.0,
+   "cv": -4500.0,
+   "spi": 0.85,
+   "cpi": 0.9043,
+   "eac": 94000.0,
+   "etc": 47000.0,
+   "vac": -9000.0,
+   "tcpi": 1.1184,
+   "status": "amber"
+  }
+ }
+}

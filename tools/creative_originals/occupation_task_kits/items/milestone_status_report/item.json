@@ -1,0 +1,353 @@
+{
+ "record_type": "creative_original_item/v1",
+ "identity": "milestone_status_report",
+ "title": "Milestone status report with slippage and dependency conflicts",
+ "purpose": "Classify each milestone as complete on time, complete late, green, amber, red or overdue from baseline, forecast and actual dates, flag forecasts that precede a predecessor, and write status lines.",
+ "form": "library_module",
+ "asset_role": null,
+ "dimension": "none",
+ "engine": {
+  "name": "python",
+  "minimum_version": "3.10"
+ },
+ "tags": [
+  "project status",
+  "milestones",
+  "status report",
+  "rag",
+  "slippage",
+  "progress report"
+ ],
+ "files": [
+  {
+   "path": "README.md",
+   "role": "other"
+  },
+  {
+   "path": "milestone_status_report.py",
+   "role": "executable_tool"
+  },
+  {
+   "path": "PROCEDURE.md",
+   "role": "skill_reference"
+  },
+  {
+   "path": "TOOLS.md",
+   "role": "other"
+  },
+  {
+   "path": "ONET-ATTRIBUTION.md",
+   "role": "other"
+  },
+  {
+   "path": "examples/known_good.json",
+   "role": "other"
+  },
+  {
+   "path": "examples/known_wrong.json",
+   "role": "other"
+  }
+ ],
+ "contract": {
+  "entry_points": {
+   "module": "milestone_status_report",
+   "function": "run",
+   "command": "python3 milestone_status_report.py < input.json",
+   "command_exit_codes": {
+    "0": "result",
+    "2": "refusal"
+   }
+  },
+  "input_schema": {
+   "type": "object",
+   "required": [
+    "as_of",
+    "milestones"
+   ],
+   "additionalProperties": false,
+   "properties": {
+    "as_of": {
+     "type": "string",
+     "description": "report date, YYYY-MM-DD"
+    },
+    "milestones": {
+     "type": "array",
+     "minItems": 1,
+     "maxItems": 2000,
+     "description": "milestones with a baseline date and, when known, a forecast or actual date, an owner and predecessor ids",
+     "items": {
+      "type": "object",
+      "required": [
+       "id",
+       "name",
+       "baseline_date"
+      ],
+      "additionalProperties": false,
+      "properties": {
+       "id": {
+        "type": "string",
+        "minLength": 1
+       },
+       "name": {
+        "type": "string",
+        "minLength": 1
+       },
+       "baseline_date": {
+        "type": "string"
+       },
+       "forecast_date": {
+        "type": "string"
+       },
+       "actual_date": {
+        "type": "string"
+       },
+       "owner": {
+        "type": "string"
+       },
+       "depends_on": {
+        "type": "array",
+        "items": {
+         "type": "string"
+        }
+       }
+      }
+     }
+    },
+    "amber_slip_days": {
+     "type": "integer",
+     "minimum": 1,
+     "maximum": 365,
+     "description": "slip in days that makes an open milestone amber (default 5)"
+    },
+    "red_slip_days": {
+     "type": "integer",
+     "minimum": 2,
+     "maximum": 730,
+     "description": "slip in days that makes an open milestone red (default 15)"
+    }
+   }
+  },
+  "output_schema": {
+   "type": "object",
+   "required": [
+    "as_of",
+    "overall",
+    "counts",
+    "milestones",
+    "lines"
+   ],
+   "properties": {
+    "as_of": {
+     "type": "string",
+     "format": "date"
+    },
+    "overall": {
+     "enum": [
+      "green",
+      "amber",
+      "red",
+      "complete"
+     ],
+     "description": "worst status of open milestones"
+    },
+    "counts": {
+     "type": "object",
+     "description": "milestones per status"
+    },
+    "milestones": {
+     "type": "array",
+     "description": "one row per milestone in input order",
+     "items": {
+      "type": "object",
+      "required": [
+       "id",
+       "status",
+       "slip_days",
+       "dependency_conflict"
+      ],
+      "properties": {
+       "id": {
+        "type": "string"
+       },
+       "status": {
+        "enum": [
+         "complete_on_time",
+         "complete_late",
+         "green",
+         "amber",
+         "red",
+         "overdue"
+        ]
+       },
+       "slip_days": {
+        "type": [
+         "integer",
+         "null"
+        ]
+       },
+       "days_until_due": {
+        "type": [
+         "integer",
+         "null"
+        ]
+       },
+       "dependency_conflict": {
+        "type": "boolean"
+       }
+      }
+     }
+    },
+    "lines": {
+     "type": "array",
+     "items": {
+      "type": "string"
+     },
+     "description": "one plain sentence per milestone that is not complete on time"
+    }
+   }
+  },
+  "refusal_reasons": [
+   "input_invalid",
+   "input_not_json",
+   "duplicate_id",
+   "unknown_dependency",
+   "invalid_date",
+   "actual_in_future",
+   "thresholds_out_of_order"
+  ],
+  "examples": {
+   "known_good": "examples/known_good.json",
+   "known_wrong": "examples/known_wrong.json"
+  },
+  "effects": "none: a pure function of its JSON input; the command reads standard input and writes standard output",
+  "procedure": "PROCEDURE.md",
+  "tools": "TOOLS.md",
+  "attribution": "ONET-ATTRIBUTION.md",
+  "onet": {
+   "database": "O*NET 31.0",
+   "license": "CC BY 4.0",
+   "dwa_ids": [
+    "4.A.3.b.6.o.6",
+    "4.A.4.a.3.c.6",
+    "4.A.4.b.4.e.7"
+   ],
+   "task_ids": [
+    "21",
+    "38",
+    "57",
+    "735",
+    "980",
+    "1279",
+    "3364",
+    "3481",
+    "5211",
+    "5265",
+    "5293",
+    "5294",
+    "5301",
+    "6984",
+    "7208",
+    "7272",
+    "8834",
+    "8923",
+    "8928",
+    "10837",
+    "12890",
+    "14637",
+    "14676",
+    "15378",
+    "15416",
+    "15595",
+    "15843",
+    "16039",
+    "16156",
+    "16163",
+    "16169",
+    "16171",
+    "16212",
+    "18857",
+    "21281",
+    "21314",
+    "21446",
+    "21457",
+    "21470",
+    "21480",
+    "21640",
+    "21669",
+    "21769",
+    "21770",
+    "21777",
+    "21778"
+   ],
+   "occupation_codes": [
+    "11-1011.00",
+    "11-1011.03",
+    "11-3012.00",
+    "11-3013.00",
+    "11-3021.00",
+    "11-3031.00",
+    "11-3051.00",
+    "11-3051.01",
+    "11-9032.00",
+    "11-9111.00",
+    "11-9121.00",
+    "11-9121.01",
+    "11-9131.00",
+    "11-9161.00",
+    "11-9199.11",
+    "13-1041.00",
+    "13-1041.01",
+    "13-1041.04",
+    "13-1041.06",
+    "13-1071.00",
+    "13-1082.00",
+    "13-1141.00",
+    "13-2072.00",
+    "13-2081.00",
+    "13-2099.04",
+    "15-1211.00",
+    "15-1221.00",
+    "15-1251.00",
+    "15-1252.00",
+    "15-1255.01",
+    "15-1299.05",
+    "15-1299.08",
+    "15-1299.09",
+    "39-9041.00",
+    "41-3021.00"
+   ]
+  },
+  "activities": [
+   {
+    "dwa_id": "4.A.3.b.6.o.6",
+    "title": "Prepare operational progress or status reports.",
+    "occupations": 15,
+    "rank": 185
+   },
+   {
+    "dwa_id": "4.A.4.a.3.c.6",
+    "title": "Inform individuals or organizations of status or findings.",
+    "occupations": 10,
+    "rank": 245
+   },
+   {
+    "dwa_id": "4.A.4.b.4.e.7",
+    "title": "Manage information technology projects or system activities.",
+    "occupations": 10,
+    "rank": 120
+   }
+  ],
+  "occupations_served": 35
+ },
+ "limits": "Calendar-day slip, not working days. Status thresholds are inputs; the helper does not judge whether a slip matters to the customer. It does not reschedule successors; use critical_path_schedule for that. The status lines are plain facts, not an explanation of causes.",
+ "related": [
+  "critical_path_schedule",
+  "earned_value_status",
+  "action_item_register"
+ ],
+ "technique_references": [
+  "Schedule slip and red, amber, green thresholds",
+  "Predecessor date consistency check"
+ ],
+ "native_checks": []
+}

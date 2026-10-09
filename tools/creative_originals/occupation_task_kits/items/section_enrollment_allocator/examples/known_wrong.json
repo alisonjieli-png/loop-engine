@@ -1,0 +1,31 @@
+{
+ "description": "A request names section BIO100-A, which is not in the section list.",
+ "input": {
+  "sections": [
+   {
+    "id": "MATH101-A",
+    "course": "MATH101",
+    "capacity": 2
+   }
+  ],
+  "students": [
+   {
+    "id": "s1",
+    "priority_group": 1,
+    "registered_at": "2026-08-01T09:00:00Z"
+   }
+  ],
+  "requests": [
+   {
+    "id": "r1",
+    "student": "s1",
+    "choices": [
+     "BIO100-A"
+    ]
+   }
+  ]
+ },
+ "expected_refusal": {
+  "reason": "unknown_section"
+ }
+}

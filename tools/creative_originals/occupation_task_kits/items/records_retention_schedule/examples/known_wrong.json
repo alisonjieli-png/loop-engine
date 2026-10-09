@@ -1,0 +1,24 @@
+{
+ "description": "A record belongs to the class emails, which the schedule does not list, so no retention period applies.",
+ "input": {
+  "as_of": "2026-10-09",
+  "schedule": [
+   {
+    "record_class": "invoices",
+    "years": 7,
+    "trigger": "created",
+    "action": "destroy"
+   }
+  ],
+  "records": [
+   {
+    "id": "R1",
+    "record_class": "emails",
+    "created": "2020-01-01"
+   }
+  ]
+ },
+ "expected_refusal": {
+  "reason": "unknown_record_class"
+ }
+}

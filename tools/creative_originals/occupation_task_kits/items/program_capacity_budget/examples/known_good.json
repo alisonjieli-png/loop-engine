@@ -1,0 +1,100 @@
+{
+ "description": "Ten 2-hour sessions for 36 expected people in a 30-seat room. Expected base: 30 seated, 6 turned away, 3 staff, cost 4000 (staff 1500, fixed 1300, variable 1200), revenue 4000, net 0, break-even fee 10 and break-even 22 participants per session. A 20-seat room loses 100 and cannot break even; a fee of 12 nets 600 and breaks even at 17.",
+ "input": {
+  "program": {
+   "sessions": 10,
+   "hours_per_session": 2,
+   "venue_capacity": 30,
+   "expected_participants": 36,
+   "participants_per_staff": 12,
+   "minimum_staff": 2,
+   "staff_hourly_rate": 25,
+   "fixed_cost_per_session": 80,
+   "fixed_cost_program": 500,
+   "variable_cost_per_participant": 4,
+   "fee_per_participant": 10,
+   "subsidy": 1000
+  },
+  "scenarios": [
+   {
+    "name": "small_room",
+    "changes": {
+     "venue_capacity": 20
+    }
+   },
+   {
+    "name": "higher_fee",
+    "changes": {
+     "fee_per_participant": 12
+    }
+   }
+  ]
+ },
+ "expected_output": {
+  "scenarios": [
+   {
+    "name": "base",
+    "participants_per_session": 30,
+    "turned_away_per_session": 6,
+    "staff_per_session": 3,
+    "cost": {
+     "staff": 1500.0,
+     "fixed": 1300.0,
+     "variable": 1200.0,
+     "total": 4000.0
+    },
+    "revenue": {
+     "fees": 3000.0,
+     "subsidy": 1000.0,
+     "total": 4000.0
+    },
+    "net": 0.0,
+    "cost_per_participant": 13.33,
+    "break_even_fee": 10.0,
+    "break_even_participants_per_session": 22
+   },
+   {
+    "name": "small_room",
+    "participants_per_session": 20,
+    "turned_away_per_session": 16,
+    "staff_per_session": 2,
+    "cost": {
+     "staff": 1000.0,
+     "fixed": 1300.0,
+     "variable": 800.0,
+     "total": 3100.0
+    },
+    "revenue": {
+     "fees": 2000.0,
+     "subsidy": 1000.0,
+     "total": 3000.0
+    },
+    "net": -100.0,
+    "cost_per_participant": 15.5,
+    "break_even_fee": 10.5,
+    "break_even_participants_per_session": null
+   },
+   {
+    "name": "higher_fee",
+    "participants_per_session": 30,
+    "turned_away_per_session": 6,
+    "staff_per_session": 3,
+    "cost": {
+     "staff": 1500.0,
+     "fixed": 1300.0,
+     "variable": 1200.0,
+     "total": 4000.0
+    },
+    "revenue": {
+     "fees": 3600.0,
+     "subsidy": 1000.0,
+     "total": 4600.0
+    },
+    "net": 600.0,
+    "cost_per_participant": 13.33,
+    "break_even_fee": 10.0,
+    "break_even_participants_per_session": 17
+   }
+  ]
+ }
+}

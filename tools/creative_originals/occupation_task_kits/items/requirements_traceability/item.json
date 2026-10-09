@@ -1,0 +1,360 @@
+{
+ "record_type": "creative_original_item/v1",
+ "identity": "requirements_traceability",
+ "title": "Requirements traceability matrix and coverage gaps",
+ "purpose": "Build a matrix linking requirements to design elements and tests, give each requirement a test status, and list requirements without design, tests or a pass, and links to nothing.",
+ "form": "library_module",
+ "asset_role": null,
+ "dimension": "none",
+ "engine": {
+  "name": "python",
+  "minimum_version": "3.10"
+ },
+ "tags": [
+  "requirements",
+  "traceability",
+  "test coverage",
+  "specifications",
+  "design review",
+  "quality"
+ ],
+ "files": [
+  {
+   "path": "README.md",
+   "role": "other"
+  },
+  {
+   "path": "requirements_traceability.py",
+   "role": "executable_tool"
+  },
+  {
+   "path": "PROCEDURE.md",
+   "role": "skill_reference"
+  },
+  {
+   "path": "TOOLS.md",
+   "role": "other"
+  },
+  {
+   "path": "ONET-ATTRIBUTION.md",
+   "role": "other"
+  },
+  {
+   "path": "examples/known_good.json",
+   "role": "other"
+  },
+  {
+   "path": "examples/known_wrong.json",
+   "role": "other"
+  }
+ ],
+ "contract": {
+  "entry_points": {
+   "module": "requirements_traceability",
+   "function": "run",
+   "command": "python3 requirements_traceability.py < input.json",
+   "command_exit_codes": {
+    "0": "result",
+    "2": "refusal"
+   }
+  },
+  "input_schema": {
+   "type": "object",
+   "required": [
+    "requirements",
+    "tests"
+   ],
+   "additionalProperties": false,
+   "properties": {
+    "requirements": {
+     "type": "array",
+     "minItems": 1,
+     "maxItems": 20000,
+     "description": "requirements with an id and an optional priority (must, should, could)",
+     "items": {
+      "type": "object",
+      "required": [
+       "id"
+      ],
+      "additionalProperties": false,
+      "properties": {
+       "id": {
+        "type": "string",
+        "minLength": 1
+       },
+       "text": {
+        "type": "string"
+       },
+       "priority": {
+        "enum": [
+         "must",
+         "should",
+         "could"
+        ]
+       }
+      }
+     }
+    },
+    "design_elements": {
+     "type": "array",
+     "maxItems": 20000,
+     "description": "design elements and the requirement ids each satisfies",
+     "items": {
+      "type": "object",
+      "required": [
+       "id",
+       "satisfies"
+      ],
+      "additionalProperties": false,
+      "properties": {
+       "id": {
+        "type": "string",
+        "minLength": 1
+       },
+       "satisfies": {
+        "type": "array",
+        "items": {
+         "type": "string"
+        },
+        "maxItems": 500
+       }
+      }
+     }
+    },
+    "tests": {
+     "type": "array",
+     "maxItems": 50000,
+     "description": "tests, the requirement ids each verifies and the latest result (pass, fail, not_run)",
+     "items": {
+      "type": "object",
+      "required": [
+       "id",
+       "verifies"
+      ],
+      "additionalProperties": false,
+      "properties": {
+       "id": {
+        "type": "string",
+        "minLength": 1
+       },
+       "verifies": {
+        "type": "array",
+        "items": {
+         "type": "string"
+        },
+        "maxItems": 500
+       },
+       "status": {
+        "enum": [
+         "pass",
+         "fail",
+         "not_run"
+        ]
+       }
+      }
+     }
+    }
+   }
+  },
+  "output_schema": {
+   "type": "object",
+   "required": [
+    "matrix",
+    "gaps",
+    "coverage"
+   ],
+   "properties": {
+    "matrix": {
+     "type": "array",
+     "description": "one row per requirement in input order",
+     "items": {
+      "type": "object",
+      "required": [
+       "requirement",
+       "design_elements",
+       "tests",
+       "test_status"
+      ],
+      "properties": {
+       "requirement": {
+        "type": "string"
+       },
+       "design_elements": {
+        "type": "array",
+        "items": {
+         "type": "string"
+        }
+       },
+       "tests": {
+        "type": "array",
+        "items": {
+         "type": "string"
+        }
+       },
+       "test_status": {
+        "enum": [
+         "passed",
+         "failed",
+         "not_run",
+         "untested"
+        ]
+       }
+      }
+     }
+    },
+    "gaps": {
+     "type": "object",
+     "description": "lists of ids for each kind of gap"
+    },
+    "coverage": {
+     "type": "object",
+     "description": "counts and shares of requirements with design, tests and a pass"
+    }
+   }
+  },
+  "refusal_reasons": [
+   "input_invalid",
+   "input_not_json",
+   "duplicate_id",
+   "unknown_requirement"
+  ],
+  "examples": {
+   "known_good": "examples/known_good.json",
+   "known_wrong": "examples/known_wrong.json"
+  },
+  "effects": "none: a pure function of its JSON input; the command reads standard input and writes standard output",
+  "procedure": "PROCEDURE.md",
+  "tools": "TOOLS.md",
+  "attribution": "ONET-ATTRIBUTION.md",
+  "onet": {
+   "database": "O*NET 31.0",
+   "license": "CC BY 4.0",
+   "dwa_ids": [
+    "4.A.4.a.2.h.7",
+    "4.A.2.a.4.e.5",
+    "4.A.2.a.4.e.3"
+   ],
+   "task_ids": [
+    "1289",
+    "1323",
+    "1328",
+    "1391",
+    "1407",
+    "1483",
+    "3467",
+    "3469",
+    "3474",
+    "3644",
+    "7383",
+    "9253",
+    "14627",
+    "14646",
+    "14666",
+    "14670",
+    "14702",
+    "16080",
+    "16082",
+    "16113",
+    "16177",
+    "16201",
+    "16207",
+    "16213",
+    "16215",
+    "16282",
+    "16287",
+    "16320",
+    "16325",
+    "16512",
+    "16801",
+    "18180",
+    "18957",
+    "19967",
+    "20725",
+    "21661",
+    "21662",
+    "21664",
+    "21672",
+    "21686",
+    "21736",
+    "21870",
+    "21944",
+    "21948",
+    "21981",
+    "21983",
+    "22088",
+    "22104",
+    "22674"
+   ],
+   "occupation_codes": [
+    "13-1161.01",
+    "15-1211.00",
+    "15-1221.00",
+    "15-1232.00",
+    "15-1241.00",
+    "15-1241.01",
+    "15-1243.00",
+    "15-1244.00",
+    "15-1252.00",
+    "15-1253.00",
+    "15-1254.00",
+    "15-1255.00",
+    "15-1255.01",
+    "15-1299.02",
+    "15-1299.08",
+    "15-2031.00",
+    "15-2051.02",
+    "17-1022.01",
+    "17-2011.00",
+    "17-2051.01",
+    "17-2051.02",
+    "17-2111.00",
+    "17-2112.00",
+    "17-2112.03",
+    "17-2199.08",
+    "17-3011.00",
+    "17-3012.00",
+    "17-3023.00",
+    "17-3025.00",
+    "17-3027.00",
+    "17-3028.00",
+    "17-3031.00",
+    "19-1029.02",
+    "19-2041.03",
+    "27-1012.00",
+    "27-4015.00"
+   ]
+  },
+  "activities": [
+   {
+    "dwa_id": "4.A.4.a.2.h.7",
+    "title": "Collaborate with others to determine design specifications or details.",
+    "occupations": 16,
+    "rank": 51
+   },
+   {
+    "dwa_id": "4.A.2.a.4.e.5",
+    "title": "Analyze project data to determine specifications or requirements.",
+    "occupations": 10,
+    "rank": 150
+   },
+   {
+    "dwa_id": "4.A.2.a.4.e.3",
+    "title": "Evaluate designs or specifications to ensure quality.",
+    "occupations": 14,
+    "rank": 152
+   }
+  ],
+  "occupations_served": 36
+ },
+ "limits": "A link is trusted as declared; the helper cannot tell whether a test really verifies the requirement. Status uses the latest result per test only. When no design elements are given, the without_design gap is left empty and design_checked is false.",
+ "related": [
+  "document_compliance_checker",
+  "report_structure_checker",
+  "milestone_status_report"
+ ],
+ "technique_references": [
+  "Traceability matrix by link inversion",
+  "Coverage and gap analysis"
+ ],
+ "native_checks": []
+}

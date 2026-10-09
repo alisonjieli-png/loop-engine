@@ -1,0 +1,376 @@
+{
+ "record_type": "creative_original_item/v1",
+ "identity": "records_retention_schedule",
+ "title": "Records retention and disposition date calculator",
+ "purpose": "Apply a retention schedule to records: find each trigger date, add the retention period, and mark records due, due soon, on legal hold, waiting for their trigger or retained, with file names checked against a naming pattern.",
+ "form": "library_module",
+ "asset_role": null,
+ "dimension": "none",
+ "engine": {
+  "name": "python",
+  "minimum_version": "3.10"
+ },
+ "tags": [
+  "records management",
+  "retention",
+  "disposition",
+  "legal hold",
+  "filing",
+  "compliance"
+ ],
+ "files": [
+  {
+   "path": "README.md",
+   "role": "other"
+  },
+  {
+   "path": "records_retention_schedule.py",
+   "role": "executable_tool"
+  },
+  {
+   "path": "PROCEDURE.md",
+   "role": "skill_reference"
+  },
+  {
+   "path": "TOOLS.md",
+   "role": "other"
+  },
+  {
+   "path": "ONET-ATTRIBUTION.md",
+   "role": "other"
+  },
+  {
+   "path": "examples/known_good.json",
+   "role": "other"
+  },
+  {
+   "path": "examples/known_wrong.json",
+   "role": "other"
+  }
+ ],
+ "contract": {
+  "entry_points": {
+   "module": "records_retention_schedule",
+   "function": "run",
+   "command": "python3 records_retention_schedule.py < input.json",
+   "command_exit_codes": {
+    "0": "result",
+    "2": "refusal"
+   }
+  },
+  "input_schema": {
+   "type": "object",
+   "required": [
+    "as_of",
+    "schedule",
+    "records"
+   ],
+   "additionalProperties": false,
+   "properties": {
+    "as_of": {
+     "type": "string",
+     "description": "evaluation date, YYYY-MM-DD"
+    },
+    "schedule": {
+     "type": "array",
+     "minItems": 1,
+     "maxItems": 2000,
+     "description": "record classes with retention years and months, the trigger (created, closed, event) and the action (destroy, archive, review)",
+     "items": {
+      "type": "object",
+      "required": [
+       "record_class",
+       "trigger",
+       "action"
+      ],
+      "additionalProperties": false,
+      "properties": {
+       "record_class": {
+        "type": "string",
+        "minLength": 1
+       },
+       "years": {
+        "type": "integer",
+        "minimum": 0,
+        "maximum": 200
+       },
+       "months": {
+        "type": "integer",
+        "minimum": 0,
+        "maximum": 2400
+       },
+       "trigger": {
+        "enum": [
+         "created",
+         "closed",
+         "event"
+        ]
+       },
+       "action": {
+        "enum": [
+         "destroy",
+         "archive",
+         "review"
+        ]
+       },
+       "citation": {
+        "type": "string"
+       }
+      }
+     }
+    },
+    "records": {
+     "type": "array",
+     "minItems": 1,
+     "maxItems": 200000,
+     "description": "records with id, class, created date and when known closed or event date, legal hold and name",
+     "items": {
+      "type": "object",
+      "required": [
+       "id",
+       "record_class",
+       "created"
+      ],
+      "additionalProperties": false,
+      "properties": {
+       "id": {
+        "type": "string",
+        "minLength": 1
+       },
+       "record_class": {
+        "type": "string"
+       },
+       "created": {
+        "type": "string"
+       },
+       "closed": {
+        "type": "string"
+       },
+       "event_date": {
+        "type": "string"
+       },
+       "legal_hold": {
+        "type": "boolean"
+       },
+       "file_name": {
+        "type": "string"
+       }
+      }
+     }
+    },
+    "review_window_days": {
+     "type": "integer",
+     "minimum": 0,
+     "maximum": 3650,
+     "description": "days ahead that count as due soon (default 90)"
+    },
+    "naming_pattern": {
+     "type": "string",
+     "description": "regular expression file names must match"
+    }
+   }
+  },
+  "output_schema": {
+   "type": "object",
+   "required": [
+    "as_of",
+    "records",
+    "summary",
+    "naming_violations"
+   ],
+   "properties": {
+    "as_of": {
+     "type": "string",
+     "format": "date"
+    },
+    "records": {
+     "type": "array",
+     "description": "one row per record in input order",
+     "items": {
+      "type": "object",
+      "required": [
+       "id",
+       "record_class",
+       "status",
+       "action",
+       "trigger_date",
+       "disposition_date"
+      ],
+      "properties": {
+       "status": {
+        "enum": [
+         "on_hold",
+         "trigger_missing",
+         "due",
+         "due_soon",
+         "retain"
+        ]
+       }
+      }
+     }
+    },
+    "summary": {
+     "type": "object",
+     "description": "records per status and per action among due records"
+    },
+    "naming_violations": {
+     "type": "array",
+     "items": {
+      "type": "string"
+     },
+     "description": "ids whose file name breaks the naming pattern"
+    }
+   }
+  },
+  "refusal_reasons": [
+   "input_invalid",
+   "input_not_json",
+   "duplicate_record_class",
+   "unknown_record_class",
+   "duplicate_record_id",
+   "invalid_date",
+   "invalid_pattern"
+  ],
+  "examples": {
+   "known_good": "examples/known_good.json",
+   "known_wrong": "examples/known_wrong.json"
+  },
+  "effects": "none: a pure function of its JSON input; the command reads standard input and writes standard output",
+  "procedure": "PROCEDURE.md",
+  "tools": "TOOLS.md",
+  "attribution": "ONET-ATTRIBUTION.md",
+  "onet": {
+   "database": "O*NET 31.0",
+   "license": "CC BY 4.0",
+   "dwa_ids": [
+    "4.A.4.c.1.a.2",
+    "4.A.3.b.6.h.9",
+    "4.A.3.b.6.n.4"
+   ],
+   "task_ids": [
+    "749",
+    "828",
+    "1085",
+    "1726",
+    "2479",
+    "2498",
+    "2565",
+    "2593",
+    "2677",
+    "2774",
+    "3276",
+    "3967",
+    "3990",
+    "4004",
+    "4509",
+    "4641",
+    "5194",
+    "5455",
+    "7023",
+    "8149",
+    "8658",
+    "9354",
+    "9795",
+    "10993",
+    "11019",
+    "15228",
+    "15544",
+    "15594",
+    "15614",
+    "15638",
+    "15653",
+    "18029",
+    "18863",
+    "20114",
+    "20756",
+    "20908",
+    "21266",
+    "21320",
+    "21335",
+    "21378",
+    "21799",
+    "22621",
+    "23181",
+    "23302",
+    "23954",
+    "24028"
+   ],
+   "occupation_codes": [
+    "11-3012.00",
+    "11-3031.00",
+    "11-3051.00",
+    "11-3111.00",
+    "11-9013.00",
+    "11-9031.00",
+    "11-9051.00",
+    "11-9121.01",
+    "11-9179.01",
+    "11-9199.01",
+    "11-9199.02",
+    "13-1071.00",
+    "15-1299.06",
+    "19-3034.00",
+    "27-1013.00",
+    "27-1023.00",
+    "27-1024.00",
+    "27-1026.00",
+    "27-2012.04",
+    "27-2022.00",
+    "27-2091.00",
+    "27-3042.00",
+    "27-3092.00",
+    "27-4011.00",
+    "27-4021.00",
+    "39-4011.00",
+    "39-4012.00",
+    "43-2011.00",
+    "43-3011.00",
+    "43-3031.00",
+    "43-3051.00",
+    "43-3071.00",
+    "43-4011.00",
+    "43-4041.00",
+    "43-4071.00",
+    "43-4151.00",
+    "43-4171.00",
+    "43-5021.00",
+    "43-6011.00",
+    "43-9061.00",
+    "43-9081.00",
+    "43-9111.00"
+   ]
+  },
+  "activities": [
+   {
+    "dwa_id": "4.A.4.c.1.a.2",
+    "title": "File documents or records.",
+    "occupations": 17,
+    "rank": 80
+   },
+   {
+    "dwa_id": "4.A.3.b.6.h.9",
+    "title": "Maintain records, documents, or other files.",
+    "occupations": 17,
+    "rank": 71
+   },
+   {
+    "dwa_id": "4.A.3.b.6.n.4",
+    "title": "Maintain regulatory or compliance documentation.",
+    "occupations": 9,
+    "rank": 338
+   }
+  ],
+  "occupations_served": 42
+ },
+ "limits": "The helper computes dates; it does not decide the retention periods, which come from law, contracts and policy. It never deletes anything. Time zones are ignored because all dates are calendar dates. Event triggers need the event date in each record.",
+ "related": [
+  "record_log_auditor",
+  "document_compliance_checker",
+  "policy_register"
+ ],
+ "technique_references": [
+  "Calendar month arithmetic with end-of-month clipping",
+  "Status precedence with legal hold"
+ ],
+ "native_checks": []
+}

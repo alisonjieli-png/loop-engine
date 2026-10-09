@@ -1,0 +1,412 @@
+{
+ "record_type": "creative_original_item/v1",
+ "identity": "critical_path_schedule",
+ "title": "Critical path schedule from tasks and dependencies",
+ "purpose": "Compute earliest and latest start and finish, total and free float, the critical path and optional calendar dates from a task list with durations and finish-to-start dependencies.",
+ "form": "library_module",
+ "asset_role": null,
+ "dimension": "none",
+ "engine": {
+  "name": "python",
+  "minimum_version": "3.10"
+ },
+ "tags": [
+  "scheduling",
+  "critical path",
+  "project plan",
+  "work plan",
+  "float",
+  "dependencies",
+  "gantt"
+ ],
+ "files": [
+  {
+   "path": "README.md",
+   "role": "other"
+  },
+  {
+   "path": "critical_path_schedule.py",
+   "role": "executable_tool"
+  },
+  {
+   "path": "PROCEDURE.md",
+   "role": "skill_reference"
+  },
+  {
+   "path": "TOOLS.md",
+   "role": "other"
+  },
+  {
+   "path": "ONET-ATTRIBUTION.md",
+   "role": "other"
+  },
+  {
+   "path": "examples/known_good.json",
+   "role": "other"
+  },
+  {
+   "path": "examples/known_wrong.json",
+   "role": "other"
+  }
+ ],
+ "contract": {
+  "entry_points": {
+   "module": "critical_path_schedule",
+   "function": "run",
+   "command": "python3 critical_path_schedule.py < input.json",
+   "command_exit_codes": {
+    "0": "result",
+    "2": "refusal"
+   }
+  },
+  "input_schema": {
+   "type": "object",
+   "required": [
+    "tasks"
+   ],
+   "additionalProperties": false,
+   "properties": {
+    "tasks": {
+     "type": "array",
+     "minItems": 1,
+     "maxItems": 2000,
+     "items": {
+      "$ref": "#/$defs/task"
+     },
+     "description": "tasks with an id, a duration in days and the ids they depend on (finish to start)"
+    },
+    "start_date": {
+     "type": "string",
+     "description": "optional YYYY-MM-DD project start for calendar dates"
+    },
+    "calendar": {
+     "enum": [
+      "calendar_days",
+      "working_days"
+     ],
+     "description": "count every day, or Monday to Friday without holidays (default calendar_days)"
+    },
+    "holidays": {
+     "type": "array",
+     "items": {
+      "type": "string"
+     },
+     "maxItems": 400,
+     "description": "YYYY-MM-DD dates skipped by the working_days calendar"
+    }
+   },
+   "$defs": {
+    "task": {
+     "type": "object",
+     "required": [
+      "id",
+      "duration"
+     ],
+     "additionalProperties": false,
+     "properties": {
+      "id": {
+       "type": "string",
+       "minLength": 1,
+       "maxLength": 64
+      },
+      "name": {
+       "type": "string",
+       "maxLength": 200
+      },
+      "duration": {
+       "type": "number",
+       "minimum": 0,
+       "maximum": 100000
+      },
+      "depends_on": {
+       "type": "array",
+       "items": {
+        "type": "string"
+       },
+       "maxItems": 200
+      }
+     }
+    }
+   }
+  },
+  "output_schema": {
+   "type": "object",
+   "required": [
+    "project_duration",
+    "critical_path",
+    "critical_tasks",
+    "order",
+    "schedule"
+   ],
+   "properties": {
+    "project_duration": {
+     "type": "number",
+     "description": "days from project start to the last finish"
+    },
+    "critical_path": {
+     "type": "array",
+     "items": {
+      "type": "string"
+     },
+     "description": "one chain of zero-float tasks from start to finish"
+    },
+    "critical_tasks": {
+     "type": "array",
+     "items": {
+      "type": "string"
+     },
+     "description": "every task with zero total float"
+    },
+    "order": {
+     "type": "array",
+     "items": {
+      "type": "string"
+     },
+     "description": "a dependency-respecting order"
+    },
+    "schedule": {
+     "type": "array",
+     "items": {
+      "type": "object",
+      "required": [
+       "id",
+       "duration",
+       "earliest_start",
+       "earliest_finish",
+       "latest_start",
+       "latest_finish",
+       "total_float",
+       "free_float",
+       "critical"
+      ],
+      "properties": {
+       "id": {
+        "type": "string"
+       },
+       "name": {
+        "type": "string"
+       },
+       "duration": {
+        "type": "number"
+       },
+       "earliest_start": {
+        "type": "number"
+       },
+       "earliest_finish": {
+        "type": "number"
+       },
+       "latest_start": {
+        "type": "number"
+       },
+       "latest_finish": {
+        "type": "number"
+       },
+       "total_float": {
+        "type": "number"
+       },
+       "free_float": {
+        "type": "number"
+       },
+       "critical": {
+        "type": "boolean"
+       },
+       "start_date": {
+        "type": "string",
+        "format": "date"
+       },
+       "finish_date": {
+        "type": "string",
+        "format": "date"
+       }
+      }
+     },
+     "description": "one row per task, in input order"
+    },
+    "project_start_date": {
+     "type": "string",
+     "format": "date"
+    },
+    "project_finish_date": {
+     "type": "string",
+     "format": "date"
+    }
+   }
+  },
+  "refusal_reasons": [
+   "input_invalid",
+   "input_not_json",
+   "duplicate_task_id",
+   "unknown_dependency",
+   "self_dependency",
+   "dependency_cycle",
+   "fractional_duration_with_dates",
+   "invalid_date"
+  ],
+  "examples": {
+   "known_good": "examples/known_good.json",
+   "known_wrong": "examples/known_wrong.json"
+  },
+  "effects": "none: a pure function of its JSON input; the command reads standard input and writes standard output",
+  "procedure": "PROCEDURE.md",
+  "tools": "TOOLS.md",
+  "attribution": "ONET-ATTRIBUTION.md",
+  "onet": {
+   "database": "O*NET 31.0",
+   "license": "CC BY 4.0",
+   "dwa_ids": [
+    "4.A.2.b.6.b.7",
+    "4.A.2.b.6.b.8",
+    "4.A.2.b.5.b.7"
+   ],
+   "task_ids": [
+    "759",
+    "1302",
+    "1387",
+    "1409",
+    "1410",
+    "1469",
+    "2723",
+    "2770",
+    "2812",
+    "3562",
+    "3565",
+    "3585",
+    "3646",
+    "3658",
+    "3663",
+    "3974",
+    "4021",
+    "4203",
+    "4597",
+    "5334",
+    "5354",
+    "7183",
+    "7389",
+    "8147",
+    "8561",
+    "8577",
+    "8989",
+    "9009",
+    "9014",
+    "11365",
+    "14645",
+    "14680",
+    "16159",
+    "16170",
+    "16171",
+    "16247",
+    "16309",
+    "16311",
+    "16329",
+    "16485",
+    "16571",
+    "17891",
+    "17904",
+    "18129",
+    "18202",
+    "18575",
+    "18579",
+    "19614",
+    "19641",
+    "19946",
+    "20379",
+    "20483",
+    "21466",
+    "21476",
+    "21699",
+    "21855",
+    "21893",
+    "21914",
+    "21924",
+    "21964",
+    "22083",
+    "22098",
+    "23732"
+   ],
+   "occupation_codes": [
+    "13-1082.00",
+    "15-1242.00",
+    "15-1253.00",
+    "15-1255.00",
+    "15-1299.08",
+    "15-1299.09",
+    "15-2031.00",
+    "15-2041.01",
+    "17-1011.00",
+    "17-1012.00",
+    "17-2021.00",
+    "17-2031.00",
+    "17-2051.01",
+    "17-2051.02",
+    "17-2072.00",
+    "17-2081.00",
+    "17-2111.02",
+    "17-2112.00",
+    "17-2112.02",
+    "17-2121.00",
+    "17-2131.00",
+    "17-2141.01",
+    "17-2151.00",
+    "17-2161.00",
+    "17-2171.00",
+    "17-2199.06",
+    "17-2199.07",
+    "17-2199.11",
+    "17-3011.00",
+    "17-3012.00",
+    "17-3022.00",
+    "17-3025.00",
+    "17-3026.00",
+    "17-3027.00",
+    "17-3028.00",
+    "27-3042.00",
+    "27-4012.00",
+    "29-2081.00",
+    "41-3011.00",
+    "43-4011.00",
+    "43-4171.00",
+    "43-5032.00",
+    "43-5061.00",
+    "43-6011.00",
+    "43-6014.00",
+    "53-1042.00",
+    "53-1042.01",
+    "53-3053.00",
+    "53-7081.00"
+   ]
+  },
+  "activities": [
+   {
+    "dwa_id": "4.A.2.b.6.b.7",
+    "title": "Prepare detailed work plans.",
+    "occupations": 24,
+    "rank": 54
+   },
+   {
+    "dwa_id": "4.A.2.b.6.b.8",
+    "title": "Develop detailed project plans.",
+    "occupations": 9,
+    "rank": 157
+   },
+   {
+    "dwa_id": "4.A.2.b.5.b.7",
+    "title": "Schedule operational activities.",
+    "occupations": 20,
+    "rank": 38
+   }
+  ],
+  "occupations_served": 49
+ },
+ "limits": "Finish-to-start dependencies only, without lags, leads or start-to-start links. Durations are deterministic; there is no resource levelling, so two critical tasks may need the same person at once. Working days are Monday to Friday; other work weeks need a calendar_days run with durations already converted. A zero-duration milestone is dated on the working day it becomes due. When several critical chains exist, critical_path shows one and critical_tasks lists all.",
+ "related": [
+  "milestone_status_report",
+  "earned_value_status",
+  "cost_estimate_rollup"
+ ],
+ "technique_references": [
+  "Critical path method forward and backward pass",
+  "Kahn topological sort",
+  "Total and free float"
+ ],
+ "native_checks": []
+}

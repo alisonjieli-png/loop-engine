@@ -1,0 +1,347 @@
+{
+ "record_type": "creative_original_item/v1",
+ "identity": "column_profile",
+ "title": "Column profile of a CSV table",
+ "purpose": "Summarize each column of a CSV without declared rules: missing values, distinct values, inferred type, frequent values, value shapes, lengths, quartiles, mean, standard deviation, outliers, date ranges, duplicate rows and constant or mostly empty columns.",
+ "form": "library_module",
+ "asset_role": null,
+ "dimension": "none",
+ "engine": {
+  "name": "python",
+  "minimum_version": "3.10"
+ },
+ "tags": [
+  "data profiling",
+  "csv",
+  "data quality",
+  "statistics",
+  "outliers",
+  "exploration"
+ ],
+ "files": [
+  {
+   "path": "README.md",
+   "role": "other"
+  },
+  {
+   "path": "column_profile.py",
+   "role": "executable_tool"
+  },
+  {
+   "path": "PROCEDURE.md",
+   "role": "skill_reference"
+  },
+  {
+   "path": "TOOLS.md",
+   "role": "other"
+  },
+  {
+   "path": "ONET-ATTRIBUTION.md",
+   "role": "other"
+  },
+  {
+   "path": "examples/known_good.json",
+   "role": "other"
+  },
+  {
+   "path": "examples/known_wrong.json",
+   "role": "other"
+  }
+ ],
+ "contract": {
+  "entry_points": {
+   "module": "column_profile",
+   "function": "run",
+   "command": "python3 column_profile.py < input.json",
+   "command_exit_codes": {
+    "0": "result",
+    "2": "refusal"
+   }
+  },
+  "input_schema": {
+   "type": "object",
+   "required": [
+    "csv_text"
+   ],
+   "additionalProperties": false,
+   "properties": {
+    "csv_text": {
+     "type": "string",
+     "minLength": 1,
+     "maxLength": 5000000,
+     "description": "CSV with a header row"
+    },
+    "top_values": {
+     "type": "integer",
+     "minimum": 1,
+     "maximum": 50,
+     "description": "most frequent values listed per column (default 5)"
+    },
+    "outlier_factor": {
+     "type": "number",
+     "exclusiveMinimum": 0,
+     "maximum": 10,
+     "description": "interquartile range multiple for outlier fences (default 1.5)"
+    },
+    "missing_markers": {
+     "type": "array",
+     "items": {
+      "type": "string"
+     },
+     "maxItems": 20,
+     "description": "cell values treated as missing besides empty text (default NA, N/A, null)"
+    }
+   }
+  },
+  "output_schema": {
+   "type": "object",
+   "required": [
+    "table",
+    "columns"
+   ],
+   "properties": {
+    "table": {
+     "type": "object",
+     "required": [
+      "rows",
+      "columns",
+      "duplicate_rows",
+      "constant_columns",
+      "mostly_missing_columns"
+     ],
+     "description": "row and column counts and table-level findings"
+    },
+    "columns": {
+     "type": "array",
+     "description": "one profile per column in header order",
+     "items": {
+      "type": "object",
+      "required": [
+       "name",
+       "inferred_type",
+       "present",
+       "missing",
+       "missing_share",
+       "distinct",
+       "top_values",
+       "shapes"
+      ]
+     }
+    }
+   }
+  },
+  "refusal_reasons": [
+   "input_invalid",
+   "input_not_json",
+   "header_missing",
+   "duplicate_column_name",
+   "ragged_rows"
+  ],
+  "examples": {
+   "known_good": "examples/known_good.json",
+   "known_wrong": "examples/known_wrong.json"
+  },
+  "effects": "none: a pure function of its JSON input; the command reads standard input and writes standard output",
+  "procedure": "PROCEDURE.md",
+  "tools": "TOOLS.md",
+  "attribution": "ONET-ATTRIBUTION.md",
+  "onet": {
+   "database": "O*NET 31.0",
+   "license": "CC BY 4.0",
+   "dwa_ids": [
+    "4.A.2.a.2.a.6",
+    "4.A.3.b.6.h.18",
+    "4.A.2.a.2.c.3"
+   ],
+   "task_ids": [
+    "776",
+    "792",
+    "798",
+    "799",
+    "806",
+    "828",
+    "1549",
+    "1561",
+    "2492",
+    "2499",
+    "2507",
+    "2517",
+    "2529",
+    "2596",
+    "2597",
+    "2629",
+    "2641",
+    "2686",
+    "2693",
+    "2697",
+    "2780",
+    "2781",
+    "2793",
+    "3737",
+    "4723",
+    "5528",
+    "5571",
+    "5575",
+    "5629",
+    "7382",
+    "7548",
+    "7579",
+    "7610",
+    "8957",
+    "8959",
+    "9100",
+    "9108",
+    "9240",
+    "9716",
+    "9736",
+    "9753",
+    "9790",
+    "9791",
+    "9797",
+    "11271",
+    "11275",
+    "11277",
+    "11290",
+    "11293",
+    "11371",
+    "11377",
+    "11402",
+    "12962",
+    "12969",
+    "13292",
+    "13302",
+    "15287",
+    "16121",
+    "16278",
+    "16281",
+    "16284",
+    "16807",
+    "16832",
+    "16977",
+    "16982",
+    "16986",
+    "18260",
+    "18295",
+    "18478",
+    "19376",
+    "19782",
+    "20394",
+    "20897",
+    "20981",
+    "21061",
+    "21065",
+    "21145",
+    "21536",
+    "21721",
+    "22158",
+    "22165",
+    "22228",
+    "22238",
+    "22264",
+    "22267",
+    "22276",
+    "22303",
+    "23298",
+    "23315",
+    "23915",
+    "23917",
+    "24036"
+   ],
+   "occupation_codes": [
+    "11-1031.00",
+    "13-2022.00",
+    "15-1243.01",
+    "15-1299.02",
+    "15-2031.00",
+    "15-2041.00",
+    "15-2051.02",
+    "19-1029.02",
+    "19-1029.03",
+    "19-1031.00",
+    "19-2043.00",
+    "19-2099.01",
+    "19-3022.00",
+    "19-3033.00",
+    "19-3051.00",
+    "19-3091.00",
+    "19-4012.00",
+    "19-4012.01",
+    "19-4013.00",
+    "19-4021.00",
+    "19-4042.00",
+    "19-4043.00",
+    "19-4044.00",
+    "19-4051.02",
+    "19-4061.00",
+    "19-4071.00",
+    "19-4092.00",
+    "19-4099.01",
+    "19-4099.03",
+    "21-1012.00",
+    "23-2093.00",
+    "25-4013.00",
+    "29-1031.00",
+    "29-2012.00",
+    "31-9097.00",
+    "33-9031.00",
+    "35-2013.00",
+    "43-1011.00",
+    "43-3031.00",
+    "43-3051.00",
+    "43-4021.00",
+    "43-4041.00",
+    "43-4061.00",
+    "43-4071.00",
+    "43-4111.00",
+    "43-4131.00",
+    "43-4141.00",
+    "43-4151.00",
+    "43-4161.00",
+    "43-4181.00",
+    "43-5061.00",
+    "43-6011.00",
+    "43-6013.00",
+    "43-6014.00",
+    "43-9021.00",
+    "43-9022.00",
+    "43-9041.00",
+    "43-9061.00",
+    "43-9071.00",
+    "43-9111.00"
+   ]
+  },
+  "activities": [
+   {
+    "dwa_id": "4.A.2.a.2.a.6",
+    "title": "Evaluate data quality.",
+    "occupations": 9,
+    "rank": 164
+   },
+   {
+    "dwa_id": "4.A.3.b.6.h.18",
+    "title": "Record research or operational data.",
+    "occupations": 22,
+    "rank": 43
+   },
+   {
+    "dwa_id": "4.A.2.a.2.c.3",
+    "title": "Compile data or documentation.",
+    "occupations": 31,
+    "rank": 7
+   }
+  ],
+  "occupations_served": 60
+ },
+ "limits": "Type inference is strict: one stray text value makes a number column a string column, which is itself a finding. Dates are recognized only in YYYY-MM-DD form. Outlier fences assume a single group; mixed populations need splitting first. Values are trimmed before counting.",
+ "related": [
+  "record_entry_validator",
+  "trend_and_correlation",
+  "duplicate_record_finder"
+ ],
+ "technique_references": [
+  "Column type inference",
+  "Interquartile range outlier fences",
+  "Value shape patterns"
+ ],
+ "native_checks": []
+}

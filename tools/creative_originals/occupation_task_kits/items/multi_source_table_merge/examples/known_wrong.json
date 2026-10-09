@@ -1,0 +1,26 @@
+{
+ "description": "The ERP source maps weight_kg to a column named Weight, but its CSV calls the column Weight (g), so the field would silently stay empty.",
+ "input": {
+  "target_fields": [
+   "sku",
+   "weight_kg"
+  ],
+  "key_fields": [
+   "sku"
+  ],
+  "sources": [
+   {
+    "name": "erp",
+    "priority": 1,
+    "csv_text": "SKU,Weight (g)\nA-100,250\n",
+    "mapping": {
+     "sku": "SKU",
+     "weight_kg": "Weight"
+    }
+   }
+  ]
+ },
+ "expected_refusal": {
+  "reason": "mapping_column_absent"
+ }
+}

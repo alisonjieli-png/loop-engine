@@ -1,0 +1,194 @@
+{
+ "description": "Seven tasks of an equipment rollout on a working-day calendar with one holiday. Expected: 12 working days, critical path A B D E F, task C has 1 day of float and G has 6.",
+ "input": {
+  "tasks": [
+   {
+    "id": "A",
+    "name": "Collect requirements",
+    "duration": 3
+   },
+   {
+    "id": "B",
+    "name": "Draft rollout plan",
+    "duration": 2,
+    "depends_on": [
+     "A"
+    ]
+   },
+   {
+    "id": "C",
+    "name": "Order equipment",
+    "duration": 5,
+    "depends_on": [
+     "A"
+    ]
+   },
+   {
+    "id": "D",
+    "name": "Prepare site",
+    "duration": 4,
+    "depends_on": [
+     "B"
+    ]
+   },
+   {
+    "id": "E",
+    "name": "Install and test",
+    "duration": 2,
+    "depends_on": [
+     "C",
+     "D"
+    ]
+   },
+   {
+    "id": "F",
+    "name": "Train staff",
+    "duration": 1,
+    "depends_on": [
+     "E"
+    ]
+   },
+   {
+    "id": "G",
+    "name": "Announce the date",
+    "duration": 1,
+    "depends_on": [
+     "B"
+    ]
+   }
+  ],
+  "start_date": "2026-10-12",
+  "calendar": "working_days",
+  "holidays": [
+   "2026-10-16"
+  ]
+ },
+ "expected_output": {
+  "project_duration": 12,
+  "critical_path": [
+   "A",
+   "B",
+   "D",
+   "E",
+   "F"
+  ],
+  "critical_tasks": [
+   "A",
+   "B",
+   "D",
+   "E",
+   "F"
+  ],
+  "order": [
+   "A",
+   "B",
+   "C",
+   "D",
+   "E",
+   "F",
+   "G"
+  ],
+  "schedule": [
+   {
+    "id": "A",
+    "duration": 3,
+    "name": "Collect requirements",
+    "earliest_start": 0,
+    "earliest_finish": 3,
+    "latest_start": 0,
+    "latest_finish": 3,
+    "total_float": 0,
+    "free_float": 0,
+    "critical": true,
+    "start_date": "2026-10-12",
+    "finish_date": "2026-10-14"
+   },
+   {
+    "id": "B",
+    "duration": 2,
+    "name": "Draft rollout plan",
+    "earliest_start": 3,
+    "earliest_finish": 5,
+    "latest_start": 3,
+    "latest_finish": 5,
+    "total_float": 0,
+    "free_float": 0,
+    "critical": true,
+    "start_date": "2026-10-15",
+    "finish_date": "2026-10-19"
+   },
+   {
+    "id": "C",
+    "duration": 5,
+    "name": "Order equipment",
+    "earliest_start": 3,
+    "earliest_finish": 8,
+    "latest_start": 4,
+    "latest_finish": 9,
+    "total_float": 1,
+    "free_float": 1,
+    "critical": false,
+    "start_date": "2026-10-15",
+    "finish_date": "2026-10-22"
+   },
+   {
+    "id": "D",
+    "duration": 4,
+    "name": "Prepare site",
+    "earliest_start": 5,
+    "earliest_finish": 9,
+    "latest_start": 5,
+    "latest_finish": 9,
+    "total_float": 0,
+    "free_float": 0,
+    "critical": true,
+    "start_date": "2026-10-20",
+    "finish_date": "2026-10-23"
+   },
+   {
+    "id": "E",
+    "duration": 2,
+    "name": "Install and test",
+    "earliest_start": 9,
+    "earliest_finish": 11,
+    "latest_start": 9,
+    "latest_finish": 11,
+    "total_float": 0,
+    "free_float": 0,
+    "critical": true,
+    "start_date": "2026-10-26",
+    "finish_date": "2026-10-27"
+   },
+   {
+    "id": "F",
+    "duration": 1,
+    "name": "Train staff",
+    "earliest_start": 11,
+    "earliest_finish": 12,
+    "latest_start": 11,
+    "latest_finish": 12,
+    "total_float": 0,
+    "free_float": 0,
+    "critical": true,
+    "start_date": "2026-10-28",
+    "finish_date": "2026-10-28"
+   },
+   {
+    "id": "G",
+    "duration": 1,
+    "name": "Announce the date",
+    "earliest_start": 5,
+    "earliest_finish": 6,
+    "latest_start": 11,
+    "latest_finish": 12,
+    "total_float": 6,
+    "free_float": 6,
+    "critical": false,
+    "start_date": "2026-10-20",
+    "finish_date": "2026-10-20"
+   }
+  ],
+  "project_start_date": "2026-10-12",
+  "project_finish_date": "2026-10-28"
+ }
+}

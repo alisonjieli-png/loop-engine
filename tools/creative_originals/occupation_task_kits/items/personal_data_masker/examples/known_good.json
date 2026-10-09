@@ -1,0 +1,93 @@
+{
+ "description": "An intake note with a name after an honorific, a name from the list, three dates in three styles, a phone number, an email, a record number caught by a custom pattern and a full card number. Expected: each replaced by a numbered placeholder; the claim number 7781 and the four card digits after 'ending' stay.",
+ "input": {
+  "text": "Intake note 2026-10-03: Ms. Rosa Diaz (DOB 04/12/1988) called from 555-010-4477 about claim 7781. Email rosa.diaz@example.com. MRN 00482913 on file. Card ending 0366 was declined; full number 4532 0151 1283 0366. Follow up with Diaz on Oct 10, 2026.",
+  "names": [
+   "Diaz"
+  ],
+  "custom_patterns": [
+   {
+    "label": "mrn",
+    "pattern": "MRN \\d{8}"
+   }
+  ]
+ },
+ "expected_output": {
+  "masked_text": "Intake note [DATE_1]: [NAME_1] (DOB [DATE_2]) called from [PHONE_1] about claim 7781. Email [EMAIL_1]. [MRN_1] on file. Card ending 0366 was declined; full number [CARD_NUMBER_1]. Follow up with [NAME_2] on [DATE_3].",
+  "inventory": {
+   "card_number": 1,
+   "date": 3,
+   "email": 1,
+   "mrn": 1,
+   "name": 2,
+   "phone": 1
+  },
+  "findings": [
+   {
+    "category": "date",
+    "start": 12,
+    "end": 22,
+    "placeholder": "[DATE_1]"
+   },
+   {
+    "category": "name",
+    "start": 24,
+    "end": 37,
+    "placeholder": "[NAME_1]"
+   },
+   {
+    "category": "date",
+    "start": 43,
+    "end": 53,
+    "placeholder": "[DATE_2]"
+   },
+   {
+    "category": "phone",
+    "start": 67,
+    "end": 79,
+    "placeholder": "[PHONE_1]"
+   },
+   {
+    "category": "email",
+    "start": 104,
+    "end": 125,
+    "placeholder": "[EMAIL_1]"
+   },
+   {
+    "category": "mrn",
+    "start": 127,
+    "end": 139,
+    "placeholder": "[MRN_1]"
+   },
+   {
+    "category": "card_number",
+    "start": 192,
+    "end": 211,
+    "placeholder": "[CARD_NUMBER_1]"
+   },
+   {
+    "category": "name",
+    "start": 228,
+    "end": 232,
+    "placeholder": "[NAME_2]"
+   },
+   {
+    "category": "date",
+    "start": 236,
+    "end": 248,
+    "placeholder": "[DATE_3]"
+   }
+  ],
+  "categories_checked": [
+   "email",
+   "url",
+   "ip_address",
+   "card_number",
+   "id_number",
+   "date",
+   "phone",
+   "name",
+   "mrn"
+  ]
+ }
+}

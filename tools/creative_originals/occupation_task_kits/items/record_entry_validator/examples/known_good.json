@@ -1,0 +1,198 @@
+{
+ "description": "Five customer rows checked against seven field rules. Expected: row 1 valid after normalization (name title case, phone digits, date to ISO); row 2 has a malformed email and an impossible date; row 3 a 5-digit phone; row 4 a status outside the allowed list, a credit limit above the maximum and a repeated customer_id; row 5 lacks customer_id. 7 errors, 1 valid row.",
+ "input": {
+  "csv_text": "customer_id,name,email,phone,signup_date,status,credit_limit\nC001,  ada   lovelace ,ada@example.com,(555) 010-1234,03/14/2026,active,5000\nC002,Grace Hopper,grace[at]example.com,555 010 9876,2026-02-30,active,7000\nC003,alan turing,alan@example.com,12345,04/01/2026,paused,\nC001,Ada Lovelace,ada.l@example.com,555-010-1111,05/02/2026,closed,250000\n,Katherine Johnson,kj@example.com,555 010 4321,06/15/2026,active,1200\n",
+  "fields": [
+   {
+    "name": "customer_id",
+    "type": "string",
+    "required": true,
+    "pattern": "^C\\d{3}$",
+    "normalize": [
+     "trim",
+     "upper"
+    ]
+   },
+   {
+    "name": "name",
+    "type": "string",
+    "required": true,
+    "normalize": [
+     "collapse_spaces",
+     "title"
+    ]
+   },
+   {
+    "name": "email",
+    "type": "email",
+    "required": true,
+    "normalize": [
+     "trim",
+     "lower"
+    ]
+   },
+   {
+    "name": "phone",
+    "type": "phone",
+    "normalize": [
+     "digits_only"
+    ]
+   },
+   {
+    "name": "signup_date",
+    "type": "date",
+    "required": true,
+    "normalize": [
+     "trim",
+     "iso_date"
+    ]
+   },
+   {
+    "name": "status",
+    "type": "string",
+    "allowed": [
+     "active",
+     "paused"
+    ],
+    "normalize": [
+     "trim",
+     "lower"
+    ]
+   },
+   {
+    "name": "credit_limit",
+    "type": "integer",
+    "minimum": 0,
+    "maximum": 100000
+   }
+  ],
+  "unique": [
+   [
+    "customer_id"
+   ]
+  ],
+  "date_formats": [
+   "%Y-%m-%d",
+   "%m/%d/%Y"
+  ]
+ },
+ "expected_output": {
+  "summary": {
+   "rows": 5,
+   "valid_rows": 1,
+   "invalid_rows": 4,
+   "errors_by_rule": {
+    "above_maximum": 1,
+    "date_unparseable": 1,
+    "duplicate_key": 1,
+    "not_allowed": 1,
+    "not_email": 1,
+    "not_phone": 1,
+    "required": 1
+   },
+   "errors_by_field": {
+    "credit_limit": 1,
+    "customer_id": 2,
+    "email": 1,
+    "phone": 1,
+    "signup_date": 1,
+    "status": 1
+   }
+  },
+  "columns": {
+   "missing_optional": [],
+   "extra": []
+  },
+  "errors": [
+   {
+    "row": 2,
+    "field": "email",
+    "rule": "not_email",
+    "value": "grace[at]example.com"
+   },
+   {
+    "row": 2,
+    "field": "signup_date",
+    "rule": "date_unparseable",
+    "value": "2026-02-30"
+   },
+   {
+    "row": 3,
+    "field": "phone",
+    "rule": "not_phone",
+    "value": "12345"
+   },
+   {
+    "row": 4,
+    "field": "status",
+    "rule": "not_allowed",
+    "value": "closed"
+   },
+   {
+    "row": 4,
+    "field": "credit_limit",
+    "rule": "above_maximum",
+    "value": "250000"
+   },
+   {
+    "row": 5,
+    "field": "customer_id",
+    "rule": "required",
+    "value": ""
+   },
+   {
+    "row": 4,
+    "field": "customer_id",
+    "rule": "duplicate_key",
+    "value": "C001"
+   }
+  ],
+  "rows": [
+   {
+    "customer_id": "C001",
+    "name": "Ada Lovelace",
+    "email": "ada@example.com",
+    "phone": "5550101234",
+    "signup_date": "2026-03-14",
+    "status": "active",
+    "credit_limit": "5000"
+   },
+   {
+    "customer_id": "C002",
+    "name": "Grace Hopper",
+    "email": "grace[at]example.com",
+    "phone": "5550109876",
+    "signup_date": "2026-02-30",
+    "status": "active",
+    "credit_limit": "7000"
+   },
+   {
+    "customer_id": "C003",
+    "name": "Alan Turing",
+    "email": "alan@example.com",
+    "phone": "12345",
+    "signup_date": "2026-04-01",
+    "status": "paused",
+    "credit_limit": ""
+   },
+   {
+    "customer_id": "C001",
+    "name": "Ada Lovelace",
+    "email": "ada.l@example.com",
+    "phone": "5550101111",
+    "signup_date": "2026-05-02",
+    "status": "closed",
+    "credit_limit": "250000"
+   },
+   {
+    "customer_id": "",
+    "name": "Katherine Johnson",
+    "email": "kj@example.com",
+    "phone": "5550104321",
+    "signup_date": "2026-06-15",
+    "status": "active",
+    "credit_limit": "1200"
+   }
+  ]
+ }
+}

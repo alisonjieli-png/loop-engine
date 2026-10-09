@@ -1,0 +1,323 @@
+{
+ "record_type": "creative_original_item/v1",
+ "identity": "earned_value_status",
+ "title": "Earned value status with performance indices and forecasts",
+ "purpose": "Compute planned value, earned value, schedule and cost variance, SPI, CPI, estimate at completion, estimate to complete, variance at completion and TCPI per work package and in total, with a status.",
+ "form": "library_module",
+ "asset_role": null,
+ "dimension": "none",
+ "engine": {
+  "name": "python",
+  "minimum_version": "3.10"
+ },
+ "tags": [
+  "earned value",
+  "project control",
+  "cost performance",
+  "schedule performance",
+  "forecast",
+  "budget"
+ ],
+ "files": [
+  {
+   "path": "README.md",
+   "role": "other"
+  },
+  {
+   "path": "earned_value_status.py",
+   "role": "executable_tool"
+  },
+  {
+   "path": "PROCEDURE.md",
+   "role": "skill_reference"
+  },
+  {
+   "path": "TOOLS.md",
+   "role": "other"
+  },
+  {
+   "path": "ONET-ATTRIBUTION.md",
+   "role": "other"
+  },
+  {
+   "path": "examples/known_good.json",
+   "role": "other"
+  },
+  {
+   "path": "examples/known_wrong.json",
+   "role": "other"
+  }
+ ],
+ "contract": {
+  "entry_points": {
+   "module": "earned_value_status",
+   "function": "run",
+   "command": "python3 earned_value_status.py < input.json",
+   "command_exit_codes": {
+    "0": "result",
+    "2": "refusal"
+   }
+  },
+  "input_schema": {
+   "type": "object",
+   "required": [
+    "work_packages"
+   ],
+   "additionalProperties": false,
+   "properties": {
+    "work_packages": {
+     "type": "array",
+     "minItems": 1,
+     "maxItems": 5000,
+     "description": "packages with budget at completion, planned and earned percent at the status date and actual cost to date",
+     "items": {
+      "type": "object",
+      "required": [
+       "id",
+       "budget",
+       "planned_percent",
+       "earned_percent",
+       "actual_cost"
+      ],
+      "additionalProperties": false,
+      "properties": {
+       "id": {
+        "type": "string",
+        "minLength": 1
+       },
+       "name": {
+        "type": "string"
+       },
+       "budget": {
+        "type": "number",
+        "exclusiveMinimum": 0
+       },
+       "planned_percent": {
+        "type": "number",
+        "minimum": 0,
+        "maximum": 100
+       },
+       "earned_percent": {
+        "type": "number",
+        "minimum": 0,
+        "maximum": 100
+       },
+       "actual_cost": {
+        "type": "number",
+        "minimum": 0
+       }
+      }
+     }
+    },
+    "amber_index": {
+     "type": "number",
+     "exclusiveMinimum": 0,
+     "maximum": 1,
+     "description": "an SPI or CPI below this is amber (default 0.95)"
+    },
+    "red_index": {
+     "type": "number",
+     "exclusiveMinimum": 0,
+     "maximum": 1,
+     "description": "an SPI or CPI below this is red (default 0.85)"
+    }
+   }
+  },
+  "output_schema": {
+   "type": "object",
+   "required": [
+    "packages",
+    "total"
+   ],
+   "properties": {
+    "packages": {
+     "type": "array",
+     "items": {
+      "type": "object",
+      "required": [
+       "bac",
+       "pv",
+       "ev",
+       "ac",
+       "sv",
+       "cv",
+       "spi",
+       "cpi",
+       "eac",
+       "etc",
+       "vac",
+       "tcpi",
+       "status"
+      ],
+      "properties": {
+       "status": {
+        "enum": [
+         "green",
+         "amber",
+         "red",
+         "not_started"
+        ]
+       }
+      }
+     },
+     "description": "one row per package in input order, with its id"
+    },
+    "total": {
+     "type": "object",
+     "required": [
+      "bac",
+      "pv",
+      "ev",
+      "ac",
+      "sv",
+      "cv",
+      "spi",
+      "cpi",
+      "eac",
+      "etc",
+      "vac",
+      "tcpi",
+      "status"
+     ],
+     "properties": {
+      "status": {
+       "enum": [
+        "green",
+        "amber",
+        "red",
+        "not_started"
+       ]
+      }
+     },
+     "description": "the same measures for the summed values"
+    }
+   }
+  },
+  "refusal_reasons": [
+   "input_invalid",
+   "input_not_json",
+   "duplicate_package_id",
+   "thresholds_out_of_order"
+  ],
+  "examples": {
+   "known_good": "examples/known_good.json",
+   "known_wrong": "examples/known_wrong.json"
+  },
+  "effects": "none: a pure function of its JSON input; the command reads standard input and writes standard output",
+  "procedure": "PROCEDURE.md",
+  "tools": "TOOLS.md",
+  "attribution": "ONET-ATTRIBUTION.md",
+  "onet": {
+   "database": "O*NET 31.0",
+   "license": "CC BY 4.0",
+   "dwa_ids": [
+    "4.A.4.b.4.j.12",
+    "4.A.4.b.4.e.7",
+    "4.A.4.b.4.h.5"
+   ],
+   "task_ids": [
+    "56",
+    "735",
+    "974",
+    "978",
+    "1081",
+    "1108",
+    "1279",
+    "1498",
+    "3239",
+    "3244",
+    "3481",
+    "3790",
+    "5197",
+    "5254",
+    "7205",
+    "14637",
+    "14676",
+    "15586",
+    "15605",
+    "15698",
+    "15834",
+    "16156",
+    "16163",
+    "16169",
+    "16171",
+    "16212",
+    "18597",
+    "20171",
+    "20847",
+    "20944",
+    "21239",
+    "21258",
+    "21470",
+    "21480",
+    "21669",
+    "21769",
+    "21770",
+    "21777",
+    "21778"
+   ],
+   "occupation_codes": [
+    "11-2011.00",
+    "11-2032.00",
+    "11-2033.00",
+    "11-3021.00",
+    "11-3071.04",
+    "11-9031.00",
+    "11-9033.00",
+    "11-9041.00",
+    "11-9051.00",
+    "11-9081.00",
+    "11-9111.00",
+    "11-9121.00",
+    "11-9121.01",
+    "11-9199.10",
+    "13-1081.00",
+    "13-1082.00",
+    "15-1211.00",
+    "15-1221.00",
+    "15-1251.00",
+    "15-1252.00",
+    "15-1255.01",
+    "15-1299.05",
+    "15-1299.08",
+    "15-1299.09",
+    "19-1023.00",
+    "23-1011.00",
+    "41-3021.00"
+   ]
+  },
+  "activities": [
+   {
+    "dwa_id": "4.A.4.b.4.j.12",
+    "title": "Manage operations, research, or logistics projects.",
+    "occupations": 11,
+    "rank": 147
+   },
+   {
+    "dwa_id": "4.A.4.b.4.e.7",
+    "title": "Manage information technology projects or system activities.",
+    "occupations": 10,
+    "rank": 120
+   },
+   {
+    "dwa_id": "4.A.4.b.4.h.5",
+    "title": "Manage organizational or project budgets.",
+    "occupations": 10,
+    "rank": 282
+   }
+  ],
+  "occupations_served": 27
+ },
+ "limits": "EAC assumes future work continues at the current CPI; other forecasting formulas are not offered. Earned percent must come from measured progress, not from spending. Schedule variance is in money, not time. Totals sum the packages, which weights large packages more.",
+ "related": [
+  "milestone_status_report",
+  "budget_variance_report",
+  "cost_estimate_rollup"
+ ],
+ "technique_references": [
+  "Earned value management indices",
+  "CPI-based estimate at completion",
+  "To-complete performance index"
+ ],
+ "native_checks": []
+}

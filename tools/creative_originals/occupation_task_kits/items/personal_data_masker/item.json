@@ -1,0 +1,524 @@
+{
+ "record_type": "creative_original_item/v1",
+ "identity": "personal_data_masker",
+ "title": "Personal data masker for free text",
+ "purpose": "Replace personal identifiers in free text (emails, web addresses, IP addresses, card numbers, phone numbers, dates, ID numbers, ZIP codes, listed names and custom patterns) with numbered placeholders and return an inventory without the values.",
+ "form": "library_module",
+ "asset_role": null,
+ "dimension": "none",
+ "engine": {
+  "name": "python",
+  "minimum_version": "3.10"
+ },
+ "tags": [
+  "privacy",
+  "redaction",
+  "pii",
+  "masking",
+  "health records",
+  "student records"
+ ],
+ "files": [
+  {
+   "path": "README.md",
+   "role": "other"
+  },
+  {
+   "path": "personal_data_masker.py",
+   "role": "executable_tool"
+  },
+  {
+   "path": "PROCEDURE.md",
+   "role": "skill_reference"
+  },
+  {
+   "path": "TOOLS.md",
+   "role": "other"
+  },
+  {
+   "path": "ONET-ATTRIBUTION.md",
+   "role": "other"
+  },
+  {
+   "path": "examples/known_good.json",
+   "role": "other"
+  },
+  {
+   "path": "examples/known_wrong.json",
+   "role": "other"
+  }
+ ],
+ "contract": {
+  "entry_points": {
+   "module": "personal_data_masker",
+   "function": "run",
+   "command": "python3 personal_data_masker.py < input.json",
+   "command_exit_codes": {
+    "0": "result",
+    "2": "refusal"
+   }
+  },
+  "input_schema": {
+   "type": "object",
+   "required": [
+    "text"
+   ],
+   "additionalProperties": false,
+   "properties": {
+    "text": {
+     "type": "string",
+     "maxLength": 500000,
+     "description": "free text to mask"
+    },
+    "categories": {
+     "type": "array",
+     "items": {
+      "enum": [
+       "email",
+       "url",
+       "ip_address",
+       "card_number",
+       "id_number",
+       "date",
+       "phone",
+       "postal_code",
+       "name"
+      ]
+     },
+     "uniqueItems": true,
+     "description": "categories to mask (default all but postal_code)"
+    },
+    "names": {
+     "type": "array",
+     "items": {
+      "type": "string",
+      "minLength": 2
+     },
+     "maxItems": 5000,
+     "description": "known names to mask wherever they appear as whole words"
+    },
+    "custom_patterns": {
+     "type": "array",
+     "maxItems": 50,
+     "description": "extra identifiers: label and pattern",
+     "items": {
+      "type": "object",
+      "required": [
+       "label",
+       "pattern"
+      ],
+      "additionalProperties": false,
+      "properties": {
+       "label": {
+        "type": "string",
+        "pattern": "^[a-z][a-z0-9_]{1,30}$"
+       },
+       "pattern": {
+        "type": "string",
+        "minLength": 1
+       }
+      }
+     }
+    },
+    "style": {
+     "enum": [
+      "numbered",
+      "label"
+     ],
+     "description": "numbered gives [EMAIL_1] per distinct value; label gives [EMAIL] (default numbered)"
+    }
+   }
+  },
+  "output_schema": {
+   "type": "object",
+   "required": [
+    "masked_text",
+    "inventory",
+    "findings",
+    "categories_checked"
+   ],
+   "properties": {
+    "masked_text": {
+     "type": "string"
+    },
+    "inventory": {
+     "type": "object",
+     "description": "category to count of masked occurrences"
+    },
+    "findings": {
+     "type": "array",
+     "description": "category, start, end (original text offsets), placeholder",
+     "items": {
+      "type": "object",
+      "required": [
+       "category",
+       "start",
+       "end",
+       "placeholder"
+      ]
+     }
+    },
+    "categories_checked": {
+     "type": "array",
+     "items": {
+      "type": "string"
+     }
+    }
+   }
+  },
+  "refusal_reasons": [
+   "input_invalid",
+   "input_not_json",
+   "invalid_pattern",
+   "label_invalid"
+  ],
+  "examples": {
+   "known_good": "examples/known_good.json",
+   "known_wrong": "examples/known_wrong.json"
+  },
+  "effects": "none: a pure function of its JSON input; the command reads standard input and writes standard output",
+  "procedure": "PROCEDURE.md",
+  "tools": "TOOLS.md",
+  "attribution": "ONET-ATTRIBUTION.md",
+  "onet": {
+   "database": "O*NET 31.0",
+   "license": "CC BY 4.0",
+   "dwa_ids": [
+    "4.A.3.b.6.k.4",
+    "4.A.3.b.6.h.12",
+    "4.A.3.b.6.h.26",
+    "4.A.1.a.1.n.3"
+   ],
+   "task_ids": [
+    "347",
+    "364",
+    "370",
+    "373",
+    "374",
+    "387",
+    "418",
+    "439",
+    "443",
+    "507",
+    "508",
+    "510",
+    "515",
+    "754",
+    "769",
+    "1830",
+    "1840",
+    "1841",
+    "1946",
+    "1972",
+    "2483",
+    "2520",
+    "2521",
+    "2524",
+    "2571",
+    "2638",
+    "2668",
+    "2689",
+    "2696",
+    "4076",
+    "4083",
+    "4134",
+    "4148",
+    "4155",
+    "4205",
+    "4727",
+    "5455",
+    "5713",
+    "5737",
+    "5766",
+    "5787",
+    "5805",
+    "5834",
+    "5859",
+    "5872",
+    "5904",
+    "5918",
+    "5950",
+    "5970",
+    "5989",
+    "6010",
+    "6038",
+    "6060",
+    "6082",
+    "6110",
+    "6133",
+    "6157",
+    "6178",
+    "6202",
+    "6227",
+    "6251",
+    "6270",
+    "6293",
+    "6314",
+    "6337",
+    "6362",
+    "6384",
+    "6405",
+    "6423",
+    "6449",
+    "6482",
+    "6517",
+    "6547",
+    "6579",
+    "6611",
+    "6645",
+    "6672",
+    "6745",
+    "6784",
+    "6828",
+    "6916",
+    "6918",
+    "6947",
+    "7736",
+    "7756",
+    "7774",
+    "7791",
+    "7811",
+    "7822",
+    "8220",
+    "8676",
+    "9387",
+    "9714",
+    "9738",
+    "9748",
+    "11301",
+    "11377",
+    "17008",
+    "17029",
+    "17063",
+    "17078",
+    "17119",
+    "17167",
+    "17201",
+    "17212",
+    "17248",
+    "17265",
+    "17268",
+    "17283",
+    "17300",
+    "17303",
+    "17329",
+    "17358",
+    "17482",
+    "17508",
+    "18308",
+    "18341",
+    "18342",
+    "18356",
+    "18399",
+    "18418",
+    "18443",
+    "18448",
+    "18536",
+    "18562",
+    "18563",
+    "18572",
+    "18690",
+    "19093",
+    "19151",
+    "19176",
+    "19182",
+    "19248",
+    "19252",
+    "19271",
+    "19287",
+    "20282",
+    "21192",
+    "22342",
+    "22374",
+    "22403",
+    "22464",
+    "22468",
+    "22479",
+    "22493",
+    "22498",
+    "22510",
+    "22706",
+    "22717",
+    "22756",
+    "22775",
+    "22819",
+    "22862",
+    "22872",
+    "22878",
+    "23299",
+    "23303",
+    "23310",
+    "23333"
+   ],
+   "occupation_codes": [
+    "19-3034.00",
+    "25-1022.00",
+    "25-1031.00",
+    "25-1032.00",
+    "25-1041.00",
+    "25-1042.00",
+    "25-1043.00",
+    "25-1051.00",
+    "25-1052.00",
+    "25-1053.00",
+    "25-1054.00",
+    "25-1061.00",
+    "25-1062.00",
+    "25-1063.00",
+    "25-1064.00",
+    "25-1065.00",
+    "25-1066.00",
+    "25-1067.00",
+    "25-1071.00",
+    "25-1072.00",
+    "25-1081.00",
+    "25-1082.00",
+    "25-1111.00",
+    "25-1112.00",
+    "25-1113.00",
+    "25-1121.00",
+    "25-1122.00",
+    "25-1123.00",
+    "25-1124.00",
+    "25-1125.00",
+    "25-1126.00",
+    "25-1192.00",
+    "25-1193.00",
+    "25-1194.00",
+    "25-2011.00",
+    "25-2012.00",
+    "25-2021.00",
+    "25-2022.00",
+    "25-2023.00",
+    "25-2031.00",
+    "25-2032.00",
+    "25-2051.00",
+    "25-2055.00",
+    "25-2056.00",
+    "25-2057.00",
+    "25-2058.00",
+    "25-2059.01",
+    "25-3011.00",
+    "25-3021.00",
+    "25-3031.00",
+    "25-3041.00",
+    "25-9042.00",
+    "25-9043.00",
+    "29-1011.00",
+    "29-1023.00",
+    "29-1071.00",
+    "29-1071.01",
+    "29-1122.00",
+    "29-1123.00",
+    "29-1125.00",
+    "29-1129.01",
+    "29-1129.02",
+    "29-1141.00",
+    "29-1141.01",
+    "29-1141.02",
+    "29-1141.03",
+    "29-1151.00",
+    "29-1161.00",
+    "29-1171.00",
+    "29-1181.00",
+    "29-1211.00",
+    "29-1212.00",
+    "29-1213.00",
+    "29-1214.00",
+    "29-1215.00",
+    "29-1216.00",
+    "29-1217.00",
+    "29-1218.00",
+    "29-1221.00",
+    "29-1223.00",
+    "29-1224.00",
+    "29-1229.01",
+    "29-1229.03",
+    "29-1229.04",
+    "29-1229.05",
+    "29-1229.06",
+    "29-1241.00",
+    "29-1242.00",
+    "29-1243.00",
+    "29-1291.00",
+    "29-1292.00",
+    "29-1299.01",
+    "29-2031.00",
+    "29-2032.00",
+    "29-2033.00",
+    "29-2034.00",
+    "29-2042.00",
+    "29-2043.00",
+    "29-2052.00",
+    "29-2053.00",
+    "29-2055.00",
+    "29-2057.00",
+    "29-2061.00",
+    "29-2072.00",
+    "29-2081.00",
+    "29-2091.00",
+    "29-2099.05",
+    "29-9092.00",
+    "29-9099.01",
+    "31-2021.00",
+    "43-1011.00",
+    "43-3011.00",
+    "43-3051.00",
+    "43-3071.00",
+    "43-4041.00",
+    "43-4061.00",
+    "43-4111.00",
+    "43-4131.00",
+    "43-4141.00",
+    "43-4151.00",
+    "43-4161.00",
+    "43-4171.00",
+    "43-5053.00",
+    "43-5061.00",
+    "43-6012.00",
+    "43-6014.00",
+    "43-9041.00"
+   ]
+  },
+  "activities": [
+   {
+    "dwa_id": "4.A.3.b.6.k.4",
+    "title": "Record patient medical histories.",
+    "occupations": 57,
+    "rank": 11
+   },
+   {
+    "dwa_id": "4.A.3.b.6.h.12",
+    "title": "Maintain student records.",
+    "occupations": 53,
+    "rank": 13
+   },
+   {
+    "dwa_id": "4.A.3.b.6.h.26",
+    "title": "Record personnel information.",
+    "occupations": 6,
+    "rank": 206
+   },
+   {
+    "dwa_id": "4.A.1.a.1.n.3",
+    "title": "Obtain personal or financial information about customers or applicants.",
+    "occupations": 12,
+    "rank": 197
+   }
+  ],
+  "occupations_served": 127
+ },
+ "limits": "Pattern masking misses names that are not listed and have no honorific, addresses written in prose, and identifiers in unusual formats. It can also mask numbers that only look like phone numbers. Treat the output as reduced risk, not as anonymized data. Dates are masked whole; keep a year separately if analysis needs it.",
+ "related": [
+  "record_entry_validator",
+  "appointment_slot_allocator",
+  "document_compliance_checker"
+ ],
+ "technique_references": [
+  "Regular expression detection",
+  "Luhn checksum",
+  "Earliest-longest overlap resolution",
+  "Consistent placeholder numbering"
+ ],
+ "native_checks": []
+}

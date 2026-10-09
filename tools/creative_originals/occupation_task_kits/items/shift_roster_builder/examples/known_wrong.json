@@ -1,0 +1,27 @@
+{
+ "description": "Two staff records share the id A, so assignments could not be told apart.",
+ "input": {
+  "shifts": [
+   {
+    "id": "S1",
+    "date": "2026-10-12",
+    "start": "07:00",
+    "end": "15:00",
+    "required": 1
+   }
+  ],
+  "staff": [
+   {
+    "id": "A",
+    "max_hours_per_week": 40
+   },
+   {
+    "id": "A",
+    "max_hours_per_week": 20
+   }
+  ]
+ },
+ "expected_refusal": {
+  "reason": "duplicate_id"
+ }
+}

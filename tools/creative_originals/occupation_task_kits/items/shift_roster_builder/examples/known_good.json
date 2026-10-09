@@ -1,0 +1,133 @@
+{
+ "description": "Four shifts on 2026-10-12 and 2026-10-13 with a 10 hour rest rule. Expected: S1 to A and B, S2 to C, S3 (overnight, no skill) to D, S4 gets only A because B is unavailable, C is inside the rest window and D lacks the nurse skill; 5 of 6 positions filled.",
+ "input": {
+  "shifts": [
+   {
+    "id": "S1",
+    "date": "2026-10-12",
+    "start": "07:00",
+    "end": "15:00",
+    "required": 2,
+    "skill": "nurse"
+   },
+   {
+    "id": "S2",
+    "date": "2026-10-12",
+    "start": "15:00",
+    "end": "23:00",
+    "required": 1,
+    "skill": "nurse"
+   },
+   {
+    "id": "S3",
+    "date": "2026-10-12",
+    "start": "23:00",
+    "end": "07:00",
+    "required": 1
+   },
+   {
+    "id": "S4",
+    "date": "2026-10-13",
+    "start": "07:00",
+    "end": "15:00",
+    "required": 2,
+    "skill": "nurse"
+   }
+  ],
+  "staff": [
+   {
+    "id": "A",
+    "skills": [
+     "nurse"
+    ],
+    "max_hours_per_week": 40
+   },
+   {
+    "id": "B",
+    "skills": [
+     "nurse"
+    ],
+    "max_hours_per_week": 40,
+    "unavailable_dates": [
+     "2026-10-13"
+    ]
+   },
+   {
+    "id": "C",
+    "skills": [
+     "nurse"
+    ],
+    "max_hours_per_week": 16
+   },
+   {
+    "id": "D",
+    "skills": [],
+    "max_hours_per_week": 40
+   }
+  ],
+  "min_rest_hours": 10
+ },
+ "expected_output": {
+  "assignments": [
+   {
+    "shift": "S1",
+    "staff": [
+     "A",
+     "B"
+    ]
+   },
+   {
+    "shift": "S2",
+    "staff": [
+     "C"
+    ]
+   },
+   {
+    "shift": "S3",
+    "staff": [
+     "D"
+    ]
+   },
+   {
+    "shift": "S4",
+    "staff": [
+     "A"
+    ]
+   }
+  ],
+  "unfilled": [
+   {
+    "shift": "S4",
+    "missing": 1,
+    "blockers": {
+     "missing_skill": 1,
+     "overlap_or_rest": 1,
+     "unavailable": 1
+    }
+   }
+  ],
+  "hours": [
+   {
+    "staff": "A",
+    "hours": 16.0,
+    "shifts": 2
+   },
+   {
+    "staff": "B",
+    "hours": 8.0,
+    "shifts": 1
+   },
+   {
+    "staff": "C",
+    "hours": 8.0,
+    "shifts": 1
+   },
+   {
+    "staff": "D",
+    "hours": 8.0,
+    "shifts": 1
+   }
+  ],
+  "filled_share": 0.8333
+ }
+}

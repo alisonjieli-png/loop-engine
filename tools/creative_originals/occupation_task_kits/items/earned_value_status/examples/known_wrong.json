@@ -1,0 +1,24 @@
+{
+ "description": "Two work packages share the id WP1, so their costs would be merged or double counted.",
+ "input": {
+  "work_packages": [
+   {
+    "id": "WP1",
+    "budget": 1000,
+    "planned_percent": 50,
+    "earned_percent": 40,
+    "actual_cost": 500
+   },
+   {
+    "id": "WP1",
+    "budget": 2000,
+    "planned_percent": 10,
+    "earned_percent": 10,
+    "actual_cost": 150
+   }
+  ]
+ },
+ "expected_refusal": {
+  "reason": "duplicate_package_id"
+ }
+}

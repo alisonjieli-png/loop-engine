@@ -1,0 +1,160 @@
+{
+ "description": "An ERP export (priority 1, weights in grams) and a supplier catalog (priority 2, weights in kilograms) merged on SKU. Expected: 4 keys; weights agree after conversion; one conflict, the A-100 price (4.20 against 4.35); A-300 takes its price and every supplier from the catalog; supplier filled for 0.75 of rows.",
+ "input": {
+  "target_fields": [
+   "sku",
+   "name",
+   "weight_kg",
+   "price",
+   "supplier"
+  ],
+  "key_fields": [
+   "sku"
+  ],
+  "sources": [
+   {
+    "name": "erp",
+    "priority": 1,
+    "csv_text": "SKU,Description,Weight (g),Unit Price\nA-100,Steel bracket,250,4.20\nA-200,Hinge pin,40,0.35\nA-300,Mounting plate,1200,\n",
+    "mapping": {
+     "sku": "SKU",
+     "name": "Description",
+     "weight_kg": "Weight (g)",
+     "price": "Unit Price"
+    },
+    "units": {
+     "weight_kg": 0.001
+    }
+   },
+   {
+    "name": "supplier_catalog",
+    "priority": 2,
+    "csv_text": "item,title,kg,price,vendor\nA-100,Steel Bracket,0.25,4.35,Northwind\nA-300,Mounting plate,1.2,12.80,Northwind\nA-400,Wall anchor,0.01,0.09,Contoso\n",
+    "mapping": {
+     "sku": "item",
+     "name": "title",
+     "weight_kg": "kg",
+     "price": "price",
+     "supplier": "vendor"
+    }
+   }
+  ],
+  "numeric_tolerance": 0.01
+ },
+ "expected_output": {
+  "rows": [
+   {
+    "values": {
+     "sku": "A-100",
+     "name": "Steel bracket",
+     "weight_kg": "0.25",
+     "price": "4.20",
+     "supplier": "Northwind"
+    },
+    "provenance": {
+     "sku": "erp",
+     "name": "erp",
+     "weight_kg": "erp",
+     "price": "erp",
+     "supplier": "supplier_catalog"
+    },
+    "sources": [
+     "erp",
+     "supplier_catalog"
+    ]
+   },
+   {
+    "values": {
+     "sku": "A-200",
+     "name": "Hinge pin",
+     "weight_kg": "0.04",
+     "price": "0.35",
+     "supplier": ""
+    },
+    "provenance": {
+     "sku": "erp",
+     "name": "erp",
+     "weight_kg": "erp",
+     "price": "erp"
+    },
+    "sources": [
+     "erp"
+    ]
+   },
+   {
+    "values": {
+     "sku": "A-300",
+     "name": "Mounting plate",
+     "weight_kg": "1.2",
+     "price": "12.80",
+     "supplier": "Northwind"
+    },
+    "provenance": {
+     "sku": "erp",
+     "name": "erp",
+     "weight_kg": "erp",
+     "price": "supplier_catalog",
+     "supplier": "supplier_catalog"
+    },
+    "sources": [
+     "erp",
+     "supplier_catalog"
+    ]
+   },
+   {
+    "values": {
+     "sku": "A-400",
+     "name": "Wall anchor",
+     "weight_kg": "0.01",
+     "price": "0.09",
+     "supplier": "Contoso"
+    },
+    "provenance": {
+     "sku": "supplier_catalog",
+     "name": "supplier_catalog",
+     "weight_kg": "supplier_catalog",
+     "price": "supplier_catalog",
+     "supplier": "supplier_catalog"
+    },
+    "sources": [
+     "supplier_catalog"
+    ]
+   }
+  ],
+  "conflicts": [
+   {
+    "key": {
+     "sku": "A-100"
+    },
+    "field": "price",
+    "values": [
+     {
+      "source": "erp",
+      "value": "4.20"
+     },
+     {
+      "source": "supplier_catalog",
+      "value": "4.35"
+     }
+    ],
+    "chosen": "erp"
+   }
+  ],
+  "summary": {
+   "keys": 4,
+   "conflicts": 1,
+   "rows_per_source": {
+    "erp": 3,
+    "supplier_catalog": 3
+   },
+   "keys_in_one_source_only": 2,
+   "filled_share": {
+    "sku": 1.0,
+    "name": 1.0,
+    "weight_kg": 1.0,
+    "price": 1.0,
+    "supplier": 0.75
+   }
+  }
+ }
+}

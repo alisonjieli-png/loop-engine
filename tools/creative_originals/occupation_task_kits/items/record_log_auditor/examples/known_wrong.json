@@ -1,0 +1,16 @@
+{
+ "description": "The log is grouped by a field named site, which no record has, so every record would fall into one empty group.",
+ "input": {
+  "records": [
+   {
+    "date": "2026-10-01",
+    "machine": "M1"
+   }
+  ],
+  "timestamp_field": "date",
+  "group_field": "site"
+ },
+ "expected_refusal": {
+  "reason": "field_absent"
+ }
+}

@@ -1,0 +1,401 @@
+{
+ "record_type": "creative_original_item/v1",
+ "identity": "multi_source_table_merge",
+ "title": "Multi-source table merge with provenance and conflicts",
+ "purpose": "Compile one table from several CSV sources by mapping columns to target fields, converting units, matching on key fields, taking values by source priority, recording which source gave each value and listing disagreements.",
+ "form": "library_module",
+ "asset_role": null,
+ "dimension": "none",
+ "engine": {
+  "name": "python",
+  "minimum_version": "3.10"
+ },
+ "tags": [
+  "data compilation",
+  "merge",
+  "provenance",
+  "csv",
+  "conflicts",
+  "data integration"
+ ],
+ "files": [
+  {
+   "path": "README.md",
+   "role": "other"
+  },
+  {
+   "path": "multi_source_table_merge.py",
+   "role": "executable_tool"
+  },
+  {
+   "path": "PROCEDURE.md",
+   "role": "skill_reference"
+  },
+  {
+   "path": "TOOLS.md",
+   "role": "other"
+  },
+  {
+   "path": "ONET-ATTRIBUTION.md",
+   "role": "other"
+  },
+  {
+   "path": "examples/known_good.json",
+   "role": "other"
+  },
+  {
+   "path": "examples/known_wrong.json",
+   "role": "other"
+  }
+ ],
+ "contract": {
+  "entry_points": {
+   "module": "multi_source_table_merge",
+   "function": "run",
+   "command": "python3 multi_source_table_merge.py < input.json",
+   "command_exit_codes": {
+    "0": "result",
+    "2": "refusal"
+   }
+  },
+  "input_schema": {
+   "type": "object",
+   "required": [
+    "target_fields",
+    "key_fields",
+    "sources"
+   ],
+   "additionalProperties": false,
+   "properties": {
+    "target_fields": {
+     "type": "array",
+     "minItems": 1,
+     "maxItems": 200,
+     "items": {
+      "type": "string"
+     },
+     "uniqueItems": true,
+     "description": "fields of the merged table, in output order"
+    },
+    "key_fields": {
+     "type": "array",
+     "minItems": 1,
+     "maxItems": 5,
+     "items": {
+      "type": "string"
+     },
+     "description": "target fields that identify a row across sources"
+    },
+    "sources": {
+     "type": "array",
+     "minItems": 1,
+     "maxItems": 20,
+     "description": "sources with a name, CSV text, a priority (1 wins), a mapping of target field to source column and optional unit multipliers per target field",
+     "items": {
+      "type": "object",
+      "required": [
+       "name",
+       "csv_text",
+       "priority",
+       "mapping"
+      ],
+      "additionalProperties": false,
+      "properties": {
+       "name": {
+        "type": "string",
+        "minLength": 1
+       },
+       "csv_text": {
+        "type": "string",
+        "maxLength": 5000000
+       },
+       "priority": {
+        "type": "integer",
+        "minimum": 1,
+        "maximum": 100
+       },
+       "mapping": {
+        "type": "object",
+        "minProperties": 1,
+        "additionalProperties": {
+         "type": "string"
+        }
+       },
+       "units": {
+        "type": "object",
+        "additionalProperties": {
+         "type": "number",
+         "exclusiveMinimum": 0
+        }
+       }
+      }
+     }
+    },
+    "numeric_tolerance": {
+     "type": "number",
+     "minimum": 0,
+     "maximum": 1,
+     "description": "relative difference below which numbers agree (default 0)"
+    }
+   }
+  },
+  "output_schema": {
+   "type": "object",
+   "required": [
+    "rows",
+    "conflicts",
+    "summary"
+   ],
+   "properties": {
+    "rows": {
+     "type": "array",
+     "description": "merged rows in first-seen key order with values and provenance",
+     "items": {
+      "type": "object",
+      "required": [
+       "values",
+       "provenance",
+       "sources"
+      ]
+     }
+    },
+    "conflicts": {
+     "type": "array",
+     "description": "fields where sources disagree, with every value",
+     "items": {
+      "type": "object",
+      "required": [
+       "key",
+       "field",
+       "values",
+       "chosen"
+      ]
+     }
+    },
+    "summary": {
+     "type": "object",
+     "description": "rows per source, keys, conflicts, filled share per field"
+    }
+   }
+  },
+  "refusal_reasons": [
+   "input_invalid",
+   "input_not_json",
+   "header_missing",
+   "mapping_column_absent",
+   "key_not_mapped",
+   "unknown_target_field",
+   "duplicate_key_in_source",
+   "duplicate_source_name",
+   "unit_on_text_value"
+  ],
+  "examples": {
+   "known_good": "examples/known_good.json",
+   "known_wrong": "examples/known_wrong.json"
+  },
+  "effects": "none: a pure function of its JSON input; the command reads standard input and writes standard output",
+  "procedure": "PROCEDURE.md",
+  "tools": "TOOLS.md",
+  "attribution": "ONET-ATTRIBUTION.md",
+  "onet": {
+   "database": "O*NET 31.0",
+   "license": "CC BY 4.0",
+   "dwa_ids": [
+    "4.A.2.a.2.c.3",
+    "4.A.2.a.2.c.2",
+    "4.A.3.b.6.h.18"
+   ],
+   "task_ids": [
+    "776",
+    "792",
+    "798",
+    "799",
+    "806",
+    "828",
+    "1549",
+    "1561",
+    "2492",
+    "2499",
+    "2507",
+    "2517",
+    "2529",
+    "2596",
+    "2597",
+    "2629",
+    "2641",
+    "2686",
+    "2693",
+    "2697",
+    "2780",
+    "2781",
+    "2793",
+    "3737",
+    "3923",
+    "3966",
+    "4004",
+    "4723",
+    "5528",
+    "5571",
+    "5575",
+    "5629",
+    "7548",
+    "7579",
+    "7610",
+    "9100",
+    "9108",
+    "9240",
+    "9333",
+    "9337",
+    "9716",
+    "9736",
+    "9753",
+    "9790",
+    "9791",
+    "9797",
+    "10842",
+    "11271",
+    "11275",
+    "11277",
+    "11290",
+    "11293",
+    "11371",
+    "11377",
+    "11402",
+    "12962",
+    "12969",
+    "13292",
+    "13302",
+    "14641",
+    "15287",
+    "16807",
+    "16832",
+    "16977",
+    "16982",
+    "18260",
+    "18295",
+    "18478",
+    "19376",
+    "19782",
+    "20394",
+    "20897",
+    "20981",
+    "21061",
+    "21065",
+    "21094",
+    "21145",
+    "21536",
+    "21789",
+    "22158",
+    "22165",
+    "22228",
+    "22238",
+    "22264",
+    "22267",
+    "22276",
+    "22528",
+    "23298",
+    "23315",
+    "23915",
+    "24018"
+   ],
+   "occupation_codes": [
+    "11-1031.00",
+    "13-1041.01",
+    "13-1041.07",
+    "13-2022.00",
+    "15-1253.00",
+    "15-1299.06",
+    "17-3013.00",
+    "19-1029.02",
+    "19-1029.03",
+    "19-1031.00",
+    "19-2043.00",
+    "19-2099.01",
+    "19-3022.00",
+    "19-3033.00",
+    "19-3051.00",
+    "19-3091.00",
+    "19-4012.00",
+    "19-4012.01",
+    "19-4013.00",
+    "19-4021.00",
+    "19-4042.00",
+    "19-4043.00",
+    "19-4051.02",
+    "19-4061.00",
+    "19-4071.00",
+    "19-4092.00",
+    "19-4099.01",
+    "19-4099.03",
+    "21-1012.00",
+    "23-2093.00",
+    "25-4013.00",
+    "27-2012.00",
+    "27-2023.00",
+    "27-3042.00",
+    "27-3091.00",
+    "27-4011.00",
+    "29-1031.00",
+    "31-9097.00",
+    "33-9031.00",
+    "35-2013.00",
+    "43-1011.00",
+    "43-3031.00",
+    "43-3051.00",
+    "43-4021.00",
+    "43-4041.00",
+    "43-4061.00",
+    "43-4071.00",
+    "43-4111.00",
+    "43-4131.00",
+    "43-4141.00",
+    "43-4151.00",
+    "43-4161.00",
+    "43-4181.00",
+    "43-5061.00",
+    "43-6011.00",
+    "43-6013.00",
+    "43-6014.00",
+    "43-9021.00",
+    "43-9022.00",
+    "43-9041.00",
+    "43-9061.00",
+    "43-9071.00",
+    "43-9111.00"
+   ]
+  },
+  "activities": [
+   {
+    "dwa_id": "4.A.2.a.2.c.3",
+    "title": "Compile data or documentation.",
+    "occupations": 31,
+    "rank": 7
+   },
+   {
+    "dwa_id": "4.A.2.a.2.c.2",
+    "title": "Compile technical information or documentation.",
+    "occupations": 10,
+    "rank": 195
+   },
+   {
+    "dwa_id": "4.A.3.b.6.h.18",
+    "title": "Record research or operational data.",
+    "occupations": 22,
+    "rank": 43
+   }
+  ],
+  "occupations_served": 63
+ },
+ "limits": "Keys must match exactly after trimming; fuzzy matching belongs to duplicate_record_finder. One row per key per source; repeated keys are refused. Unit conversion is a multiplier only, so offsets such as temperature scales are not supported. Text values are compared after case folding, so a change of capital letters is not a conflict.",
+ "related": [
+  "record_entry_validator",
+  "duplicate_record_finder",
+  "column_profile"
+ ],
+ "technique_references": [
+  "Priority-based field survivorship",
+  "Provenance per field",
+  "Relative numeric tolerance"
+ ],
+ "native_checks": []
+}

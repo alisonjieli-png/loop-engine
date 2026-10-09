@@ -1,0 +1,31 @@
+{
+ "description": "Provider P1 lists two availability blocks that overlap on 2026-10-13, so free time is ambiguous and the helper must refuse.",
+ "input": {
+  "providers": [
+   {
+    "id": "P1",
+    "availability": [
+     {
+      "date": "2026-10-13",
+      "start": "09:00",
+      "end": "12:00"
+     },
+     {
+      "date": "2026-10-13",
+      "start": "11:00",
+      "end": "13:00"
+     }
+    ]
+   }
+  ],
+  "requests": [
+   {
+    "id": "R1",
+    "duration_minutes": 30
+   }
+  ]
+ },
+ "expected_refusal": {
+  "reason": "overlapping_availability"
+ }
+}

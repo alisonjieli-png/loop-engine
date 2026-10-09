@@ -1,0 +1,30 @@
+{
+ "description": "Two records share the id V1, so a duplicate decision could not say which record it means.",
+ "input": {
+  "records": [
+   {
+    "id": "V1",
+    "name": "A"
+   },
+   {
+    "id": "V1",
+    "name": "B"
+   }
+  ],
+  "fields": [
+   {
+    "name": "name",
+    "method": "exact"
+   }
+  ],
+  "blocking": [
+   {
+    "field": "name",
+    "transform": "prefix3"
+   }
+  ]
+ },
+ "expected_refusal": {
+  "reason": "duplicate_id"
+ }
+}

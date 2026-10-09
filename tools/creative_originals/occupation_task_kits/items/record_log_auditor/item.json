@@ -1,0 +1,472 @@
+{
+ "record_type": "creative_original_item/v1",
+ "identity": "record_log_auditor",
+ "title": "Operational log completeness and order audit",
+ "purpose": "Audit an operational log for missing required fields, unreadable or out-of-order timestamps, repeated ids, sequence gaps and repeats, and missing days or hours per group against a period, with coverage shares.",
+ "form": "library_module",
+ "asset_role": null,
+ "dimension": "none",
+ "engine": {
+  "name": "python",
+  "minimum_version": "3.10"
+ },
+ "tags": [
+  "records",
+  "operational log",
+  "audit",
+  "completeness",
+  "sequence gaps",
+  "documentation"
+ ],
+ "files": [
+  {
+   "path": "README.md",
+   "role": "other"
+  },
+  {
+   "path": "record_log_auditor.py",
+   "role": "executable_tool"
+  },
+  {
+   "path": "PROCEDURE.md",
+   "role": "skill_reference"
+  },
+  {
+   "path": "TOOLS.md",
+   "role": "other"
+  },
+  {
+   "path": "ONET-ATTRIBUTION.md",
+   "role": "other"
+  },
+  {
+   "path": "examples/known_good.json",
+   "role": "other"
+  },
+  {
+   "path": "examples/known_wrong.json",
+   "role": "other"
+  }
+ ],
+ "contract": {
+  "entry_points": {
+   "module": "record_log_auditor",
+   "function": "run",
+   "command": "python3 record_log_auditor.py < input.json",
+   "command_exit_codes": {
+    "0": "result",
+    "2": "refusal"
+   }
+  },
+  "input_schema": {
+   "type": "object",
+   "required": [
+    "records",
+    "timestamp_field"
+   ],
+   "additionalProperties": false,
+   "properties": {
+    "records": {
+     "type": "array",
+     "minItems": 1,
+     "maxItems": 200000,
+     "items": {
+      "type": "object"
+     },
+     "description": "log records as objects"
+    },
+    "timestamp_field": {
+     "type": "string",
+     "minLength": 1,
+     "description": "field holding a YYYY-MM-DD date or an ISO 8601 date and time"
+    },
+    "required_fields": {
+     "type": "array",
+     "items": {
+      "type": "string"
+     },
+     "maxItems": 100,
+     "description": "fields every record must fill"
+    },
+    "id_field": {
+     "type": "string",
+     "description": "field whose values must not repeat"
+    },
+    "sequence_field": {
+     "type": "string",
+     "description": "integer field expected to rise by 1 per group"
+    },
+    "group_field": {
+     "type": "string",
+     "description": "field that splits the log, such as site or machine"
+    },
+    "expected_interval": {
+     "enum": [
+      "day",
+      "hour"
+     ],
+     "description": "one record expected per day or per hour"
+    },
+    "period": {
+     "type": "object",
+     "required": [
+      "start",
+      "end"
+     ],
+     "additionalProperties": false,
+     "properties": {
+      "start": {
+       "type": "string"
+      },
+      "end": {
+       "type": "string"
+      }
+     },
+     "description": "YYYY-MM-DD range the log should cover, inclusive"
+    },
+    "max_issues": {
+     "type": "integer",
+     "minimum": 1,
+     "maximum": 10000,
+     "description": "issues listed (default 200); counts are always complete"
+    }
+   }
+  },
+  "output_schema": {
+   "type": "object",
+   "required": [
+    "summary",
+    "issues",
+    "coverage"
+   ],
+   "properties": {
+    "summary": {
+     "type": "object",
+     "description": "counts per issue kind and overall coverage share"
+    },
+    "issues": {
+     "type": "array",
+     "description": "first issues with record index (0-based), group, kind, detail",
+     "items": {
+      "type": "object",
+      "required": [
+       "record",
+       "group",
+       "kind",
+       "detail"
+      ]
+     }
+    },
+    "coverage": {
+     "type": "array",
+     "description": "per group: first and last time, expected and present slots",
+     "items": {
+      "type": "object",
+      "required": [
+       "group",
+       "records",
+       "expected_slots",
+       "present_slots",
+       "share"
+      ]
+     }
+    }
+   }
+  },
+  "refusal_reasons": [
+   "input_invalid",
+   "input_not_json",
+   "field_absent",
+   "invalid_period"
+  ],
+  "examples": {
+   "known_good": "examples/known_good.json",
+   "known_wrong": "examples/known_wrong.json"
+  },
+  "effects": "none: a pure function of its JSON input; the command reads standard input and writes standard output",
+  "procedure": "PROCEDURE.md",
+  "tools": "TOOLS.md",
+  "attribution": "ONET-ATTRIBUTION.md",
+  "onet": {
+   "database": "O*NET 31.0",
+   "license": "CC BY 4.0",
+   "dwa_ids": [
+    "4.A.3.b.6.h.5",
+    "4.A.3.b.6.h.11",
+    "4.A.3.b.6.h.21",
+    "4.A.3.b.6.h.19"
+   ],
+   "task_ids": [
+    "49",
+    "569",
+    "796",
+    "900",
+    "1020",
+    "1090",
+    "1094",
+    "1128",
+    "1287",
+    "1321",
+    "1346",
+    "1366",
+    "1368",
+    "1372",
+    "1689",
+    "1702",
+    "2539",
+    "2731",
+    "2926",
+    "3586",
+    "3641",
+    "3819",
+    "5045",
+    "5194",
+    "7125",
+    "7151",
+    "7160",
+    "7226",
+    "7256",
+    "7384",
+    "7953",
+    "7968",
+    "8238",
+    "8245",
+    "8391",
+    "8638",
+    "8642",
+    "9436",
+    "9455",
+    "9656",
+    "10578",
+    "10586",
+    "10600",
+    "10610",
+    "10620",
+    "10625",
+    "10693",
+    "10707",
+    "10980",
+    "11108",
+    "11276",
+    "11374",
+    "11378",
+    "11406",
+    "11638",
+    "11674",
+    "11747",
+    "11772",
+    "11777",
+    "12748",
+    "12749",
+    "12772",
+    "13426",
+    "13836",
+    "13843",
+    "14555",
+    "14642",
+    "14643",
+    "14744",
+    "14851",
+    "15466",
+    "15592",
+    "15620",
+    "15796",
+    "16076",
+    "16295",
+    "16425",
+    "16468",
+    "16516",
+    "16579",
+    "17567",
+    "17714",
+    "17950",
+    "17955",
+    "18101",
+    "18146",
+    "18203",
+    "18518",
+    "18600",
+    "18846",
+    "19007",
+    "19412",
+    "20197",
+    "20274",
+    "20900",
+    "20935",
+    "21238",
+    "21360",
+    "21370",
+    "21380",
+    "21853",
+    "21866",
+    "21902",
+    "21984",
+    "21989",
+    "21992",
+    "22011",
+    "22063",
+    "22410",
+    "22923",
+    "22929",
+    "22944",
+    "22948",
+    "23077",
+    "23098",
+    "23256",
+    "23319",
+    "23387",
+    "23390",
+    "23563",
+    "23725",
+    "23727",
+    "23748",
+    "23752",
+    "23819",
+    "23894",
+    "24043"
+   ],
+   "occupation_codes": [
+    "11-2032.00",
+    "11-3051.04",
+    "11-3061.00",
+    "11-3071.00",
+    "11-9013.00",
+    "11-9031.00",
+    "11-9051.00",
+    "11-9081.00",
+    "11-9111.00",
+    "11-9121.01",
+    "11-9121.02",
+    "11-9141.00",
+    "11-9151.00",
+    "11-9161.00",
+    "11-9171.00",
+    "11-9199.08",
+    "15-1211.01",
+    "15-1231.00",
+    "15-1232.00",
+    "15-1241.01",
+    "15-1244.00",
+    "15-1253.00",
+    "15-1299.01",
+    "15-2031.00",
+    "15-2099.01",
+    "17-1022.01",
+    "17-2011.00",
+    "17-2031.00",
+    "17-2081.00",
+    "17-2111.00",
+    "17-2112.02",
+    "17-2121.00",
+    "17-2141.02",
+    "17-2171.00",
+    "17-2199.05",
+    "17-2199.07",
+    "17-2199.08",
+    "17-3023.00",
+    "17-3024.00",
+    "17-3024.01",
+    "17-3025.00",
+    "17-3026.01",
+    "25-4013.00",
+    "25-4022.00",
+    "25-4031.00",
+    "25-9021.00",
+    "33-1011.00",
+    "33-1012.00",
+    "33-1021.00",
+    "33-1091.00",
+    "33-2022.00",
+    "33-3041.00",
+    "33-3051.00",
+    "33-3051.04",
+    "33-9011.00",
+    "33-9092.00",
+    "33-9094.00",
+    "33-9099.02",
+    "37-3012.00",
+    "41-3041.00",
+    "43-3021.00",
+    "43-3061.00",
+    "43-4021.00",
+    "43-5011.00",
+    "43-5032.00",
+    "43-5061.00",
+    "43-9021.00",
+    "43-9022.00",
+    "43-9041.00",
+    "45-2011.00",
+    "45-2021.00",
+    "45-2092.00",
+    "45-2093.00",
+    "49-1011.00",
+    "49-2011.00",
+    "49-2021.00",
+    "49-2022.00",
+    "49-2094.00",
+    "49-2095.00",
+    "49-2098.00",
+    "49-9011.00",
+    "49-9012.00",
+    "49-9021.00",
+    "49-9091.00",
+    "49-9094.00",
+    "49-9099.01",
+    "53-2011.00",
+    "53-2012.00",
+    "53-2021.00",
+    "53-2022.00",
+    "53-2031.00",
+    "53-3051.00",
+    "53-3053.00",
+    "53-4031.00",
+    "53-4041.00",
+    "53-5011.00",
+    "53-5021.00",
+    "53-5031.00",
+    "53-6011.00",
+    "53-6041.00",
+    "53-7065.00"
+   ]
+  },
+  "activities": [
+   {
+    "dwa_id": "4.A.3.b.6.h.5",
+    "title": "Maintain operational records.",
+    "occupations": 47,
+    "rank": 6
+   },
+   {
+    "dwa_id": "4.A.3.b.6.h.11",
+    "title": "Document operational activities.",
+    "occupations": 22,
+    "rank": 69
+   },
+   {
+    "dwa_id": "4.A.3.b.6.h.21",
+    "title": "Maintain operational records or records systems.",
+    "occupations": 17,
+    "rank": 92
+   },
+   {
+    "dwa_id": "4.A.3.b.6.h.19",
+    "title": "Record operational details of travel.",
+    "occupations": 16,
+    "rank": 220
+   }
+  ],
+  "occupations_served": 101
+ },
+ "limits": "Timestamps are YYYY-MM-DD dates or ISO 8601 date-times; offsets are converted to UTC before slots are counted, so local midnight can shift a record to another day. One record per slot counts as covered; the helper does not check how many records a slot should have. Sequence values must be integers; other values are skipped.",
+ "related": [
+  "record_entry_validator",
+  "records_retention_schedule",
+  "kpi_scorecard"
+ ],
+ "technique_references": [
+  "Sequence gap detection",
+  "Time slot coverage",
+  "Run-length grouping of missing slots"
+ ],
+ "native_checks": []
+}

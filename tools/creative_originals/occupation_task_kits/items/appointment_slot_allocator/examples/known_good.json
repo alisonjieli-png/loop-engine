@@ -1,0 +1,136 @@
+{
+ "description": "Two providers, one existing booking, a 10 minute buffer and five requests. Expected: R2 follow_up at 09:45 with P1 (the buffer pushes it past the 09:00 to 09:30 booking), R1 with its preferred provider P2 at 10:00, R3 on 2026-10-14 at 13:00; R4 has no provider offering x_ray and R5 (120 minutes, by 2026-10-13) has no free slot. P1 books 105 of 300 minutes.",
+ "input": {
+  "providers": [
+   {
+    "id": "P1",
+    "name": "Clinic room 1",
+    "services": [
+     "consult",
+     "follow_up"
+    ],
+    "availability": [
+     {
+      "date": "2026-10-13",
+      "start": "09:00",
+      "end": "12:00"
+     },
+     {
+      "date": "2026-10-14",
+      "start": "13:00",
+      "end": "15:00"
+     }
+    ]
+   },
+   {
+    "id": "P2",
+    "name": "Clinic room 2",
+    "services": [
+     "consult"
+    ],
+    "availability": [
+     {
+      "date": "2026-10-13",
+      "start": "10:00",
+      "end": "11:00"
+     }
+    ]
+   }
+  ],
+  "existing_bookings": [
+   {
+    "provider": "P1",
+    "date": "2026-10-13",
+    "start": "09:00",
+    "end": "09:30"
+   }
+  ],
+  "requests": [
+   {
+    "id": "R1",
+    "service": "consult",
+    "duration_minutes": 60,
+    "priority": 2,
+    "preferred_provider": "P2"
+   },
+   {
+    "id": "R2",
+    "service": "follow_up",
+    "duration_minutes": 30,
+    "priority": 1
+   },
+   {
+    "id": "R3",
+    "service": "consult",
+    "duration_minutes": 45,
+    "priority": 3,
+    "earliest_date": "2026-10-14"
+   },
+   {
+    "id": "R4",
+    "service": "x_ray",
+    "duration_minutes": 20,
+    "priority": 1
+   },
+   {
+    "id": "R5",
+    "service": "consult",
+    "duration_minutes": 120,
+    "priority": 3,
+    "latest_date": "2026-10-13"
+   }
+  ],
+  "slot_step_minutes": 15,
+  "buffer_minutes": 10
+ },
+ "expected_output": {
+  "bookings": [
+   {
+    "request": "R2",
+    "provider": "P1",
+    "date": "2026-10-13",
+    "start": "09:45",
+    "end": "10:15"
+   },
+   {
+    "request": "R1",
+    "provider": "P2",
+    "date": "2026-10-13",
+    "start": "10:00",
+    "end": "11:00",
+    "preferred_provider_used": true
+   },
+   {
+    "request": "R3",
+    "provider": "P1",
+    "date": "2026-10-14",
+    "start": "13:00",
+    "end": "13:45"
+   }
+  ],
+  "unplaced": [
+   {
+    "request": "R4",
+    "reason": "no_provider_offers_service"
+   },
+   {
+    "request": "R5",
+    "reason": "no_free_slot_in_window"
+   }
+  ],
+  "utilization": [
+   {
+    "provider": "P1",
+    "available_minutes": 300,
+    "booked_minutes": 105,
+    "share": 0.35
+   },
+   {
+    "provider": "P2",
+    "available_minutes": 60,
+    "booked_minutes": 60,
+    "share": 1.0
+   }
+  ]
+ }
+}

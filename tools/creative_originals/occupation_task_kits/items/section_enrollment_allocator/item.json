@@ -1,0 +1,479 @@
+{
+ "record_type": "creative_original_item/v1",
+ "identity": "section_enrollment_allocator",
+ "title": "Section enrollment allocator with prerequisites and waitlists",
+ "purpose": "Seat students in course sections by priority group and registration time, honouring capacity, prerequisites, one section per course and time-block clashes, with ordered waitlists.",
+ "form": "library_module",
+ "asset_role": null,
+ "dimension": "none",
+ "engine": {
+  "name": "python",
+  "minimum_version": "3.10"
+ },
+ "tags": [
+  "enrollment",
+  "registration",
+  "course sections",
+  "waitlist",
+  "prerequisites",
+  "education"
+ ],
+ "files": [
+  {
+   "path": "README.md",
+   "role": "other"
+  },
+  {
+   "path": "section_enrollment_allocator.py",
+   "role": "executable_tool"
+  },
+  {
+   "path": "PROCEDURE.md",
+   "role": "skill_reference"
+  },
+  {
+   "path": "TOOLS.md",
+   "role": "other"
+  },
+  {
+   "path": "ONET-ATTRIBUTION.md",
+   "role": "other"
+  },
+  {
+   "path": "examples/known_good.json",
+   "role": "other"
+  },
+  {
+   "path": "examples/known_wrong.json",
+   "role": "other"
+  }
+ ],
+ "contract": {
+  "entry_points": {
+   "module": "section_enrollment_allocator",
+   "function": "run",
+   "command": "python3 section_enrollment_allocator.py < input.json",
+   "command_exit_codes": {
+    "0": "result",
+    "2": "refusal"
+   }
+  },
+  "input_schema": {
+   "type": "object",
+   "required": [
+    "sections",
+    "students",
+    "requests"
+   ],
+   "additionalProperties": false,
+   "properties": {
+    "sections": {
+     "type": "array",
+     "minItems": 1,
+     "maxItems": 2000,
+     "description": "sections with a course, a seat capacity, an optional time block and course prerequisites",
+     "items": {
+      "type": "object",
+      "required": [
+       "id",
+       "course",
+       "capacity"
+      ],
+      "additionalProperties": false,
+      "properties": {
+       "id": {
+        "type": "string",
+        "minLength": 1
+       },
+       "course": {
+        "type": "string",
+        "minLength": 1
+       },
+       "capacity": {
+        "type": "integer",
+        "minimum": 0,
+        "maximum": 5000
+       },
+       "time_block": {
+        "type": "string"
+       },
+       "prerequisites": {
+        "type": "array",
+        "items": {
+         "type": "string"
+        }
+       }
+      }
+     }
+    },
+    "students": {
+     "type": "array",
+     "minItems": 1,
+     "maxItems": 50000,
+     "description": "students with a priority group, a registration time and completed courses",
+     "items": {
+      "type": "object",
+      "required": [
+       "id",
+       "priority_group",
+       "registered_at"
+      ],
+      "additionalProperties": false,
+      "properties": {
+       "id": {
+        "type": "string",
+        "minLength": 1
+       },
+       "priority_group": {
+        "type": "integer",
+        "minimum": 1,
+        "maximum": 20
+       },
+       "registered_at": {
+        "type": "string"
+       },
+       "completed": {
+        "type": "array",
+        "items": {
+         "type": "string"
+        }
+       }
+      }
+     }
+    },
+    "requests": {
+     "type": "array",
+     "minItems": 1,
+     "maxItems": 100000,
+     "description": "one seat request per course: the student and section choices in preference order",
+     "items": {
+      "type": "object",
+      "required": [
+       "id",
+       "student",
+       "choices"
+      ],
+      "additionalProperties": false,
+      "properties": {
+       "id": {
+        "type": "string",
+        "minLength": 1
+       },
+       "student": {
+        "type": "string"
+       },
+       "choices": {
+        "type": "array",
+        "minItems": 1,
+        "maxItems": 10,
+        "items": {
+         "type": "string"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "output_schema": {
+   "type": "object",
+   "required": [
+    "enrollments",
+    "waitlists",
+    "not_enrolled",
+    "section_fill"
+   ],
+   "properties": {
+    "enrollments": {
+     "type": "array",
+     "description": "seated requests in processing order, with the choice rank",
+     "items": {
+      "type": "object",
+      "required": [
+       "request",
+       "student",
+       "section",
+       "choice_rank"
+      ],
+      "properties": {
+       "request": {
+        "type": "string"
+       },
+       "student": {
+        "type": "string"
+       },
+       "section": {
+        "type": "string"
+       },
+       "choice_rank": {
+        "type": "integer"
+       }
+      }
+     }
+    },
+    "waitlists": {
+     "type": "object",
+     "description": "section id to waitlisted student ids in order"
+    },
+    "not_enrolled": {
+     "type": "array",
+     "description": "requests without a seat, with the reason",
+     "items": {
+      "type": "object",
+      "required": [
+       "request",
+       "student",
+       "reason"
+      ],
+      "properties": {
+       "request": {
+        "type": "string"
+       },
+       "student": {
+        "type": "string"
+       },
+       "reason": {
+        "enum": [
+         "waitlisted",
+         "missing_prerequisite",
+         "time_clash",
+         "already_in_course"
+        ]
+       }
+      }
+     }
+    },
+    "section_fill": {
+     "type": "array",
+     "description": "capacity, enrolled and waitlisted per section",
+     "items": {
+      "type": "object",
+      "required": [
+       "section",
+       "capacity",
+       "enrolled",
+       "waitlisted"
+      ],
+      "properties": {
+       "section": {
+        "type": "string"
+       },
+       "capacity": {
+        "type": "integer"
+       },
+       "enrolled": {
+        "type": "integer"
+       },
+       "waitlisted": {
+        "type": "integer"
+       }
+      }
+     }
+    }
+   }
+  },
+  "refusal_reasons": [
+   "input_invalid",
+   "input_not_json",
+   "duplicate_id",
+   "unknown_section",
+   "unknown_student",
+   "invalid_date_time"
+  ],
+  "examples": {
+   "known_good": "examples/known_good.json",
+   "known_wrong": "examples/known_wrong.json"
+  },
+  "effects": "none: a pure function of its JSON input; the command reads standard input and writes standard output",
+  "procedure": "PROCEDURE.md",
+  "tools": "TOOLS.md",
+  "attribution": "ONET-ATTRIBUTION.md",
+  "onet": {
+   "database": "O*NET 31.0",
+   "license": "CC BY 4.0",
+   "dwa_ids": [
+    "4.A.4.c.1.a.5",
+    "4.A.3.b.6.h.12"
+   ],
+   "task_ids": [
+    "5455",
+    "5675",
+    "5697",
+    "5713",
+    "5722",
+    "5737",
+    "5746",
+    "5766",
+    "5769",
+    "5787",
+    "5791",
+    "5805",
+    "5815",
+    "5834",
+    "5838",
+    "5859",
+    "5860",
+    "5872",
+    "5885",
+    "5904",
+    "5909",
+    "5918",
+    "5930",
+    "5950",
+    "5957",
+    "5970",
+    "5979",
+    "5989",
+    "6000",
+    "6010",
+    "6022",
+    "6038",
+    "6047",
+    "6060",
+    "6069",
+    "6082",
+    "6091",
+    "6110",
+    "6113",
+    "6133",
+    "6137",
+    "6157",
+    "6162",
+    "6178",
+    "6187",
+    "6202",
+    "6210",
+    "6227",
+    "6231",
+    "6251",
+    "6257",
+    "6270",
+    "6276",
+    "6293",
+    "6302",
+    "6314",
+    "6325",
+    "6337",
+    "6348",
+    "6362",
+    "6372",
+    "6384",
+    "6395",
+    "6405",
+    "6415",
+    "6423",
+    "6432",
+    "6449",
+    "6462",
+    "6482",
+    "6517",
+    "6547",
+    "6579",
+    "6611",
+    "6645",
+    "6672",
+    "6699",
+    "6745",
+    "6784",
+    "6828",
+    "6837",
+    "8676",
+    "17008",
+    "17029",
+    "19093",
+    "22342",
+    "22374",
+    "22403",
+    "22464",
+    "22468",
+    "22479",
+    "22493",
+    "22498",
+    "22510"
+   ],
+   "occupation_codes": [
+    "19-3034.00",
+    "25-1011.00",
+    "25-1021.00",
+    "25-1022.00",
+    "25-1031.00",
+    "25-1032.00",
+    "25-1041.00",
+    "25-1042.00",
+    "25-1043.00",
+    "25-1051.00",
+    "25-1052.00",
+    "25-1053.00",
+    "25-1054.00",
+    "25-1061.00",
+    "25-1062.00",
+    "25-1063.00",
+    "25-1064.00",
+    "25-1065.00",
+    "25-1066.00",
+    "25-1067.00",
+    "25-1071.00",
+    "25-1072.00",
+    "25-1081.00",
+    "25-1082.00",
+    "25-1111.00",
+    "25-1112.00",
+    "25-1113.00",
+    "25-1121.00",
+    "25-1122.00",
+    "25-1123.00",
+    "25-1124.00",
+    "25-1125.00",
+    "25-1126.00",
+    "25-1192.00",
+    "25-1193.00",
+    "25-1194.00",
+    "25-2011.00",
+    "25-2012.00",
+    "25-2021.00",
+    "25-2022.00",
+    "25-2023.00",
+    "25-2031.00",
+    "25-2032.00",
+    "25-2051.00",
+    "25-2055.00",
+    "25-2056.00",
+    "25-2057.00",
+    "25-2058.00",
+    "25-2059.01",
+    "25-3011.00",
+    "25-3021.00",
+    "25-3031.00",
+    "25-3041.00",
+    "25-9042.00",
+    "25-9043.00"
+   ]
+  },
+  "activities": [
+   {
+    "dwa_id": "4.A.4.c.1.a.5",
+    "title": "Perform student enrollment or registration activities.",
+    "occupations": 37,
+    "rank": 50
+   },
+   {
+    "dwa_id": "4.A.3.b.6.h.12",
+    "title": "Maintain student records.",
+    "occupations": 53,
+    "rank": 13
+   }
+  ],
+  "occupations_served": 55
+ },
+ "limits": "Prerequisites are completed course ids only; grades, co-requisites and instructor permission are not modelled. A time block is a label; overlap between different labels is not detected. Waitlists are not promoted automatically when seats free up: rerun with updated capacity. A registration time without an offset is read as UTC.",
+ "related": [
+  "weighted_gradebook",
+  "record_entry_validator",
+  "personal_data_masker"
+ ],
+ "technique_references": [
+  "Priority queue allocation",
+  "First-choice seat assignment with waitlists"
+ ],
+ "native_checks": []
+}

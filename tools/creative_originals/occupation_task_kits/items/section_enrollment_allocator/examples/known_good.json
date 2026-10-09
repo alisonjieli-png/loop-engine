@@ -1,0 +1,207 @@
+{
+ "description": "Four sections, four students in two priority groups, eight requests. Expected: s1 gets STAT201-A and WRIT110-A, s2 and s3 get MATH101-A; s2 lacks the MATH101 prerequisite for STAT201-A; s3 is waitlisted for WRIT110-A and already holds MATH101; s4 is waitlisted for STAT201-A.",
+ "input": {
+  "sections": [
+   {
+    "id": "MATH101-A",
+    "course": "MATH101",
+    "capacity": 2,
+    "time_block": "MWF09"
+   },
+   {
+    "id": "MATH101-B",
+    "course": "MATH101",
+    "capacity": 1,
+    "time_block": "TTH10"
+   },
+   {
+    "id": "STAT201-A",
+    "course": "STAT201",
+    "capacity": 1,
+    "time_block": "MWF09",
+    "prerequisites": [
+     "MATH101"
+    ]
+   },
+   {
+    "id": "WRIT110-A",
+    "course": "WRIT110",
+    "capacity": 1,
+    "time_block": "TTH10"
+   }
+  ],
+  "students": [
+   {
+    "id": "s1",
+    "priority_group": 1,
+    "registered_at": "2026-08-01T09:00:00Z",
+    "completed": [
+     "MATH101"
+    ]
+   },
+   {
+    "id": "s2",
+    "priority_group": 1,
+    "registered_at": "2026-08-01T10:00:00Z",
+    "completed": []
+   },
+   {
+    "id": "s3",
+    "priority_group": 2,
+    "registered_at": "2026-07-15T08:00:00Z"
+   },
+   {
+    "id": "s4",
+    "priority_group": 2,
+    "registered_at": "2026-07-20T08:00:00Z",
+    "completed": [
+     "MATH101"
+    ]
+   }
+  ],
+  "requests": [
+   {
+    "id": "r1",
+    "student": "s1",
+    "choices": [
+     "STAT201-A"
+    ]
+   },
+   {
+    "id": "r2",
+    "student": "s1",
+    "choices": [
+     "WRIT110-A"
+    ]
+   },
+   {
+    "id": "r3",
+    "student": "s2",
+    "choices": [
+     "MATH101-A",
+     "MATH101-B"
+    ]
+   },
+   {
+    "id": "r4",
+    "student": "s2",
+    "choices": [
+     "STAT201-A"
+    ]
+   },
+   {
+    "id": "r5",
+    "student": "s3",
+    "choices": [
+     "MATH101-A",
+     "MATH101-B"
+    ]
+   },
+   {
+    "id": "r6",
+    "student": "s4",
+    "choices": [
+     "STAT201-A"
+    ]
+   },
+   {
+    "id": "r7",
+    "student": "s3",
+    "choices": [
+     "WRIT110-A"
+    ]
+   },
+   {
+    "id": "r8",
+    "student": "s3",
+    "choices": [
+     "MATH101-B"
+    ]
+   }
+  ]
+ },
+ "expected_output": {
+  "enrollments": [
+   {
+    "request": "r1",
+    "student": "s1",
+    "section": "STAT201-A",
+    "choice_rank": 1
+   },
+   {
+    "request": "r2",
+    "student": "s1",
+    "section": "WRIT110-A",
+    "choice_rank": 1
+   },
+   {
+    "request": "r3",
+    "student": "s2",
+    "section": "MATH101-A",
+    "choice_rank": 1
+   },
+   {
+    "request": "r5",
+    "student": "s3",
+    "section": "MATH101-A",
+    "choice_rank": 1
+   }
+  ],
+  "waitlists": {
+   "STAT201-A": [
+    "s4"
+   ],
+   "WRIT110-A": [
+    "s3"
+   ]
+  },
+  "not_enrolled": [
+   {
+    "request": "r4",
+    "student": "s2",
+    "reason": "missing_prerequisite"
+   },
+   {
+    "request": "r7",
+    "student": "s3",
+    "reason": "waitlisted"
+   },
+   {
+    "request": "r8",
+    "student": "s3",
+    "reason": "already_in_course"
+   },
+   {
+    "request": "r6",
+    "student": "s4",
+    "reason": "waitlisted"
+   }
+  ],
+  "section_fill": [
+   {
+    "section": "MATH101-A",
+    "capacity": 2,
+    "enrolled": 2,
+    "waitlisted": 0
+   },
+   {
+    "section": "MATH101-B",
+    "capacity": 1,
+    "enrolled": 0,
+    "waitlisted": 0
+   },
+   {
+    "section": "STAT201-A",
+    "capacity": 1,
+    "enrolled": 1,
+    "waitlisted": 1
+   },
+   {
+    "section": "WRIT110-A",
+    "capacity": 1,
+    "enrolled": 1,
+    "waitlisted": 1
+   }
+  ]
+ }
+}

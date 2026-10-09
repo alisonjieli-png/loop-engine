@@ -1,0 +1,16 @@
+{
+ "description": "The rules require customer_id but the CSV has no customer_id column at all, which is a structural problem rather than a row error.",
+ "input": {
+  "csv_text": "id,name\n1,Ada\n",
+  "fields": [
+   {
+    "name": "customer_id",
+    "type": "string",
+    "required": true
+   }
+  ]
+ },
+ "expected_refusal": {
+  "reason": "missing_required_column"
+ }
+}

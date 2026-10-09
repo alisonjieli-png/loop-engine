@@ -1,0 +1,389 @@
+{
+ "record_type": "creative_original_item/v1",
+ "identity": "shift_roster_builder",
+ "title": "Shift roster builder with skills, hours and rest limits",
+ "purpose": "Assign staff to shifts while respecting required skills, unavailable dates, overlapping shifts, minimum rest, weekly hour limits and shift count limits, and explain every unfilled position.",
+ "form": "library_module",
+ "asset_role": null,
+ "dimension": "none",
+ "engine": {
+  "name": "python",
+  "minimum_version": "3.10"
+ },
+ "tags": [
+  "rostering",
+  "shifts",
+  "work schedule",
+  "staffing",
+  "duty assignment",
+  "fairness"
+ ],
+ "files": [
+  {
+   "path": "README.md",
+   "role": "other"
+  },
+  {
+   "path": "shift_roster_builder.py",
+   "role": "executable_tool"
+  },
+  {
+   "path": "PROCEDURE.md",
+   "role": "skill_reference"
+  },
+  {
+   "path": "TOOLS.md",
+   "role": "other"
+  },
+  {
+   "path": "ONET-ATTRIBUTION.md",
+   "role": "other"
+  },
+  {
+   "path": "examples/known_good.json",
+   "role": "other"
+  },
+  {
+   "path": "examples/known_wrong.json",
+   "role": "other"
+  }
+ ],
+ "contract": {
+  "entry_points": {
+   "module": "shift_roster_builder",
+   "function": "run",
+   "command": "python3 shift_roster_builder.py < input.json",
+   "command_exit_codes": {
+    "0": "result",
+    "2": "refusal"
+   }
+  },
+  "input_schema": {
+   "type": "object",
+   "required": [
+    "shifts",
+    "staff"
+   ],
+   "additionalProperties": false,
+   "properties": {
+    "shifts": {
+     "type": "array",
+     "minItems": 1,
+     "maxItems": 3000,
+     "description": "shifts with a date, start and end (an end at or before the start ends the next day), the number of people required and an optional skill",
+     "items": {
+      "type": "object",
+      "required": [
+       "id",
+       "date",
+       "start",
+       "end",
+       "required"
+      ],
+      "additionalProperties": false,
+      "properties": {
+       "id": {
+        "type": "string",
+        "minLength": 1
+       },
+       "date": {
+        "type": "string"
+       },
+       "start": {
+        "type": "string"
+       },
+       "end": {
+        "type": "string"
+       },
+       "required": {
+        "type": "integer",
+        "minimum": 1,
+        "maximum": 100
+       },
+       "skill": {
+        "type": "string"
+       }
+      }
+     }
+    },
+    "staff": {
+     "type": "array",
+     "minItems": 1,
+     "maxItems": 2000,
+     "description": "people with skills, a weekly hour limit, optional unavailable dates and a shift count limit",
+     "items": {
+      "type": "object",
+      "required": [
+       "id",
+       "max_hours_per_week"
+      ],
+      "additionalProperties": false,
+      "properties": {
+       "id": {
+        "type": "string",
+        "minLength": 1
+       },
+       "name": {
+        "type": "string"
+       },
+       "skills": {
+        "type": "array",
+        "items": {
+         "type": "string"
+        }
+       },
+       "max_hours_per_week": {
+        "type": "number",
+        "minimum": 0,
+        "maximum": 168
+       },
+       "max_shifts": {
+        "type": "integer",
+        "minimum": 0
+       },
+       "unavailable_dates": {
+        "type": "array",
+        "items": {
+         "type": "string"
+        }
+       }
+      }
+     }
+    },
+    "min_rest_hours": {
+     "type": "number",
+     "minimum": 0,
+     "maximum": 48,
+     "description": "minimum hours between two shifts of one person (default 10)"
+    }
+   }
+  },
+  "output_schema": {
+   "type": "object",
+   "required": [
+    "assignments",
+    "unfilled",
+    "hours",
+    "filled_share"
+   ],
+   "properties": {
+    "assignments": {
+     "type": "array",
+     "description": "staff ids per shift, in shift start order",
+     "items": {
+      "type": "object",
+      "required": [
+       "shift",
+       "staff"
+      ],
+      "properties": {
+       "shift": {
+        "type": "string"
+       },
+       "staff": {
+        "type": "array",
+        "items": {
+         "type": "string"
+        }
+       }
+      }
+     }
+    },
+    "unfilled": {
+     "type": "array",
+     "description": "shifts short of people, with the count and the main blocker",
+     "items": {
+      "type": "object",
+      "required": [
+       "shift",
+       "missing",
+       "blockers"
+      ],
+      "properties": {
+       "shift": {
+        "type": "string"
+       },
+       "missing": {
+        "type": "integer"
+       },
+       "blockers": {
+        "type": "object"
+       }
+      }
+     }
+    },
+    "hours": {
+     "type": "array",
+     "description": "assigned hours and shifts per person, in input order",
+     "items": {
+      "type": "object",
+      "required": [
+       "staff",
+       "hours",
+       "shifts"
+      ],
+      "properties": {
+       "staff": {
+        "type": "string"
+       },
+       "hours": {
+        "type": "number"
+       },
+       "shifts": {
+        "type": "integer"
+       }
+      }
+     }
+    },
+    "filled_share": {
+     "type": "number",
+     "description": "positions filled divided by positions required"
+    }
+   }
+  },
+  "refusal_reasons": [
+   "input_invalid",
+   "input_not_json",
+   "duplicate_id",
+   "invalid_date_or_time",
+   "shift_too_long"
+  ],
+  "examples": {
+   "known_good": "examples/known_good.json",
+   "known_wrong": "examples/known_wrong.json"
+  },
+  "effects": "none: a pure function of its JSON input; the command reads standard input and writes standard output",
+  "procedure": "PROCEDURE.md",
+  "tools": "TOOLS.md",
+  "attribution": "ONET-ATTRIBUTION.md",
+  "onet": {
+   "database": "O*NET 31.0",
+   "license": "CC BY 4.0",
+   "dwa_ids": [
+    "4.A.4.b.1.f.6",
+    "4.A.4.b.1.f.4",
+    "4.A.4.b.1.f.2"
+   ],
+   "task_ids": [
+    "52",
+    "659",
+    "672",
+    "837",
+    "1082",
+    "1106",
+    "1279",
+    "2390",
+    "2727",
+    "2809",
+    "5245",
+    "5264",
+    "7193",
+    "8831",
+    "9666",
+    "9713",
+    "9724",
+    "13138",
+    "14624",
+    "16167",
+    "16248",
+    "17613",
+    "18027",
+    "18570",
+    "18764",
+    "18771",
+    "18851",
+    "20701",
+    "20768",
+    "20842",
+    "20898",
+    "21110",
+    "21128",
+    "21264",
+    "21401",
+    "21462",
+    "21677",
+    "22942",
+    "23150",
+    "23156",
+    "23159",
+    "23176",
+    "23340",
+    "23935"
+   ],
+   "occupation_codes": [
+    "11-1011.00",
+    "11-1021.00",
+    "11-3012.00",
+    "11-9033.00",
+    "11-9051.00",
+    "11-9071.00",
+    "11-9072.00",
+    "11-9081.00",
+    "11-9111.00",
+    "11-9131.00",
+    "11-9171.00",
+    "11-9179.02",
+    "11-9199.01",
+    "13-1082.00",
+    "15-1221.00",
+    "15-1251.00",
+    "15-1252.00",
+    "15-1299.09",
+    "15-2041.01",
+    "25-1022.00",
+    "25-1123.00",
+    "33-1091.00",
+    "39-1013.00",
+    "39-1014.00",
+    "39-1022.00",
+    "39-3031.00",
+    "39-3092.00",
+    "39-9011.00",
+    "39-9032.00",
+    "41-1011.00",
+    "41-1012.00",
+    "43-1011.00",
+    "43-4081.00",
+    "43-4121.00",
+    "43-5032.00",
+    "43-6014.00",
+    "43-9061.00",
+    "45-1011.00",
+    "49-9041.00"
+   ]
+  },
+  "activities": [
+   {
+    "dwa_id": "4.A.4.b.1.f.6",
+    "title": "Assign duties or work schedules to employees.",
+    "occupations": 20,
+    "rank": 65
+   },
+   {
+    "dwa_id": "4.A.4.b.1.f.4",
+    "title": "Prepare employee work schedules.",
+    "occupations": 9,
+    "rank": 229
+   },
+   {
+    "dwa_id": "4.A.4.b.1.f.2",
+    "title": "Prepare staff schedules or work assignments.",
+    "occupations": 12,
+    "rank": 255
+   }
+  ],
+  "occupations_served": 39
+ },
+ "limits": "Greedy, not optimal: an early assignment can make a later shift impossible that another assignment would have filled. Labour law, union rules, pay rates, preferences and requests for days off beyond unavailable dates are not modelled. Rest is checked between assigned shifts only, not against shifts worked before the roster period.",
+ "related": [
+  "appointment_slot_allocator",
+  "training_compliance_matrix",
+  "critical_path_schedule"
+ ],
+ "technique_references": [
+  "Greedy least-loaded assignment",
+  "Interval overlap with rest padding",
+  "ISO week bucketing"
+ ],
+ "native_checks": []
+}

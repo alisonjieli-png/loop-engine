@@ -1,0 +1,136 @@
+{
+ "description": "Six vendor records blocked by postal code and the last four phone digits. Expected: V5 and V6 (0.981) and V1 and V2 (0.8947) are duplicates, V1 and V4 (0.8095) a possible duplicate; V2 and V4 score 0.6842, below review; two clusters.",
+ "input": {
+  "records": [
+   {
+    "id": "V1",
+    "name": "Acme Supply Co.",
+    "phone": "(555) 010-2000",
+    "postal": "30301",
+    "city": "Atlanta"
+   },
+   {
+    "id": "V2",
+    "name": "ACME Supply Company",
+    "phone": "555-010-2000",
+    "postal": "30301",
+    "city": "Atlanta"
+   },
+   {
+    "id": "V3",
+    "name": "Apex Tools",
+    "phone": "555 010 3000",
+    "postal": "30302",
+    "city": "Atlanta"
+   },
+   {
+    "id": "V4",
+    "name": "Acme Supplies",
+    "phone": "",
+    "postal": "30301",
+    "city": "Atlanta"
+   },
+   {
+    "id": "V5",
+    "name": "Brightline Logistics",
+    "phone": "555-010-4000",
+    "postal": "10001",
+    "city": "New York"
+   },
+   {
+    "id": "V6",
+    "name": "Bright Line Logistics",
+    "phone": "555-010-4000",
+    "postal": "10001",
+    "city": "New York"
+   }
+  ],
+  "fields": [
+   {
+    "name": "name",
+    "method": "edit_ratio",
+    "weight": 2
+   },
+   {
+    "name": "phone",
+    "method": "digits",
+    "weight": 2
+   },
+   {
+    "name": "postal",
+    "method": "exact",
+    "weight": 1
+   }
+  ],
+  "blocking": [
+   {
+    "field": "postal",
+    "transform": "normalized"
+   },
+   {
+    "field": "phone",
+    "transform": "last4_digits"
+   }
+  ]
+ },
+ "expected_output": {
+  "summary": {
+   "records": 6,
+   "candidate_pairs": 4,
+   "duplicates": 2,
+   "possible": 1,
+   "clusters": 2,
+   "records_in_clusters": 4
+  },
+  "pairs": [
+   {
+    "a": "V5",
+    "b": "V6",
+    "score": 0.981,
+    "decision": "duplicate",
+    "field_scores": {
+     "name": 0.9524,
+     "phone": 1.0,
+     "postal": 1.0
+    }
+   },
+   {
+    "a": "V1",
+    "b": "V2",
+    "score": 0.8947,
+    "decision": "duplicate",
+    "field_scores": {
+     "name": 0.7368,
+     "phone": 1.0,
+     "postal": 1.0
+    }
+   },
+   {
+    "a": "V1",
+    "b": "V4",
+    "score": 0.8095,
+    "decision": "possible",
+    "field_scores": {
+     "name": 0.7143,
+     "postal": 1.0
+    }
+   }
+  ],
+  "clusters": [
+   {
+    "representative": "V1",
+    "members": [
+     "V1",
+     "V2"
+    ]
+   },
+   {
+    "representative": "V5",
+    "members": [
+     "V5",
+     "V6"
+    ]
+   }
+  ]
+ }
+}

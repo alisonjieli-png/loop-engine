@@ -1,0 +1,144 @@
+{
+ "description": "Four requirements, three design elements and four tests. Expected: R1 passed, R2 failed (a must without a pass), R3 not run, R4 has neither design nor tests; D3 and T4 link to nothing; pass share 0.25.",
+ "input": {
+  "requirements": [
+   {
+    "id": "R1",
+    "priority": "must",
+    "text": "Export the monthly report as CSV."
+   },
+   {
+    "id": "R2",
+    "priority": "must",
+    "text": "Mask account numbers in exports."
+   },
+   {
+    "id": "R3",
+    "priority": "should",
+    "text": "Email the report to subscribers."
+   },
+   {
+    "id": "R4",
+    "priority": "could",
+    "text": "Offer a dark theme."
+   }
+  ],
+  "design_elements": [
+   {
+    "id": "D1",
+    "satisfies": [
+     "R1",
+     "R2"
+    ]
+   },
+   {
+    "id": "D2",
+    "satisfies": [
+     "R3"
+    ]
+   },
+   {
+    "id": "D3",
+    "satisfies": []
+   }
+  ],
+  "tests": [
+   {
+    "id": "T1",
+    "verifies": [
+     "R1"
+    ],
+    "status": "pass"
+   },
+   {
+    "id": "T2",
+    "verifies": [
+     "R2"
+    ],
+    "status": "fail"
+   },
+   {
+    "id": "T3",
+    "verifies": [
+     "R3"
+    ],
+    "status": "not_run"
+   },
+   {
+    "id": "T4",
+    "verifies": [],
+    "status": "pass"
+   }
+  ]
+ },
+ "expected_output": {
+  "matrix": [
+   {
+    "requirement": "R1",
+    "design_elements": [
+     "D1"
+    ],
+    "tests": [
+     "T1"
+    ],
+    "test_status": "passed"
+   },
+   {
+    "requirement": "R2",
+    "design_elements": [
+     "D1"
+    ],
+    "tests": [
+     "T2"
+    ],
+    "test_status": "failed"
+   },
+   {
+    "requirement": "R3",
+    "design_elements": [
+     "D2"
+    ],
+    "tests": [
+     "T3"
+    ],
+    "test_status": "not_run"
+   },
+   {
+    "requirement": "R4",
+    "design_elements": [],
+    "tests": [],
+    "test_status": "untested"
+   }
+  ],
+  "gaps": {
+   "without_design": [
+    "R4"
+   ],
+   "without_tests": [
+    "R4"
+   ],
+   "failing": [
+    "R2"
+   ],
+   "must_without_a_pass": [
+    "R2"
+   ],
+   "design_linked_to_nothing": [
+    "D3"
+   ],
+   "tests_linked_to_nothing": [
+    "T4"
+   ]
+  },
+  "coverage": {
+   "requirements": 4,
+   "with_design": 3,
+   "with_tests": 3,
+   "passed": 1,
+   "design_share": 0.75,
+   "test_share": 0.75,
+   "pass_share": 0.25,
+   "design_checked": true
+  }
+ }
+}

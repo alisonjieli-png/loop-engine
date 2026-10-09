@@ -1,0 +1,15 @@
+{
+ "description": "The custom pattern for record numbers has an unclosed group, so it cannot be compiled and nothing would be masked by it.",
+ "input": {
+  "text": "MRN 00482913",
+  "custom_patterns": [
+   {
+    "label": "mrn",
+    "pattern": "MRN (\\d{8}"
+   }
+  ]
+ },
+ "expected_refusal": {
+  "reason": "invalid_pattern"
+ }
+}

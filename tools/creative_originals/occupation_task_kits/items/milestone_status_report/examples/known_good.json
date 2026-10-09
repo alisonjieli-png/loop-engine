@@ -1,0 +1,118 @@
+{
+ "description": "Six milestones on 2026-10-09. Expected: M1 complete 3 days late, M2 complete on time, M3 amber (7 days slip), M4 red (20 days), M5 overdue, M6 green but forecast before its predecessor M4, so a dependency conflict; overall red.",
+ "input": {
+  "as_of": "2026-10-09",
+  "milestones": [
+   {
+    "id": "M1",
+    "name": "Requirements signed off",
+    "baseline_date": "2026-09-15",
+    "actual_date": "2026-09-18",
+    "owner": "Ana"
+   },
+   {
+    "id": "M2",
+    "name": "Design approved",
+    "baseline_date": "2026-10-01",
+    "actual_date": "2026-09-30"
+   },
+   {
+    "id": "M3",
+    "name": "Vendor selected",
+    "baseline_date": "2026-10-20",
+    "forecast_date": "2026-10-27",
+    "depends_on": [
+     "M2"
+    ]
+   },
+   {
+    "id": "M4",
+    "name": "Pilot live",
+    "baseline_date": "2026-11-10",
+    "forecast_date": "2026-11-30",
+    "depends_on": [
+     "M3"
+    ],
+    "owner": "Kai"
+   },
+   {
+    "id": "M5",
+    "name": "Training plan",
+    "baseline_date": "2026-10-05"
+   },
+   {
+    "id": "M6",
+    "name": "Go-live",
+    "baseline_date": "2026-12-01",
+    "forecast_date": "2026-11-25",
+    "depends_on": [
+     "M4"
+    ]
+   }
+  ]
+ },
+ "expected_output": {
+  "as_of": "2026-10-09",
+  "overall": "red",
+  "counts": {
+   "complete_on_time": 1,
+   "complete_late": 1,
+   "green": 1,
+   "amber": 1,
+   "red": 1,
+   "overdue": 1
+  },
+  "milestones": [
+   {
+    "id": "M1",
+    "status": "complete_late",
+    "slip_days": 3,
+    "days_until_due": null,
+    "dependency_conflict": false
+   },
+   {
+    "id": "M2",
+    "status": "complete_on_time",
+    "slip_days": -1,
+    "days_until_due": null,
+    "dependency_conflict": false
+   },
+   {
+    "id": "M3",
+    "status": "amber",
+    "slip_days": 7,
+    "days_until_due": 18,
+    "dependency_conflict": false
+   },
+   {
+    "id": "M4",
+    "status": "red",
+    "slip_days": 20,
+    "days_until_due": 52,
+    "dependency_conflict": false
+   },
+   {
+    "id": "M5",
+    "status": "overdue",
+    "slip_days": 4,
+    "days_until_due": -4,
+    "dependency_conflict": false
+   },
+   {
+    "id": "M6",
+    "status": "green",
+    "slip_days": -6,
+    "days_until_due": 47,
+    "dependency_conflict": true
+   }
+  ],
+  "lines": [
+   "M1 Requirements signed off: completed 2026-09-18, 3 days late.",
+   "M3 Vendor selected: forecast 2026-10-27, 7 days after baseline (amber).",
+   "M4 Pilot live: forecast 2026-11-30, 20 days after baseline (red). Owner: Kai.",
+   "M5 Training plan: overdue, baseline 2026-10-05 passed with no completion or later forecast.",
+   "M6 Go-live: forecast 2026-11-25, 6 days before baseline (green).",
+   "M6 Go-live: forecast is earlier than a predecessor's date; one of the two dates is wrong."
+  ]
+ }
+}

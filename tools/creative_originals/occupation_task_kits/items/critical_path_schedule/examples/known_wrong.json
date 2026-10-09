@@ -1,0 +1,11 @@
+{
+ "description": "Three tasks that depend on each other in a loop. No schedule exists, so the helper must refuse instead of returning dates.",
+ "input": {
+  "tasks": [
+   {"id": "A", "duration": 2, "depends_on": ["C"]},
+   {"id": "B", "duration": 1, "depends_on": ["A"]},
+   {"id": "C", "duration": 3, "depends_on": ["B"]}
+  ]
+ },
+ "expected_refusal": {"reason": "dependency_cycle"}
+}

@@ -1,0 +1,25 @@
+{
+ "description": "A scenario changes a field named price, which the program does not have, so the comparison would be silently wrong.",
+ "input": {
+  "program": {
+   "sessions": 4,
+   "hours_per_session": 1,
+   "venue_capacity": 10,
+   "expected_participants": 8,
+   "participants_per_staff": 8,
+   "staff_hourly_rate": 20,
+   "fee_per_participant": 5
+  },
+  "scenarios": [
+   {
+    "name": "price_up",
+    "changes": {
+     "price": 12
+    }
+   }
+  ]
+ },
+ "expected_refusal": {
+  "reason": "unknown_scenario_field"
+ }
+}
