@@ -4543,7 +4543,7 @@ ACG_API_PAGE = (b"<p>This section covers the ambientCG API which you can use to 
                 b"code.</p>")
 
 
-class _Fetched:
+class _CreativeFetched:
     def __init__(self, url, status, body):
         self.url, self.status, self.body = url, status, body
         self.sha256, self.retrieved_at, self.cached = _digest(body), "2026-10-05T00:00:00Z", False
@@ -4561,10 +4561,10 @@ class _CreativeReader:
     def get(self, url, cache_errors=False):
         self.asked.append(url)
         if url in self.pages:
-            return _Fetched(url, 200, self.pages[url])
+            return _CreativeFetched(url, 200, self.pages[url])
         if url == "https://creativecommons.org/publicdomain/zero/1.0/legalcode.txt":
-            return _Fetched(url, 200, CC0_TEXT)
-        return _Fetched(url, 404, b"")
+            return _CreativeFetched(url, 200, CC0_TEXT)
+        return _CreativeFetched(url, 404, b"")
 
     def digest(self, url, *, published=None, maximum_bytes=0, inspect=None, use_cache=True):
         from supply_lines.reading import Digested
@@ -4588,7 +4588,7 @@ class _CreativeReader:
                 "sha256": _digest(self.pinned), "retrieved_at": "2026-10-05T00:00:00Z", "url": "https://example.org"}
 
     def github(self, path):
-        return _Fetched("https://api.github.com/" + path, 200 if path in self.github_answers else 404,
+        return _CreativeFetched("https://api.github.com/" + path, 200 if path in self.github_answers else 404,
                         self.github_answers.get(path, b"{}"))
 
     def licence_text(self, repository, commit):
