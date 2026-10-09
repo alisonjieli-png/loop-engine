@@ -1,0 +1,177 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "icosphere",
+  "title": "Icosphere by recursive subdivision",
+  "purpose": "Build an evenly tessellated sphere by splitting a regular icosahedron into four triangles per face and projecting onto the sphere. Use it for physics bodies, planets and smooth balls.",
+  "form": "library_module",
+  "asset_role": null,
+  "dimension": "3d",
+  "engine": {
+    "name": "python",
+    "minimum_version": "3.10"
+  },
+  "tags": [
+    "primitive",
+    "sphere",
+    "icosphere",
+    "icosahedron",
+    "geodesic",
+    "subdivision"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "role": "other"
+    },
+    {
+      "path": "icosphere.py",
+      "role": "executable_tool"
+    },
+    {
+      "path": "example.gltf",
+      "role": "skill_asset"
+    }
+  ],
+  "contract": {
+    "module": "icosphere",
+    "entry_points": [
+      {
+        "name": "icosahedron",
+        "signature": "icosahedron(radius=1.0)",
+        "summary": "The regular icosahedron inscribed in a sphere of ``radius``: 12 vertices and 20 outward triangles."
+      },
+      {
+        "name": "icosphere",
+        "signature": "icosphere(radius=1.0, subdivisions=3)",
+        "summary": "An icosphere with 10 * 4^n + 2 vertices and 20 * 4^n triangles, every vertex on the sphere."
+      },
+      {
+        "name": "main",
+        "signature": "main(argv=None)",
+        "summary": "Command line: write the icosphere as .gltf or .obj and print a JSON summary."
+      }
+    ],
+    "parameters": [
+      {
+        "name": "radius",
+        "type": "float",
+        "default": 1.0,
+        "unit": "m",
+        "minimum": 1e-06,
+        "maximum": 1000000.0,
+        "meaning": "Distance from the centre to every vertex."
+      },
+      {
+        "name": "subdivisions",
+        "type": "int",
+        "default": 3,
+        "unit": "count",
+        "minimum": 0,
+        "maximum": 7,
+        "meaning": "Times each triangle is split into four; 10 * 4^n + 2 vertices."
+      }
+    ],
+    "invariants": {
+      "icosahedron_exact": {
+        "call": "icosphere",
+        "arguments": {
+          "radius": 1.0,
+          "subdivisions": 0
+        },
+        "expect": {
+          "vertex_count": 12,
+          "face_count": 20,
+          "watertight": true,
+          "euler_characteristic": 2,
+          "convex": true,
+          "volume": [
+            2.5361507101204097,
+            1e-12
+          ],
+          "area": [
+            9.574541383273937,
+            1e-12
+          ],
+          "vertices_on_sphere": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            1.0,
+            1e-12
+          ]
+        }
+      },
+      "three_levels": {
+        "call": "icosphere",
+        "arguments": {
+          "radius": 2.0,
+          "subdivisions": 3
+        },
+        "expect": {
+          "vertex_count": 642,
+          "face_count": 1280,
+          "watertight": true,
+          "euler_characteristic": 2,
+          "convex": true,
+          "vertices_on_sphere": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            2.0,
+            1e-12
+          ],
+          "edge_length_range": [
+            0.26,
+            0.34
+          ],
+          "normals": "unit",
+          "normals_agree": 1.0
+        }
+      },
+      "one_level": {
+        "call": "icosphere",
+        "arguments": {
+          "radius": 1.0,
+          "subdivisions": 1
+        },
+        "expect": {
+          "vertex_count": 42,
+          "face_count": 80,
+          "watertight": true
+        }
+      }
+    },
+    "complexity": "O(20 * 4^subdivisions)",
+    "outputs": [
+      {
+        "format": "gltf",
+        "content": "one mesh with POSITION and NORMAL, indexed triangles"
+      },
+      {
+        "format": "obj",
+        "content": "the same sphere as Wavefront OBJ"
+      }
+    ],
+    "axes": "+Y up, metres"
+  },
+  "limits": "No texture coordinates: an icosphere has no seam-free UV layout; add a spherical projection if needed. Triangles are close to equal but not identical in size (edge lengths vary by about 20 percent at three levels). The polygon volume is below the true sphere's.",
+  "related": [],
+  "technique_references": [
+    "Regular icosahedron from three golden rectangles",
+    "Loop-free 1-to-4 midpoint subdivision",
+    "Radial projection to the sphere"
+  ],
+  "native_checks": [
+    "generator_runs_system_python",
+    "generator_runs_verifier_python",
+    "gltf_strict_structure",
+    "interpreters_agree",
+    "example_matches_generator",
+    "godot_headless_gltf_load",
+    "godot_compatibility_render"
+  ]
+}

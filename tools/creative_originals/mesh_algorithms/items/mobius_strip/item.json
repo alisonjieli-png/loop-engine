@@ -1,0 +1,199 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "mobius_strip",
+  "title": "Moebius strip and twisted bands",
+  "purpose": "Build a band around a circle with any number of half twists: one gives a one-sided Moebius strip with a single edge, even counts give two-sided bands. Use it for sculpture, puzzles and topology tests.",
+  "form": "library_module",
+  "asset_role": null,
+  "dimension": "3d",
+  "engine": {
+    "name": "python",
+    "minimum_version": "3.10"
+  },
+  "tags": [
+    "primitive",
+    "moebius strip",
+    "non-orientable",
+    "twisted band",
+    "topology",
+    "parametric surface"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "role": "other"
+    },
+    {
+      "path": "mobius_strip.py",
+      "role": "executable_tool"
+    },
+    {
+      "path": "example.gltf",
+      "role": "skill_asset"
+    }
+  ],
+  "contract": {
+    "module": "mobius_strip",
+    "entry_points": [
+      {
+        "name": "band_point",
+        "signature": "band_point(angle, offset, radius=1.0, half_twists=1)",
+        "summary": "Point at loop angle ``angle`` (radians, from +X toward -Z) and signed offset across the band."
+      },
+      {
+        "name": "mobius_strip",
+        "signature": "mobius_strip(radius=1.0, width=0.5, half_twists=1, segments=120, strips=6)",
+        "summary": "A twisted band of segments * (strips + 1) vertices and segments * strips quads, with no seam."
+      },
+      {
+        "name": "main",
+        "signature": "main(argv=None)",
+        "summary": "Command line: write the band as .gltf or .obj and print a JSON summary."
+      }
+    ],
+    "parameters": [
+      {
+        "name": "radius",
+        "type": "float",
+        "default": 1.0,
+        "unit": "m",
+        "minimum": 1e-06,
+        "maximum": 1000000.0,
+        "meaning": "Radius of the centre circle around the Y axis."
+      },
+      {
+        "name": "width",
+        "type": "float",
+        "default": 0.5,
+        "unit": "m",
+        "minimum": 1e-06,
+        "maximum": 1000000.0,
+        "meaning": "Width of the band; keep it below twice the radius."
+      },
+      {
+        "name": "half_twists",
+        "type": "int",
+        "default": 1,
+        "unit": "count",
+        "minimum": 0,
+        "maximum": 64,
+        "meaning": "Half turns of the band along the loop; odd values give a one-sided band."
+      },
+      {
+        "name": "segments",
+        "type": "int",
+        "default": 120,
+        "unit": "count",
+        "minimum": 3,
+        "maximum": 100000,
+        "meaning": "Divisions along the loop."
+      },
+      {
+        "name": "strips",
+        "type": "int",
+        "default": 6,
+        "unit": "count",
+        "minimum": 1,
+        "maximum": 1000,
+        "meaning": "Divisions across the width."
+      }
+    ],
+    "invariants": {
+      "moebius": {
+        "call": "mobius_strip",
+        "arguments": {},
+        "expect": {
+          "vertex_count": 840,
+          "face_count": 720,
+          "manifold": true,
+          "oriented": false,
+          "boundary_loops": 1,
+          "euler_characteristic": 0,
+          "area": [
+            3.1499070390259605,
+            0.012599628156103842
+          ],
+          "normals": "unit"
+        }
+      },
+      "two_half_twists": {
+        "call": "mobius_strip",
+        "arguments": {
+          "half_twists": 2
+        },
+        "expect": {
+          "vertex_count": 840,
+          "face_count": 720,
+          "oriented": true,
+          "boundary_loops": 2,
+          "euler_characteristic": 0
+        }
+      },
+      "three_half_twists": {
+        "call": "mobius_strip",
+        "arguments": {
+          "half_twists": 3,
+          "segments": 60,
+          "strips": 2
+        },
+        "expect": {
+          "vertex_count": 180,
+          "face_count": 120,
+          "oriented": false,
+          "boundary_loops": 1
+        }
+      },
+      "flat_ring": {
+        "call": "mobius_strip",
+        "arguments": {
+          "half_twists": 0,
+          "segments": 64,
+          "strips": 1
+        },
+        "expect": {
+          "vertices_on_plane": [
+            [
+              0.0,
+              1.0,
+              0.0
+            ],
+            0.0,
+            1e-15
+          ],
+          "boundary_loops": 2,
+          "oriented": true
+        }
+      }
+    },
+    "complexity": "O(segments * strips)",
+    "outputs": [
+      {
+        "format": "gltf",
+        "content": "one double-sided mesh with POSITION and NORMAL, indexed triangles"
+      },
+      {
+        "format": "obj",
+        "content": "the same band as Wavefront OBJ"
+      }
+    ],
+    "axes": "+Y up, metres"
+  },
+  "limits": "A one-sided surface has no consistent winding: faces disagree across one seam column and the normals there flip, so render it double-sided (the material is marked so). Very wide bands (width near twice the radius) self-intersect. The area check tolerance covers the flat-quad approximation.",
+  "related": [
+    "klein_bottle",
+    "torus"
+  ],
+  "technique_references": [
+    "Parametric band ((R + s cos(k u / 2)) cos u, s sin(k u / 2), -(R + s cos(k u / 2)) sin u)",
+    "Seam identification with reversal for odd half twists"
+  ],
+  "native_checks": [
+    "generator_runs_system_python",
+    "generator_runs_verifier_python",
+    "gltf_strict_structure",
+    "interpreters_agree",
+    "example_matches_generator",
+    "godot_headless_gltf_load",
+    "godot_compatibility_render"
+  ]
+}

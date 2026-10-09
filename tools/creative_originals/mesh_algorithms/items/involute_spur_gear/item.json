@@ -1,0 +1,244 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "involute_spur_gear",
+  "title": "Involute spur gear",
+  "purpose": "Generate a spur gear whose tooth flanks are true involutes of the base circle, sized by module, tooth count and pressure angle, extruded around a bore. Use it for mechanisms, clocks and props.",
+  "form": "library_module",
+  "asset_role": null,
+  "dimension": "3d",
+  "engine": {
+    "name": "python",
+    "minimum_version": "3.10"
+  },
+  "tags": [
+    "gear",
+    "involute",
+    "spur gear",
+    "mechanical",
+    "extrusion",
+    "cad"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "role": "other"
+    },
+    {
+      "path": "involute_spur_gear.py",
+      "role": "executable_tool"
+    },
+    {
+      "path": "example.gltf",
+      "role": "skill_asset"
+    }
+  ],
+  "contract": {
+    "module": "involute_spur_gear",
+    "entry_points": [
+      {
+        "name": "involute_function",
+        "signature": "involute_function(angle)",
+        "summary": "inv(a) = tan(a) - a, the polar angle swept by the involute at pressure angle a."
+      },
+      {
+        "name": "gear_radii",
+        "signature": "gear_radii(teeth=18, module=0.1, pressure_angle=20.0)",
+        "summary": "(pitch, base, addendum, root) radii: z m / 2, pitch cos(alpha), pitch + m, pitch - 1.25 m."
+      },
+      {
+        "name": "gear_profile",
+        "signature": "gear_profile(teeth=18, module=0.1, pressure_angle=20.0, flank_samples=6, tip_samples=3, root_samples=4)",
+        "summary": "The counter-clockwise 2D outline of the gear, tooth 0 centred on +X."
+      },
+      {
+        "name": "spur_gear",
+        "signature": "spur_gear(teeth=18, module=0.1, pressure_angle=20.0, thickness=0.25, bore_radius=0.18, flank_samples=6)",
+        "summary": "The gear extruded along Y and centred at the origin: two capped faces (triangulated around the bore) and quad side walls, closed and outward. With a bore the solid has genus 1."
+      },
+      {
+        "name": "build",
+        "signature": "build(teeth=18, module=0.1, pressure_angle=20.0, thickness=0.25, bore_radius=0.18, flank_samples=6)",
+        "summary": "The gear the command line writes: each cap shares its vertices under one flat normal and every wall quad owns its corners, so edges between caps and walls and between flank segments stay crisp."
+      },
+      {
+        "name": "main",
+        "signature": "main(argv=None)",
+        "summary": "Command line: write the gear as .gltf or .obj and print a JSON summary."
+      }
+    ],
+    "parameters": [
+      {
+        "name": "teeth",
+        "type": "int",
+        "default": 18,
+        "unit": "count",
+        "minimum": 6,
+        "maximum": 400,
+        "meaning": "Number of teeth."
+      },
+      {
+        "name": "module",
+        "type": "float",
+        "default": 0.1,
+        "unit": "m",
+        "minimum": 1e-05,
+        "maximum": 1000.0,
+        "meaning": "Pitch diameter divided by the tooth count; meshing gears share it."
+      },
+      {
+        "name": "pressure_angle",
+        "type": "float",
+        "default": 20.0,
+        "unit": "degrees",
+        "minimum": 10.0,
+        "maximum": 35.0,
+        "meaning": "Angle between the line of action and the pitch circle tangent."
+      },
+      {
+        "name": "thickness",
+        "type": "float",
+        "default": 0.25,
+        "unit": "m",
+        "minimum": 1e-06,
+        "maximum": 1000000.0,
+        "meaning": "Face width along Y."
+      },
+      {
+        "name": "bore_radius",
+        "type": "float",
+        "default": 0.18,
+        "unit": "m",
+        "minimum": 0.0,
+        "maximum": 1000000.0,
+        "meaning": "Radius of the centre hole; 0 for none. Must stay inside the root circle."
+      },
+      {
+        "name": "flank_samples",
+        "type": "int",
+        "default": 6,
+        "unit": "count",
+        "minimum": 1,
+        "maximum": 200,
+        "meaning": "Segments along each involute flank."
+      }
+    ],
+    "invariants": {
+      "default": {
+        "call": "spur_gear",
+        "arguments": {},
+        "expect": {
+          "vertex_count": 868,
+          "watertight": true,
+          "euler_characteristic": 0,
+          "genus": 1,
+          "volume": [
+            0.59342779868986,
+            0.0029671389934492996
+          ],
+          "within": [
+            [
+              -1.0,
+              -0.125,
+              -1.0
+            ],
+            [
+              1.0,
+              0.125,
+              1.0
+            ],
+            1e-12
+          ]
+        }
+      },
+      "no_bore": {
+        "call": "spur_gear",
+        "arguments": {
+          "teeth": 24,
+          "module": 0.05,
+          "thickness": 0.1,
+          "bore_radius": 0.0,
+          "flank_samples": 3
+        },
+        "expect": {
+          "vertex_count": 816,
+          "watertight": true,
+          "euler_characteristic": 2,
+          "volume": [
+            0.11096270587842948,
+            0.0006657762352705769
+          ]
+        }
+      },
+      "outline_point_count": {
+        "call": "gear_profile",
+        "arguments": {},
+        "expect": {
+          "length": 414,
+          "polygons_simple": true
+        }
+      },
+      "radii": {
+        "call": "gear_radii",
+        "arguments": {
+          "teeth": 18,
+          "module": 0.1,
+          "pressure_angle": 20.0
+        },
+        "expect": {
+          "sequence_close": [
+            [
+              0.9,
+              0.8457233587073176,
+              1.0,
+              0.775
+            ],
+            1e-12
+          ]
+        }
+      },
+      "involute": {
+        "call": "involute_function",
+        "arguments": {
+          "angle": 0.3490658503988659
+        },
+        "expect": {
+          "close": [
+            0.014904383867336446,
+            1e-15
+          ]
+        }
+      }
+    },
+    "complexity": "O(teeth * flank_samples)",
+    "outputs": [
+      {
+        "format": "gltf",
+        "content": "the gear with POSITION and NORMAL: caps share vertices under one normal, wall quads own their corners"
+      },
+      {
+        "format": "obj",
+        "content": "the same gear as Wavefront OBJ"
+      }
+    ],
+    "axes": "+Y up, metres"
+  },
+  "limits": "Standard full-depth teeth (addendum 1 module, dedendum 1.25 modules) without profile shift, tip relief or a root fillet: the flank meets the root circle with a radial segment. No backlash is added. Gears with very few teeth undercut in reality; this outline does not model that. The volume check compares with the exact area of the smooth outline within 0.5 percent.",
+  "related": [
+    "screw_thread",
+    "cylinder_cone_frustum"
+  ],
+  "technique_references": [
+    "Involute of a circle and the involute function inv(a) = tan a - a",
+    "Tooth thickness of half the circular pitch at the pitch circle",
+    "Ear clipping with a bridged hole for the caps"
+  ],
+  "native_checks": [
+    "generator_runs_system_python",
+    "generator_runs_verifier_python",
+    "gltf_strict_structure",
+    "interpreters_agree",
+    "example_matches_generator",
+    "godot_headless_gltf_load",
+    "godot_compatibility_render"
+  ]
+}

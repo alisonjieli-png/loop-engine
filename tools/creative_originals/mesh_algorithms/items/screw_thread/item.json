@@ -1,0 +1,225 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "screw_thread",
+  "title": "Threaded rod with a trapezoidal helical thread",
+  "purpose": "Generate a closed threaded rod whose radius follows a trapezoidal thread profile along a helix, with flat crest and root. Use it for bolts, screws, jar necks and lead screws.",
+  "form": "library_module",
+  "asset_role": null,
+  "dimension": "3d",
+  "engine": {
+    "name": "python",
+    "minimum_version": "3.10"
+  },
+  "tags": [
+    "screw",
+    "thread",
+    "helix",
+    "bolt",
+    "mechanical",
+    "cad"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "role": "other"
+    },
+    {
+      "path": "screw_thread.py",
+      "role": "executable_tool"
+    },
+    {
+      "path": "example.gltf",
+      "role": "skill_asset"
+    }
+  ],
+  "contract": {
+    "module": "screw_thread",
+    "entry_points": [
+      {
+        "name": "thread_profile",
+        "signature": "thread_profile(phase, crest=0.15, root=0.25)",
+        "summary": "Height of the thread in [0, 1] at ``phase`` (fraction of the pitch): root flat, rising flank, crest flat, falling flank, each flank (1 - crest - root) / 2 of the pitch."
+      },
+      {
+        "name": "screw_thread",
+        "signature": "screw_thread(major_radius=0.2, minor_radius=0.16, pitch=0.1, length=0.8, crest=0.15, root=0.25, segments=32, samples_per_pitch=8)",
+        "summary": "A closed threaded rod centred at the origin along Y: (rows + 1) * segments vertices, rows * segments quads and two polygon caps, where rows = ceil(length / pitch * samples_per_pitch). The radius at angle theta and height y is minor + (major - minor) * profile(y / pitch - theta / 2 pi): a right-hand thread."
+      },
+      {
+        "name": "main",
+        "signature": "main(argv=None)",
+        "summary": "Command line: write the threaded rod as .gltf or .obj and print a JSON summary."
+      }
+    ],
+    "parameters": [
+      {
+        "name": "major_radius",
+        "type": "float",
+        "default": 0.2,
+        "unit": "m",
+        "minimum": 1e-06,
+        "maximum": 1000000.0,
+        "meaning": "Radius at the thread crest."
+      },
+      {
+        "name": "minor_radius",
+        "type": "float",
+        "default": 0.16,
+        "unit": "m",
+        "minimum": 1e-06,
+        "maximum": 1000000.0,
+        "meaning": "Radius at the thread root; below major_radius."
+      },
+      {
+        "name": "pitch",
+        "type": "float",
+        "default": 0.1,
+        "unit": "m",
+        "minimum": 1e-06,
+        "maximum": 1000000.0,
+        "meaning": "Axial distance between neighbouring crests (one turn for a single start)."
+      },
+      {
+        "name": "length",
+        "type": "float",
+        "default": 0.8,
+        "unit": "m",
+        "minimum": 1e-06,
+        "maximum": 1000000.0,
+        "meaning": "Length of the rod along Y."
+      },
+      {
+        "name": "crest",
+        "type": "float",
+        "default": 0.15,
+        "unit": "fraction",
+        "minimum": 0.0,
+        "maximum": 0.9,
+        "meaning": "Fraction of the pitch that is flat at the crest."
+      },
+      {
+        "name": "root",
+        "type": "float",
+        "default": 0.25,
+        "unit": "fraction",
+        "minimum": 0.0,
+        "maximum": 0.9,
+        "meaning": "Fraction of the pitch that is flat at the root; crest + root < 1."
+      },
+      {
+        "name": "segments",
+        "type": "int",
+        "default": 32,
+        "unit": "count",
+        "minimum": 3,
+        "maximum": 4096,
+        "meaning": "Divisions around the rod."
+      },
+      {
+        "name": "samples_per_pitch",
+        "type": "int",
+        "default": 8,
+        "unit": "count",
+        "minimum": 4,
+        "maximum": 1000,
+        "meaning": "Axial rows per pitch."
+      }
+    ],
+    "invariants": {
+      "default": {
+        "call": "screw_thread",
+        "arguments": {},
+        "expect": {
+          "vertex_count": 2080,
+          "face_count": 2050,
+          "watertight": true,
+          "euler_characteristic": 2,
+          "volume": [
+            0.0797092234080616,
+            0.00023912767022418477
+          ],
+          "normals": "unit",
+          "within": [
+            [
+              -0.2,
+              -0.4,
+              -0.2
+            ],
+            [
+              0.2,
+              0.4,
+              0.2
+            ],
+            1e-12
+          ]
+        }
+      },
+      "root_flat": {
+        "call": "thread_profile",
+        "arguments": {
+          "phase": 0.1
+        },
+        "expect": {
+          "close": [
+            0.0,
+            0.0
+          ]
+        }
+      },
+      "flank_middle": {
+        "call": "thread_profile",
+        "arguments": {
+          "phase": 0.4
+        },
+        "expect": {
+          "close": [
+            0.5,
+            1e-12
+          ]
+        }
+      },
+      "crest_flat": {
+        "call": "thread_profile",
+        "arguments": {
+          "phase": 1.6
+        },
+        "expect": {
+          "close": [
+            1.0,
+            0.0
+          ]
+        }
+      }
+    },
+    "complexity": "O(segments * length / pitch * samples_per_pitch)",
+    "outputs": [
+      {
+        "format": "gltf",
+        "content": "one welded mesh with POSITION and NORMAL, indexed triangles"
+      },
+      {
+        "format": "obj",
+        "content": "the same rod as Wavefront OBJ"
+      }
+    ],
+    "axes": "+Y up, metres"
+  },
+  "limits": "A single right-hand start; the ends are cut flat through the thread without a chamfer. The flanks are sampled on a fixed grid, so the crest and root corners are only as sharp as the axial sampling. Dimensions are free numbers, not tied to a thread standard.",
+  "related": [
+    "coil_spring",
+    "involute_spur_gear"
+  ],
+  "technique_references": [
+    "Helical radius function r(theta, y) = minor + depth * profile(y / pitch - theta / 2 pi)",
+    "Trapezoidal thread profile"
+  ],
+  "native_checks": [
+    "generator_runs_system_python",
+    "generator_runs_verifier_python",
+    "gltf_strict_structure",
+    "interpreters_agree",
+    "example_matches_generator",
+    "godot_headless_gltf_load",
+    "godot_compatibility_render"
+  ]
+}

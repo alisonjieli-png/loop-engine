@@ -1,0 +1,517 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "bspline_de_boor",
+  "title": "B-spline curves with de Boor evaluation and knot insertion",
+  "purpose": "Evaluate clamped and periodic B-spline curves of any degree with de Boor's algorithm, compute Cox-de Boor basis functions and insert knots without changing the curve. Use it for smooth paths, animation curves and CAD-style editing.",
+  "form": "library_module",
+  "asset_role": null,
+  "dimension": "3d",
+  "engine": {
+    "name": "python",
+    "minimum_version": "3.10"
+  },
+  "tags": [
+    "b-spline",
+    "de boor",
+    "knot insertion",
+    "curve",
+    "basis functions",
+    "cad"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "role": "other"
+    },
+    {
+      "path": "bspline_de_boor.py",
+      "role": "executable_tool"
+    },
+    {
+      "path": "example.gltf",
+      "role": "skill_asset"
+    }
+  ],
+  "contract": {
+    "module": "bspline_de_boor",
+    "entry_points": [
+      {
+        "name": "clamped_knots",
+        "signature": "clamped_knots(count, degree)",
+        "summary": "Clamped uniform knot vector in [0, 1] for ``count`` control points: degree + 1 repeated end knots."
+      },
+      {
+        "name": "de_boor",
+        "signature": "de_boor(controls, degree, knots, t)",
+        "summary": "Curve point at t by de Boor's triangular scheme (the stable form of the B-spline sum)."
+      },
+      {
+        "name": "basis_functions",
+        "signature": "basis_functions(degree, knots, count, t)",
+        "summary": "All ``count`` basis function values N_i,degree(t) by the Cox-de Boor recursion; they sum to 1 on the domain."
+      },
+      {
+        "name": "insert_knot",
+        "signature": "insert_knot(controls, degree, knots, t)",
+        "summary": "Boehm knot insertion: (new controls, new knots) describing the same curve with one more control point."
+      },
+      {
+        "name": "sample_curve",
+        "signature": "sample_curve(controls, degree=3, samples=160, closed=False)",
+        "summary": "``samples`` points along a clamped curve (ends on the first and last control points) or, when closed, a uniform periodic curve through the wrapped control loop (no repeated end point)."
+      },
+      {
+        "name": "build",
+        "signature": "build(degree=3, closed=False, samples=160)",
+        "summary": "A tube along the demonstration curve plus line segments of its control polygon."
+      },
+      {
+        "name": "main",
+        "signature": "main(argv=None)",
+        "summary": "Command line: write the curve tube and control polygon (.gltf or .obj) and print a JSON summary."
+      }
+    ],
+    "parameters": [
+      {
+        "name": "degree",
+        "type": "int",
+        "default": 3,
+        "unit": "degree",
+        "minimum": 1,
+        "maximum": 7,
+        "meaning": "Polynomial degree of the curve."
+      },
+      {
+        "name": "closed",
+        "type": "bool",
+        "default": false,
+        "unit": "flag",
+        "meaning": "Periodic curve through the control polygon's loop instead of a clamped open curve."
+      },
+      {
+        "name": "samples",
+        "type": "int",
+        "default": 160,
+        "unit": "count",
+        "minimum": 2,
+        "maximum": 100000,
+        "meaning": "Points sampled along the curve for the display tube."
+      }
+    ],
+    "invariants": {
+      "clamped_knot_vector": {
+        "call": "clamped_knots",
+        "arguments": {
+          "count": 7,
+          "degree": 3
+        },
+        "expect": {
+          "equals": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.25,
+            0.5,
+            0.75,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ]
+        }
+      },
+      "basis_values": {
+        "call": "basis_functions",
+        "arguments": {
+          "degree": 3,
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.25,
+            0.5,
+            0.75,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "count": 7,
+          "t": 0.37
+        },
+        "expect": {
+          "sequence_close": [
+            [
+              0.0,
+              0.035152,
+              0.4798453333333334,
+              0.4665706666666667,
+              0.018432,
+              0.0,
+              0.0
+            ],
+            1e-14
+          ]
+        }
+      },
+      "quadratic_is_bezier": {
+        "call": "de_boor",
+        "arguments": {
+          "controls": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              1.0,
+              2.0,
+              0.0
+            ],
+            [
+              2.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "degree": 2,
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "t": 0.5
+        },
+        "expect": {
+          "sequence_close": [
+            [
+              1.0,
+              1.0,
+              0.0
+            ],
+            1e-15
+          ]
+        }
+      },
+      "degree_one_is_polyline": {
+        "call": "sample_curve",
+        "arguments": {
+          "controls": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              1.0,
+              0.0,
+              0.0
+            ],
+            [
+              1.0,
+              1.0,
+              0.0
+            ]
+          ],
+          "degree": 1,
+          "samples": 5
+        },
+        "expect": {
+          "points_close": [
+            [
+              [
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.5,
+                0.0,
+                0.0
+              ],
+              [
+                1.0,
+                0.0,
+                0.0
+              ],
+              [
+                1.0,
+                0.5,
+                0.0
+              ],
+              [
+                1.0,
+                1.0,
+                0.0
+              ]
+            ],
+            1e-15
+          ]
+        }
+      },
+      "clamped_ends": {
+        "call": "sample_curve",
+        "arguments": {
+          "controls": [
+            [
+              -2.0,
+              0.0,
+              0.0
+            ],
+            [
+              -1.5,
+              1.2,
+              -0.6
+            ],
+            [
+              -0.5,
+              -0.4,
+              -1.0
+            ],
+            [
+              0.3,
+              1.4,
+              0.4
+            ],
+            [
+              1.2,
+              -0.2,
+              1.0
+            ],
+            [
+              2.0,
+              1.0,
+              0.2
+            ],
+            [
+              2.4,
+              0.0,
+              -0.8
+            ]
+          ],
+          "degree": 3,
+          "samples": 50
+        },
+        "expect": {
+          "point_count": 50,
+          "first_point": [
+            [
+              -2.0,
+              0.0,
+              0.0
+            ],
+            1e-15
+          ],
+          "last_point": [
+            [
+              2.4,
+              0.0,
+              -0.8
+            ],
+            1e-15
+          ]
+        }
+      },
+      "knot_insertion": {
+        "call": "insert_knot",
+        "arguments": {
+          "controls": [
+            [
+              -2.0,
+              0.0,
+              0.0
+            ],
+            [
+              -1.5,
+              1.2,
+              -0.6
+            ],
+            [
+              -0.5,
+              -0.4,
+              -1.0
+            ],
+            [
+              0.3,
+              1.4,
+              0.4
+            ],
+            [
+              1.2,
+              -0.2,
+              1.0
+            ],
+            [
+              2.0,
+              1.0,
+              0.2
+            ],
+            [
+              2.4,
+              0.0,
+              -0.8
+            ]
+          ],
+          "degree": 3,
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.25,
+            0.5,
+            0.75,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "t": 0.3
+        },
+        "select": 0,
+        "expect": {
+          "length": 8,
+          "sequence_close": [
+            [
+              [
+                -2.0,
+                0.0,
+                0.0
+              ],
+              [
+                -1.5,
+                1.2,
+                -0.6
+              ],
+              [
+                -0.9000000000000001,
+                0.24,
+                -0.84
+              ],
+              [
+                -0.18000000000000005,
+                0.3199999999999999,
+                -0.44000000000000006
+              ],
+              [
+                0.35999999999999993,
+                1.2933333333333332,
+                0.44
+              ],
+              [
+                1.2,
+                -0.2,
+                1.0
+              ],
+              [
+                2.0,
+                1.0,
+                0.2
+              ],
+              [
+                2.4,
+                0.0,
+                -0.8
+              ]
+            ],
+            1e-14
+          ]
+        }
+      },
+      "periodic_loop": {
+        "call": "sample_curve",
+        "arguments": {
+          "controls": [
+            [
+              -2.0,
+              0.0,
+              0.0
+            ],
+            [
+              -1.5,
+              1.2,
+              -0.6
+            ],
+            [
+              -0.5,
+              -0.4,
+              -1.0
+            ],
+            [
+              0.3,
+              1.4,
+              0.4
+            ],
+            [
+              1.2,
+              -0.2,
+              1.0
+            ],
+            [
+              2.0,
+              1.0,
+              0.2
+            ],
+            [
+              2.4,
+              0.0,
+              -0.8
+            ]
+          ],
+          "degree": 3,
+          "samples": 40,
+          "closed": true
+        },
+        "expect": {
+          "point_count": 40
+        }
+      },
+      "display": {
+        "call": "build",
+        "arguments": {},
+        "expect": {
+          "watertight": true,
+          "line_count": 6
+        }
+      }
+    },
+    "complexity": "O(degree^2) per point",
+    "outputs": [
+      {
+        "format": "gltf",
+        "content": "a tube along the curve plus a LINES primitive for the control polygon"
+      },
+      {
+        "format": "obj",
+        "content": "the same tube and polygon lines as Wavefront OBJ"
+      }
+    ],
+    "axes": "+Y up, metres"
+  },
+  "limits": "Non-rational only (see nurbs_curve for weights). Knot vectors must be non-decreasing with the usual multiplicity limits; clamped_knots builds uniform interior knots only. The control polygon in the display mesh is a LINES primitive, which draws one pixel wide in most viewers.",
+  "related": [
+    "nurbs_curve",
+    "bezier_curve_arc_length",
+    "catmull_rom_spline"
+  ],
+  "technique_references": [
+    "de Boor's algorithm",
+    "Cox-de Boor recursion",
+    "Boehm knot insertion",
+    "Clamped and periodic uniform knot vectors"
+  ],
+  "native_checks": [
+    "generator_runs_system_python",
+    "generator_runs_verifier_python",
+    "gltf_strict_structure",
+    "interpreters_agree",
+    "example_matches_generator",
+    "godot_headless_gltf_load",
+    "godot_compatibility_render"
+  ]
+}

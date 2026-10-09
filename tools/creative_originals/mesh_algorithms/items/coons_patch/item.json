@@ -1,0 +1,307 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "coons_patch",
+  "title": "Coons patch from four boundary curves",
+  "purpose": "Fill the space between four boundary curves with a bilinearly blended Coons surface, from functions or polylines. Use it for terrain fills, cloth panels, car body patches and quick lofts.",
+  "form": "library_module",
+  "asset_role": null,
+  "dimension": "3d",
+  "engine": {
+    "name": "python",
+    "minimum_version": "3.10"
+  },
+  "tags": [
+    "coons patch",
+    "surface",
+    "boundary interpolation",
+    "transfinite",
+    "patch",
+    "modeling"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "role": "other"
+    },
+    {
+      "path": "coons_patch.py",
+      "role": "executable_tool"
+    },
+    {
+      "path": "example.gltf",
+      "role": "skill_asset"
+    }
+  ],
+  "contract": {
+    "module": "coons_patch",
+    "entry_points": [
+      {
+        "name": "coons_point",
+        "signature": "coons_point(bottom, top, left, right, u, v)",
+        "summary": "S(u, v) = ruled(u) + ruled(v) - bilinear corners, for boundary functions of one parameter in [0, 1]: bottom(u) = S(u, 0), top(u) = S(u, 1), left(v) = S(0, v), right(v) = S(1, v); the corners must agree."
+      },
+      {
+        "name": "polyline_function",
+        "signature": "polyline_function(points)",
+        "summary": "A boundary function t -> point that follows a polyline by arc length (t = 0 first point, 1 last)."
+      },
+      {
+        "name": "demo_boundary",
+        "signature": "demo_boundary(name='saddle')",
+        "summary": "(bottom, top, left, right) boundary functions over a 2 x 2 square in XZ."
+      },
+      {
+        "name": "coons_patch",
+        "signature": "coons_patch(boundary, resolution=24)",
+        "summary": "A (resolution + 1)^2 grid mesh of the Coons patch with normals from the mesh; boundary vertices lie exactly on the boundary curves. ``boundary`` is (bottom, top, left, right), each a function of one parameter in [0, 1] or a polyline (followed by arc length). Faces wind so the normal follows (dS/dv) x (dS/du), which points +Y for the demonstration squares."
+      },
+      {
+        "name": "build",
+        "signature": "build(boundary='saddle', resolution=24)",
+        "summary": "The demonstration patch, coloured by height."
+      },
+      {
+        "name": "main",
+        "signature": "main(argv=None)",
+        "summary": "Command line: write the patch (.gltf or .obj) and print a JSON summary."
+      }
+    ],
+    "parameters": [
+      {
+        "name": "boundary",
+        "type": "str",
+        "default": "saddle",
+        "unit": "name",
+        "choices": [
+          "saddle",
+          "pillow",
+          "flat"
+        ],
+        "meaning": "Demonstration set of four boundary curves."
+      },
+      {
+        "name": "resolution",
+        "type": "int",
+        "default": 24,
+        "unit": "cells",
+        "minimum": 1,
+        "maximum": 4096,
+        "meaning": "Grid cells per side; the patch has (resolution + 1)^2 vertices."
+      }
+    ],
+    "invariants": {
+      "flat_square": {
+        "call": "coons_patch",
+        "arguments": {
+          "boundary": {
+            "$call": "demo_boundary",
+            "arguments": {
+              "name": "flat"
+            }
+          },
+          "resolution": 4
+        },
+        "expect": {
+          "vertex_count": 25,
+          "face_count": 16,
+          "area": [
+            4.0,
+            1e-12
+          ],
+          "vertices_on_plane": [
+            [
+              0.0,
+              1.0,
+              0.0
+            ],
+            0.0,
+            1e-15
+          ],
+          "boundary_loops": 1
+        }
+      },
+      "saddle_bounds": {
+        "call": "coons_patch",
+        "arguments": {
+          "boundary": {
+            "$call": "demo_boundary",
+            "arguments": {
+              "name": "saddle"
+            }
+          },
+          "resolution": 8
+        },
+        "expect": {
+          "vertex_count": 81,
+          "face_count": 64,
+          "bounds": [
+            [
+              -1.0,
+              -0.5,
+              -1.0
+            ],
+            [
+              1.0,
+              0.5,
+              1.0
+            ],
+            1e-12
+          ]
+        }
+      },
+      "saddle_centre": {
+        "call": "coons_point",
+        "arguments": {
+          "bottom": {
+            "$call": "demo_boundary",
+            "arguments": {
+              "name": "saddle"
+            },
+            "select": 0
+          },
+          "top": {
+            "$call": "demo_boundary",
+            "arguments": {
+              "name": "saddle"
+            },
+            "select": 1
+          },
+          "left": {
+            "$call": "demo_boundary",
+            "arguments": {
+              "name": "saddle"
+            },
+            "select": 2
+          },
+          "right": {
+            "$call": "demo_boundary",
+            "arguments": {
+              "name": "saddle"
+            },
+            "select": 3
+          },
+          "u": 0.5,
+          "v": 0.5
+        },
+        "expect": {
+          "sequence_close": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            1e-15
+          ]
+        }
+      },
+      "polyline_boundary": {
+        "call": "coons_patch",
+        "arguments": {
+          "boundary": [
+            [
+              [
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                1.0,
+                0.5,
+                0.0
+              ],
+              [
+                2.0,
+                0.0,
+                0.0
+              ]
+            ],
+            [
+              [
+                0.0,
+                0.0,
+                -2.0
+              ],
+              [
+                2.0,
+                0.0,
+                -2.0
+              ]
+            ],
+            [
+              [
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                -2.0
+              ]
+            ],
+            [
+              [
+                2.0,
+                0.0,
+                0.0
+              ],
+              [
+                2.0,
+                0.0,
+                -2.0
+              ]
+            ]
+          ],
+          "resolution": 4
+        },
+        "expect": {
+          "vertex_count": 25,
+          "face_count": 16,
+          "bounds": [
+            [
+              0.0,
+              0.0,
+              -2.0
+            ],
+            [
+              2.0,
+              0.5,
+              0.0
+            ],
+            1e-12
+          ]
+        }
+      }
+    },
+    "complexity": "O(resolution^2)",
+    "outputs": [
+      {
+        "format": "gltf",
+        "content": "the patch with POSITION, NORMAL and COLOR_0 by height, double-sided"
+      },
+      {
+        "format": "obj",
+        "content": "the same patch as Wavefront OBJ"
+      }
+    ],
+    "axes": "+Y up, metres"
+  },
+  "limits": "The four curves must meet at their corners (not checked). Bilinear blending matches positions only (C0 across patch borders), not tangents. Polyline boundaries are followed by arc length, so their corners do not line up with grid lines in general.",
+  "related": [
+    "nurbs_surface",
+    "loft_profiles"
+  ],
+  "technique_references": [
+    "Bilinearly blended Coons patch (Coons 1964)",
+    "Boolean sum of ruled surfaces"
+  ],
+  "native_checks": [
+    "generator_runs_system_python",
+    "generator_runs_verifier_python",
+    "gltf_strict_structure",
+    "interpreters_agree",
+    "example_matches_generator",
+    "godot_headless_gltf_load",
+    "godot_compatibility_render"
+  ]
+}

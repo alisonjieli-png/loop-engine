@@ -1,0 +1,338 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "loft_profiles",
+  "title": "Loft through a stack of profiles",
+  "purpose": "Skin a closed solid through a sequence of closed profiles, resampled to equal counts by arc length and aligned to avoid twisting, with capped ends. Use it for bottles, hulls, towers and organic forms.",
+  "form": "library_module",
+  "asset_role": null,
+  "dimension": "3d",
+  "engine": {
+    "name": "python",
+    "minimum_version": "3.10"
+  },
+  "tags": [
+    "loft",
+    "skinning",
+    "profiles",
+    "resampling",
+    "modeling",
+    "hull"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "role": "other"
+    },
+    {
+      "path": "loft_profiles.py",
+      "role": "executable_tool"
+    },
+    {
+      "path": "example.gltf",
+      "role": "skill_asset"
+    }
+  ],
+  "contract": {
+    "module": "loft_profiles",
+    "entry_points": [
+      {
+        "name": "resample_closed",
+        "signature": "resample_closed(polygon, count)",
+        "summary": "``count`` points spaced evenly by arc length around a closed polygon, starting at its first vertex."
+      },
+      {
+        "name": "align",
+        "signature": "align(reference, ring)",
+        "summary": "``ring`` cyclically shifted to minimize the summed squared distance to ``reference`` (same orientation assumed), which keeps the skin from twisting."
+      },
+      {
+        "name": "loft",
+        "signature": "loft(profiles, samples=None, caps=True)",
+        "summary": "A closed skin through 3D profiles (each a closed planar polygon, listed from the first end to the other)."
+      },
+      {
+        "name": "demo_profiles",
+        "signature": "demo_profiles(shape='bottle')",
+        "summary": "Closed profiles (3D, horizontal) for a bottle (circles), a tower (square turning into an octagon) or a boat hull (U-shaped sections closed at the deck)."
+      },
+      {
+        "name": "build",
+        "signature": "build(shape='bottle', samples=48)",
+        "summary": "The lofted demonstration solid with smooth normals."
+      },
+      {
+        "name": "main",
+        "signature": "main(argv=None)",
+        "summary": "Command line: write the lofted solid (.gltf or .obj) and print a JSON summary."
+      }
+    ],
+    "parameters": [
+      {
+        "name": "shape",
+        "type": "str",
+        "default": "bottle",
+        "unit": "name",
+        "choices": [
+          "bottle",
+          "tower",
+          "boat"
+        ],
+        "meaning": "Demonstration stack of profiles."
+      },
+      {
+        "name": "samples",
+        "type": "int",
+        "default": 48,
+        "unit": "count",
+        "minimum": 3,
+        "maximum": 100000,
+        "meaning": "Points per profile after resampling."
+      }
+    ],
+    "invariants": {
+      "box": {
+        "call": "loft",
+        "arguments": {
+          "profiles": [
+            [
+              [
+                -1.0,
+                0.0,
+                -1.0
+              ],
+              [
+                1.0,
+                0.0,
+                -1.0
+              ],
+              [
+                1.0,
+                0.0,
+                1.0
+              ],
+              [
+                -1.0,
+                0.0,
+                1.0
+              ]
+            ],
+            [
+              [
+                -1.0,
+                2.0,
+                -1.0
+              ],
+              [
+                1.0,
+                2.0,
+                -1.0
+              ],
+              [
+                1.0,
+                2.0,
+                1.0
+              ],
+              [
+                -1.0,
+                2.0,
+                1.0
+              ]
+            ]
+          ]
+        },
+        "expect": {
+          "vertex_count": 8,
+          "face_count": 8,
+          "watertight": true,
+          "volume": [
+            8.0,
+            1e-12
+          ]
+        }
+      },
+      "frustum_with_reversed_ring": {
+        "call": "loft",
+        "arguments": {
+          "profiles": [
+            [
+              [
+                -1.0,
+                0.0,
+                -1.0
+              ],
+              [
+                1.0,
+                0.0,
+                -1.0
+              ],
+              [
+                1.0,
+                0.0,
+                1.0
+              ],
+              [
+                -1.0,
+                0.0,
+                1.0
+              ]
+            ],
+            [
+              [
+                -0.5,
+                3.0,
+                0.5
+              ],
+              [
+                0.5,
+                3.0,
+                0.5
+              ],
+              [
+                0.5,
+                3.0,
+                -0.5
+              ],
+              [
+                -0.5,
+                3.0,
+                -0.5
+              ]
+            ]
+          ]
+        },
+        "expect": {
+          "watertight": true,
+          "volume": [
+            7.0,
+            1e-12
+          ]
+        }
+      },
+      "bottle": {
+        "call": "loft",
+        "arguments": {
+          "profiles": {
+            "$call": "demo_profiles",
+            "arguments": {
+              "shape": "bottle"
+            }
+          },
+          "samples": 48
+        },
+        "expect": {
+          "vertex_count": 336,
+          "face_count": 380,
+          "watertight": true,
+          "euler_characteristic": 2
+        }
+      },
+      "square_to_circle_resampling": {
+        "call": "resample_closed",
+        "arguments": {
+          "polygon": [
+            [
+              -1.0,
+              0.0,
+              -1.0
+            ],
+            [
+              1.0,
+              0.0,
+              -1.0
+            ],
+            [
+              1.0,
+              0.0,
+              1.0
+            ],
+            [
+              -1.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "count": 8
+        },
+        "expect": {
+          "points_close": [
+            [
+              [
+                -1.0,
+                0.0,
+                -1.0
+              ],
+              [
+                0.0,
+                0.0,
+                -1.0
+              ],
+              [
+                1.0,
+                0.0,
+                -1.0
+              ],
+              [
+                1.0,
+                0.0,
+                0.0
+              ],
+              [
+                1.0,
+                0.0,
+                1.0
+              ],
+              [
+                0.0,
+                0.0,
+                1.0
+              ],
+              [
+                -1.0,
+                0.0,
+                1.0
+              ],
+              [
+                -1.0,
+                0.0,
+                0.0
+              ]
+            ],
+            1e-15
+          ]
+        }
+      }
+    },
+    "complexity": "O(profiles * samples^2) for the alignment search",
+    "outputs": [
+      {
+        "format": "gltf",
+        "content": "the lofted demonstration solid with POSITION and NORMAL"
+      },
+      {
+        "format": "obj",
+        "content": "the same solid as Wavefront OBJ"
+      }
+    ],
+    "axes": "+Y up, metres"
+  },
+  "limits": "Profiles should be planar, simple and stacked without crossing each other; the alignment tries every cyclic shift (quadratic in the sample count). Corners are kept only when resampling lands on them. Side quads between non-parallel profiles are not planar.",
+  "related": [
+    "profile_sweep",
+    "lathe_revolve",
+    "extrude_polygon_holes"
+  ],
+  "technique_references": [
+    "Arc-length resampling of closed polygons",
+    "Cyclic alignment by least squared distance",
+    "Orientation unification about the loft direction"
+  ],
+  "native_checks": [
+    "generator_runs_system_python",
+    "generator_runs_verifier_python",
+    "gltf_strict_structure",
+    "interpreters_agree",
+    "example_matches_generator",
+    "godot_headless_gltf_load",
+    "godot_compatibility_render"
+  ]
+}

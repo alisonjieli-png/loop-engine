@@ -1,0 +1,203 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "coil_spring",
+  "title": "Coil spring along a helix",
+  "purpose": "Sweep a round wire along a helix with exact rotation-minimizing frames and flat end caps, giving a closed spring mesh. Use it for mechanical props, suspension parts and coiled cables.",
+  "form": "library_module",
+  "asset_role": null,
+  "dimension": "3d",
+  "engine": {
+    "name": "python",
+    "minimum_version": "3.10"
+  },
+  "tags": [
+    "helix",
+    "spring",
+    "coil",
+    "sweep",
+    "rotation minimizing frame",
+    "mechanical"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "role": "other"
+    },
+    {
+      "path": "coil_spring.py",
+      "role": "executable_tool"
+    },
+    {
+      "path": "example.gltf",
+      "role": "skill_asset"
+    }
+  ],
+  "contract": {
+    "module": "coil_spring",
+    "entry_points": [
+      {
+        "name": "helix_frame",
+        "signature": "helix_frame(t, coil_radius=0.5, pitch=0.25)",
+        "summary": "(tangent, normal, binormal) at helix angle t; the normal is the Frenet normal turned back by the accumulated torsion, which makes the frame rotation-minimizing (no twist about the tangent)."
+      },
+      {
+        "name": "coil_spring",
+        "signature": "coil_spring(coil_radius=0.5, pitch=0.25, turns=6.0, wire_radius=0.05, steps_per_turn=36, sides=10)",
+        "summary": "A closed spring mesh centred at the origin along Y."
+      },
+      {
+        "name": "main",
+        "signature": "main(argv=None)",
+        "summary": "Command line: write the spring as .gltf or .obj and print a JSON summary."
+      }
+    ],
+    "parameters": [
+      {
+        "name": "coil_radius",
+        "type": "float",
+        "default": 0.5,
+        "unit": "m",
+        "minimum": 1e-06,
+        "maximum": 1000000.0,
+        "meaning": "Distance from the Y axis to the wire centre."
+      },
+      {
+        "name": "pitch",
+        "type": "float",
+        "default": 0.25,
+        "unit": "m",
+        "minimum": 0.0,
+        "maximum": 1000000.0,
+        "meaning": "Rise per turn; keep it above twice the wire radius so turns do not touch."
+      },
+      {
+        "name": "turns",
+        "type": "float",
+        "default": 6.0,
+        "unit": "turns",
+        "minimum": 0.01,
+        "maximum": 10000.0,
+        "meaning": "Number of turns (fractions allowed)."
+      },
+      {
+        "name": "wire_radius",
+        "type": "float",
+        "default": 0.05,
+        "unit": "m",
+        "minimum": 1e-06,
+        "maximum": 1000000.0,
+        "meaning": "Radius of the wire cross-section."
+      },
+      {
+        "name": "steps_per_turn",
+        "type": "int",
+        "default": 36,
+        "unit": "count",
+        "minimum": 3,
+        "maximum": 100000,
+        "meaning": "Samples along the helix per turn."
+      },
+      {
+        "name": "sides",
+        "type": "int",
+        "default": 10,
+        "unit": "count",
+        "minimum": 3,
+        "maximum": 1024,
+        "meaning": "Divisions around the wire."
+      }
+    ],
+    "invariants": {
+      "default": {
+        "call": "coil_spring",
+        "arguments": {},
+        "expect": {
+          "vertex_count": 2190,
+          "face_count": 2162,
+          "welded_watertight": true,
+          "welded_euler_characteristic": 2,
+          "volume": [
+            0.13893145585280853,
+            0.0011114516468224683
+          ],
+          "normals": "unit",
+          "normals_agree": 1.0,
+          "within": [
+            [
+              -0.55,
+              -0.8,
+              -0.55
+            ],
+            [
+              0.55,
+              0.8,
+              0.55
+            ],
+            1e-12
+          ]
+        }
+      },
+      "frame_at_start": {
+        "call": "helix_frame",
+        "arguments": {
+          "t": 0.0
+        },
+        "select": 1,
+        "expect": {
+          "sequence_close": [
+            [
+              -1.0,
+              0.0,
+              0.0
+            ],
+            1e-15
+          ]
+        }
+      },
+      "flat_coil": {
+        "call": "coil_spring",
+        "arguments": {
+          "pitch": 0.0,
+          "turns": 0.5,
+          "steps_per_turn": 8,
+          "sides": 4
+        },
+        "expect": {
+          "vertex_count": 28,
+          "face_count": 18,
+          "welded_watertight": true
+        }
+      }
+    },
+    "complexity": "O(turns * steps_per_turn * sides)",
+    "outputs": [
+      {
+        "format": "gltf",
+        "content": "one mesh with POSITION and NORMAL, indexed triangles"
+      },
+      {
+        "format": "obj",
+        "content": "the same spring as Wavefront OBJ"
+      }
+    ],
+    "axes": "+Y up, metres"
+  },
+  "limits": "Turns touch or pass through each other when the pitch is below twice the wire radius; nothing checks this. The volume check allows 0.8 percent below cross-section times helix length, the loss from straight segments and tilted rings at 36 steps per turn. Ends are cut square to the wire (no ground flat ends). No texture coordinates. Cap vertices are separate from the wire ends, so the mesh is closed after welding.",
+  "related": [
+    "torus_knot",
+    "screw_thread"
+  ],
+  "technique_references": [
+    "Helix Frenet frame with curvature R / (R^2 + b^2) and torsion b / (R^2 + b^2)",
+    "Rotation-minimizing frame by undoing the accumulated torsion"
+  ],
+  "native_checks": [
+    "generator_runs_system_python",
+    "generator_runs_verifier_python",
+    "gltf_strict_structure",
+    "interpreters_agree",
+    "example_matches_generator",
+    "godot_headless_gltf_load",
+    "godot_compatibility_render"
+  ]
+}

@@ -1,0 +1,395 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "kochanek_bartels_spline",
+  "title": "Kochanek-Bartels tension, continuity and bias spline",
+  "purpose": "Interpolate keys with cubic Hermite segments whose tangents are shaped by tension, continuity and bias, as in animation key editors. Use it for motion paths and value curves with overshoot or sharp keys.",
+  "form": "library_module",
+  "asset_role": null,
+  "dimension": "3d",
+  "engine": {
+    "name": "python",
+    "minimum_version": "3.10"
+  },
+  "tags": [
+    "kochanek-bartels",
+    "tcb spline",
+    "hermite",
+    "animation",
+    "interpolation",
+    "keyframes"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "role": "other"
+    },
+    {
+      "path": "kochanek_bartels_spline.py",
+      "role": "executable_tool"
+    },
+    {
+      "path": "example.gltf",
+      "role": "skill_asset"
+    }
+  ],
+  "contract": {
+    "module": "kochanek_bartels_spline",
+    "entry_points": [
+      {
+        "name": "hermite",
+        "signature": "hermite(p0, p1, m0, m1, t)",
+        "summary": "Cubic Hermite point from p0 (t = 0) to p1 (t = 1) with end tangents m0 and m1."
+      },
+      {
+        "name": "tcb_tangents",
+        "signature": "tcb_tangents(previous, current, following, tension=0.0, continuity=0.0, bias=0.0)",
+        "summary": "(incoming, outgoing) tangents at ``current`` from the Kochanek-Bartels formulas."
+      },
+      {
+        "name": "tcb_spline",
+        "signature": "tcb_spline(keys, tension=0.0, continuity=0.0, bias=0.0, samples_per_segment=16)",
+        "summary": "Points through every key (open curve; the end keys repeat their neighbour difference). With all three parameters 0 the curve is the uniform Catmull-Rom spline; with tension 1 every segment is straight."
+      },
+      {
+        "name": "build",
+        "signature": "build(tension=0.0, continuity=0.0, bias=0.0, samples_per_segment=16)",
+        "summary": "Tubes for the chosen setting (gold) and, for comparison, tension 0.8 (blue) through the same keys."
+      },
+      {
+        "name": "main",
+        "signature": "main(argv=None)",
+        "summary": "Command line: write the spline tubes (.gltf or .obj) and print a JSON summary."
+      }
+    ],
+    "parameters": [
+      {
+        "name": "tension",
+        "type": "float",
+        "default": 0.0,
+        "unit": "ratio",
+        "minimum": -1.0,
+        "maximum": 1.0,
+        "meaning": "Tangent length: 1 gives straight segments, -1 rounder curves."
+      },
+      {
+        "name": "continuity",
+        "type": "float",
+        "default": 0.0,
+        "unit": "ratio",
+        "minimum": -1.0,
+        "maximum": 1.0,
+        "meaning": "Difference between incoming and outgoing tangents: away from 0 makes corners."
+      },
+      {
+        "name": "bias",
+        "type": "float",
+        "default": 0.0,
+        "unit": "ratio",
+        "minimum": -1.0,
+        "maximum": 1.0,
+        "meaning": "Tangent direction: positive leans toward the previous key (overshoot), negative toward the next."
+      },
+      {
+        "name": "samples_per_segment",
+        "type": "int",
+        "default": 16,
+        "unit": "count",
+        "minimum": 1,
+        "maximum": 10000,
+        "meaning": "Points per segment."
+      }
+    ],
+    "invariants": {
+      "zero_parameters_are_catmull_rom": {
+        "call": "tcb_spline",
+        "arguments": {
+          "keys": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              1.0,
+              0.0,
+              0.0
+            ],
+            [
+              1.0,
+              1.0,
+              0.0
+            ],
+            [
+              3.0,
+              2.0,
+              0.0
+            ]
+          ],
+          "samples_per_segment": 2
+        },
+        "select": 3,
+        "expect": {
+          "sequence_close": [
+            [
+              0.9375,
+              0.4375,
+              0.0
+            ],
+            1e-14
+          ]
+        }
+      },
+      "tension_one_is_straight": {
+        "call": "tcb_spline",
+        "arguments": {
+          "keys": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              1.0,
+              0.0,
+              0.0
+            ],
+            [
+              1.0,
+              1.0,
+              0.0
+            ],
+            [
+              3.0,
+              2.0,
+              0.0
+            ]
+          ],
+          "tension": 1.0,
+          "samples_per_segment": 4
+        },
+        "expect": {
+          "point_count": 13,
+          "points_close": [
+            [
+              [
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.15625,
+                0.0,
+                0.0
+              ],
+              [
+                0.5,
+                0.0,
+                0.0
+              ],
+              [
+                0.84375,
+                0.0,
+                0.0
+              ],
+              [
+                1.0,
+                0.0,
+                0.0
+              ],
+              [
+                1.0,
+                0.15625,
+                0.0
+              ],
+              [
+                1.0,
+                0.5,
+                0.0
+              ],
+              [
+                1.0,
+                0.84375,
+                0.0
+              ],
+              [
+                1.0,
+                1.0,
+                0.0
+              ],
+              [
+                1.3125,
+                1.15625,
+                0.0
+              ],
+              [
+                2.0,
+                1.5,
+                0.0
+              ],
+              [
+                2.6875,
+                1.84375,
+                0.0
+              ],
+              [
+                3.0,
+                2.0,
+                0.0
+              ]
+            ],
+            1e-14
+          ]
+        }
+      },
+      "default_tangents": {
+        "call": "tcb_tangents",
+        "arguments": {
+          "previous": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "current": [
+            1.0,
+            0.0,
+            0.0
+          ],
+          "following": [
+            1.0,
+            2.0,
+            0.0
+          ]
+        },
+        "expect": {
+          "sequence_close": [
+            [
+              [
+                0.5,
+                1.0,
+                0.0
+              ],
+              [
+                0.5,
+                1.0,
+                0.0
+              ]
+            ],
+            1e-15
+          ]
+        }
+      },
+      "full_continuity_corner": {
+        "call": "tcb_tangents",
+        "arguments": {
+          "previous": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "current": [
+            1.0,
+            0.0,
+            0.0
+          ],
+          "following": [
+            1.0,
+            2.0,
+            0.0
+          ],
+          "continuity": 1.0
+        },
+        "expect": {
+          "sequence_close": [
+            [
+              [
+                0.0,
+                2.0,
+                0.0
+              ],
+              [
+                1.0,
+                0.0,
+                0.0
+              ]
+            ],
+            1e-15
+          ]
+        }
+      },
+      "hermite_end": {
+        "call": "hermite",
+        "arguments": {
+          "p0": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "p1": [
+            1.0,
+            1.0,
+            0.0
+          ],
+          "m0": [
+            1.0,
+            0.0,
+            0.0
+          ],
+          "m1": [
+            0.0,
+            1.0,
+            0.0
+          ],
+          "t": 1.0
+        },
+        "expect": {
+          "sequence_close": [
+            [
+              1.0,
+              1.0,
+              0.0
+            ],
+            0.0
+          ]
+        }
+      },
+      "display": {
+        "call": "build",
+        "arguments": {},
+        "expect": {
+          "mesh_count": 2,
+          "watertight": true
+        }
+      }
+    },
+    "complexity": "O(keys * samples_per_segment)",
+    "outputs": [
+      {
+        "format": "gltf",
+        "content": "tubes along the chosen spline and along a tension 0.8 version for comparison"
+      },
+      {
+        "format": "obj",
+        "content": "the same tubes as Wavefront OBJ"
+      }
+    ],
+    "axes": "+Y up, metres"
+  },
+  "limits": "Keys are equally spaced in time; uneven key times would need the tangent scaling of the original paper, which is not applied. Large continuity values make visible corners by design. Open ends repeat the neighbour difference.",
+  "related": [
+    "catmull_rom_spline",
+    "bezier_curve_arc_length"
+  ],
+  "technique_references": [
+    "Kochanek-Bartels (TCB) splines (1984)",
+    "Cubic Hermite basis"
+  ],
+  "native_checks": [
+    "generator_runs_system_python",
+    "generator_runs_verifier_python",
+    "gltf_strict_structure",
+    "interpreters_agree",
+    "example_matches_generator",
+    "godot_headless_gltf_load",
+    "godot_compatibility_render"
+  ]
+}

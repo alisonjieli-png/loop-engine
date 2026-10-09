@@ -1,0 +1,322 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "profile_sweep",
+  "title": "Profile sweep with scale and twist",
+  "purpose": "Sweep a closed 2D profile along a 3D path with transported frames, linear scaling and twist, and cap both ends into a closed solid. Use it for mouldings, horns, handles, tentacles and extruded paths.",
+  "form": "library_module",
+  "asset_role": null,
+  "dimension": "3d",
+  "engine": {
+    "name": "python",
+    "minimum_version": "3.10"
+  },
+  "tags": [
+    "sweep",
+    "extrusion",
+    "profile",
+    "twist",
+    "taper",
+    "modeling"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "role": "other"
+    },
+    {
+      "path": "profile_sweep.py",
+      "role": "executable_tool"
+    },
+    {
+      "path": "example.gltf",
+      "role": "skill_asset"
+    }
+  ],
+  "contract": {
+    "module": "profile_sweep",
+    "entry_points": [
+      {
+        "name": "demo_profile",
+        "signature": "demo_profile(name='star', size=0.3)",
+        "summary": "A counter-clockwise closed 2D profile: five-point star, square, 24-gon circle or plus-shaped cross."
+      },
+      {
+        "name": "demo_path",
+        "signature": "demo_path(name='arc', steps=64)",
+        "summary": "``steps`` + 1 points along a demonstration path."
+      },
+      {
+        "name": "sweep",
+        "signature": "sweep(profile, path, end_scale=1.0, twist=0.0, caps=True)",
+        "summary": "A mesh of len(path) rings of len(profile) vertices; ring k is the profile scaled by lerp(1, end_scale, k / (n - 1)) and turned by twist * k / (n - 1) degrees, placed in a frame carried along the path by the rotation between consecutive tangents. Caps triangulate the profile, so the result is closed. Profile x maps to the frame normal and profile y to the binormal; the profile is made counter-clockwise first."
+      },
+      {
+        "name": "build",
+        "signature": "build(profile='star', path='arc', end_scale=0.4, twist=90.0, steps=64)",
+        "summary": "The swept demonstration solid, flat shaded so profile corners stay crisp."
+      },
+      {
+        "name": "main",
+        "signature": "main(argv=None)",
+        "summary": "Command line: write the swept solid (.gltf or .obj) and print a JSON summary."
+      }
+    ],
+    "parameters": [
+      {
+        "name": "profile",
+        "type": "str",
+        "default": "star",
+        "unit": "name",
+        "choices": [
+          "star",
+          "square",
+          "circle",
+          "cross"
+        ],
+        "meaning": "Closed 2D cross-section."
+      },
+      {
+        "name": "path",
+        "type": "str",
+        "default": "arc",
+        "unit": "name",
+        "choices": [
+          "arc",
+          "helix",
+          "line",
+          "s_curve"
+        ],
+        "meaning": "3D path the profile follows."
+      },
+      {
+        "name": "end_scale",
+        "type": "float",
+        "default": 0.4,
+        "unit": "ratio",
+        "minimum": 0.0,
+        "maximum": 100.0,
+        "meaning": "Profile scale at the end of the path (1 at the start, linear in between)."
+      },
+      {
+        "name": "twist",
+        "type": "float",
+        "default": 90.0,
+        "unit": "degrees",
+        "minimum": -36000.0,
+        "maximum": 36000.0,
+        "meaning": "Total rotation of the profile about the path from start to end."
+      },
+      {
+        "name": "steps",
+        "type": "int",
+        "default": 64,
+        "unit": "count",
+        "minimum": 1,
+        "maximum": 100000,
+        "meaning": "Path samples minus one."
+      }
+    ],
+    "invariants": {
+      "straight_prism": {
+        "call": "sweep",
+        "arguments": {
+          "profile": [
+            [
+              -0.5,
+              -0.5
+            ],
+            [
+              0.5,
+              -0.5
+            ],
+            [
+              0.5,
+              0.5
+            ],
+            [
+              -0.5,
+              0.5
+            ]
+          ],
+          "path": [
+            [
+              0.0,
+              -1.0,
+              0.0
+            ],
+            [
+              0.0,
+              -0.5,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.5,
+              0.0
+            ],
+            [
+              0.0,
+              1.0,
+              0.0
+            ]
+          ]
+        },
+        "expect": {
+          "vertex_count": 20,
+          "face_count": 20,
+          "watertight": true,
+          "volume": [
+            2.0,
+            1e-12
+          ]
+        }
+      },
+      "straight_frustum": {
+        "call": "sweep",
+        "arguments": {
+          "profile": [
+            [
+              -0.5,
+              -0.5
+            ],
+            [
+              0.5,
+              -0.5
+            ],
+            [
+              0.5,
+              0.5
+            ],
+            [
+              -0.5,
+              0.5
+            ]
+          ],
+          "path": [
+            [
+              0.0,
+              -1.0,
+              0.0
+            ],
+            [
+              0.0,
+              -0.5,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.5,
+              0.0
+            ],
+            [
+              0.0,
+              1.0,
+              0.0
+            ]
+          ],
+          "end_scale": 0.5
+        },
+        "expect": {
+          "watertight": true,
+          "volume": [
+            1.1666666666666667,
+            1e-12
+          ]
+        }
+      },
+      "twisted_star_on_arc": {
+        "call": "sweep",
+        "arguments": {
+          "profile": {
+            "$call": "demo_profile",
+            "arguments": {
+              "name": "star"
+            }
+          },
+          "path": {
+            "$call": "demo_path",
+            "arguments": {
+              "name": "arc",
+              "steps": 64
+            }
+          },
+          "end_scale": 0.4,
+          "twist": 90.0
+        },
+        "expect": {
+          "vertex_count": 650,
+          "face_count": 656,
+          "watertight": true,
+          "euler_characteristic": 2
+        }
+      },
+      "helix_volume": {
+        "call": "sweep",
+        "arguments": {
+          "profile": {
+            "$call": "demo_profile",
+            "arguments": {
+              "name": "cross"
+            }
+          },
+          "path": {
+            "$call": "demo_path",
+            "arguments": {
+              "name": "helix",
+              "steps": 256
+            }
+          }
+        },
+        "expect": {
+          "watertight": true,
+          "volume": [
+            2.5449060526269314,
+            0.005089812105253862
+          ]
+        }
+      }
+    },
+    "complexity": "O(path points * profile points)",
+    "outputs": [
+      {
+        "format": "gltf",
+        "content": "the flat-shaded swept solid with POSITION and NORMAL"
+      },
+      {
+        "format": "obj",
+        "content": "the same solid as Wavefront OBJ"
+      }
+    ],
+    "axes": "+Y up, metres"
+  },
+  "limits": "The profile must be a simple polygon; tight bends with a large profile fold the walls through each other (not detected). Twisted walls are non-planar quads split along their shorter diagonal. Frames are transported by the turn between tangents (first order), so very coarse paths drift.",
+  "related": [
+    "rotation_minimizing_frames",
+    "loft_profiles",
+    "mitered_polyline_pipe"
+  ],
+  "technique_references": [
+    "Frame transport by the rotation between consecutive tangents",
+    "Linear scale and twist interpolation",
+    "Ear-clipped end caps"
+  ],
+  "native_checks": [
+    "generator_runs_system_python",
+    "generator_runs_verifier_python",
+    "gltf_strict_structure",
+    "interpreters_agree",
+    "example_matches_generator",
+    "godot_headless_gltf_load",
+    "godot_compatibility_render"
+  ]
+}

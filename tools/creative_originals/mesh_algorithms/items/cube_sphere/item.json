@@ -1,0 +1,231 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "cube_sphere",
+  "title": "Cube sphere with equal-area mapping",
+  "purpose": "Map the six faces of a subdivided cube onto a sphere as one welded quad mesh, with a polynomial mapping that keeps cell areas within about 16 percent. Use it for planets and cube-map spheres.",
+  "form": "library_module",
+  "asset_role": null,
+  "dimension": "3d",
+  "engine": {
+    "name": "python",
+    "minimum_version": "3.10"
+  },
+  "tags": [
+    "primitive",
+    "sphere",
+    "cube sphere",
+    "quad sphere",
+    "planet",
+    "cube map"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "role": "other"
+    },
+    {
+      "path": "cube_sphere.py",
+      "role": "executable_tool"
+    },
+    {
+      "path": "example.gltf",
+      "role": "skill_asset"
+    }
+  ],
+  "contract": {
+    "module": "cube_sphere",
+    "entry_points": [
+      {
+        "name": "cube_to_sphere",
+        "signature": "cube_to_sphere(point, mapping='equal_area')",
+        "summary": "Map a point on the surface of the cube [-1, 1]^3 to the unit sphere."
+      },
+      {
+        "name": "cube_sphere",
+        "signature": "cube_sphere(radius=1.0, divisions=12, mapping='equal_area')",
+        "summary": "A welded cube sphere: 6 n^2 + 2 vertices and 6 n^2 outward quads (n = divisions), unit normals."
+      },
+      {
+        "name": "face_area_ratio",
+        "signature": "face_area_ratio(mesh)",
+        "summary": "Largest face area divided by the smallest: 1 for perfectly even cells."
+      },
+      {
+        "name": "main",
+        "signature": "main(argv=None)",
+        "summary": "Command line: write the cube sphere as .gltf or .obj and print a JSON summary."
+      }
+    ],
+    "parameters": [
+      {
+        "name": "radius",
+        "type": "float",
+        "default": 1.0,
+        "unit": "m",
+        "minimum": 1e-06,
+        "maximum": 1000000.0,
+        "meaning": "Distance from the centre to every vertex."
+      },
+      {
+        "name": "divisions",
+        "type": "int",
+        "default": 12,
+        "unit": "count",
+        "minimum": 1,
+        "maximum": 512,
+        "meaning": "Quads along each cube edge; 6 * divisions^2 quads in total."
+      },
+      {
+        "name": "mapping",
+        "type": "str",
+        "default": "equal_area",
+        "unit": "name",
+        "choices": [
+          "equal_area",
+          "normalized"
+        ],
+        "meaning": "Cube to sphere mapping: the polynomial mapping with more even cells, or plain normalization."
+      }
+    ],
+    "invariants": {
+      "equal_area_default": {
+        "call": "cube_sphere",
+        "arguments": {
+          "radius": 1.0,
+          "divisions": 12
+        },
+        "expect": {
+          "vertex_count": 866,
+          "face_count": 864,
+          "quad_count": 864,
+          "watertight": true,
+          "euler_characteristic": 2,
+          "vertices_on_sphere": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            1.0,
+            1e-12
+          ],
+          "bounds": [
+            [
+              -1.0,
+              -1.0,
+              -1.0
+            ],
+            [
+              1.0,
+              1.0,
+              1.0
+            ],
+            1e-12
+          ],
+          "normals": "unit",
+          "normals_agree": 1.0
+        }
+      },
+      "even_cells": {
+        "call": "face_area_ratio",
+        "arguments": {
+          "mesh": {
+            "$call": "cube_sphere",
+            "arguments": {
+              "divisions": 12
+            }
+          }
+        },
+        "expect": {
+          "at_most": 1.2
+        }
+      },
+      "normalized_cells_are_uneven": {
+        "call": "face_area_ratio",
+        "arguments": {
+          "mesh": {
+            "$call": "cube_sphere",
+            "arguments": {
+              "divisions": 12,
+              "mapping": "normalized"
+            }
+          }
+        },
+        "expect": {
+          "at_least": 4.0
+        }
+      },
+      "single_division": {
+        "call": "cube_sphere",
+        "arguments": {
+          "radius": 3.0,
+          "divisions": 1
+        },
+        "expect": {
+          "vertex_count": 8,
+          "face_count": 6,
+          "watertight": true,
+          "vertices_on_sphere": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            3.0,
+            1e-12
+          ]
+        }
+      },
+      "corner_maps_to_diagonal": {
+        "call": "cube_to_sphere",
+        "arguments": {
+          "point": [
+            1.0,
+            1.0,
+            1.0
+          ]
+        },
+        "expect": {
+          "sequence_close": [
+            [
+              0.5773502691896258,
+              0.5773502691896258,
+              0.5773502691896258
+            ],
+            1e-15
+          ]
+        }
+      }
+    },
+    "complexity": "O(divisions^2)",
+    "outputs": [
+      {
+        "format": "gltf",
+        "content": "one welded mesh with POSITION and NORMAL, quads split into triangles"
+      },
+      {
+        "format": "obj",
+        "content": "the same sphere as Wavefront OBJ with quad faces"
+      }
+    ],
+    "axes": "+Y up, metres"
+  },
+  "limits": "No texture coordinates in the welded mesh; per-face cube-map coordinates need the six faces split apart. Cells are even but not equal (largest over smallest area about 1.16 at 12 divisions with the equal_area mapping, about 4.2 with plain normalization).",
+  "related": [
+    "icosphere",
+    "uv_sphere"
+  ],
+  "technique_references": [
+    "Cube to sphere polynomial mapping x sqrt(1 - y^2/2 - z^2/2 + y^2 z^2/3)",
+    "Integer lattice welding of cube faces"
+  ],
+  "native_checks": [
+    "generator_runs_system_python",
+    "generator_runs_verifier_python",
+    "gltf_strict_structure",
+    "interpreters_agree",
+    "example_matches_generator",
+    "godot_headless_gltf_load",
+    "godot_compatibility_render"
+  ]
+}

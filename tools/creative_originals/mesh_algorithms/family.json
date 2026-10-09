@@ -1,0 +1,12 @@
+{
+  "record_type": "creative_original_family/v1",
+  "family": "mesh_algorithms",
+  "title": "Original pure-Python mesh and geometry algorithms",
+  "description": "Mesh and geometry algorithms written in standard-library Python 3.10: primitives, curves and surfaces, subdivision, simplification, smoothing, triangulation, hulls, Voronoi diagrams, iso-surfaces, voxels, terrain, procedural growth and mesh analysis. Each item is one importable module whose functions return meshes, points or reports, with a command line that writes a text glTF 2.0 file (one .gltf with an embedded base64 buffer) or an OBJ file. Every package carries meshkit.py, the shared toolkit (mesh type, normals, measures, topology checks, welding, triangulation, an iso-surface polygonizer, seeded noise, glTF and OBJ writers and a strict glTF reader), and test_package.py, which runs the item's declared cases against exact counts and closed-form values and runs known-wrong controls. The contract card lists the entry points, parameters with units, the known-answer cases, the complexity and the outputs. Native verification runs each generator under two Python versions, loads the glTF in Godot 4 with GLTFDocument, compares surfaces, vertex and index counts, bounds and animations with the Python result, and renders a preview with the compatibility renderer.",
+  "engine": {"name": "python", "minimum_version": "3.10", "notes": "Standard library only. Outputs are checked by loading them in Godot 4.7.2 with GLTFDocument."},
+  "shared_files": [{"path": "meshkit.py", "role": "executable_tool"},
+                   {"path": "test_package.py", "role": "executable_tool"}],
+  "native_verifier": "native.py",
+  "generator_version": "1.0.0",
+  "default_dimension": "3d"
+}

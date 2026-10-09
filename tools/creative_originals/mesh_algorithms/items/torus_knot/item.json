@@ -1,0 +1,214 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "torus_knot",
+  "title": "Torus knot tube with parallel-transport frames",
+  "purpose": "Sweep a circle along a (p, q) torus knot with parallel-transport frames closed by an even twist, so the closed tube has no twist seam. Use it for knot sculpture, jewellery and decorative pipes.",
+  "form": "library_module",
+  "asset_role": null,
+  "dimension": "3d",
+  "engine": {
+    "name": "python",
+    "minimum_version": "3.10"
+  },
+  "tags": [
+    "torus knot",
+    "tube",
+    "sweep",
+    "parallel transport",
+    "knot",
+    "trefoil"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "role": "other"
+    },
+    {
+      "path": "torus_knot.py",
+      "role": "executable_tool"
+    },
+    {
+      "path": "example.gltf",
+      "role": "skill_asset"
+    }
+  ],
+  "contract": {
+    "module": "torus_knot",
+    "entry_points": [
+      {
+        "name": "knot_point",
+        "signature": "knot_point(t, p=2, q=3, major_radius=1.0, minor_radius=0.4)",
+        "summary": "Curve point at parameter t in [0, 2 pi): ((R + r cos qt) cos pt, r sin qt, -(R + r cos qt) sin pt)."
+      },
+      {
+        "name": "knot_tangent",
+        "signature": "knot_tangent(t, p=2, q=3, major_radius=1.0, minor_radius=0.4)",
+        "summary": "Unit tangent of the curve from its analytic derivative."
+      },
+      {
+        "name": "transport_frames",
+        "signature": "transport_frames(tangents)",
+        "summary": "Normals carried around a closed curve by rotating each one with the turn between consecutive tangents, then corrected by an even twist so the last normal meets the first."
+      },
+      {
+        "name": "torus_knot",
+        "signature": "torus_knot(p=2, q=3, major_radius=1.0, minor_radius=0.4, tube_radius=0.1, segments=180, sides=12)",
+        "summary": "A closed tube along the (p, q) torus knot: segments * sides vertices and quads, torus topology."
+      },
+      {
+        "name": "main",
+        "signature": "main(argv=None)",
+        "summary": "Command line: write the knot tube as .gltf or .obj and print a JSON summary."
+      }
+    ],
+    "parameters": [
+      {
+        "name": "p",
+        "type": "int",
+        "default": 2,
+        "unit": "count",
+        "minimum": 1,
+        "maximum": 64,
+        "meaning": "Turns around the Y axis (the torus' axis of symmetry)."
+      },
+      {
+        "name": "q",
+        "type": "int",
+        "default": 3,
+        "unit": "count",
+        "minimum": 1,
+        "maximum": 64,
+        "meaning": "Turns around the torus tube; p and q without a common factor give a knot."
+      },
+      {
+        "name": "major_radius",
+        "type": "float",
+        "default": 1.0,
+        "unit": "m",
+        "minimum": 1e-06,
+        "maximum": 1000000.0,
+        "meaning": "Radius of the torus the curve winds on."
+      },
+      {
+        "name": "minor_radius",
+        "type": "float",
+        "default": 0.4,
+        "unit": "m",
+        "minimum": 1e-06,
+        "maximum": 1000000.0,
+        "meaning": "Tube radius of that torus (how far the curve swings)."
+      },
+      {
+        "name": "tube_radius",
+        "type": "float",
+        "default": 0.1,
+        "unit": "m",
+        "minimum": 1e-06,
+        "maximum": 1000000.0,
+        "meaning": "Radius of the swept circle; keep it below half the closest approach of the strands."
+      },
+      {
+        "name": "segments",
+        "type": "int",
+        "default": 180,
+        "unit": "count",
+        "minimum": 8,
+        "maximum": 100000,
+        "meaning": "Samples along the curve."
+      },
+      {
+        "name": "sides",
+        "type": "int",
+        "default": 12,
+        "unit": "count",
+        "minimum": 3,
+        "maximum": 1024,
+        "meaning": "Divisions around the tube."
+      }
+    ],
+    "invariants": {
+      "trefoil": {
+        "call": "torus_knot",
+        "arguments": {},
+        "expect": {
+          "vertex_count": 2160,
+          "face_count": 2160,
+          "watertight": true,
+          "euler_characteristic": 0,
+          "genus": 1,
+          "volume": [
+            0.4432757681663045,
+            0.001773103072665218
+          ],
+          "area": [
+            9.178256882711144,
+            0.03671302753084458
+          ],
+          "normals": "unit",
+          "normals_agree": 1.0
+        }
+      },
+      "cinquefoil": {
+        "call": "torus_knot",
+        "arguments": {
+          "p": 2,
+          "q": 5,
+          "segments": 300,
+          "sides": 8
+        },
+        "expect": {
+          "vertex_count": 2400,
+          "watertight": true,
+          "genus": 1
+        }
+      },
+      "start_point": {
+        "call": "knot_point",
+        "arguments": {
+          "t": 0.0
+        },
+        "expect": {
+          "sequence_close": [
+            [
+              1.4,
+              0.0,
+              0.0
+            ],
+            1e-15
+          ]
+        }
+      }
+    },
+    "complexity": "O(segments * sides)",
+    "outputs": [
+      {
+        "format": "gltf",
+        "content": "one welded mesh with POSITION and NORMAL, indexed triangles"
+      },
+      {
+        "format": "obj",
+        "content": "the same tube as Wavefront OBJ"
+      }
+    ],
+    "axes": "+Y up, metres"
+  },
+  "limits": "The tube does not test for self-intersection: keep tube_radius below half the closest approach of the strands (true for the defaults). No texture coordinates. The volume and area checks compare with cross-section times curve length within 0.4 percent.",
+  "related": [
+    "coil_spring",
+    "torus"
+  ],
+  "technique_references": [
+    "Torus knot curve ((R + r cos qt) cos pt, r sin qt, -(R + r cos qt) sin pt)",
+    "Discrete parallel transport of frames (rotation between consecutive tangents)",
+    "Holonomy correction spread evenly along a closed curve"
+  ],
+  "native_checks": [
+    "generator_runs_system_python",
+    "generator_runs_verifier_python",
+    "gltf_strict_structure",
+    "interpreters_agree",
+    "example_matches_generator",
+    "godot_headless_gltf_load",
+    "godot_compatibility_render"
+  ]
+}

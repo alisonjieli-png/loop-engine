@@ -1,0 +1,334 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "polygon_offset_2d",
+  "title": "Polygon offset with miter, round or bevel joins",
+  "purpose": "Grow or shrink a simple 2D polygon by a distance with miter, round or bevel joins, refusing offsets that would make it cross itself. Use it for outlines, margins, toolpaths and walls from floor plans.",
+  "form": "library_module",
+  "asset_role": null,
+  "dimension": "2d",
+  "engine": {
+    "name": "python",
+    "minimum_version": "3.10"
+  },
+  "tags": [
+    "offset",
+    "polygon",
+    "buffer",
+    "2d",
+    "toolpath",
+    "outline"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "role": "other"
+    },
+    {
+      "path": "polygon_offset_2d.py",
+      "role": "executable_tool"
+    },
+    {
+      "path": "example.gltf",
+      "role": "skill_asset"
+    }
+  ],
+  "contract": {
+    "module": "polygon_offset_2d",
+    "entry_points": [
+      {
+        "name": "offset_polygon",
+        "signature": "offset_polygon(polygon, distance, join='round', arc_segments=8, miter_limit=4.0)",
+        "summary": "The offset outline, counter-clockwise. Each edge moves ``distance`` along its outward normal; where the moved edges overlap (a corner turning against the offset) they meet at their line intersection, and where they open a gap the ``join`` fills it: the line intersection (miter, limited to miter_limit * |distance|, beyond which it bevels), an arc around the corner (round) or the straight gap (bevel). Raises MeshError when an edge would vanish or turn around (offset_collapses) or the result would cross itself (offset_self_intersects)."
+      },
+      {
+        "name": "build",
+        "signature": "build(distance=0.25, join='round', arc_segments=8)",
+        "summary": "A flat band between the demonstration polygon and its offset (the offset outside, or inside when the distance is negative), in the XZ plane facing +Y."
+      },
+      {
+        "name": "main",
+        "signature": "main(argv=None)",
+        "summary": "Command line: write the offset band (.gltf or .obj) and print a JSON summary."
+      }
+    ],
+    "parameters": [
+      {
+        "name": "distance",
+        "type": "float",
+        "default": 0.25,
+        "unit": "m",
+        "minimum": -1000000.0,
+        "maximum": 1000000.0,
+        "meaning": "Offset distance: positive grows the polygon, negative shrinks it."
+      },
+      {
+        "name": "join",
+        "type": "str",
+        "default": "round",
+        "unit": "name",
+        "choices": [
+          "round",
+          "miter",
+          "bevel"
+        ],
+        "meaning": "How offset edges meet at corners that open a gap."
+      },
+      {
+        "name": "arc_segments",
+        "type": "int",
+        "default": 8,
+        "unit": "count",
+        "minimum": 1,
+        "maximum": 4096,
+        "meaning": "Segments per 90 degrees of a round join."
+      }
+    ],
+    "invariants": {
+      "miter": {
+        "call": "offset_polygon",
+        "arguments": {
+          "polygon": [
+            [
+              -1.0,
+              -1.0
+            ],
+            [
+              1.0,
+              -1.0
+            ],
+            [
+              1.0,
+              1.0
+            ],
+            [
+              -1.0,
+              1.0
+            ]
+          ],
+          "distance": 0.5,
+          "join": "miter"
+        },
+        "expect": {
+          "point_count": 4,
+          "polygon_area": [
+            9.0,
+            1e-12
+          ]
+        }
+      },
+      "bevel": {
+        "call": "offset_polygon",
+        "arguments": {
+          "polygon": [
+            [
+              -1.0,
+              -1.0
+            ],
+            [
+              1.0,
+              -1.0
+            ],
+            [
+              1.0,
+              1.0
+            ],
+            [
+              -1.0,
+              1.0
+            ]
+          ],
+          "distance": 0.5,
+          "join": "bevel"
+        },
+        "expect": {
+          "point_count": 8,
+          "polygon_area": [
+            8.5,
+            1e-12
+          ]
+        }
+      },
+      "round": {
+        "call": "offset_polygon",
+        "arguments": {
+          "polygon": [
+            [
+              -1.0,
+              -1.0
+            ],
+            [
+              1.0,
+              -1.0
+            ],
+            [
+              1.0,
+              1.0
+            ],
+            [
+              -1.0,
+              1.0
+            ]
+          ],
+          "distance": 0.5,
+          "join": "round",
+          "arc_segments": 8
+        },
+        "expect": {
+          "point_count": 36,
+          "polygon_area": [
+            8.780361288064514,
+            1e-12
+          ],
+          "polygons_simple": true
+        }
+      },
+      "inward": {
+        "call": "offset_polygon",
+        "arguments": {
+          "polygon": [
+            [
+              -1.0,
+              -1.0
+            ],
+            [
+              1.0,
+              -1.0
+            ],
+            [
+              1.0,
+              1.0
+            ],
+            [
+              -1.0,
+              1.0
+            ]
+          ],
+          "distance": -0.5
+        },
+        "expect": {
+          "polygon_area": [
+            1.0,
+            1e-12
+          ],
+          "points_close": [
+            [
+              [
+                -0.5,
+                -0.5
+              ],
+              [
+                0.5,
+                -0.5
+              ],
+              [
+                0.5,
+                0.5
+              ],
+              [
+                -0.5,
+                0.5
+              ]
+            ],
+            1e-12
+          ]
+        }
+      },
+      "concave_inward": {
+        "call": "offset_polygon",
+        "arguments": {
+          "polygon": [
+            [
+              0.0,
+              0.0
+            ],
+            [
+              2.0,
+              0.0
+            ],
+            [
+              2.0,
+              1.0
+            ],
+            [
+              1.0,
+              1.0
+            ],
+            [
+              1.0,
+              2.0
+            ],
+            [
+              0.0,
+              2.0
+            ]
+          ],
+          "distance": -0.25,
+          "join": "miter"
+        },
+        "expect": {
+          "polygon_area": [
+            1.25,
+            1e-12
+          ],
+          "point_count": 6
+        }
+      },
+      "too_far_inward": {
+        "call": "offset_polygon",
+        "arguments": {
+          "polygon": [
+            [
+              -1.0,
+              -1.0
+            ],
+            [
+              1.0,
+              -1.0
+            ],
+            [
+              1.0,
+              1.0
+            ],
+            [
+              -1.0,
+              1.0
+            ]
+          ],
+          "distance": -1.5
+        },
+        "raises": "offset_collapses"
+      }
+    },
+    "complexity": "O(n^2) including the self-intersection check",
+    "outputs": [
+      {
+        "format": "gltf",
+        "content": "a flat band between the demonstration polygon and its offset, in the XZ plane facing +Y"
+      },
+      {
+        "format": "obj",
+        "content": "the same band as Wavefront OBJ"
+      }
+    ],
+    "axes": "+Y up, metres; 2D (x, y) maps to (x, 0, -y)"
+  },
+  "limits": "Offsets that make edges vanish or cross are refused rather than cleaned up (no splitting into several polygons). Holes are not handled; offset each ring separately with the opposite sign. Round joins are polylines of arc_segments chords per right angle.",
+  "related": [
+    "fillet_polyline_2d",
+    "extrude_polygon_holes"
+  ],
+  "technique_references": [
+    "Offset edge lines along outward normals",
+    "Miter, round and bevel joins",
+    "Segment intersection test for self-crossing"
+  ],
+  "native_checks": [
+    "generator_runs_system_python",
+    "generator_runs_verifier_python",
+    "gltf_strict_structure",
+    "interpreters_agree",
+    "example_matches_generator",
+    "godot_headless_gltf_load",
+    "godot_compatibility_render"
+  ]
+}

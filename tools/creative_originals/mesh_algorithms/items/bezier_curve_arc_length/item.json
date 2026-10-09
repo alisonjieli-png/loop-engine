@@ -1,0 +1,435 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "bezier_curve_arc_length",
+  "title": "Cubic Bezier evaluation, arc length and resampling",
+  "purpose": "Evaluate and split cubic Bezier curves by de Casteljau, measure arc length by Gauss-Legendre quadrature and resample paths at even arc-length spacing. Use it for camera paths, motion along curves and even spacing of instances.",
+  "form": "library_module",
+  "asset_role": null,
+  "dimension": "3d",
+  "engine": {
+    "name": "python",
+    "minimum_version": "3.10"
+  },
+  "tags": [
+    "bezier",
+    "curve",
+    "arc length",
+    "resampling",
+    "de casteljau",
+    "motion path"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "role": "other"
+    },
+    {
+      "path": "bezier_curve_arc_length.py",
+      "role": "executable_tool"
+    },
+    {
+      "path": "example.gltf",
+      "role": "skill_asset"
+    }
+  ],
+  "contract": {
+    "module": "bezier_curve_arc_length",
+    "entry_points": [
+      {
+        "name": "bezier_point",
+        "signature": "bezier_point(controls, t)",
+        "summary": "Point at parameter t in [0, 1] by de Casteljau's repeated linear interpolation (any dimension)."
+      },
+      {
+        "name": "bezier_derivative",
+        "signature": "bezier_derivative(controls, t)",
+        "summary": "Velocity dB/dt of a cubic at t: 3 [(1-t)^2 (P1-P0) + 2 (1-t) t (P2-P1) + t^2 (P3-P2)]."
+      },
+      {
+        "name": "split_bezier",
+        "signature": "split_bezier(controls, t=0.5)",
+        "summary": "The two cubics that trace the parts before and after t (de Casteljau's intermediate points)."
+      },
+      {
+        "name": "arc_length",
+        "signature": "arc_length(controls, t0=0.0, t1=1.0, pieces=16)",
+        "summary": "Length of a cubic between t0 and t1: five-point Gauss-Legendre quadrature of the speed on ``pieces`` equal sub-intervals (error falls like the tenth power of the piece size for smooth speed)."
+      },
+      {
+        "name": "length_table",
+        "signature": "length_table(controls, pieces=32)",
+        "summary": "Cumulative arc length at t = k / pieces for k = 0 .. pieces (the lookup table for inversion)."
+      },
+      {
+        "name": "parameter_at_length",
+        "signature": "parameter_at_length(controls, length, table=None)",
+        "summary": "The t whose arc length from 0 equals ``length``: find the table piece, then Newton steps inside it."
+      },
+      {
+        "name": "resample_by_length",
+        "signature": "resample_by_length(segments, spacing)",
+        "summary": "Points along a path of cubic segments spaced ``spacing`` apart in arc length, plus the final end point."
+      },
+      {
+        "name": "demo_path",
+        "signature": "demo_path(name='wave')",
+        "summary": "Cubic segments of a demonstration path: 'wave' (four arches), 'loop' (closed) or 'quarter_circle'."
+      },
+      {
+        "name": "build",
+        "signature": "build(path='wave', spacing=0.05, tube_radius=0.04)",
+        "summary": "A tube through the path resampled at even arc length (what the command line writes)."
+      },
+      {
+        "name": "main",
+        "signature": "main(argv=None)",
+        "summary": "Command line: write the resampled path as a tube (.gltf or .obj) and print a JSON summary."
+      }
+    ],
+    "parameters": [
+      {
+        "name": "path",
+        "type": "str",
+        "default": "wave",
+        "unit": "name",
+        "choices": [
+          "wave",
+          "loop",
+          "quarter_circle"
+        ],
+        "meaning": "Demonstration path made of cubic segments."
+      },
+      {
+        "name": "spacing",
+        "type": "float",
+        "default": 0.05,
+        "unit": "m",
+        "minimum": 0.001,
+        "maximum": 1000.0,
+        "meaning": "Arc-length spacing of the resampled points the tube follows."
+      },
+      {
+        "name": "tube_radius",
+        "type": "float",
+        "default": 0.04,
+        "unit": "m",
+        "minimum": 0.0001,
+        "maximum": 1000.0,
+        "meaning": "Radius of the display tube."
+      }
+    ],
+    "invariants": {
+      "straight_line_length": {
+        "call": "arc_length",
+        "arguments": {
+          "controls": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              1.0,
+              0.0,
+              0.0
+            ],
+            [
+              2.0,
+              0.0,
+              0.0
+            ],
+            [
+              3.0,
+              0.0,
+              0.0
+            ]
+          ]
+        },
+        "expect": {
+          "close": [
+            3.0,
+            1e-12
+          ]
+        }
+      },
+      "quarter_circle_length": {
+        "call": "arc_length",
+        "arguments": {
+          "controls": [
+            [
+              1.0,
+              0.0,
+              0.0
+            ],
+            [
+              1.0,
+              0.5522847498307935,
+              0.0
+            ],
+            [
+              0.5522847498307935,
+              1.0,
+              0.0
+            ],
+            [
+              0.0,
+              1.0,
+              0.0
+            ]
+          ]
+        },
+        "expect": {
+          "close": [
+            1.5710166980728448,
+            1e-09
+          ]
+        }
+      },
+      "midpoint": {
+        "call": "bezier_point",
+        "arguments": {
+          "controls": [
+            [
+              1.0,
+              0.0,
+              0.0
+            ],
+            [
+              1.0,
+              0.5522847498307935,
+              0.0
+            ],
+            [
+              0.5522847498307935,
+              1.0,
+              0.0
+            ],
+            [
+              0.0,
+              1.0,
+              0.0
+            ]
+          ],
+          "t": 0.5
+        },
+        "expect": {
+          "sequence_close": [
+            [
+              0.7071067811865476,
+              0.7071067811865476,
+              0.0
+            ],
+            1e-15
+          ]
+        }
+      },
+      "split_first_half": {
+        "call": "split_bezier",
+        "arguments": {
+          "controls": [
+            [
+              1.0,
+              0.0,
+              0.0
+            ],
+            [
+              1.0,
+              0.5522847498307935,
+              0.0
+            ],
+            [
+              0.5522847498307935,
+              1.0,
+              0.0
+            ],
+            [
+              0.0,
+              1.0,
+              0.0
+            ]
+          ],
+          "t": 0.5
+        },
+        "select": 0,
+        "expect": {
+          "sequence_close": [
+            [
+              [
+                1.0,
+                0.0,
+                0.0
+              ],
+              [
+                1.0,
+                0.2761423749153967,
+                0.0
+              ],
+              [
+                0.8880711874576983,
+                0.5261423749153967,
+                0.0
+              ],
+              [
+                0.7071067811865476,
+                0.7071067811865476,
+                0.0
+              ]
+            ],
+            1e-15
+          ]
+        }
+      },
+      "start_velocity": {
+        "call": "bezier_derivative",
+        "arguments": {
+          "controls": [
+            [
+              1.0,
+              0.0,
+              0.0
+            ],
+            [
+              1.0,
+              0.5522847498307935,
+              0.0
+            ],
+            [
+              0.5522847498307935,
+              1.0,
+              0.0
+            ],
+            [
+              0.0,
+              1.0,
+              0.0
+            ]
+          ],
+          "t": 0.0
+        },
+        "expect": {
+          "sequence_close": [
+            [
+              0.0,
+              1.6568542494923804,
+              0.0
+            ],
+            1e-15
+          ]
+        }
+      },
+      "even_spacing_on_uneven_speed": {
+        "call": "resample_by_length",
+        "arguments": {
+          "segments": [
+            [
+              [
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.1,
+                0.0,
+                0.0
+              ],
+              [
+                0.2,
+                0.0,
+                0.0
+              ],
+              [
+                3.0,
+                0.0,
+                0.0
+              ]
+            ]
+          ],
+          "spacing": 0.5
+        },
+        "expect": {
+          "point_count": 7,
+          "points_close": [
+            [
+              [
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.5,
+                0.0,
+                0.0
+              ],
+              [
+                1.0,
+                0.0,
+                0.0
+              ],
+              [
+                1.5,
+                0.0,
+                0.0
+              ],
+              [
+                2.0,
+                0.0,
+                0.0
+              ],
+              [
+                2.5,
+                0.0,
+                0.0
+              ],
+              [
+                3.0,
+                0.0,
+                0.0
+              ]
+            ],
+            1e-09
+          ]
+        }
+      },
+      "display_tube": {
+        "call": "build",
+        "arguments": {},
+        "expect": {
+          "watertight": true,
+          "normals": "unit"
+        }
+      }
+    },
+    "complexity": "O(pieces) per length query; O(points * log pieces) for resampling",
+    "outputs": [
+      {
+        "format": "gltf",
+        "content": "a tube along the resampled demonstration path with POSITION and NORMAL"
+      },
+      {
+        "format": "obj",
+        "content": "the same tube as Wavefront OBJ"
+      }
+    ],
+    "axes": "+Y up, metres"
+  },
+  "limits": "Cubic segments only (the evaluation works for any degree, the length and split functions take four control points). Arc length is numerical (five-point Gauss-Legendre on 16 or 32 pieces), accurate to about 1e-10 for smooth segments but slower to converge near cusps. The display tube is for viewing, not a production sweep.",
+  "related": [
+    "bspline_de_boor",
+    "catmull_rom_spline",
+    "nurbs_curve"
+  ],
+  "technique_references": [
+    "de Casteljau evaluation and subdivision",
+    "Gauss-Legendre quadrature of the speed",
+    "Arc-length inversion by table lookup and Newton iteration"
+  ],
+  "native_checks": [
+    "generator_runs_system_python",
+    "generator_runs_verifier_python",
+    "gltf_strict_structure",
+    "interpreters_agree",
+    "example_matches_generator",
+    "godot_headless_gltf_load",
+    "godot_compatibility_render"
+  ]
+}

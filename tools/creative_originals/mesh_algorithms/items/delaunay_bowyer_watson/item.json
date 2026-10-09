@@ -1,0 +1,315 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "delaunay_bowyer_watson",
+  "title": "2D Delaunay triangulation by Bowyer-Watson",
+  "purpose": "Triangulate 2D points so that no point lies inside any triangle's circumcircle, using Bowyer-Watson insertion with exact fallback predicates. Use it for terrain meshes, interpolation and Voronoi construction.",
+  "form": "library_module",
+  "asset_role": null,
+  "dimension": "2d",
+  "engine": {
+    "name": "python",
+    "minimum_version": "3.10"
+  },
+  "tags": [
+    "delaunay",
+    "triangulation",
+    "bowyer-watson",
+    "computational geometry",
+    "2d",
+    "exact predicates"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "role": "other"
+    },
+    {
+      "path": "delaunay_bowyer_watson.py",
+      "role": "executable_tool"
+    },
+    {
+      "path": "example.gltf",
+      "role": "skill_asset"
+    }
+  ],
+  "contract": {
+    "module": "delaunay_bowyer_watson",
+    "entry_points": [
+      {
+        "name": "delaunay",
+        "signature": "delaunay(points)",
+        "summary": "Delaunay triangulation of 2D points: {\"points\", \"triangles\", \"hull\"}."
+      },
+      {
+        "name": "random_points",
+        "signature": "random_points(count=160, layout='random', seed=11)",
+        "summary": "Seeded demonstration points in the unit square: uniform 'random', 'jittered_grid' or concentric 'rings'."
+      },
+      {
+        "name": "triangulation_mesh",
+        "signature": "triangulation_mesh(result, height=0.0)",
+        "summary": "A flat glTF-ready mesh of a triangulation: one colour per triangle, the plane facing +Y."
+      },
+      {
+        "name": "build",
+        "signature": "build(count=160, layout='random', seed=11)",
+        "summary": "The coloured triangulation of seeded points that the command line writes."
+      },
+      {
+        "name": "main",
+        "signature": "main(argv=None)",
+        "summary": "Command line: write the triangulation as .gltf or .obj and print a JSON summary."
+      }
+    ],
+    "parameters": [
+      {
+        "name": "count",
+        "type": "int",
+        "default": 160,
+        "unit": "count",
+        "minimum": 3,
+        "maximum": 20000,
+        "meaning": "Number of input points."
+      },
+      {
+        "name": "layout",
+        "type": "str",
+        "default": "random",
+        "unit": "name",
+        "choices": [
+          "random",
+          "jittered_grid",
+          "rings"
+        ],
+        "meaning": "How the demonstration points are placed in the unit square."
+      },
+      {
+        "name": "seed",
+        "type": "int",
+        "default": 11,
+        "unit": "integer",
+        "minimum": 0,
+        "maximum": 2147483647,
+        "meaning": "Random seed; the same seed gives the same points."
+      }
+    ],
+    "invariants": {
+      "hexagon_and_centre": {
+        "call": "delaunay",
+        "arguments": {
+          "points": [
+            [
+              0.0,
+              0.0
+            ],
+            [
+              1.0,
+              0.0
+            ],
+            [
+              0.5000000000000001,
+              0.8660254037844386
+            ],
+            [
+              -0.4999999999999998,
+              0.8660254037844387
+            ],
+            [
+              -1.0,
+              1.2246467991473532e-16
+            ],
+            [
+              -0.5000000000000004,
+              -0.8660254037844384
+            ],
+            [
+              0.5000000000000001,
+              -0.8660254037844386
+            ]
+          ]
+        },
+        "expect": {
+          "triangulation_count": 6,
+          "delaunay": true,
+          "triangles_ccw": true,
+          "uses_all_points": true,
+          "triangulation_area": [
+            2.598076211353316,
+            1e-12
+          ]
+        }
+      },
+      "cocircular_grid": {
+        "call": "delaunay",
+        "arguments": {
+          "points": [
+            [
+              0.0,
+              0.0
+            ],
+            [
+              1.0,
+              0.0
+            ],
+            [
+              2.0,
+              0.0
+            ],
+            [
+              3.0,
+              0.0
+            ],
+            [
+              0.0,
+              1.0
+            ],
+            [
+              1.0,
+              1.0
+            ],
+            [
+              2.0,
+              1.0
+            ],
+            [
+              3.0,
+              1.0
+            ],
+            [
+              0.0,
+              2.0
+            ],
+            [
+              1.0,
+              2.0
+            ],
+            [
+              2.0,
+              2.0
+            ],
+            [
+              3.0,
+              2.0
+            ],
+            [
+              0.0,
+              3.0
+            ],
+            [
+              1.0,
+              3.0
+            ],
+            [
+              2.0,
+              3.0
+            ],
+            [
+              3.0,
+              3.0
+            ]
+          ]
+        },
+        "expect": {
+          "triangulation_count": 18,
+          "delaunay": true,
+          "triangles_ccw": true,
+          "uses_all_points": true,
+          "triangulation_area": [
+            9.0,
+            1e-12
+          ]
+        }
+      },
+      "random_points": {
+        "call": "delaunay",
+        "arguments": {
+          "points": {
+            "$call": "random_points",
+            "arguments": {
+              "count": 120,
+              "layout": "random",
+              "seed": 3
+            }
+          }
+        },
+        "expect": {
+          "triangulation_count": 226,
+          "delaunay": true,
+          "triangles_ccw": true,
+          "uses_all_points": true,
+          "triangulation_area": [
+            0.8900295790840185,
+            1e-12
+          ]
+        }
+      },
+      "duplicate_point": {
+        "call": "delaunay",
+        "arguments": {
+          "points": [
+            [
+              0.0,
+              0.0
+            ],
+            [
+              1.0,
+              0.0
+            ],
+            [
+              0.0,
+              1.0
+            ],
+            [
+              1.0,
+              0.0
+            ],
+            [
+              1.0,
+              1.2
+            ]
+          ]
+        },
+        "expect": {
+          "triangulation_count": 2,
+          "uses_all_points": false,
+          "delaunay": true,
+          "triangulation_area": [
+            1.1,
+            1e-12
+          ]
+        }
+      }
+    },
+    "complexity": "O(n^2)",
+    "outputs": [
+      {
+        "format": "gltf",
+        "content": "the triangulation of seeded points as a flat mesh in the XZ plane, one colour per triangle (COLOR_0)"
+      },
+      {
+        "format": "obj",
+        "content": "the same flat mesh as Wavefront OBJ"
+      }
+    ],
+    "axes": "+Y up, metres; 2D (x, y) maps to (x, 0, -y)"
+  },
+  "limits": "Quadratic insertion: suited to thousands of points, not millions. Exact rational arithmetic is used only when the floating-point predicate is too close to call, which is slow for large degenerate inputs. Exact duplicate points are used once. Collinear input raises an error. No constraint edges; see a constrained triangulation for polygons with holes.",
+  "related": [
+    "quickhull_3d"
+  ],
+  "technique_references": [
+    "Bowyer-Watson incremental insertion",
+    "In-circle and orientation determinants with exact fallback",
+    "Lawson edge flips",
+    "Convex hull completion"
+  ],
+  "native_checks": [
+    "generator_runs_system_python",
+    "generator_runs_verifier_python",
+    "gltf_strict_structure",
+    "interpreters_agree",
+    "example_matches_generator",
+    "godot_headless_gltf_load",
+    "godot_compatibility_render"
+  ]
+}

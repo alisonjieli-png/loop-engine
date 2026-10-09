@@ -1,0 +1,230 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "superellipsoid",
+  "title": "Superellipsoid superquadric",
+  "purpose": "Generate Barr superquadric solids whose two exponents morph between boxes, cylinders, ellipsoids, diamonds and pinched stars, with the exact smooth volume available. Use it for rounded props and shape fitting.",
+  "form": "library_module",
+  "asset_role": null,
+  "dimension": "3d",
+  "engine": {
+    "name": "python",
+    "minimum_version": "3.10"
+  },
+  "tags": [
+    "primitive",
+    "superquadric",
+    "superellipsoid",
+    "rounded box",
+    "parametric surface",
+    "morph"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "role": "other"
+    },
+    {
+      "path": "superellipsoid.py",
+      "role": "executable_tool"
+    },
+    {
+      "path": "example.gltf",
+      "role": "skill_asset"
+    }
+  ],
+  "contract": {
+    "module": "superellipsoid",
+    "entry_points": [
+      {
+        "name": "superellipsoid_point",
+        "signature": "superellipsoid_point(polar, azimuth, size_x=1.0, size_y=0.8, size_z=1.0, north_south=0.6, east_west=0.3)",
+        "summary": "Surface point at polar angle ``polar`` from +Y and azimuth from +X toward -Z (signed powers of cos, sin)."
+      },
+      {
+        "name": "superellipsoid",
+        "signature": "superellipsoid(size_x=1.0, size_y=0.8, size_z=1.0, north_south=0.6, east_west=0.3, segments=48, rings=24)",
+        "summary": "A welded superellipsoid: 2 + (rings - 1) * segments vertices, segments * rings faces, outward winding."
+      },
+      {
+        "name": "superellipsoid_volume",
+        "signature": "superellipsoid_volume(size_x=1.0, size_y=0.8, size_z=1.0, north_south=0.6, east_west=0.3)",
+        "summary": "Exact volume of the smooth surface: 2 a b c e1 e2 B(e1 / 2 + 1, e1) B(e2 / 2, e2 / 2), B the beta function."
+      },
+      {
+        "name": "main",
+        "signature": "main(argv=None)",
+        "summary": "Command line: write the superellipsoid as .gltf or .obj and print a JSON summary."
+      }
+    ],
+    "parameters": [
+      {
+        "name": "size_x",
+        "type": "float",
+        "default": 1.0,
+        "unit": "m",
+        "minimum": 1e-06,
+        "maximum": 1000000.0,
+        "meaning": "Semi-axis along X."
+      },
+      {
+        "name": "size_y",
+        "type": "float",
+        "default": 0.8,
+        "unit": "m",
+        "minimum": 1e-06,
+        "maximum": 1000000.0,
+        "meaning": "Semi-axis along Y (up)."
+      },
+      {
+        "name": "size_z",
+        "type": "float",
+        "default": 1.0,
+        "unit": "m",
+        "minimum": 1e-06,
+        "maximum": 1000000.0,
+        "meaning": "Semi-axis along Z."
+      },
+      {
+        "name": "north_south",
+        "type": "float",
+        "default": 0.6,
+        "unit": "exponent",
+        "minimum": 0.01,
+        "maximum": 4.0,
+        "meaning": "Exponent e1 of the latitude profile: below 1 squarer, 1 round, above 1 pinched."
+      },
+      {
+        "name": "east_west",
+        "type": "float",
+        "default": 0.3,
+        "unit": "exponent",
+        "minimum": 0.01,
+        "maximum": 4.0,
+        "meaning": "Exponent e2 of the horizontal cross-section: below 1 squarer, 1 round, 2 diamond."
+      },
+      {
+        "name": "segments",
+        "type": "int",
+        "default": 48,
+        "unit": "count",
+        "minimum": 3,
+        "maximum": 4096,
+        "meaning": "Divisions around the Y axis."
+      },
+      {
+        "name": "rings",
+        "type": "int",
+        "default": 24,
+        "unit": "count",
+        "minimum": 2,
+        "maximum": 4096,
+        "meaning": "Divisions from pole to pole."
+      }
+    ],
+    "invariants": {
+      "default": {
+        "call": "superellipsoid",
+        "arguments": {},
+        "expect": {
+          "vertex_count": 1106,
+          "face_count": 1152,
+          "watertight": true,
+          "euler_characteristic": 2,
+          "bounds": [
+            [
+              -1.0,
+              -0.8,
+              -1.0
+            ],
+            [
+              1.0,
+              0.8,
+              1.0
+            ],
+            1e-12
+          ],
+          "normals": "unit"
+        }
+      },
+      "ellipsoid_exact": {
+        "call": "superellipsoid",
+        "arguments": {
+          "size_x": 1.0,
+          "size_y": 0.8,
+          "size_z": 1.2,
+          "north_south": 1.0,
+          "east_west": 1.0,
+          "segments": 40,
+          "rings": 20
+        },
+        "expect": {
+          "watertight": true,
+          "volume": [
+            3.980069916514619,
+            1e-09
+          ]
+        }
+      },
+      "converges_to_formula": {
+        "call": "superellipsoid",
+        "arguments": {
+          "north_south": 1.0,
+          "east_west": 0.3,
+          "segments": 128,
+          "rings": 64
+        },
+        "expect": {
+          "watertight": true,
+          "volume": [
+            4.13875606138554,
+            0.00620813409207831
+          ]
+        }
+      },
+      "formula": {
+        "call": "superellipsoid_volume",
+        "arguments": {
+          "north_south": 1.0,
+          "east_west": 0.3
+        },
+        "expect": {
+          "close": [
+            4.13875606138554,
+            1e-12
+          ]
+        }
+      }
+    },
+    "complexity": "O(segments * rings)",
+    "outputs": [
+      {
+        "format": "gltf",
+        "content": "one welded mesh with POSITION and NORMAL, indexed triangles"
+      },
+      {
+        "format": "obj",
+        "content": "the same solid as Wavefront OBJ"
+      }
+    ],
+    "axes": "+Y up, metres"
+  },
+  "limits": "Even angle sampling crowds vertices near sharp edges and leaves flat sides coarse for small exponents; exponents near 0 produce nearly degenerate thin faces. No texture coordinates. Normals are mesh normals, not the analytic surface normals.",
+  "related": [
+    "supershape_gielis",
+    "rounded_box",
+    "uv_sphere"
+  ],
+  "technique_references": [
+    "Barr superquadric with signed powers of cosine and sine",
+    "Superellipsoid volume via beta functions"
+  ],
+  "native_checks": [
+    "generator_runs_system_python",
+    "generator_runs_verifier_python",
+    "gltf_strict_structure",
+    "interpreters_agree",
+    "example_matches_generator",
+    "godot_headless_gltf_load",
+    "godot_compatibility_render"
+  ]
+}

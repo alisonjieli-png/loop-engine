@@ -1,0 +1,408 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "lathe_revolve",
+  "title": "Lathe revolution with partial angles",
+  "purpose": "Revolve an (r, y) profile around the Y axis, fully or through a partial angle with flat cut faces, and compute the exact volume of the polygonal solid. Use it for vases, bowls, chess pieces and turned parts.",
+  "form": "library_module",
+  "asset_role": null,
+  "dimension": "3d",
+  "engine": {
+    "name": "python",
+    "minimum_version": "3.10"
+  },
+  "tags": [
+    "lathe",
+    "revolve",
+    "surface of revolution",
+    "turned parts",
+    "vase",
+    "modeling"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "role": "other"
+    },
+    {
+      "path": "lathe_revolve.py",
+      "role": "executable_tool"
+    },
+    {
+      "path": "example.gltf",
+      "role": "skill_asset"
+    }
+  ],
+  "contract": {
+    "module": "lathe_revolve",
+    "entry_points": [
+      {
+        "name": "demo_profile",
+        "signature": "demo_profile(name='vase')",
+        "summary": "An (r, y) polyline from bottom to top; r = 0 at an end closes the solid on the axis there."
+      },
+      {
+        "name": "lathe",
+        "signature": "lathe(profile, segments=48, angle=360.0)",
+        "summary": "Revolve ``profile`` about Y; points with r = 0 become single vertices. A full turn welds the seam; a partial turn adds both cut faces (the profile closed along the axis) and is closed when both profile ends lie on the axis. Faces point outward for a profile listed from bottom to top with r >= 0."
+      },
+      {
+        "name": "revolved_volume",
+        "signature": "revolved_volume(profile, segments=48, angle=360.0)",
+        "summary": "Exact volume of the lathe solid: segments * sin(angle / segments) * |first moment of the profile polygon closed along the axis| (each profile point sweeps straight chords, not circular arcs)."
+      },
+      {
+        "name": "build",
+        "signature": "build(profile='vase', segments=48, angle=360.0)",
+        "summary": "The smooth-shaded lathe solid of a demonstration profile."
+      },
+      {
+        "name": "main",
+        "signature": "main(argv=None)",
+        "summary": "Command line: write the revolved solid (.gltf or .obj) and print a JSON summary."
+      }
+    ],
+    "parameters": [
+      {
+        "name": "profile",
+        "type": "str",
+        "default": "vase",
+        "unit": "name",
+        "choices": [
+          "vase",
+          "bowl",
+          "pawn",
+          "spindle"
+        ],
+        "meaning": "Demonstration (r, y) profile."
+      },
+      {
+        "name": "segments",
+        "type": "int",
+        "default": 48,
+        "unit": "count",
+        "minimum": 3,
+        "maximum": 4096,
+        "meaning": "Divisions of the swept angle."
+      },
+      {
+        "name": "angle",
+        "type": "float",
+        "default": 360.0,
+        "unit": "degrees",
+        "minimum": 1.0,
+        "maximum": 360.0,
+        "meaning": "Swept angle; below 360 the cut sides are closed with the profile polygon."
+      }
+    ],
+    "invariants": {
+      "cylinder": {
+        "call": "lathe",
+        "arguments": {
+          "profile": [
+            [
+              0.0,
+              0.0
+            ],
+            [
+              1.0,
+              0.0
+            ],
+            [
+              1.0,
+              2.0
+            ],
+            [
+              0.0,
+              2.0
+            ]
+          ],
+          "segments": 64
+        },
+        "expect": {
+          "vertex_count": 130,
+          "face_count": 192,
+          "watertight": true,
+          "volume": [
+            6.273096981091879,
+            1e-12
+          ],
+          "area": [
+            18.83442160891089,
+            1e-12
+          ]
+        }
+      },
+      "sphere": {
+        "call": "lathe",
+        "arguments": {
+          "profile": [
+            [
+              0.0,
+              -1.0
+            ],
+            [
+              0.19509032201612825,
+              -0.9807852804032304
+            ],
+            [
+              0.3826834323650898,
+              -0.9238795325112867
+            ],
+            [
+              0.5555702330196022,
+              -0.8314696123025452
+            ],
+            [
+              0.7071067811865475,
+              -0.7071067811865476
+            ],
+            [
+              0.8314696123025452,
+              -0.5555702330196023
+            ],
+            [
+              0.9238795325112867,
+              -0.38268343236508984
+            ],
+            [
+              0.9807852804032304,
+              -0.19509032201612833
+            ],
+            [
+              1.0,
+              -6.123233995736766e-17
+            ],
+            [
+              0.9807852804032304,
+              0.1950903220161282
+            ],
+            [
+              0.9238795325112867,
+              0.3826834323650897
+            ],
+            [
+              0.8314696123025455,
+              0.555570233019602
+            ],
+            [
+              0.7071067811865476,
+              0.7071067811865475
+            ],
+            [
+              0.5555702330196022,
+              0.8314696123025453
+            ],
+            [
+              0.3826834323650899,
+              0.9238795325112867
+            ],
+            [
+              0.1950903220161286,
+              0.9807852804032304
+            ],
+            [
+              0.0,
+              1.0
+            ]
+          ],
+          "segments": 32
+        },
+        "expect": {
+          "watertight": true,
+          "euler_characteristic": 2,
+          "volume": [
+            4.1219417407858465,
+            1e-12
+          ],
+          "vertices_on_sphere": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            1.0,
+            1e-12
+          ]
+        }
+      },
+      "half_turn": {
+        "call": "lathe",
+        "arguments": {
+          "profile": [
+            [
+              0.0,
+              0.0
+            ],
+            [
+              1.0,
+              0.0
+            ],
+            [
+              1.0,
+              2.0
+            ],
+            [
+              0.0,
+              2.0
+            ]
+          ],
+          "segments": 16,
+          "angle": 180.0
+        },
+        "expect": {
+          "watertight": true,
+          "volume": [
+            3.121445152258052,
+            1e-12
+          ]
+        }
+      },
+      "spindle": {
+        "call": "lathe",
+        "arguments": {
+          "profile": [
+            [
+              0.0,
+              -1.0
+            ],
+            [
+              0.12940952255126037,
+              -0.9659258262890683
+            ],
+            [
+              0.24999999999999997,
+              -0.8660254037844387
+            ],
+            [
+              0.35355339059327373,
+              -0.7071067811865476
+            ],
+            [
+              0.4330127018922193,
+              -0.5000000000000001
+            ],
+            [
+              0.48296291314453416,
+              -0.25881904510252074
+            ],
+            [
+              0.5,
+              -6.123233995736766e-17
+            ],
+            [
+              0.48296291314453416,
+              0.25881904510252063
+            ],
+            [
+              0.43301270189221935,
+              0.4999999999999998
+            ],
+            [
+              0.3535533905932738,
+              0.7071067811865475
+            ],
+            [
+              0.24999999999999997,
+              0.8660254037844387
+            ],
+            [
+              0.1294095225512605,
+              0.9659258262890682
+            ],
+            [
+              0.0,
+              1.0
+            ]
+          ],
+          "segments": 48
+        },
+        "expect": {
+          "watertight": true,
+          "volume": [
+            1.0264192491702826,
+            1e-12
+          ]
+        }
+      },
+      "open_vase": {
+        "call": "lathe",
+        "arguments": {
+          "profile": {
+            "$call": "demo_profile",
+            "arguments": {
+              "name": "vase"
+            }
+          }
+        },
+        "expect": {
+          "vertex_count": 1201,
+          "face_count": 1200,
+          "boundary_loops": 1,
+          "manifold": true
+        }
+      },
+      "volume_formula": {
+        "call": "revolved_volume",
+        "arguments": {
+          "profile": [
+            [
+              0.0,
+              0.0
+            ],
+            [
+              1.0,
+              0.0
+            ],
+            [
+              1.0,
+              2.0
+            ],
+            [
+              0.0,
+              2.0
+            ]
+          ],
+          "segments": 16,
+          "angle": 180.0
+        },
+        "expect": {
+          "close": [
+            3.121445152258052,
+            1e-12
+          ]
+        }
+      }
+    },
+    "complexity": "O(profile points * segments)",
+    "outputs": [
+      {
+        "format": "gltf",
+        "content": "the revolved demonstration profile with POSITION and NORMAL (double-sided for open profiles)"
+      },
+      {
+        "format": "obj",
+        "content": "the same surface as Wavefront OBJ"
+      }
+    ],
+    "axes": "+Y up, metres"
+  },
+  "limits": "Profile points need r >= 0 and should go from bottom to top; a profile that crosses the axis or itself gives an invalid solid. Open profiles (not ending on the axis) give open surfaces. Points on the axis collapse to single vertices, so pole faces are triangles.",
+  "related": [
+    "cylinder_cone_frustum",
+    "capsule",
+    "loft_profiles"
+  ],
+  "technique_references": [
+    "Polygonal surface of revolution",
+    "Exact volume by Green's theorem: n sin(angle / n) times the profile's first moment"
+  ],
+  "native_checks": [
+    "generator_runs_system_python",
+    "generator_runs_verifier_python",
+    "gltf_strict_structure",
+    "interpreters_agree",
+    "example_matches_generator",
+    "godot_headless_gltf_load",
+    "godot_compatibility_render"
+  ]
+}

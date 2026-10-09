@@ -1,0 +1,248 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "cylinder_cone_frustum",
+  "title": "Cylinder, cone, frustum and pipe",
+  "purpose": "Generate straight solids of revolution: cylinders, cones, truncated cones and bored pipes, with flat-shaded caps and UVs. Use it for columns, cups, nozzles, pipes and lamp shades.",
+  "form": "function",
+  "asset_role": null,
+  "dimension": "3d",
+  "engine": {
+    "name": "python",
+    "minimum_version": "3.10"
+  },
+  "tags": [
+    "primitive",
+    "cylinder",
+    "cone",
+    "frustum",
+    "pipe",
+    "revolution"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "role": "other"
+    },
+    {
+      "path": "cylinder_cone_frustum.py",
+      "role": "executable_tool"
+    },
+    {
+      "path": "example.gltf",
+      "role": "skill_asset"
+    }
+  ],
+  "contract": {
+    "module": "cylinder_cone_frustum",
+    "entry_points": [
+      {
+        "name": "frustum",
+        "signature": "frustum(bottom_radius=0.6, top_radius=0.3, height=1.2, segments=32, inner_radius=0.12, caps=True)",
+        "summary": "A straight solid of revolution around Y, centred at the origin, with outward faces."
+      },
+      {
+        "name": "main",
+        "signature": "main(argv=None)",
+        "summary": "Command line: write the solid as .gltf or .obj and print a JSON summary."
+      }
+    ],
+    "parameters": [
+      {
+        "name": "bottom_radius",
+        "type": "float",
+        "default": 0.6,
+        "unit": "m",
+        "minimum": 0.0,
+        "maximum": 1000000.0,
+        "meaning": "Outer radius at the bottom (y = -height / 2); 0 makes a cone pointing down."
+      },
+      {
+        "name": "top_radius",
+        "type": "float",
+        "default": 0.3,
+        "unit": "m",
+        "minimum": 0.0,
+        "maximum": 1000000.0,
+        "meaning": "Outer radius at the top (y = +height / 2); 0 makes a cone; equal radii make a cylinder."
+      },
+      {
+        "name": "height",
+        "type": "float",
+        "default": 1.2,
+        "unit": "m",
+        "minimum": 1e-06,
+        "maximum": 1000000.0,
+        "meaning": "Distance between the bottom and top planes."
+      },
+      {
+        "name": "segments",
+        "type": "int",
+        "default": 32,
+        "unit": "count",
+        "minimum": 3,
+        "maximum": 4096,
+        "meaning": "Divisions around the Y axis."
+      },
+      {
+        "name": "inner_radius",
+        "type": "float",
+        "default": 0.12,
+        "unit": "m",
+        "minimum": 0.0,
+        "maximum": 1000000.0,
+        "meaning": "Radius of a straight bore along Y; 0 for a solid. Must be below both outer radii."
+      },
+      {
+        "name": "caps",
+        "type": "bool",
+        "default": true,
+        "unit": "flag",
+        "meaning": "Close the ends; without caps the result is an open tube (or two tubes with a bore)."
+      }
+    ],
+    "invariants": {
+      "bored_frustum": {
+        "call": "frustum",
+        "arguments": {},
+        "expect": {
+          "vertex_count": 260,
+          "face_count": 128,
+          "triangle_count": 256,
+          "welded_watertight": true,
+          "genus": 1,
+          "volume": [
+            0.73266560613801,
+            1e-12
+          ],
+          "area": [
+            5.708818464986026,
+            1e-12
+          ],
+          "normals": "unit"
+        }
+      },
+      "solid_frustum": {
+        "call": "frustum",
+        "arguments": {
+          "inner_radius": 0.0
+        },
+        "expect": {
+          "vertex_count": 130,
+          "face_count": 34,
+          "triangle_count": 124,
+          "welded_watertight": true,
+          "welded_euler_characteristic": 2,
+          "volume": [
+            0.7866041783690291,
+            1e-12
+          ],
+          "area": [
+            4.895390120093827,
+            1e-12
+          ]
+        }
+      },
+      "cone": {
+        "call": "frustum",
+        "arguments": {
+          "bottom_radius": 1.0,
+          "top_radius": 0.0,
+          "height": 1.0,
+          "segments": 24,
+          "inner_radius": 0.0
+        },
+        "expect": {
+          "vertex_count": 73,
+          "triangle_count": 46,
+          "welded_watertight": true,
+          "volume": [
+            1.035276180410083,
+            1e-12
+          ],
+          "area": [
+            7.5171246043242625,
+            1e-12
+          ]
+        }
+      },
+      "cylinder": {
+        "call": "frustum",
+        "arguments": {
+          "bottom_radius": 0.5,
+          "top_radius": 0.5,
+          "height": 2.0,
+          "segments": 64,
+          "inner_radius": 0.0
+        },
+        "expect": {
+          "welded_watertight": true,
+          "volume": [
+            1.5682742452729697,
+            1e-12
+          ],
+          "area": [
+            7.848936559182476,
+            1e-12
+          ],
+          "bounds": [
+            [
+              -0.5,
+              -1.0,
+              -0.5
+            ],
+            [
+              0.5,
+              1.0,
+              0.5
+            ],
+            1e-12
+          ]
+        }
+      },
+      "open_tube": {
+        "call": "frustum",
+        "arguments": {
+          "inner_radius": 0.0,
+          "caps": false
+        },
+        "expect": {
+          "vertex_count": 66,
+          "face_count": 32,
+          "welded_boundary_loops": 2,
+          "welded_euler_characteristic": 0
+        }
+      }
+    },
+    "complexity": "O(segments)",
+    "outputs": [
+      {
+        "format": "gltf",
+        "content": "one mesh with POSITION, NORMAL and TEXCOORD_0, indexed triangles"
+      },
+      {
+        "format": "obj",
+        "content": "the same solid as Wavefront OBJ with polygon caps"
+      }
+    ],
+    "axes": "+Y up, metres"
+  },
+  "limits": "Only straight sides (no curved profile; see a lathe for that) and a constant-radius bore. Caps and walls own separate vertices for sharp shading, so closed results are watertight after welding. A cone apex holds one vertex per segment.",
+  "related": [
+    "capsule",
+    "torus"
+  ],
+  "technique_references": [
+    "Solid of revolution with a straight profile",
+    "Slant normals from the side slope",
+    "Annular cap quads"
+  ],
+  "native_checks": [
+    "generator_runs_system_python",
+    "generator_runs_verifier_python",
+    "gltf_strict_structure",
+    "interpreters_agree",
+    "example_matches_generator",
+    "godot_headless_gltf_load",
+    "godot_compatibility_render"
+  ]
+}

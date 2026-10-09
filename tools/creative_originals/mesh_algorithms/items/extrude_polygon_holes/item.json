@@ -1,0 +1,584 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "extrude_polygon_holes",
+  "title": "Extrude a polygon with holes",
+  "purpose": "Extrude a 2D polygon with any number of holes into a closed solid with optional taper, triangulating the caps with bridged holes. Use it for plates, signs, floor plans, gaskets and logos.",
+  "form": "library_module",
+  "asset_role": null,
+  "dimension": "2.5d",
+  "engine": {
+    "name": "python",
+    "minimum_version": "3.10"
+  },
+  "tags": [
+    "extrusion",
+    "polygon with holes",
+    "triangulation",
+    "2.5d",
+    "plate",
+    "taper"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "role": "other"
+    },
+    {
+      "path": "extrude_polygon_holes.py",
+      "role": "executable_tool"
+    },
+    {
+      "path": "example.gltf",
+      "role": "skill_asset"
+    }
+  ],
+  "contract": {
+    "module": "extrude_polygon_holes",
+    "entry_points": [
+      {
+        "name": "extrude",
+        "signature": "extrude(outer, holes=(), height=0.4, taper=1.0)",
+        "summary": "A closed solid: the polygon at y = 0 (facing -Y), the same polygon scaled by ``taper`` at y = height (facing +Y) and quad walls. 2D (x, y) maps to (x, *, -y). Each hole adds one tunnel (genus = holes). Volume = area * height * (1 + taper + taper^2) / 3, which is area * height when taper = 1."
+      },
+      {
+        "name": "polygon_area",
+        "signature": "polygon_area(outer, holes=())",
+        "summary": "Area of the polygon minus its holes (shoelace)."
+      },
+      {
+        "name": "build",
+        "signature": "build(height=0.4, taper=1.0)",
+        "summary": "The extruded demonstration plate (outline with a round and a square hole), flat shaded."
+      },
+      {
+        "name": "main",
+        "signature": "main(argv=None)",
+        "summary": "Command line: write the extruded solid (.gltf or .obj) and print a JSON summary."
+      }
+    ],
+    "parameters": [
+      {
+        "name": "height",
+        "type": "float",
+        "default": 0.4,
+        "unit": "m",
+        "minimum": 1e-06,
+        "maximum": 1000000.0,
+        "meaning": "Extrusion distance along +Y (the solid spans y = 0 to height)."
+      },
+      {
+        "name": "taper",
+        "type": "float",
+        "default": 1.0,
+        "unit": "ratio",
+        "minimum": 0.0,
+        "maximum": 100.0,
+        "meaning": "Scale of the top face about the origin (1 straight walls, below 1 inward slope)."
+      }
+    ],
+    "invariants": {
+      "plate_with_two_holes": {
+        "call": "extrude",
+        "arguments": {
+          "outer": [
+            [
+              -1.2,
+              -0.8
+            ],
+            [
+              1.2,
+              -0.8
+            ],
+            [
+              1.2,
+              0.3
+            ],
+            [
+              0.6,
+              0.8
+            ],
+            [
+              -0.6,
+              0.8
+            ],
+            [
+              -1.2,
+              0.3
+            ]
+          ],
+          "holes": [
+            [
+              [
+                -0.55,
+                -0.2
+              ],
+              [
+                -0.5622358709262116,
+                -0.2772542485937369
+              ],
+              [
+                -0.5977457514062632,
+                -0.3469463130731183
+              ],
+              [
+                -0.6530536869268817,
+                -0.4022542485937369
+              ],
+              [
+                -0.7227457514062632,
+                -0.43776412907378837
+              ],
+              [
+                -0.8,
+                -0.45
+              ],
+              [
+                -0.8772542485937369,
+                -0.4377641290737884
+              ],
+              [
+                -0.9469463130731183,
+                -0.4022542485937369
+              ],
+              [
+                -1.002254248593737,
+                -0.3469463130731183
+              ],
+              [
+                -1.0377641290737885,
+                -0.2772542485937369
+              ],
+              [
+                -1.05,
+                -0.20000000000000004
+              ],
+              [
+                -1.0377641290737885,
+                -0.12274575140626329
+              ],
+              [
+                -1.002254248593737,
+                -0.053053686926881755
+              ],
+              [
+                -0.9469463130731184,
+                0.002254248593736824
+              ],
+              [
+                -0.8772542485937369,
+                0.03776412907378837
+              ],
+              [
+                -0.8,
+                0.04999999999999999
+              ],
+              [
+                -0.7227457514062632,
+                0.0377641290737884
+              ],
+              [
+                -0.6530536869268818,
+                0.0022542485937368795
+              ],
+              [
+                -0.5977457514062632,
+                -0.05305368692688167
+              ],
+              [
+                -0.5622358709262116,
+                -0.1227457514062631
+              ]
+            ],
+            [
+              [
+                0.3,
+                -0.5
+              ],
+              [
+                0.3,
+                0.1
+              ],
+              [
+                0.9,
+                0.1
+              ],
+              [
+                0.9,
+                -0.5
+              ]
+            ]
+          ],
+          "height": 0.4
+        },
+        "expect": {
+          "vertex_count": 60,
+          "face_count": 94,
+          "watertight": true,
+          "genus": 2,
+          "volume": [
+            1.1947457514062632,
+            1e-12
+          ]
+        }
+      },
+      "tapered": {
+        "call": "extrude",
+        "arguments": {
+          "outer": [
+            [
+              -1.2,
+              -0.8
+            ],
+            [
+              1.2,
+              -0.8
+            ],
+            [
+              1.2,
+              0.3
+            ],
+            [
+              0.6,
+              0.8
+            ],
+            [
+              -0.6,
+              0.8
+            ],
+            [
+              -1.2,
+              0.3
+            ]
+          ],
+          "holes": [
+            [
+              [
+                -0.55,
+                -0.2
+              ],
+              [
+                -0.5622358709262116,
+                -0.2772542485937369
+              ],
+              [
+                -0.5977457514062632,
+                -0.3469463130731183
+              ],
+              [
+                -0.6530536869268817,
+                -0.4022542485937369
+              ],
+              [
+                -0.7227457514062632,
+                -0.43776412907378837
+              ],
+              [
+                -0.8,
+                -0.45
+              ],
+              [
+                -0.8772542485937369,
+                -0.4377641290737884
+              ],
+              [
+                -0.9469463130731183,
+                -0.4022542485937369
+              ],
+              [
+                -1.002254248593737,
+                -0.3469463130731183
+              ],
+              [
+                -1.0377641290737885,
+                -0.2772542485937369
+              ],
+              [
+                -1.05,
+                -0.20000000000000004
+              ],
+              [
+                -1.0377641290737885,
+                -0.12274575140626329
+              ],
+              [
+                -1.002254248593737,
+                -0.053053686926881755
+              ],
+              [
+                -0.9469463130731184,
+                0.002254248593736824
+              ],
+              [
+                -0.8772542485937369,
+                0.03776412907378837
+              ],
+              [
+                -0.8,
+                0.04999999999999999
+              ],
+              [
+                -0.7227457514062632,
+                0.0377641290737884
+              ],
+              [
+                -0.6530536869268818,
+                0.0022542485937368795
+              ],
+              [
+                -0.5977457514062632,
+                -0.05305368692688167
+              ],
+              [
+                -0.5622358709262116,
+                -0.1227457514062631
+              ]
+            ],
+            [
+              [
+                0.3,
+                -0.5
+              ],
+              [
+                0.3,
+                0.1
+              ],
+              [
+                0.9,
+                0.1
+              ],
+              [
+                0.9,
+                -0.5
+              ]
+            ]
+          ],
+          "height": 0.4,
+          "taper": 0.5
+        },
+        "expect": {
+          "watertight": true,
+          "volume": [
+            0.6969350216536535,
+            1e-12
+          ]
+        }
+      },
+      "clockwise_square": {
+        "call": "extrude",
+        "arguments": {
+          "outer": [
+            [
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              1.0
+            ],
+            [
+              1.0,
+              1.0
+            ],
+            [
+              1.0,
+              0.0
+            ]
+          ],
+          "height": 2.0
+        },
+        "expect": {
+          "vertex_count": 8,
+          "watertight": true,
+          "euler_characteristic": 2,
+          "volume": [
+            2.0,
+            1e-12
+          ],
+          "bounds": [
+            [
+              0.0,
+              0.0,
+              -1.0
+            ],
+            [
+              1.0,
+              2.0,
+              0.0
+            ],
+            0.0
+          ]
+        }
+      },
+      "area": {
+        "call": "polygon_area",
+        "arguments": {
+          "outer": [
+            [
+              -1.2,
+              -0.8
+            ],
+            [
+              1.2,
+              -0.8
+            ],
+            [
+              1.2,
+              0.3
+            ],
+            [
+              0.6,
+              0.8
+            ],
+            [
+              -0.6,
+              0.8
+            ],
+            [
+              -1.2,
+              0.3
+            ]
+          ],
+          "holes": [
+            [
+              [
+                -0.55,
+                -0.2
+              ],
+              [
+                -0.5622358709262116,
+                -0.2772542485937369
+              ],
+              [
+                -0.5977457514062632,
+                -0.3469463130731183
+              ],
+              [
+                -0.6530536869268817,
+                -0.4022542485937369
+              ],
+              [
+                -0.7227457514062632,
+                -0.43776412907378837
+              ],
+              [
+                -0.8,
+                -0.45
+              ],
+              [
+                -0.8772542485937369,
+                -0.4377641290737884
+              ],
+              [
+                -0.9469463130731183,
+                -0.4022542485937369
+              ],
+              [
+                -1.002254248593737,
+                -0.3469463130731183
+              ],
+              [
+                -1.0377641290737885,
+                -0.2772542485937369
+              ],
+              [
+                -1.05,
+                -0.20000000000000004
+              ],
+              [
+                -1.0377641290737885,
+                -0.12274575140626329
+              ],
+              [
+                -1.002254248593737,
+                -0.053053686926881755
+              ],
+              [
+                -0.9469463130731184,
+                0.002254248593736824
+              ],
+              [
+                -0.8772542485937369,
+                0.03776412907378837
+              ],
+              [
+                -0.8,
+                0.04999999999999999
+              ],
+              [
+                -0.7227457514062632,
+                0.0377641290737884
+              ],
+              [
+                -0.6530536869268818,
+                0.0022542485937368795
+              ],
+              [
+                -0.5977457514062632,
+                -0.05305368692688167
+              ],
+              [
+                -0.5622358709262116,
+                -0.1227457514062631
+              ]
+            ],
+            [
+              [
+                0.3,
+                -0.5
+              ],
+              [
+                0.3,
+                0.1
+              ],
+              [
+                0.9,
+                0.1
+              ],
+              [
+                0.9,
+                -0.5
+              ]
+            ]
+          ]
+        },
+        "expect": {
+          "close": [
+            2.9868643785156577,
+            1e-12
+          ]
+        }
+      }
+    },
+    "complexity": "O(n^2) for the cap triangulation, n the total ring size",
+    "outputs": [
+      {
+        "format": "gltf",
+        "content": "the flat-shaded demonstration plate with POSITION and NORMAL"
+      },
+      {
+        "format": "obj",
+        "content": "the same solid as Wavefront OBJ"
+      }
+    ],
+    "axes": "+Y up, metres"
+  },
+  "limits": "Rings must be simple and the holes must lie inside the outer ring without touching each other; this is not checked. Taper scales about the origin, so off-centre shapes lean. No bevel or rounded edges.",
+  "related": [
+    "loft_profiles",
+    "involute_spur_gear",
+    "polygon_offset_2d"
+  ],
+  "technique_references": [
+    "Ear clipping with hole bridging",
+    "Prismatoid volume with similar end faces"
+  ],
+  "native_checks": [
+    "generator_runs_system_python",
+    "generator_runs_verifier_python",
+    "gltf_strict_structure",
+    "interpreters_agree",
+    "example_matches_generator",
+    "godot_headless_gltf_load",
+    "godot_compatibility_render"
+  ]
+}

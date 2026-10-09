@@ -1,0 +1,258 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "fillet_polyline_2d",
+  "title": "Fillet polygon corners with arcs",
+  "purpose": "Round the corners of a 2D polygon or polyline with circular arcs tangent to both edges, shrinking the radius where edges are too short. Use it for rounded outlines, toolpaths and soft UI shapes.",
+  "form": "library_module",
+  "asset_role": null,
+  "dimension": "2d",
+  "engine": {
+    "name": "python",
+    "minimum_version": "3.10"
+  },
+  "tags": [
+    "fillet",
+    "rounded corners",
+    "polygon",
+    "2d",
+    "arc",
+    "outline"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "role": "other"
+    },
+    {
+      "path": "fillet_polyline_2d.py",
+      "role": "executable_tool"
+    },
+    {
+      "path": "example.gltf",
+      "role": "skill_asset"
+    }
+  ],
+  "contract": {
+    "module": "fillet_polyline_2d",
+    "entry_points": [
+      {
+        "name": "fillet",
+        "signature": "fillet(points, radius=0.3, arc_segments=8, closed=True)",
+        "summary": "Points of the polygon (or open polyline) with each corner replaced by ``arc_segments`` + 1 points of an arc of ``radius`` tangent to both edges. The tangent points sit radius / tan(angle / 2) from the corner, limited to half of each edge (the radius shrinks to fit). Straight corners are kept as they are."
+      },
+      {
+        "name": "perimeter",
+        "signature": "perimeter(points, closed=True)",
+        "summary": "Length of the polygon (or polyline)."
+      },
+      {
+        "name": "build",
+        "signature": "build(radius=0.3, arc_segments=8)",
+        "summary": "The filleted demonstration outline as a flat plate in the XZ plane facing +Y."
+      },
+      {
+        "name": "main",
+        "signature": "main(argv=None)",
+        "summary": "Command line: write the filleted outline (.gltf or .obj) and print a JSON summary."
+      }
+    ],
+    "parameters": [
+      {
+        "name": "radius",
+        "type": "float",
+        "default": 0.3,
+        "unit": "m",
+        "minimum": 0.0,
+        "maximum": 1000000.0,
+        "meaning": "Fillet radius; reduced at a corner whose edges are too short to hold it."
+      },
+      {
+        "name": "arc_segments",
+        "type": "int",
+        "default": 8,
+        "unit": "count",
+        "minimum": 1,
+        "maximum": 4096,
+        "meaning": "Straight segments per arc."
+      }
+    ],
+    "invariants": {
+      "square": {
+        "call": "fillet",
+        "arguments": {
+          "points": [
+            [
+              -1.0,
+              -1.0
+            ],
+            [
+              1.0,
+              -1.0
+            ],
+            [
+              1.0,
+              1.0
+            ],
+            [
+              -1.0,
+              1.0
+            ]
+          ],
+          "radius": 0.5,
+          "arc_segments": 8
+        },
+        "expect": {
+          "point_count": 36,
+          "polygon_area": [
+            3.7803612880645128,
+            1e-12
+          ],
+          "closed_polyline_length": [
+            7.136548490545939,
+            1e-12
+          ],
+          "polygons_simple": true
+        }
+      },
+      "radius_shrinks_to_fit": {
+        "call": "fillet",
+        "arguments": {
+          "points": [
+            [
+              -1.0,
+              -1.0
+            ],
+            [
+              1.0,
+              -1.0
+            ],
+            [
+              1.0,
+              1.0
+            ],
+            [
+              -1.0,
+              1.0
+            ]
+          ],
+          "radius": 5.0,
+          "arc_segments": 4
+        },
+        "expect": {
+          "point_count": 16,
+          "polygon_area": [
+            3.0614674589207183,
+            1e-12
+          ],
+          "points_on_circle": [
+            [
+              0.0,
+              0.0
+            ],
+            1.0,
+            1e-12
+          ]
+        }
+      },
+      "open_polyline_keeps_ends": {
+        "call": "fillet",
+        "arguments": {
+          "points": [
+            [
+              0.0,
+              0.0
+            ],
+            [
+              1.0,
+              0.0
+            ],
+            [
+              1.0,
+              1.0
+            ]
+          ],
+          "radius": 0.2,
+          "arc_segments": 4,
+          "closed": false
+        },
+        "expect": {
+          "point_count": 7,
+          "first_point": [
+            [
+              0.0,
+              0.0
+            ],
+            0.0
+          ],
+          "last_point": [
+            [
+              1.0,
+              1.0
+            ],
+            0.0
+          ]
+        }
+      },
+      "perimeter": {
+        "call": "perimeter",
+        "arguments": {
+          "points": [
+            [
+              -1.0,
+              -1.0
+            ],
+            [
+              1.0,
+              -1.0
+            ],
+            [
+              1.0,
+              1.0
+            ],
+            [
+              -1.0,
+              1.0
+            ]
+          ]
+        },
+        "expect": {
+          "close": [
+            8.0,
+            1e-15
+          ]
+        }
+      }
+    },
+    "complexity": "O(n * arc_segments)",
+    "outputs": [
+      {
+        "format": "gltf",
+        "content": "the filleted demonstration outline as a flat plate in the XZ plane facing +Y"
+      },
+      {
+        "format": "obj",
+        "content": "the same plate as Wavefront OBJ"
+      }
+    ],
+    "axes": "+Y up, metres; 2D (x, y) maps to (x, 0, -y)"
+  },
+  "limits": "Each corner is filleted on its own: where a shrunk radius takes half of an edge from both ends, the arcs meet but the radius is no longer the requested one. Self-intersecting input is not repaired. Arcs are polylines with arc_segments chords.",
+  "related": [
+    "polygon_offset_2d",
+    "chaikin_corner_cutting",
+    "rounded_box"
+  ],
+  "technique_references": [
+    "Tangent arc construction: distance r / tan(angle / 2) from the corner",
+    "Corner bisector for the arc centre"
+  ],
+  "native_checks": [
+    "generator_runs_system_python",
+    "generator_runs_verifier_python",
+    "gltf_strict_structure",
+    "interpreters_agree",
+    "example_matches_generator",
+    "godot_headless_gltf_load",
+    "godot_compatibility_render"
+  ]
+}

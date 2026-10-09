@@ -1,0 +1,248 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "chaikin_corner_cutting",
+  "title": "Chaikin corner cutting",
+  "purpose": "Round polygons and polylines by repeated corner cutting at the quarter points, converging to the quadratic B-spline. Use it for smooth outlines, organic 2D shapes and softening hand-drawn strokes.",
+  "form": "library_module",
+  "asset_role": null,
+  "dimension": "2d",
+  "engine": {
+    "name": "python",
+    "minimum_version": "3.10"
+  },
+  "tags": [
+    "chaikin",
+    "corner cutting",
+    "subdivision",
+    "curve smoothing",
+    "2d",
+    "b-spline"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "role": "other"
+    },
+    {
+      "path": "chaikin_corner_cutting.py",
+      "role": "executable_tool"
+    },
+    {
+      "path": "example.gltf",
+      "role": "skill_asset"
+    }
+  ],
+  "contract": {
+    "module": "chaikin_corner_cutting",
+    "entry_points": [
+      {
+        "name": "chaikin",
+        "signature": "chaikin(points, iterations=1, closed=True, ratio=0.25)",
+        "summary": "Each round replaces every edge (a, b) by the points (1 - r) a + r b and r a + (1 - r) b. A closed polygon of n points has n * 2^k points after k rounds; an open polyline keeps both end points and has 2n points after one round. With r = 1/4 the limit is the uniform quadratic B-spline of the input."
+      },
+      {
+        "name": "build",
+        "signature": "build(iterations=4, ratio=0.25)",
+        "summary": "The rounded demonstration star as a flat plate in the XZ plane, with the input polygon as a thin outline tube."
+      },
+      {
+        "name": "main",
+        "signature": "main(argv=None)",
+        "summary": "Command line: write the plate and outline (.gltf or .obj) and print a JSON summary."
+      }
+    ],
+    "parameters": [
+      {
+        "name": "iterations",
+        "type": "int",
+        "default": 4,
+        "unit": "count",
+        "minimum": 0,
+        "maximum": 16,
+        "meaning": "Rounds of corner cutting; each doubles the point count of a closed polygon."
+      },
+      {
+        "name": "ratio",
+        "type": "float",
+        "default": 0.25,
+        "unit": "fraction",
+        "minimum": 0.01,
+        "maximum": 0.49,
+        "meaning": "Where each edge is cut, as a fraction from each end (0.25 is Chaikin's rule)."
+      }
+    ],
+    "invariants": {
+      "one_round": {
+        "call": "chaikin",
+        "arguments": {
+          "points": [
+            [
+              -1.0,
+              -1.0
+            ],
+            [
+              1.0,
+              -1.0
+            ],
+            [
+              1.0,
+              1.0
+            ],
+            [
+              -1.0,
+              1.0
+            ]
+          ],
+          "iterations": 1
+        },
+        "expect": {
+          "point_count": 8,
+          "polygon_area": [
+            3.5,
+            1e-12
+          ],
+          "polygons_convex": true
+        }
+      },
+      "three_rounds": {
+        "call": "chaikin",
+        "arguments": {
+          "points": [
+            [
+              -1.0,
+              -1.0
+            ],
+            [
+              1.0,
+              -1.0
+            ],
+            [
+              1.0,
+              1.0
+            ],
+            [
+              -1.0,
+              1.0
+            ]
+          ],
+          "iterations": 3
+        },
+        "expect": {
+          "point_count": 32,
+          "polygon_area": [
+            3.34375,
+            1e-12
+          ]
+        }
+      },
+      "converges_to_spline_area": {
+        "call": "chaikin",
+        "arguments": {
+          "points": [
+            [
+              -1.0,
+              -1.0
+            ],
+            [
+              1.0,
+              -1.0
+            ],
+            [
+              1.0,
+              1.0
+            ],
+            [
+              -1.0,
+              1.0
+            ]
+          ],
+          "iterations": 6
+        },
+        "expect": {
+          "point_count": 256,
+          "polygon_area": [
+            3.33349609375,
+            1e-12
+          ]
+        }
+      },
+      "open_keeps_ends": {
+        "call": "chaikin",
+        "arguments": {
+          "points": [
+            [
+              0.0,
+              0.0
+            ],
+            [
+              1.0,
+              0.0
+            ],
+            [
+              1.0,
+              1.0
+            ]
+          ],
+          "iterations": 1,
+          "closed": false
+        },
+        "expect": {
+          "point_count": 6,
+          "first_point": [
+            [
+              0.0,
+              0.0
+            ],
+            0.0
+          ],
+          "last_point": [
+            [
+              1.0,
+              1.0
+            ],
+            0.0
+          ]
+        }
+      },
+      "display": {
+        "call": "build",
+        "arguments": {},
+        "expect": {
+          "mesh_count": 2,
+          "face_count": 218
+        }
+      }
+    },
+    "complexity": "O(n * 2^iterations)",
+    "outputs": [
+      {
+        "format": "gltf",
+        "content": "the smoothed demonstration star as a flat plate and the input polygon as a thin tube"
+      },
+      {
+        "format": "obj",
+        "content": "the same meshes as Wavefront OBJ"
+      }
+    ],
+    "axes": "+Y up, metres; 2D (x, y) maps to (x, 0, -y)"
+  },
+  "limits": "The curve shrinks inside the control polygon (it approximates, it does not interpolate). Point counts double every round. Ratios other than 1/4 converge to curves that are not the quadratic B-spline.",
+  "related": [
+    "douglas_peucker",
+    "fillet_polyline_2d",
+    "catmull_clark_subdivision"
+  ],
+  "technique_references": [
+    "Chaikin corner cutting (1974)",
+    "Uniform quadratic B-spline as the limit curve"
+  ],
+  "native_checks": [
+    "generator_runs_system_python",
+    "generator_runs_verifier_python",
+    "gltf_strict_structure",
+    "interpreters_agree",
+    "example_matches_generator",
+    "godot_headless_gltf_load",
+    "godot_compatibility_render"
+  ]
+}

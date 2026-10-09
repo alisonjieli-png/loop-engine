@@ -1,0 +1,246 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "nurbs_surface",
+  "title": "NURBS surfaces with exact sphere and torus",
+  "purpose": "Evaluate and tessellate tensor-product NURBS surfaces, including exact spheres and tori built as surfaces of revolution from rational profiles. Use it for CAD-style surfaces and exact round shapes.",
+  "form": "library_module",
+  "asset_role": null,
+  "dimension": "3d",
+  "engine": {
+    "name": "python",
+    "minimum_version": "3.10"
+  },
+  "tags": [
+    "nurbs",
+    "surface",
+    "tensor product",
+    "revolution",
+    "tessellation",
+    "cad"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "role": "other"
+    },
+    {
+      "path": "nurbs_surface.py",
+      "role": "executable_tool"
+    },
+    {
+      "path": "example.gltf",
+      "role": "skill_asset"
+    }
+  ],
+  "contract": {
+    "module": "nurbs_surface",
+    "entry_points": [
+      {
+        "name": "surface_point",
+        "signature": "surface_point(surface, u, v)",
+        "summary": "Point at (u, v): each control row is reduced at v in homogeneous coordinates, then the column at u."
+      },
+      {
+        "name": "revolve_profile",
+        "signature": "revolve_profile(profile, profile_weights, profile_degree, profile_knots)",
+        "summary": "Surface of revolution about Y: an (r, y) NURBS profile times the nine-point exact circle."
+      },
+      {
+        "name": "sphere_surface",
+        "signature": "sphere_surface(radius=1.0)",
+        "summary": "Exact sphere: a five-point rational semicircle from the south to the north pole, revolved."
+      },
+      {
+        "name": "torus_surface",
+        "signature": "torus_surface(major_radius=1.0, minor_radius=0.35)",
+        "summary": "Exact torus: the nine-point circle of the tube cross-section, revolved."
+      },
+      {
+        "name": "wave_surface",
+        "signature": "wave_surface()",
+        "summary": "A bicubic free-form patch over [-1.5, 1.5]^2 with a 5 x 5 control net and unit weights."
+      },
+      {
+        "name": "tessellate",
+        "signature": "tessellate(surface, u_samples=48, v_samples=24, closed_v=False)",
+        "summary": "A grid mesh of u_samples x v_samples points evenly spaced in the parameters, normals from central differences in parameter space. ``closed_v`` leaves out the repeated last column of a closed direction."
+      },
+      {
+        "name": "build",
+        "signature": "build(shape='torus', u_samples=48, v_samples=24)",
+        "summary": "The tessellated demonstration surface the command line writes."
+      },
+      {
+        "name": "main",
+        "signature": "main(argv=None)",
+        "summary": "Command line: write the tessellated surface (.gltf or .obj) and print a JSON summary."
+      }
+    ],
+    "parameters": [
+      {
+        "name": "shape",
+        "type": "str",
+        "default": "torus",
+        "unit": "name",
+        "choices": [
+          "sphere",
+          "torus",
+          "wave"
+        ],
+        "meaning": "Demonstration surface: exact sphere, exact torus or a free-form wave patch."
+      },
+      {
+        "name": "u_samples",
+        "type": "int",
+        "default": 48,
+        "unit": "count",
+        "minimum": 2,
+        "maximum": 4096,
+        "meaning": "Grid lines across the first parameter."
+      },
+      {
+        "name": "v_samples",
+        "type": "int",
+        "default": 24,
+        "unit": "count",
+        "minimum": 2,
+        "maximum": 4096,
+        "meaning": "Grid lines across the second parameter."
+      }
+    ],
+    "invariants": {
+      "exact_sphere": {
+        "call": "tessellate",
+        "arguments": {
+          "surface": {
+            "$call": "sphere_surface"
+          },
+          "u_samples": 24,
+          "v_samples": 16,
+          "closed_v": true
+        },
+        "expect": {
+          "vertex_count": 384,
+          "vertices_on_sphere": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            1.0,
+            1e-13
+          ],
+          "welded_watertight": true,
+          "welded_euler_characteristic": 2
+        }
+      },
+      "exact_torus": {
+        "call": "tessellate",
+        "arguments": {
+          "surface": {
+            "$call": "torus_surface"
+          },
+          "u_samples": 25,
+          "v_samples": 16,
+          "closed_v": true
+        },
+        "expect": {
+          "vertex_count": 400,
+          "welded_watertight": true,
+          "genus": 1,
+          "bounds": [
+            [
+              -1.35,
+              -0.35,
+              -1.35
+            ],
+            [
+              1.35,
+              0.35,
+              1.35
+            ],
+            1e-12
+          ]
+        }
+      },
+      "sphere_equator": {
+        "call": "surface_point",
+        "arguments": {
+          "surface": {
+            "$call": "sphere_surface"
+          },
+          "u": 0.5,
+          "v": 0.0
+        },
+        "expect": {
+          "sequence_close": [
+            [
+              1.0,
+              0.0,
+              0.0
+            ],
+            1e-15
+          ]
+        }
+      },
+      "free_form_patch": {
+        "call": "tessellate",
+        "arguments": {
+          "surface": {
+            "$call": "wave_surface"
+          },
+          "u_samples": 10,
+          "v_samples": 10
+        },
+        "expect": {
+          "vertex_count": 100,
+          "face_count": 81,
+          "boundary_loops": 1,
+          "within": [
+            [
+              -1.5,
+              -0.5,
+              -1.5
+            ],
+            [
+              1.5,
+              0.5,
+              1.5
+            ],
+            1e-12
+          ]
+        }
+      }
+    },
+    "complexity": "O(u_samples * v_samples * (degree_u + 1)(degree_v + 1))",
+    "outputs": [
+      {
+        "format": "gltf",
+        "content": "the tessellated surface with POSITION and NORMAL"
+      },
+      {
+        "format": "obj",
+        "content": "the same surface as Wavefront OBJ"
+      }
+    ],
+    "axes": "+Y up, metres"
+  },
+  "limits": "Uniform parameter sampling, not curvature adaptive. The sphere's poles and the closed seam are repeated grid points, so closed results are watertight after welding. Normals come from central differences in parameter space, with mesh normals at the poles.",
+  "related": [
+    "nurbs_curve",
+    "coons_patch"
+  ],
+  "technique_references": [
+    "Tensor-product rational de Boor evaluation",
+    "Surface of revolution from a NURBS profile and the nine-point circle"
+  ],
+  "native_checks": [
+    "generator_runs_system_python",
+    "generator_runs_verifier_python",
+    "gltf_strict_structure",
+    "interpreters_agree",
+    "example_matches_generator",
+    "godot_headless_gltf_load",
+    "godot_compatibility_render"
+  ]
+}

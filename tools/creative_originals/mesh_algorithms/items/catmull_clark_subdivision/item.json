@@ -1,0 +1,281 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "catmull_clark_subdivision",
+  "title": "Catmull-Clark subdivision surface",
+  "purpose": "Smooth a polygon cage into a quad mesh by Catmull-Clark subdivision, with B-spline boundary rules and fixed boundary corners. Use it to turn low-poly blockouts into smooth organic shapes.",
+  "form": "library_module",
+  "asset_role": null,
+  "dimension": "3d",
+  "engine": {
+    "name": "python",
+    "minimum_version": "3.10"
+  },
+  "tags": [
+    "subdivision",
+    "catmull-clark",
+    "smoothing",
+    "quad mesh",
+    "subdivision surface",
+    "modeling"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "role": "other"
+    },
+    {
+      "path": "catmull_clark_subdivision.py",
+      "role": "executable_tool"
+    },
+    {
+      "path": "example.gltf",
+      "role": "skill_asset"
+    }
+  ],
+  "contract": {
+    "module": "catmull_clark_subdivision",
+    "entry_points": [
+      {
+        "name": "catmull_clark",
+        "signature": "catmull_clark(mesh, levels=1)",
+        "summary": "Subdivide ``levels`` times; every output face is a quad and normals are angle weighted."
+      },
+      {
+        "name": "cage",
+        "signature": "cage(name='torus')",
+        "summary": "A demonstration control cage: 'cube', 'torus' (4 x 4 square ring), 'plane' (open 2 x 2 grid with a raised centre) or 'l_block' (an extruded L whose caps are hexagons)."
+      },
+      {
+        "name": "build",
+        "signature": "build(cage='torus', levels=3)",
+        "summary": "The subdivided demonstration cage the command line writes."
+      },
+      {
+        "name": "main",
+        "signature": "main(argv=None)",
+        "summary": "Command line: write the subdivided cage as .gltf or .obj and print a JSON summary."
+      }
+    ],
+    "parameters": [
+      {
+        "name": "cage",
+        "type": "str",
+        "default": "torus",
+        "unit": "name",
+        "choices": [
+          "cube",
+          "torus",
+          "plane",
+          "l_block"
+        ],
+        "meaning": "Control cage to subdivide."
+      },
+      {
+        "name": "levels",
+        "type": "int",
+        "default": 3,
+        "unit": "count",
+        "minimum": 0,
+        "maximum": 6,
+        "meaning": "Number of subdivision steps; each step multiplies the face count by about four."
+      }
+    ],
+    "invariants": {
+      "cube_one_level": {
+        "call": "catmull_clark",
+        "arguments": {
+          "mesh": {
+            "$call": "cage",
+            "arguments": {
+              "name": "cube"
+            }
+          },
+          "levels": 1
+        },
+        "expect": {
+          "vertex_count": 26,
+          "face_count": 24,
+          "quad_count": 24,
+          "watertight": true,
+          "euler_characteristic": 2,
+          "bounds": [
+            [
+              -0.5,
+              -0.5,
+              -0.5
+            ],
+            [
+              0.5,
+              0.5,
+              0.5
+            ],
+            1e-12
+          ],
+          "normals": "unit",
+          "normals_agree": 1.0
+        }
+      },
+      "cube_two_levels": {
+        "call": "catmull_clark",
+        "arguments": {
+          "mesh": {
+            "$meshkit": "box"
+          },
+          "levels": 2
+        },
+        "expect": {
+          "vertex_count": 98,
+          "face_count": 96,
+          "watertight": true,
+          "euler_characteristic": 2,
+          "within": [
+            [
+              -0.5,
+              -0.5,
+              -0.5
+            ],
+            [
+              0.5,
+              0.5,
+              0.5
+            ],
+            0.0
+          ]
+        }
+      },
+      "torus_cage": {
+        "call": "catmull_clark",
+        "arguments": {
+          "mesh": {
+            "$call": "cage",
+            "arguments": {
+              "name": "torus"
+            }
+          },
+          "levels": 1
+        },
+        "expect": {
+          "vertex_count": 64,
+          "face_count": 64,
+          "watertight": true,
+          "euler_characteristic": 0,
+          "genus": 1
+        }
+      },
+      "open_plane": {
+        "call": "catmull_clark",
+        "arguments": {
+          "mesh": {
+            "$call": "cage",
+            "arguments": {
+              "name": "plane"
+            }
+          },
+          "levels": 1
+        },
+        "expect": {
+          "vertex_count": 25,
+          "face_count": 16,
+          "boundary_loops": 1,
+          "boundary_edges": 16,
+          "euler_characteristic": 1,
+          "manifold": true,
+          "bounds": [
+            [
+              -1.0,
+              0.0,
+              -1.0
+            ],
+            [
+              1.0,
+              0.28125,
+              1.0
+            ],
+            1e-12
+          ]
+        }
+      },
+      "hexagon_caps": {
+        "call": "catmull_clark",
+        "arguments": {
+          "mesh": {
+            "$call": "cage",
+            "arguments": {
+              "name": "l_block"
+            }
+          },
+          "levels": 1
+        },
+        "expect": {
+          "vertex_count": 38,
+          "face_count": 36,
+          "quad_count": 36,
+          "watertight": true,
+          "euler_characteristic": 2
+        }
+      },
+      "triangle_cage": {
+        "call": "catmull_clark",
+        "arguments": {
+          "mesh": {
+            "$meshkit": "tetrahedron"
+          },
+          "levels": 1
+        },
+        "expect": {
+          "vertex_count": 14,
+          "face_count": 12,
+          "watertight": true,
+          "euler_characteristic": 2
+        }
+      },
+      "zero_levels": {
+        "call": "catmull_clark",
+        "arguments": {
+          "mesh": {
+            "$meshkit": "box"
+          },
+          "levels": 0
+        },
+        "expect": {
+          "vertex_count": 8,
+          "face_count": 6,
+          "volume": [
+            1.0,
+            1e-12
+          ]
+        }
+      }
+    },
+    "complexity": "O(4^levels * F)",
+    "outputs": [
+      {
+        "format": "gltf",
+        "content": "one mesh with POSITION, NORMAL and the attributes listed above, indexed triangles"
+      },
+      {
+        "format": "obj",
+        "content": "the same mesh as Wavefront OBJ with positions, normals and polygon faces"
+      }
+    ],
+    "axes": "+Y up, metres"
+  },
+  "limits": "No crease or corner sharpness tags beyond fixed valence-two boundary corners. Faces may be triangles, quads or larger polygons, but non-manifold edges (three or more faces) are treated as boundary midpoints. Output quads are generally not planar and are split along their shorter diagonal on export. Positions follow the standard rules; the limit surface is not evaluated.",
+  "related": [
+    "quickhull_3d"
+  ],
+  "technique_references": [
+    "Catmull-Clark subdivision (1978)",
+    "Cubic B-spline boundary rule",
+    "Angle-weighted vertex normals"
+  ],
+  "native_checks": [
+    "generator_runs_system_python",
+    "generator_runs_verifier_python",
+    "gltf_strict_structure",
+    "interpreters_agree",
+    "example_matches_generator",
+    "godot_headless_gltf_load",
+    "godot_compatibility_render"
+  ]
+}

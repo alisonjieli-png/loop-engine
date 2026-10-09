@@ -1,0 +1,229 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "chain_links",
+  "title": "Chain of interlocking oval links",
+  "purpose": "Build a chain of oval (stadium) wire links that hook through each other, as one link mesh instanced by glTF nodes at alternating 90 degree angles. Use it for props, rigging and anchors.",
+  "form": "library_module",
+  "asset_role": null,
+  "dimension": "3d",
+  "engine": {
+    "name": "python",
+    "minimum_version": "3.10"
+  },
+  "tags": [
+    "chain",
+    "links",
+    "instancing",
+    "gltf nodes",
+    "sweep",
+    "props"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "role": "other"
+    },
+    {
+      "path": "chain_links.py",
+      "role": "executable_tool"
+    },
+    {
+      "path": "example.gltf",
+      "role": "skill_asset"
+    }
+  ],
+  "contract": {
+    "module": "chain_links",
+    "entry_points": [
+      {
+        "name": "stadium_point",
+        "signature": "stadium_point(fraction, straight=0.4, end_radius=0.3)",
+        "summary": "(position, unit tangent) on the stadium centre line in the XZ plane at arc-length ``fraction`` in [0, 1), starting at the middle of the +Z straight side and running counter-clockwise seen from +Y."
+      },
+      {
+        "name": "link_mesh",
+        "signature": "link_mesh(straight=0.4, end_radius=0.3, wire_radius=0.08, samples=64, sides=12)",
+        "summary": "One closed link in the XZ plane centred at the origin: samples * sides vertices and quads (torus topology). The centre line is planar, so the frame is the in-plane normal and +Y."
+      },
+      {
+        "name": "chain",
+        "signature": "chain(links=7, straight=0.4, end_radius=0.3, wire_radius=0.08, clearance=0.02, samples=64, sides=12)",
+        "summary": "A scene dict {\"meshes\": [link], \"nodes\": [...]}: a root node and one child node per link along X."
+      },
+      {
+        "name": "chain_mesh",
+        "signature": "chain_mesh(links=7, straight=0.4, end_radius=0.3, wire_radius=0.08, clearance=0.02, samples=64, sides=12)",
+        "summary": "The chain baked into one mesh (each link transformed by its node), for measuring and for OBJ."
+      },
+      {
+        "name": "main",
+        "signature": "main(argv=None)",
+        "summary": "Command line: write the chain (instanced nodes in .gltf, baked in .obj) and print a JSON summary."
+      }
+    ],
+    "parameters": [
+      {
+        "name": "links",
+        "type": "int",
+        "default": 7,
+        "unit": "count",
+        "minimum": 1,
+        "maximum": 10000,
+        "meaning": "Number of links."
+      },
+      {
+        "name": "straight",
+        "type": "float",
+        "default": 0.4,
+        "unit": "m",
+        "minimum": 0.0,
+        "maximum": 1000000.0,
+        "meaning": "Length of the straight sides of each link's centre line."
+      },
+      {
+        "name": "end_radius",
+        "type": "float",
+        "default": 0.3,
+        "unit": "m",
+        "minimum": 1e-06,
+        "maximum": 1000000.0,
+        "meaning": "Radius of the round ends of the centre line; above 2 * wire_radius + clearance."
+      },
+      {
+        "name": "wire_radius",
+        "type": "float",
+        "default": 0.08,
+        "unit": "m",
+        "minimum": 1e-06,
+        "maximum": 1000000.0,
+        "meaning": "Radius of the wire."
+      },
+      {
+        "name": "clearance",
+        "type": "float",
+        "default": 0.02,
+        "unit": "m",
+        "minimum": 0.0,
+        "maximum": 1000000.0,
+        "meaning": "Gap left between neighbouring links where they hook."
+      },
+      {
+        "name": "samples",
+        "type": "int",
+        "default": 64,
+        "unit": "count",
+        "minimum": 8,
+        "maximum": 100000,
+        "meaning": "Samples along each link's centre line."
+      },
+      {
+        "name": "sides",
+        "type": "int",
+        "default": 12,
+        "unit": "count",
+        "minimum": 3,
+        "maximum": 1024,
+        "meaning": "Divisions around the wire."
+      }
+    ],
+    "invariants": {
+      "single_link": {
+        "call": "link_mesh",
+        "arguments": {},
+        "expect": {
+          "vertex_count": 768,
+          "face_count": 768,
+          "watertight": true,
+          "euler_characteristic": 0,
+          "genus": 1,
+          "volume": [
+            0.0515511473693544,
+            0.0001546534421080632
+          ],
+          "normals": "unit",
+          "normals_agree": 1.0
+        }
+      },
+      "baked_chain": {
+        "call": "chain_mesh",
+        "arguments": {},
+        "expect": {
+          "vertex_count": 5376,
+          "components": 7,
+          "genus": 7,
+          "watertight": true,
+          "euler_characteristic": 0,
+          "volume": [
+            0.3608580315854808,
+            0.0010825740947564425
+          ]
+        }
+      },
+      "instanced_scene": {
+        "call": "chain",
+        "arguments": {
+          "links": 5
+        },
+        "expect": {
+          "mesh_count": 1,
+          "node_count": 6,
+          "face_count": 768
+        }
+      },
+      "centre_line_start": {
+        "call": "stadium_point",
+        "arguments": {
+          "fraction": 0.0
+        },
+        "expect": {
+          "sequence_close": [
+            [
+              [
+                0.0,
+                0.0,
+                0.3
+              ],
+              [
+                1.0,
+                0.0,
+                0.0
+              ]
+            ],
+            1e-15
+          ]
+        }
+      }
+    },
+    "complexity": "O(samples * sides) for the link; O(links) nodes",
+    "outputs": [
+      {
+        "format": "gltf",
+        "content": "one link mesh and a root node with one child node per link (instancing)"
+      },
+      {
+        "format": "obj",
+        "content": "the chain with every link transformed into place"
+      }
+    ],
+    "axes": "+Y up, metres"
+  },
+  "limits": "Links are rigid and straight in a line; there is no physics or sag. Contact is only avoided geometrically when end_radius exceeds twice the wire radius plus the clearance (checked). No texture coordinates.",
+  "related": [
+    "torus",
+    "coil_spring"
+  ],
+  "technique_references": [
+    "Stadium centre line with arc-length parameter",
+    "Tube sweep with planar frames",
+    "glTF node instancing with quaternion rotations"
+  ],
+  "native_checks": [
+    "generator_runs_system_python",
+    "generator_runs_verifier_python",
+    "gltf_strict_structure",
+    "interpreters_agree",
+    "example_matches_generator",
+    "godot_headless_gltf_load",
+    "godot_compatibility_render"
+  ]
+}

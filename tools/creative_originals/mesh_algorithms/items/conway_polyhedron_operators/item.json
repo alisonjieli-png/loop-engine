@@ -1,0 +1,264 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "conway_polyhedron_operators",
+  "title": "Conway polyhedron operators",
+  "purpose": "Build polyhedra from Conway notation: dual, ambo, kis, truncate, join, expand, ortho, gyro and snub applied to T, C, O, D, I, prisms and antiprisms, with planarizing relaxation. Use it for geodesic forms and gems.",
+  "form": "library_module",
+  "asset_role": null,
+  "dimension": "3d",
+  "engine": {
+    "name": "python",
+    "minimum_version": "3.10"
+  },
+  "tags": [
+    "polyhedron",
+    "conway notation",
+    "truncation",
+    "snub",
+    "dual",
+    "geodesic"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "role": "other"
+    },
+    {
+      "path": "conway_polyhedron_operators.py",
+      "role": "executable_tool"
+    },
+    {
+      "path": "example.gltf",
+      "role": "skill_asset"
+    }
+  ],
+  "contract": {
+    "module": "conway_polyhedron_operators",
+    "entry_points": [
+      {
+        "name": "seed",
+        "signature": "seed(name)",
+        "summary": "Seed polyhedron (vertices on the unit sphere, outward faces): T, C, O, D, I, Pn or An (n >= 3)."
+      },
+      {
+        "name": "dual",
+        "signature": "dual(vertices, faces)",
+        "summary": "Dual: one vertex per face (its centroid on the unit sphere), one face per vertex (its faces in order)."
+      },
+      {
+        "name": "ambo",
+        "signature": "ambo(vertices, faces)",
+        "summary": "Ambo (rectify): one vertex per edge midpoint; a face for each old face and each old vertex."
+      },
+      {
+        "name": "kis",
+        "signature": "kis(vertices, faces)",
+        "summary": "Kis: raise a vertex over every face centre and replace the face with a fan of triangles."
+      },
+      {
+        "name": "gyro",
+        "signature": "gyro(vertices, faces)",
+        "summary": "Gyro: every n-gon becomes n pentagons around a new centre, with two new vertices on each edge."
+      },
+      {
+        "name": "apply_operator",
+        "signature": "apply_operator(letter, vertices, faces)",
+        "summary": "One operator: d dual, a ambo, k kis, j join (da), t truncate (dkd), e expand (aa), o ortho (dad... de), g gyro, s snub (dg)."
+      },
+      {
+        "name": "conway",
+        "signature": "conway(notation='tI', relax=40)",
+        "summary": "The polyhedron for a Conway notation string, as a closed mesh with polygon faces on about the unit sphere."
+      },
+      {
+        "name": "build",
+        "signature": "build(notation='tI', relax=40)",
+        "summary": "The flat-shaded polyhedron the command line writes, each face coloured by its number of corners."
+      },
+      {
+        "name": "main",
+        "signature": "main(argv=None)",
+        "summary": "Command line: write the polyhedron as .gltf or .obj and print a JSON summary."
+      }
+    ],
+    "parameters": [
+      {
+        "name": "notation",
+        "type": "str",
+        "default": "tI",
+        "unit": "notation",
+        "meaning": "Operators read right to left, then a seed: T C O D I, Pn (prism) or An (antiprism), for example tI, sC, dkD."
+      },
+      {
+        "name": "relax",
+        "type": "int",
+        "default": 40,
+        "unit": "iterations",
+        "minimum": 0,
+        "maximum": 10000,
+        "meaning": "Planarizing iterations after each operator (0 keeps raw centroids on the unit sphere)."
+      }
+    ],
+    "invariants": {
+      "tI": {
+        "call": "conway",
+        "arguments": {
+          "notation": "tI",
+          "relax": 10
+        },
+        "expect": {
+          "vertex_count": 60,
+          "face_count": 32,
+          "watertight": true,
+          "euler_characteristic": 2
+        }
+      },
+      "sC": {
+        "call": "conway",
+        "arguments": {
+          "notation": "sC",
+          "relax": 10
+        },
+        "expect": {
+          "vertex_count": 24,
+          "face_count": 38,
+          "watertight": true,
+          "euler_characteristic": 2
+        }
+      },
+      "gC": {
+        "call": "conway",
+        "arguments": {
+          "notation": "gC",
+          "relax": 10
+        },
+        "expect": {
+          "vertex_count": 38,
+          "face_count": 24,
+          "watertight": true,
+          "euler_characteristic": 2
+        }
+      },
+      "dkD": {
+        "call": "conway",
+        "arguments": {
+          "notation": "dkD",
+          "relax": 10
+        },
+        "expect": {
+          "vertex_count": 60,
+          "face_count": 32,
+          "watertight": true,
+          "euler_characteristic": 2
+        }
+      },
+      "eC": {
+        "call": "conway",
+        "arguments": {
+          "notation": "eC",
+          "relax": 10
+        },
+        "expect": {
+          "vertex_count": 24,
+          "face_count": 26,
+          "watertight": true,
+          "euler_characteristic": 2
+        }
+      },
+      "jC": {
+        "call": "conway",
+        "arguments": {
+          "notation": "jC",
+          "relax": 10
+        },
+        "expect": {
+          "vertex_count": 14,
+          "face_count": 12,
+          "watertight": true,
+          "euler_characteristic": 2
+        }
+      },
+      "aaD": {
+        "call": "conway",
+        "arguments": {
+          "notation": "aaD",
+          "relax": 10
+        },
+        "expect": {
+          "vertex_count": 60,
+          "face_count": 62,
+          "watertight": true,
+          "euler_characteristic": 2
+        }
+      },
+      "kT": {
+        "call": "conway",
+        "arguments": {
+          "notation": "kT",
+          "relax": 10
+        },
+        "expect": {
+          "vertex_count": 8,
+          "face_count": 12,
+          "watertight": true,
+          "euler_characteristic": 2
+        }
+      },
+      "prism": {
+        "call": "conway",
+        "arguments": {
+          "notation": "P5",
+          "relax": 0
+        },
+        "expect": {
+          "vertex_count": 10,
+          "face_count": 7,
+          "watertight": true
+        }
+      },
+      "antiprism": {
+        "call": "conway",
+        "arguments": {
+          "notation": "A5",
+          "relax": 0
+        },
+        "expect": {
+          "vertex_count": 10,
+          "face_count": 12,
+          "watertight": true
+        }
+      }
+    },
+    "complexity": "O(size of the result) per operator, plus relax * faces",
+    "outputs": [
+      {
+        "format": "gltf",
+        "content": "the flat-shaded polyhedron with COLOR_0 by face size (triangle, square, pentagon, hexagon)"
+      },
+      {
+        "format": "obj",
+        "content": "the same polyhedron as Wavefront OBJ"
+      }
+    ],
+    "axes": "+Y up, metres"
+  },
+  "limits": "Geometry is approximate: new points start at centroids on the unit sphere and the relaxation only makes faces nearly planar; it does not produce canonical forms with equal edge lengths. Snub and gyro results are one of two mirror images.",
+  "related": [
+    "platonic_solids",
+    "icosphere"
+  ],
+  "technique_references": [
+    "Conway polyhedron notation (dual, ambo, kis, gyro and compositions)",
+    "Face cycles around vertices from directed edges",
+    "Planarizing relaxation"
+  ],
+  "native_checks": [
+    "generator_runs_system_python",
+    "generator_runs_verifier_python",
+    "gltf_strict_structure",
+    "interpreters_agree",
+    "example_matches_generator",
+    "godot_headless_gltf_load",
+    "godot_compatibility_render"
+  ]
+}

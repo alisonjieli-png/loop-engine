@@ -1,0 +1,194 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "capsule",
+  "title": "Capsule with hemispherical caps",
+  "purpose": "Build a capsule (a cylinder capped by two hemispheres) along Y with unit normals and UVs that follow the profile length. Use it for character colliders, pills and rounded rods.",
+  "form": "library_module",
+  "asset_role": null,
+  "dimension": "3d",
+  "engine": {
+    "name": "python",
+    "minimum_version": "3.10"
+  },
+  "tags": [
+    "primitive",
+    "capsule",
+    "collider",
+    "pill",
+    "hemisphere",
+    "texture coordinates"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "role": "other"
+    },
+    {
+      "path": "capsule.py",
+      "role": "executable_tool"
+    },
+    {
+      "path": "example.gltf",
+      "role": "skill_asset"
+    }
+  ],
+  "contract": {
+    "module": "capsule",
+    "entry_points": [
+      {
+        "name": "capsule_profile",
+        "signature": "capsule_profile(radius=0.5, length=1.0, cap_rings=8)",
+        "summary": "The (r, y) profile from the north pole to the south pole: quarter arcs joined by the straight part."
+      },
+      {
+        "name": "capsule",
+        "signature": "capsule(radius=0.5, length=1.0, segments=32, cap_rings=8)",
+        "summary": "A capsule along Y centred at the origin: 2 segments + 2 cap_rings (segments + 1) vertices and 4 cap_rings segments triangles, with unit normals and UVs (v from the north pole by profile length)."
+      },
+      {
+        "name": "main",
+        "signature": "main(argv=None)",
+        "summary": "Command line: write the capsule as .gltf or .obj and print a JSON summary."
+      }
+    ],
+    "parameters": [
+      {
+        "name": "radius",
+        "type": "float",
+        "default": 0.5,
+        "unit": "m",
+        "minimum": 1e-06,
+        "maximum": 1000000.0,
+        "meaning": "Radius of the cylinder and of both hemispheres."
+      },
+      {
+        "name": "length",
+        "type": "float",
+        "default": 1.0,
+        "unit": "m",
+        "minimum": 0.0,
+        "maximum": 1000000.0,
+        "meaning": "Length of the straight part; the total height is length + 2 * radius."
+      },
+      {
+        "name": "segments",
+        "type": "int",
+        "default": 32,
+        "unit": "count",
+        "minimum": 3,
+        "maximum": 4096,
+        "meaning": "Divisions around the Y axis."
+      },
+      {
+        "name": "cap_rings",
+        "type": "int",
+        "default": 8,
+        "unit": "count",
+        "minimum": 1,
+        "maximum": 2048,
+        "meaning": "Rings in each hemisphere from the pole to the equator."
+      }
+    ],
+    "invariants": {
+      "default": {
+        "call": "capsule",
+        "arguments": {},
+        "expect": {
+          "vertex_count": 592,
+          "triangle_count": 1024,
+          "welded_watertight": true,
+          "welded_euler_characteristic": 2,
+          "volume": [
+            1.2956040056627438,
+            1e-09
+          ],
+          "area": [
+            6.252972012708584,
+            1e-09
+          ],
+          "bounds": [
+            [
+              -0.5,
+              -1.0,
+              -0.5
+            ],
+            [
+              0.5,
+              1.0,
+              0.5
+            ],
+            1e-12
+          ],
+          "normals": "unit",
+          "normals_agree": 1.0,
+          "uv_range": [
+            [
+              0.0,
+              0.0
+            ],
+            [
+              1.0,
+              1.0
+            ],
+            1e-12
+          ]
+        }
+      },
+      "sphere_when_length_is_zero": {
+        "call": "capsule",
+        "arguments": {
+          "radius": 1.0,
+          "length": 0.0,
+          "segments": 16,
+          "cap_rings": 4
+        },
+        "expect": {
+          "vertex_count": 168,
+          "volume": [
+            3.926596389111272,
+            1e-12
+          ],
+          "vertices_on_sphere": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            1.0,
+            1e-12
+          ]
+        }
+      }
+    },
+    "complexity": "O(segments * cap_rings)",
+    "outputs": [
+      {
+        "format": "gltf",
+        "content": "one mesh with POSITION, NORMAL and TEXCOORD_0, indexed triangles"
+      },
+      {
+        "format": "obj",
+        "content": "the same capsule as Wavefront OBJ"
+      }
+    ],
+    "axes": "+Y up, metres"
+  },
+  "limits": "The equator rows are doubled (one ring for each hemisphere), so the straight part has exactly one row of quads. The seam and the pole vertices are duplicated for texture coordinates, so the mesh is closed after welding.",
+  "related": [
+    "uv_sphere",
+    "cylinder_cone_frustum"
+  ],
+  "technique_references": [
+    "Quarter-circle profile revolution",
+    "Arc-length texture parameter"
+  ],
+  "native_checks": [
+    "generator_runs_system_python",
+    "generator_runs_verifier_python",
+    "gltf_strict_structure",
+    "interpreters_agree",
+    "example_matches_generator",
+    "godot_headless_gltf_load",
+    "godot_compatibility_render"
+  ]
+}

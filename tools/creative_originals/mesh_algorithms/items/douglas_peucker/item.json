@@ -1,0 +1,298 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "douglas_peucker",
+  "title": "Ramer-Douglas-Peucker polyline simplification",
+  "purpose": "Simplify 2D or 3D polylines by keeping only points farther than a tolerance from the simplified line, with a measure of the largest deviation. Use it for GPS tracks, contours, strokes and paths.",
+  "form": "library_module",
+  "asset_role": null,
+  "dimension": "3d",
+  "engine": {
+    "name": "python",
+    "minimum_version": "3.10"
+  },
+  "tags": [
+    "simplification",
+    "douglas-peucker",
+    "polyline",
+    "decimation",
+    "gps",
+    "contours"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "role": "other"
+    },
+    {
+      "path": "douglas_peucker.py",
+      "role": "executable_tool"
+    },
+    {
+      "path": "example.gltf",
+      "role": "skill_asset"
+    }
+  ],
+  "contract": {
+    "module": "douglas_peucker",
+    "entry_points": [
+      {
+        "name": "simplify",
+        "signature": "simplify(points, tolerance=0.05)",
+        "summary": "The kept points, in order: both ends, and recursively the point farthest from the current chord segment while that distance exceeds ``tolerance``. Iterative (no recursion limit). O(n log n) typical, O(n^2) worst."
+      },
+      {
+        "name": "max_deviation",
+        "signature": "max_deviation(original, simplified)",
+        "summary": "Largest distance from any original point to the simplified polyline (0 when nothing was removed)."
+      },
+      {
+        "name": "demo_curve",
+        "signature": "demo_curve(samples=400)",
+        "summary": "A 3D test curve: a spiral with a superimposed wobble."
+      },
+      {
+        "name": "build",
+        "signature": "build(tolerance=0.05, samples=400)",
+        "summary": "Two tubes: the original curve (thin, grey) and its simplification (thicker, coloured)."
+      },
+      {
+        "name": "main",
+        "signature": "main(argv=None)",
+        "summary": "Command line: write both tubes (.gltf or .obj) and print a JSON summary."
+      }
+    ],
+    "parameters": [
+      {
+        "name": "tolerance",
+        "type": "float",
+        "default": 0.05,
+        "unit": "m",
+        "minimum": 0.0,
+        "maximum": 1000000.0,
+        "meaning": "Largest allowed distance from a removed point to the simplified polyline."
+      },
+      {
+        "name": "samples",
+        "type": "int",
+        "default": 400,
+        "unit": "count",
+        "minimum": 2,
+        "maximum": 1000000,
+        "meaning": "Points in the demonstration curve before simplification."
+      }
+    ],
+    "invariants": {
+      "collinear": {
+        "call": "simplify",
+        "arguments": {
+          "points": [
+            [
+              0.0,
+              0.0
+            ],
+            [
+              1.0,
+              0.0
+            ],
+            [
+              2.0,
+              0.0
+            ],
+            [
+              3.0,
+              0.0
+            ],
+            [
+              4.0,
+              0.0
+            ],
+            [
+              5.0,
+              0.0
+            ],
+            [
+              6.0,
+              0.0
+            ],
+            [
+              7.0,
+              0.0
+            ],
+            [
+              8.0,
+              0.0
+            ],
+            [
+              9.0,
+              0.0
+            ]
+          ],
+          "tolerance": 0.0
+        },
+        "expect": {
+          "points_close": [
+            [
+              [
+                0.0,
+                0.0
+              ],
+              [
+                9.0,
+                0.0
+              ]
+            ],
+            0.0
+          ]
+        }
+      },
+      "reference_example": {
+        "call": "simplify",
+        "arguments": {
+          "points": [
+            [
+              0.0,
+              0.0
+            ],
+            [
+              1.0,
+              0.1
+            ],
+            [
+              2.0,
+              -0.1
+            ],
+            [
+              3.0,
+              5.0
+            ],
+            [
+              4.0,
+              6.0
+            ],
+            [
+              5.0,
+              7.0
+            ],
+            [
+              6.0,
+              8.1
+            ],
+            [
+              7.0,
+              9.0
+            ],
+            [
+              8.0,
+              9.0
+            ],
+            [
+              9.0,
+              9.0
+            ]
+          ],
+          "tolerance": 1.0
+        },
+        "expect": {
+          "points_close": [
+            [
+              [
+                0.0,
+                0.0
+              ],
+              [
+                2.0,
+                -0.1
+              ],
+              [
+                3.0,
+                5.0
+              ],
+              [
+                7.0,
+                9.0
+              ],
+              [
+                9.0,
+                9.0
+              ]
+            ],
+            0.0
+          ]
+        }
+      },
+      "deviation_bound": {
+        "call": "max_deviation",
+        "arguments": {
+          "original": {
+            "$call": "demo_curve",
+            "arguments": {}
+          },
+          "simplified": {
+            "$call": "simplify",
+            "arguments": {
+              "points": {
+                "$call": "demo_curve",
+                "arguments": {}
+              },
+              "tolerance": 0.05
+            }
+          }
+        },
+        "expect": {
+          "at_most": 0.05
+        }
+      },
+      "zero_tolerance_keeps_corners": {
+        "call": "simplify",
+        "arguments": {
+          "points": {
+            "$call": "demo_curve",
+            "arguments": {}
+          },
+          "tolerance": 0.0
+        },
+        "expect": {
+          "point_count": 400
+        }
+      },
+      "display": {
+        "call": "build",
+        "arguments": {},
+        "expect": {
+          "mesh_count": 2,
+          "watertight": true
+        }
+      }
+    },
+    "complexity": "O(n log n) typical, O(n^2) worst case",
+    "outputs": [
+      {
+        "format": "gltf",
+        "content": "two tubes: the original curve (thin, grey) and the simplified one (thicker)"
+      },
+      {
+        "format": "obj",
+        "content": "the same tubes as Wavefront OBJ"
+      }
+    ],
+    "axes": "+Y up, metres"
+  },
+  "limits": "Distances are measured to chord segments, and the result keeps the original end points. The simplified line can cross itself or other lines (no topology preservation). Not suited to closed rings without choosing a split point first.",
+  "related": [
+    "chaikin_corner_cutting",
+    "fillet_polyline_2d"
+  ],
+  "technique_references": [
+    "Ramer-Douglas-Peucker algorithm (1972, 1973)",
+    "Point to segment distance"
+  ],
+  "native_checks": [
+    "generator_runs_system_python",
+    "generator_runs_verifier_python",
+    "gltf_strict_structure",
+    "interpreters_agree",
+    "example_matches_generator",
+    "godot_headless_gltf_load",
+    "godot_compatibility_render"
+  ]
+}

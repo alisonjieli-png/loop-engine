@@ -1,0 +1,222 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "rounded_box",
+  "title": "Rounded box with filleted edges",
+  "purpose": "Build a box whose edges and corners are rounded to one radius as a single welded quad mesh, with the exact smooth volume available. Use it for furniture, devices, buttons and soft props.",
+  "form": "library_module",
+  "asset_role": null,
+  "dimension": "3d",
+  "engine": {
+    "name": "python",
+    "minimum_version": "3.10"
+  },
+  "tags": [
+    "primitive",
+    "rounded box",
+    "fillet",
+    "bevel",
+    "quad mesh",
+    "props"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "role": "other"
+    },
+    {
+      "path": "rounded_box.py",
+      "role": "executable_tool"
+    },
+    {
+      "path": "example.gltf",
+      "role": "skill_asset"
+    }
+  ],
+  "contract": {
+    "module": "rounded_box",
+    "entry_points": [
+      {
+        "name": "rounded_box_volume",
+        "signature": "rounded_box_volume(size_x=2.0, size_y=1.0, size_z=1.4, radius=0.25)",
+        "summary": "Exact volume of the smooth rounded box: inner box, six slabs, twelve quarter cylinders, one sphere."
+      },
+      {
+        "name": "rounded_box",
+        "signature": "rounded_box(size_x=2.0, size_y=1.0, size_z=1.4, radius=0.25, bevel_segments=6, flat_segments=2)",
+        "summary": "A closed rounded box centred at the origin with unit normals."
+      },
+      {
+        "name": "main",
+        "signature": "main(argv=None)",
+        "summary": "Command line: write the rounded box as .gltf or .obj and print a JSON summary."
+      }
+    ],
+    "parameters": [
+      {
+        "name": "size_x",
+        "type": "float",
+        "default": 2.0,
+        "unit": "m",
+        "minimum": 1e-06,
+        "maximum": 1000000.0,
+        "meaning": "Overall size along X."
+      },
+      {
+        "name": "size_y",
+        "type": "float",
+        "default": 1.0,
+        "unit": "m",
+        "minimum": 1e-06,
+        "maximum": 1000000.0,
+        "meaning": "Overall size along Y."
+      },
+      {
+        "name": "size_z",
+        "type": "float",
+        "default": 1.4,
+        "unit": "m",
+        "minimum": 1e-06,
+        "maximum": 1000000.0,
+        "meaning": "Overall size along Z."
+      },
+      {
+        "name": "radius",
+        "type": "float",
+        "default": 0.25,
+        "unit": "m",
+        "minimum": 0.0,
+        "maximum": 1000000.0,
+        "meaning": "Rounding radius; at most half the smallest size."
+      },
+      {
+        "name": "bevel_segments",
+        "type": "int",
+        "default": 6,
+        "unit": "count",
+        "minimum": 1,
+        "maximum": 256,
+        "meaning": "Divisions across each rounded edge (a quarter circle)."
+      },
+      {
+        "name": "flat_segments",
+        "type": "int",
+        "default": 2,
+        "unit": "count",
+        "minimum": 1,
+        "maximum": 1024,
+        "meaning": "Divisions across each flat face strip."
+      }
+    ],
+    "invariants": {
+      "default": {
+        "call": "rounded_box",
+        "arguments": {},
+        "expect": {
+          "vertex_count": 1178,
+          "face_count": 1176,
+          "watertight": true,
+          "euler_characteristic": 2,
+          "volume": [
+            2.584863515412937,
+            0.01033945406165175
+          ],
+          "bounds": [
+            [
+              -1.0,
+              -0.5,
+              -0.7
+            ],
+            [
+              1.0,
+              0.5,
+              0.7
+            ],
+            1e-12
+          ],
+          "normals": "unit",
+          "normals_agree": 1.0
+        }
+      },
+      "sharp_box": {
+        "call": "rounded_box",
+        "arguments": {
+          "radius": 0.0
+        },
+        "expect": {
+          "vertex_count": 26,
+          "face_count": 24,
+          "watertight": true,
+          "volume": [
+            2.8,
+            1e-12
+          ],
+          "area": [
+            12.4,
+            1e-12
+          ]
+        }
+      },
+      "sphere_limit": {
+        "call": "rounded_box",
+        "arguments": {
+          "size_x": 1.0,
+          "size_y": 1.0,
+          "size_z": 1.0,
+          "radius": 0.5
+        },
+        "expect": {
+          "watertight": true,
+          "vertices_on_sphere": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            0.5,
+            1e-12
+          ]
+        }
+      },
+      "volume_formula": {
+        "call": "rounded_box_volume",
+        "arguments": {},
+        "expect": {
+          "close": [
+            2.584863515412937,
+            1e-12
+          ]
+        }
+      }
+    },
+    "complexity": "O(face lattice size)",
+    "outputs": [
+      {
+        "format": "gltf",
+        "content": "one welded mesh with POSITION and NORMAL, indexed triangles"
+      },
+      {
+        "format": "obj",
+        "content": "the same box as Wavefront OBJ"
+      }
+    ],
+    "axes": "+Y up, metres"
+  },
+  "limits": "One radius for every edge; no per-edge radii or chamfers. No texture coordinates. The rounded bands use a lattice pulled onto the surface, so their quads are not exactly even.",
+  "related": [
+    "superellipsoid",
+    "cube_sphere"
+  ],
+  "technique_references": [
+    "Minkowski sum of a box and a sphere (nearest inner-box point plus radius)",
+    "Non-uniform lattice with quarter-circle spacing"
+  ],
+  "native_checks": [
+    "generator_runs_system_python",
+    "generator_runs_verifier_python",
+    "gltf_strict_structure",
+    "interpreters_agree",
+    "example_matches_generator",
+    "godot_headless_gltf_load",
+    "godot_compatibility_render"
+  ]
+}

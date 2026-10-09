@@ -1,0 +1,188 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "torus",
+  "title": "Torus with wrapped texture coordinates",
+  "purpose": "Build a ring torus around the Y axis with unit normals and a texture grid that wraps in both directions. Use it for rings, donuts, tyres and as a genus-one test surface.",
+  "form": "function",
+  "asset_role": null,
+  "dimension": "3d",
+  "engine": {
+    "name": "python",
+    "minimum_version": "3.10"
+  },
+  "tags": [
+    "primitive",
+    "torus",
+    "ring",
+    "genus one",
+    "texture coordinates",
+    "donut"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "role": "other"
+    },
+    {
+      "path": "torus.py",
+      "role": "executable_tool"
+    },
+    {
+      "path": "example.gltf",
+      "role": "skill_asset"
+    }
+  ],
+  "contract": {
+    "module": "torus",
+    "entry_points": [
+      {
+        "name": "torus",
+        "signature": "torus(major_radius=1.0, minor_radius=0.35, segments=48, sides=24)",
+        "summary": "A torus centred at the origin around +Y with unit normals, UVs and outward quads."
+      },
+      {
+        "name": "main",
+        "signature": "main(argv=None)",
+        "summary": "Command line: write the torus as .gltf or .obj and print a JSON summary."
+      }
+    ],
+    "parameters": [
+      {
+        "name": "major_radius",
+        "type": "float",
+        "default": 1.0,
+        "unit": "m",
+        "minimum": 1e-06,
+        "maximum": 1000000.0,
+        "meaning": "Distance from the Y axis to the centre of the tube."
+      },
+      {
+        "name": "minor_radius",
+        "type": "float",
+        "default": 0.35,
+        "unit": "m",
+        "minimum": 1e-06,
+        "maximum": 1000000.0,
+        "meaning": "Radius of the tube; below major_radius for a ring torus."
+      },
+      {
+        "name": "segments",
+        "type": "int",
+        "default": 48,
+        "unit": "count",
+        "minimum": 3,
+        "maximum": 4096,
+        "meaning": "Divisions around the Y axis."
+      },
+      {
+        "name": "sides",
+        "type": "int",
+        "default": 24,
+        "unit": "count",
+        "minimum": 3,
+        "maximum": 4096,
+        "meaning": "Divisions around the tube."
+      }
+    ],
+    "invariants": {
+      "default": {
+        "call": "torus",
+        "arguments": {},
+        "expect": {
+          "vertex_count": 1225,
+          "face_count": 1152,
+          "welded_watertight": true,
+          "welded_euler_characteristic": 0,
+          "genus": 1,
+          "volume": [
+            2.383704802269834,
+            1e-09
+          ],
+          "area": [
+            13.7534501603397,
+            1e-09
+          ],
+          "normals": "unit",
+          "normals_agree": 1.0,
+          "uv_range": [
+            [
+              0.0,
+              0.0
+            ],
+            [
+              1.0,
+              1.0
+            ],
+            1e-12
+          ],
+          "bounds": [
+            [
+              -1.35,
+              -0.35,
+              -1.35
+            ],
+            [
+              1.35,
+              0.35,
+              1.35
+            ],
+            1e-12
+          ]
+        }
+      },
+      "coarse": {
+        "call": "torus",
+        "arguments": {
+          "major_radius": 2.0,
+          "minor_radius": 0.5,
+          "segments": 4,
+          "sides": 3
+        },
+        "expect": {
+          "vertex_count": 20,
+          "face_count": 12,
+          "welded_watertight": true,
+          "genus": 1,
+          "volume": [
+            2.598076211353315,
+            1e-12
+          ],
+          "area": [
+            25.033393321122645,
+            1e-12
+          ]
+        }
+      }
+    },
+    "complexity": "O(segments * sides)",
+    "outputs": [
+      {
+        "format": "gltf",
+        "content": "one mesh with POSITION, NORMAL and TEXCOORD_0, indexed triangles"
+      },
+      {
+        "format": "obj",
+        "content": "the same torus as Wavefront OBJ"
+      }
+    ],
+    "axes": "+Y up, metres"
+  },
+  "limits": "The texture seam duplicates one row and one column, so the mesh is closed only after welding. Self-intersecting (horn and spindle) tori, with the minor radius at or above the major radius, are not handled specially. The polygon volume is below the smooth torus's.",
+  "related": [
+    "torus_knot",
+    "uv_sphere"
+  ],
+  "technique_references": [
+    "Torus parameterization ((R + r cos v) cos u, r sin v, -(R + r cos v) sin u)",
+    "Polygonal surface of revolution"
+  ],
+  "native_checks": [
+    "generator_runs_system_python",
+    "generator_runs_verifier_python",
+    "gltf_strict_structure",
+    "interpreters_agree",
+    "example_matches_generator",
+    "godot_headless_gltf_load",
+    "godot_compatibility_render"
+  ]
+}

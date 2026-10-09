@@ -1,0 +1,418 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "catmull_rom_spline",
+  "title": "Centripetal Catmull-Rom spline",
+  "purpose": "Interpolate a curve through control points with uniform, centripetal or chordal Catmull-Rom parameterization, open or closed. Use it for paths through waypoints, camera rails and track layouts.",
+  "form": "library_module",
+  "asset_role": null,
+  "dimension": "3d",
+  "engine": {
+    "name": "python",
+    "minimum_version": "3.10"
+  },
+  "tags": [
+    "catmull-rom",
+    "spline",
+    "interpolation",
+    "centripetal",
+    "waypoints",
+    "curve"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "role": "other"
+    },
+    {
+      "path": "catmull_rom_spline.py",
+      "role": "executable_tool"
+    },
+    {
+      "path": "example.gltf",
+      "role": "skill_asset"
+    }
+  ],
+  "contract": {
+    "module": "catmull_rom_spline",
+    "entry_points": [
+      {
+        "name": "catmull_rom_point",
+        "signature": "catmull_rom_point(p0, p1, p2, p3, t, alpha=0.5)",
+        "summary": "Point between p1 (t = 0) and p2 (t = 1) of the Catmull-Rom segment with knot spacing |dp|^alpha, by the Barry-Goldman pyramid of linear interpolations."
+      },
+      {
+        "name": "catmull_rom",
+        "signature": "catmull_rom(points, alpha=0.5, closed=False, samples_per_segment=16)",
+        "summary": "Points of the spline through every control point; each segment contributes ``samples_per_segment`` points starting at its first control point, and an open spline ends exactly on the last point. Open ends use a reflected neighbour (2 p0 - p1) so the end tangents follow the first and last segments."
+      },
+      {
+        "name": "build",
+        "signature": "build(alpha=0.5, closed=True, samples_per_segment=16)",
+        "summary": "A tube through the demonstration control points plus small markers at each control point."
+      },
+      {
+        "name": "main",
+        "signature": "main(argv=None)",
+        "summary": "Command line: write the spline tube and control markers (.gltf or .obj) and print a JSON summary."
+      }
+    ],
+    "parameters": [
+      {
+        "name": "alpha",
+        "type": "float",
+        "default": 0.5,
+        "unit": "exponent",
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "meaning": "Knot spacing exponent: 0 uniform, 0.5 centripetal (no cusps or self-loops), 1 chordal."
+      },
+      {
+        "name": "closed",
+        "type": "bool",
+        "default": true,
+        "unit": "flag",
+        "meaning": "Join the last control point back to the first."
+      },
+      {
+        "name": "samples_per_segment",
+        "type": "int",
+        "default": 16,
+        "unit": "count",
+        "minimum": 1,
+        "maximum": 10000,
+        "meaning": "Points per segment between consecutive control points."
+      }
+    ],
+    "invariants": {
+      "passes_through_start": {
+        "call": "catmull_rom_point",
+        "arguments": {
+          "p0": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "p1": [
+            1.0,
+            0.2,
+            0.0
+          ],
+          "p2": [
+            1.7,
+            1.4,
+            0.3
+          ],
+          "p3": [
+            0.4,
+            2.0,
+            -0.5
+          ],
+          "t": 0.0
+        },
+        "expect": {
+          "sequence_close": [
+            [
+              1.0,
+              0.2,
+              0.0
+            ],
+            0.0
+          ]
+        }
+      },
+      "passes_through_end": {
+        "call": "catmull_rom_point",
+        "arguments": {
+          "p0": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "p1": [
+            1.0,
+            0.2,
+            0.0
+          ],
+          "p2": [
+            1.7,
+            1.4,
+            0.3
+          ],
+          "p3": [
+            0.4,
+            2.0,
+            -0.5
+          ],
+          "t": 1.0
+        },
+        "expect": {
+          "sequence_close": [
+            [
+              1.7,
+              1.4,
+              0.3
+            ],
+            0.0
+          ]
+        }
+      },
+      "uniform_matches_matrix_form": {
+        "call": "catmull_rom_point",
+        "arguments": {
+          "p0": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "p1": [
+            1.0,
+            0.2,
+            0.0
+          ],
+          "p2": [
+            1.7,
+            1.4,
+            0.3
+          ],
+          "p3": [
+            0.4,
+            2.0,
+            -0.5
+          ],
+          "t": 0.3,
+          "alpha": 0.0
+        },
+        "expect": {
+          "sequence_close": [
+            [
+              1.2950499999999998,
+              0.5054000000000001,
+              0.1026
+            ],
+            1e-14
+          ]
+        }
+      },
+      "centripetal_matches_tangent_form": {
+        "call": "catmull_rom_point",
+        "arguments": {
+          "p0": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "p1": [
+            1.0,
+            0.2,
+            0.0
+          ],
+          "p2": [
+            1.7,
+            1.4,
+            0.3
+          ],
+          "p3": [
+            0.4,
+            2.0,
+            -0.5
+          ],
+          "t": 0.6,
+          "alpha": 0.5
+        },
+        "expect": {
+          "sequence_close": [
+            [
+              1.5775847928979592,
+              0.9144349437716592,
+              0.23693507881020223
+            ],
+            1e-14
+          ]
+        }
+      },
+      "even_line": {
+        "call": "catmull_rom",
+        "arguments": {
+          "points": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              1.0,
+              0.0,
+              0.0
+            ],
+            [
+              2.0,
+              0.0,
+              0.0
+            ],
+            [
+              3.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "alpha": 0.0,
+          "closed": false,
+          "samples_per_segment": 4
+        },
+        "expect": {
+          "point_count": 13,
+          "points_close": [
+            [
+              [
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.25,
+                0.0,
+                0.0
+              ],
+              [
+                0.5,
+                0.0,
+                0.0
+              ],
+              [
+                0.75,
+                0.0,
+                0.0
+              ],
+              [
+                1.0,
+                0.0,
+                0.0
+              ],
+              [
+                1.25,
+                0.0,
+                0.0
+              ],
+              [
+                1.5,
+                0.0,
+                0.0
+              ],
+              [
+                1.75,
+                0.0,
+                0.0
+              ],
+              [
+                2.0,
+                0.0,
+                0.0
+              ],
+              [
+                2.25,
+                0.0,
+                0.0
+              ],
+              [
+                2.5,
+                0.0,
+                0.0
+              ],
+              [
+                2.75,
+                0.0,
+                0.0
+              ],
+              [
+                3.0,
+                0.0,
+                0.0
+              ]
+            ],
+            1e-15
+          ]
+        }
+      },
+      "closed_loop": {
+        "call": "catmull_rom",
+        "arguments": {
+          "points": [
+            [
+              1.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              -1.0
+            ],
+            [
+              -1.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "closed": true,
+          "samples_per_segment": 8
+        },
+        "expect": {
+          "point_count": 32,
+          "first_point": [
+            [
+              1.0,
+              0.0,
+              0.0
+            ],
+            0.0
+          ]
+        }
+      },
+      "display": {
+        "call": "build",
+        "arguments": {},
+        "expect": {
+          "mesh_count": 2,
+          "watertight": true
+        }
+      }
+    },
+    "complexity": "O(points * samples_per_segment)",
+    "outputs": [
+      {
+        "format": "gltf",
+        "content": "a tube along the spline and a mesh of small control-point markers"
+      },
+      {
+        "format": "obj",
+        "content": "the same meshes as Wavefront OBJ"
+      }
+    ],
+    "axes": "+Y up, metres"
+  },
+  "limits": "Interpolating splines have only C1 continuity at the control points (curvature may jump). Coincident consecutive control points are separated by a tiny knot gap. Open ends use reflected neighbour points, one of several conventions.",
+  "related": [
+    "kochanek_bartels_spline",
+    "bezier_curve_arc_length",
+    "bspline_de_boor"
+  ],
+  "technique_references": [
+    "Catmull-Rom spline",
+    "Barry-Goldman pyramidal evaluation",
+    "Centripetal knot parameterization (alpha = 0.5)"
+  ],
+  "native_checks": [
+    "generator_runs_system_python",
+    "generator_runs_verifier_python",
+    "gltf_strict_structure",
+    "interpreters_agree",
+    "example_matches_generator",
+    "godot_headless_gltf_load",
+    "godot_compatibility_render"
+  ]
+}

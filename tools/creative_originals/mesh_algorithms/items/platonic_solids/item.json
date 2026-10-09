@@ -1,0 +1,278 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "platonic_solids",
+  "title": "Platonic solids with exact edge length",
+  "purpose": "Generate the five regular convex polyhedra with exact coordinates and polygon faces found as supporting planes. Use them for dice, crystals, teaching models and as seeds for other operators.",
+  "form": "library_module",
+  "asset_role": null,
+  "dimension": "3d",
+  "engine": {
+    "name": "python",
+    "minimum_version": "3.10"
+  },
+  "tags": [
+    "polyhedron",
+    "platonic solids",
+    "dodecahedron",
+    "icosahedron",
+    "dice",
+    "geometry"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "role": "other"
+    },
+    {
+      "path": "platonic_solids.py",
+      "role": "executable_tool"
+    },
+    {
+      "path": "example.gltf",
+      "role": "skill_asset"
+    }
+  ],
+  "contract": {
+    "module": "platonic_solids",
+    "entry_points": [
+      {
+        "name": "solid_vertices",
+        "signature": "solid_vertices(name, edge=1.0)",
+        "summary": "Vertex coordinates of a Platonic solid centred at the origin with the given edge length."
+      },
+      {
+        "name": "hull_faces",
+        "signature": "hull_faces(vertices)",
+        "summary": "Faces of a convex polyhedron given only its vertices: each plane through three vertices with all vertices on one side is a face; its vertices are ordered counter-clockwise seen from outside."
+      },
+      {
+        "name": "platonic_solid",
+        "signature": "platonic_solid(name='dodecahedron', edge=1.0)",
+        "summary": "One Platonic solid: exact vertices, polygon faces (triangles, squares or pentagons), outward winding."
+      },
+      {
+        "name": "build",
+        "signature": "build(solid='all', edge=1.0)",
+        "summary": "The flat-shaded solid, or all five side by side along X, as the command line writes them."
+      },
+      {
+        "name": "main",
+        "signature": "main(argv=None)",
+        "summary": "Command line: write the solids as .gltf or .obj and print a JSON summary."
+      }
+    ],
+    "parameters": [
+      {
+        "name": "solid",
+        "type": "str",
+        "default": "all",
+        "unit": "name",
+        "choices": [
+          "all",
+          "tetrahedron",
+          "cube",
+          "octahedron",
+          "dodecahedron",
+          "icosahedron"
+        ],
+        "meaning": "Which solid to write; 'all' places the five in a row along X."
+      },
+      {
+        "name": "edge",
+        "type": "float",
+        "default": 1.0,
+        "unit": "m",
+        "minimum": 1e-06,
+        "maximum": 1000000.0,
+        "meaning": "Edge length of every solid."
+      }
+    ],
+    "invariants": {
+      "tetrahedron": {
+        "call": "platonic_solid",
+        "arguments": {
+          "name": "tetrahedron",
+          "edge": 1.0
+        },
+        "expect": {
+          "vertex_count": 4,
+          "face_count": 4,
+          "euler_characteristic": 2,
+          "watertight": true,
+          "convex": true,
+          "volume": [
+            0.11785113019775793,
+            1e-12
+          ],
+          "area": [
+            1.7320508075688772,
+            1e-12
+          ],
+          "vertices_on_sphere": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            0.6123724356957945,
+            1e-12
+          ]
+        }
+      },
+      "cube": {
+        "call": "platonic_solid",
+        "arguments": {
+          "name": "cube",
+          "edge": 1.0
+        },
+        "expect": {
+          "vertex_count": 8,
+          "face_count": 6,
+          "euler_characteristic": 2,
+          "watertight": true,
+          "convex": true,
+          "volume": [
+            1.0,
+            1e-12
+          ],
+          "area": [
+            6.0,
+            1e-12
+          ],
+          "vertices_on_sphere": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            0.8660254037844386,
+            1e-12
+          ]
+        }
+      },
+      "octahedron": {
+        "call": "platonic_solid",
+        "arguments": {
+          "name": "octahedron",
+          "edge": 1.0
+        },
+        "expect": {
+          "vertex_count": 6,
+          "face_count": 8,
+          "euler_characteristic": 2,
+          "watertight": true,
+          "convex": true,
+          "volume": [
+            0.47140452079103173,
+            1e-12
+          ],
+          "area": [
+            3.4641016151377544,
+            1e-12
+          ],
+          "vertices_on_sphere": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            0.7071067811865476,
+            1e-12
+          ]
+        }
+      },
+      "dodecahedron": {
+        "call": "platonic_solid",
+        "arguments": {
+          "name": "dodecahedron",
+          "edge": 1.0
+        },
+        "expect": {
+          "vertex_count": 20,
+          "face_count": 12,
+          "euler_characteristic": 2,
+          "watertight": true,
+          "convex": true,
+          "volume": [
+            7.663118960624632,
+            1e-12
+          ],
+          "area": [
+            20.645728807067602,
+            1e-12
+          ],
+          "vertices_on_sphere": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            1.4012585384440734,
+            1e-12
+          ]
+        }
+      },
+      "icosahedron": {
+        "call": "platonic_solid",
+        "arguments": {
+          "name": "icosahedron",
+          "edge": 1.0
+        },
+        "expect": {
+          "vertex_count": 12,
+          "face_count": 20,
+          "euler_characteristic": 2,
+          "watertight": true,
+          "convex": true,
+          "volume": [
+            2.1816949906249126,
+            1e-12
+          ],
+          "area": [
+            8.660254037844386,
+            1e-12
+          ],
+          "vertices_on_sphere": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            0.9510565162951535,
+            1e-12
+          ]
+        }
+      }
+    },
+    "complexity": "O(V^4) face finding for V <= 20 vertices",
+    "outputs": [
+      {
+        "format": "gltf",
+        "content": "one flat-shaded mesh per solid (or all five along X), POSITION and NORMAL"
+      },
+      {
+        "format": "obj",
+        "content": "the same solids as Wavefront OBJ"
+      }
+    ],
+    "axes": "+Y up, metres"
+  },
+  "limits": "Only the five regular convex solids; no star polyhedra or Archimedean solids. Face finding checks every vertex triple, which is fine for these sizes but not for large point sets.",
+  "related": [
+    "conway_polyhedron_operators",
+    "icosphere"
+  ],
+  "technique_references": [
+    "Cartesian coordinates from cube corners and golden rectangles",
+    "Faces as supporting planes of the vertex set"
+  ],
+  "native_checks": [
+    "generator_runs_system_python",
+    "generator_runs_verifier_python",
+    "gltf_strict_structure",
+    "interpreters_agree",
+    "example_matches_generator",
+    "godot_headless_gltf_load",
+    "godot_compatibility_render"
+  ]
+}

@@ -1,0 +1,208 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "clothoid_road",
+  "title": "Clothoid transition road",
+  "purpose": "Lay out a road bend from a straight, a clothoid (Euler spiral) easing into a circular arc and a clothoid back, with exact Fresnel-series geometry and a coloured ribbon. Use it for roads, tracks and rails.",
+  "form": "library_module",
+  "asset_role": null,
+  "dimension": "2.5d",
+  "engine": {
+    "name": "python",
+    "minimum_version": "3.10"
+  },
+  "tags": [
+    "clothoid",
+    "euler spiral",
+    "road",
+    "fresnel",
+    "transition curve",
+    "track"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "role": "other"
+    },
+    {
+      "path": "clothoid_road.py",
+      "role": "executable_tool"
+    },
+    {
+      "path": "example.gltf",
+      "role": "skill_asset"
+    }
+  ],
+  "contract": {
+    "module": "clothoid_road",
+    "entry_points": [
+      {
+        "name": "clothoid_point",
+        "signature": "clothoid_point(s, scale)",
+        "summary": "(x, y, heading) on the unit-direction clothoid at arc length s: x = integral cos(u^2 / (2 A^2)) du, y = integral sin(u^2 / (2 A^2)) du from 0 to s with A = ``scale``, heading s^2 / (2 A^2). Integrated by the power series of the Fresnel integrals (converges for every s)."
+      },
+      {
+        "name": "curvature_at",
+        "signature": "curvature_at(s, transition=6.0, radius=8.0, arc_length=0.0)",
+        "summary": "Curvature of the road centre line at distance s along the bend: rising linearly over the first clothoid, 1 / radius along the arc, falling over the second clothoid, 0 elsewhere."
+      },
+      {
+        "name": "centre_line",
+        "signature": "centre_line(radius=8.0, transition=6.0, arc_angle=60.0, step=0.5, lead=6.0)",
+        "summary": "Points (x, y) and headings of the road centre line, starting with a straight of length ``lead`` along +x, integrating the piecewise-linear curvature exactly segment by segment (clothoid series inside the transitions, circles on the arc)."
+      },
+      {
+        "name": "road",
+        "signature": "road(radius=8.0, transition=6.0, arc_angle=60.0, width=3.0, step=0.5)",
+        "summary": "A flat road ribbon in the XZ plane (2D y maps to -z) with asphalt colour and white edge lines."
+      },
+      {
+        "name": "main",
+        "signature": "main(argv=None)",
+        "summary": "Command line: write the road ribbon (.gltf or .obj) and print a JSON summary."
+      }
+    ],
+    "parameters": [
+      {
+        "name": "radius",
+        "type": "float",
+        "default": 8.0,
+        "unit": "m",
+        "minimum": 0.1,
+        "maximum": 1000000.0,
+        "meaning": "Radius of the circular arc in the middle of the bend."
+      },
+      {
+        "name": "transition",
+        "type": "float",
+        "default": 6.0,
+        "unit": "m",
+        "minimum": 0.0,
+        "maximum": 1000000.0,
+        "meaning": "Length of each clothoid, over which curvature grows linearly from 0 to 1 / radius."
+      },
+      {
+        "name": "arc_angle",
+        "type": "float",
+        "default": 60.0,
+        "unit": "degrees",
+        "minimum": 0.0,
+        "maximum": 300.0,
+        "meaning": "Turn of the circular arc between the two clothoids."
+      },
+      {
+        "name": "width",
+        "type": "float",
+        "default": 3.0,
+        "unit": "m",
+        "minimum": 0.01,
+        "maximum": 1000.0,
+        "meaning": "Road width."
+      },
+      {
+        "name": "step",
+        "type": "float",
+        "default": 0.5,
+        "unit": "m",
+        "minimum": 0.01,
+        "maximum": 100.0,
+        "meaning": "Arc-length spacing of the road cross-sections."
+      }
+    ],
+    "invariants": {
+      "fresnel_point": {
+        "call": "clothoid_point",
+        "arguments": {
+          "s": 6.0,
+          "scale": 6.928203230275509
+        },
+        "expect": {
+          "sequence_close": [
+            [
+              5.916172537187745,
+              0.7425001432715226,
+              0.37500000000000006
+            ],
+            1e-10
+          ]
+        }
+      },
+      "bend_end": {
+        "call": "centre_line",
+        "arguments": {},
+        "select": -1,
+        "expect": {
+          "sequence_close": [
+            [
+              8.946532611460187,
+              18.780889785049343,
+              1.7971975511942269
+            ],
+            1e-06
+          ]
+        }
+      },
+      "curvature_rises_linearly": {
+        "call": "curvature_at",
+        "arguments": {
+          "s": 3.0
+        },
+        "expect": {
+          "close": [
+            0.0625,
+            1e-15
+          ]
+        }
+      },
+      "road_ribbon": {
+        "call": "road",
+        "arguments": {},
+        "expect": {
+          "vertex_count": 264,
+          "face_count": 195,
+          "has_colors": true,
+          "vertices_on_plane": [
+            [
+              0.0,
+              1.0,
+              0.0
+            ],
+            0.0,
+            0.0
+          ],
+          "boundary_loops": 1
+        }
+      }
+    },
+    "complexity": "O(length / step) points, each a short power series",
+    "outputs": [
+      {
+        "format": "gltf",
+        "content": "the road ribbon with POSITION, NORMAL and COLOR_0 (asphalt with white edge lines)"
+      },
+      {
+        "format": "obj",
+        "content": "the same ribbon as Wavefront OBJ"
+      }
+    ],
+    "axes": "+Y up, metres"
+  },
+  "limits": "A flat road in one plane: no banking, crown or elevation profile. One left-hand bend between two straights; chain several calls for longer layouts. The series is evaluated in double precision, accurate to about 1e-10 m for transitions of a few hundred metres.",
+  "related": [
+    "catmull_rom_spline",
+    "bezier_curve_arc_length"
+  ],
+  "technique_references": [
+    "Clothoid (Euler spiral) with curvature proportional to arc length",
+    "Fresnel integrals by power series",
+    "Piecewise integration at curvature breakpoints"
+  ],
+  "native_checks": [
+    "generator_runs_system_python",
+    "generator_runs_verifier_python",
+    "gltf_strict_structure",
+    "interpreters_agree",
+    "example_matches_generator",
+    "godot_headless_gltf_load",
+    "godot_compatibility_render"
+  ]
+}

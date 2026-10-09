@@ -1,0 +1,243 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "uv_sphere",
+  "title": "UV sphere with texture seam and pole fans",
+  "purpose": "Build a latitude and longitude sphere with unit normals, a texture seam and one pole vertex per segment. Use it for globes, planets and any sphere that takes an equirectangular texture.",
+  "form": "function",
+  "asset_role": null,
+  "dimension": "3d",
+  "engine": {
+    "name": "python",
+    "minimum_version": "3.10"
+  },
+  "tags": [
+    "primitive",
+    "sphere",
+    "uv sphere",
+    "equirectangular",
+    "texture coordinates",
+    "gltf"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "role": "other"
+    },
+    {
+      "path": "uv_sphere.py",
+      "role": "executable_tool"
+    },
+    {
+      "path": "example.gltf",
+      "role": "skill_asset"
+    }
+  ],
+  "contract": {
+    "module": "uv_sphere",
+    "entry_points": [
+      {
+        "name": "uv_sphere",
+        "signature": "uv_sphere(radius=1.0, segments=32, rings=16)",
+        "summary": "A UV sphere centred at the origin with unit normals, texture coordinates and outward faces."
+      },
+      {
+        "name": "main",
+        "signature": "main(argv=None)",
+        "summary": "Command line: write the sphere as .gltf or .obj and print a JSON summary."
+      }
+    ],
+    "parameters": [
+      {
+        "name": "radius",
+        "type": "float",
+        "default": 1.0,
+        "unit": "m",
+        "minimum": 1e-06,
+        "maximum": 1000000.0,
+        "meaning": "Distance from the centre to every vertex."
+      },
+      {
+        "name": "segments",
+        "type": "int",
+        "default": 32,
+        "unit": "count",
+        "minimum": 3,
+        "maximum": 2048,
+        "meaning": "Divisions around the Y axis (longitude)."
+      },
+      {
+        "name": "rings",
+        "type": "int",
+        "default": 16,
+        "unit": "count",
+        "minimum": 2,
+        "maximum": 2048,
+        "meaning": "Divisions from the north pole to the south pole (latitude)."
+      }
+    ],
+    "invariants": {
+      "default": {
+        "call": "uv_sphere",
+        "arguments": {
+          "radius": 1.0,
+          "segments": 32,
+          "rings": 16
+        },
+        "expect": {
+          "vertex_count": 559,
+          "face_count": 512,
+          "triangle_count": 960,
+          "welded_watertight": true,
+          "welded_euler_characteristic": 2,
+          "volume": [
+            4.1219417407858465,
+            1e-09
+          ],
+          "area": [
+            12.465694088650581,
+            1e-09
+          ],
+          "vertices_on_sphere": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            1.0,
+            1e-12
+          ],
+          "normals": "unit",
+          "normals_agree": 1.0,
+          "uv_range": [
+            [
+              0.0,
+              0.0
+            ],
+            [
+              1.0,
+              1.0
+            ],
+            1e-12
+          ]
+        }
+      },
+      "bipyramid": {
+        "call": "uv_sphere",
+        "arguments": {
+          "radius": 1.0,
+          "segments": 3,
+          "rings": 2
+        },
+        "expect": {
+          "vertex_count": 10,
+          "face_count": 6,
+          "triangle_count": 6,
+          "welded_watertight": true,
+          "welded_euler_characteristic": 2,
+          "volume": [
+            0.8660254037844387,
+            1e-09
+          ],
+          "area": [
+            5.809475019311126,
+            1e-09
+          ],
+          "vertices_on_sphere": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            1.0,
+            1e-12
+          ],
+          "normals": "unit",
+          "normals_agree": 1.0,
+          "uv_range": [
+            [
+              0.0,
+              0.0
+            ],
+            [
+              1.0,
+              1.0
+            ],
+            1e-12
+          ]
+        }
+      },
+      "fine_scaled": {
+        "call": "uv_sphere",
+        "arguments": {
+          "radius": 2.5,
+          "segments": 48,
+          "rings": 24
+        },
+        "expect": {
+          "vertex_count": 1223,
+          "face_count": 1152,
+          "triangle_count": 2208,
+          "welded_watertight": true,
+          "welded_euler_characteristic": 2,
+          "volume": [
+            64.98392869282799,
+            1.5625000000000003e-08
+          ],
+          "area": [
+            78.25976579852245,
+            6.2500000000000005e-09
+          ],
+          "vertices_on_sphere": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            2.5,
+            2.5e-12
+          ],
+          "normals": "unit",
+          "normals_agree": 1.0,
+          "uv_range": [
+            [
+              0.0,
+              0.0
+            ],
+            [
+              1.0,
+              1.0
+            ],
+            1e-12
+          ]
+        }
+      }
+    },
+    "complexity": "O(segments * rings)",
+    "outputs": [
+      {
+        "format": "gltf",
+        "content": "one mesh with POSITION, NORMAL and the attributes listed above, indexed triangles"
+      },
+      {
+        "format": "obj",
+        "content": "the same mesh as Wavefront OBJ with positions, normals and polygon faces"
+      }
+    ],
+    "axes": "+Y up, metres"
+  },
+  "limits": "The seam and the pole vertices are duplicated for texture coordinates, so the mesh is closed only after welding coincident vertices. Pole triangles are thin and the faces are not equal in area; use an icosphere or a cube sphere for even tessellation. The polygon volume and area are below the true sphere's and approach them as segments and rings grow.",
+  "related": [],
+  "technique_references": [
+    "Spherical coordinates (polar angle, longitude)",
+    "Equirectangular texture mapping"
+  ],
+  "native_checks": [
+    "generator_runs_system_python",
+    "generator_runs_verifier_python",
+    "gltf_strict_structure",
+    "interpreters_agree",
+    "example_matches_generator",
+    "godot_headless_gltf_load",
+    "godot_compatibility_render"
+  ]
+}

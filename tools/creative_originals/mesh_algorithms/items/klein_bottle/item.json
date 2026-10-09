@@ -1,0 +1,173 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "klein_bottle",
+  "title": "Klein bottle figure-eight immersion",
+  "purpose": "Build the figure-eight immersion of the Klein bottle: a closed, one-sided surface with no edge and Euler characteristic 0. Use it for mathematical sculpture and to test non-orientable meshes.",
+  "form": "library_module",
+  "asset_role": null,
+  "dimension": "3d",
+  "engine": {
+    "name": "python",
+    "minimum_version": "3.10"
+  },
+  "tags": [
+    "parametric surface",
+    "klein bottle",
+    "non-orientable",
+    "topology",
+    "immersion",
+    "sculpture"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "role": "other"
+    },
+    {
+      "path": "klein_bottle.py",
+      "role": "executable_tool"
+    },
+    {
+      "path": "example.gltf",
+      "role": "skill_asset"
+    }
+  ],
+  "contract": {
+    "module": "klein_bottle",
+    "entry_points": [
+      {
+        "name": "figure_eight_point",
+        "signature": "figure_eight_point(u, v, radius=2.0)",
+        "summary": "Point of the figure-eight immersion at angles u (around the centre circle) and v (around the eight)."
+      },
+      {
+        "name": "klein_bottle",
+        "signature": "klein_bottle(radius=2.0, scale=0.5, u_segments=80, v_segments=24)",
+        "summary": "A closed figure-eight Klein bottle: u_segments * v_segments vertices and as many quads."
+      },
+      {
+        "name": "main",
+        "signature": "main(argv=None)",
+        "summary": "Command line: write the surface as .gltf or .obj and print a JSON summary."
+      }
+    ],
+    "parameters": [
+      {
+        "name": "radius",
+        "type": "float",
+        "default": 2.0,
+        "unit": "m",
+        "minimum": 1.0,
+        "maximum": 1000000.0,
+        "meaning": "Radius of the centre circle before scaling; above 1 keeps the figure eight off the axis."
+      },
+      {
+        "name": "scale",
+        "type": "float",
+        "default": 0.5,
+        "unit": "m",
+        "minimum": 1e-06,
+        "maximum": 1000000.0,
+        "meaning": "Uniform scale applied to the whole surface."
+      },
+      {
+        "name": "u_segments",
+        "type": "int",
+        "default": 80,
+        "unit": "count",
+        "minimum": 3,
+        "maximum": 100000,
+        "meaning": "Divisions around the centre circle."
+      },
+      {
+        "name": "v_segments",
+        "type": "int",
+        "default": 24,
+        "unit": "count",
+        "minimum": 4,
+        "maximum": 100000,
+        "meaning": "Divisions around the figure-eight cross-section."
+      }
+    ],
+    "invariants": {
+      "default": {
+        "call": "klein_bottle",
+        "arguments": {},
+        "expect": {
+          "vertex_count": 1920,
+          "face_count": 1920,
+          "closed": true,
+          "manifold": true,
+          "oriented": false,
+          "euler_characteristic": 0,
+          "components": 1,
+          "normals": "unit"
+        }
+      },
+      "coarse": {
+        "call": "klein_bottle",
+        "arguments": {
+          "radius": 3.0,
+          "scale": 1.0,
+          "u_segments": 8,
+          "v_segments": 6
+        },
+        "expect": {
+          "vertex_count": 48,
+          "face_count": 48,
+          "closed": true,
+          "oriented": false,
+          "euler_characteristic": 0
+        }
+      },
+      "seam_point": {
+        "call": "figure_eight_point",
+        "arguments": {
+          "u": 0.0,
+          "v": 0.0,
+          "radius": 2.0
+        },
+        "expect": {
+          "sequence_close": [
+            [
+              2.0,
+              0.0,
+              0.0
+            ],
+            1e-15
+          ]
+        }
+      }
+    },
+    "complexity": "O(u_segments * v_segments)",
+    "outputs": [
+      {
+        "format": "gltf",
+        "content": "one double-sided mesh with POSITION and NORMAL, indexed triangles"
+      },
+      {
+        "format": "obj",
+        "content": "the same surface as Wavefront OBJ"
+      }
+    ],
+    "axes": "+Y up, metres"
+  },
+  "limits": "The figure-eight immersion passes through itself along one circle, as every Klein bottle in three dimensions must; the mesh does not split faces there. There is no consistent winding, so normals flip across one seam and the surface should be drawn double-sided.",
+  "related": [
+    "mobius_strip",
+    "torus"
+  ],
+  "technique_references": [
+    "Figure-eight Klein bottle immersion",
+    "Grid identification (u + 2 pi, v) ~ (u, -v)"
+  ],
+  "native_checks": [
+    "generator_runs_system_python",
+    "generator_runs_verifier_python",
+    "gltf_strict_structure",
+    "interpreters_agree",
+    "example_matches_generator",
+    "godot_headless_gltf_load",
+    "godot_compatibility_render"
+  ]
+}

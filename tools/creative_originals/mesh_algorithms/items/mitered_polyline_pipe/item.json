@@ -1,0 +1,243 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "mitered_polyline_pipe",
+  "title": "Mitered pipe along a polyline",
+  "purpose": "Run a constant polygon cross-section along a polyline with miter joints, so walls stay flat and the volume equals cross-section times centre-line length. Use it for ducts, plumbing, frames and wiring.",
+  "form": "library_module",
+  "asset_role": null,
+  "dimension": "3d",
+  "engine": {
+    "name": "python",
+    "minimum_version": "3.10"
+  },
+  "tags": [
+    "pipe",
+    "miter",
+    "polyline",
+    "duct",
+    "frame",
+    "sweep"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "role": "other"
+    },
+    {
+      "path": "mitered_polyline_pipe.py",
+      "role": "executable_tool"
+    },
+    {
+      "path": "example.gltf",
+      "role": "skill_asset"
+    }
+  ],
+  "contract": {
+    "module": "mitered_polyline_pipe",
+    "entry_points": [
+      {
+        "name": "mitered_pipe",
+        "signature": "mitered_pipe(points, radius=0.12, sides=12, closed=False)",
+        "summary": "A pipe with one ring per polyline point: end rings are perpendicular to their segment; every inner ring lies in the bisecting (miter) plane of its two segments, found by projecting the cross-section along the segment direction. The volume equals cross-section area times centre-line length for corners that do not fold back. Open pipes get flat caps; faces point outward."
+      },
+      {
+        "name": "demo_route",
+        "signature": "demo_route(name='plumbing')",
+        "summary": "Demonstration polylines: a plumbing run with right angles, a zigzag, or a closed rectangular frame."
+      },
+      {
+        "name": "build",
+        "signature": "build(radius=0.12, sides=12, route='plumbing')",
+        "summary": "The flat-shaded demonstration pipe."
+      },
+      {
+        "name": "main",
+        "signature": "main(argv=None)",
+        "summary": "Command line: write the pipe (.gltf or .obj) and print a JSON summary."
+      }
+    ],
+    "parameters": [
+      {
+        "name": "radius",
+        "type": "float",
+        "default": 0.12,
+        "unit": "m",
+        "minimum": 1e-06,
+        "maximum": 1000000.0,
+        "meaning": "Circumradius of the regular polygon cross-section."
+      },
+      {
+        "name": "sides",
+        "type": "int",
+        "default": 12,
+        "unit": "count",
+        "minimum": 3,
+        "maximum": 1024,
+        "meaning": "Sides of the cross-section polygon."
+      },
+      {
+        "name": "route",
+        "type": "str",
+        "default": "plumbing",
+        "unit": "name",
+        "choices": [
+          "plumbing",
+          "zigzag",
+          "frame"
+        ],
+        "meaning": "Demonstration polyline (frame is closed)."
+      }
+    ],
+    "invariants": {
+      "right_angle": {
+        "call": "mitered_pipe",
+        "arguments": {
+          "points": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              2.0,
+              0.0,
+              0.0
+            ],
+            [
+              2.0,
+              3.0,
+              0.0
+            ]
+          ],
+          "radius": 0.5,
+          "sides": 4
+        },
+        "expect": {
+          "vertex_count": 12,
+          "face_count": 10,
+          "watertight": true,
+          "volume": [
+            2.5,
+            1e-12
+          ]
+        }
+      },
+      "plumbing": {
+        "call": "mitered_pipe",
+        "arguments": {
+          "points": [
+            [
+              -1.5,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              1.0,
+              0.0
+            ],
+            [
+              0.0,
+              1.0,
+              -1.0
+            ],
+            [
+              1.2,
+              1.0,
+              -1.0
+            ],
+            [
+              1.2,
+              0.2,
+              -1.0
+            ]
+          ],
+          "radius": 0.12,
+          "sides": 12
+        },
+        "expect": {
+          "watertight": true,
+          "volume": [
+            0.23759999999999992,
+            1e-12
+          ]
+        }
+      },
+      "closed_frame": {
+        "call": "mitered_pipe",
+        "arguments": {
+          "points": [
+            [
+              -1.0,
+              0.0,
+              -0.6
+            ],
+            [
+              1.0,
+              0.0,
+              -0.6
+            ],
+            [
+              1.0,
+              0.0,
+              0.6
+            ],
+            [
+              -1.0,
+              0.0,
+              0.6
+            ]
+          ],
+          "radius": 0.1,
+          "sides": 6,
+          "closed": true
+        },
+        "expect": {
+          "vertex_count": 24,
+          "watertight": true,
+          "genus": 1,
+          "volume": [
+            0.16627687752661224,
+            1e-12
+          ]
+        }
+      }
+    },
+    "complexity": "O(points * sides)",
+    "outputs": [
+      {
+        "format": "gltf",
+        "content": "the flat-shaded demonstration pipe with POSITION and NORMAL"
+      },
+      {
+        "format": "obj",
+        "content": "the same pipe as Wavefront OBJ"
+      }
+    ],
+    "axes": "+Y up, metres"
+  },
+  "limits": "Sharp corners (turning more than about 120 degrees) make long miter spikes; corners closer than the radius overlap. Use profile_sweep or a tube for smooth bends. The cross-section is a regular polygon centred on the path.",
+  "related": [
+    "profile_sweep",
+    "rotation_minimizing_frames"
+  ],
+  "technique_references": [
+    "Miter (bisector) plane joints",
+    "Frame transport between segment directions",
+    "Volume preservation of centred oblique cuts"
+  ],
+  "native_checks": [
+    "generator_runs_system_python",
+    "generator_runs_verifier_python",
+    "gltf_strict_structure",
+    "interpreters_agree",
+    "example_matches_generator",
+    "godot_headless_gltf_load",
+    "godot_compatibility_render"
+  ]
+}

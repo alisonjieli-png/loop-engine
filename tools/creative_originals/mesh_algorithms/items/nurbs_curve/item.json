@@ -1,0 +1,285 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "nurbs_curve",
+  "title": "NURBS curves with exact circles and conics",
+  "purpose": "Evaluate rational B-spline (NURBS) curves in homogeneous coordinates, with the exact nine-point circle and single-span conic arcs. Use it where circles and arcs must be exact, as in CAD data.",
+  "form": "library_module",
+  "asset_role": null,
+  "dimension": "3d",
+  "engine": {
+    "name": "python",
+    "minimum_version": "3.10"
+  },
+  "tags": [
+    "nurbs",
+    "rational",
+    "circle",
+    "conic",
+    "curve",
+    "cad"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "role": "other"
+    },
+    {
+      "path": "nurbs_curve.py",
+      "role": "executable_tool"
+    },
+    {
+      "path": "example.gltf",
+      "role": "skill_asset"
+    }
+  ],
+  "contract": {
+    "module": "nurbs_curve",
+    "entry_points": [
+      {
+        "name": "nurbs_point",
+        "signature": "nurbs_point(controls, weights, degree, knots, t)",
+        "summary": "Point of the rational B-spline at t: de Boor on (w x, w y, w z, w), then divide by w."
+      },
+      {
+        "name": "circle",
+        "signature": "circle(radius=1.0, center=(0.0, 0.0, 0.0))",
+        "summary": "The exact circle in the XZ plane as a degree-2 NURBS: nine control points on a square (corner weights sqrt(2) / 2) and knots 0 0 0 1/4 1/4 1/2 1/2 3/4 3/4 1 1 1. Returns (controls, weights, degree, knots)."
+      },
+      {
+        "name": "conic_arc",
+        "signature": "conic_arc(start, control, end, weight)",
+        "summary": "A single rational quadratic arc: weight < 1 ellipse, 1 parabola, > 1 hyperbola, through start and end with tangents toward ``control``. Returns (controls, weights, degree, knots)."
+      },
+      {
+        "name": "sample_nurbs",
+        "signature": "sample_nurbs(curve, samples=128, closed=False)",
+        "summary": "``samples`` points evenly spaced in the parameter (the last one left out for a closed curve)."
+      },
+      {
+        "name": "build",
+        "signature": "build(radius=1.0, samples=48)",
+        "summary": "Tubes along the exact circle and three conic arcs (ellipse, parabola, hyperbola) beside it."
+      },
+      {
+        "name": "main",
+        "signature": "main(argv=None)",
+        "summary": "Command line: write the circle and conic tubes (.gltf or .obj) and print a JSON summary."
+      }
+    ],
+    "parameters": [
+      {
+        "name": "radius",
+        "type": "float",
+        "default": 1.0,
+        "unit": "m",
+        "minimum": 1e-06,
+        "maximum": 1000000.0,
+        "meaning": "Radius of the exact NURBS circle that the command line draws."
+      },
+      {
+        "name": "samples",
+        "type": "int",
+        "default": 48,
+        "unit": "count",
+        "minimum": 3,
+        "maximum": 100000,
+        "meaning": "Points sampled along each curve for the display tubes."
+      }
+    ],
+    "invariants": {
+      "exact_circle": {
+        "call": "sample_nurbs",
+        "arguments": {
+          "curve": {
+            "$call": "circle",
+            "arguments": {
+              "radius": 2.0
+            }
+          },
+          "samples": 100,
+          "closed": true
+        },
+        "expect": {
+          "point_count": 100,
+          "points_on_circle": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            2.0,
+            1e-13
+          ]
+        }
+      },
+      "circle_at_one_eighth": {
+        "call": "nurbs_point",
+        "arguments": {
+          "controls": {
+            "$call": "circle",
+            "arguments": {},
+            "select": 0
+          },
+          "weights": {
+            "$call": "circle",
+            "arguments": {},
+            "select": 1
+          },
+          "degree": 2,
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            0.25,
+            0.25,
+            0.5,
+            0.5,
+            0.75,
+            0.75,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "t": 0.125
+        },
+        "expect": {
+          "sequence_close": [
+            [
+              0.7071067811865476,
+              0.0,
+              -0.7071067811865476
+            ],
+            1e-15
+          ]
+        }
+      },
+      "quarter_circle_conic": {
+        "call": "sample_nurbs",
+        "arguments": {
+          "curve": {
+            "$call": "conic_arc",
+            "arguments": {
+              "start": [
+                1.0,
+                0.0,
+                0.0
+              ],
+              "control": [
+                1.0,
+                1.0,
+                0.0
+              ],
+              "end": [
+                0.0,
+                1.0,
+                0.0
+              ],
+              "weight": 0.7071067811865476
+            }
+          },
+          "samples": 9
+        },
+        "expect": {
+          "points_on_circle": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            1.0,
+            1e-15
+          ],
+          "point_count": 9
+        }
+      },
+      "parabola_conic": {
+        "call": "sample_nurbs",
+        "arguments": {
+          "curve": {
+            "$call": "conic_arc",
+            "arguments": {
+              "start": [
+                1.0,
+                0.0,
+                0.0
+              ],
+              "control": [
+                1.0,
+                1.0,
+                0.0
+              ],
+              "end": [
+                0.0,
+                1.0,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          },
+          "samples": 3
+        },
+        "expect": {
+          "points_close": [
+            [
+              [
+                1.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.75,
+                0.75,
+                0.0
+              ],
+              [
+                0.0,
+                1.0,
+                0.0
+              ]
+            ],
+            1e-15
+          ]
+        }
+      },
+      "display": {
+        "call": "build",
+        "arguments": {},
+        "expect": {
+          "mesh_count": 4,
+          "watertight": true
+        }
+      }
+    },
+    "complexity": "O(degree^2) per point",
+    "outputs": [
+      {
+        "format": "gltf",
+        "content": "tubes along the exact circle and three conic arcs (ellipse, parabola, hyperbola)"
+      },
+      {
+        "format": "obj",
+        "content": "the same tubes as Wavefront OBJ"
+      }
+    ],
+    "axes": "+Y up, metres"
+  },
+  "limits": "The parameter is not proportional to arc length (points crowd toward the square's edge midpoints). Weights must be positive. Only curves; see nurbs_surface for surfaces.",
+  "related": [
+    "nurbs_surface",
+    "bspline_de_boor"
+  ],
+  "technique_references": [
+    "Rational de Boor evaluation in homogeneous coordinates",
+    "Nine-point quadratic NURBS circle with corner weights sqrt(2) / 2",
+    "Rational quadratic conic arcs (weight below, at and above 1)"
+  ],
+  "native_checks": [
+    "generator_runs_system_python",
+    "generator_runs_verifier_python",
+    "gltf_strict_structure",
+    "interpreters_agree",
+    "example_matches_generator",
+    "godot_headless_gltf_load",
+    "godot_compatibility_render"
+  ]
+}

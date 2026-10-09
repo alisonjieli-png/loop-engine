@@ -1,0 +1,264 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "supershape_gielis",
+  "title": "3D supershape from the Gielis superformula",
+  "purpose": "Generate star, flower, shell and crystal solids from two Gielis superformula curves combined as a spherical product. Use it for organic props, alien plants and procedural gems.",
+  "form": "library_module",
+  "asset_role": null,
+  "dimension": "3d",
+  "engine": {
+    "name": "python",
+    "minimum_version": "3.10"
+  },
+  "tags": [
+    "parametric surface",
+    "supershape",
+    "superformula",
+    "gielis",
+    "procedural",
+    "organic"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "role": "other"
+    },
+    {
+      "path": "supershape_gielis.py",
+      "role": "executable_tool"
+    },
+    {
+      "path": "example.gltf",
+      "role": "skill_asset"
+    }
+  ],
+  "contract": {
+    "module": "supershape_gielis",
+    "entry_points": [
+      {
+        "name": "superformula",
+        "signature": "superformula(angle, m=7.0, n1=0.2, n2=1.7, n3=1.7, a=1.0, b=1.0)",
+        "summary": "Gielis superformula radius r(angle) = (|cos(m angle / 4) / a|^n2 + |sin(m angle / 4) / b|^n3)^(-1 / n1)."
+      },
+      {
+        "name": "supershape",
+        "signature": "supershape(m1=7.0, n1=0.2, n2=1.7, n3=1.7, m2=7.0, p1=0.2, p2=1.7, p3=1.7, size=1.0, segments=64, rings=32)",
+        "summary": "A welded 3D supershape: 2 + (rings - 1) * segments vertices and segments * rings outward faces."
+      },
+      {
+        "name": "main",
+        "signature": "main(argv=None)",
+        "summary": "Command line: write the supershape as .gltf or .obj and print a JSON summary."
+      }
+    ],
+    "parameters": [
+      {
+        "name": "m1",
+        "type": "float",
+        "default": 7.0,
+        "unit": "symmetry",
+        "minimum": 0.0,
+        "maximum": 100.0,
+        "meaning": "Rotational symmetry of the horizontal curve (lobes around Y)."
+      },
+      {
+        "name": "n1",
+        "type": "float",
+        "default": 0.2,
+        "unit": "exponent",
+        "minimum": 0.01,
+        "maximum": 100.0,
+        "meaning": "Overall exponent of the horizontal curve."
+      },
+      {
+        "name": "n2",
+        "type": "float",
+        "default": 1.7,
+        "unit": "exponent",
+        "minimum": 0.0,
+        "maximum": 100.0,
+        "meaning": "Cosine term exponent of the horizontal curve."
+      },
+      {
+        "name": "n3",
+        "type": "float",
+        "default": 1.7,
+        "unit": "exponent",
+        "minimum": 0.0,
+        "maximum": 100.0,
+        "meaning": "Sine term exponent of the horizontal curve."
+      },
+      {
+        "name": "m2",
+        "type": "float",
+        "default": 7.0,
+        "unit": "symmetry",
+        "minimum": 0.0,
+        "maximum": 100.0,
+        "meaning": "Symmetry of the vertical (latitude) curve."
+      },
+      {
+        "name": "p1",
+        "type": "float",
+        "default": 0.2,
+        "unit": "exponent",
+        "minimum": 0.01,
+        "maximum": 100.0,
+        "meaning": "Overall exponent of the vertical curve."
+      },
+      {
+        "name": "p2",
+        "type": "float",
+        "default": 1.7,
+        "unit": "exponent",
+        "minimum": 0.0,
+        "maximum": 100.0,
+        "meaning": "Cosine term exponent of the vertical curve."
+      },
+      {
+        "name": "p3",
+        "type": "float",
+        "default": 1.7,
+        "unit": "exponent",
+        "minimum": 0.0,
+        "maximum": 100.0,
+        "meaning": "Sine term exponent of the vertical curve."
+      },
+      {
+        "name": "size",
+        "type": "float",
+        "default": 1.0,
+        "unit": "m",
+        "minimum": 1e-06,
+        "maximum": 1000000.0,
+        "meaning": "Uniform scale of the result."
+      },
+      {
+        "name": "segments",
+        "type": "int",
+        "default": 64,
+        "unit": "count",
+        "minimum": 3,
+        "maximum": 4096,
+        "meaning": "Divisions around the Y axis."
+      },
+      {
+        "name": "rings",
+        "type": "int",
+        "default": 32,
+        "unit": "count",
+        "minimum": 2,
+        "maximum": 4096,
+        "meaning": "Divisions from pole to pole."
+      }
+    ],
+    "invariants": {
+      "default": {
+        "call": "supershape",
+        "arguments": {},
+        "expect": {
+          "vertex_count": 1986,
+          "face_count": 2048,
+          "watertight": true,
+          "euler_characteristic": 2,
+          "normals": "unit"
+        }
+      },
+      "sphere_when_symmetry_is_zero": {
+        "call": "supershape",
+        "arguments": {
+          "m1": 0.0,
+          "n1": 1.0,
+          "n2": 1.0,
+          "n3": 1.0,
+          "m2": 0.0,
+          "p1": 1.0,
+          "p2": 1.0,
+          "p3": 1.0,
+          "segments": 16,
+          "rings": 8
+        },
+        "expect": {
+          "vertices_on_sphere": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            1.0,
+            1e-12
+          ],
+          "volume": [
+            3.926596389111272,
+            1e-09
+          ],
+          "area": [
+            12.166689438554348,
+            1e-09
+          ]
+        }
+      },
+      "square_curve": {
+        "call": "superformula",
+        "arguments": {
+          "angle": 0.7853981633974483,
+          "m": 4.0,
+          "n1": 1.0,
+          "n2": 1.0,
+          "n3": 1.0
+        },
+        "expect": {
+          "close": [
+            0.7071067811865475,
+            1e-15
+          ]
+        }
+      },
+      "unit_circle": {
+        "call": "superformula",
+        "arguments": {
+          "angle": 0.7,
+          "m": 0.0,
+          "n1": 2.0,
+          "n2": 2.0,
+          "n3": 2.0
+        },
+        "expect": {
+          "close": [
+            1.0,
+            1e-15
+          ]
+        }
+      }
+    },
+    "complexity": "O(segments * rings)",
+    "outputs": [
+      {
+        "format": "gltf",
+        "content": "one welded mesh with POSITION and NORMAL, indexed triangles"
+      },
+      {
+        "format": "obj",
+        "content": "the same solid as Wavefront OBJ"
+      }
+    ],
+    "axes": "+Y up, metres"
+  },
+  "limits": "Some parameter sets make the radius very large or undefined at certain angles (an error is raised when both terms vanish); very small n1 values give spiky shapes with thin faces. The surface can intersect itself for extreme values. No texture coordinates.",
+  "related": [
+    "superellipsoid"
+  ],
+  "technique_references": [
+    "Gielis superformula r = (|cos(m t / 4) / a|^n2 + |sin(m t / 4) / b|^n3)^(-1 / n1)",
+    "Spherical product of two planar curves"
+  ],
+  "native_checks": [
+    "generator_runs_system_python",
+    "generator_runs_verifier_python",
+    "gltf_strict_structure",
+    "interpreters_agree",
+    "example_matches_generator",
+    "godot_headless_gltf_load",
+    "godot_compatibility_render"
+  ]
+}

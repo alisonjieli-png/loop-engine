@@ -1,0 +1,240 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "heightmap_fbm_terrain",
+  "title": "Heightmap terrain from fractal noise",
+  "purpose": "Generate a square terrain mesh from seeded fractal gradient noise, with central-difference normals, UVs and colours banded by height and slope. Use it for game ground, backdrops and test terrain.",
+  "form": "library_module",
+  "asset_role": null,
+  "dimension": "2.5d",
+  "engine": {
+    "name": "python",
+    "minimum_version": "3.10"
+  },
+  "tags": [
+    "terrain",
+    "heightmap",
+    "fbm",
+    "gradient noise",
+    "procedural",
+    "landscape",
+    "vertex colors"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "role": "other"
+    },
+    {
+      "path": "heightmap_fbm_terrain.py",
+      "role": "executable_tool"
+    },
+    {
+      "path": "example.gltf",
+      "role": "skill_asset"
+    }
+  ],
+  "contract": {
+    "module": "heightmap_fbm_terrain",
+    "entry_points": [
+      {
+        "name": "height_at",
+        "signature": "height_at(x, z, height=6.0, feature_size=14.0, octaves=5, seed=7)",
+        "summary": "Terrain height in metres at horizontal position (x, z): fBm gradient noise times ``height``."
+      },
+      {
+        "name": "terrain_color",
+        "signature": "terrain_color(normalized_height, steepness)",
+        "summary": "RGBA colour for a height in [0, 1] (low to high) and a steepness in [0, 1] (flat to vertical)."
+      },
+      {
+        "name": "heightmap_terrain",
+        "signature": "heightmap_terrain(size=40.0, resolution=40, height=6.0, feature_size=14.0, octaves=5, seed=7)",
+        "summary": "A terrain mesh of (resolution + 1)^2 vertices and resolution^2 quads, centred on the origin, +Y up."
+      },
+      {
+        "name": "main",
+        "signature": "main(argv=None)",
+        "summary": "Command line: write the terrain as .gltf or .obj and print a JSON summary."
+      }
+    ],
+    "parameters": [
+      {
+        "name": "size",
+        "type": "float",
+        "default": 40.0,
+        "unit": "m",
+        "minimum": 0.001,
+        "maximum": 100000.0,
+        "meaning": "Side length of the square terrain, centred on the origin."
+      },
+      {
+        "name": "resolution",
+        "type": "int",
+        "default": 40,
+        "unit": "cells",
+        "minimum": 1,
+        "maximum": 1024,
+        "meaning": "Grid cells per side; the grid has (resolution + 1)^2 vertices."
+      },
+      {
+        "name": "height",
+        "type": "float",
+        "default": 6.0,
+        "unit": "m",
+        "minimum": 0.0,
+        "maximum": 100000.0,
+        "meaning": "Noise amplitude; heights stay within about plus or minus this value."
+      },
+      {
+        "name": "feature_size",
+        "type": "float",
+        "default": 14.0,
+        "unit": "m",
+        "minimum": 0.001,
+        "maximum": 100000.0,
+        "meaning": "Horizontal size of the largest hills (the first noise octave's wavelength)."
+      },
+      {
+        "name": "octaves",
+        "type": "int",
+        "default": 5,
+        "unit": "count",
+        "minimum": 1,
+        "maximum": 12,
+        "meaning": "Noise octaves; each adds detail at half the size and half the amplitude."
+      },
+      {
+        "name": "seed",
+        "type": "int",
+        "default": 7,
+        "unit": "integer",
+        "minimum": 0,
+        "maximum": 2147483647,
+        "meaning": "Noise seed; the same seed gives the same terrain."
+      }
+    ],
+    "invariants": {
+      "small_grid": {
+        "call": "heightmap_terrain",
+        "arguments": {
+          "size": 10.0,
+          "resolution": 8
+        },
+        "expect": {
+          "vertex_count": 81,
+          "face_count": 64,
+          "triangle_count": 128,
+          "manifold": true,
+          "boundary_loops": 1,
+          "euler_characteristic": 1,
+          "within": [
+            [
+              -5.0,
+              -12.0,
+              -5.0
+            ],
+            [
+              5.0,
+              12.0,
+              5.0
+            ],
+            1e-12
+          ],
+          "normals": "unit",
+          "normals_agree": 1.0,
+          "has_colors": true,
+          "uv_range": [
+            [
+              0.0,
+              0.0
+            ],
+            [
+              1.0,
+              1.0
+            ],
+            1e-12
+          ]
+        }
+      },
+      "flat_when_height_is_zero": {
+        "call": "heightmap_terrain",
+        "arguments": {
+          "size": 10.0,
+          "resolution": 4,
+          "height": 0.0
+        },
+        "expect": {
+          "vertex_count": 25,
+          "triangle_count": 32,
+          "vertices_on_plane": [
+            [
+              0.0,
+              1.0,
+              0.0
+            ],
+            0.0,
+            0.0
+          ],
+          "area": [
+            100.0,
+            1e-09
+          ],
+          "bounds": [
+            [
+              -5.0,
+              0.0,
+              -5.0
+            ],
+            [
+              5.0,
+              0.0,
+              5.0
+            ],
+            1e-12
+          ]
+        }
+      },
+      "zero_on_lattice": {
+        "call": "height_at",
+        "arguments": {
+          "x": 14.0,
+          "z": 28.0
+        },
+        "expect": {
+          "equals": 0.0
+        }
+      }
+    },
+    "complexity": "O(resolution^2 * octaves)",
+    "outputs": [
+      {
+        "format": "gltf",
+        "content": "the terrain mesh with POSITION, NORMAL, TEXCOORD_0 and COLOR_0, indexed triangles"
+      },
+      {
+        "format": "obj",
+        "content": "the terrain as Wavefront OBJ with positions, texture coordinates, normals and quads"
+      }
+    ],
+    "axes": "+Y up, metres"
+  },
+  "limits": "A single height per (x, z): no overhangs, caves or arches. The noise is not periodic, so tiles do not wrap. Heights stay within about plus or minus the height parameter (at most twice it). The colour bands are a fixed stylized palette, not a physical material model.",
+  "related": [
+    "delaunay_bowyer_watson"
+  ],
+  "technique_references": [
+    "Gradient noise with quintic interpolation",
+    "Fractional Brownian motion (octave sum)",
+    "Central-difference normals",
+    "Height and slope colour banding"
+  ],
+  "native_checks": [
+    "generator_runs_system_python",
+    "generator_runs_verifier_python",
+    "gltf_strict_structure",
+    "interpreters_agree",
+    "example_matches_generator",
+    "godot_headless_gltf_load",
+    "godot_compatibility_render"
+  ]
+}
