@@ -1,4 +1,4 @@
-/* Compare the two offers in the real rendered page. Local mode uses a temporary
+/* Compare the three offers in the real rendered page. Local mode uses a temporary
    service fixture. An optional exact HTTPS origin is read-only, without accounts.
    Zoom cases emulate the effective CSS viewport and pixel density, not browser UI.
    Usage: PYTHON=... node tools/check_offering_launch.mjs NEW_DIRECTORY [HTTPS_ORIGIN] */
@@ -43,6 +43,9 @@ function layout(){
   heading:box(h1),primary:box(home?.querySelector("#hero-primary")),offerings,visibleText:active?.innerText||"",
   heroCopy:home?{headline:home.querySelector("h1").innerText,subhead:home.querySelector(".hero-subhead").innerText,text:home.querySelector(".hero-copy").innerText}:null,
   packageHeadlineCount:home?.querySelectorAll("[data-library-count]").length||0,
+  hero:box(home?.querySelector('[data-band="hero"]')),
+  pricedOffersInsideHero:home?.querySelectorAll('[data-band="hero"] [data-offering], [data-band="hero"] .offering-price').length||0,
+  pricingIds:active?[...active.querySelectorAll('[data-offering]')].map(node=>node.dataset.offering):[],
   setup:home?.querySelector("#hero-setup")?.getAttribute("href"),start:home?.querySelector("#hero-primary")?.getAttribute("href")};
 }
 let child,browser;
@@ -93,13 +96,15 @@ with TemporaryDirectory() as folder:
    }
    if(path==="/"){
     check("short_outcome_hero_keeps_audiences_and_product",heroProblems(state.heroCopy).length===0&&heroCheckRejectsItsKnownWrongCases(state.heroCopy),where);
-    check("both_offers_show_price_period_consent_and_scope",offeringProblems(state.offerings).length===0,{...where,offers:state.offerings});
+    check("three_offers_show_price_period_consent_and_scope",offeringProblems(state.offerings).length===0,{...where,offers:state.offerings});
+    check("third_offering_is_required",offeringProblems(state.offerings.slice(0,2)).length>0,where);
     check("known_wrong_missing_feed_price_or_consent_is_refused",offeringProblems(state.offerings.map(row=>({...row,text:row.text.replace("$4.99 a month","")}))).length>0
       &&offeringProblems(state.offerings.map(row=>({...row,text:row.text.replace("No automatic charge","")}))).length>0,where);
     check("homepage_marketing_counts_files_not_packages",state.packageHeadlineCount===0&&!/\bpackages?\b/i.test(state.visibleText),where);
     check("existing_access_and_setup_paths_are_preserved",state.start==="/get-started"&&state.setup==="/setup",where);
     if(profile.height>=700)check("headline_and_primary_fit_first_screen",state.heading.bottom<=state.height&&state.primary.bottom<=state.height,where);
-    if(profile.width>=1100)check("both_offer_prices_fit_first_screen",state.offerings.length===2&&state.offerings.every(item=>item.price.bottom<=state.height),where);
+    check("pricing_has_its_own_section_outside_the_hero",state.pricedOffersInsideHero===0&&state.offerings.length===3
+      &&state.offerings.every(item=>item.price.top>=state.hero.bottom-1),where);
     await page.evaluate(()=>scrollTo(0,200));check("header_remains_inside_after_scroll",headerFits(await page.evaluate(layout)),where);await page.evaluate(()=>scrollTo(0,0));
     if(profile.name==="desktop-100"){
      await page.locator(".header").evaluate(node=>{node.style.transform="translateX(-200px)";});
@@ -135,6 +140,8 @@ with TemporaryDirectory() as folder:
    if(path==="/pricing"||path==="/feeds")check("feed_price_free_end_date_and_opt_in_are_explicit",/\$4\.99\s+a month/.test(state.visibleText)
     &&/Free through December 31, 2026 \(Eastern\)/.test(state.visibleText)&&/No automatic charge/.test(state.visibleText)&&/opt-in/.test(state.visibleText)
     &&/source collections/i.test(state.visibleText)&&/\$29\s+a month/.test(state.visibleText),where);
+   if(path==="/pricing")check("pricing_page_has_three_separate_cards",JSON.stringify(state.pricingIds)===JSON.stringify(
+    ['agent-feeds','agent-feeds-harness-files','overnight-afk-work']),where);
    if(path==="/library")check("library_hero_does_not_advertise_package_counts",!/\bpackages?\b/i.test(await page.locator(".lib-hero").innerText()),where);
    const filename=`${profile.name}-${theme}-${path==="/"?"home":path.slice(1)}.png`;
    await page.screenshot({path:resolve(output,filename),fullPage:false});

@@ -387,9 +387,9 @@ DEMONSTRATIONS = (("simple", "/demo"), ("overnight", "/overnight"), ("kaggle", "
 
 
 def hero_markup(page):
-    """The markup of the hero band of the homepage, from its opening tag to the next band."""
-    found = re.search(r'<div class="home-band[^"]*" data-band="hero">(.*?)(?=\n\s*<div class="home-band)', page, re.S)
-    return found.group(1) if found else ""
+    """Read the introductory copy and its separate example band, excluding pricing."""
+    found = re.findall(r'<div class="home-band[^"]*" data-band="(hero|explore)">(.*?)(?=\n\s*<div class="home-band)', page, re.S)
+    return "\n".join(markup for _name, markup in found) if [name for name, _markup in found] == ["hero", "explore"] else ""
 
 
 def hero_problems(page, served_tools=HERO_TOOLS):

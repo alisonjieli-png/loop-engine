@@ -77,13 +77,26 @@ class OfferingCopyTests(unittest.TestCase):
         self.assertEqual({name: retired_copy(text) for name, text in views.items()
                           if retired_copy(text)}, {})
 
-    def test_both_offerings_are_named_on_home_and_pricing(self):
+    def test_three_offerings_are_named_on_home_and_pricing(self):
         views = marketing_views((ASSETS / "index.html").read_text())
         for name in ("home", "pricing"):
             text = re.sub(r"\s+", " ", views[name])
-            for fact in ("Agent Feeds", COMBINED, "$29"):
+            for fact in ("Agent Feeds", COMBINED, "Overnight / AFK Work", "Included in Preview", "$29"):
                 self.assertIn(fact, text, (name, fact))
             self.assertEqual(feed_price_problems(text), [], name)
+
+    def test_pricing_is_outside_the_hero_and_overnight_has_its_own_card(self):
+        rows = read_marked((ASSETS / "index.html").read_text())
+        hero = [row for row in rows if row["attrs"].get("data-band") == "hero"]
+        self.assertEqual(len(hero), 1)
+        self.assertNotIn("a month", hero[0]["text"])
+        cards = [row for row in rows if "data-offering" in row["attrs"]]
+        expected = ["agent-feeds", "agent-feeds-harness-files", "overnight-afk-work"] * 2
+        self.assertEqual([row["attrs"]["data-offering"] for row in cards], expected)
+        for row in cards:
+            if row["attrs"]["data-offering"] == "overnight-afk-work":
+                self.assertIn("No extra charge", row["text"])
+                self.assertEqual(overnight_tools_problems(row["text"]), [])
 
     def test_feed_price_period_consent_and_availability_are_not_optional(self):
         from loop_engine.core.service_runtime.catalogue_feed import page_body

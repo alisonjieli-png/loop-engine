@@ -401,13 +401,13 @@ const bandProblems=measured=>[...(measured.count<6?["the homepage has "+measured
 /* The pricing band on a wide screen. The heading column and the plan card sit side by side, and the heading starts at the top of
    the card, so no empty area opens above the heading beside the taller card. The review of September 23 found the column centred
    beside the card. On a phone the two stack, and the reader reports the card below the heading instead of beside it. */
-const pricingColumns=target=>target.evaluate(async ()=>{await document.fonts.ready;const band=document.querySelector('[data-band="pricing"]'),box=selector=>band?.querySelector(selector)?.getBoundingClientRect()||null;
+const pricingColumns=target=>target.evaluate(async ()=>{await document.fonts.ready;const band=document.querySelector('[data-band="start"]'),box=selector=>band?.querySelector(selector)?.getBoundingClientRect()||null;
   const title=box(".pricing-teaser > .section-title"),card=box(".pricing-teaser > .plan-summary");
   return {width:innerWidth,titleTop:title?Math.round(title.top):null,titleLeft:title?Math.round(title.left):null,cardTop:card?Math.round(card.top):null,cardLeft:card?Math.round(card.left):null};});
 const headingMeetsTheCard=measured=>measured.titleTop!==null&&measured.cardTop!==null&&measured.cardLeft>measured.titleLeft&&Math.abs(measured.titleTop-measured.cardTop)<=1;
-/* The primary buttons a visitor can see: in the header, in the footer and in the page that is shown. */
+/* General account actions share one destination. Product-specific actions have their own offering checks. */
 const primaryActions=target=>target.evaluate(()=>[...document.querySelectorAll("header .button.primary, footer .button.primary, [data-view]:not([hidden]) .button.primary")]
-  .filter(node=>node.getClientRects().length>0&&getComputedStyle(node).visibility!=="hidden")
+  .filter(node=>!node.closest('[data-offering]')&&node.getClientRects().length>0&&getComputedStyle(node).visibility!=="hidden")
   .map(node=>({id:node.id,text:node.textContent.replace(/[↗→]/g,"").replace(/\s+/g," ").trim(),href:node.getAttribute("href")||"",header:Boolean(node.closest("header"))})));
 const primaryProblems=(actions,registrationOpen=false)=>[...(actions.length?[]:["no primary action is shown"]),
   ...actions.filter(action=>action.text!==stateLabel(registrationOpen)||action.href!==statePath(registrationOpen)).map(action=>"a primary action says "+JSON.stringify(action.text)+" and opens "+JSON.stringify(action.href))];
@@ -427,7 +427,7 @@ const heroDirectoryParts=["instructions","skills","tools"],heroStages=["search",
 /* A sentence that assembles or builds something for each or every step, or for this step, without saying the engine is built to. */
 const perStepClaim=text=>text.split(/(?<=[.!?])\s+/).filter(sentence=>/\b(?:assembl|build|built)\w*\b[^.!?]*\b(?:each|every|this|one)\s+(?:step|subtask)\b/i.test(sentence)&&!/\bbuilt to\b/i.test(sentence));
 const heroDirectory=target=>target.evaluate(()=>{
-  const band=document.querySelector('[data-view="home"] [data-band="hero"]'),figure=band?.querySelector("[data-hero-directory]"),shown=node=>Boolean(node&&node.getClientRects().length>0);
+  const band=document.querySelector('[data-view="home"] [data-band="explore"]'),figure=band?.querySelector("[data-hero-directory]"),shown=node=>Boolean(node&&node.getClientRects().length>0);
   return {shown:shown(figure),parts:figure?[...figure.querySelectorAll("[data-hero-part]")].map(node=>node.dataset.heroPart):[],
     label:figure?.querySelector("[data-hero-label]")?.textContent.replace(/\s+/g," ").trim()||"",
     note:figure?.querySelector("[data-hero-note]")?.textContent.replace(/\s+/g," ").trim()||"",
@@ -479,7 +479,7 @@ const useCaseProblems=cards=>[...cardProblems(cards,useCaseOrder),
 /* No layout shift from late script. The first screen is measured as served, with the page script held back, and again once
    the script has run and the service has answered. Nothing measured here may move by more than one pixel. The fonts are
    waited for in both pages, so a font that arrives late is not mistaken for the script. */
-const heroBoxes=target=>target.evaluate(async ()=>{await document.fonts.ready;return Object.fromEntries(['[data-view="home"] h1',"#hero-primary","#hero-setup","#hero-access-note",".hero-price",".hero-harnesses","#hero-directory",'[data-band="demos"]'].map(selector=>{
+const heroBoxes=target=>target.evaluate(async ()=>{await document.fonts.ready;return Object.fromEntries(['[data-view="home"] h1',"#hero-primary","#hero-setup","#hero-access-note",".hero-price-amount",".hero-harnesses","#hero-directory",'[data-band="demos"]'].map(selector=>{
   const node=document.querySelector(selector);if(!node)return [selector,null];const box=node.getBoundingClientRect();
   return [selector,[Math.round(box.left),Math.round(box.top+scrollY),Math.round(box.width),Math.round(box.height)]];}));});
 /* Text contrast, as WCAG AA sets it: 4.5 to 1 for body text and 3 to 1 for large text, measured against the solid grounds
@@ -828,11 +828,11 @@ try {
   check("category_line_check_rejects_a_shortened_line_a_missing_harness_a_status_and_a_new_order",categoryProblems({...categoryState,footer:"Optimized operation."}).length===1
     &&categoryProblems({...categoryState,harnesses:heroHarnesses.filter(name=>name!=="Pi")}).length===1&&categoryProblems({...categoryState,harnesses:heroHarnesses.map(name=>name==="Pi"?"Pi Planned":name)}).length===1
     &&categoryProblems({...categoryState,harnesses:[...heroHarnesses].reverse()}).length===1);
-  /* The price in the hero, as the owner decided on September 23, 2026: "Agent Feeds + Harness Files $29 a month", written the one way the design
-     standards allow. */
-  const heroPrice=await page.evaluate(()=>document.querySelector('[data-view="home"] .hero-price')?.textContent.replace(/\s+/g," ").trim()||"");
-  const statesThePlanAndPrice=text=>/^Agent Feeds \+ Harness Files \$29 a month\b/.test(text)&&!/United States dollars|per month/i.test(text);
-  check("homepage_hero_states_the_plan_and_the_price",statesThePlanAndPrice(heroPrice),{price:heroPrice});
+  /* Prices belong to the dedicated three-offering section, not the introductory hero. */
+  const heroPrice=await page.evaluate(()=>document.querySelector('[data-view="home"] [data-offering="agent-feeds-harness-files"]')?.textContent.replace(/\s+/g," ").trim()||"");
+  const statesThePlanAndPrice=text=>/Agent Feeds \+ Harness Files/.test(text)&&/\$29 a month\b/.test(text)&&!/United States dollars|per month/i.test(text);
+  check("homepage_plan_section_states_the_plan_and_the_price",statesThePlanAndPrice(heroPrice),{price:heroPrice});
+  check("homepage_intro_has_no_pricing_cards",await page.locator('[data-view="home"] [data-band="hero"] [data-offering]').count()===0);
   check("hero_price_check_rejects_a_missing_price_and_another_way_of_writing_it",!statesThePlanAndPrice("")&&!statesThePlanAndPrice("Agent Feeds + Harness Files")&&!statesThePlanAndPrice("Agent Feeds + Harness Files 29 United States dollars each month")
     &&!statesThePlanAndPrice("Agent Feeds + Harness Files $29 per month")&&statesThePlanAndPrice("Agent Feeds + Harness Files $29 a month for the whole library"));
   /* Two actions in the hero, as the owner decided on September 23, 2026: Get started, the one primary action, which opens the
@@ -866,16 +866,16 @@ try {
   /* The design's order since September 24, 2026: the hero with the working directory beside the copy, the three demonstrations,
      the library, the three use cases, trust, pricing, questions and the closing band. The Ask, get, place band left the homepage
      that day with a dated removal row: the hero shows the directory and the demonstrations show each run start to finish. */
-  const bandOrder=["hero","demos","library","use-cases","trust","pricing","faq","closing"];
+  const bandOrder=["hero","pricing","explore","demos","library","use-cases","trust","start","faq","closing"];
   const homeFlow=await page.locator('[data-view="home"]').evaluate(home=>({bands:[...home.children].map(node=>node.dataset.band||node.tagName.toLowerCase()),directoryIn:document.getElementById("hero-directory")?.closest("[data-band]")?.dataset.band||""}));
-  const followsTheDesign=flow=>JSON.stringify(flow.bands)===JSON.stringify(bandOrder)&&flow.directoryIn==="hero";
+  const followsTheDesign=flow=>JSON.stringify(flow.bands)===JSON.stringify(bandOrder)&&flow.directoryIn==="explore";
   check("homepage_bands_follow_the_design_order",followsTheDesign(homeFlow),homeFlow);
   check("band_order_check_rejects_a_moved_band_a_returned_band_and_a_directory_outside_the_hero",!followsTheDesign({...homeFlow,bands:[bandOrder[0],bandOrder[2],bandOrder[1],...bandOrder.slice(3)]})
     &&!followsTheDesign({...homeFlow,bands:bandOrder.slice(1)})&&!followsTheDesign({...homeFlow,bands:[bandOrder[0],"how",...bandOrder.slice(1)]})&&!followsTheDesign({...homeFlow,directoryIn:"demos"}));
   /* The working directory of one step sits beside the copy in the hero on a wide screen, as the owner decided on September 24,
      2026, so the first look shows what a step gets. The known-wrong layouts put it below the copy and leave it out. */
   const heroLayout=await page.locator('[data-view="home"]').evaluate(home=>{
-    const hero=home.querySelector(".product-hero"),copy=hero?.querySelector(".hero-copy"),example=hero?.querySelector(".hero-directory");
+    const hero=home.querySelector(".product-hero"),copy=hero?.querySelector(".hero-copy"),example=home.querySelector(".hero-directory");
     const box=node=>node?node.getBoundingClientRect():{left:0,right:0,top:0,bottom:0};
     return {copyTop:Math.round(box(copy).top),copyBottom:Math.round(box(copy).bottom),copyRight:Math.round(box(copy).right),exampleTop:Math.round(box(example).top),
       exampleBottom:Math.round(box(example).bottom),exampleLeft:Math.round(box(example).left),hasExample:Boolean(example),hasCopy:Boolean(copy),viewport:innerWidth};
@@ -1040,10 +1040,11 @@ try {
   check("offer_check_rejects_a_summary_without_the_usage_record",!givesEveryOffer(offers.filter(name=>name!=="usage"),planText)&&!givesEveryOffer(offers,planText.replace(/usage/gi,"")));
   /* The pricing band on the homepage states the price the one way the design standards allow, "$29 a month", and the measured unit,
      and links the pricing page. It no longer says who is free: the owner removed that on September 23, 2026. */
-  const teaserText=await page.locator(".pricing-teaser").innerText();
+  const teaserText=(await page.locator(".pricing-teaser").innerText()).replace(/\s+/g," ");
   const teaserProblems=text=>[...(/\$29 a month/.test(text)?[]:["no \"$29 a month\""]),...(/per month|United States dollars/i.test(text)?["the price is written another way"]:[]),
     ...(/one downloaded item/i.test(text)?[]:["no measured unit"]),...(invitationWords.test(text)?["a retired word: "+text.match(invitationWords)[0]]:[])];
-  check("homepage_states_the_plan_price_and_the_measured_unit",teaserProblems(teaserText).length===0&&await page.locator('.pricing-teaser a[data-page="pricing"]').getAttribute("href")==="/pricing",{problems:teaserProblems(teaserText)});
+  check("homepage_states_the_plan_price_and_the_measured_unit",teaserProblems(teaserText).length===0
+    &&await page.locator('.pricing-teaser a[data-page="pricing"]').evaluateAll(links=>links.length>0&&links.every(link=>link.getAttribute("href")==="/pricing")),{problems:teaserProblems(teaserText)});
   check("teaser_check_rejects_another_price_phrase_a_missing_unit_and_free_invited_accounts",teaserProblems(teaserText.replace("$29 a month","$29 per month")).length>=1&&teaserProblems(teaserText.replace(/one downloaded item/gi,"one call")).length===1
     &&teaserProblems(teaserText+" Invited accounts are free.").length===1&&teaserProblems(teaserText+" Search is free.").length===1);
   /* The closing band holds the one primary action, Get started, and at most the guide beside it as a secondary action. */
@@ -1067,10 +1068,10 @@ try {
   const plain=await withoutScript.newPage();
   plain.on("pageerror",()=>{});
   await plain.goto(fixture.base+"/");
-  const plainHome=await plain.evaluate(()=>({price:document.querySelector('[data-view="home"] .hero-price')?.textContent.replace(/\s+/g," ").trim()||"",
+  const plainHome=await plain.evaluate(()=>({price:document.querySelector('[data-view="home"] [data-offering="agent-feeds-harness-files"]')?.textContent.replace(/\s+/g," ").trim()||"",
     actions:["hero-primary","hero-setup"].filter(id=>(document.getElementById(id)?.getClientRects().length||0)>0),
     harnesses:[...document.querySelectorAll('[data-view="home"] .hero-harnesses:not(.hero-harnesses-protocol) li')].filter(node=>node.getClientRects().length>0).map(node=>node.textContent.trim())}));
-  const plainProblems=[...(statesThePlanAndPrice(plainHome.price)?[]:["the hero shows no price"]),...(plainHome.actions.length===2?[]:["the hero shows the actions "+JSON.stringify(plainHome.actions)]),
+  const plainProblems=[...(statesThePlanAndPrice(plainHome.price)?[]:["the plan section shows no price"]),...(plainHome.actions.length===2?[]:["the hero shows the actions "+JSON.stringify(plainHome.actions)]),
     ...(JSON.stringify(plainHome.harnesses)===JSON.stringify(heroHarnesses)?[]:["the hero names "+JSON.stringify(plainHome.harnesses)]),...useCaseProblems(await homeCards(plain,'[data-view="home"] [data-use-case]',"useCase"))];
   check("homepage_reads_when_the_script_has_not_run",plainProblems.length===0,{problems:plainProblems});
   const plainHero=await heroDirectory(plain),plainDemos=await homeCards(plain,'[data-view="home"] [data-demo-card]',"demoCard");
@@ -1470,7 +1471,11 @@ try {
   check("pricing_fact_check_fails_when_one_fact_is_missing_or_a_retired_offer_returns",pricingFacts.every(([name,fact])=>missingFacts(pricingText.split(fact).join("")).includes(name))
     &&missingFacts(pricingText+"\nSearch is free.").includes("free search")&&missingFacts(pricingText+"\nInvited accounts are free.").includes("free invited accounts")
     &&missingFacts(pricingText+"\n29 United States dollars each month").includes("another way of writing the price"),{facts:pricingFacts.length});
-  check("pricing_view_distinguishes_two_offerings_and_only_one_paid_plan",await page.locator("[data-plan-point]").count()===7&&await page.locator('[data-view="pricing"] .plan-card').count()===2&&await page.locator('[data-view="pricing"] .button.primary').count()===1&&await page.locator('[data-view="pricing"] .pricing-feed a[href="/feeds"]').count()===1);
+  check("pricing_view_distinguishes_three_offerings_and_current_checkout_scope",await page.locator("[data-plan-point]").count()===6
+    &&await page.locator('[data-view="pricing"] .plan-card').count()===3
+    &&await page.locator('[data-view="pricing"] #pricing-primary').count()===1
+    &&await page.locator('[data-view="pricing"] .pricing-overnight a[href="/overnight"]').count()===1
+    &&await page.locator('[data-view="pricing"] .pricing-feed a[href="/feeds"]').count()===1);
   /* While the service reports no checkout, the pricing view may not carry a control that starts a payment. The guide states that rule, so a check owns it. */
   const purchaseWords={source:"\\b(?:buy|purchase|checkout|subscribe|subscription|pay|payment|card)\\b",flags:"i"};
   const purchaseControls=async opened=>opened.locator('[data-view="pricing"]').evaluate((node,pattern)=>{
@@ -1970,18 +1975,18 @@ try {
     {name:"call_a_library_kind_available",changes:[{path:"/",find:'<li class="kind" data-kind="tools"><h3>Tools and code</h3>',replacement:'<li class="kind" data-kind="tools"><h3>Tools and code</h3><p class="status-tag is-available" data-status="available">Available now</p>'}],
      run:async (opened,note)=>note("library_names_the_six_kinds_without_a_status_word",cardProblems(await homeCards(opened,"[data-kind]","kind"),kindOrder).length===0),
      expected:["library_names_the_six_kinds_without_a_status_word"]},
-    {name:"take_the_price_out_of_the_hero",changes:[{path:"/",find:'<span class="hero-price-amount">$29 a month</span>',replacement:'<span class="hero-price-amount"></span>'}],
-     run:async (opened,note)=>note("homepage_hero_states_the_plan_and_the_price",statesThePlanAndPrice(await opened.evaluate(()=>document.querySelector('[data-view="home"] .hero-price')?.textContent.replace(/\s+/g," ").trim()||""))),
-     expected:["homepage_hero_states_the_plan_and_the_price"]},
+    {name:"take_the_price_out_of_the_plan_section",changes:[{path:"/",find:'<span class="hero-price-amount">$29 a month</span>',replacement:'<span class="hero-price-amount"></span>'}],
+     run:async (opened,note)=>note("homepage_plan_section_states_the_plan_and_the_price",statesThePlanAndPrice(await opened.evaluate(()=>document.querySelector('[data-view="home"] [data-offering="agent-feeds-harness-files"]')?.textContent.replace(/\s+/g," ").trim()||""))),
+     expected:["homepage_plan_section_states_the_plan_and_the_price"]},
     {name:"bring_back_see_one_step_in_place_of_the_guide",changes:[{path:"/",find:'<a class="button secondary on-night" id="hero-setup" href="/setup" data-page="setup">Get set up</a>',replacement:'<a class="button secondary" id="hero-see-step" href="#step-demo">See one step work</a>'}],
      run:async (opened,note)=>note("homepage_hero_offers_get_started_and_get_set_up_and_says_how_they_differ",heroActionProblems(await readHeroActions(opened)).length===0),
      expected:["homepage_hero_offers_get_started_and_get_set_up_and_says_how_they_differ"]},
     {name:"write_the_retired_words_beside_the_hero_actions",changes:[{path:"/",find:'<a class="button secondary on-night" id="hero-setup" href="/setup" data-page="setup">Get set up</a>',replacement:'<a class="button secondary on-night" id="hero-setup" href="/setup" data-page="setup">Get set up</a> <span>Invitation only while we open in small groups. Search is free.</span>'}],
      run:async (opened,note)=>note("homepage_carries_no_invitation_word_while_registration_is_closed",(await homepageWordProblems(opened)).length===0),
      expected:["homepage_carries_no_invitation_word_while_registration_is_closed"]},
-    {name:"overlap_the_terminal_with_the_copy",changes:[{path:"/assets/service.css",find:".hero.product-hero{display:flex;flex-direction:column;align-items:stretch;gap:2rem;",replacement:".hero.product-hero{display:flex;flex-direction:row;align-items:stretch;gap:2rem;"}],
+    {name:"overlap_the_terminal_with_the_copy",changes:[{path:"/assets/service.css",find:".home-proof{display:flex;flex-direction:column;align-items:stretch;gap:2rem;padding:0}",replacement:".home-proof{display:flex;flex-direction:column;align-items:stretch;gap:2rem;padding:0;position:absolute;top:-1200px}"}],
      run:async (opened,note)=>{await opened.setViewportSize({width:1440,height:1000});note("homepage_terminal_follows_the_copy_in_the_hero",terminalBelowCopy(await opened.locator('[data-view="home"]').evaluate(home=>{
-       const hero=home.querySelector(".product-hero"),copy=hero?.querySelector(".hero-copy"),example=hero?.querySelector(".hero-directory");const box=node=>node?node.getBoundingClientRect():{left:0,right:0,top:0,bottom:0};
+       const hero=home.querySelector(".product-hero"),copy=hero?.querySelector(".hero-copy"),example=home.querySelector(".hero-directory");const box=node=>node?node.getBoundingClientRect():{left:0,right:0,top:0,bottom:0};
        return {copyTop:Math.round(box(copy).top),copyBottom:Math.round(box(copy).bottom),copyRight:Math.round(box(copy).right),exampleTop:Math.round(box(example).top),exampleBottom:Math.round(box(example).bottom),exampleLeft:Math.round(box(example).left),hasExample:Boolean(example),hasCopy:Boolean(copy),viewport:innerWidth};})));},
      expected:["homepage_terminal_follows_the_copy_in_the_hero"]},
     {name:"hide_the_learning_use_case",changes:[{path:"/",find:'<li class="use-case" data-use-case="learning">',replacement:'<li class="use-case" data-use-case="learning" hidden>'}],

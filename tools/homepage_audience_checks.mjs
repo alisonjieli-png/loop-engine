@@ -33,7 +33,7 @@ export async function checkAudiences(page,check){
   const offerings=await page.locator('[data-view="home"] [data-offering]').evaluateAll(items=>items.map(item=>({
     id:item.dataset.offering,title:item.querySelector('h2')?.innerText.replace(/\s+/g,' ').trim(),
     href:item.querySelector('a')?.getAttribute('href'),text:item.innerText.replace(/\s+/g,' ')})));
-  check('homepage_separates_agent_feeds_and_harness_files_with_working_paths',offeringProblems(offerings).length===0);
+  check('homepage_separates_three_offerings_with_working_paths',offeringProblems(offerings).length===0);
   check('offering_check_refuses_missing_paths_wrong_destinations_and_hidden_availability',
     offeringProblems(offerings.slice(1)).length>0&&offeringProblems(offerings.map(row=>({...row,href:'/'}))).length>0
     &&offeringProblems(offerings.map(row=>({...row,text:''}))).length>0);
@@ -62,9 +62,10 @@ export function overnightToolsProblems(preview){
 }
 
 export function offeringProblems(cards){
-  const expected=[['agent-feeds','Agent Feeds','/feeds'],['agent-feeds-harness-files','Agent Feeds \+ Harness Files','/pricing']];
+  const expected=[['agent-feeds','Agent Feeds','/feeds'],['agent-feeds-harness-files','Harness Files','/pricing'],
+    ['overnight-afk-work','Overnight / AFK Work','/overnight']];
   const problems=[];
-  if(cards.length!==expected.length)return ['two offerings are required'];
+  if(cards.length!==expected.length)return ['three distinct offerings are required'];
   for(let index=0;index<expected.length;index++){
     const [id,title,href]=expected[index],card=cards[index];
     if(card.id!==id||card.title!==title||card.href!==href)problems.push('offering identity or destination differs');
@@ -72,7 +73,8 @@ export function offeringProblems(cards){
   if(!/\$4\.99 a month/.test(cards[0].text)||!/Free through December 31, 2026 \(Eastern\)/.test(cards[0].text)
     ||!/No automatic charge/.test(cards[0].text)||!/opt-in/.test(cards[0].text)||!/source collections/i.test(cards[0].text))problems.push('feed price, free period, consent or current scope is missing');
   if(!/Agent Feeds \+ Harness Files/.test(cards[1].text)||!/\$29 a month/.test(cards[1].text))problems.push('full library price is missing');
-  if(!/local overnight/i.test(cards[1].text))problems.push('local overnight workflow scope is missing');
+  if(!/local overnight/i.test(cards[2].text)||!/preview/i.test(cards[2].text)||!/no extra charge/i.test(cards[2].text)
+    ||!/checkpoints/i.test(cards[2].text)||!/morning reports/i.test(cards[2].text))problems.push('usable overnight preview scope is missing');
   return problems;
 }
 
