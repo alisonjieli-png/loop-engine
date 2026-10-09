@@ -632,11 +632,14 @@ def parser() -> argparse.ArgumentParser:
     main = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     commands = main.add_subparsers(dest="command", required=True)
 
-    def common(sub):
+    def common(sub, reads_network=True):
         sub.add_argument("--run-folder", required=True, help="outside the repository, for example "
                          "/home/username/baltor-library/supply/<line>/<date>")
         sub.add_argument("--store-root", default="/home/username/baltor-library/import-store")
-        sub.add_argument("--authorize-network-reads", action="store_true", required=True)
+        if reads_network:
+            # A line that reads no network address (creative-originals reads the committed repository) takes no
+            # network authorization, so its command never asks for an authority it does not use.
+            sub.add_argument("--authorize-network-reads", action="store_true", required=True)
         sub.add_argument("--authorize-store-writes", action="store_true")
         sub.add_argument("--materialize", action="store_true", help="also write every package under the run folder")
         sub.add_argument("--maximum-requests", type=int, default=6000)
@@ -703,7 +706,7 @@ def parser() -> argparse.ArgumentParser:
                                       "openapi_sources.json")
     tool_servers_command.add_argument("--stars", action="store_true", help="read each repository's stars (GraphQL)")
     originals = commands.add_parser("creative-originals")
-    common(originals)
+    common(originals, reads_network=False)
     originals.add_argument("--evidence-root", help="the folder tools/creative_originals/verify.py wrote native "
                            "evidence records into (required for families with a native verifier)")
     originals.add_argument("--family", action="append", help="only these families")
