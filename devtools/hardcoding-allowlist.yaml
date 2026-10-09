@@ -1,5 +1,11 @@
 schema: hardcoding_allowlist/v1
 entries:
+- finding_id: hardcoding.29104ab09a67e1984b41a2da
+  owner: tools.operator_credentials.json:api_keys.rapidapi-owner-third.environment
+  classification: SECRET_OR_CREDENTIAL_REFERENCE
+  rationale: "Reviewed October 9: this is the public environment-variable name in the existing operator credential registry, not a secret. Fake-keyring tests verify that all three research references select distinct service/account/purpose bindings and never consult the live keyring. The resolver and provider adapters retain credential handling, shared quotas, destination limits and effect authority. No whole-file exclusion applies."
+  created_on: '2026-10-09'
+  expires_on: '2027-01-09'
 - finding_id: hardcoding.3cc2a1b42f3ad43fc09ba75b
   owner: tools.operator_credentials.json:api_keys.anthropic-model-secondary.environment
   classification: SECRET_OR_CREDENTIAL_REFERENCE

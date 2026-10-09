@@ -47,13 +47,30 @@ class CredentialTests(unittest.TestCase):
     def test_secondary_research_references_do_not_alias_primary_credentials(self):
         references = tool.references()["api_keys"]
         for primary, secondary in (("anthropic-model-primary", "anthropic-model-secondary"),
-                                   ("rapidapi-reddit34-primary", "rapidapi-owner-secondary")):
+                                   ("rapidapi-reddit34-primary", "rapidapi-owner-secondary"),
+                                   ("rapidapi-reddit34-primary", "rapidapi-owner-third"),
+                                   ("rapidapi-owner-secondary", "rapidapi-owner-third")):
             first, second = references[primary], references[secondary]
             self.assertNotEqual(tuple(first[name] for name in ("service", "account", "purpose")),
                                 tuple(second[name] for name in ("service", "account", "purpose")))
             self.assertEqual(first["environment"], second["environment"])
             self.assertNotIn("value", second)
             self.assertNotIn("token", second)
+
+    def test_research_references_resolve_separate_fake_keyring_items(self):
+        names = ("rapidapi-reddit34-primary", "rapidapi-owner-secondary", "rapidapi-owner-third")
+        data = tool.references()
+        rows = [KeyItem(("fixture-research-" + str(index)).encode(), {
+            "application": "loop-engine", **{field: data["api_keys"][name][field]
+            for field in ("service", "account", "purpose")}}) for index, name in enumerate(names)]
+        saved = Saved(rows)
+        def matching(attributes):
+            return [item for item in rows if item.get_attributes() == attributes]
+        with patch.object(saved, "search_items", side_effect=matching), patch.object(
+                tool, "collection", side_effect=AssertionError("live keyring not authorized")):
+            resolved = [tool.resolve(name, saved, data) for name in names]
+        self.assertEqual(resolved, ["fixture-research-" + str(index) for index in range(len(names))])
+        self.assertTrue(all(item.writes == 0 for item in rows))
 
     def test_reddit_inventory_alias_reuses_the_native_reader_keyring_identity(self):
         from knowledge_radar.rapidapi_reddit import REFERENCE
