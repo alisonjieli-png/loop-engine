@@ -13,6 +13,7 @@ from urllib.parse import quote, urlunsplit
 
 from loop_engine.core.library_ingestion.request_log import RequestCeilingReached
 from loop_engine.core.library_ingestion.https_transport import HTTPS_SCHEME
+from loop_engine.core.library_ingestion.record_rules import canonical_digest
 from loop_engine.core.record_operations_records import parse_json
 
 from .engines import (FAILED, OK, PARTIAL, EngineAnswer, RadarEngineError, ReadContext,
@@ -95,7 +96,7 @@ class HuggingFaceBenchmarkLeaderboard:
             seen.add(identity)
             verified = item.get("verified") if type(item.get("verified")) is bool else None
             direction = item.get("lower_is_better") if type(item.get("lower_is_better")) is bool else None
-            key = "hf-benchmark:" + dataset + ":" + item["modelId"] + ":" + str(filename or "") + ":" + str(pull or "")
+            key = "hf-benchmark:" + canonical_digest([dataset, *identity])
             title, _reason = clean_title(item["modelId"] + " on " + dataset)
             rows.append(observation(context, self, key=key, origin="hf:" + item["modelId"],
                 title=title,

@@ -109,6 +109,14 @@ class HuggingFaceBenchmarkTests(unittest.TestCase):
         result, _ = self.read([{**ENTRY, "modelId": identity}])
         self.assertEqual(result.observations[0].facts["model_id"], identity)
         self.assertLessEqual(len(result.observations[0].title), engines.MAXIMUM_TITLE)
+        context, network = self.context()
+        dataset = "d" * 96 + "/" + "e" * 96
+        context = replace(context, binding=records.SourceBinding(context.binding.engine, context.binding.section,
+                                                                {"dataset": dataset, "limit": 10}))
+        network.answers = {"huggingface.co/api/datasets/" + dataset + "/leaderboard":
+                           (200, json.dumps([{**ENTRY, "modelId": identity}]).encode())}
+        item = benchmarks.HuggingFaceBenchmarkLeaderboard().read(context).observations[0]
+        self.assertEqual(records.read_observation(item.to_dict()), item)
 
     def test_provider_refusals_never_renew_results_or_retry(self):
         for status in (401, 403, 404, 429, 500):
