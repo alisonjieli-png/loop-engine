@@ -2,7 +2,7 @@
 
 Kind: product architecture with measured local implementation and proposed hosting.
 Date: 2026-09-19. The [current deployment](#current-deployment) section was
-added on 2026-09-20 and last checked on 2026-10-09, after Fly release 84.
+added on 2026-09-20 and last checked on 2026-10-09, after Fly release 85.
 
 The hosted product manages accounts, subscriptions, and access to intelligence.
 The customer runs Loop Engine and the selected harnesses. A hosted intelligence
@@ -48,27 +48,27 @@ section. Update this section in the same change that records a new release.
 Public registration is enabled. The site offers the existing monthly plan;
 these deployment checks alone do not establish a fully qualified paid service.
 
-The running image is Fly release 84, from
-`3aba83195515e1d956da6c20b60b5af167975576`, image
-`sha256:c6d1532de4dff5dfbe8330c667b3e4a5cd216332c78a6c6c6dc1f1f12ee3caa6`.
-Exact CI `37914979120` and guarded deployment `37935281471` passed; the gate
+The running image is Fly release 85, from
+`c948a9aa08b0ee6890c9abf70d5992f161711bee`, image
+`sha256:4801fdb6ac7ae15d50e786f46b3a2d243af3cac1099d79b91ff43905ff42449b`.
+Exact CI `37940684057` and guarded deployment `37943750820` passed; the gate
 is closed. On a fresh worktree of that revision the full local browser suite
 passed 977 checks and all 197 mutants, the offering matrix 483 checks and the
 service smoke 766 checks. The live offering/layout matrix passed 483 checks.
 Independent read-only review passed 426 checks across 68 desktop/phone views
 on all ten hosts, including twenty Terms comparisons unchanged since release
-83. The all-host pulse passed fifty reads with no slow response. A fresh full
-public route audit passed 67 pages, 277 views and 407 links. It checks
+84. The all-host pulse passed fifty reads with no slow response. A fresh full
+public route audit passed 67 pages, 277 views and 419 links. It checks
 rendering and navigation, not every authenticated journey or marketing claim.
-This release corrects the overnight copy that the release-83 review found
-overstated: the homepage and overnight page now describe a bounded local queue
-with call and time limits, task checkpoints and a morning report, label the
-example night as illustrative and say that a finished process is not an
-accepted result. The feeds page compares the three offerings.
+Release 85 makes the offer clearer on the homepage and pricing page, shows
+three ways to connect a harness on the setup page, organizes Agent Feeds per
+agent with 19 collections (six new, backed by 32 checked sources) and fixes
+copy on several pages. Release 84 earlier corrected the overnight copy that
+the release-83 review found overstated.
 
 All nine product hostnames now serve public assets through Cloudflare and
 forward dynamic requests to Fly. The technical Fly hostname remains a direct
-fallback. Export `7d2c719ca8ab...` contains 2,544 files, all verified on
+fallback. Export `a5d9cd327dab...` contains 2,556 files, all verified on
 `baltor.ai` against their exact bodies and required headers. It reads the live
 population, so the homepage shows the 1,473,065 files served now. Disable proxying on the saved DNS
 records to recover the direct paths; do not delete the routes or resources.
@@ -88,13 +88,13 @@ Thirteen curated decision-source
 collections and a live catalogue specimen are available. Local per-agent
 reading profiles are implemented; hosted saved preferences, agent assignments
 and personalized research delivery remain unfinished. The proposed Supervised
-Runs tier is not active. The [release record](../../artifacts/architecture-audit-2026-09-19/pilot-release-84.json)
+Runs tier is not active. The [release record](../../artifacts/architecture-audit-2026-09-19/pilot-release-85.json)
 binds the application, public export, live checks and separate follow-ups.
-Release 83 is the compatible image rollback, at
-`sha256:d765fa8be32b654c44c0c9262383a4abfd57e9a2976f7bda11a1967b661f36e4`,
-with export `9ed7e6ba5a3f...` as the edge rollback. The release-84 `src` tree
-equals that of `ccd35b35`; later commits add tools, creative originals, the
-case-generation repair and supply code that the image does not contain.
+Release 84 is the compatible image rollback, at
+`sha256:c6d1532de4dff5dfbe8330c667b3e4a5cd216332c78a6c6c6dc1f1f12ee3caa6`,
+with export `7d2c719ca8ab...` as the edge rollback. The model-directory data
+refresh `a77744aa` reached main after this release was built and goes out
+with the next one; the edge export uses the deployed revision.
 This source includes the model-directory refresh, repaired private supply
 journals, isolated constraint-case generation, bounded overnight operator and
 account handoff. Available local overnight tools are labelled Preview, with

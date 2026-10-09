@@ -5,6 +5,19 @@
   "releases": [
    {
     "kind": "service",
+    "number": 85,
+    "at": "2026-10-09T14:25:59Z",
+    "lines": [
+     "Clearer offer on the homepage and pricing page: Agent Feeds free through December 31, 2026, Harness Files at $29 a month, Overnight / AFK Work included in Preview.",
+     "Setup page: three ways to connect a harness.",
+     "Agent Feeds per agent, with 19 feed collections, six of them new and backed by 32 checked sources.",
+     "Copy fixes across the deck, directory, library and security pages."
+    ],
+    "seen_after_release": "",
+    "not_shown": 1
+   },
+   {
+    "kind": "service",
     "number": 84,
     "at": "2026-10-09T13:16:19Z",
     "lines": [

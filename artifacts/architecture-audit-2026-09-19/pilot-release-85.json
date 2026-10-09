@@ -1,0 +1,141 @@
+{
+ "record_type": "pilot_release_record/v1",
+ "release": 85,
+ "app": "baltor-pilot",
+ "source_revision": "c948a9aa08b0ee6890c9abf70d5992f161711bee",
+ "image": "registry.fly.io/baltor-pilot@sha256:4801fdb6ac7ae15d50e786f46b3a2d243af3cac1099d79b91ff43905ff42449b",
+ "rollback_release": 84,
+ "rollback_image": "registry.fly.io/baltor-pilot@sha256:c6d1532de4dff5dfbe8330c667b3e4a5cd216332c78a6c6c6dc1f1f12ee3caa6",
+ "owner_local_date": "2026-10-09",
+ "deployed_at": "2026-10-09T14:25:59Z",
+ "ci_run": 37940684057,
+ "ci_conclusion": "success",
+ "deploy_run": 37943750820,
+ "deploy_workflow_conclusion": "success",
+ "deployment_gate_after": false,
+ "operator": "Claude release operator, sub-agent of the Claude Code session, while Codex has no usage until October 15",
+ "catalogue": {
+  "release_id": "a4ba2053f7151d5c277a939b3525be98542f9ee2ac08e252a962e4721ea63d0b",
+  "content_digest": "7741e196ac4efcceefdfa7fcdea58a4f44423a9c710db1dbd13728d90c5a81c3",
+  "packages": 249610,
+  "distinct_files": 1473065,
+  "distinct_file_bytes": 8163675302,
+  "changed_by_this_application_release": false,
+  "publication_record": "catalogue-api-contracts-2026-10-09.json"
+ },
+ "changes": [
+  "Clearer offer on the homepage and pricing page: Agent Feeds free through December 31, 2026, Harness Files at $29 a month, Overnight / AFK Work included in Preview.",
+  "Setup page: three ways to connect a harness.",
+  "Agent Feeds per agent, with 19 feed collections, six of them new and backed by 32 checked sources.",
+  "Copy fixes across the deck, directory, library and security pages.",
+  "Served from public main c948a9aa; d25e6cb4 (98 procedural texture generators) is in tools only and not in the image."
+ ],
+ "cloudflare": {
+  "worker": "baltor-web-edge",
+  "export_id": "a5d9cd327dab432d59d42f70d5fc9758e3c40dadcd321e3dc7760f98f2d75206",
+  "worker_deployment": "54e23bf76d9a4512a6f9e63565cde5d1",
+  "deployed_at": "2026-10-09T14:30:22Z",
+  "static_files": 2556,
+  "static_bytes": 76432380,
+  "packages_read_from_live_capabilities": 249610,
+  "origin_mode": "all",
+  "production_hostnames": [
+   "baltor.ai",
+   "www.baltor.ai",
+   "app.baltor.ai",
+   "docs.baltor.ai",
+   "status.baltor.ai",
+   "examples.baltor.ai",
+   "demo.baltor.ai",
+   "deck.baltor.ai",
+   "redteam.baltor.ai"
+  ],
+  "direct_fallback_hostname": "baltor-pilot.fly.dev",
+  "production_routes_changed": false,
+  "rollback_export_id": "7d2c719ca8ab319859fba94534218e9232076f1b1f5a2b52db20169d7670d2b4",
+  "rollback_worker_deployment": "644cb0cce97445c688096008d9a76123"
+ },
+ "checks": {
+  "service_smoke": {
+   "passed": 766,
+   "total": 766
+  },
+  "local_browser": {
+   "passed": 977,
+   "total": 977,
+   "mutants_detected": 197,
+   "mutants_total": 197,
+   "evidence_sha256": "b78db9c4f223953b7cf03cbdb2566124b46b7798bb34cae23c0246b4b46f1ef6"
+  },
+  "local_offering_matrix": {
+   "passed": 483,
+   "total": 483,
+   "evidence_sha256": "f12c632822872d2fe8b75f28083ff98e20cf5780f79235638c3a79dcfa8956c7"
+  },
+  "live_offering_matrix": {
+   "passed": 483,
+   "total": 483,
+   "evidence_sha256": "f538f54ac1d78c4c682e391291dac61c511501001dd983d24c2296a6e3a0d719"
+  },
+  "independent_live_checks": {
+   "passed": 426,
+   "total": 426,
+   "hostnames": 10,
+   "views": 68,
+   "unchanged_terms_comparisons": 20,
+   "browser_errors": 0,
+   "evidence_sha256": "d8c399a806a052fed9528bc6699f820504234034e177a0cec87407e829b9043d"
+  },
+  "edge_readback": {
+   "passed": 2556,
+   "total": 2556,
+   "scope": "exact bodies, required headers and export marker on baltor.ai",
+   "evidence_sha256": "c680347f084f933066604b5cb1ad2f1829d4eb44dfa6df910eacc9a63e00e952"
+  },
+  "pulse": {
+   "reads": 50,
+   "problems": 0,
+   "slow": 0,
+   "passed": true,
+   "evidence_sha256": "8d0ed8416ddd45b302284c58fd7871c647c30b70e1ddbb6c94ea4ab909f411fb"
+  },
+  "live_full_public_route_map": {
+   "pages": 67,
+   "views": 277,
+   "links_checked": 419,
+   "automated_problems": 0,
+   "passed": true,
+   "evidence_sha256": "cb204b7f2d5b865c2987b1b0a36c25e886da29dcc84f5a22c67665757d3c3235"
+  },
+  "provider_readback": {
+   "release_status": "complete",
+   "machine_state": "started",
+   "machine_health": "passing",
+   "evidence_sha256": "5f5940a8330ff48f0100d4feebea7228ba802563aa5de0f7fb8ccd59e404aa36"
+  }
+ },
+ "limits": [
+  "Checks use headless Chromium and emulated viewports, not a physical device or the owner's browser session.",
+  "The route audit checks public rendering and navigation, not every authenticated journey or the truth of every marketing sentence.",
+  "No candidate files were published, provider products activated, models called, identity migrated or body-storage engine changed by this application release. R2 holds verified copies; Fly volume body storage stays selected."
+ ],
+ "private_evidence": [
+  "release85-20261009-b0ebac/release85-deployment.json",
+  "release85-20261009-b0ebac/release85-provider-readback.json",
+  "release85-20261009-b0ebac/workspace-c948a9aa-01.json",
+  "release85-20261009-b0ebac/offering-c948a9aa-01/report.json",
+  "release85-20261009-b0ebac/service-smoke-c948a9aa-01.txt",
+  "release85-20261009-b0ebac/live/pulse-01.json",
+  "release85-20261009-b0ebac/live/offering-live-01/report.json",
+  "release85-20261009-b0ebac/live/independent/attempt-01/report.json",
+  "release85-20261009-b0ebac/live/route-audit-01/report.json",
+  "repo-disk-review-20261007-1uZpT8/cloudflare-site-release85-01/events.jsonl",
+  "repo-disk-review-20261007-1uZpT8/release85-edge-readback-01.json"
+ ],
+ "observations": [
+  "Right after the restart the non-required health check free_monthly_renewal_current reported free_monthly_renewal_not_run_yet; every required check passed."
+ ],
+ "retained_attempts": [
+  "Commit a77744aa (model directory data) reached main inside the release window, so the standard export operator refused c948a9aa as no longer main's head before any effect. A copy of the operator that requires the revision to be on main and to equal the live, reconciled Fly release exported c948a9aa, so the edge and origin serve the same revision."
+ ]
+}

@@ -3,7 +3,7 @@
 Kind: generated view. Do not edit by hand. The only task authority is
 [roadmap.yaml](roadmap.yaml); change it, then run
 `PYTHONPATH=src:tools .venv/bin/python tools/build_development_tracker.py`.
-Source fingerprint: `sha256:2cd4720c645221023c8a982b373c4df00efc091d16595aa2e1381462d48ca5cd`.
+Source fingerprint: `sha256:e0a14a2d09df8d65403dd35f30a7ae47e363110de2c6f1d0963adf9425192fee`.
 
 ## Where things stand
 
@@ -114,11 +114,11 @@ Acceptance: The exact CI-passed revision is deployed through the guarded workflo
 2. Dispatch the guarded deployment once and reconcile the remote result.
 3. Close the deployment gate; record image, revision, rollback and all-host checks.
 
-Evidence: Release 84 from 3aba8319: exact CI 37914979120, guarded deployment 37935281471, gate closed, image c6d1532de4df, rollback release 83. Local suites on the exact tree: browser 977/977 with 197/197 wrong controls, offering 483/483, service smoke 766/766. All ten hosts pass the independent offering/Terms/health checks (426/426); Cloudflare export 7d2c719ca8ab matches all 2,544 files; route audit 67 pages, 277 views, 407 links, zero problems.
+Evidence: Release 85 from c948a9aa: exact CI 37940684057, guarded deployment 37943750820, gate closed, image 4801fdb6ac7a, rollback release 84. Local suites on the exact tree: browser 977/977 with 197/197 wrong controls, offering 483/483, service smoke 766/766. All ten hosts pass the independent offering/Terms/health checks (426/426); Cloudflare export a5d9cd327dab matches all 2,556 files; route audit 67 pages, 277 views, 419 links, zero problems.
 
 Next: Keep application deployment and catalogue publication from overlapping.
 
-Comment: The fifty-read pulse passed with no slow response. Release 84 corrects the overstated overnight copy found in the release-83 review. Application release does not publish catalogue additions.
+Comment: The fifty-read pulse passed with no slow response. Release 85 ships the clearer offer, three ways to connect and per-agent feeds; release 84 corrected the overnight copy. Application releases do not publish catalogue additions.
 
 ### S-6.215.01 Record the current live file baseline
 
