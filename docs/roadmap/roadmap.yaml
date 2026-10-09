@@ -3614,13 +3614,13 @@ steps:
     subtasks:
       - id: "S-6.102.01"
         title: "Package and test the ChatGPT and Codex plugin"
-        status: "ready"
+        status: "building"
         completion_status: "offline_verified"
         depends_on: []
         acceptance: "The package exposes only qualified MCP capabilities and passes an ordinary-user connection journey."
         procedure: ["Reconcile the preserved plugin candidate with current official packaging requirements.","Test OAuth, scopes, tool descriptions, read/write annotations and optional UI.","Prepare support, privacy, terms and reviewer instructions without exposing operator tools."]
-        next_action: "Use the existing MCP server and distinguish private connection from directory publication."
-        evidence: ""
+        next_action: "Release the integration, then run tools/check_chatgpt_app_live.py with --expect-presentation and --screens as a fresh account, confirm the authorization server metadata advertises authorization_response_iss_parameter_supported, and keep the report with the release record. The remaining steps for each directory and client are in docs/guides/chatgpt-app.md."
+        evidence: "October 9, 2026: the October 5 work (8f1d6228, e68648f5, c3ee59b3 and two uncommitted edits) is on main, rebased with every superseded hunk recorded in its commits. OAuth client registration admits the documented callbacks of Claude, Cursor on the web, VS Code and Codex and any loopback port, and RFC 9207 issuer identification is advertised; the tests and gates are in docs/guides/chatgpt-app.md. The live proof of October 5, before the release that serves the presentation, passed 23 of 23 checks."
         comment: "Directory approval and discovery are external outcomes, not guaranteed engineering dates."
       - id: "S-6.102.02"
         title: "Complete plugin review and release prerequisites"

@@ -1086,16 +1086,16 @@
    "complete": false,
    "completion_status": "offline_verified",
    "depends_on": [],
-   "evidence": "",
+   "evidence": "October 9, 2026: the October 5 work (8f1d6228, e68648f5, c3ee59b3 and two uncommitted edits) is on main, rebased with every superseded hunk recorded in its commits. OAuth client registration admits the documented callbacks of Claude, Cursor on the web, VS Code and Codex and any loopback port, and RFC 9207 issuer identification is advertised; the tests and gates are in docs/guides/chatgpt-app.md. The live proof of October 5, before the release that serves the presentation, passed 23 of 23 checks.",
    "id": "S-6.102.01",
-   "next_action": "Use the existing MCP server and distinguish private connection from directory publication.",
+   "next_action": "Release the integration, then run tools/check_chatgpt_app_live.py with --expect-presentation and --screens as a fresh account, confirm the authorization server metadata advertises authorization_response_iss_parameter_supported, and keep the report with the release record. The remaining steps for each directory and client are in docs/guides/chatgpt-app.md.",
    "owner_step": "S-6.102",
    "procedure": [
     "Reconcile the preserved plugin candidate with current official packaging requirements.",
     "Test OAuth, scopes, tool descriptions, read/write annotations and optional UI.",
     "Prepare support, privacy, terms and reviewer instructions without exposing operator tools."
    ],
-   "status": "ready",
+   "status": "building",
    "title": "Package and test the ChatGPT and Codex plugin",
    "waiting_on": []
   },
@@ -6725,5 +6725,5 @@
  ],
  "record_type": "development_tracker/v2",
  "source": "docs/roadmap/roadmap.yaml",
- "source_fingerprint": "sha256:e0a14a2d09df8d65403dd35f30a7ae47e363110de2c6f1d0963adf9425192fee"
+ "source_fingerprint": "sha256:01d95e9b9bbfb464ac40f9baff633d5f5e114000f988a290ebcc39080a0e9b5d"
 }

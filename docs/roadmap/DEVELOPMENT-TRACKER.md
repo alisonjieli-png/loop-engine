@@ -3,7 +3,7 @@
 Kind: generated view. Do not edit by hand. The only task authority is
 [roadmap.yaml](roadmap.yaml); change it, then run
 `PYTHONPATH=src:tools .venv/bin/python tools/build_development_tracker.py`.
-Source fingerprint: `sha256:e0a14a2d09df8d65403dd35f30a7ae47e363110de2c6f1d0963adf9425192fee`.
+Source fingerprint: `sha256:01d95e9b9bbfb464ac40f9baff633d5f5e114000f988a290ebcc39080a0e9b5d`.
 
 ## Where things stand
 
@@ -75,7 +75,7 @@ Next eligible subtask: S-6.215.11: Qualify and admit the new case groups
 | 48 | [ ] S-6.201.01: Recover the authorized TensorArt asset history | blocked | offline_verified | Resolve the missing target-account access without forwarding cookies to third parties. |
 | 49 | [ ] S-6.201.02: Complete one editable creative project and revision | ready | offline_verified | Select a small end-to-end creative proof rather than expanding untested templates. |
 | 50 | [ ] S-6.201.03: Produce a rights-cleared product demonstration | proposed | published | Waiting on S-6.201.02 |
-| 51 | [ ] S-6.102.01: Package and test the ChatGPT and Codex plugin | ready | offline_verified | Use the existing MCP server and distinguish private connection from directory publication. |
+| 51 | [ ] S-6.102.01: Package and test the ChatGPT and Codex plugin | building | offline_verified | Release the integration, then run tools/check_chatgpt_app_live.py with --expect-presentation and --screens as a fresh account, confirm the authorization server metadata advertises authorization_response_iss_parameter_supported, and keep the report with the release record. The remaining steps for each directory and client are in docs/guides/chatgpt-app.md. |
 | 52 | [ ] S-6.102.02: Complete plugin review and release prerequisites | proposed | published | Waiting on S-6.102.01 |
 | 53 | [ ] S-6.204.01: Measure onboarding and product use | ready | live_qualified | Use measured activation and usefulness to guide the next batch and marketing. |
 | 54 | [ ] S-6.204.02: Prepare launch, funding and startup-credit material | ready | offline_verified | Prioritize the infrastructure already used and the next customer proof. |
@@ -890,7 +890,7 @@ Comment: Preview clips are labelled as previews; no fabricated before/after resu
 
 ### S-6.102.01 Package and test the ChatGPT and Codex plugin
 
-Owner step: S-6.102. State: ready. Completion requires: offline_verified.
+Owner step: S-6.102. State: building. Completion requires: offline_verified.
 
 Acceptance: The package exposes only qualified MCP capabilities and passes an ordinary-user connection journey.
 
@@ -898,9 +898,9 @@ Acceptance: The package exposes only qualified MCP capabilities and passes an or
 2. Test OAuth, scopes, tool descriptions, read/write annotations and optional UI.
 3. Prepare support, privacy, terms and reviewer instructions without exposing operator tools.
 
-Evidence: Not yet recorded.
+Evidence: October 9, 2026: the October 5 work (8f1d6228, e68648f5, c3ee59b3 and two uncommitted edits) is on main, rebased with every superseded hunk recorded in its commits. OAuth client registration admits the documented callbacks of Claude, Cursor on the web, VS Code and Codex and any loopback port, and RFC 9207 issuer identification is advertised; the tests and gates are in docs/guides/chatgpt-app.md. The live proof of October 5, before the release that serves the presentation, passed 23 of 23 checks.
 
-Next: Use the existing MCP server and distinguish private connection from directory publication.
+Next: Release the integration, then run tools/check_chatgpt_app_live.py with --expect-presentation and --screens as a fresh account, confirm the authorization server metadata advertises authorization_response_iss_parameter_supported, and keep the report with the release record. The remaining steps for each directory and client are in docs/guides/chatgpt-app.md.
 
 Comment: Directory approval and discovery are external outcomes, not guaranteed engineering dates.
 
