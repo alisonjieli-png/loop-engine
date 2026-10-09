@@ -141,15 +141,16 @@ class RecordsTest(unittest.TestCase):
 
 
     def test_a_file_may_declare_the_media_type_the_shared_table_does_not_know(self):
-        script = PackageFile("load.gd", b"extends Node3D\n", "other", media_type="text/x-gdscript")
-        payload, _bodies = build(_package(files=[script, PackageFile(LICENCE_NAME, LICENCE, "other",
-                                                                     records.LICENCE_TEXT)]))
+        # A USD ASCII stage is UTF-8 text the shared table does not list (it lists Godot scenes and scripts).
+        stage = PackageFile("stage.usda", b"#usda 1.0\n", "other", media_type="text/x-usda")
+        payload, _bodies = build(_package(files=[stage, PackageFile(LICENCE_NAME, LICENCE, "other",
+                                                                    records.LICENCE_TEXT)]))
         types = {entry["path"]: entry["media_type"] for entry in payload["package"]["files"]}
-        self.assertEqual((types["load.gd"], types["LICENSE"]), ("text/x-gdscript", "text/plain"))
-        # Known wrong: without the declaration the shared table calls the script binary.
-        payload, _bodies = build(_package(files=[PackageFile("load.gd", b"extends Node3D\n", "other"),
+        self.assertEqual((types["stage.usda"], types["LICENSE"]), ("text/x-usda", "text/plain"))
+        # Known wrong: without the declaration the shared table calls the stage binary.
+        payload, _bodies = build(_package(files=[PackageFile("stage.usda", b"#usda 1.0\n", "other"),
                                                  PackageFile(LICENCE_NAME, LICENCE, "other", records.LICENCE_TEXT)]))
-        self.assertEqual({entry["path"]: entry["media_type"] for entry in payload["package"]["files"]}["load.gd"],
+        self.assertEqual({entry["path"]: entry["media_type"] for entry in payload["package"]["files"]}["stage.usda"],
                          "application/octet-stream")
 
 class ReadingTest(unittest.TestCase):

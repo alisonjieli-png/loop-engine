@@ -26,6 +26,8 @@ build_library_supply.py
 ├── api-tool-servers  one tested Model Context Protocol tool server per curated OpenAPI specification file
 ├── creative-assets  one pinned CC0 asset recipe (Poly Haven, ambientCG) or editable Godot demo project per
 │                    asset or project, with a verifying fetcher, loaders and offline tests
+├── creative-originals  one package per item of Baltor's own creative families (tools/creative_originals:
+│                    Godot, Blender, textures, 2D, 2.5D, 3D and 4D tools), with its native evidence
 └── report         the supply by family and form, and the projected composition
 ```
 
@@ -59,7 +61,7 @@ LICENCE_FILE = ROOT / "LICENSE"
 #: The code the generators run: a stored package must name a revision where all of it is committed. Generated
 #: views elsewhere in the tree (a regenerated status page) do not change what a generator writes.
 GENERATOR_PATHS = ("tools/supply_lines", "tools/build_library_supply.py", "tools/licensed_import",
-                   "tools/component_qualification",
+                   "tools/component_qualification", "tools/creative_originals",
                    "src/loop_engine/core/library_ingestion", "src/loop_engine/core/service_runtime/catalogue_attributes.py",
                    "src/loop_engine/core/service_runtime/catalogue_packages.py", "src/loop_engine/data/library_composition.json",
                    "LICENSE")
@@ -460,6 +462,20 @@ def payload_counts(built) -> dict:
             "distinct_payload_bytes": sum(digests.values())}
 
 
+def creative_originals(args) -> dict:
+    from supply_lines import creative_originals as line
+    run_folder = _outside(args.run_folder)
+    run_folder.mkdir(parents=True, exist_ok=True)
+    revision = code_revision(args.authorize_store_writes)
+    evidence = Path(args.evidence_root).resolve() if args.evidence_root else None
+    built, refusals, facts, summary = line.generate(
+        code_revision=revision, licence_text=LICENCE_FILE.read_bytes(), generated_on=now_utc()[:10],
+        retrieved_at=now_utc(), evidence_root=evidence, only_families=args.family, only_items=args.item)
+    (run_folder / "families.json").write_text(json.dumps(summary, indent=1, sort_keys=True) + "\n", encoding="utf-8")
+    return finish(args, records.CREATIVE_ORIGINALS, built, refusals, {"families": summary}, None, facts,
+                  complete=not args.family and not args.item)
+
+
 def creative_assets(args) -> dict:
     from supply_lines import creative_assets as line
     from supply_lines import godot_demos
@@ -686,6 +702,12 @@ def parser() -> argparse.ArgumentParser:
     tool_servers_command.add_argument("--source", action="append", help="only these source identities of "
                                       "openapi_sources.json")
     tool_servers_command.add_argument("--stars", action="store_true", help="read each repository's stars (GraphQL)")
+    originals = commands.add_parser("creative-originals")
+    common(originals)
+    originals.add_argument("--evidence-root", help="the folder tools/creative_originals/verify.py wrote native "
+                           "evidence records into (required for families with a native verifier)")
+    originals.add_argument("--family", action="append", help="only these families")
+    originals.add_argument("--item", action="append", help="only these item identities")
     creative = commands.add_parser("creative-assets")
     common(creative)
     creative.add_argument("--source", action="append", choices=("polyhaven", "ambientcg", "godot_demo_projects"),
@@ -797,7 +819,8 @@ def main(argv=None) -> int:
      "constraint-campaign": constraint_campaign,
      "case-exclusions": case_exclusions,
      "manim-scenes": manim_scenes, "api-tool-servers": api_tool_servers,
-     "creative-assets": creative_assets, "report": report}[args.command](args)
+     "creative-assets": creative_assets, "creative-originals": creative_originals,
+     "report": report}[args.command](args)
     return 0
 
 

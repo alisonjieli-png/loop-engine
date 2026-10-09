@@ -260,6 +260,37 @@
     "json_file": "creative.json",
     "field": "asset.asset_role"
    }
+  },
+  "creative_originals": {
+   "kinds": [
+    "code_module",
+    "template",
+    "three_d_model",
+    "contract_schema"
+   ],
+   "forms": [
+    "library_module",
+    "function",
+    "code_example",
+    "evaluation_set",
+    "template",
+    "three_d_model",
+    "schema"
+   ],
+   "shape": "code",
+   "required_files": [
+    "LICENSE",
+    "ATTRIBUTION.md",
+    "README.md",
+    "component.json"
+   ],
+   "job_key": {
+    "json_file": "component.json",
+    "fields": [
+     "job.family",
+     "job.identity"
+    ]
+   }
   }
  },
  "record_types": {

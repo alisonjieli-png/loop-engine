@@ -192,23 +192,35 @@ Supply lines (each writes library_supply_candidate/v1 records)
 │   │   module, a failure or a timeout refused by name
 │   └── a test that renders every frame at low quality with nothing written, run in bubblewrap with the
 │       network closed by an interpreter that has Manim; the scene's construct raising must fail it
-└── creative_assets: one pinned CC0 asset recipe or editable Godot project per asset or project
-    ├── kinds and forms reference_image (an HDRI, a texture set, a material), three_d_model (a model)
-    │   and template (an editable project); one line state per source (polyhaven, ambientcg,
-    │   godot_demo_projects)
-    ├── terms: each source's licence statement and API terms pinned by digest and checked on every run
-    │   for the clauses the line relies on; a statement that no longer holds them holds the whole source
-    │   (terms_not_confirmed)
-    ├── assets (creative_assets.py): Poly Haven's API and ambientCG's API v3; resolutions and formats
-    │   are variants in creative.json, each file pinned by its address, size and SHA-256, which the
-    │   generator learns by streaming the file once (FactReader.digest) and keeps nothing; the
-    │   publisher's size and MD5 are checked; 1k and 2k by default
-    ├── projects (godot_demos.py): each project of godotengine/godot-demo-projects at its head commit,
-    │   read from one archive and proven file by file by git blob identity; text copied byte for byte,
-    │   media pinned; per-project licence notices decided; every res:// reference present or pinned;
-    │   a headless Godot import when Godot 4 is installed (else recorded as skipped)
-    └── the same creative_fetch.py, blender_load.py, godot_load.gd, godot_project_check.py and tests
-        in every package (creative_files/), run offline against a loopback server and a recording bpy
+├── creative_assets: one pinned CC0 asset recipe or editable Godot project per asset or project
+│   ├── kinds and forms reference_image (an HDRI, a texture set, a material), three_d_model (a model)
+│   │   and template (an editable project); one line state per source (polyhaven, ambientcg,
+│   │   godot_demo_projects)
+│   ├── terms: each source's licence statement and API terms pinned by digest and checked on every run
+│   │   for the clauses the line relies on; a statement that no longer holds them holds the whole source
+│   │   (terms_not_confirmed)
+│   ├── assets (creative_assets.py): Poly Haven's API and ambientCG's API v3; resolutions and formats
+│   │   are variants in creative.json, each file pinned by its address, size and SHA-256, which the
+│   │   generator learns by streaming the file once (FactReader.digest) and keeps nothing; the
+│   │   publisher's size and MD5 are checked; 1k and 2k by default
+│   ├── projects (godot_demos.py): each project of godotengine/godot-demo-projects at its head commit,
+│   │   read from one archive and proven file by file by git blob identity; text copied byte for byte,
+│   │   media pinned; per-project licence notices decided; every res:// reference present or pinned;
+│   │   a headless Godot import when Godot 4 is installed (else recorded as skipped)
+│   └── the same creative_fetch.py, blender_load.py, godot_load.gd, godot_project_check.py and tests
+│       in every package (creative_files/), run offline against a loopback server and a recording bpy
+└── creative_originals: one package per item of Baltor's own creative families (creative_originals.py)
+    ├── source: tools/creative_originals/<family>/items/<identity>/ and the family's shared/ files at the
+    │   pinned commit, each a fact by its raw.githubusercontent.com address and SHA-256 (MIT); the files are
+    │   verbatim copies of those facts, and component.json is the contract card a harness reads first
+    ├── kinds and forms: code modules (library_module, function, code_example, evaluation_set), template,
+    │   three_d_model and schema; the job key is component.json job.family and job.identity
+    ├── native evidence: a family with a native verifier (Godot 4.7.2, Blender 5.2.1) must hold a passed
+    │   record for the item's exact bytes, written beforehand by tools/creative_originals/verify.py; the
+    │   record and the captured preview.png travel in the package; a missing, stale or failed record
+    │   refuses the item by name
+    └── qualification runs the package's own Python tests and mutation in the sandbox; the engine-side
+        behavior is the native record's observation, which the sandbox does not repeat
 ```
 
 Beside the lines, `verbatim_code_sources.json` and

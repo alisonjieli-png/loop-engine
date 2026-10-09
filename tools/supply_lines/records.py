@@ -44,9 +44,9 @@ RUN_RECORD_TYPE = "library_supply_run/v1"
 #: The supply lines, one per kind of fact source. publisher_tables reads an official publisher's own HTTPS address
 #: (a statistical series, a database release), where data_tables reads a GitHub file.
 (MCP_REGISTRY, OPENAPI_OPERATIONS, PROGRAM_INSTALLS, DATA_TABLES, FUNCTION_EXTRACTS, JSON_SCHEMAS,
- MANIM_SCENES, API_TOOL_SERVERS, PUBLISHER_TABLES, CREATIVE_ASSETS) = LINES = (
+ MANIM_SCENES, API_TOOL_SERVERS, PUBLISHER_TABLES, CREATIVE_ASSETS, CREATIVE_ORIGINALS) = LINES = (
     "mcp_registry", "openapi_operations", "program_installs", "data_tables", "function_extracts", "json_schemas",
-    "manim_scenes", "api_tool_servers", "publisher_tables", "creative_assets")
+    "manim_scenes", "api_tool_servers", "publisher_tables", "creative_assets", "creative_originals")
 #: How the text of every supply package was authored, and the review profile it needs. The panel has no such
 #: profile yet (tools/candidate_review reads original and imported packages only), so an export holds these.
 AUTHORING = "generated_from_licensed_facts"
@@ -140,6 +140,11 @@ REFUSAL_REASONS = {
                       "package_path_invalid",
                       "blocked_by_static_check", "generated_test_failed", "package_above_review_bound",
                       "duplicate_asset"),
+    # Baltor's own creative families (tools/creative_originals): an unreadable family or item, an item whose native
+    # check has no record, a record for other bytes, or a failed check, and the shared packaging refusals.
+    CREATIVE_ORIGINALS: ("family_invalid", "item_invalid", "native_evidence_missing", "native_evidence_stale",
+                         "native_check_failed", "blocked_by_static_check", "package_above_review_bound",
+                         "package_path_invalid"),
 }
 #: The forms each line may declare, and the harness kind it serves them as.
 LINE_FORMS = {MCP_REGISTRY: {"mcp_server": "protocol_server_configuration"},
@@ -159,7 +164,13 @@ LINE_FORMS = {MCP_REGISTRY: {"mcp_server": "protocol_server_configuration"},
               # reference forms): an HDRI or a texture set is an image fed to a renderer, a model a 3D model and a
               # demo project an editable template; the pinned recipe and its loaders are how the bytes arrive.
               CREATIVE_ASSETS: {"reference_image": "reference_image", "three_d_model": "three_d_model",
-                                "template": "template"}}
+                                "template": "template"},
+              # Original Godot, Blender, texture, geometry and contract tools: code modules, plus templates, 3D
+              # models and schemas when that is what the item delivers (tools/creative_originals/records.py).
+              CREATIVE_ORIGINALS: {"library_module": "code_module", "function": "code_module",
+                                   "code_example": "code_module", "evaluation_set": "code_module",
+                                   "template": "template", "three_d_model": "three_d_model",
+                                   "schema": "contract_schema"}}
 CANDIDATE_FIELDS = ("record_type", "record_id", "upstream_key", "line", "kind", "native_format", "component_form",
                     "name", "description", "package", "package_digest", "files", "licence", "provenance",
                     "placements", "declared_effects", "effect_evidence", "credentials", "tests", "findings",
