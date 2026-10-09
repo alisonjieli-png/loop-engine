@@ -1,0 +1,12 @@
+{
+  "record_type": "creative_original_family/v1",
+  "family": "geometry_4d",
+  "title": "Original four-dimensional geometry tools",
+  "description": "Generators, rotations, projections and slices of four-dimensional objects: the six regular 4-polytopes, uniform polytopes from Coxeter groups, duoprisms, the Clifford torus and Hopf fibration, implicit 4D shapes, rotation algebras, 4D curves, mazes and cellular automata. Each item is an importable Python module with a CLI that writes text glTF 2.0 (with morph-target animation where the output moves) or JSON, SVG or PNG; some items add a Godot 4 scene that animates the 4D object live in GDScript from the same mathematics. Item contracts declare exact known answers (vertex, edge, face and cell counts, radii, volumes, symmetry orders) that the package tests check, plus known-wrong controls. Native verification regenerates each example with the item's CLI, loads every glTF in Godot 4 with GLTFDocument and compares meshes, surfaces, vertices, blend shapes and animations, compares GDScript output with the Python reference for scene items, and renders a preview with the compatibility renderer.",
+  "engine": {"name": "python", "minimum_version": "3.10", "notes": "Standard library only; Godot 4.3 or later opens the glTF files and scenes; verified with Godot 4.7.2 gl_compatibility"},
+  "shared_files": [{"path": "fourd.py", "role": "executable_tool"},
+                   {"path": "test_package.py", "role": "executable_tool"}],
+  "native_verifier": "native.py",
+  "generator_version": "1.0.0",
+  "default_dimension": "4d"
+}

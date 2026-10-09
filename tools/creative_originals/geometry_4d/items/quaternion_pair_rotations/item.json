@@ -1,0 +1,180 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "quaternion_pair_rotations",
+  "title": "4D rotations as pairs of unit quaternions",
+  "purpose": "Compose a 4D rotation from a left and a right unit quaternion, decompose any rotation matrix back into its pair, read its plane angles and kind (left or right isoclinic, simple, double), interpolate along geodesics with double slerp, and write left and right isoclinic loops of the 16-cell as glTF.",
+  "form": "library_module",
+  "asset_role": null,
+  "dimension": "4d",
+  "engine": {
+    "name": "python",
+    "minimum_version": "3.10"
+  },
+  "tags": [
+    "4d",
+    "rotation",
+    "quaternion",
+    "isoclinic",
+    "double cover",
+    "slerp",
+    "so4",
+    "morph targets",
+    "gltf"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "role": "other"
+    },
+    {
+      "path": "quaternion_pair_rotations.py",
+      "role": "executable_tool"
+    },
+    {
+      "path": "example.gltf",
+      "role": "skill_asset"
+    }
+  ],
+  "contract": {
+    "entry_points": [
+      "compose",
+      "quaternion_from_rotation3",
+      "decompose",
+      "half_angle",
+      "pair_angles",
+      "classify",
+      "slerp",
+      "interpolate",
+      "isoclinic",
+      "export",
+      "rotations",
+      "invariants",
+      "controls",
+      "main"
+    ],
+    "parameters": [
+      {
+        "flag": "--angle-rate",
+        "type": "int",
+        "default": 1,
+        "meaning": "full isoclinic turns per loop"
+      },
+      {
+        "flag": "--frames",
+        "type": "int",
+        "default": 28,
+        "meaning": "keyframes per loop"
+      },
+      {
+        "flag": "--eye",
+        "type": "float",
+        "default": 2.6,
+        "meaning": "4D eye distance, circumradius 1"
+      },
+      {
+        "flag": "--duration",
+        "type": "float",
+        "default": 6.0,
+        "meaning": "seconds per loop"
+      },
+      {
+        "flag": "--gap",
+        "type": "float",
+        "default": 2.4,
+        "meaning": "distance between the two models"
+      },
+      {
+        "flag": "--style",
+        "type": "choice",
+        "choices": [
+          "tubes",
+          "lines"
+        ],
+        "default": "tubes",
+        "meaning": "unlit three-sided tubes or LINES"
+      },
+      {
+        "flag": "--radius",
+        "type": "float",
+        "default": 0.03,
+        "meaning": "tube radius, circumradius 1"
+      },
+      {
+        "flag": "--out",
+        "type": "path",
+        "default": null,
+        "meaning": "output .gltf"
+      }
+    ],
+    "invariants": {
+      "decompose_roundtrip": true,
+      "pair_angles_match_trace": true,
+      "double_cover_same_matrix": true,
+      "one_sign_flip_negates": true,
+      "left_right_commute": true,
+      "isoclinic_moves_every_vector": [
+        0.6,
+        0.6
+      ],
+      "slerp_midpoint_squared": true,
+      "classes": [
+        "identity",
+        "simple",
+        "left_isoclinic",
+        "right_isoclinic",
+        "double"
+      ],
+      "conjugation_fixes_w": [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "conjugation_turns_xy": [
+        0.8,
+        0.0
+      ]
+    },
+    "outputs": [
+      {
+        "path": "example.gltf",
+        "kind": "gltf",
+        "command": [],
+        "meshes": 2,
+        "vertices": 288,
+        "morph_targets": 28,
+        "animations": 1,
+        "triangles": 288
+      }
+    ],
+    "cli_example": [
+      "--angle-rate",
+      "2",
+      "--frames",
+      "16",
+      "--out",
+      "isoclinic_fast.gltf"
+    ],
+    "coordinates": "x, y, z, w with p = w + xi + yj + zk; frames projected in perspective to Godot/glTF +Y up",
+    "preview_time": 0.4
+  },
+  "limits": "The animation stores keyframes as morph targets, so vertices move along chords between them (0.6 percent of the radius at most for the example). Tubes are unlit three-sided prisms morphed without normal targets. Decomposition returns one of the two lifts (scalar part of l non-negative).",
+  "related": [
+    "rotation_exp_log",
+    "rotor_bivector_algebra",
+    "hopf_fibration"
+  ],
+  "technique_references": [
+    "SO(4) double cover by S3 x S3",
+    "left and right isoclinic rotations",
+    "quaternion from a rotation matrix (Shepperd's method)",
+    "spherical linear interpolation (slerp)",
+    "Cayley's factorization of 4D rotations"
+  ],
+  "native_checks": [
+    "cli_rebuilds_example",
+    "gltf_structure",
+    "godot_gltf_load_blend_shapes_and_tracks",
+    "godot_compatibility_render"
+  ]
+}

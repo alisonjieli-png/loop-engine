@@ -1,0 +1,39 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "icositetrachoron_24cell",
+  "title": "24-cell from the Hurwitz quaternion units",
+  "purpose": "Generate the 24-cell as the binary tetrahedral group (closure of two unit quaternions), split it into three inscribed 16-cells by coset, check self-duality, and write a coset-coloured wireframe glTF or a polytope JSON record.",
+  "form": "library_module",
+  "asset_role": null,
+  "dimension": "4d",
+  "engine": {"name": "python", "minimum_version": "3.10"},
+  "tags": ["4d", "24-cell", "icositetrachoron", "polytope", "quaternion", "hurwitz units", "binary tetrahedral group", "self-dual", "gltf"],
+  "files": [{"path": "README.md", "role": "other"},
+            {"path": "icositetrachoron_24cell.py", "role": "executable_tool"},
+            {"path": "example.gltf", "role": "skill_asset"}],
+  "contract": {
+    "entry_points": ["closure", "hurwitz_units", "is_group", "cosets", "facet_normals", "polytope", "is_24cell",
+                     "is_sixteen_cell", "dual_vertices", "wireframe", "export", "invariants", "controls", "main"],
+    "parameters": [
+      {"flag": "--rotate", "type": "text", "default": "xw=0.4,yz=0.25", "meaning": "plane rotations applied in order"},
+      {"flag": "--project", "type": "choice", "choices": ["perspective", "stereographic", "orthographic"], "default": "perspective", "meaning": "4D to 3D projection"},
+      {"flag": "--eye", "type": "float", "default": 2.6, "meaning": "4D eye distance, circumradius 1"},
+      {"flag": "--style", "type": "choice", "choices": ["tubes", "lines"], "default": "tubes", "meaning": "tube mesh or LINES primitive"},
+      {"flag": "--radius", "type": "float", "default": 0.022, "meaning": "tube radius"},
+      {"flag": "--sides", "type": "int", "default": 8, "meaning": "sides per tube"},
+      {"flag": "--out", "type": "path", "default": null, "meaning": ".gltf wireframe or .json polytope record"}
+    ],
+    "invariants": {"vertices": 24, "edges": 96, "faces": 96, "cells": 24, "euler_characteristic": 0, "circumradius": 1.0,
+                   "edge_length": 1.0, "regular": true, "schlafli": [3, 4, 3], "hypervolume": 2.0,
+                   "cell_volume": 0.47140452079103173, "vertex_degree": 8, "group_order": 24, "group_closed": true,
+                   "cosets": 3, "cosets_are_16cells": [true, true, true], "self_dual": true},
+    "outputs": [{"path": "example.gltf", "kind": "gltf", "command": [], "meshes": 1, "vertices": 1824, "triangles": 2016,
+                 "morph_targets": 0, "animations": 0}],
+    "cli_example": ["--style", "lines", "--project", "orthographic", "--out", "24cell_lines.gltf"],
+    "coordinates": "x, y, z, w with the quaternion a + bi + cj + dk at (b, c, d, a); projected to Godot/glTF +Y up"
+  },
+  "limits": "Tubes are straight segments between projected vertices; under the stereographic projection the true edge images are circular arcs. Group closure compares elements after rounding to 8 decimals, so generators must be exact to that precision. The perspective projection refuses an eye inside the rotated 24-cell.",
+  "related": ["cross_polytope_16cell", "hexacosichoron_600cell", "tesseract"],
+  "technique_references": ["Schlafli symbol {3,4,3}", "Hurwitz quaternions", "binary tetrahedral group 2T of order 24", "cosets of the quaternion group Q8", "self-duality of the 24-cell"],
+  "native_checks": ["cli_rebuilds_example", "gltf_structure", "godot_gltf_load", "godot_compatibility_render"]
+}

@@ -1,0 +1,328 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "wythoff_uniform_polytopes",
+  "title": "Uniform 4-polytopes by the Wythoff construction",
+  "purpose": "Generate the uniform polytope of a Coxeter group (A4, B4, D4, F4, H4) and a ringed diagram with unit edges: vertices, edges, faces, cells and cell types, written as exploded cells coloured by cell type, a wireframe glTF or a polytope JSON record.",
+  "form": "library_module",
+  "asset_role": null,
+  "dimension": "4d",
+  "engine": {
+    "name": "python",
+    "minimum_version": "3.10"
+  },
+  "tags": [
+    "4d",
+    "uniform polytope",
+    "wythoff construction",
+    "coxeter group",
+    "truncation",
+    "polytope",
+    "f-vector",
+    "gltf"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "role": "other"
+    },
+    {
+      "path": "wythoff_uniform_polytopes.py",
+      "role": "executable_tool"
+    },
+    {
+      "path": "example.gltf",
+      "role": "skill_asset"
+    }
+  ],
+  "contract": {
+    "entry_points": [
+      "parse_rings",
+      "name",
+      "construct",
+      "cell_types",
+      "edge_lengths",
+      "mesh",
+      "export",
+      "invariants",
+      "controls",
+      "main"
+    ],
+    "parameters": [
+      {
+        "flag": "--group",
+        "type": "choice",
+        "choices": [
+          "A4",
+          "B4",
+          "D4",
+          "F4",
+          "H4"
+        ],
+        "default": "B4",
+        "meaning": "Coxeter group"
+      },
+      {
+        "flag": "--rings",
+        "type": "text",
+        "default": "1100",
+        "meaning": "ringed nodes, node 0 first"
+      },
+      {
+        "flag": "--rotate",
+        "type": "text",
+        "default": "xw=0.2,yz=0.3",
+        "meaning": "plane rotations applied in order"
+      },
+      {
+        "flag": "--project",
+        "type": "choice",
+        "choices": [
+          "perspective",
+          "stereographic",
+          "orthographic"
+        ],
+        "default": "perspective",
+        "meaning": "4D to 3D projection"
+      },
+      {
+        "flag": "--eye",
+        "type": "float",
+        "default": 2.6,
+        "meaning": "4D eye distance in circumradii"
+      },
+      {
+        "flag": "--style",
+        "type": "choice",
+        "choices": [
+          "cells",
+          "tubes",
+          "lines"
+        ],
+        "default": "cells",
+        "meaning": "exploded cells, tubes or LINES"
+      },
+      {
+        "flag": "--shrink",
+        "type": "float",
+        "default": 0.84,
+        "meaning": "cell scale toward its own centroid"
+      },
+      {
+        "flag": "--tube",
+        "type": "float",
+        "default": 0.03,
+        "meaning": "tube radius, edges have length 1"
+      },
+      {
+        "flag": "--cells",
+        "type": "choice",
+        "choices": [
+          "front",
+          "all"
+        ],
+        "default": "front",
+        "meaning": "cells style: only cells facing the 4D eye, or all cells"
+      },
+      {
+        "flag": "--out",
+        "type": "path",
+        "default": null,
+        "meaning": ".gltf model or .json polytope record"
+      }
+    ],
+    "invariants": {
+      "f_vectors": {
+        "A4 1000": [
+          5,
+          10,
+          10,
+          5
+        ],
+        "A4 0100": [
+          10,
+          30,
+          30,
+          10
+        ],
+        "A4 1100": [
+          20,
+          40,
+          30,
+          10
+        ],
+        "A4 1001": [
+          20,
+          60,
+          70,
+          30
+        ],
+        "A4 1111": [
+          120,
+          240,
+          150,
+          30
+        ],
+        "B4 1000": [
+          16,
+          32,
+          24,
+          8
+        ],
+        "B4 0100": [
+          32,
+          96,
+          88,
+          24
+        ],
+        "B4 1100": [
+          64,
+          128,
+          88,
+          24
+        ],
+        "B4 1001": [
+          64,
+          192,
+          208,
+          80
+        ],
+        "B4 0110": [
+          96,
+          192,
+          120,
+          24
+        ],
+        "B4 1010": [
+          96,
+          288,
+          248,
+          56
+        ],
+        "B4 0011": [
+          48,
+          120,
+          96,
+          24
+        ],
+        "B4 1111": [
+          384,
+          768,
+          464,
+          80
+        ],
+        "F4 0100": [
+          96,
+          288,
+          240,
+          48
+        ],
+        "F4 1100": [
+          192,
+          384,
+          240,
+          48
+        ],
+        "H4 0001": [
+          120,
+          720,
+          1200,
+          600
+        ]
+      },
+      "euler_characteristics": [
+        0
+      ],
+      "structure_problems": 0,
+      "unit_edges": true,
+      "vertex_transitive_degrees": true,
+      "truncated_tesseract_cells": [
+        [
+          4,
+          4,
+          16
+        ],
+        [
+          24,
+          14,
+          8
+        ]
+      ],
+      "runcinated_tesseract_cells": [
+        [
+          4,
+          4,
+          16
+        ],
+        [
+          6,
+          5,
+          32
+        ],
+        [
+          8,
+          6,
+          32
+        ]
+      ],
+      "omnitruncated_5cell_cells": [
+        [
+          12,
+          8,
+          20
+        ],
+        [
+          24,
+          14,
+          10
+        ]
+      ],
+      "names": [
+        "truncated tesseract",
+        "rectified 24-cell",
+        "600-cell"
+      ]
+    },
+    "outputs": [
+      {
+        "path": "example.gltf",
+        "kind": "gltf",
+        "command": [],
+        "meshes": 1,
+        "vertices": 168,
+        "triangles": 76,
+        "morph_targets": 0,
+        "animations": 0
+      }
+    ],
+    "cli_example": [
+      "--group",
+      "A4",
+      "--rings",
+      "1001",
+      "--style",
+      "tubes",
+      "--out",
+      "runcinated_5cell.gltf"
+    ],
+    "coordinates": "x, y, z, w in the frame of the group's simple roots (axis-aligned for B4 and F4); projected to Godot/glTF +Y up"
+  },
+  "limits": "Ringings whose orbit exceeds 1500 vertices are refused (most H4 forms beyond the truncated 600-cell). Finding the cells scans every image of the four fundamental weights, which takes seconds for the larger H4 forms in CPython. Snub and other non-Wythoffian uniform polytopes are out of scope. A4, D4 and H4 coordinates come from a Cholesky factor of the Gram matrix, so their orientation is not axis-aligned.",
+  "related": [
+    "tesseract",
+    "icositetrachoron_24cell",
+    "coxeter_plane_projection"
+  ],
+  "technique_references": [
+    "Wythoff construction",
+    "Coxeter-Dynkin diagrams with ringed nodes",
+    "reflection group orbits",
+    "fundamental weights as facet normals",
+    "simple roots from the Cholesky factor of the Coxeter Gram matrix"
+  ],
+  "native_checks": [
+    "cli_rebuilds_example",
+    "gltf_structure",
+    "godot_gltf_load",
+    "godot_compatibility_render"
+  ]
+}

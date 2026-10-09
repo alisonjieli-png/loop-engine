@@ -1,0 +1,40 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "projection_comparison",
+  "title": "Perspective, stereographic and orthographic projections compared",
+  "purpose": "Project one rotated 4D polytope three ways side by side (stereographic edges as true circular arcs) and measure what each map keeps: straight lines, circles, parallels and angles. Reads built-in polytopes or any fourd_polytope/v1 JSON record.",
+  "form": "library_module",
+  "asset_role": null,
+  "dimension": "4d",
+  "engine": {"name": "python", "minimum_version": "3.10"},
+  "tags": ["4d", "projection", "perspective", "stereographic", "orthographic", "conformal", "comparison", "gltf"],
+  "files": [{"path": "README.md", "role": "other"},
+            {"path": "projection_comparison.py", "role": "executable_tool"},
+            {"path": "example.gltf", "role": "skill_asset"}],
+  "contract": {
+    "entry_points": ["make_polytope", "load_polytope", "arc", "stereographic_derivative", "tangent_on_sphere", "angle_errors",
+                     "is_concyclic", "meshes", "export", "invariants", "controls", "main"],
+    "parameters": [
+      {"flag": "--polytope", "type": "text", "default": "tesseract", "meaning": "tesseract, 16cell, 24cell, 5cell or a polytope JSON path"},
+      {"flag": "--rotate", "type": "text", "default": "xw=0.5,yz=0.35,zw=0.2", "meaning": "plane rotations applied in order"},
+      {"flag": "--eye", "type": "float", "default": 2.5, "meaning": "perspective eye distance in circumradii"},
+      {"flag": "--gap", "type": "float", "default": 2.6, "meaning": "spacing of the views in circumradii"},
+      {"flag": "--radius", "type": "float", "default": 0.035, "meaning": "tube radius in circumradii"},
+      {"flag": "--sides", "type": "int", "default": 5, "meaning": "sides of each tube"},
+      {"flag": "--segments", "type": "int", "default": 6, "meaning": "segments per stereographic arc"},
+      {"flag": "--out", "type": "path", "default": null, "meaning": "output .gltf"}
+    ],
+    "invariants": {"stereographic_conformal": true, "perspective_conformal": false, "orthographic_conformal": false,
+                   "perspective_keeps_lines": true, "stereographic_arcs_are_circles": true,
+                   "orthographic_keeps_parallels": true, "perspective_keeps_parallels": false,
+                   "axis_tesseract_orthographic_edge_lengths": [0.0, 2.0]},
+    "outputs": [{"path": "example.gltf", "kind": "gltf", "command": [], "meshes": 3, "vertices": 3136, "triangles": 3520,
+                 "morph_targets": 0, "animations": 0}],
+    "cli_example": ["--polytope", "24cell", "--segments", "4", "--out", "24cell_three_views.gltf"],
+    "coordinates": "x, y, z, w; the three views sit along glTF x (perspective, stereographic, orthographic), +Y up"
+  },
+  "limits": "Each view is scaled so its farthest vertex sits at the circumradius, which hides the real size differences between the projections. Stereographic arcs are polylines of a few segments (6 by default), so they approximate the circular images. Angle errors are measured at vertices only. The stereographic view refuses a vertex at the projection pole; choose a rotation that moves it. Input records must be convex polytopes centred near the origin for the circumsphere to make sense.",
+  "related": ["schlegel_diagram", "tesseract", "hopf_fibration"],
+  "technique_references": ["central perspective projection", "stereographic projection of the 3-sphere (conformal, circle preserving)", "orthographic parallel projection", "derivative of the stereographic map", "great-circle arcs as radial images of chords"],
+  "native_checks": ["cli_rebuilds_example", "gltf_structure", "godot_gltf_load", "godot_compatibility_render"]
+}

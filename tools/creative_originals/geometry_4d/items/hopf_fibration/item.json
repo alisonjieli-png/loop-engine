@@ -1,0 +1,165 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "hopf_fibration",
+  "title": "Hopf fibration fibres as linked circles",
+  "purpose": "Lift base points of S2 to their Hopf fibres in S3, project them stereographically into linked circles, check the fibration's properties (great circles, Clifford parallels, linking number 1, tori over latitude circles), and write tubes plus a colour-matched base sphere as glTF.",
+  "form": "three_d_model",
+  "asset_role": "generation_input",
+  "dimension": "4d",
+  "engine": {
+    "name": "python",
+    "minimum_version": "3.10"
+  },
+  "tags": [
+    "4d",
+    "hopf fibration",
+    "3-sphere",
+    "linked circles",
+    "villarceau circles",
+    "clifford parallels",
+    "stereographic projection",
+    "gltf"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "role": "other"
+    },
+    {
+      "path": "hopf_fibration.py",
+      "role": "executable_tool"
+    },
+    {
+      "path": "example.gltf",
+      "role": "skill_asset"
+    }
+  ],
+  "contract": {
+    "entry_points": [
+      "hopf_map",
+      "lift",
+      "fibre",
+      "base_points",
+      "colour",
+      "is_great_circle",
+      "is_circle_3d",
+      "linking_number",
+      "distance_spread",
+      "meshes",
+      "export",
+      "invariants",
+      "controls",
+      "main"
+    ],
+    "parameters": [
+      {
+        "flag": "--latitudes",
+        "type": "text",
+        "default": "100,130,155",
+        "meaning": "degrees from the x axis of the base circles"
+      },
+      {
+        "flag": "--per-ring",
+        "type": "int",
+        "default": 8,
+        "meaning": "fibres per base circle"
+      },
+      {
+        "flag": "--samples",
+        "type": "int",
+        "default": 30,
+        "meaning": "points per fibre"
+      },
+      {
+        "flag": "--radius",
+        "type": "float",
+        "default": 0.04,
+        "meaning": "tube radius"
+      },
+      {
+        "flag": "--sides",
+        "type": "int",
+        "default": 4,
+        "meaning": "sides of each tube"
+      },
+      {
+        "flag": "--inset",
+        "type": "choice",
+        "choices": [
+          "on",
+          "off"
+        ],
+        "default": "on",
+        "meaning": "base sphere with coloured dots"
+      },
+      {
+        "flag": "--out",
+        "type": "path",
+        "default": null,
+        "meaning": "output .gltf"
+      }
+    ],
+    "invariants": {
+      "fibres_map_to_base": true,
+      "fibres_are_great_circles": true,
+      "images_are_circles": true,
+      "pairwise_linking_numbers": [
+        1
+      ],
+      "clifford_parallel_spread": 0.0,
+      "equator_fibres_on_clifford_torus": true,
+      "latitude_60_torus_level": 0.5,
+      "hopf_map_of_one": [
+        1.0,
+        0.0,
+        0.0
+      ]
+    },
+    "outputs": [
+      {
+        "path": "example.gltf",
+        "kind": "gltf",
+        "command": [],
+        "meshes": 3,
+        "vertices": 3330,
+        "triangles": 6560,
+        "morph_targets": 0,
+        "animations": 0
+      }
+    ],
+    "cli_example": [
+      "--latitudes",
+      "90",
+      "--per-ring",
+      "8",
+      "--samples",
+      "24",
+      "--inset",
+      "off",
+      "--out",
+      "clifford_fibres.gltf"
+    ],
+    "coordinates": "quaternion a + bi + cj + dk at (x, y, z, w) = (b, c, d, a); stereographic image from (0, 0, 0, 1), Godot/glTF +Y up"
+  },
+  "limits": "Fibres are polygons of the given sample count, so their images are polygonal circles. Base circles must avoid the x axis direction, whose fibre passes through the projection pole and becomes a line; fibres near it become very large. The inset base sphere uses alpha blending.",
+  "related": [
+    "three_sphere_sampling",
+    "clifford_torus",
+    "hexacosichoron_600cell"
+  ],
+  "technique_references": [
+    "Hopf fibration S3 to S2",
+    "Hopf map q i conj(q)",
+    "Clifford parallel great circles",
+    "Hopf link (linking number 1)",
+    "stereographic projection",
+    "Gauss linking integral",
+    "parallel transport frames for swept tubes"
+  ],
+  "native_checks": [
+    "cli_rebuilds_example",
+    "gltf_structure",
+    "godot_gltf_load",
+    "godot_compatibility_render"
+  ]
+}

@@ -1,0 +1,179 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "schlegel_diagram",
+  "title": "Schlegel diagrams of convex 4-polytopes",
+  "purpose": "Project a convex 4-polytope from a point just outside one cell onto that cell, so all other cells nest inside it, and write the diagram as a glTF wireframe with the outer cell as a translucent shell. Built-in regular polytopes or any polytope JSON record.",
+  "form": "library_module",
+  "asset_role": null,
+  "dimension": "4d",
+  "engine": {
+    "name": "python",
+    "minimum_version": "3.10"
+  },
+  "tags": [
+    "4d",
+    "schlegel diagram",
+    "projection",
+    "polytope",
+    "120-cell",
+    "nested cells",
+    "gltf"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "role": "other"
+    },
+    {
+      "path": "schlegel_diagram.py",
+      "role": "executable_tool"
+    },
+    {
+      "path": "example.gltf",
+      "role": "skill_asset"
+    }
+  ],
+  "contract": {
+    "entry_points": [
+      "load_polytope",
+      "eye_point",
+      "project",
+      "outer_faces",
+      "inside_outer_cell",
+      "depth",
+      "meshes",
+      "export",
+      "invariants",
+      "controls",
+      "main"
+    ],
+    "parameters": [
+      {
+        "flag": "--polytope",
+        "type": "text",
+        "default": "24cell",
+        "meaning": "5cell, tesseract, 16cell, 24cell, 120cell, 600cell or a polytope JSON path"
+      },
+      {
+        "flag": "--cell",
+        "type": "int",
+        "default": 0,
+        "meaning": "cell to look through"
+      },
+      {
+        "flag": "--style",
+        "type": "choice",
+        "choices": [
+          "tubes",
+          "lines"
+        ],
+        "default": "tubes",
+        "meaning": "tube mesh or LINES"
+      },
+      {
+        "flag": "--radius",
+        "type": "float",
+        "default": null,
+        "meaning": "tube radius, default 1.2 percent of the size"
+      },
+      {
+        "flag": "--sides",
+        "type": "int",
+        "default": 6,
+        "meaning": "sides per tube"
+      },
+      {
+        "flag": "--shell",
+        "type": "choice",
+        "choices": [
+          "on",
+          "off"
+        ],
+        "default": "on",
+        "meaning": "translucent outer cell"
+      },
+      {
+        "flag": "--out",
+        "type": "path",
+        "default": null,
+        "meaning": "output .gltf"
+      }
+    ],
+    "invariants": {
+      "inside_fixed_distinct": {
+        "5cell": [
+          true,
+          true,
+          true
+        ],
+        "tesseract": [
+          true,
+          true,
+          true
+        ],
+        "16cell": [
+          true,
+          true,
+          true
+        ],
+        "24cell": [
+          true,
+          true,
+          true
+        ],
+        "120cell": [
+          true,
+          true,
+          true
+        ],
+        "600cell": [
+          true,
+          true,
+          true
+        ]
+      },
+      "tesseract_inner_cell_is_centred_cube": true,
+      "tesseract_inner_to_outer_ratio": 0.333333333,
+      "cells_120cell": 120
+    },
+    "outputs": [
+      {
+        "path": "example.gltf",
+        "kind": "gltf",
+        "command": [],
+        "meshes": 2,
+        "vertices": 1464,
+        "triangles": 1640,
+        "morph_targets": 0,
+        "animations": 0
+      }
+    ],
+    "cli_example": [
+      "--polytope",
+      "120cell",
+      "--style",
+      "lines",
+      "--out",
+      "schlegel_120cell.gltf"
+    ],
+    "coordinates": "3D coordinates in the chosen cell's hyperplane basis, origin at the cell centroid; Godot/glTF +Y up"
+  },
+  "limits": "The polytope must be convex and its record must list cells (the eye position is computed from the cell hyperplanes). The eye sits halfway to the nearest other cell hyperplane; other choices change the nesting depth but not the combinatorics. LINES are one pixel wide in most viewers; the shell relies on the viewer's alpha sorting.",
+  "related": [
+    "projection_comparison",
+    "hecatonicosachoron_120cell",
+    "polytope_inspector"
+  ],
+  "technique_references": [
+    "Schlegel diagram",
+    "central projection onto a facet hyperplane",
+    "viewpoint inside the region beyond exactly one facet",
+    "Coxeter group orbits for regular polytopes"
+  ],
+  "native_checks": [
+    "cli_rebuilds_example",
+    "gltf_structure",
+    "godot_gltf_load",
+    "godot_compatibility_render"
+  ]
+}

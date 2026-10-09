@@ -1,0 +1,39 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "hexacosichoron_600cell",
+  "title": "600-cell from the binary icosahedral group",
+  "purpose": "Generate the 600-cell as the 120 icosians (closure of two unit quaternions), find its faces and cells as cliques, split it into 12 Hopf decagons and 5 inscribed 24-cells by cosets, and write a glTF with the decagons as coloured tubes.",
+  "form": "library_module",
+  "asset_role": null,
+  "dimension": "4d",
+  "engine": {"name": "python", "minimum_version": "3.10"},
+  "tags": ["4d", "600-cell", "hexacosichoron", "icosians", "binary icosahedral group", "hopf fibration", "clifford parallels", "polytope", "gltf"],
+  "files": [{"path": "README.md", "role": "other"},
+            {"path": "hexacosichoron_600cell.py", "role": "executable_tool"},
+            {"path": "example.gltf", "role": "skill_asset"}],
+  "contract": {
+    "entry_points": ["closure", "icosians", "order", "clique_polytope", "polytope", "left_cosets", "hopf_decagons",
+                     "is_regular_decagon", "hurwitz_subgroup", "is_24cell", "meshes", "export", "invariants", "controls", "main"],
+    "parameters": [
+      {"flag": "--rotate", "type": "text", "default": "xw=0.35,yz=0.2", "meaning": "plane rotations applied in order"},
+      {"flag": "--project", "type": "choice", "choices": ["perspective", "stereographic", "orthographic"], "default": "perspective", "meaning": "4D to 3D projection"},
+      {"flag": "--eye", "type": "float", "default": 2.4, "meaning": "4D eye distance, circumradius 1"},
+      {"flag": "--radius", "type": "float", "default": 0.012, "meaning": "Hopf decagon tube radius"},
+      {"flag": "--sides", "type": "int", "default": 6, "meaning": "sides per tube"},
+      {"flag": "--out", "type": "path", "default": null, "meaning": ".gltf model or .json polytope record"}
+    ],
+    "invariants": {"vertices": 120, "edges": 720, "faces": 1200, "cells": 600, "euler_characteristic": 0,
+                   "circumradius": 1.0, "edge_length": 0.6180339887498949, "regular": true, "schlafli": [3, 3, 5],
+                   "hypervolume": 3.8627124296868973, "vertex_degree": 12, "group_order": 120, "group_closed": true,
+                   "generator_orders": [6, 10, 4], "hopf_decagons": 12, "decagons_regular": true,
+                   "decagon_edges_are_edges": true, "inscribed_24cells": 5, "cosets_are_24cells": true},
+    "outputs": [{"path": "example.gltf", "kind": "gltf", "command": [], "meshes": 2, "vertices": 3000, "triangles": 3840,
+                 "lines": 720, "morph_targets": 0, "animations": 0}],
+    "cli_example": ["--project", "orthographic", "--radius", "0.01", "--out", "600cell_ortho.gltf"],
+    "coordinates": "x, y, z, w with the quaternion a + bi + cj + dk at (b, c, d, a); projected to Godot/glTF +Y up"
+  },
+  "limits": "Only the 120 Hopf decagon edges are tubes; the other 600 edges are one-pixel LINES, whose width depends on the viewer. The quaternion 1 is a vertex at the stereographic pole, so the stereographic projection needs a rotation that moves it away (the default does). Group closure merges elements after rounding to 8 decimals.",
+  "related": ["hecatonicosachoron_120cell", "icositetrachoron_24cell", "hopf_fibration"],
+  "technique_references": ["Schlafli symbol {3,3,5}", "binary icosahedral group 2I with s^3 = t^5 = (st)^2 = -1", "icosians", "cosets of a cyclic subgroup as Hopf fibres (Clifford parallel great circles)", "cosets of the binary tetrahedral group as inscribed 24-cells", "cliques of the edge graph as faces and cells"],
+  "native_checks": ["cli_rebuilds_example", "gltf_structure", "godot_gltf_load", "godot_compatibility_render"]
+}

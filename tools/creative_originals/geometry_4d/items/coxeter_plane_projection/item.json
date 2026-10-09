@@ -1,0 +1,42 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "coxeter_plane_projection",
+  "title": "Coxeter plane projections of 4-polytopes",
+  "purpose": "Find the plane in which the Coxeter element of A4, B4, F4 or H4 turns by 2 pi/h and project a regular or Wythoff 4-polytope onto it, giving the h-fold symmetric drawing with its concentric rings, written as SVG or as a flat glTF.",
+  "form": "library_module",
+  "asset_role": null,
+  "dimension": "4d",
+  "engine": {"name": "python", "minimum_version": "3.10"},
+  "tags": ["4d", "coxeter plane", "petrie polygon", "projection", "symmetry", "svg", "600-cell", "gltf"],
+  "files": [{"path": "README.md", "role": "other"},
+            {"path": "coxeter_plane_projection.py", "role": "executable_tool"},
+            {"path": "example.gltf", "role": "skill_asset"},
+            {"path": "example.svg", "role": "skill_asset"}],
+  "contract": {
+    "entry_points": ["reflection_matrix", "coxeter_element", "element_order", "coxeter_plane", "named_polytope", "project", "rings",
+                     "is_symmetric", "svg", "meshes", "export", "invariants", "controls", "main"],
+    "parameters": [
+      {"flag": "--polytope", "type": "text", "default": "600cell", "meaning": "5cell, tesseract, 16cell, 24cell, 600cell or 120cell"},
+      {"flag": "--group", "type": "text", "default": null, "meaning": "Coxeter group for a Wythoff ringing"},
+      {"flag": "--rings", "type": "text", "default": null, "meaning": "ringing with --group, like 1100"},
+      {"flag": "--style", "type": "choice", "choices": ["lines", "tubes"], "default": "lines", "meaning": "glTF edges as LINES or tubes"},
+      {"flag": "--out", "type": "path", "default": null, "meaning": ".svg drawing or .gltf model"}
+    ],
+    "invariants": {"coxeter_numbers": {"A4": 5, "B4": 8, "F4": 12, "H4": 30},
+                   "ring_counts": {"5cell": [5], "tesseract": [8, 8], "16cell": [8], "24cell": [12, 12],
+                                   "600cell": [30, 30, 30, 30], "120cell": [30, 60, 30, 60, 60, 60, 60, 60, 60, 30, 60, 30]},
+                   "rotation_orbits": {"5cell": 1, "tesseract": 2, "16cell": 1, "24cell": 2, "600cell": 4, "120cell": 20},
+                   "h_fold_symmetric": {"5cell": true, "tesseract": true, "16cell": true, "24cell": true, "600cell": true,
+                                        "120cell": true},
+                   "tesseract_edges": 32, "plane_orthonormal": true},
+    "outputs": [{"path": "example.gltf", "kind": "gltf", "command": [], "meshes": 2, "vertices": 1560, "lines": 720,
+                 "triangles": 2400, "morph_targets": 0, "animations": 0},
+                {"path": "example.svg", "kind": "svg", "command": []}],
+    "cli_example": ["--group", "B4", "--rings", "1100", "--out", "truncated_tesseract_coxeter.svg"],
+    "coordinates": "2D Coxeter plane coordinates; in the glTF the drawing lies in the xy plane (z = 0), scaled to radius 1"
+  },
+  "limits": "Vertices come from Coxeter group orbits and are capped at 3000; edges join vertices at distance 1, which is the edge length of every Wythoff polytope. Ring counts group points by radius, so two rings of h points at one radius count as one ring of 2h (the 120-cell shows 12 radii for 20 orbits). The drawing is orthographic: vertices may coincide in the plane for some ringings.",
+  "related": ["wythoff_uniform_polytopes", "hexacosichoron_600cell", "hecatonicosachoron_120cell"],
+  "technique_references": ["Coxeter element and Coxeter number", "Coxeter plane as an eigenspace of (c + c^T)/2", "Petrie polygon", "reflection matrices of simple roots", "Wythoff construction"],
+  "native_checks": ["cli_rebuilds_example", "gltf_structure", "godot_gltf_load", "godot_compatibility_render"]
+}

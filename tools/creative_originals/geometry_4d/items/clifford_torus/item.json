@@ -1,0 +1,38 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "clifford_torus",
+  "title": "Clifford torus in the 3-sphere",
+  "purpose": "Parametrize the flat Clifford torus in S3, check its flat metric, area 2 pi^2, the two solid tori of volume pi^2 it bounds and its linked core circles, and write its stereographic image turning in 4D as a looping glTF morph animation.",
+  "form": "three_d_model",
+  "asset_role": "generation_input",
+  "dimension": "4d",
+  "engine": {"name": "python", "minimum_version": "3.10"},
+  "tags": ["4d", "clifford torus", "flat torus", "3-sphere", "stereographic projection", "dupin cyclide", "morph targets", "gltf"],
+  "files": [{"path": "README.md", "role": "other"},
+            {"path": "clifford_torus.py", "role": "executable_tool"},
+            {"path": "example.gltf", "role": "skill_asset"}],
+  "contract": {
+    "entry_points": ["point", "metric", "area", "solid_torus_volumes", "is_clifford", "stereographic_from", "core_linking",
+                     "image_radii", "grid", "frames", "export", "invariants", "controls", "main"],
+    "parameters": [
+      {"flag": "--plane", "type": "choice", "choices": ["xy", "xz", "yz"], "default": "xz", "meaning": "rotation plane"},
+      {"flag": "--frames", "type": "int", "default": 16, "meaning": "keyframes per loop"},
+      {"flag": "--columns", "type": "int", "default": 24, "meaning": "grid steps along u"},
+      {"flag": "--rows", "type": "int", "default": 10, "meaning": "grid steps along v"},
+      {"flag": "--duration", "type": "float", "default": 8.0, "meaning": "seconds per loop"},
+      {"flag": "--out", "type": "path", "default": null, "meaning": "output .gltf"}
+    ],
+    "invariants": {"on_clifford_torus": true, "induced_metric": [0.5, 0.0, 0.5], "area": 19.739208802178716,
+                   "solid_torus_volumes": [9.869604401089358, 9.869604401089358], "image_radii": [1.414213562, 1.0],
+                   "core_linking_number": 1, "xy_rotation_maps_grid_to_itself": true, "xz_loop_closes": true},
+    "outputs": [{"path": "example.gltf", "kind": "gltf", "command": [], "meshes": 1, "vertices": 240, "triangles": 480,
+                 "morph_targets": 16, "animations": 1}],
+    "cli_example": ["--plane", "yz", "--frames", "6", "--columns", "12", "--rows", "6", "--out", "clifford_yz.gltf"],
+    "coordinates": "(cos u, sin u, cos v, sin v)/sqrt(2) in x, y, z, w; stereographic image from (0, 0, 0, 1), Godot/glTF +Y up",
+    "preview_time": 0.25
+  },
+  "limits": "The animation stores 16 keyframes per loop as morph targets (positions and normals), so between keyframes vertices move along chords and the surface shrinks slightly. Rotation planes containing w are refused because they carry points through the projection pole. The solid torus volumes come from Simpson's rule (error near 1e-10).",
+  "related": ["hopf_fibration", "duocylinder", "rotor_bivector_algebra"],
+  "technique_references": ["Clifford torus", "induced metric of a parametrized surface", "Hopf coordinates and the volume element of S3", "stereographic projection to a torus of revolution", "Dupin cyclides", "Gauss linking integral"],
+  "native_checks": ["cli_rebuilds_example", "gltf_structure", "godot_gltf_load_blend_shapes_and_tracks", "godot_compatibility_render"]
+}

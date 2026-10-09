@@ -1,0 +1,216 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "slice_morph_animation",
+  "title": "Exact hyperplane slice sweep as glTF morph targets",
+  "purpose": "Sweep a hyperplane through the 5-cell, tesseract, 16-cell or 24-cell and write one glTF mesh whose morph-target animation plays the exact sequence of 3D cross-sections (for example tetrahedron, truncated tetrahedron, octahedron).",
+  "form": "three_d_model",
+  "asset_role": "generation_input",
+  "dimension": "4d",
+  "engine": {
+    "name": "python",
+    "minimum_version": "3.10"
+  },
+  "tags": [
+    "4d",
+    "slice",
+    "cross-section",
+    "hyperplane",
+    "morph targets",
+    "blend shapes",
+    "animation",
+    "gltf",
+    "tesseract",
+    "polytope"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "role": "other"
+    },
+    {
+      "path": "slice_morph_animation.py",
+      "role": "executable_tool"
+    },
+    {
+      "path": "example.gltf",
+      "role": "skill_asset"
+    }
+  ],
+  "contract": {
+    "entry_points": [
+      "make_polytope",
+      "direction_vector",
+      "tetrahedra",
+      "build",
+      "positions_at",
+      "mesh_measures",
+      "exact_measures",
+      "morph_error",
+      "section_types",
+      "document",
+      "export",
+      "invariants",
+      "controls",
+      "main"
+    ],
+    "parameters": [
+      {
+        "flag": "--polytope",
+        "type": "choice",
+        "choices": [
+          "5cell",
+          "tesseract",
+          "16cell",
+          "24cell"
+        ],
+        "default": "tesseract",
+        "meaning": "polytope to slice"
+      },
+      {
+        "flag": "--direction",
+        "type": "text",
+        "default": "vertex",
+        "meaning": "cell, face, edge, vertex (first) or a,b,c,d"
+      },
+      {
+        "flag": "--duration",
+        "type": "float",
+        "default": 4.0,
+        "meaning": "seconds for the full sweep"
+      },
+      {
+        "flag": "--out",
+        "type": "path",
+        "default": null,
+        "meaning": "output .gltf"
+      }
+    ],
+    "invariants": {
+      "tesseract_vertex_first": [
+        [
+          4,
+          6,
+          4
+        ],
+        [
+          12,
+          18,
+          8
+        ],
+        [
+          12,
+          18,
+          8
+        ],
+        [
+          4,
+          6,
+          4
+        ]
+      ],
+      "tesseract_vertex_first_center": [
+        6,
+        12,
+        8
+      ],
+      "tesseract_vertex_first_center_volume": 10.666666666666666,
+      "tesseract_edge_first": [
+        [
+          6,
+          9,
+          5
+        ],
+        [
+          12,
+          18,
+          8
+        ],
+        [
+          6,
+          9,
+          5
+        ]
+      ],
+      "tesseract_face_first": [
+        [
+          8,
+          12,
+          6
+        ],
+        [
+          8,
+          12,
+          6
+        ]
+      ],
+      "tesseract_cell_first": [
+        [
+          8,
+          12,
+          6
+        ]
+      ],
+      "cell16_cell_first_center": [
+        12,
+        24,
+        14
+      ],
+      "cell5_vertex_first": [
+        [
+          4,
+          6,
+          4
+        ]
+      ],
+      "cell5_edge_first": [
+        [
+          6,
+          9,
+          5
+        ]
+      ],
+      "morph_matches_exact_slices": true,
+      "example_keyframes": 7
+    },
+    "outputs": [
+      {
+        "path": "example.gltf",
+        "kind": "gltf",
+        "command": [],
+        "meshes": 1,
+        "vertices": 192,
+        "triangles": 96,
+        "morph_targets": 6,
+        "animations": 1
+      }
+    ],
+    "cli_example": [
+      "--polytope",
+      "16cell",
+      "--direction",
+      "cell",
+      "--out",
+      "16cell_slices.gltf"
+    ],
+    "coordinates": "slice points in the hyperplane's own x, y, z (fourd.hyperplane_basis; for the normal (0,0,0,1) these are x, y, z), Godot/glTF +Y up",
+    "preview_time": 1.45
+  },
+  "limits": "Convex polytopes with planar cells only (the four built in). Where vertex heights tie, a slice corner jumps between two coincident positions inside a 1 ms keyframe pair; the drawn shape does not change there. The mesh holds degenerate zero-area triangles for parts of cells the hyperplane has not reached. The slice frame (hyperplane basis) is fixed for the whole sweep.",
+  "related": [
+    "tesseract",
+    "hypercube_sections",
+    "polytope_slicer_godot"
+  ],
+  "technique_references": [
+    "cross-sections of convex polytopes by hyperplanes",
+    "tetrahedral decomposition of polyhedral cells",
+    "piecewise-linear vertex motion between critical heights",
+    "glTF 2.0 morph targets with linear weight interpolation"
+  ],
+  "native_checks": [
+    "cli_rebuilds_example",
+    "gltf_structure",
+    "godot_gltf_load_blend_shapes_and_tracks",
+    "godot_compatibility_render"
+  ]
+}

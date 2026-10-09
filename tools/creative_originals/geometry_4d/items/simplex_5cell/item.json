@@ -1,0 +1,191 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "simplex_5cell",
+  "title": "5-cell from the standard simplex of R5",
+  "purpose": "Place the regular 4-simplex in 4D through the Helmert basis, with barycentric coordinates, uniform interior sampling and a permutation symmetry check, and write exploded cells, a wireframe glTF or a polytope JSON record.",
+  "form": "library_module",
+  "asset_role": null,
+  "dimension": "4d",
+  "engine": {
+    "name": "python",
+    "minimum_version": "3.10"
+  },
+  "tags": [
+    "4d",
+    "5-cell",
+    "simplex",
+    "pentachoron",
+    "polytope",
+    "barycentric",
+    "helmert basis",
+    "gltf"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "role": "other"
+    },
+    {
+      "path": "simplex_5cell.py",
+      "role": "executable_tool"
+    },
+    {
+      "path": "example.gltf",
+      "role": "skill_asset"
+    }
+  ],
+  "contract": {
+    "entry_points": [
+      "helmert_basis",
+      "vertices",
+      "polytope",
+      "barycentric",
+      "contains",
+      "sample_points",
+      "symmetry_count",
+      "dihedral_angle",
+      "mesh",
+      "export",
+      "invariants",
+      "controls",
+      "main"
+    ],
+    "parameters": [
+      {
+        "flag": "--edge",
+        "type": "float",
+        "default": 1.0,
+        "meaning": "edge length"
+      },
+      {
+        "flag": "--rotate",
+        "type": "text",
+        "default": "xw=3.0,yz=0.4",
+        "meaning": "plane rotations applied in order"
+      },
+      {
+        "flag": "--project",
+        "type": "choice",
+        "choices": [
+          "perspective",
+          "stereographic",
+          "orthographic"
+        ],
+        "default": "perspective",
+        "meaning": "4D to 3D projection"
+      },
+      {
+        "flag": "--eye",
+        "type": "float",
+        "default": 3.0,
+        "meaning": "4D eye distance in circumradii"
+      },
+      {
+        "flag": "--style",
+        "type": "choice",
+        "choices": [
+          "cells",
+          "tubes",
+          "lines"
+        ],
+        "default": "cells",
+        "meaning": "exploded cells, tube wireframe or LINES"
+      },
+      {
+        "flag": "--radius",
+        "type": "float",
+        "default": null,
+        "meaning": "tube radius, default 0.03 x edge"
+      },
+      {
+        "flag": "--shrink",
+        "type": "float",
+        "default": 0.62,
+        "meaning": "cell scale toward its own centroid"
+      },
+      {
+        "flag": "--cells",
+        "type": "choice",
+        "choices": [
+          "front",
+          "all"
+        ],
+        "default": "front",
+        "meaning": "cells style: only cells facing the 4D eye, or all cells"
+      },
+      {
+        "flag": "--out",
+        "type": "path",
+        "default": null,
+        "meaning": ".gltf model or .json polytope record"
+      }
+    ],
+    "invariants": {
+      "vertices": 5,
+      "edges": 10,
+      "faces": 10,
+      "cells": 5,
+      "euler_characteristic": 0,
+      "circumradius": 0.6324555320336759,
+      "edge_length": 1.0,
+      "regular": true,
+      "schlafli": [
+        3,
+        3,
+        3
+      ],
+      "hypervolume": 0.023292374765622813,
+      "helmert_orthonormal": true,
+      "symmetry_order": 120,
+      "dihedral_angle_degrees": 75.52248781407008,
+      "samples_inside": true,
+      "centroid_weights": [
+        0.2,
+        0.2,
+        0.2,
+        0.2,
+        0.2
+      ]
+    },
+    "outputs": [
+      {
+        "path": "example.gltf",
+        "kind": "gltf",
+        "command": [],
+        "meshes": 1,
+        "vertices": 48,
+        "triangles": 16,
+        "morph_targets": 0,
+        "animations": 0
+      }
+    ],
+    "cli_example": [
+      "--style",
+      "tubes",
+      "--project",
+      "orthographic",
+      "--out",
+      "5cell_tubes.gltf"
+    ],
+    "coordinates": "x, y, z, w (Helmert coordinates of R5); projected to Godot/glTF +Y up"
+  },
+  "limits": "The exploded view shrinks each projected cell toward its own projected centroid, which is a display choice, not a geometric operation in 4D. Sampling uses Python's random module with a fixed seed, so it is reproducible but not cryptographic. Under the stereographic projection, flat faces between projected vertices only approximate the curved images of the cells.",
+  "related": [
+    "cross_polytope_16cell",
+    "wythoff_uniform_polytopes",
+    "polyhedral_prism_pyramid"
+  ],
+  "technique_references": [
+    "Schlafli symbol {3,3,3}",
+    "Helmert orthonormal basis of the sum-zero hyperplane",
+    "barycentric coordinates",
+    "Dirichlet(1,...,1) sampling by sorted uniform spacings",
+    "regular simplex dihedral angle arccos(1/n)"
+  ],
+  "native_checks": [
+    "cli_rebuilds_example",
+    "gltf_structure",
+    "godot_gltf_load",
+    "godot_compatibility_render"
+  ]
+}

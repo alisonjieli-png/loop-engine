@@ -1,0 +1,176 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "hecatonicosachoron_120cell",
+  "title": "120-cell from its seven coordinate classes",
+  "purpose": "Build the 120-cell from its coordinate rule (even permutations included), take its dodecahedral cells from the icosian directions, split its vertices into five inscribed 600-cells, and write a glTF of two linked rings of ten cells plus all edges.",
+  "form": "library_module",
+  "asset_role": null,
+  "dimension": "4d",
+  "engine": {
+    "name": "python",
+    "minimum_version": "3.10"
+  },
+  "tags": [
+    "4d",
+    "120-cell",
+    "hecatonicosachoron",
+    "dodecahedral cells",
+    "polytope",
+    "icosians",
+    "golden ratio",
+    "gltf"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "role": "other"
+    },
+    {
+      "path": "hecatonicosachoron_120cell.py",
+      "role": "executable_tool"
+    },
+    {
+      "path": "example.gltf",
+      "role": "skill_asset"
+    }
+  ],
+  "contract": {
+    "entry_points": [
+      "even_permutations",
+      "coordinate_classes",
+      "icosians",
+      "polytope",
+      "inscribed_600cells",
+      "is_600cell",
+      "cell_ring",
+      "meshes",
+      "export",
+      "invariants",
+      "controls",
+      "main"
+    ],
+    "parameters": [
+      {
+        "flag": "--rotate",
+        "type": "text",
+        "default": "xw=0.3,yz=0.15",
+        "meaning": "plane rotations applied in order"
+      },
+      {
+        "flag": "--project",
+        "type": "choice",
+        "choices": [
+          "perspective",
+          "stereographic",
+          "orthographic"
+        ],
+        "default": "perspective",
+        "meaning": "4D to 3D projection"
+      },
+      {
+        "flag": "--eye",
+        "type": "float",
+        "default": 2.2,
+        "meaning": "4D eye distance, circumradius 1"
+      },
+      {
+        "flag": "--shrink",
+        "type": "float",
+        "default": 0.94,
+        "meaning": "scale of each ring cell toward its centroid"
+      },
+      {
+        "flag": "--edges",
+        "type": "choice",
+        "choices": [
+          "plain",
+          "orbits"
+        ],
+        "default": "plain",
+        "meaning": "edge colours: plain, or one colour per inscribed 600-cell"
+      },
+      {
+        "flag": "--out",
+        "type": "path",
+        "default": null,
+        "meaning": ".gltf model or .json polytope record"
+      }
+    ],
+    "invariants": {
+      "vertices": 600,
+      "edges": 1200,
+      "faces": 720,
+      "cells": 120,
+      "euler_characteristic": 0,
+      "circumradius": 1.0,
+      "edge_length": 0.27009075673773913,
+      "regular": true,
+      "schlafli": [
+        5,
+        3,
+        3
+      ],
+      "hypervolume_per_edge4": 787.856981034338,
+      "vertex_degree": 4,
+      "coordinate_classes": [
+        24,
+        64,
+        64,
+        64,
+        96,
+        96,
+        192
+      ],
+      "cell_vertices": [
+        20
+      ],
+      "icosians": 120,
+      "inscribed_600cells": 5,
+      "orbits_are_600cells": true,
+      "cell_ring_length": 10,
+      "ring_cells_share_pentagons": true,
+      "linked_rings_disjoint": true
+    },
+    "outputs": [
+      {
+        "path": "example.gltf",
+        "kind": "gltf",
+        "command": [],
+        "meshes": 2,
+        "vertices": 1800,
+        "triangles": 720,
+        "lines": 1200,
+        "morph_targets": 0,
+        "animations": 0
+      }
+    ],
+    "cli_example": [
+      "--project",
+      "orthographic",
+      "--shrink",
+      "0.8",
+      "--out",
+      "120cell_ortho.gltf"
+    ],
+    "coordinates": "x, y, z, w with the quaternion a + bi + cj + dk at (b, c, d, a); projected to Godot/glTF +Y up"
+  },
+  "limits": "Edges are one-pixel LINES whose width depends on the viewer; only the twenty ring cells are solid. Building the polytope takes about half a second in CPython. Vertices are merged after rounding to 12 decimals and inscribed 600-cell orbits after rounding to 7, which suits the built-in coordinates but not arbitrary input.",
+  "related": [
+    "hexacosichoron_600cell",
+    "wythoff_uniform_polytopes",
+    "coxeter_plane_projection"
+  ],
+  "technique_references": [
+    "Schlafli symbol {5,3,3}",
+    "coordinates of the 120-cell from even permutations with the golden ratio",
+    "icosians as cell directions of the dual 600-cell",
+    "orbits of left quaternion multiplication",
+    "rings of ten cells along a great decagon"
+  ],
+  "native_checks": [
+    "cli_rebuilds_example",
+    "gltf_structure",
+    "godot_gltf_load",
+    "godot_compatibility_render"
+  ]
+}

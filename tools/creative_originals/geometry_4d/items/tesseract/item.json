@@ -1,0 +1,40 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "tesseract",
+  "title": "Tesseract from 4-bit vertex labels",
+  "purpose": "Build the tesseract exactly (edges, square faces and cubic cells from bit patterns), rotate it in any of the six planes and write a projected wireframe glTF or a polytope JSON record. Also gives its Gray code cycle and inscribed 16-cells.",
+  "form": "library_module",
+  "asset_role": null,
+  "dimension": "4d",
+  "engine": {"name": "python", "minimum_version": "3.10"},
+  "tags": ["4d", "tesseract", "hypercube", "8-cell", "polytope", "gltf", "wireframe", "gray code", "projection"],
+  "files": [{"path": "README.md", "role": "other"},
+            {"path": "tesseract.py", "role": "executable_tool"},
+            {"path": "example.gltf", "role": "skill_asset"}],
+  "contract": {
+    "entry_points": ["vertices", "polytope", "gray_cycle", "is_hamiltonian_cycle", "half_tesseracts", "is_sixteen_cell",
+                     "wireframe", "export", "invariants", "controls", "main"],
+    "parameters": [
+      {"flag": "--size", "type": "float", "default": 2.0, "meaning": "edge length"},
+      {"flag": "--rotate", "type": "text", "default": "xw=0.6,yz=0.3", "meaning": "plane rotations applied in order, radians or deg"},
+      {"flag": "--project", "type": "choice", "choices": ["perspective", "stereographic", "orthographic"], "default": "perspective", "meaning": "4D to 3D projection"},
+      {"flag": "--eye", "type": "float", "default": 2.5, "meaning": "4D eye distance in circumradii"},
+      {"flag": "--style", "type": "choice", "choices": ["tubes", "lines"], "default": "tubes", "meaning": "tube mesh or LINES primitive"},
+      {"flag": "--radius", "type": "float", "default": null, "meaning": "tube radius, default 0.035 x size"},
+      {"flag": "--sides", "type": "int", "default": 8, "meaning": "sides per tube"},
+      {"flag": "--out", "type": "path", "default": null, "meaning": ".gltf wireframe or .json polytope record"}
+    ],
+    "invariants": {"vertices": 16, "edges": 32, "faces": 24, "cells": 8, "euler_characteristic": 0, "circumradius": 2.0,
+                   "edge_length": 2.0, "regular": true, "schlafli": [4, 3, 3], "hypervolume": 16.0, "surface_volume": 64.0,
+                   "vertex_degree": 4, "gray_cycle_is_hamiltonian": true, "inscribed_16cells": [true, true],
+                   "edges_match_minimum_distance": true},
+    "outputs": [{"path": "example.gltf", "kind": "gltf", "command": [], "meshes": 1, "vertices": 704, "triangles": 832,
+                 "morph_targets": 0, "animations": 0}],
+    "cli_example": ["--style", "lines", "--project", "stereographic", "--out", "tesseract_lines.gltf"],
+    "coordinates": "x, y, z, w; projected to Godot/glTF +Y up"
+  },
+  "limits": "Tubes are straight segments between projected vertices, so under the stereographic projection they are chords, not the circular arcs that are the true images of great-circle edges. The perspective projection refuses an eye inside the rotated object. Depth colour is linear in the rotated w coordinate and is not physically based.",
+  "related": ["cross_polytope_16cell", "tesseract_net_unfolding", "slice_morph_animation"],
+  "technique_references": ["Schlafli symbol {4,3,3}", "hypercube as the product of four intervals", "reflected binary Gray code", "demitesseract (alternated tesseract) is the 16-cell", "central perspective projection from a 4D eye point"],
+  "native_checks": ["cli_rebuilds_example", "gltf_structure", "godot_gltf_load", "godot_compatibility_render"]
+}

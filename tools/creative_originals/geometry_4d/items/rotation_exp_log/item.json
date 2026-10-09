@@ -1,0 +1,186 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "rotation_exp_log",
+  "title": "4D rotation exponential, logarithm and geodesics",
+  "purpose": "Turn plane rates into a rotation with a closed-form matrix exponential, recover the two invariant plane angles and the generator of any 4D rotation, classify it (simple, isoclinic, double), interpolate along SO(4) geodesics, and write a looping rotation glTF.",
+  "form": "library_module",
+  "asset_role": null,
+  "dimension": "4d",
+  "engine": {
+    "name": "python",
+    "minimum_version": "3.10"
+  },
+  "tags": [
+    "4d",
+    "rotation",
+    "so4",
+    "matrix exponential",
+    "matrix logarithm",
+    "double rotation",
+    "isoclinic",
+    "interpolation",
+    "morph targets",
+    "gltf"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "role": "other"
+    },
+    {
+      "path": "rotation_exp_log.py",
+      "role": "executable_tool"
+    },
+    {
+      "path": "example.gltf",
+      "role": "skill_asset"
+    }
+  ],
+  "contract": {
+    "entry_points": [
+      "generator",
+      "is_skew",
+      "generator_angles",
+      "expm",
+      "rotation_angles",
+      "logm",
+      "classify",
+      "geodesic",
+      "frames",
+      "chord_error",
+      "export",
+      "rotations",
+      "invariants",
+      "controls",
+      "main"
+    ],
+    "parameters": [
+      {
+        "flag": "--rates",
+        "type": "text",
+        "default": "xw=1,yz=2",
+        "meaning": "plane rates of the generator"
+      },
+      {
+        "flag": "--polytope",
+        "type": "choice",
+        "choices": [
+          "tesseract",
+          "24cell"
+        ],
+        "default": "tesseract",
+        "meaning": "object to turn"
+      },
+      {
+        "flag": "--frames",
+        "type": "int",
+        "default": 48,
+        "meaning": "keyframes over t in [0, 2 pi]"
+      },
+      {
+        "flag": "--eye",
+        "type": "float",
+        "default": 2.5,
+        "meaning": "4D eye distance in circumradii"
+      },
+      {
+        "flag": "--duration",
+        "type": "float",
+        "default": 8.0,
+        "meaning": "seconds per loop"
+      },
+      {
+        "flag": "--style",
+        "type": "choice",
+        "choices": [
+          "tubes",
+          "lines"
+        ],
+        "default": "tubes",
+        "meaning": "unlit three-sided tubes or LINES"
+      },
+      {
+        "flag": "--radius",
+        "type": "float",
+        "default": 0.025,
+        "meaning": "tube radius in circumradii"
+      },
+      {
+        "flag": "--out",
+        "type": "path",
+        "default": null,
+        "meaning": "output .gltf"
+      }
+    ],
+    "invariants": {
+      "exp_log_roundtrip": true,
+      "log_exp_roundtrip": true,
+      "plane_rotation_matches": true,
+      "angles_of_double_rotation": [
+        1.1,
+        0.3
+      ],
+      "classes": [
+        "identity",
+        "simple",
+        "isoclinic",
+        "double"
+      ],
+      "left_multiplication_is_isoclinic": [
+        "isoclinic",
+        0.4,
+        0.4
+      ],
+      "geodesic_midpoint_is_half_generator": true,
+      "loop_closes_after_two_pi": true,
+      "generator_angles_of_xw1_yz2": [
+        2.0,
+        1.0
+      ],
+      "chord_error_example": 0.008555138626
+    },
+    "outputs": [
+      {
+        "path": "example.gltf",
+        "kind": "gltf",
+        "command": [],
+        "meshes": 1,
+        "vertices": 192,
+        "morph_targets": 48,
+        "animations": 1,
+        "triangles": 192
+      }
+    ],
+    "cli_example": [
+      "--rates",
+      "xy=1,zw=1",
+      "--polytope",
+      "24cell",
+      "--frames",
+      "24",
+      "--out",
+      "24cell_isoclinic.gltf"
+    ],
+    "coordinates": "x, y, z, w; frames projected in perspective to Godot/glTF +Y up",
+    "preview_time": 1.3
+  },
+  "limits": "The animation stores keyframes as morph targets, so vertices move along chords between keyframes: the largest deviation from the true rotation is 1 - cos(step/2) of the radius (0.0086 for the example with 48 frames and rate 2). Tubes are unlit three-sided prisms whose positions are morphed without normal targets. The logarithm is ill-conditioned for nearly isoclinic rotations, where the invariant planes are not unique, and picks one plane pair for rotations by pi.",
+  "related": [
+    "quaternion_pair_rotations",
+    "rotor_bivector_algebra",
+    "tesseract"
+  ],
+  "technique_references": [
+    "invariant plane decomposition of SO(4)",
+    "Pfaffian of a 4x4 skew-symmetric matrix",
+    "closed-form exponential from the minimal polynomial (Rodrigues-type formula)",
+    "principal matrix logarithm of a rotation",
+    "geodesics of SO(4) with the bi-invariant metric"
+  ],
+  "native_checks": [
+    "cli_rebuilds_example",
+    "gltf_structure",
+    "godot_gltf_load_blend_shapes_and_tracks",
+    "godot_compatibility_render"
+  ]
+}

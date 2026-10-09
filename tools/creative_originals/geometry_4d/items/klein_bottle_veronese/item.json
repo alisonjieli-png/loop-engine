@@ -1,0 +1,38 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "klein_bottle_veronese",
+  "title": "Klein bottle and Veronese surface embedded in 4D",
+  "purpose": "Build the Klein bottle and the real projective plane (Veronese surface) as embedded surfaces of R4, prove non-orientability and Euler characteristics on their meshes, show their 3D shadows cross themselves (Steiner's Roman surface), and write both shadows coloured by the fourth coordinate.",
+  "form": "library_module",
+  "asset_role": null,
+  "dimension": "4d",
+  "engine": {"name": "python", "minimum_version": "3.10"},
+  "tags": ["4d", "klein bottle", "veronese surface", "roman surface", "projective plane", "non-orientable", "embedding", "gltf"],
+  "files": [{"path": "README.md", "role": "other"},
+            {"path": "klein_bottle_veronese.py", "role": "executable_tool"},
+            {"path": "example.gltf", "role": "skill_asset"}],
+  "contract": {
+    "entry_points": ["klein", "klein_mesh", "veronese", "veronese_mesh", "euler_characteristic", "is_orientable",
+                     "closest_far_pair", "roman_residual", "shadow_mesh", "export", "invariants", "controls", "main"],
+    "parameters": [
+      {"flag": "--columns", "type": "int", "default": 32, "meaning": "Klein bottle grid steps along u (even)"},
+      {"flag": "--rows", "type": "int", "default": 12, "meaning": "Klein bottle grid steps along v"},
+      {"flag": "--subdivisions", "type": "int", "default": 3, "meaning": "icosphere subdivisions for the Veronese surface"},
+      {"flag": "--gap", "type": "float", "default": 2.6, "meaning": "distance between the two models"},
+      {"flag": "--out", "type": "path", "default": null, "meaning": "output .gltf"}
+    ],
+    "invariants": {"klein_euler_characteristic": 0, "klein_orientable": false, "klein_embedded_in_r4": true,
+                   "klein_shadow_self_intersects": true, "klein_seam_identification": true,
+                   "rp2_euler_characteristic": 1, "rp2_orientable": false, "rp2_embedded_in_r4": true,
+                   "roman_shadow_self_intersects": true, "roman_equation_residual": 0.0,
+                   "torus_control_orientable": true, "torus_control_euler": 0},
+    "outputs": [{"path": "example.gltf", "kind": "gltf", "command": [], "meshes": 2, "vertices": 4224, "triangles": 1408,
+                 "morph_targets": 0, "animations": 0}],
+    "cli_example": ["--columns", "16", "--rows", "8", "--subdivisions", "2", "--out", "coarse_surfaces.gltf"],
+    "coordinates": "surfaces in x, y, z, w; the shadow drops w (Klein) or the fourth Veronese coordinate, Godot/glTF +Y up"
+  },
+  "limits": "Meshes are flat-shaded with duplicated vertices because a non-orientable surface has no consistent normal field; materials are double-sided. The embedding check measures the smallest distance between mesh vertices more than three edges apart, a sampled test rather than a proof. The colour scale of the dropped coordinate is per surface.",
+  "related": ["clifford_torus", "projection_comparison", "sdf_4d_shapes"],
+  "technique_references": ["Klein bottle embedding in R4 by a half-angle twist", "Veronese embedding of the real projective plane", "Steiner Roman surface", "Euler characteristic of quotient meshes", "orientation propagation across shared edges"],
+  "native_checks": ["cli_rebuilds_example", "gltf_structure", "godot_gltf_load", "godot_compatibility_render"]
+}

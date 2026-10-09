@@ -1,0 +1,41 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "duocylinder",
+  "title": "Duocylinder measures and diagonal slices",
+  "purpose": "Compute the duocylinder's hypervolume, boundary 3-volume and ridge torus area, confirm them by integrating axis and diagonal slices, and write the diagonal slice sweep (stretched Steinmetz bicylinders) as an exact four-strip glTF morph animation.",
+  "form": "three_d_model",
+  "asset_role": "generation_input",
+  "dimension": "4d",
+  "engine": {"name": "python", "minimum_version": "3.10"},
+  "tags": ["4d", "duocylinder", "steinmetz solid", "bicylinder", "slice", "cavalieri", "morph targets", "gltf"],
+  "files": [{"path": "README.md", "role": "other"},
+            {"path": "duocylinder.py", "role": "executable_tool"},
+            {"path": "example.gltf", "role": "skill_asset"}],
+  "contract": {
+    "entry_points": ["contains", "hypervolume", "boundary_volume", "ridge_area", "axis_slice_volume", "cavalieri_axis",
+                     "diagonal_slice_volume", "cavalieri_diagonal", "diagonal_slice", "mesh_volume", "export", "invariants",
+                     "controls", "main"],
+    "parameters": [
+      {"flag": "--frames", "type": "int", "default": 12, "meaning": "keyframes from -reach to +reach"},
+      {"flag": "--segments", "type": "int", "default": 24, "meaning": "grid steps along x on each strip"},
+      {"flag": "--reach", "type": "float", "default": 1.85, "meaning": "largest |k| of the slice x + z = k"},
+      {"flag": "--duration", "type": "float", "default": 6.0, "meaning": "seconds for the sweep"},
+      {"flag": "--out", "type": "path", "default": null, "meaning": "output .gltf"}
+    ],
+    "invariants": {"hypervolume": 9.869604401089358, "hypervolume_cavalieri_axis": 9.869604401089358,
+                   "hypervolume_cavalieri_diagonal": 9.869604401089358, "boundary_volume": 39.47841760435743,
+                   "ridge_area": 39.47841760435743, "axis_slice_volume_at_0": 6.283185307179586,
+                   "diagonal_slice_volume_at_0": 7.542472332656508, "steinmetz_volume_times_root2": 7.542472332656508,
+                   "diagonal_mesh_matches_at_0": true, "diagonal_mesh_matches_at_1": true, "slice_points_inside": true,
+                   "centre_inside": true},
+    "outputs": [{"path": "example.gltf", "kind": "gltf", "command": [], "meshes": 1, "vertices": 200, "triangles": 192,
+                 "morph_targets": 11, "animations": 1}],
+    "cli_example": ["--frames", "4", "--segments", "8", "--reach", "1.5", "--out", "duocylinder_coarse.gltf"],
+    "coordinates": "slice x + z = k in its hyperplane basis: ((2x - k)/sqrt 2, y, w), Godot/glTF +Y up",
+    "preview_time": 3.0
+  },
+  "limits": "The slice sweep and the diagonal formulas are for the unit duocylinder (both radii 1); the measure functions take any radii. Slice volumes come from Simpson's rule after a cosine substitution (near 1e-8 relative for the Cavalieri total). Keyframes are morph targets, so between them vertices move along chords.",
+  "related": ["clifford_torus", "duoprism", "sdf_4d_shapes"],
+  "technique_references": ["duocylinder as a product of two disks", "Cavalieri's principle", "Steinmetz bicylinder", "ruled cylinder surfaces", "Chebyshev spacing for quadrature and meshing", "Simpson's rule"],
+  "native_checks": ["cli_rebuilds_example", "gltf_structure", "godot_gltf_load_blend_shapes_and_tracks", "godot_compatibility_render"]
+}

@@ -1,0 +1,37 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "three_sphere_sampling",
+  "title": "Uniform point sets on the 3-sphere",
+  "purpose": "Sample unit quaternions three ways (normalized Gaussians, a Hopf fibration grid, a super-Fibonacci spiral), measure separation, covering radius and cap discrepancy against the exact cap volume of S3, and write the stereographic image as a glTF point cloud.",
+  "form": "library_module",
+  "asset_role": null,
+  "dimension": "4d",
+  "engine": {"name": "python", "minimum_version": "3.10"},
+  "tags": ["4d", "3-sphere", "sampling", "unit quaternions", "super-fibonacci", "hopf fibration", "point cloud", "gltf"],
+  "files": [{"path": "README.md", "role": "other"},
+            {"path": "three_sphere_sampling.py", "role": "executable_tool"},
+            {"path": "example.gltf", "role": "skill_asset"}],
+  "contract": {
+    "entry_points": ["gaussian", "fibonacci_sphere", "lift", "hopf_map", "hopf_grid", "super_fibonacci", "sample", "cap_fraction",
+                     "separation", "covering_radius", "cap_discrepancy", "export", "invariants", "controls", "main"],
+    "parameters": [
+      {"flag": "--method", "type": "choice", "choices": ["gaussian", "hopf_grid", "super_fibonacci"], "default": "super_fibonacci", "meaning": "sampler"},
+      {"flag": "--count", "type": "int", "default": 2000, "meaning": "number of points"},
+      {"flag": "--clip", "type": "float", "default": 3.0, "meaning": "drop images beyond this radius"},
+      {"flag": "--seed", "type": "int", "default": 1, "meaning": "seed of the gaussian sampler"},
+      {"flag": "--out", "type": "path", "default": null, "meaning": "output .gltf"}
+    ],
+    "invariants": {"unit_norms": true, "hopf_fibres_map_to_base": true, "fibre_chord_12": 0.517638090205,
+                   "cap_fraction_hemisphere": 0.5, "cap_fraction_whole": 1.0, "super_fibonacci_hemisphere_count_1000": 500,
+                   "super_fibonacci_better_separated": true, "super_fibonacci_low_discrepancy": true,
+                   "hopf_grid_low_discrepancy": true},
+    "outputs": [{"path": "example.gltf", "kind": "gltf", "command": [], "meshes": 1, "vertices": 1896, "points": 1896,
+                 "morph_targets": 0, "animations": 0}],
+    "cli_example": ["--method", "hopf_grid", "--count", "600", "--out", "hopf_grid.gltf"],
+    "coordinates": "unit quaternions (x, y, z, w) = w + xi + yj + zk; stereographic image from (0, 0, 0, 1), Godot/glTF +Y up"
+  },
+  "limits": "Separation is an O(n^2) scan and covering radius and discrepancy are estimates from random probes and caps, so they suit sets of a few thousand points. The hopf_grid rounds the count to bases times fibre points. Points whose image lies beyond the clip radius (those near the projection pole) are left out of the glTF. POINTS render at one pixel in most viewers.",
+  "related": ["hopf_fibration", "clifford_torus", "quaternion_pair_rotations"],
+  "technique_references": ["uniform sampling by normalized Gaussian vectors", "Hopf fibration as a Riemannian submersion", "Fibonacci spiral on S2", "super-Fibonacci spirals for S3", "volume of a spherical cap on S3", "stereographic projection"],
+  "native_checks": ["cli_rebuilds_example", "gltf_structure", "godot_gltf_load", "godot_compatibility_render"]
+}

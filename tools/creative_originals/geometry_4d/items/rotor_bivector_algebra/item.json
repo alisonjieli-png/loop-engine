@@ -1,0 +1,43 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "rotor_bivector_algebra",
+  "title": "Cl(4,0) rotors and bivector decomposition",
+  "purpose": "A 4D geometric algebra: geometric and outer products, reversion, rotors exp(-B/2), the split of any bivector into two commuting simple parts, reflections, and the torus knot a double rotation traces, written as a glTF tube on the Clifford torus.",
+  "form": "library_module",
+  "asset_role": null,
+  "dimension": "4d",
+  "engine": {"name": "python", "minimum_version": "3.10"},
+  "tags": ["4d", "geometric algebra", "clifford algebra", "rotor", "bivector", "torus knot", "clifford torus", "gltf"],
+  "files": [{"path": "README.md", "role": "other"},
+            {"path": "rotor_bivector_algebra.py", "role": "executable_tool"},
+            {"path": "example.gltf", "role": "skill_asset"}],
+  "contract": {
+    "entry_points": ["blade", "vector", "bivector", "product", "wedge", "grade", "reverse", "add", "magnitude",
+                     "exp_multivector", "rotor", "sandwich", "rotor_matrix", "is_simple", "split_bivector", "exp_split",
+                     "reflection", "torus_knot", "linking_number", "winding_about_z", "meshes", "export", "rotations",
+                     "invariants", "controls", "main"],
+    "parameters": [
+      {"flag": "--p", "type": "int", "default": 2, "meaning": "rate in the xy plane"},
+      {"flag": "--q", "type": "int", "default": 3, "meaning": "rate in the zw plane"},
+      {"flag": "--samples", "type": "int", "default": 180, "meaning": "points along the knot"},
+      {"flag": "--sides", "type": "int", "default": 6, "meaning": "sides of the knot tube"},
+      {"flag": "--radius", "type": "float", "default": 0.06, "meaning": "tube radius"},
+      {"flag": "--shell", "type": "choice", "choices": ["on", "off"], "default": "on", "meaning": "translucent Clifford torus"},
+      {"flag": "--out", "type": "path", "default": null, "meaning": "output .gltf"}
+    ],
+    "invariants": {"e1e2_squares_to_minus_one": -1.0, "pseudoscalar_squares_to_one": 1.0,
+                   "rotor_matches_plane_rotation": true, "rotor_is_unit": true, "split_sums_back": true,
+                   "split_parts_simple": [true, true], "split_parts_commute": true, "general_bivector_simple": false,
+                   "plane_bivector_simple": true, "exp_series_matches_split": true,
+                   "split_magnitudes_xy03_zw11": [1.1, 0.3], "two_reflections_make_rotation": [0.0, 1.0, 0.0, 0.0],
+                   "knot_on_clifford_torus": true, "trefoil_winding_about_z": 2.0, "trefoil_linking_with_unit_circle": 3},
+    "outputs": [{"path": "example.gltf", "kind": "gltf", "command": [], "meshes": 2, "vertices": 2880, "triangles": 3600,
+                 "morph_targets": 0, "animations": 0}],
+    "cli_example": ["--p", "3", "--q", "5", "--shell", "off", "--samples", "120", "--out", "knot_3_5.gltf"],
+    "coordinates": "x, y, z, w = e1, e2, e3, e4; knot stereographically projected from (0, 0, 0, 1) to Godot/glTF +Y up"
+  },
+  "limits": "Multivectors are dense lists of 16 floats and products loop over all blade pairs, so the module suits exploration and tests, not bulk transforms. exp_multivector uses a truncated Taylor series after scaling and squaring (about 1e-12 for moderate bivectors). split_bivector refuses isoclinic bivectors, whose planes are not unique. The torus shell uses alpha blending, whose sorting depends on the viewer.",
+  "related": ["rotation_exp_log", "quaternion_pair_rotations", "clifford_torus"],
+  "technique_references": ["Clifford algebra Cl(4,0) with blade bitmasks", "rotors exp(-B/2) and the sandwich product", "invariant decomposition of a 4D bivector into commuting simple bivectors", "Cartan-Dieudonne: rotations as products of reflections", "torus knots on the Clifford torus", "Gauss linking integral"],
+  "native_checks": ["cli_rebuilds_example", "gltf_structure", "godot_gltf_load", "godot_compatibility_render"]
+}

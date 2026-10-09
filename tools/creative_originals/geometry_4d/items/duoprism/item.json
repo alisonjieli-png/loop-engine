@@ -1,0 +1,230 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "duoprism",
+  "title": "Duoprisms as products of two polygons",
+  "purpose": "Build any {p}x{q} duoprism exactly (pq vertices, two rings of prisms), with unit-edge or equal radii, check its counts and volume against the product formulas, and write exploded prisms, a wireframe glTF or a polytope JSON record.",
+  "form": "library_module",
+  "asset_role": null,
+  "dimension": "4d",
+  "engine": {
+    "name": "python",
+    "minimum_version": "3.10"
+  },
+  "tags": [
+    "4d",
+    "duoprism",
+    "product polytope",
+    "prism ring",
+    "polygon",
+    "clifford torus",
+    "polytope",
+    "gltf"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "role": "other"
+    },
+    {
+      "path": "duoprism.py",
+      "role": "executable_tool"
+    },
+    {
+      "path": "example.gltf",
+      "role": "skill_asset"
+    }
+  ],
+  "contract": {
+    "entry_points": [
+      "radii",
+      "polytope",
+      "polygon_area",
+      "expected_counts",
+      "is_uniform",
+      "tesseract_check",
+      "mesh",
+      "export",
+      "invariants",
+      "controls",
+      "main"
+    ],
+    "parameters": [
+      {
+        "flag": "--p",
+        "type": "int",
+        "default": 5,
+        "meaning": "sides of the xy polygon"
+      },
+      {
+        "flag": "--q",
+        "type": "int",
+        "default": 7,
+        "meaning": "sides of the zw polygon"
+      },
+      {
+        "flag": "--radii",
+        "type": "choice",
+        "choices": [
+          "uniform",
+          "equal"
+        ],
+        "default": "uniform",
+        "meaning": "unit edges or both radii 1"
+      },
+      {
+        "flag": "--rotate",
+        "type": "text",
+        "default": "xw=0.5,yz=0.3",
+        "meaning": "plane rotations applied in order"
+      },
+      {
+        "flag": "--project",
+        "type": "choice",
+        "choices": [
+          "perspective",
+          "stereographic",
+          "orthographic"
+        ],
+        "default": "perspective",
+        "meaning": "4D to 3D projection"
+      },
+      {
+        "flag": "--eye",
+        "type": "float",
+        "default": 2.6,
+        "meaning": "4D eye distance in circumradii"
+      },
+      {
+        "flag": "--style",
+        "type": "choice",
+        "choices": [
+          "cells",
+          "tubes",
+          "lines"
+        ],
+        "default": "cells",
+        "meaning": "exploded prisms, tubes or LINES"
+      },
+      {
+        "flag": "--shrink",
+        "type": "float",
+        "default": 0.86,
+        "meaning": "cell scale toward its own centroid"
+      },
+      {
+        "flag": "--tube",
+        "type": "float",
+        "default": 0.025,
+        "meaning": "tube radius in circumradii"
+      },
+      {
+        "flag": "--cells",
+        "type": "choice",
+        "choices": [
+          "front",
+          "all"
+        ],
+        "default": "front",
+        "meaning": "cells style: only cells facing the 4D eye, or all cells"
+      },
+      {
+        "flag": "--out",
+        "type": "path",
+        "default": null,
+        "meaning": ".gltf model or .json polytope record"
+      }
+    ],
+    "invariants": {
+      "f_vectors": {
+        "3x3": [
+          9,
+          18,
+          15,
+          6
+        ],
+        "4x4": [
+          16,
+          32,
+          24,
+          8
+        ],
+        "5x7": [
+          35,
+          70,
+          47,
+          12
+        ],
+        "3x8": [
+          24,
+          48,
+          35,
+          11
+        ],
+        "6x10": [
+          60,
+          120,
+          76,
+          16
+        ]
+      },
+      "formula_matches": true,
+      "euler_characteristics": [
+        0
+      ],
+      "structure_problems": 0,
+      "hypervolume_3x3": 0.1875,
+      "hypervolume_3x3_formula": 0.1875,
+      "hypervolume_4x4": 1.0,
+      "uniform_5x7": true,
+      "edge_length_5x7": 1.0,
+      "prism_rings_5x7": [
+        5,
+        7
+      ],
+      "pq44_is_tesseract": true
+    },
+    "outputs": [
+      {
+        "path": "example.gltf",
+        "kind": "gltf",
+        "command": [],
+        "meshes": 1,
+        "vertices": 174,
+        "triangles": 96,
+        "morph_targets": 0,
+        "animations": 0
+      }
+    ],
+    "cli_example": [
+      "--p",
+      "3",
+      "--q",
+      "12",
+      "--radii",
+      "equal",
+      "--style",
+      "tubes",
+      "--out",
+      "duoprism_3_12.gltf"
+    ],
+    "coordinates": "x, y, z, w (p-gon in xy, q-gon in zw); projected to Godot/glTF +Y up"
+  },
+  "limits": "p times q is capped at 4096 in the CLI. The exploded view shrinks each projected prism toward its own projected centroid, a display choice. The perspective projection refuses an eye inside the rotated duoprism; flat faces under the stereographic projection approximate curved cell images.",
+  "related": [
+    "tesseract",
+    "clifford_torus",
+    "duocylinder"
+  ],
+  "technique_references": [
+    "Cartesian product of polygons (duoprism)",
+    "f-vector of a product polytope",
+    "hypervolume of a product as the product of areas",
+    "uniform polygon radius 1/(2 sin(pi/n))"
+  ],
+  "native_checks": [
+    "cli_rebuilds_example",
+    "gltf_structure",
+    "godot_gltf_load",
+    "godot_compatibility_render"
+  ]
+}
