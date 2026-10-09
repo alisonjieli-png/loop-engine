@@ -16,7 +16,7 @@ from loop_engine.core.library_ingestion.https_transport import HTTPS_SCHEME
 from loop_engine.core.record_operations_records import parse_json
 
 from .engines import (FAILED, OK, PARTIAL, EngineAnswer, RadarEngineError, ReadContext,
-                      limit_of, observation, parameter)
+                      clean_title, limit_of, observation, parameter)
 from .engines_network import _status_answer
 
 HOST = "huggingface.co"
@@ -96,8 +96,9 @@ class HuggingFaceBenchmarkLeaderboard:
             verified = item.get("verified") if type(item.get("verified")) is bool else None
             direction = item.get("lower_is_better") if type(item.get("lower_is_better")) is bool else None
             key = "hf-benchmark:" + dataset + ":" + item["modelId"] + ":" + str(filename or "") + ":" + str(pull or "")
+            title, _reason = clean_title(item["modelId"] + " on " + dataset)
             rows.append(observation(context, self, key=key, origin="hf:" + item["modelId"],
-                title=item["modelId"] + " on " + dataset,
+                title=title,
                 url=urlunsplit((HTTPS_SCHEME, HOST, "/datasets/" + quote(dataset, safe="/"), "", "")),
                 source_address=address, licence=None,
                 licence_basis="result and benchmark reuse rights have not been qualified",

@@ -104,6 +104,12 @@ class HuggingFaceBenchmarkTests(unittest.TestCase):
         result, _ = self.read([wrong])
         self.assertEqual(result.observations, (), "SDK field names are not the observed REST wire shape")
 
+    def test_long_valid_identity_keeps_exact_fact_and_bounded_title(self):
+        identity = "a" * 96 + "/" + "b" * 96
+        result, _ = self.read([{**ENTRY, "modelId": identity}])
+        self.assertEqual(result.observations[0].facts["model_id"], identity)
+        self.assertLessEqual(len(result.observations[0].title), engines.MAXIMUM_TITLE)
+
     def test_provider_refusals_never_renew_results_or_retry(self):
         for status in (401, 403, 404, 429, 500):
             result, network = self.read(status=status)
