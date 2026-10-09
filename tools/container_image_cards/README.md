@@ -218,11 +218,15 @@ stale (for other bytes) or failed is refused by name.
 `smoke.py` runs a few small images a run names with `--smoke name:tag` on the
 local engine (docker 29.5.2 here, containerd image store): it pulls the platform
 image by its index digest, compares `docker image inspect --platform`'s Config
-with the card's runtime, and runs the argument list `render_run()` writes with
-`--network none` added. An image that exposes no port must exit 0; one that
+with the card's runtime. A failed pull or config comparison ends before
+execution. It runs the argument list `render_run()` writes for the selected
+Docker or Podman engine with `--network none`, 256 MiB memory, one CPU,
+128 processes and no privilege escalation. An image that exposes no port must exit 0; one that
 exposes a port is started detached, must still be running after five seconds
-and is stopped with its stop signal. The image is removed again when the run
-pulled it. A failed smoke run refuses the card (`smoke_check_failed`).
+and is stopped with its stop signal. A private engine-written container ID
+binds cleanup, including after a timeout; a missing identity or failed cleanup
+fails the run. Pulled images remain cached because the daemon may have other
+users. A failed smoke run refuses the card (`smoke_check_failed`).
 
 ## Existing work: adopted, adapted and rejected
 

@@ -17,6 +17,7 @@ from __future__ import annotations
 import hashlib
 import io
 import json
+import subprocess
 import sys
 import tempfile
 import unittest
@@ -506,7 +507,7 @@ class VerifyTests(unittest.TestCase):
 
 
 class SmokeTests(unittest.TestCase):
-    def test_a_smoke_run_pulls_compares_runs_and_removes_what_it_pulled(self):
+    def test_a_smoke_run_pulls_compares_runs_and_cleans_only_its_container(self):
         hub = demo_hub()
         record = cards.contract(demo_family(hub, "2.4.1-alpine"))
         calls = []
@@ -523,6 +524,8 @@ class SmokeTests(unittest.TestCase):
                 return SimpleNamespace(returncode=0, stdout=config_text, stderr="")
             if argv[1:3] == ["container", "inspect"]:
                 return SimpleNamespace(returncode=0, stdout='{"Running": true}', stderr="")
+            if argv[1:2] == ["run"]:
+                Path(argv[argv.index("--cidfile") + 1]).write_text("8" * 64, encoding="ascii")
             return SimpleNamespace(returncode=0, stdout="", stderr="")
 
         module = cards.card_module()
@@ -531,12 +534,85 @@ class SmokeTests(unittest.TestCase):
         self.assertEqual(result["state"], smoke.PASSED, result["checks"])
         started = next(call for call in calls if call[1:2] == ["run"])
         self.assertEqual(started[2:4], ["--network", "none"])
-        self.assertTrue(any(call[1:3] == ["image", "rm"] for call in calls))
+        self.assertTrue(any(call[1:3] == ["container", "rm"] and call[-1] == "8" * 64 for call in calls))
+        self.assertFalse(any(call[1:3] == ["image", "rm"] for call in calls))
         # Known wrong: an engine that reads another config fails the comparison.
         config_text = json.dumps(json.loads(config("amd64", user="root"))["config"])
+        calls.clear()
         with unittest.mock.patch.object(smoke.shutil, "which", return_value="/usr/bin/docker"):
             result = smoke.smoke(record, "f" * 64, module, run=run, sleep=lambda seconds: None)
         self.assertEqual(result["state"], smoke.FAILED)
+        self.assertFalse(any(call[1:2] == ["run"] for call in calls), "a mismatched image must not be run")
+
+    def test_engine_selection_limits_and_failed_cleanup_are_observed(self):
+        for cleanup_status in (0, 1):
+            with self.subTest(cleanup_status=cleanup_status):
+                result, calls = self.run_probe(cleanup_status=cleanup_status)
+                self.assertEqual(result["state"], smoke.PASSED if cleanup_status == 0 else smoke.FAILED)
+                self.assertTrue(all(call[0] == "podman" for call in calls))
+                started = next(call for call in calls if call[1:2] == ["run"])
+                self.assertEqual(started[started.index("--memory") + 1], "256m")
+                self.assertIn("--pids-limit", started)
+                self.assertIn("--cpus", started)
+                self.assertNotIn("--name", started)
+                self.assertFalse(any(call[1:3] == ["image", "rm"] for call in calls))
+
+    def test_pull_failure_stops_before_running_any_container(self):
+        result, calls = self.run_probe(pull_status=1)
+        self.assertEqual(result["state"], smoke.FAILED)
+        self.assertFalse(any(call[1:2] == ["run"] for call in calls))
+        self.assertFalse(any(call[1:3] == ["container", "rm"] for call in calls))
+
+    def test_timed_out_run_cleans_the_exact_owned_container(self):
+        result, calls = self.run_probe(timeout=True)
+        self.assertEqual(result["state"], smoke.FAILED)
+        self.assertIn(["podman", "container", "rm", "--force", "--volumes", "8" * 64], calls)
+
+    def test_missing_or_malformed_identity_never_authorizes_cleanup(self):
+        for identity in (None, "baltor-smoke-existing", "8" * 65):
+            with self.subTest(identity=identity):
+                result, calls = self.run_probe(identity=identity)
+                self.assertEqual(result["state"], smoke.FAILED)
+                self.assertFalse(any(call[1:3] == ["container", "rm"] for call in calls))
+                self.assertFalse(any(call[1:2] == ["stop"] for call in calls))
+
+    def test_engine_timeout_is_a_failed_record(self):
+        def unavailable(*_args, **_settings):
+            raise subprocess.TimeoutExpired("podman", 30)
+        record = cards.contract(demo_family(demo_hub(), "2.4.1-alpine"))
+        with unittest.mock.patch.object(smoke.shutil, "which", return_value="/usr/bin/podman"):
+            result = smoke.smoke(record, "f" * 64, cards.card_module(), engine="podman", run=unavailable)
+        self.assertEqual(result["state"], smoke.FAILED)
+
+    def run_probe(self, *, cleanup_status=0, pull_status=0, timeout=False, identity="8" * 64):
+        record = cards.contract(demo_family(demo_hub(), "2.4.1-alpine"))
+        calls = []
+        config_text = json.dumps(json.loads(config("amd64", user="demo"))["config"])
+
+        def run(argv, **settings):
+            calls.append(argv)
+            status, output = 0, ""
+            if argv[1:2] == ["version"]:
+                output = "5.6.1\n"
+            elif argv[1:2] == ["pull"]:
+                status = pull_status
+            elif argv[1:3] == ["image", "inspect"]:
+                output = config_text if "--platform" in argv else "sha256:" + "9" * 64
+            elif argv[1:2] == ["run"]:
+                if identity is not None:
+                    Path(argv[argv.index("--cidfile") + 1]).write_text(identity, encoding="ascii")
+                if timeout:
+                    raise subprocess.TimeoutExpired(argv, settings["timeout"])
+            elif argv[1:3] == ["container", "inspect"]:
+                output = '{"Running": true}'
+            elif argv[1:3] == ["container", "rm"]:
+                status = cleanup_status
+            return SimpleNamespace(returncode=status, stdout=output, stderr="")
+
+        with unittest.mock.patch.object(smoke.shutil, "which", return_value="/usr/bin/podman"):
+            result = smoke.smoke(record, "f" * 64, cards.card_module(), engine="podman", run=run,
+                                 sleep=lambda _seconds: None)
+        return result, calls
 
 
 if __name__ == "__main__":
