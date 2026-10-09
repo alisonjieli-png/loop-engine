@@ -303,6 +303,24 @@ class BBCodeTests(unittest.TestCase):
         self.assertEqual(self.convert(text), "```gdscript\nfunc f():\n\treturn 1\n```\n\n```csharp\nint F() => 1;\n```"
                                              "\n\n```text\nplain\n```\n\n```gdscript\nvar a = [b]1[/b]\n```")
 
+    def test_hidden_characters_and_comment_openers_are_written_visibly_with_the_same_meaning(self):
+        cases = {
+            "A comment node, e.g. [code]<!--A comment-->[/code].":
+                "A comment node, e.g. <code>&lt;!--A comment--&gt;</code>.",
+            "Plain <!-- text --> and a zero‍width joiner.": "Plain &lt;!-- text --> and a zero&#x200D;width joiner.",
+            "[code]a‍b[/code]": "<code>a&#x200D;b</code>",
+            "\t\t[codeblock]\n\t\tprint(\"❤️‍\U0001f525\")\n\t\t[/codeblock]":
+                "```gdscript\nprint(\"❤️\\u200d\U0001f525\")\n```",
+        }
+        for source, expected in cases.items():
+            converted = self.convert(source)
+            self.assertEqual(converted, expected, source)
+            self.assertFalse(any(bbcode.invisible(character) for character in converted))
+            self.assertNotIn("<!--", converted)
+        # Known wrong: the characters the safety rule calls invisible are found, and a visible one is not.
+        self.assertTrue(bbcode.invisible("‍") and bbcode.invisible("﻿"))
+        self.assertFalse(bbcode.invisible("️") or bbcode.invisible("a"))
+
     def test_known_wrong_an_unknown_tag_is_kept_escaped_and_reported(self):
         context = self.context()
         self.assertEqual(bbcode.to_markdown("A [foo] tag.", context), "A \\[foo\\] tag.")
@@ -382,7 +400,10 @@ def release(**changes):
     values = dict(name="godot", title="Godot", release="4.7.2-stable", version="4.7.2", api_version="4.7",
                   repository="godotengine/godot", commit=COMMIT, binary_name="Godot_v4.7.2-stable_linux.x86_64",
                   binary_sha256="8" * 64, binary_version="4.7.2.stable.official.ed1daf0bf", docs_address=DOCS,
-                  syntax=CARD.GODOT_SYNTAX, renames_from_version="3")
+                  syntax=CARD.GODOT_SYNTAX, renames_from_version="3",
+                  surface_source="dumped with `--doctool` from the official Godot 4.7.2-stable build",
+                  surface_phrase="the surface the engine binary itself reports", text_format="BBCode",
+                  editor_api_types=("editor",), editor_note="**Editor only:** an editor class.")
     values.update(changes)
     return cards.EngineRelease(**values)
 

@@ -29,8 +29,8 @@ build_library_supply.py
 ├── creative-originals  one package per item of Baltor's own creative families (tools/creative_originals:
 │                    Godot, Blender, textures, 2D, 2.5D, 3D and 4D tools), with its native evidence
 ├── engine-api-cards  one version-pinned API contract card per class of a pinned engine release (Godot
-│                    4.7.2-stable): the build's own surface, the class reference text, the renames map, and
-│                    one native check of every card by the same build (tools/engine_api_cards)
+│                    4.7.2-stable): the engine's own surface and reference text, the renames map, and one
+│                    native check of every card by the same engine (tools/engine_api_cards)
 └── report         the supply by family and form, and the projected composition
 ```
 
@@ -479,32 +479,44 @@ def creative_originals(args) -> dict:
                   complete=not args.family and not args.item)
 
 
-def engine_api_cards(args) -> dict:
+def _godot_cards(args, run_folder: Path, workspace: Path, only: tuple) -> tuple:
+    """(reader, read, verifier) of the Godot adapter: the pinned build dumps the surface and checks every card."""
     from engine_api_cards import godot_native
+    from supply_lines import engine_api_cards as line
+    engine = godot_native.locate(args.godot)
+    reader = FactReader(run_folder, line.HOSTS, maximum_requests=args.maximum_requests,
+                        pause_seconds=args.pause_seconds, maximum_bytes=64 * 1024 * 1024)
+    return (reader, lambda: line.read_godot(reader, engine, workspace, only=only),
+            lambda sources: lambda prepared: line.native_evidence(engine, prepared, workspace, run_folder / "evidence"))
+
+
+#: The engine adapters of the engine-api-cards command.
+CARD_ADAPTERS = {"godot": _godot_cards}
+
+
+def engine_api_cards(args) -> dict:
     from supply_lines import engine_api_cards as line
     run_folder = _outside(args.run_folder)
     run_folder.mkdir(parents=True, exist_ok=True)
     revision = code_revision(args.authorize_store_writes)
-    engine = godot_native.locate(args.godot)
-    reader = FactReader(run_folder, line.HOSTS, maximum_requests=args.maximum_requests,
-                        pause_seconds=args.pause_seconds, maximum_bytes=64 * 1024 * 1024)
     workspace = run_folder / "workspace"
+    only = tuple(args.engine_class or ())
+    reader, read, verifier = CARD_ADAPTERS[args.engine](args, run_folder, workspace, only)
     try:
-        sources = line.read_godot(reader, engine, workspace, only=tuple(args.engine_class or ()))
+        sources = read()
     except line.LineStopped as error:
         # The release as a whole cannot be carded (an unreadable tag, a licence the line cannot copy, a build that
         # is not the release's): one refusal names it and nothing is withdrawn.
-        stopped = [records.refusal(records.ENGINE_API_CARDS, error.reason, line.GODOT_REPOSITORY, error.detail)]
+        stopped = [records.refusal(records.ENGINE_API_CARDS, error.reason, args.engine, error.detail)]
         return finish(args, records.ENGINE_API_CARDS, [], stopped, {"stopped": error.reason}, reader, {},
-                      complete=False, scope=line.GODOT_STATE_SCOPE)
+                      complete=False, scope="")
     built, refusals, facts, summary = line.generate(
-        sources, verifier=lambda prepared: line.native_evidence(engine, prepared, workspace, run_folder / "evidence"),
-        code_revision=revision, licence_text=LICENCE_FILE.read_bytes(), generated_on=now_utc()[:10],
-        staging=run_folder / "staging", workers=args.workers, only=tuple(args.engine_class or ()))
+        sources, verifier=verifier(sources), code_revision=revision, licence_text=LICENCE_FILE.read_bytes(),
+        generated_on=now_utc()[:10], staging=run_folder / "staging", workers=args.workers, only=only)
     (run_folder / "summary.json").write_text(json.dumps(summary, indent=1, sort_keys=True) + "\n", encoding="utf-8")
     unread = any(row["reason"] in line.UNREAD_REASONS for row in refusals)
     return finish(args, records.ENGINE_API_CARDS, built, refusals, {"summary": summary, **payload_counts(built)},
-                  reader, facts, complete=not args.engine_class and not unread, scope=line.GODOT_STATE_SCOPE)
+                  reader, facts, complete=not args.engine_class and not unread, scope=sources.state_scope)
 
 
 def creative_assets(args) -> dict:

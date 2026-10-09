@@ -58,10 +58,14 @@ type, and none grants authority.
 ```text
 engine_api_surface/v1 (api.json) and engine_api_card/v1 (component.json): the fixed edge
 ├── godot adapter: Godot 4.7.2-stable (godot_reference.py, godot_renames.py, godot_native.py,
-│   godot_verify.gd, and the fact reading in ../supply_lines/engine_api_cards.py)
-└── further adapters write the same two records (three.js and Babylon.js are planned, each with its own
-    syntax in api_card.py and its own native check)
+│   godot_verify.gd, and the fact reading in ../supply_lines/engine_api_cards.py), syntax "godot"
+└── a further adapter writes the same two records, with its own reader, text interface, syntax (when its
+    declarations read differently) and native check; the card writer, checker and packaging stay as they are
 ```
+
+An adapter gives the card writer its text through one interface (`markdown`, `title`, `address`: the
+BBCode converter's `Context` for Godot), and says in its `EngineRelease` where the
+surface was read, the format and licence of the text, and which classes exist only in an editor.
 
 A card is the same files whatever the engine: `README.md` (and `members-2.md`,
 `members-3.md`, ... for a class past 240,000 bytes), `api.json`,
@@ -128,7 +132,7 @@ default branch's licence file has the commit's own blob identity
 |---|---|
 | ClassDB class | the class exists; its parent is the expected one; every listed method, signal, integer constant and enumeration is the class's own; every property is its own, an element of one of its arrays (`point_{index}/position`), a per-child property of a container holding one child (`tab_{index}/title`), or a setting its settings object holds (ProjectSettings, EditorSettings); a property that overrides an ancestor's default is looked up with inheritance |
 | Variant type | the type exists; every method is callable on a value of the type (`Callable.create(value, name).is_valid()`); every member can be read from one |
-| Global scope | every function compiles in a script, with untyped arguments, one more for a variadic call, or constants of the declared types (`preload` needs a constant path); every member is an engine singleton |
+| Global scope | every function compiles in a script, with untyped arguments, one more for a variadic call, or constants of the declared types (`preload` needs a constant path); every member is an engine singleton (no reflection could fail to know a global scope, so no check claims it) |
 
 The record binds the card digest (every card file but `component.json`, the
 record itself and the attribution), names the build and carries no time stamp.
@@ -143,6 +147,19 @@ settings of `ProjectSettings` that a standard build defines only for the
 doctool (`main/main.cpp`: "Hack to define .NET-specific project settings even
 on non-.NET builds, so that we don't lose their descriptions and default values
 in DocTools"). `Variant` has no surface and is refused as `no_api_surface`.
+
+### What a reader sees, and what it cannot
+
+A card never holds a character a reader cannot see, nor an HTML comment opener: the qualification safety
+rules refuse both, and the 4.7.2 reference has both in four classes (a zero-width joiner inside the emoji
+strings of TextServer, TextEdit and LineEdit; XMLParser's `<!--A comment-->`), which the first full run lost
+for it. Such a character is now written visibly with the same meaning: a numeric character reference in prose,
+an HTML code element in inline code (rendered as the same code span), and a `\u` escape in a code block, where
+the reference has them only inside string literals that GDScript and C# read the same way. The safety rule's
+own definition of an invisible character decides (`bbcode.invisible`).
+
+A class of the `editor` api type (82 in 4.7.2) says so in its header: it exists in the editor, for editor
+plugins and `@tool` scripts, and an exported project does not have it.
 
 ### Renames
 
@@ -160,10 +177,10 @@ custom rules of the converter, not map entries, so no card lists them.
 ## Commands
 
 ```bash
-PYTHONPATH=src:tools python tools/build_library_supply.py engine-api-cards \
+PYTHONPATH=src:tools python tools/build_library_supply.py engine-api-cards [--engine godot] \
   --run-folder RUN --authorize-network-reads [--authorize-store-writes --store-root STORE] \
   [--materialize] [--class Node --class Vector3] [--godot PATH] [--workers 8]
-PYTHONPATH=src:tools python -m unittest tools.test_engine_api_cards
+PYTHONPATH=src:tools python -m unittest tools.test_engine_api_cards tools.test_engine_api_cards_line
 ```
 
 The run folder keeps every fetched fact (cached by address), the dump, the

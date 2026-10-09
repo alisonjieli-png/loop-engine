@@ -25,7 +25,6 @@ import json
 from dataclasses import dataclass
 from pathlib import Path
 
-from . import bbcode
 from .godot_reference import ENUMS, ClassKind, ClassReference
 
 CARD_FILES = Path(__file__).resolve().parent / "card_files"
@@ -77,8 +76,17 @@ class EngineRelease:
     binary_sha256: str
     binary_version: str
     docs_address: str  # the documentation of the same version, which $DOCS_URL names
-    syntax: str  # api_card.GODOT_SYNTAX
+    syntax: str  # api_card.GODOT_SYNTAX or api_card.JAVASCRIPT_SYNTAX
     renames_from_version: str = ""
+    #: Where the surface was read, as the Source section names it, and how the header describes that surface.
+    surface_source: str = ""
+    surface_phrase: str = "the surface the engine itself reports"
+    #: The format the reference text was converted from, and the licence of that text.
+    text_format: str = ""
+    licence: str = "MIT"
+    #: The api types whose classes exist only in the engine's editor, and what a card of such a class says.
+    editor_api_types: tuple = ()
+    editor_note: str = ""
 
     def identity(self) -> dict:
         return {"name": self.name, "title": self.title, "release": self.release, "version": self.version,
@@ -117,35 +125,35 @@ def json_bytes(value) -> bytes:
     return (json.dumps(value, indent=1, ensure_ascii=False) + "\n").encode("utf-8")
 
 
-def purpose(release: EngineRelease, reference: ClassReference, context: bbcode.Context) -> str:
+def purpose(release: EngineRelease, reference: ClassReference, context) -> str:
     """The "Use this card when" line, written from the class's role (its brief description)."""
     code = card_module().code
-    role = bbcode.to_markdown(reference.documentation["brief"], context).replace("\n\n", " ").strip()
+    role = context.markdown(reference.documentation["brief"]).replace("\n\n", " ").strip()
     subject = f"{KIND_PHRASES[reference.kind]} {code(reference.name)}"
     line = f"Use this card when writing or checking {release.title} {release.api_version} code that uses {subject}."
     return line + (f" Its role: {role}" if role else " The class reference gives it no brief description.")
 
 
-def _notes(documentation: dict, context: bbcode.Context) -> list:
-    return [f"**{label}:** {bbcode.to_markdown(documentation[key], context) or label.lower()}"
+def _notes(documentation: dict, context) -> list:
+    return [f"**{label}:** {context.markdown(documentation[key]) or label.lower()}"
             for key, label in NOTE_LABELS if key in documentation]
 
 
-def _item_block(section: str, item: dict, documentation: dict, context: bbcode.Context) -> str:
+def _item_block(section: str, item: dict, documentation: dict, context, syntax: str) -> str:
     module = card_module()
-    parts = [module.ITEM_PREFIX + module.item_line(section, item)]
+    parts = [module.ITEM_PREFIX + module.item_line(section, item, syntax)]
     if section == ENUMS:
         for value, value_documentation in zip(item["values"], documentation["values"]):
-            parts.append(module.VALUE_PREFIX + module.item_line(module.CONSTANTS, value))
+            parts.append(module.VALUE_PREFIX + module.item_line(module.CONSTANTS, value, syntax))
             parts += _notes(value_documentation, context)
-            parts.append(bbcode.to_markdown(value_documentation["description"], context) or NO_DESCRIPTION)
+            parts.append(context.markdown(value_documentation["description"]) or NO_DESCRIPTION)
         return "\n\n".join(parts) + "\n\n"
     parts += _notes(documentation, context)
-    parts.append(bbcode.to_markdown(documentation["description"], context) or NO_DESCRIPTION)
+    parts.append(context.markdown(documentation["description"]) or NO_DESCRIPTION)
     return "\n\n".join(parts) + "\n\n"
 
 
-def _head(api: dict, release: EngineRelease, reference: ClassReference, context: bbcode.Context) -> str:
+def _head(api: dict, release: EngineRelease, reference: ClassReference, context) -> str:
     module = card_module()
     code = module.code
     lines = [module.TITLE_PREFIX + module.title_line(api), purpose(release, reference, context)]
@@ -154,11 +162,12 @@ def _head(api: dict, release: EngineRelease, reference: ClassReference, context:
     if api["inherited_by"]:
         lines.append(module.INHERITED_BY_PREFIX + ", ".join(code(name) for name in api["inherited_by"]))
     lines += _notes(reference.documentation["notes"], context)
-    lines.append(f"{release.title} {release.release}. Every heading below is written from `{API_NAME}`, the "
-                 "surface the engine binary itself reports; the text under it is the engine's own class reference "
-                 "at the same tag.")
-    brief = bbcode.to_markdown(reference.documentation["brief"], context)
-    description = bbcode.to_markdown(reference.documentation["description"], context)
+    if reference.api_type and reference.api_type in release.editor_api_types:
+        lines.append(release.editor_note)
+    lines.append(f"{release.title} {release.release}. Every heading below is written from `{API_NAME}`, "
+                 f"{release.surface_phrase}; the text under it is the engine's own reference at the same release.")
+    brief = context.markdown(reference.documentation["brief"])
+    description = context.markdown(reference.documentation["description"])
     lines.append(module.SECTION_PREFIX + "Description")
     lines.append("\n\n".join(text for text in (brief, description) if text) or NO_DESCRIPTION)
     renames = (api.get("renames") or {}).get("entries") or []
@@ -171,8 +180,7 @@ def _head(api: dict, release: EngineRelease, reference: ClassReference, context:
     tutorials = reference.documentation["tutorials"]
     if tutorials:
         lines.append(module.SECTION_PREFIX + "Tutorials")
-        lines.append("\n".join(f"- [{bbcode.escape_text(row['title']) or row['address']}]"
-                               f"({row['address'].replace(bbcode.DOCS_PLACEHOLDER, release.docs_address)})"
+        lines.append("\n".join(f"- [{context.title(row['title']) or row['address']}]({context.address(row['address'])})"
                                for row in tutorials))
     return "\n\n".join(lines) + "\n\n"
 
@@ -180,19 +188,17 @@ def _head(api: dict, release: EngineRelease, reference: ClassReference, context:
 def _source(api: dict, release: EngineRelease, sources: CardSources, copyright_lines: list) -> str:
     module = card_module()
     lines = [module.SECTION_PREFIX + "Source",
-             f"- Surface: dumped with `--doctool` from the official {release.title} {release.release} build "
-             f"`{release.binary_name}` (SHA-256 `{release.binary_sha256}`), and checked against the same build "
-             "(`verification/native.json`).",
+             f"- Surface: {release.surface_source}, and checked against the same build (`verification/native.json`).",
              f"- Text: `{sources.reference_path}` of {release.repository} at tag `{release.release}` (commit "
-             f"`{release.commit}`), converted from BBCode. " + " ".join(copyright_lines) +
-             " MIT, see `UPSTREAM-LICENSE`."]
+             f"`{release.commit}`), converted from {release.text_format}. " + " ".join(copyright_lines) +
+             f" {release.licence}, see `UPSTREAM-LICENSE`."]
     if api.get("renames"):
         lines.append(f"- Renames: `{sources.renames_path}` at the same commit.")
     lines.append(f"- `{TEST_NAME}` checks that every heading of this card agrees with `{API_NAME}`.")
     return "\n\n".join(lines[:1]) + "\n\n" + "\n".join(lines[1:]) + "\n"
 
 
-def _body(api: dict, reference: ClassReference, context: bbcode.Context) -> list:
+def _body(api: dict, reference: ClassReference, context) -> list:
     """(section, heading block or None, item block) in document order: one row per item."""
     module = card_module()
     rows = []
@@ -201,11 +207,11 @@ def _body(api: dict, reference: ClassReference, context: bbcode.Context) -> list
         documentation = reference.documentation["items"][section]
         for index, item in enumerate(items):
             rows.append((section, module.SECTION_PREFIX + module.HEADINGS[section] + "\n\n" if not index else None,
-                         _item_block(section, item, documentation[index], context)))
+                         _item_block(section, item, documentation[index], context, api["syntax"])))
     return rows
 
 
-def documents(api: dict, release: EngineRelease, reference: ClassReference, context: bbcode.Context,
+def documents(api: dict, release: EngineRelease, reference: ClassReference, context,
               sources: CardSources, copyright_lines: list, *, maximum: int = MAXIMUM_DOCUMENT_BYTES) -> dict:
     """{document name: text}: README.md alone, or README.md and members-N.md when the class is large."""
     module = card_module()
@@ -263,7 +269,7 @@ def tags(release: EngineRelease, reference: ClassReference) -> list:
     return unique[:16]
 
 
-def component_card(api: dict, release: EngineRelease, reference: ClassReference, context: bbcode.Context,
+def component_card(api: dict, release: EngineRelease, reference: ClassReference, context,
                    files: dict, evidence: dict, *, generator: dict, limits: str) -> dict:
     """component.json (engine_api_card/v1): the small contract card a harness reads first."""
     module = card_module()

@@ -56,6 +56,10 @@ GODOT_STATE_SCOPE = "godot_4_7"
 LICENCE_PATH, COPYRIGHT_PATH = "LICENSE.txt", "COPYRIGHT.txt"
 #: The class reference files of the engine repository: the core classes, then each module's and platform's.
 REFERENCE_PATH = re.compile(r"(?:doc/classes|modules/[^/]+/doc_classes|platform/[^/]+/doc_classes)/([^/]+)\.xml")
+#: The format of the Godot class reference text, the api type of its editor-only classes and what their cards say.
+GODOT_TEXT_FORMAT, GODOT_EDITOR_API = "BBCode", "editor"
+GODOT_EDITOR_NOTE = ("**Editor only:** this class exists in the editor, for editor plugins and `@tool` scripts; an "
+                     "exported project does not have it.")
 #: The type of a file in a git tree listing.
 BLOB_TYPE = "blob"
 #: The licence COPYRIGHT.txt names for the engine's own MIT files (Debian's short name for MIT).
@@ -68,8 +72,8 @@ HOSTS = (RAW_HOST, API_HOST) + DOWNLOAD_HOSTS
 ASSET_SUFFIX = ".zip"
 DIGEST_PREFIX = "sha256:"
 MAXIMUM_ASSET_BYTES = 256 * 1024 * 1024
-#: What every card says it does not establish.
-LIMITS = ("The surface is the official Linux x86_64 editor build's: a class, member or setting that only another "
+#: What every Godot card says it does not establish.
+LIMITS = GODOT_LIMITS = ("The surface is the official Linux x86_64 editor build's: a class, member or setting that only another "
           "platform, a .NET build or a module this build lacks registers is not listed. The text is the class "
           "reference at the tag, converted from BBCode; references to other classes are names, not links. "
           "Nothing here was loaded by a harness.")
@@ -148,6 +152,16 @@ class EngineSources:
     release_asset: "dict | None"
     refusals: list = field(default_factory=list)
     summary: dict = field(default_factory=dict)
+    #: The adapter's text interface for one class (a bbcode.Context, a JsDocText); None writes Godot BBCode.
+    text_for: object = None
+    #: The licence file's path at the commit, the basis its class text facts name, what every card says it does
+    #: not establish, and the store state the release keeps.
+    licence_path: str = "LICENSE.txt"
+    text_basis: str = "copyright_file_stanza_expat"
+    limits: str = ""
+    state_scope: str = ""
+    #: A package registry's record of the release the build came from (role package_metadata), when there is one.
+    metadata: "dict | None" = None
 
 
 #: How the licence of the tag was decided: GitHub's interface at the tag, or (when it names none there) GitHub's
@@ -287,17 +301,23 @@ def read_godot(reader, engine, workspace: Path, *, tag: str = GODOT_TAG, bind_re
     else:
         renames_map = None
     asset = _release_asset(reader, engine, tag) if bind_release else None
+    binary = Path(engine.path).name
     release = cards.EngineRelease(
         name=GODOT, title=GODOT_TITLE, release=tag, version=version, api_version=api_version,
-        repository=GODOT_REPOSITORY, commit=commit, binary_name=Path(engine.path).name, binary_sha256=engine.sha256,
+        repository=GODOT_REPOSITORY, commit=commit, binary_name=binary, binary_sha256=engine.sha256,
         binary_version=engine.version, docs_address=https_address(DOCS_HOST, f"en/{api_version}"),
-        syntax=cards.card_module().GODOT_SYNTAX, renames_from_version=godot_renames.FROM_VERSION)
+        syntax=cards.card_module().GODOT_SYNTAX, renames_from_version=godot_renames.FROM_VERSION,
+        surface_source=(f"dumped with `--doctool` from the official {GODOT_TITLE} {tag} build `{binary}` "
+                        f"(SHA-256 `{engine.sha256}`)"),
+        surface_phrase="the surface the engine binary itself reports", text_format=GODOT_TEXT_FORMAT,
+        licence=GENERATED_CODE_LICENCE, editor_api_types=(GODOT_EDITOR_API,), editor_note=GODOT_EDITOR_NOTE)
     licence = dict(pinned[LICENCE_PATH], evidence=decision.evidence(), basis=licence_basis)
     summary = {"dump_classes": len(dump), "dump_sha256": godot_native.dump_digest(dump),
                "reference_files": len(reference_paths), "renames": outcomes,
                "release_asset": asset["url"] if asset else None}
     return EngineSources(release, located, references, documentation, reference_paths, pinned, licence,
-                         pinned[COPYRIGHT_PATH], renames, renames_map, asset, refusals, summary)
+                         pinned[COPYRIGHT_PATH], renames, renames_map, asset, refusals, summary,
+                         licence_path=LICENCE_PATH, limits=GODOT_LIMITS, state_scope=GODOT_STATE_SCOPE)
 
 
 @dataclass(frozen=True)
@@ -313,7 +333,9 @@ class PreparedCard:
 
 
 def _copyright_lines(licence_bytes: bytes) -> list:
-    return [line.strip() for line in licence_bytes.decode("utf-8").splitlines() if line.startswith("Copyright")]
+    """The copyright notices of a licence text, each ending as a sentence."""
+    lines = [line.strip() for line in licence_bytes.decode("utf-8").splitlines() if line.startswith("Copyright")]
+    return [line if line.endswith(".") else line + "." for line in lines]
 
 
 def prepare(sources: EngineSources, licence_text: bytes, only=()) -> tuple:
@@ -344,7 +366,8 @@ def prepare(sources: EngineSources, licence_text: bytes, only=()) -> tuple:
             renames_path=godot_renames.MAP_PATH if renames else "",
             renames_sha256=sources.renames_map["sha256"] if renames else "")
         api = cards.surface_record(sources.release, reference, chains[name], children[name], renames, card_sources)
-        context = bbcode.Context(known, name, sources.release.docs_address, module.code)
+        context = sources.text_for(name) if sources.text_for else bbcode.Context(
+            known, name, sources.release.docs_address, module.code)
         texts = cards.documents(api, sources.release, documentation, context, card_sources,
                                 _copyright_lines(sources.licence["bytes"]))
         files = {path: text.encode("utf-8") for path, text in texts.items()}
@@ -389,7 +412,7 @@ def final_files(card: PreparedCard, evidence: bytes, sources: EngineSources, cod
     release = sources.release
     component = cards.component_card(
         card.api, release, sources.documentation[card.name], card.context, card.files, json.loads(evidence),
-        limits=LIMITS,
+        limits=sources.limits or LIMITS,
         generator={"line": ENGINE_API_CARDS, "version": GENERATOR_VERSION, "adapter": release.name,
                    "code_revision": code_revision})
     return {**card.files, cards.COMPONENT_NAME: cards.json_bytes(component), godot_native.EVIDENCE_PATH: evidence}
@@ -408,16 +431,22 @@ def _package(card: PreparedCard, files: dict, sources: EngineSources, *, code_re
             rows.append(PackageFile(path, data, "other", LICENCE_TEXT))
         elif path == UPSTREAM_LICENCE_NAME:
             rows.append(PackageFile(path, data, "other", LICENCE_TEXT,
-                                    {"url": github_blob_address(release.repository, release.commit, LICENCE_PATH),
+                                    {"url": github_blob_address(release.repository, release.commit,
+                                                                sources.licence_path),
                                      "sha256": sources.licence["sha256"]}))
         else:
             rows.append(PackageFile(path, data, EXECUTABLE_ROLE if path.endswith(PYTHON_SUFFIX) else OTHER_ROLE,
                                     GENERATED))
-    facts = [_fact(sources.licence, "licence_text", sources.licence["basis"]),
-             _fact(sources.copyright, "licence_evidence", "copyright_file_files_star_expat_at_the_tag"),
-             _fact(sources.pinned[card.sources.reference_path], "data_source", "copyright_file_stanza_expat")]
+    facts = [_fact(sources.licence, "licence_text", sources.licence["basis"])]
+    if sources.copyright is not None:
+        facts.append(_fact(sources.copyright, "licence_evidence", "copyright_file_files_star_expat_at_the_tag"))
+    facts.append(_fact(sources.pinned[card.sources.reference_path], "data_source", sources.text_basis))
     if card.sources.renames_path:
-        facts.append(_fact(sources.renames_map, "data_source", "copyright_file_stanza_expat"))
+        facts.append(_fact(sources.renames_map, "data_source", sources.text_basis))
+    if sources.metadata is not None:
+        facts.append(fact_source(sources.metadata["url"], sources.metadata["retrieved_at"], sources.metadata["sha256"],
+                                 len(sources.metadata["bytes"]), "package_metadata", spdx="NOASSERTION",
+                                 basis="registry_record_read_for_the_package_digest_and_its_git_head"))
     if sources.release_asset:
         asset = sources.release_asset
         facts.append(fact_source(asset["url"], asset["retrieved_at"], asset["sha256"], asset["size_bytes"] or 0,

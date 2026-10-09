@@ -47,11 +47,12 @@ CHECKS = {ClassKind.OBJECT_CLASS: (("class_known", None, None), ("parent_matches
                                    ("enumerations_known", "enums", "enums")),
           ClassKind.BUILTIN_TYPE: (("type_known", None, None), ("methods_callable", "methods", "methods"),
                                    ("members_readable", "members", "members")),
-          ClassKind.GLOBAL_SCOPE: (("scope_known", None, None), ("functions_compile", "methods", "functions"),
+          # A global scope has no reflection that could fail to know it: its checks are its functions and singletons.
+          ClassKind.GLOBAL_SCOPE: (("functions_compile", "methods", "functions"),
                                    ("singletons_known", "members", "members"))}
 #: A property that overrides an ancestor's default names that ancestor under this key.
 OVERRIDES_KEY = "overrides"
-KNOWN_CHECKS = ("class_known", "type_known", "scope_known")
+KNOWN_CHECKS = ("class_known", "type_known")
 PARENT_CHECK = "parent_matches"
 #: The most missing names an evidence record lists for one check.
 MAXIMUM_LISTED = 25

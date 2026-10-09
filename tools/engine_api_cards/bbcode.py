@@ -21,12 +21,24 @@ description text (one XML element, lines indented with tabs)
         otherwise read it as markup
 ```
 
+A card never holds a character a reader cannot see, nor an HTML comment opener: the qualification safety rules
+refuse both (hidden_character, hidden_comment), and the class reference has both in a few samples (a zero-width
+joiner inside the emoji strings of TextServer, TextEdit and LineEdit; XMLParser's "<!--A comment-->"). Such a
+character is written visibly instead, with the same meaning: as a numeric character reference in prose, inside
+an HTML code element in inline code (which renders as the same code span), and as a \\u escape in a code block,
+where the class reference has them only inside string literals (GDScript and C# read \\u the same way). Which
+characters are invisible is the safety rule's own definition (tools/candidate_review/prechecks/safety_rules.py).
+
 Nothing here reads a file or the network.
 """
 from __future__ import annotations
 
+import html
 import re
+import unicodedata
 from dataclasses import dataclass, field
+
+from candidate_review.prechecks.safety_rules import ALLOWED_CONTROLS, INVISIBLE_RANGES
 
 #: The tags that open a code block when they start a line, and the language of each block.
 CODEBLOCK, GDSCRIPT, CSHARP, CODEBLOCKS = "codeblock", "gdscript", "csharp", "codeblocks"
@@ -50,13 +62,41 @@ _ESCAPED = {"\\": "\\\\", "`": "\\`", "*": "\\*", "[": "\\[", "]": "\\]"}
 #: Emphasis by underscore needs a word boundary: an underscore inside a word (snake_case) stays as it is.
 UNDERSCORE, SPACE = "_", " "
 _BLOCK_START = re.compile(r"^(#|>|[-+*](?=\s)|=|~|\d+(?=[.)](?:\s|$)))")
-_HTML_START = re.compile(r"<(?=[A-Za-z/!?])")
+_HTML_START = re.compile(r"<(?=[A-Za-z/?])")
+#: An HTML comment, declaration or CDATA opener in prose is written as a character reference.
+_HTML_DECLARATION = re.compile(r"<(?=!)")
+COMMENT_OPENER, FORMAT_CATEGORY = "<!--", "Cf"
+CODE_ELEMENT = "<code>{}</code>"
+
+
+def invisible(character: str) -> bool:
+    """Whether a character is one a reader cannot see: the qualification safety rule's own definition."""
+    code = ord(character)
+    return (any(low <= code <= high for low, high in INVISIBLE_RANGES)
+            or (unicodedata.category(character) == FORMAT_CATEGORY and character not in ALLOWED_CONTROLS))
+
+
+def reference(character: str) -> str:
+    """A character as an HTML numeric character reference (&#x200D;)."""
+    return f"&#x{ord(character):04X};"
+
+
+def code_escape(character: str) -> str:
+    """A character as a \\u escape of a GDScript or C# string literal (\\u200d, or \\U followed by 8 digits)."""
+    code = ord(character)
+    return f"\\u{code:04x}" if code <= 0xFFFF else f"\\U{code:08x}"
+
+
+def visible(text: str, written) -> str:
+    """Text with every invisible character written by ``written``."""
+    return "".join(written(character) if invisible(character) else character for character in text)
 
 
 @dataclass(frozen=True)
 class Context:
     """What a description is read against: the engine's classes, the class it belongs to and the documentation
-    address that replaces $DOCS_URL."""
+    address that replaces $DOCS_URL. It is the card writer's text interface (markdown, title, address), which every
+    engine adapter's text gives."""
 
     classes: frozenset
     current_class: str
@@ -64,8 +104,23 @@ class Context:
     code: object = None  # the card module's code(), so code spans are written one way everywhere
     unresolved: list = field(default_factory=list)
 
+    def markdown(self, text: "str | None") -> str:
+        """A description as Markdown."""
+        return to_markdown(text, self)
+
+    def title(self, text: str) -> str:
+        """A link title as Markdown text."""
+        return escape_text(text)
+
+    def address(self, address: str) -> str:
+        """A documentation address, with $DOCS_URL resolved to the same engine version's documentation."""
+        return _address(self, address)
+
 
 def _code(context: Context, text: str) -> str:
+    if COMMENT_OPENER in text or any(invisible(character) for character in text):
+        # The same code span, as an HTML element whose text holds no comment opener or hidden character.
+        return CODE_ELEMENT.format(visible(html.escape(text, quote=False), reference))
     if context.code is not None:
         return context.code(text)
     fence = "`" * (max((len(run) for run in re.findall(r"`+", text)), default=0) + 1)
@@ -85,7 +140,7 @@ def escape_text(text: str, line_start: bool = False) -> str:
             out.append(UNDERSCORE if before.isalnum() and after.isalnum() else "\\" + UNDERSCORE)
         else:
             out.append(character)
-    escaped = _HTML_START.sub("\\\\<", "".join(out))
+    escaped = _HTML_DECLARATION.sub("&lt;", _HTML_START.sub("\\\\<", visible("".join(out), reference)))
     if line_start:
         stripped = escaped.lstrip(" ")
         match = _BLOCK_START.match(stripped)
@@ -222,7 +277,7 @@ def to_markdown(text: "str | None", context: Context) -> str:
         while index < len(lines) and not lines[index].lstrip("\t").startswith(f"[/{name}"):
             raw = lines[index]
             tabs = len(raw) - len(raw.lstrip("\t"))
-            body.append("\t" * max(0, tabs - indent) + raw.lstrip("\t") if raw.strip() else "")
+            body.append("\t" * max(0, tabs - indent) + visible(raw.lstrip("\t"), code_escape) if raw.strip() else "")
             index += 1
         index += 1
         while body and not body[-1]:

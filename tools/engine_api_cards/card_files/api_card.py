@@ -40,10 +40,11 @@ RENAME_KINDS = (CLASS_RENAME, METHOD_RENAME, PROPERTY_RENAME, SIGNAL_RENAME, CON
 #: The documents a card is written in: README.md, then members-2.md, members-3.md, ... for a large class.
 README, MEMBERS_DOCUMENT = "README.md", "members-{}.md"
 _MEMBERS_DOCUMENT = re.compile(r"members-([2-9]|[1-9][0-9]+)\.md")
-#: The syntax a surface is written in: the engine's own class reference conventions, named by api.json's "syntax".
-GODOT_SYNTAX = "godot"
-SYNTAXES = (GODOT_SYNTAX,)
-VARARG, VOID, ELLIPSIS = "vararg", "void", "..."
+#: The syntax a surface is written in, named by api.json's "syntax": Godot's class reference conventions
+#: ("float get_floor_angle(up_direction: Vector3 = Vector3(0, 1, 0)) const"), or a JavaScript library's JSDoc
+#: conventions in TypeScript notation ("lerp(v: Vector3, alpha: number): Vector3").
+GODOT_SYNTAX, JAVASCRIPT_SYNTAX = SYNTAXES = ("godot", "javascript")
+VARARG, VOID, ELLIPSIS, ANY = "vararg", "void", "...", "any"
 BITFIELD_WRAPPER, ARRAY_WRAPPER, ARRAY_SUFFIX = "BitField[{}]", "Array[{}]", "[]"
 #: What a property heading adds after its declaration, and a theme item's data type.
 MEMBER_NOTES = (("setter", "setter"), ("getter", "getter"), ("overrides", "overrides"))
@@ -81,8 +82,13 @@ def parameters_text(parameters, qualifiers=()) -> str:
     return ", ".join(parts)
 
 
-def signature(section, item) -> str:
-    """The declaration of one item, in the engine's class reference syntax."""
+def signature(section, item, syntax=GODOT_SYNTAX) -> str:
+    """The declaration of one item, in the syntax its surface is written in."""
+    return SIGNATURES[syntax](section, item)
+
+
+def godot_signature(section, item) -> str:
+    """The declaration of one item, in Godot's class reference syntax."""
     qualifiers = tuple(item.get("qualifiers", ()))
     tail = "".join(f" {word}" for word in qualifiers)
     if section in (CONSTRUCTORS, METHODS, OPERATORS):
@@ -100,9 +106,43 @@ def signature(section, item) -> str:
     return f"{item['name']} = {item['value']}"
 
 
-def item_line(section, item) -> str:
+def javascript_parameters(parameters) -> str:
+    """A JavaScript parameter list in TypeScript notation: name: Type, name?: Type, or name: Type = default."""
+    parts = []
+    for parameter in parameters:
+        optional = "?" if parameter.get("optional") and "default" not in parameter else ""
+        part = f"{parameter['name']}{optional}: {parameter.get('type') or ANY}"
+        if "default" in parameter:
+            part += f" = {parameter['default']}"
+        parts.append(part)
+    return ", ".join(parts)
+
+
+def javascript_signature(section, item) -> str:
+    """The declaration of one item of a JavaScript library, its qualifiers (static, async, readonly) first."""
+    prefix = "".join(f"{word} " for word in item.get("qualifiers", ()))
+    if section == CONSTRUCTORS:
+        return f"new {item['name']}({javascript_parameters(item.get('params', ()))})"
+    if section in (METHODS, OPERATORS, ANNOTATIONS):
+        returned = item["returns"].get("type") or ANY if item.get("returns") else VOID
+        return f"{prefix}{item['name']}({javascript_parameters(item.get('params', ()))}): {returned}"
+    if section == SIGNALS:
+        return f"{item['name']}({javascript_parameters(item.get('params', ()))})"
+    if section in (MEMBERS, THEME_ITEMS):
+        text = f"{prefix}{item['name']}: {item.get('type') or ANY}"
+        return text + (f" = {item['default']}" if "default" in item else "")
+    if section == ENUMS:
+        return "enum " + str(item["name"])
+    return f"{prefix}{item['name']} = {item['value']}"
+
+
+#: How each syntax writes a declaration.
+SIGNATURES = {GODOT_SYNTAX: godot_signature, JAVASCRIPT_SYNTAX: javascript_signature}
+
+
+def item_line(section, item, syntax=GODOT_SYNTAX) -> str:
     """The heading line of one item: its declaration as code, then what the declaration does not show."""
-    line = code(signature(section, item))
+    line = code(signature(section, item, syntax))
     if section == MEMBERS:
         for label, key in MEMBER_NOTES:
             if item.get(key):
@@ -149,9 +189,10 @@ def card_lines(api) -> list:
             continue
         lines.append((SECTION, section, HEADINGS[section]))
         for item in items:
-            lines.append((ITEM, section, item_line(section, item)))
+            lines.append((ITEM, section, item_line(section, item, api["syntax"])))
             if section == ENUMS:
-                lines += [(VALUE, section, item_line(CONSTANTS, value)) for value in item.get("values", ())]
+                lines += [(VALUE, section, item_line(CONSTANTS, value, api["syntax"]))
+                          for value in item.get("values", ())]
     return lines
 
 
