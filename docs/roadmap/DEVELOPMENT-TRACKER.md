@@ -3,7 +3,7 @@
 Kind: generated view. Do not edit by hand. The only task authority is
 [roadmap.yaml](roadmap.yaml); change it, then run
 `PYTHONPATH=src:tools .venv/bin/python tools/build_development_tracker.py`.
-Source fingerprint: `sha256:0529f7f2d394fe71a5ec6aabd61661fb7baea926bf19b5a9f0913d99237a9b51`.
+Source fingerprint: `sha256:bac9a84c12c99ca6545147dcafabc9fc233ee179fde0edd07879fff79d8adef8`.
 
 ## Where things stand
 
@@ -290,7 +290,7 @@ Acceptance: New groups pass native checks and do not repeat case jobs from any s
 2. Run the qualification controls and exact candidate checks.
 3. Admit only qualified groups under the existing policy.
 
-Evidence: October 9: the separate scalable campaign's completed prefix held 6,733 groups and 96,077 distinct payloads. All passed its original all-checks qualification. A new native duplicate pass compared both prior case populations and held 376 overlapping groups; 6,357 were admitted into a new cleared folder. Prior execution evidence was reused, not rerun or relabelled as fresh execution. Publication remains separate.
+Evidence: October 9: the separate scalable campaign's completed prefix held 6,733 groups and 96,077 distinct payloads. All passed its original all-checks qualification. A new native duplicate pass compared both prior case populations and held 376 overlapping groups; 6,357 were admitted into a new cleared folder. Its byte-verified bundle contains 90,957 distinct payloads and 64,993 case jobs, with zero job overlap against those two populations. The held groups also retain 1,983 non-overlapping jobs for later regrouping. Prior execution evidence was reused, not rerun or relabelled as fresh execution. Publication remains separate.
 
 Next: Qualify the 379-group pilot separately, then combine only non-overlapping admitted material through the release owner. Use the larger campaign's cleared admission, not its initial 6,733-group folder.
 
@@ -322,9 +322,9 @@ Acceptance: A frozen production plan measures candidate yield, accepted yield, t
 2. Select licensed data tables, executable utilities, harness templates and editable creative materials.
 3. Reuse unchanged implementations and allocate bounded cohorts with explicit stops.
 
-Evidence: October 9: 19 of 92 ranges completed before a private diagnostic record reached 22,313 JSON values while using only 424,336 of its 4 MiB allowance. The decoder incorrectly shared the served-file 20,000-value limit. The local repair has a separate bounded control-record traversal profile, preserves served limits and processes the formerly failing parent. Construction findings now separate missing baseline members from unavailable probe candidates; a fixed 64-parent comparison retains all 496 case jobs.
+Evidence: October 9: 19 of 92 ranges completed before a private diagnostic record reached 22,313 JSON values while using only 424,336 of its 4 MiB allowance. The decoder incorrectly shared the served-file 20,000-value limit. The repair has a separate bounded control-record traversal profile and preserves served limits. A fresh committed-source pilot at 059e5659 completes the formerly failing parent with three cases, 15 distinct payloads and unchanged inputs; it is not admitted or published. Construction findings now separate missing baseline members from unavailable probe candidates; a fixed 64-parent comparison retains all 496 case jobs. Larger recovery is not running while publication consumes the constrained disk headroom.
 
-Next: Release the retained-record traversal repair, confirm a fresh committed-source pilot, and use a new bounded recovery run with updated exclusions. Preserve the old failed journal and keep Claude's creative lane separate.
+Next: Integrate the retained-record repair into the release owner's next application release. Prepare a fresh bounded recovery with updated exclusions and enough disk headroom for generation, qualification and publication. Preserve the old failed journal and keep Claude's creative lane separate.
 
 Comment: Common-word and parameter combinations are research dimensions, not automatically useful files.
 
