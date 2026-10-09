@@ -25,7 +25,7 @@ from types import SimpleNamespace
 from . import engines
 from .assemble import item_digest, json_bytes
 from .pngio import PngError, decode
-from .records import EVIDENCE_RECORD, CreativeRecordError, item_identities, read_family, read_item
+from .records import EVIDENCE_RECORD, FAILED, PASSED, CreativeRecordError, item_identities, read_family, read_item
 
 ROOT = Path(__file__).resolve().parent
 
@@ -72,21 +72,21 @@ def verify_item(family_directory: Path, family: dict, module, identity: str, out
             preview_record = {"path": "preview.png", "sha256": hashlib.sha256(preview).hexdigest(),
                               "width": image["width"], "height": image["height"]}
     except PngError as error:
-        checks, engine = [{"name": "preview_png", "state": "failed", "detail": {"reason": error.reason}}], {}
+        checks, engine = [{"name": "preview_png", "state": FAILED, "detail": {"reason": error.reason}}], {}
         preview = None
     except Exception as error:  # a verifier bug is recorded as a failure, never a pass
-        checks = [{"name": "verifier_error", "state": "failed",
+        checks = [{"name": "verifier_error", "state": FAILED,
                    "detail": {"error": f"{type(error).__name__}: {error}"[:600],
                               "trace": traceback.format_exc()[-1500:]}}]
         engine, preview = {}, None
     for check in checks:
         if not isinstance(check, dict) or set(check) != {"name", "state", "detail"} or check["state"] not in (
-                "passed", "failed"):
-            checks = [{"name": "verifier_output_invalid", "state": "failed", "detail": {"check": repr(check)[:300]}}]
+                PASSED, FAILED):
+            checks = [{"name": "verifier_output_invalid", "state": FAILED, "detail": {"check": repr(check)[:300]}}]
             preview, preview_record = None, None
             break
-    state = "passed" if checks and all(check["state"] == "passed" for check in checks) else "failed"
-    if state != "passed":
+    state = PASSED if checks and all(check["state"] == PASSED for check in checks) else FAILED
+    if state != PASSED:
         preview, preview_record = None, None
     record = {"record_type": EVIDENCE_RECORD, "family": family["family"], "identity": identity, "item_digest": digest,
               "engine": engine, "checks": checks, "state": state, "preview": preview_record}
@@ -97,10 +97,10 @@ def verify_item(family_directory: Path, family: dict, module, identity: str, out
         image_path.write_bytes(preview)
     elif image_path.exists():
         image_path.unlink()
-    if state == "passed":
+    if state == PASSED:
         shutil.rmtree(workspace, ignore_errors=True)
     return {"identity": identity, "state": state,
-            "failed_checks": [check["name"] for check in checks if check["state"] != "passed"]}
+            "failed_checks": [check["name"] for check in checks if check["state"] != PASSED]}
 
 
 def main(argv=None) -> int:
@@ -130,8 +130,8 @@ def main(argv=None) -> int:
             print(json.dumps(row), flush=True)
     rows.sort(key=lambda row: row["identity"])
     summary = {"family": args.family, "items": len(rows),
-               "passed": sum(row["state"] == "passed" for row in rows),
-               "failed": [row for row in rows if row["state"] != "passed"]}
+               "passed": sum(row["state"] == PASSED for row in rows),
+               "failed": [row for row in rows if row["state"] != PASSED]}
     (output / args.family).mkdir(parents=True, exist_ok=True)
     (output / args.family / "SUMMARY.json").write_bytes(json_bytes(summary))
     print(json.dumps({key: summary[key] for key in ("family", "items", "passed")} | {"failed": len(summary["failed"])}))

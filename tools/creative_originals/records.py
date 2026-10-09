@@ -41,7 +41,7 @@ DIMENSIONS = ("2d", "2.5d", "3d", "4d", "none")
 ENGINES = ("godot", "blender", "python", "node", "webgl2_browser", "any_gltf_viewer")
 #: Package file roles (catalogue_packages.FILE_ROLES) an item may declare.
 FILE_ROLES = ("instruction_file", "skill_reference", "skill_asset", "executable_tool", "configuration", "other")
-EVIDENCE_STATES = ("passed", "failed")
+EVIDENCE_STATES = (PASSED, FAILED) = ("passed", "failed")
 
 _IDENTITY = re.compile(r"^[a-z][a-z0-9_]{2,63}$")
 _TAG = re.compile(r"^[a-z0-9][a-z0-9 .+#/-]{0,39}$")
@@ -248,7 +248,7 @@ def read_evidence(data: bytes, family: str, identity: str, item_digest: str) -> 
     return record
 
 
-__all__ = ["FAMILY_RECORD", "ITEM_RECORD", "COMPONENT_RECORD", "EVIDENCE_RECORD", "COMPONENT_NAME", "EVIDENCE_PATH",
+__all__ = ["PASSED", "FAILED", "EVIDENCE_STATES", "FAMILY_RECORD", "ITEM_RECORD", "COMPONENT_RECORD", "EVIDENCE_RECORD", "COMPONENT_NAME", "EVIDENCE_PATH",
            "PREVIEW_PATH", "FORM_KINDS", "ASSET_ROLE_FORMS", "ASSET_ROLES", "DIMENSIONS", "ENGINES", "FILE_ROLES",
            "CreativeRecordError", "read_family", "read_item", "read_evidence", "item_identities", "families",
            "safe_relative"]

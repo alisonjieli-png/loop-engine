@@ -16,6 +16,7 @@ import json
 import os
 import shutil
 import subprocess
+import tempfile
 import time
 from dataclasses import dataclass
 from pathlib import Path
@@ -87,10 +88,11 @@ def locate(name: str) -> Engine:
     for candidate in candidates:
         path = Path(candidate)
         if path.is_file() and os.access(path, os.X_OK):
-            completed = subprocess.run([str(path), "--version"] if name == "godot" else
-                                       [str(path), "--background", "--factory-startup", "--version"],
-                                       capture_output=True, text=True, timeout=120,
-                                       env={**_isolated_environment(Path("/tmp")), "DISPLAY": ""})
+            with tempfile.TemporaryDirectory(prefix="baltor-engine-probe-") as probe_home:
+                completed = subprocess.run([str(path), "--version"] if name == "godot" else
+                                           [str(path), "--background", "--factory-startup", "--version"],
+                                           capture_output=True, text=True, timeout=120,
+                                           env=_isolated_environment(Path(probe_home)))
             lines = [line.strip() for line in completed.stdout.splitlines() if line.strip()]
             version = next((line for line in lines if line[:1].isdigit() or line.startswith("Blender ")), "unknown")
             engine = Engine(name, str(path), version.replace("Blender ", ""), _digest(path))
@@ -128,7 +130,9 @@ def run(engine: Engine, arguments: list, *, workspace: Path, timeout: int = 180,
             command = ["systemd-run", "--user", "--scope", "--quiet", "--collect", "-p", f"MemoryMax={memory}",
                        "-p", "MemorySwapMax=256M", "--", *command]
     started = time.monotonic()
-    env = {**_isolated_environment(home), **(environment or {})}
+    env = _isolated_environment(home)
+    if environment:
+        env.update(environment)
     try:
         completed = subprocess.run(command, cwd=workspace, env=env, capture_output=True, text=True,
                                    errors="replace", timeout=timeout)

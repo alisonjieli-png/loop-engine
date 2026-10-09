@@ -34,6 +34,24 @@ SANDBOX_PYTHON = "/usr/bin/python3"
 
 
 @dataclass(frozen=True)
+class SandboxEnvironment:
+    """The environment a local package test run gets: a fixed search path, a UTF-8 locale and no bytecode files,
+    the way the qualification sandbox starts its interpreter."""
+
+    search_path: str = "/usr/bin:/bin"
+    locale: str = "C.UTF-8"
+    #: PYTHONDONTWRITEBYTECODE: any non-empty value stops the interpreter writing .pyc files into the package.
+    no_bytecode_flag: str = "1"
+
+    def variables(self, home: Path) -> dict:
+        return {"PATH": self.search_path, "HOME": str(home), "LANG": self.locale,
+                "PYTHONDONTWRITEBYTECODE": self.no_bytecode_flag}
+
+
+LOCAL_SANDBOX_ENVIRONMENT = SandboxEnvironment()
+
+
+@dataclass(frozen=True)
 class Entry:
     path: str
     data: bytes
@@ -142,7 +160,8 @@ def write_package(directory: Path, entries: list, licence: "bytes | None" = None
     return directory
 
 
-def run_package_tests(directory: Path, *, timeout: int = 300, python: str = SANDBOX_PYTHON) -> dict:
+def run_package_tests(directory: Path, *, timeout: int = 300, python: str = SANDBOX_PYTHON,
+                      settings: SandboxEnvironment = LOCAL_SANDBOX_ENVIRONMENT) -> dict:
     """Run the package's root test_*.py modules the way the sandbox does: isolated interpreter, package root as cwd.
 
     This is not the sandbox (no namespace, network or resource isolation); it shows a family author whether the
@@ -151,7 +170,7 @@ def run_package_tests(directory: Path, *, timeout: int = 300, python: str = SAND
     tests = sorted(path.stem for path in directory.glob("test_*.py"))
     if not tests:
         return {"state": "failed", "reason": "no_root_test_modules", "tests": []}
-    environment = {"PATH": "/usr/bin:/bin", "HOME": str(directory), "PYTHONDONTWRITEBYTECODE": "1", "LANG": "C.UTF-8"}
+    environment = settings.variables(directory)
     try:
         completed = subprocess.run([python, "-E", "-s", "-B", "-m", "unittest", "-v", *tests], cwd=directory,
                                    env=environment, capture_output=True, text=True, timeout=timeout)
