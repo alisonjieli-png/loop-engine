@@ -16,11 +16,11 @@ artifact does not substitute for testing its live behavior.
 
 Current milestone: two million useful served harness component files, then
 the longer-term ten-million target. The last live observation, on October 9
-after the case publication, is 1,557,669 distinct files in 255,967 packages
-(release `413a05d3...`). The contract and case batches added 120,036 and 84,604
-net-new digests, preserved every prior version and all 448 Public Good grants,
-passed ordinary-account retrieval checks and are mirrored to R2. That leaves
-442,331 files to the next milestone.
+after the creative publication, is 1,560,856 distinct files in 256,380 packages
+(release `29a2bc33...`). The contract, case and creative batches added 120,036,
+84,604 and 3,187 net-new digests, preserved every prior version and all 448
+Public Good grants, passed ordinary-account retrieval checks and are mirrored
+to R2. That leaves 439,144 files to the next milestone.
 
 Release 83 completes the owner's three-offering presentation priority.
 Pricing sits outside the hero in its own section, with
@@ -281,7 +281,7 @@ delay a ready publication or exhaust memory, storage or provider allowances.
 
 | Workstream | Prepared or verified | Current release cycle | Following cycle | Acceptance |
 | --- | --- | --- | --- | --- |
-| Ten-million-file supply | 1,557,669 distinct files live; listing repaired | ACTIVE: bounded private atom generation; independently review candidates | Expand qualified code, data, native assets and source-backed feeds | GATE: 10,000,000 distinct served digests with preserved access and useful family coverage |
+| Ten-million-file supply | 1,560,856 distinct files live; listing repaired | ACTIVE: bounded private atom generation; independently review candidates | Expand qualified code, data, native assets and source-backed feeds | GATE: 10,000,000 distinct served digests with preserved access and useful family coverage |
 | Public Good coverage | All 17 goals; 448 groups / 1,128 useful files live | DONE: new SDG exact download and isolated deterministic customer use | Preserve access through next release | Broaden useful coverage |
 | Cloudflare storage and delivery | All nine product hostnames; all current file bodies mirrored | NEXT: qualify R2 customer delivery and failure/revocation behavior | Select verified bodies and measure the D1 alternative | GATE: live integrity, authorization, failure recovery and measured cost |
 | Internal repository and paper intelligence | Existing radar and query executor contracts | ACTIVE: pin sources, observations, ranking rules and worker deployment | Cloudflare acquisition, private raw storage and checked production | GATE: repeatable current-source results and recovery from duplicate delivery |

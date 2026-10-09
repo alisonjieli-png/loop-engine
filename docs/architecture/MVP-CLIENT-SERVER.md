@@ -68,10 +68,10 @@ the release-83 review found overstated.
 
 All nine product hostnames now serve public assets through Cloudflare and
 forward dynamic requests to Fly. The technical Fly hostname remains a direct
-fallback. Export `cad2ab154429...` contains 2,556 files, all verified on
-`baltor.ai` against their exact bodies and required headers. It was refreshed
-from the deployed revision after the case publication so the homepage shows
-the 1,557,669 files served now. It reads the live
+fallback. Export `04d74cbc354d...` contains 2,556 files, all verified on
+`baltor.ai` against their exact bodies and required headers. It is refreshed
+from the deployed revision after each catalogue publication, so the homepage
+shows the 1,560,856 files served now. It reads the live
 population, so the homepage shows the 1,473,065 files served now. Disable proxying on the saved DNS
 records to recover the direct paths; do not delete the routes or resources.
 
@@ -118,9 +118,15 @@ It is not a third paid hosted plan. The flexible price clause is published;
 reconcile a new-signup Price without changing existing subscriptions or grants.
 Hosted Overnight / AFK Work needs actual coordination, isolation, recovery
 and checkout before sale.
-The catalogue now serves 255,967 packages and 1,557,669 distinct files,
-release `413a05d39aab...`, content `1b89e70c1dc1...`, catalogue state revision
-40. The October 9 afternoon publication added 6,357 qualified API
+The catalogue now serves 256,380 packages and 1,560,856 distinct files,
+release `29a2bc33c313...`, content `be16755d2c48...`, catalogue state revision
+41. The October 9 evening publication added 413 original creative harness
+components (Godot shaders and components, Blender tools, procedural textures,
+geometry and mesh algorithms, evaluation atoms and occupation task kits) and
+3,187 distinct files; its
+[publication record](../../artifacts/architecture-audit-2026-09-19/catalogue-creative-originals-2026-10-09.json)
+binds a non-staff download of a new package. Before it, the October 9
+afternoon publication, release `413a05d39aab...`, added 6,357 qualified API
 constraint-case packages and 84,604 distinct files; a non-staff account
 downloaded a new case package exactly, and its
 [publication record](../../artifacts/architecture-audit-2026-09-19/catalogue-api-cases-2026-10-09.json)
@@ -142,9 +148,9 @@ tool as an ordinary no-plan customer, preserves paid usage and passes its
 isolated declared example, schemas and calendar-oracle checks.
 Volume body storage, custom SQLite search and Supabase identity remain
 selected. R2 has verified the preceding 1,352,837 files, a separate 192-body
-delta and the new bodies of releases `a4ba2053` (120,036) and `413a05d3`
-(84,604): complete current-catalogue coverage across four scopes, not a fresh
-full rerun or a body-engine switch. Public Good policy `9f0f5cfe...`
+delta and the new bodies of releases `a4ba2053` (120,036), `413a05d3`
+(84,604) and `29a2bc33` (3,187): complete current-catalogue coverage across
+five scopes, not a fresh full rerun or a body-engine switch. Public Good policy `9f0f5cfe...`
 preserves 424 grants and adds the 24 SDG tools, for 448 available groups and
 1,128 distinct useful files across all 17 goals. Limits are unchanged;
 new grants expire October 31 at 00:00 UTC. The complete granted group remains

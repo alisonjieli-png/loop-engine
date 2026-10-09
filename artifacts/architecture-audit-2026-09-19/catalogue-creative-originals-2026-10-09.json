@@ -1,0 +1,3487 @@
+{
+ "record_type": "catalogue_publication_evidence/v1",
+ "recorded_on": "2026-10-09",
+ "application_release": 85,
+ "source_bundle": {
+  "path": ".le-creative-3d/out/supply/additions-creative-d25e6cb4",
+  "digest": "9221bced200f0639bfc04425b5573428c8c0f2d309167bd5ac11996e05cc94c9",
+  "built_from_main": "d25e6cb4"
+ },
+ "publisher_source_revision": "c1e3c1313998584bda79f0f6f0e9bac03ebfddef",
+ "base_release": "413a05d39aab9fc9785c2c93cb9d748a0c54b4f056048a094ff8d85af8f8cf6a",
+ "active_release": "29a2bc33c3132a97466e79c18350f3574624f2ef7967b07241029e269b92e742",
+ "bundle_digest": "c6224e7335394d295e5c24e71856f87826198daca04c4c2b024ec1f3d34b7a72",
+ "content_digest": "be16755d2c4876d165cc1776d9507341f9f0037b00823e66a84ca04149850870",
+ "reconciliation_digest": "0622ed3a2564ce703ec2138fca043d526d333e75fb06b4800b28831c6a3206af",
+ "catalogue_state_revision": 41,
+ "confirmed_at": "2026-10-09T18:13:20.150376+00:00",
+ "items_before": 255967,
+ "items_after": 256380,
+ "distinct_files_before": 1557669,
+ "distinct_files_after": 1560856,
+ "new_distinct_files": 3187,
+ "new_distinct_bytes": 31534700,
+ "distinct_file_bytes_after": 8309209485,
+ "unchanged_item_versions": 255967,
+ "replaced": 0,
+ "withdrawn": [],
+ "admission": {
+  "tier": "community",
+  "line": "creative_originals",
+  "items": 413,
+  "kinds": "Godot 4 shaders and gameplay components, Blender 5.2 tools, procedural texture generators, four-dimensional geometry, mesh algorithms, asset contract checkers, evaluation atoms and occupation task kits",
+  "basis": "deterministic qualification of all 413 items with every check against the live a4ba2053 mirror and the 20 live licence labels, admitted with the shared decision ledger; native engine verification where an engine applies; independent review ongoing",
+  "licences": {
+   "MIT": 413
+  }
+ },
+ "checks": {
+  "judged_queries": 354,
+  "judged_queries_first_results_changed": [
+   {
+    "after": [
+     "canonicalize_company_legal_suffixes",
+     "restore_capitalisation_of_names",
+     "layer_exception_catalogs_with_precedence",
+     "library.supply.openapi_operations.1986a83ff0eaeb77f752911b.92769cc9e2eca0e5",
+     "import_skill_refactoring_c060019b1896",
+     "library.supply.data_tables.fac3f2b2ca53314f77ec72da.7bb654e4bedef8bc",
+     "import_skill_policy_drafting_6ac6e62fa2a7",
+     "import_rules_30_background_agents_ec57ba4fbf9c",
+     "import_skill_chemaudit_standardization_0b960fa868fc",
+     "library.supply.openapi_operations.9ad2339ea889002caee5c246.1af8fdc5a6308b19"
+    ],
+    "before": [
+     "canonicalize_company_legal_suffixes",
+     "restore_capitalisation_of_names",
+     "layer_exception_catalogs_with_precedence",
+     "library.supply.openapi_operations.1986a83ff0eaeb77f752911b.92769cc9e2eca0e5",
+     "import_skill_refactoring_c060019b1896",
+     "library.supply.data_tables.fac3f2b2ca53314f77ec72da.7bb654e4bedef8bc",
+     "import_rules_30_background_agents_ec57ba4fbf9c",
+     "import_skill_policy_drafting_6ac6e62fa2a7",
+     "library.supply.openapi_operations.9ad2339ea889002caee5c246.1af8fdc5a6308b19",
+     "import_skill_chemaudit_standardization_0b960fa868fc"
+    ],
+    "entered": [],
+    "expected": [
+     "canonicalize_company_legal_suffixes"
+    ],
+    "expected_ranks": {
+     "canonicalize_company_legal_suffixes": [
+      1,
+      1
+     ]
+    },
+    "left": [],
+    "query": "standardize Inc and LLC in company names"
+   },
+   {
+    "after": [
+     "normalize_and_recover_email_addresses",
+     "restore_capitalisation_of_names",
+     "analyse_errors_by_segment_and_cluster",
+     "freeze_the_success_metric_before_measuring",
+     "score_duplicate_pairs_by_weakest_signal",
+     "library.supply.openapi_operations.4831cbeac8b9d3337b9937b8.0b36be6283d71ea9",
+     "library.supply.mcp_registry.712a8eb5ffc31efed8b38ee3.9f921a1fcd4b0ba3",
+     "library.supply.openapi_operations.2d71a9a65bde78d92eeffeaf.5c4def355841b9eb",
+     "library.supply.openapi_operations.b0f73510740177512be11b19.7f68cbc70a54097a",
+     "library.supply.openapi_operations.750d07f18bdb8c597454c77f.365f81a432727f20"
+    ],
+    "before": [
+     "normalize_and_recover_email_addresses",
+     "restore_capitalisation_of_names",
+     "analyse_errors_by_segment_and_cluster",
+     "freeze_the_success_metric_before_measuring",
+     "score_duplicate_pairs_by_weakest_signal",
+     "library.supply.openapi_operations.4831cbeac8b9d3337b9937b8.0b36be6283d71ea9",
+     "library.supply.mcp_registry.712a8eb5ffc31efed8b38ee3.9f921a1fcd4b0ba3",
+     "library.supply.openapi_operations.2d71a9a65bde78d92eeffeaf.5c4def355841b9eb",
+     "library.supply.openapi_operations.750d07f18bdb8c597454c77f.365f81a432727f20",
+     "library.supply.openapi_operations.b0f73510740177512be11b19.7f68cbc70a54097a"
+    ],
+    "entered": [],
+    "expected": [
+     "normalize_and_recover_email_addresses"
+    ],
+    "expected_ranks": {
+     "normalize_and_recover_email_addresses": [
+      1,
+      1
+     ]
+    },
+    "left": [],
+    "query": "fix typos in email domains like gmail.con"
+   },
+   {
+    "after": [
+     "normalize_whitespace_and_unicode_text",
+     "library.supply.function_extracts.1079d0d6c0d82158d23722b9.2477efdce756d48c",
+     "library.supply.function_extracts.909b46dc84f1747e7637cb20.ed6c0935a6511652",
+     "library.supply.data_tables.987054a43e174e5331344652.e6bb744389f0c335",
+     "library.supply.function_extracts.7b8182ebd444ac7986be6c23.d56a80b08e26e5b1",
+     "library.supply.creative_originals.54ead8bd0d771da1292b5cfc.a8f1d6839e841620",
+     "import_skill_requirements_engineering_ccc293868df1",
+     "import_hook_lib_strip_heredoc_sh_61d5a2e7ec76",
+     "library.supply.creative_originals.6dd3549f786d3e5278e63ecf.cb1bab0400e15f59",
+     "import_skill_release_659e0d873bb1"
+    ],
+    "before": [
+     "normalize_whitespace_and_unicode_text",
+     "library.supply.function_extracts.1079d0d6c0d82158d23722b9.2477efdce756d48c",
+     "library.supply.function_extracts.909b46dc84f1747e7637cb20.ed6c0935a6511652",
+     "library.supply.data_tables.987054a43e174e5331344652.e6bb744389f0c335",
+     "library.supply.function_extracts.7b8182ebd444ac7986be6c23.d56a80b08e26e5b1",
+     "import_skill_requirements_engineering_ccc293868df1",
+     "import_hook_lib_strip_heredoc_sh_61d5a2e7ec76",
+     "import_skill_release_659e0d873bb1",
+     "library.supply.openapi_operations.a7fb4b1a1349dd8ef43da48b.68869dde7149788a",
+     "library.supply.json_schemas.ed96eb60f51ba956518d90f0.319aac258ecba4c6"
+    ],
+    "entered": [
+     "library.supply.creative_originals.54ead8bd0d771da1292b5cfc.a8f1d6839e841620",
+     "library.supply.creative_originals.6dd3549f786d3e5278e63ecf.cb1bab0400e15f59"
+    ],
+    "expected": [
+     "normalize_whitespace_and_unicode_text"
+    ],
+    "expected_ranks": {
+     "normalize_whitespace_and_unicode_text": [
+      1,
+      1
+     ]
+    },
+    "left": [
+     "library.supply.openapi_operations.a7fb4b1a1349dd8ef43da48b.68869dde7149788a",
+     "library.supply.json_schemas.ed96eb60f51ba956518d90f0.319aac258ecba4c6"
+    ],
+    "query": "strip non-breaking spaces and zero width characters"
+   },
+   {
+    "after": [
+     "read_the_train_validation_gap",
+     "check_that_a_result_is_stable_and_generalizes",
+     "decide_whether_a_step_needs_a_model",
+     "look_for_structure_the_model_missed",
+     "escalate_uncertain_values_with_candidates",
+     "detect_malformed_values_by_dominant_pattern",
+     "measure_the_environment_before_relying_on_it",
+     "check_for_existing_work_before_building",
+     "verify_the_requested_output",
+     "forecast_an_action_then_compare"
+    ],
+    "before": [
+     "read_the_train_validation_gap",
+     "check_that_a_result_is_stable_and_generalizes",
+     "decide_whether_a_step_needs_a_model",
+     "look_for_structure_the_model_missed",
+     "detect_malformed_values_by_dominant_pattern",
+     "escalate_uncertain_values_with_candidates",
+     "measure_the_environment_before_relying_on_it",
+     "check_for_existing_work_before_building",
+     "verify_the_requested_output",
+     "forecast_an_action_then_compare"
+    ],
+    "entered": [],
+    "expected": [
+     "read_the_train_validation_gap"
+    ],
+    "expected_ranks": {
+     "read_the_train_validation_gap": [
+      1,
+      1
+     ]
+    },
+    "left": [],
+    "query": "is my model overfitting"
+   },
+   {
+    "after": [
+     "plan_and_split_work_with_explicit_joins",
+     "find_duplicate_records_with_blocking_keys",
+     "propose_a_dedupe_without_deleting_rows",
+     "import_command_command_ce3ed1b88db7",
+     "import_skill_join_discord_56a566b9339d",
+     "import_skill_pathfinder_482efb313eb0",
+     "library.supply.openapi_operations.dbf3382db0c00097a5ed7655.92a5a623af592a69",
+     "library.supply.openapi_operations.42634c5b06c619ef6adf3571.bf9445cd339167ed",
+     "library.supply.creative_originals.de1a52a223ce40b40a15eba3.c79dab8f0c0eaff3",
+     "library.supply.openapi_operations.a8dc356a22b5fb5fcba75251.3702867c5700de64"
+    ],
+    "before": [
+     "plan_and_split_work_with_explicit_joins",
+     "find_duplicate_records_with_blocking_keys",
+     "propose_a_dedupe_without_deleting_rows",
+     "import_command_command_ce3ed1b88db7",
+     "import_skill_join_discord_56a566b9339d",
+     "import_skill_pathfinder_482efb313eb0",
+     "library.supply.openapi_operations.dbf3382db0c00097a5ed7655.92a5a623af592a69",
+     "library.supply.openapi_operations.42634c5b06c619ef6adf3571.bf9445cd339167ed",
+     "library.supply.openapi_operations.a8dc356a22b5fb5fcba75251.3702867c5700de64",
+     "library.supply.openapi_operations.58c877d107eee9a97a81136a.85edea69c8c8e192"
+    ],
+    "entered": [
+     "library.supply.creative_originals.de1a52a223ce40b40a15eba3.c79dab8f0c0eaff3"
+    ],
+    "expected": [
+     "check_a_table_join_before_trusting_it"
+    ],
+    "expected_ranks": {
+     "check_a_table_join_before_trusting_it": [
+      null,
+      null
+     ]
+    },
+    "left": [
+     "library.supply.openapi_operations.58c877d107eee9a97a81136a.85edea69c8c8e192"
+    ],
+    "query": "join duplicated my rows"
+   },
+   {
+    "after": [
+     "write_a_pinned_container_and_batch_job",
+     "export_a_standalone_python_package",
+     "import_skill_docker_feabfcd61c0a",
+     "import_command_build_image_574a5a517f97",
+     "import_skill_docker_patterns_4ebae8d82501",
+     "import_skill_gke_batch_hpc_d440c55a73fd",
+     "library.supply.openapi_operations.14ad4980e13bf518927f08fe.e7b9a28a8477b49d",
+     "import_skill_containerize_aspnetcore_2905ed432914",
+     "library.supply.openapi_operations.ff08b1aa79dbeb7bc0d3d4fb.c99a461ccda9eb05",
+     "library.supply.openapi_operations.0f05322a126fa5ba37181671.e894faed48813efd"
+    ],
+    "before": [
+     "write_a_pinned_container_and_batch_job",
+     "export_a_standalone_python_package",
+     "import_skill_docker_feabfcd61c0a",
+     "import_command_build_image_574a5a517f97",
+     "import_skill_docker_patterns_4ebae8d82501",
+     "import_skill_gke_batch_hpc_d440c55a73fd",
+     "library.supply.openapi_operations.14ad4980e13bf518927f08fe.e7b9a28a8477b49d",
+     "import_skill_containerize_aspnetcore_2905ed432914",
+     "library.supply.openapi_operations.ff08b1aa79dbeb7bc0d3d4fb.c99a461ccda9eb05",
+     "import_skill_resize_images_0d2bd42e520f"
+    ],
+    "entered": [
+     "library.supply.openapi_operations.0f05322a126fa5ba37181671.e894faed48813efd"
+    ],
+    "expected": [
+     "write_a_pinned_container_and_batch_job"
+    ],
+    "expected_ranks": {
+     "write_a_pinned_container_and_batch_job": [
+      1,
+      1
+     ]
+    },
+    "left": [
+     "import_skill_resize_images_0d2bd42e520f"
+    ],
+    "query": "Dockerfile for a batch job pinned image"
+   },
+   {
+    "after": [
+     "carry_competing_readings_of_a_request",
+     "read_the_train_validation_gap",
+     "decide_whether_a_step_needs_a_model",
+     "import_command_question_9d059cb6eabf",
+     "import_rules_get_more_from_ai_3774e097b2ff",
+     "import_skill_ddw_help_de246cf47e02",
+     "import_skill_pragmatic_howto_b0e55f0dcb63",
+     "import_skill_call_coaching_cdbe302fe031",
+     "import_skill_gno_onboard_00a7a13f7663",
+     "import_skill_purchaseplus_how_to_cb30faddc186"
+    ],
+    "before": [
+     "carry_competing_readings_of_a_request",
+     "read_the_train_validation_gap",
+     "decide_whether_a_step_needs_a_model",
+     "import_command_question_9d059cb6eabf",
+     "import_rules_get_more_from_ai_3774e097b2ff",
+     "import_skill_ddw_help_de246cf47e02",
+     "import_skill_pragmatic_howto_b0e55f0dcb63",
+     "import_skill_call_coaching_cdbe302fe031",
+     "import_skill_purchaseplus_how_to_cb30faddc186",
+     "import_skill_gno_onboard_00a7a13f7663"
+    ],
+    "entered": [],
+    "expected": [
+     "read_a_failure_report_and_name_the_first_wrong_value"
+    ],
+    "expected_ranks": {
+     "read_a_failure_report_and_name_the_first_wrong_value": [
+      null,
+      null
+     ]
+    },
+    "left": [],
+    "query": "how do I read a stack trace"
+   },
+   {
+    "after": [
+     "forecast_an_action_then_compare",
+     "hand_over_a_result_its_consumer_can_use",
+     "carry_competing_readings_of_a_request",
+     "detect_malformed_values_by_dominant_pattern",
+     "check_for_existing_work_before_building",
+     "look_for_structure_the_model_missed",
+     "choose_metrics_by_task_type_and_industry",
+     "report_observed_derived_assumed_and_unknown",
+     "import_skill_blast_radius_review_0a3a3cd106a9",
+     "import_skill_research_3f8c503e7f7b"
+    ],
+    "before": [
+     "forecast_an_action_then_compare",
+     "hand_over_a_result_its_consumer_can_use",
+     "carry_competing_readings_of_a_request",
+     "detect_malformed_values_by_dominant_pattern",
+     "look_for_structure_the_model_missed",
+     "check_for_existing_work_before_building",
+     "choose_metrics_by_task_type_and_industry",
+     "report_observed_derived_assumed_and_unknown",
+     "import_skill_blast_radius_review_0a3a3cd106a9",
+     "import_skill_research_3f8c503e7f7b"
+    ],
+    "entered": [],
+    "expected": [
+     "review_a_change_for_correctness"
+    ],
+    "expected_ranks": {
+     "review_a_change_for_correctness": [
+      null,
+      null
+     ]
+    },
+    "left": [],
+    "query": "what should I look for when reviewing a pull request"
+   },
+   {
+    "after": [
+     "import_skill_azure_kubernetes_automatic_readiness_123b988d5cb7",
+     "import_skill_migration_risk_analyzer_c49c72589c5f",
+     "import_skill_qdrant_migration_tool_4e524696a9ea",
+     "import_skill_google_agents_cli_scaffold_0469e3173c3c",
+     "import_skill_oma_architecture_e6c0a5c185a0",
+     "import_skill_database_migration_9719fc396d8c",
+     "import_subagent_arm_migration_2fbcbb5cbe13",
+     "library.supply.openapi_operations.09c94e764e5e8acef16ad854.ff295dbfaebdf570",
+     "library.supply.openapi_operations.775c7889163cb4ddc63f1bf2.b2d8c7e96f2f7376",
+     "import_skill_seo_drift_44d1eb8138f6"
+    ],
+    "before": [
+     "import_skill_azure_kubernetes_automatic_readiness_123b988d5cb7",
+     "import_skill_migration_risk_analyzer_c49c72589c5f",
+     "import_skill_qdrant_migration_tool_4e524696a9ea",
+     "import_skill_oma_architecture_e6c0a5c185a0",
+     "import_skill_google_agents_cli_scaffold_0469e3173c3c",
+     "import_skill_database_migration_9719fc396d8c",
+     "import_subagent_arm_migration_2fbcbb5cbe13",
+     "import_subagent_testing_agent_43b1e53072b2",
+     "library.supply.openapi_operations.09c94e764e5e8acef16ad854.ff295dbfaebdf570",
+     "library.supply.openapi_operations.775c7889163cb4ddc63f1bf2.b2d8c7e96f2f7376"
+    ],
+    "entered": [
+     "import_skill_seo_drift_44d1eb8138f6"
+    ],
+    "expected": [
+     "write_a_migration_that_is_safe_to_run_twice"
+    ],
+    "expected_ranks": {
+     "write_a_migration_that_is_safe_to_run_twice": [
+      null,
+      null
+     ]
+    },
+    "left": [
+     "import_subagent_testing_agent_43b1e53072b2"
+    ],
+    "query": "the deployment retried and ran my migration twice"
+   },
+   {
+    "after": [
+     "propose_a_dedupe_without_deleting_rows",
+     "find_duplicate_records_with_blocking_keys",
+     "import_rules_support_a_friend_in_crisis_981b1745dce1",
+     "import_rules_reconnect_with_someone_b33a50298ee5",
+     "library.supply.data_tables.ba99eb66a768d3554843ef76.b5e6025a0384ef55",
+     "library.supply.publisher_tables.e438801c3fe8d96d18e581f6.8a8bd02bc5156668",
+     "import_rules_digital_death_plan_f6caaf2befe1",
+     "library.supply.publisher_tables.858627f9912589197d0df8cb.40750887740dac73",
+     "library.supply.publisher_tables.8846a2ea81e88c93f1c98bc5.28a5e3c13520837b",
+     "library.supply.publisher_tables.d0d86374d83fdacc2334d4c1.0855b046f3662b5d"
+    ],
+    "before": [
+     "propose_a_dedupe_without_deleting_rows",
+     "find_duplicate_records_with_blocking_keys",
+     "import_rules_support_a_friend_in_crisis_981b1745dce1",
+     "import_rules_reconnect_with_someone_b33a50298ee5",
+     "library.supply.data_tables.ba99eb66a768d3554843ef76.b5e6025a0384ef55",
+     "library.supply.publisher_tables.e438801c3fe8d96d18e581f6.8a8bd02bc5156668",
+     "library.supply.publisher_tables.858627f9912589197d0df8cb.40750887740dac73",
+     "library.supply.publisher_tables.8846a2ea81e88c93f1c98bc5.28a5e3c13520837b",
+     "import_rules_digital_death_plan_f6caaf2befe1",
+     "library.supply.publisher_tables.d0d86374d83fdacc2334d4c1.0855b046f3662b5d"
+    ],
+    "entered": [],
+    "expected": [
+     "bound_a_list_endpoint_with_paging_and_limits"
+    ],
+    "expected_ranks": {
+     "bound_a_list_endpoint_with_paging_and_limits": [
+      null,
+      null
+     ]
+    },
+    "left": [],
+    "query": "someone asked my endpoint for a million rows"
+   },
+   {
+    "after": [
+     "report_observed_derived_assumed_and_unknown",
+     "diagnose_a_stall_and_change_strategy",
+     "write_a_pinned_container_and_batch_job",
+     "find_duplicate_records_with_blocking_keys",
+     "library.supply.openapi_operations.5dcb8cf06490205aa795ee8b.43322859545bdd02",
+     "import_subagent_testing_agent_43b1e53072b2",
+     "import_skill_create_session_duration_rule_d15c09507a4d",
+     "library.supply.openapi_operations.014314cc9be1754358199135.1778acadac16d937",
+     "import_skill_create_timeout_policy_rule_762b96421afd",
+     "import_command_defect_03dbc176f710"
+    ],
+    "before": [
+     "report_observed_derived_assumed_and_unknown",
+     "diagnose_a_stall_and_change_strategy",
+     "write_a_pinned_container_and_batch_job",
+     "find_duplicate_records_with_blocking_keys",
+     "import_subagent_testing_agent_43b1e53072b2",
+     "library.supply.openapi_operations.5dcb8cf06490205aa795ee8b.43322859545bdd02",
+     "import_skill_create_session_duration_rule_d15c09507a4d",
+     "library.supply.openapi_operations.014314cc9be1754358199135.1778acadac16d937",
+     "import_skill_change_map_349323a02a17",
+     "import_skill_create_timeout_policy_rule_762b96421afd"
+    ],
+    "entered": [
+     "import_command_defect_03dbc176f710"
+    ],
+    "expected": [
+     "make_a_write_safe_to_repeat_with_an_idempotency_key"
+    ],
+    "expected_ranks": {
+     "make_a_write_safe_to_repeat_with_an_idempotency_key": [
+      null,
+      null
+     ]
+    },
+    "left": [
+     "import_skill_change_map_349323a02a17"
+    ],
+    "query": "the customer was charged twice after a timeout"
+   },
+   {
+    "after": [
+     "forecast_an_action_then_compare",
+     "deliver_the_best_available_result_when_blocked",
+     "detect_malformed_values_by_dominant_pattern",
+     "restore_capitalisation_of_names",
+     "check_that_a_result_is_stable_and_generalizes",
+     "import_skill_optimize_a552f0ceca73",
+     "import_skill_mlx_core_semantics_a51a21d84c45",
+     "import_skill_pg_extensions_c6ef32598521",
+     "import_skill_deep_audit_3bad90a3250d",
+     "import_skill_search_speed_optimization_6b6d93729d94"
+    ],
+    "before": [
+     "forecast_an_action_then_compare",
+     "deliver_the_best_available_result_when_blocked",
+     "detect_malformed_values_by_dominant_pattern",
+     "restore_capitalisation_of_names",
+     "check_that_a_result_is_stable_and_generalizes",
+     "import_skill_optimize_a552f0ceca73",
+     "import_skill_mlx_core_semantics_a51a21d84c45",
+     "import_skill_pg_extensions_c6ef32598521",
+     "import_skill_search_speed_optimization_6b6d93729d94",
+     "import_skill_deep_audit_3bad90a3250d"
+    ],
+    "entered": [],
+    "expected": [
+     "set_timeouts_and_cancel_an_outbound_call"
+    ],
+    "expected_ranks": {
+     "set_timeouts_and_cancel_an_outbound_call": [
+      null,
+      null
+     ]
+    },
+    "left": [],
+    "query": "one slow service is holding all my threads"
+   },
+   {
+    "after": [
+     "plan_and_split_work_with_explicit_joins",
+     "freeze_the_success_metric_before_measuring",
+     "verify_an_export_in_an_isolated_interpreter",
+     "forecast_an_action_then_compare",
+     "orient_on_a_task_and_write_its_contracts",
+     "score_duplicate_pairs_by_weakest_signal",
+     "choose_one_next_action",
+     "find_duplicate_records_with_blocking_keys",
+     "propose_a_dedupe_without_deleting_rows",
+     "choose_metrics_by_task_type_and_industry"
+    ],
+    "before": [
+     "plan_and_split_work_with_explicit_joins",
+     "freeze_the_success_metric_before_measuring",
+     "verify_an_export_in_an_isolated_interpreter",
+     "forecast_an_action_then_compare",
+     "orient_on_a_task_and_write_its_contracts",
+     "score_duplicate_pairs_by_weakest_signal",
+     "choose_one_next_action",
+     "find_duplicate_records_with_blocking_keys",
+     "propose_a_dedupe_without_deleting_rows",
+     "read_the_train_validation_gap"
+    ],
+    "entered": [
+     "choose_metrics_by_task_type_and_industry"
+    ],
+    "expected": [
+     "compare_a_smaller_model_against_the_larger_one"
+    ],
+    "expected_ranks": {
+     "compare_a_smaller_model_against_the_larger_one": [
+      null,
+      null
+     ]
+    },
+    "left": [
+     "read_the_train_validation_gap"
+    ],
+    "query": "compare two models on my own task"
+   },
+   {
+    "after": [
+     "write_a_pinned_container_and_batch_job",
+     "split_address_lines_into_components",
+     "propose_a_dedupe_without_deleting_rows",
+     "plan_and_split_work_with_explicit_joins",
+     "export_a_standalone_python_package",
+     "import_command_shard_doc_9b6a19626fd4",
+     "import_skill_to_issues_c19c886e9ba4",
+     "import_command_decompose_proof_99df832bc10d",
+     "import_command_epic_decompose_4438589123f7",
+     "import_subagent_planner_a764444e08d4"
+    ],
+    "before": [
+     "write_a_pinned_container_and_batch_job",
+     "split_address_lines_into_components",
+     "propose_a_dedupe_without_deleting_rows",
+     "plan_and_split_work_with_explicit_joins",
+     "export_a_standalone_python_package",
+     "import_command_shard_doc_9b6a19626fd4",
+     "import_skill_to_issues_c19c886e9ba4",
+     "import_command_decompose_proof_99df832bc10d",
+     "import_subagent_unfolding_po_8f166f5e5702",
+     "import_command_epic_decompose_4438589123f7"
+    ],
+    "entered": [
+     "import_subagent_planner_a764444e08d4"
+    ],
+    "expected": [
+     "split_a_large_request_into_assignable_parts"
+    ],
+    "expected_ranks": {
+     "split_a_large_request_into_assignable_parts": [
+      null,
+      null
+     ]
+    },
+    "left": [
+     "import_subagent_unfolding_po_8f166f5e5702"
+    ],
+    "query": "break a big job into smaller assignments"
+   },
+   {
+    "after": [
+     "profile_text_column_before_cleaning",
+     "detect_malformed_values_by_dominant_pattern",
+     "layer_exception_catalogs_with_precedence",
+     "propose_a_dedupe_without_deleting_rows",
+     "freeze_the_success_metric_before_measuring",
+     "test_driven_change_red_green_refactor",
+     "verify_the_requested_output",
+     "normalize_whitespace_and_unicode_text",
+     "export_a_standalone_python_package",
+     "library.supply.creative_originals.4b34f569a96c4fe3210b361e.a07efb6d4361cb46"
+    ],
+    "before": [
+     "profile_text_column_before_cleaning",
+     "detect_malformed_values_by_dominant_pattern",
+     "layer_exception_catalogs_with_precedence",
+     "propose_a_dedupe_without_deleting_rows",
+     "freeze_the_success_metric_before_measuring",
+     "test_driven_change_red_green_refactor",
+     "verify_the_requested_output",
+     "normalize_whitespace_and_unicode_text",
+     "export_a_standalone_python_package",
+     "library.supply.mcp_registry.b4ffd50190fa1983f8b26d75.5cd6b01f1f469544"
+    ],
+    "entered": [
+     "library.supply.creative_originals.4b34f569a96c4fe3210b361e.a07efb6d4361cb46"
+    ],
+    "expected": [
+     "profile_text_column_before_cleaning"
+    ],
+    "expected_ranks": {
+     "profile_text_column_before_cleaning": [
+      1,
+      1
+     ]
+    },
+    "left": [
+     "library.supply.mcp_registry.b4ffd50190fa1983f8b26d75.5cd6b01f1f469544"
+    ],
+    "query": "survey a messy text column first"
+   },
+   {
+    "after": [
+     "normalize_whitespace_and_unicode_text",
+     "import_skill_plain_db1d59102958",
+     "import_subagent_planner_f5c266111589",
+     "import_subagent_hatch3r_maintainability_2f5dcbe96985",
+     "import_skill_browser_automation_18eeda79a485",
+     "import_skill_journeys_to_hypotheses_d5f1f1bf87d2",
+     "import_subagent_version_delta_analyst_f44394187f76",
+     "library.supply.function_extracts.b4d2c7fdd757475334820844.6d9181c3c8fc341d",
+     "import_subagent_compat_6ae03f1c3950",
+     "import_subagent_risk_assessment_b98fa4ef926c"
+    ],
+    "before": [
+     "normalize_whitespace_and_unicode_text",
+     "import_skill_plain_db1d59102958",
+     "import_subagent_planner_f5c266111589",
+     "import_subagent_hatch3r_maintainability_2f5dcbe96985",
+     "import_skill_browser_automation_18eeda79a485",
+     "import_skill_journeys_to_hypotheses_d5f1f1bf87d2",
+     "import_subagent_version_delta_analyst_f44394187f76",
+     "import_subagent_compat_6ae03f1c3950",
+     "library.supply.function_extracts.b4d2c7fdd757475334820844.6d9181c3c8fc341d",
+     "import_subagent_risk_assessment_b98fa4ef926c"
+    ],
+    "entered": [],
+    "expected": [
+     "normalize_whitespace_and_unicode_text"
+    ],
+    "expected_ranks": {
+     "normalize_whitespace_and_unicode_text": [
+      1,
+      1
+     ]
+    },
+    "left": [],
+    "query": "curly quotes and tabs are breaking my import"
+   },
+   {
+    "after": [
+     "restore_capitalisation_of_names",
+     "library.supply.function_extracts.24f78125f28000df2745682a.6721ce2c72ee24bc",
+     "library.supply.data_tables.33c66b0e9a9516428e00de75.7a3d036495f611d6",
+     "library.supply.data_tables.41cc38c07ded6bafe981221a.d6124fff7c3a64a3",
+     "import_skill_cortex_recall_global_f1eb09f45a0e",
+     "import_skill_upgrade_dependencies_11c9703489bb",
+     "library.supply.function_extracts.3370758c7b7baadcaefd612b.f36e802de6981430",
+     "library.supply.function_extracts.5ed8ce35ea8205a9e964145b.733aeec8315ebd6c",
+     "import_command_usage_d278d5762f85",
+     "library.supply.creative_originals.99bd6dbb60428ae52b7d5020.c7330118274c12ec"
+    ],
+    "before": [
+     "restore_capitalisation_of_names",
+     "library.supply.function_extracts.24f78125f28000df2745682a.6721ce2c72ee24bc",
+     "library.supply.data_tables.33c66b0e9a9516428e00de75.7a3d036495f611d6",
+     "library.supply.data_tables.41cc38c07ded6bafe981221a.d6124fff7c3a64a3",
+     "import_skill_cortex_recall_global_f1eb09f45a0e",
+     "import_skill_upgrade_dependencies_11c9703489bb",
+     "library.supply.function_extracts.3370758c7b7baadcaefd612b.f36e802de6981430",
+     "import_command_usage_d278d5762f85",
+     "library.supply.function_extracts.5ed8ce35ea8205a9e964145b.733aeec8315ebd6c",
+     "library.supply.function_extracts.f3a54ba208801e2caf7cdcde.6d095e3e95dd7898"
+    ],
+    "entered": [
+     "library.supply.creative_originals.99bd6dbb60428ae52b7d5020.c7330118274c12ec"
+    ],
+    "expected": [
+     "restore_capitalisation_of_names"
+    ],
+    "expected_ranks": {
+     "restore_capitalisation_of_names": [
+      1,
+      1
+     ]
+    },
+    "left": [
+     "library.supply.function_extracts.f3a54ba208801e2caf7cdcde.6d095e3e95dd7898"
+    ],
+    "query": "surnames like mcdonald are all lowercase"
+   },
+   {
+    "after": [
+     "canonicalize_company_legal_suffixes",
+     "review_an_accepted_solution_adversarially",
+     "normalize_website_addresses",
+     "restore_capitalisation_of_names",
+     "forecast_an_action_then_compare",
+     "detect_malformed_values_by_dominant_pattern",
+     "deliver_the_best_available_result_when_blocked",
+     "plan_and_split_work_with_explicit_joins",
+     "library.supply.openapi_operations.11683968e3d9d6eb55479736.29df60fbb413f718",
+     "library.supply.openapi_operations.c807c25746da62475c5a86f0.cec2cfa4df99d820"
+    ],
+    "before": [
+     "canonicalize_company_legal_suffixes",
+     "review_an_accepted_solution_adversarially",
+     "normalize_website_addresses",
+     "restore_capitalisation_of_names",
+     "forecast_an_action_then_compare",
+     "detect_malformed_values_by_dominant_pattern",
+     "deliver_the_best_available_result_when_blocked",
+     "plan_and_split_work_with_explicit_joins",
+     "library.supply.openapi_operations.11683968e3d9d6eb55479736.29df60fbb413f718",
+     "library.supply.openapi_operations.a5f486eeb2529d8b822b63f8.d2f6f0edc6bc4e2a"
+    ],
+    "entered": [
+     "library.supply.openapi_operations.c807c25746da62475c5a86f0.cec2cfa4df99d820"
+    ],
+    "expected": [
+     "canonicalize_company_legal_suffixes"
+    ],
+    "expected_ranks": {
+     "canonicalize_company_legal_suffixes": [
+      1,
+      1
+     ]
+    },
+    "left": [
+     "library.supply.openapi_operations.a5f486eeb2529d8b822b63f8.d2f6f0edc6bc4e2a"
+    ],
+    "query": "ltd and limited should be written one way"
+   },
+   {
+    "after": [
+     "carry_competing_readings_of_a_request",
+     "freeze_the_success_metric_before_measuring",
+     "read_the_train_validation_gap",
+     "library.supply.creative_originals.7a09f7ac445d891a26e0ad2e.2636cba2402d8ad0",
+     "import_code_module_numbers_different_signs_py_39e5c55ed017",
+     "library.supply.openapi_operations.362038a04d11f3283b495a1e.25887edfe965c9c5",
+     "library.supply.data_tables.4e720e6ba3c47dce73b736f8.ee100a59355c7fae",
+     "import_skill_latex_tables_794d78249879",
+     "library.supply.mcp_registry.da5aa447a94ff0f1aecdd477.bb80138e28b25aa2",
+     "import_skill_emem_referential_drift_18cac1d20b7d"
+    ],
+    "before": [
+     "carry_competing_readings_of_a_request",
+     "freeze_the_success_metric_before_measuring",
+     "read_the_train_validation_gap",
+     "import_code_module_numbers_different_signs_py_39e5c55ed017",
+     "library.supply.openapi_operations.362038a04d11f3283b495a1e.25887edfe965c9c5",
+     "library.supply.data_tables.4e720e6ba3c47dce73b736f8.ee100a59355c7fae",
+     "library.supply.mcp_registry.da5aa447a94ff0f1aecdd477.bb80138e28b25aa2",
+     "import_skill_latex_tables_794d78249879",
+     "import_skill_emem_referential_drift_18cac1d20b7d",
+     "import_subagent_dotnet_benchmark_designer_f33f48129e2d"
+    ],
+    "entered": [
+     "library.supply.creative_originals.7a09f7ac445d891a26e0ad2e.2636cba2402d8ad0"
+    ],
+    "expected": [
+     "normalize_phone_numbers"
+    ],
+    "expected_ranks": {
+     "normalize_phone_numbers": [
+      null,
+      null
+     ]
+    },
+    "left": [
+     "import_subagent_dotnet_benchmark_designer_f33f48129e2d"
+    ],
+    "query": "telephone numbers are in ten different formats"
+   },
+   {
+    "after": [
+     "normalize_website_addresses",
+     "normalize_and_recover_email_addresses",
+     "resolve_missing_information",
+     "score_duplicate_pairs_by_weakest_signal",
+     "import_skill_pragma_and_addresses_a8c08e7649a9",
+     "library.supply.openapi_operations.f439d5deef6eb06069a5687d.9d47f648460d2131",
+     "library.supply.creative_originals.7a09f7ac445d891a26e0ad2e.2636cba2402d8ad0",
+     "import_skill_email_enrichment_e97a469351f3",
+     "library.supply.openapi_operations.7a2ec3daa229664c2813b441.243f4cd556b6eccf",
+     "import_skill_analyze_web_traffic_d79429e8ecba"
+    ],
+    "before": [
+     "normalize_website_addresses",
+     "normalize_and_recover_email_addresses",
+     "resolve_missing_information",
+     "score_duplicate_pairs_by_weakest_signal",
+     "split_address_lines_into_components",
+     "import_skill_pragma_and_addresses_a8c08e7649a9",
+     "library.supply.openapi_operations.f439d5deef6eb06069a5687d.9d47f648460d2131",
+     "import_skill_email_enrichment_e97a469351f3",
+     "library.supply.openapi_operations.7a2ec3daa229664c2813b441.243f4cd556b6eccf",
+     "import_skill_analyze_web_traffic_d79429e8ecba"
+    ],
+    "entered": [
+     "library.supply.creative_originals.7a09f7ac445d891a26e0ad2e.2636cba2402d8ad0"
+    ],
+    "expected": [
+     "normalize_website_addresses"
+    ],
+    "expected_ranks": {
+     "normalize_website_addresses": [
+      1,
+      1
+     ]
+    },
+    "left": [
+     "split_address_lines_into_components"
+    ],
+    "query": "web addresses are missing http"
+   },
+   {
+    "after": [
+     "normalize_and_recover_email_addresses",
+     "normalize_whitespace_and_unicode_text",
+     "normalize_website_addresses",
+     "carry_competing_readings_of_a_request",
+     "library.supply.openapi_operations.5c43a5e81e07e11581a73a89.bd2e58ee8d258673",
+     "import_command_research_238488968991",
+     "library.supply.openapi_operations.6e174ab60d1e4fd1a31cf21c.a2fdb7d0d86a4859",
+     "library.supply.openapi_operations.bc5838ff5518e27c06065d95.230412dc55841020",
+     "library.supply.creative_originals.7a09f7ac445d891a26e0ad2e.2636cba2402d8ad0",
+     "library.supply.openapi_operations.618d757a54fe68223e9b75bf.e45ad39e1e4e79de"
+    ],
+    "before": [
+     "normalize_and_recover_email_addresses",
+     "normalize_whitespace_and_unicode_text",
+     "normalize_website_addresses",
+     "carry_competing_readings_of_a_request",
+     "library.supply.openapi_operations.5c43a5e81e07e11581a73a89.bd2e58ee8d258673",
+     "import_command_research_238488968991",
+     "library.supply.openapi_operations.6e174ab60d1e4fd1a31cf21c.a2fdb7d0d86a4859",
+     "library.supply.openapi_operations.bc5838ff5518e27c06065d95.230412dc55841020",
+     "library.supply.openapi_operations.618d757a54fe68223e9b75bf.e45ad39e1e4e79de",
+     "library.supply.openapi_operations.40d2c74b3d4c7fb82d192cfe.ce4841baa18546d7"
+    ],
+    "entered": [
+     "library.supply.creative_originals.7a09f7ac445d891a26e0ad2e.2636cba2402d8ad0"
+    ],
+    "expected": [
+     "normalize_and_recover_email_addresses"
+    ],
+    "expected_ranks": {
+     "normalize_and_recover_email_addresses": [
+      1,
+      1
+     ]
+    },
+    "left": [
+     "library.supply.openapi_operations.40d2c74b3d4c7fb82d192cfe.ce4841baa18546d7"
+    ],
+    "query": "mail addresses have spaces and angle brackets in them"
+   },
+   {
+    "after": [
+     "profile_text_column_before_cleaning",
+     "layer_exception_catalogs_with_precedence",
+     "import_skill_research_harness_setup_d907db293bc8",
+     "email_address_aggregation_data_engineering",
+     "import_skill_ac_audit_configure_audit_7cf7134d7f52",
+     "import_rules_project_epic_template_cursorrules_prompt_a3074d6a25c0",
+     "import_rules_examples_246bf8b84d57",
+     "import_skill_ac_safety_configure_safety_883405681b6b",
+     "library.supply.openapi_operations.0c445e13460977b761d925ac.5e90b181c1e3addc",
+     "import_rules_project_1b4846847df1"
+    ],
+    "before": [
+     "profile_text_column_before_cleaning",
+     "layer_exception_catalogs_with_precedence",
+     "import_skill_research_harness_setup_d907db293bc8",
+     "email_address_aggregation_data_engineering",
+     "import_skill_ac_audit_configure_audit_7cf7134d7f52",
+     "import_rules_examples_246bf8b84d57",
+     "import_rules_project_epic_template_cursorrules_prompt_a3074d6a25c0",
+     "import_skill_ac_safety_configure_safety_883405681b6b",
+     "import_rules_project_1b4846847df1",
+     "library.supply.openapi_operations.0c445e13460977b761d925ac.5e90b181c1e3addc"
+    ],
+    "entered": [],
+    "expected": [
+     "layer_exception_catalogs_with_precedence"
+    ],
+    "expected_ranks": {
+     "layer_exception_catalogs_with_precedence": [
+      2,
+      2
+     ]
+    },
+    "left": [],
+    "query": "per project overrides for cleaning rules"
+   },
+   {
+    "after": [
+     "escalate_uncertain_values_with_candidates",
+     "carry_competing_readings_of_a_request",
+     "choose_review_perspectives",
+     "choose_one_next_action",
+     "review_an_accepted_solution_adversarially",
+     "propose_a_dedupe_without_deleting_rows",
+     "canonicalize_company_legal_suffixes",
+     "normalize_website_addresses",
+     "restore_capitalisation_of_names",
+     "apply_hold_or_escalate_each_correction"
+    ],
+    "before": [
+     "escalate_uncertain_values_with_candidates",
+     "carry_competing_readings_of_a_request",
+     "choose_review_perspectives",
+     "choose_one_next_action",
+     "review_an_accepted_solution_adversarially",
+     "propose_a_dedupe_without_deleting_rows",
+     "canonicalize_company_legal_suffixes",
+     "normalize_website_addresses",
+     "restore_capitalisation_of_names",
+     "score_duplicate_pairs_by_weakest_signal"
+    ],
+    "entered": [
+     "apply_hold_or_escalate_each_correction"
+    ],
+    "expected": [
+     "escalate_uncertain_values_with_candidates"
+    ],
+    "expected_ranks": {
+     "escalate_uncertain_values_with_candidates": [
+      1,
+      1
+     ]
+    },
+    "left": [
+     "score_duplicate_pairs_by_weakest_signal"
+    ],
+    "query": "build a review request with ranked options"
+   },
+   {
+    "after": [
+     "detect_malformed_values_by_dominant_pattern",
+     "verify_an_export_in_an_isolated_interpreter",
+     "test_driven_change_red_green_refactor",
+     "verify_the_requested_output",
+     "profile_text_column_before_cleaning",
+     "import_skill_ccm_load_81b1cdd0c6e6",
+     "import_skill_go_a4c0c1391103",
+     "import_skill_email_deliverability_ece8a92a551d",
+     "import_skill_deepen_plan_9668aaa73e83",
+     "library.supply.openapi_operations.89e0580c4a7144770318c334.7cae38cac80caa9c"
+    ],
+    "before": [
+     "detect_malformed_values_by_dominant_pattern",
+     "verify_an_export_in_an_isolated_interpreter",
+     "test_driven_change_red_green_refactor",
+     "verify_the_requested_output",
+     "profile_text_column_before_cleaning",
+     "import_skill_ccm_load_81b1cdd0c6e6",
+     "import_skill_go_a4c0c1391103",
+     "import_skill_deepen_plan_9668aaa73e83",
+     "library.supply.openapi_operations.89e0580c4a7144770318c334.7cae38cac80caa9c",
+     "import_skill_email_deliverability_ece8a92a551d"
+    ],
+    "entered": [],
+    "expected": [
+     "refuse_secrets_and_unsafe_paths_in_generated_files"
+    ],
+    "expected_ranks": {
+     "refuse_secrets_and_unsafe_paths_in_generated_files": [
+      null,
+      null
+     ]
+    },
+    "left": [],
+    "query": "make sure no credentials end up in the output files"
+   },
+   {
+    "after": [
+     "orient_on_a_task_and_write_its_contracts",
+     "check_for_existing_work_before_building",
+     "test_driven_change_red_green_refactor",
+     "normalize_website_addresses",
+     "report_observed_derived_assumed_and_unknown",
+     "export_a_standalone_python_package",
+     "import_skill_requirements_engineering_ccc293868df1",
+     "library.supply.openapi_operations.3e42dcd197ef42207226dba9.6e498ab3b6250143",
+     "import_skill_customer_story_builder_505d81d48e7b",
+     "library.supply.openapi_operations.9d0520a7771e9e9e385a536d.21b5bc1155d1ca51"
+    ],
+    "before": [
+     "orient_on_a_task_and_write_its_contracts",
+     "check_for_existing_work_before_building",
+     "test_driven_change_red_green_refactor",
+     "normalize_website_addresses",
+     "report_observed_derived_assumed_and_unknown",
+     "export_a_standalone_python_package",
+     "import_skill_requirements_engineering_ccc293868df1",
+     "library.supply.openapi_operations.3e42dcd197ef42207226dba9.6e498ab3b6250143",
+     "library.supply.openapi_operations.9d0520a7771e9e9e385a536d.21b5bc1155d1ca51",
+     "import_skill_customer_story_builder_505d81d48e7b"
+    ],
+    "entered": [],
+    "expected": [
+     "orient_on_a_task_and_write_its_contracts",
+     "questions_to_ask_before_starting_work"
+    ],
+    "expected_ranks": {
+     "orient_on_a_task_and_write_its_contracts": [
+      1,
+      1
+     ],
+     "questions_to_ask_before_starting_work": [
+      null,
+      null
+     ]
+    },
+    "left": [],
+    "query": "write down the inputs outputs and definition of done"
+   },
+   {
+    "after": [
+     "verify_an_export_in_an_isolated_interpreter",
+     "check_for_existing_work_before_building",
+     "copy_a_table_with_corrections_never_in_place",
+     "normalize_whitespace_and_unicode_text",
+     "check_that_a_result_is_stable_and_generalizes",
+     "choose_one_next_action",
+     "test_driven_change_red_green_refactor",
+     "import_command_craft_workflow_run_90f0338097e9",
+     "import_command_typegen_417520ee0d2a",
+     "import_command_amazing_e2e_check_5c5622f54c5c"
+    ],
+    "before": [
+     "verify_an_export_in_an_isolated_interpreter",
+     "check_for_existing_work_before_building",
+     "copy_a_table_with_corrections_never_in_place",
+     "normalize_whitespace_and_unicode_text",
+     "choose_one_next_action",
+     "check_that_a_result_is_stable_and_generalizes",
+     "test_driven_change_red_green_refactor",
+     "import_command_craft_workflow_run_90f0338097e9",
+     "import_command_typegen_417520ee0d2a",
+     "import_command_amazing_e2e_check_5c5622f54c5c"
+    ],
+    "entered": [],
+    "expected": [
+     "forecast_an_action_then_compare"
+    ],
+    "expected_ranks": {
+     "forecast_an_action_then_compare": [
+      null,
+      null
+     ]
+    },
+    "left": [],
+    "query": "sanity check an expensive run in advance"
+   },
+   {
+    "after": [
+     "forecast_an_action_then_compare",
+     "carry_competing_readings_of_a_request",
+     "report_observed_derived_assumed_and_unknown",
+     "detect_malformed_values_by_dominant_pattern",
+     "check_for_existing_work_before_building",
+     "choose_metrics_by_task_type_and_industry",
+     "import_skill_n8n_patterns_61da92124927",
+     "import_rules_delegate_to_ai_305665a275f3",
+     "import_command_meta_creative_strategy_a3d76e13e352",
+     "import_skill_next_1fc4e9eb84cb"
+    ],
+    "before": [
+     "forecast_an_action_then_compare",
+     "carry_competing_readings_of_a_request",
+     "report_observed_derived_assumed_and_unknown",
+     "detect_malformed_values_by_dominant_pattern",
+     "check_for_existing_work_before_building",
+     "choose_metrics_by_task_type_and_industry",
+     "import_skill_n8n_patterns_61da92124927",
+     "import_rules_delegate_to_ai_305665a275f3",
+     "import_command_meta_creative_strategy_a3d76e13e352",
+     "import_skill_story_mine_6ce86bf1fb6d"
+    ],
+    "entered": [
+     "import_skill_next_1fc4e9eb84cb"
+    ],
+    "expected": [
+     "choose_review_perspectives"
+    ],
+    "expected_ranks": {
+     "choose_review_perspectives": [
+      null,
+      null
+     ]
+    },
+    "left": [
+     "import_skill_story_mine_6ce86bf1fb6d"
+    ],
+    "query": "what angles should a reviewer take"
+   },
+   {
+    "after": [
+     "deliver_the_best_available_result_when_blocked",
+     "library.supply.openapi_operations.f97e1a074542160ba79e6cd7.7a64cdd185903a90",
+     "import_skill_kina_microvm_d4f326aeddb2",
+     "import_skill_finish_task_42ae926c90a9",
+     "library.supply.openapi_operations.7bfd308009413f10dea2947e.dee9f4c67cd15430",
+     "import_skill_skill_finish_branch_10df7f0d04ac",
+     "import_skill_merge_contributor_pr_3c748b84ae24",
+     "import_skill_skill_finish_branch_d7b183c98558",
+     "import_skill_setup_ee8628b29403",
+     "library.supply.openapi_operations.78a3fa16ef90c296b53855dc.b0485c433ff6b378"
+    ],
+    "before": [
+     "deliver_the_best_available_result_when_blocked",
+     "library.supply.openapi_operations.f97e1a074542160ba79e6cd7.7a64cdd185903a90",
+     "import_skill_kina_microvm_d4f326aeddb2",
+     "import_skill_finish_task_42ae926c90a9",
+     "library.supply.openapi_operations.7bfd308009413f10dea2947e.dee9f4c67cd15430",
+     "import_skill_skill_finish_branch_10df7f0d04ac",
+     "import_skill_skill_finish_branch_d7b183c98558",
+     "import_skill_merge_contributor_pr_3c748b84ae24",
+     "import_skill_setup_ee8628b29403",
+     "import_skill_ship_bb26e11b325d"
+    ],
+    "entered": [
+     "library.supply.openapi_operations.78a3fa16ef90c296b53855dc.b0485c433ff6b378"
+    ],
+    "expected": [
+     "deliver_the_best_available_result_when_blocked"
+    ],
+    "expected_ranks": {
+     "deliver_the_best_available_result_when_blocked": [
+      1,
+      1
+     ]
+    },
+    "left": [
+     "import_skill_ship_bb26e11b325d"
+    ],
+    "query": "cannot finish because the service is unreachable"
+   },
+   {
+    "after": [
+     "apply_hold_or_escalate_each_correction",
+     "resolve_missing_information",
+     "library.supply.openapi_operations.1cfe6b467b5e14f72ad88b37.57dd124093a78eeb",
+     "import_skill_deep_research_eb0a40489f89",
+     "import_subagent_kb_optimizer_16095541bf07",
+     "import_subagent_bm_eval_auditor_7f56824df853",
+     "import_subagent_gsd_eval_auditor_058ff8c644bb",
+     "import_subagent_gsd_eval_auditor_compact_42ed84309b76",
+     "import_skill_sharing_results_b9f8b8ca6266",
+     "library.supply.creative_originals.3e0f6904628eddea507e6785.0b746d5f7cf69802"
+    ],
+    "before": [
+     "apply_hold_or_escalate_each_correction",
+     "resolve_missing_information",
+     "library.supply.openapi_operations.1cfe6b467b5e14f72ad88b37.57dd124093a78eeb",
+     "import_skill_deep_research_eb0a40489f89",
+     "import_subagent_kb_optimizer_16095541bf07",
+     "import_subagent_bm_eval_auditor_7f56824df853",
+     "import_subagent_gsd_eval_auditor_058ff8c644bb",
+     "import_subagent_gsd_eval_auditor_compact_42ed84309b76",
+     "import_skill_sharing_results_b9f8b8ca6266",
+     "import_command_unhappy_3ad858bbf5dc"
+    ],
+    "entered": [
+     "library.supply.creative_originals.3e0f6904628eddea507e6785.0b746d5f7cf69802"
+    ],
+    "expected": [
+     "deliver_the_best_available_result_when_blocked"
+    ],
+    "expected_ranks": {
+     "deliver_the_best_available_result_when_blocked": [
+      null,
+      null
+     ]
+    },
+    "left": [
+     "import_command_unhappy_3ad858bbf5dc"
+    ],
+    "query": "give a partial answer with the gaps marked"
+   },
+   {
+    "after": [
+     "report_observed_derived_assumed_and_unknown",
+     "normalize_website_addresses",
+     "test_driven_change_red_green_refactor",
+     "layer_exception_catalogs_with_precedence",
+     "orient_on_a_task_and_write_its_contracts",
+     "write_a_pinned_container_and_batch_job",
+     "review_an_accepted_solution_adversarially",
+     "import_skill_cco_tools_f28f84768c26",
+     "import_command_slither_bf3df3a72296",
+     "import_skill_service_omni_presence_user_config_deploy_d8ba32b52c12"
+    ],
+    "before": [
+     "report_observed_derived_assumed_and_unknown",
+     "normalize_website_addresses",
+     "test_driven_change_red_green_refactor",
+     "layer_exception_catalogs_with_precedence",
+     "orient_on_a_task_and_write_its_contracts",
+     "write_a_pinned_container_and_batch_job",
+     "review_an_accepted_solution_adversarially",
+     "import_skill_cco_tools_f28f84768c26",
+     "import_command_slither_bf3df3a72296",
+     "library.supply.openapi_operations.8c66dc79c9959dd2b1059b6d.3c94e93301aebe1b"
+    ],
+    "entered": [
+     "import_skill_service_omni_presence_user_config_deploy_d8ba32b52c12"
+    ],
+    "expected": [
+     "report_observed_derived_assumed_and_unknown"
+    ],
+    "expected_ranks": {
+     "report_observed_derived_assumed_and_unknown": [
+      1,
+      1
+     ]
+    },
+    "left": [
+     "library.supply.openapi_operations.8c66dc79c9959dd2b1059b6d.3c94e93301aebe1b"
+    ],
+    "query": "separate facts from guesses in the write up"
+   },
+   {
+    "after": [
+     "decide_whether_a_step_needs_a_model",
+     "escalate_uncertain_values_with_candidates",
+     "carry_competing_readings_of_a_request",
+     "look_for_structure_the_model_missed",
+     "check_that_a_result_is_stable_and_generalizes",
+     "import_skill_explain_02ad8a8a4826",
+     "import_skill_catchup_37a842b4feaa",
+     "import_skill_os_whats_next_68d655f2245c",
+     "import_skill_os_step_by_step_7b2289b7534c",
+     "library.supply.openapi_operations.1d7e44c0e4d9e8e8f104c925.243998556d39073d"
+    ],
+    "before": [
+     "decide_whether_a_step_needs_a_model",
+     "escalate_uncertain_values_with_candidates",
+     "carry_competing_readings_of_a_request",
+     "look_for_structure_the_model_missed",
+     "check_that_a_result_is_stable_and_generalizes",
+     "import_skill_explain_02ad8a8a4826",
+     "import_skill_catchup_37a842b4feaa",
+     "import_skill_os_whats_next_68d655f2245c",
+     "import_skill_os_step_by_step_7b2289b7534c",
+     "import_skill_plain_language_ff55d74f3b97"
+    ],
+    "entered": [
+     "library.supply.openapi_operations.1d7e44c0e4d9e8e8f104c925.243998556d39073d"
+    ],
+    "expected": [
+     "decide_whether_a_step_needs_a_model"
+    ],
+    "expected_ranks": {
+     "decide_whether_a_step_needs_a_model": [
+      1,
+      1
+     ]
+    },
+    "left": [
+     "import_skill_plain_language_ff55d74f3b97"
+    ],
+    "query": "can plain code do this instead of a language model"
+   },
+   {
+    "after": [
+     "decide_whether_a_step_needs_a_model",
+     "choose_one_next_action",
+     "choose_review_perspectives",
+     "carry_competing_readings_of_a_request",
+     "verify_the_requested_output",
+     "restore_capitalisation_of_names",
+     "detect_malformed_values_by_dominant_pattern",
+     "score_duplicate_pairs_by_weakest_signal",
+     "apply_hold_or_escalate_each_correction",
+     "resolve_missing_information"
+    ],
+    "before": [
+     "decide_whether_a_step_needs_a_model",
+     "choose_one_next_action",
+     "choose_review_perspectives",
+     "carry_competing_readings_of_a_request",
+     "verify_the_requested_output",
+     "restore_capitalisation_of_names",
+     "detect_malformed_values_by_dominant_pattern",
+     "apply_hold_or_escalate_each_correction",
+     "score_duplicate_pairs_by_weakest_signal",
+     "resolve_missing_information"
+    ],
+    "entered": [],
+    "expected": [
+     "decide_whether_a_step_needs_a_model"
+    ],
+    "expected_ranks": {
+     "decide_whether_a_step_needs_a_model": [
+      1,
+      1
+     ]
+    },
+    "left": [],
+    "query": "cut the token spend of each step"
+   },
+   {
+    "after": [
+     "look_for_structure_the_model_missed",
+     "detect_malformed_values_by_dominant_pattern",
+     "check_for_existing_work_before_building",
+     "carry_competing_readings_of_a_request",
+     "verify_an_export_in_an_isolated_interpreter",
+     "copy_a_table_with_corrections_never_in_place",
+     "import_skill_reconcile_backlog_sweep_plan_4f3329112bea",
+     "import_skill_verify_resolved_issues_7e3aab60c2e1",
+     "baltor_waste_mass_balance",
+     "library.supply.creative_originals.53db005ac36799549fe0a7ea.e47d092fa78ce4cc"
+    ],
+    "before": [
+     "look_for_structure_the_model_missed",
+     "detect_malformed_values_by_dominant_pattern",
+     "check_for_existing_work_before_building",
+     "carry_competing_readings_of_a_request",
+     "verify_an_export_in_an_isolated_interpreter",
+     "copy_a_table_with_corrections_never_in_place",
+     "import_skill_reconcile_backlog_sweep_plan_4f3329112bea",
+     "import_skill_verify_resolved_issues_7e3aab60c2e1",
+     "baltor_waste_mass_balance",
+     "import_skill_fix_3d12545fef4d"
+    ],
+    "entered": [
+     "library.supply.creative_originals.53db005ac36799549fe0a7ea.e47d092fa78ce4cc"
+    ],
+    "expected": [
+     "look_for_structure_the_model_missed"
+    ],
+    "expected_ranks": {
+     "look_for_structure_the_model_missed": [
+      1,
+      1
+     ]
+    },
+    "left": [
+     "import_skill_fix_3d12545fef4d"
+    ],
+    "query": "the residuals still have a pattern in them"
+   },
+   {
+    "after": [
+     "audit_data_splits_for_errors_and_leakage",
+     "check_that_a_result_is_stable_and_generalizes",
+     "score_duplicate_pairs_by_weakest_signal",
+     "verify_the_requested_output",
+     "diagnose_a_stall_and_change_strategy",
+     "test_driven_change_red_green_refactor",
+     "choose_one_next_action",
+     "detect_malformed_values_by_dominant_pattern",
+     "measure_the_environment_before_relying_on_it",
+     "verify_an_export_in_an_isolated_interpreter"
+    ],
+    "before": [
+     "audit_data_splits_for_errors_and_leakage",
+     "check_that_a_result_is_stable_and_generalizes",
+     "score_duplicate_pairs_by_weakest_signal",
+     "verify_the_requested_output",
+     "diagnose_a_stall_and_change_strategy",
+     "test_driven_change_red_green_refactor",
+     "detect_malformed_values_by_dominant_pattern",
+     "choose_one_next_action",
+     "measure_the_environment_before_relying_on_it",
+     "verify_an_export_in_an_isolated_interpreter"
+    ],
+    "entered": [],
+    "expected": [
+     "audit_data_splits_for_errors_and_leakage"
+    ],
+    "expected_ranks": {
+     "audit_data_splits_for_errors_and_leakage": [
+      1,
+      1
+     ]
+    },
+    "left": [],
+    "query": "the same customer is in both the training and the test set"
+   },
+   {
+    "after": [
+     "analyse_errors_by_segment_and_cluster",
+     "split_address_lines_into_components",
+     "propose_a_dedupe_without_deleting_rows",
+     "plan_and_split_work_with_explicit_joins",
+     "find_duplicate_records_with_blocking_keys",
+     "import_rules_common_mistakes_800c888ebd25",
+     "library.supply.openapi_operations.ca76944eb51cffc69c631523.f6cefe464fc58149",
+     "library.supply.openapi_operations.f5809c3a1a9a492459137285.ac58d074c340e393",
+     "library.supply.openapi_operations.6d6fcaa41cbc88fd3291df1e.6664680999171774",
+     "import_skill_ast_skeletonizer_d79e958eea9c"
+    ],
+    "before": [
+     "split_address_lines_into_components",
+     "analyse_errors_by_segment_and_cluster",
+     "propose_a_dedupe_without_deleting_rows",
+     "plan_and_split_work_with_explicit_joins",
+     "find_duplicate_records_with_blocking_keys",
+     "import_rules_common_mistakes_800c888ebd25",
+     "library.supply.openapi_operations.ca76944eb51cffc69c631523.f6cefe464fc58149",
+     "library.supply.openapi_operations.f5809c3a1a9a492459137285.ac58d074c340e393",
+     "import_skill_ast_skeletonizer_d79e958eea9c",
+     "library.supply.openapi_operations.6d6fcaa41cbc88fd3291df1e.6664680999171774"
+    ],
+    "entered": [],
+    "expected": [
+     "analyse_errors_by_segment_and_cluster"
+    ],
+    "expected_ranks": {
+     "analyse_errors_by_segment_and_cluster": [
+      2,
+      1
+     ]
+    },
+    "left": [],
+    "query": "group the mistakes into types"
+   },
+   {
+    "after": [
+     "check_for_existing_work_before_building",
+     "normalize_and_recover_email_addresses",
+     "measure_the_environment_before_relying_on_it",
+     "plan_and_split_work_with_explicit_joins",
+     "choose_one_next_action",
+     "choose_review_perspectives",
+     "import_skill_accelerate_diagnose_fa021d4f361b",
+     "import_skill_cargo_analytics_7547a96455a8",
+     "import_skill_os_what_could_go_wrong_ad1b3003777d",
+     "import_command_offload_570f5d0456db"
+    ],
+    "before": [
+     "normalize_and_recover_email_addresses",
+     "check_for_existing_work_before_building",
+     "measure_the_environment_before_relying_on_it",
+     "plan_and_split_work_with_explicit_joins",
+     "choose_one_next_action",
+     "choose_review_perspectives",
+     "import_skill_accelerate_diagnose_fa021d4f361b",
+     "import_skill_cargo_analytics_7547a96455a8",
+     "import_command_offload_570f5d0456db",
+     "import_skill_os_what_could_go_wrong_ad1b3003777d"
+    ],
+    "entered": [],
+    "expected": [
+     "review_an_accepted_solution_adversarially"
+    ],
+    "expected_ranks": {
+     "review_an_accepted_solution_adversarially": [
+      null,
+      null
+     ]
+    },
+    "left": [],
+    "query": "imagine this failed and work out why"
+   },
+   {
+    "after": [
+     "diagnose_a_stall_and_change_strategy",
+     "find_duplicate_records_with_blocking_keys",
+     "propose_a_dedupe_without_deleting_rows",
+     "plan_and_split_work_with_explicit_joins",
+     "copy_a_table_with_corrections_never_in_place",
+     "write_a_pinned_container_and_batch_job",
+     "profile_text_column_before_cleaning",
+     "library.supply.openapi_operations.8e91db48556d3da89d8a9c8e.391c231833c2025c",
+     "library.supply.openapi_operations.4a7937f768c0d3de3b3becf6.b45c2fcd8b36412b",
+     "import_skill_verify_result_73b2de20d869"
+    ],
+    "before": [
+     "diagnose_a_stall_and_change_strategy",
+     "find_duplicate_records_with_blocking_keys",
+     "propose_a_dedupe_without_deleting_rows",
+     "plan_and_split_work_with_explicit_joins",
+     "copy_a_table_with_corrections_never_in_place",
+     "write_a_pinned_container_and_batch_job",
+     "profile_text_column_before_cleaning",
+     "library.supply.openapi_operations.8e91db48556d3da89d8a9c8e.391c231833c2025c",
+     "library.supply.openapi_operations.4a7937f768c0d3de3b3becf6.b45c2fcd8b36412b",
+     "library.supply.openapi_operations.069f3ccac03eff6af4e088e8.a48f7a2c97d4d85c"
+    ],
+    "entered": [
+     "import_skill_verify_result_73b2de20d869"
+    ],
+    "expected": [
+     "check_a_table_join_before_trusting_it"
+    ],
+    "expected_ranks": {
+     "check_a_table_join_before_trusting_it": [
+      null,
+      null
+     ]
+    },
+    "left": [
+     "library.supply.openapi_operations.069f3ccac03eff6af4e088e8.a48f7a2c97d4d85c"
+    ],
+    "query": "row count exploded after a join"
+   },
+   {
+    "after": [
+     "write_a_pinned_container_and_batch_job",
+     "deliver_the_best_available_result_when_blocked",
+     "test_driven_change_red_green_refactor",
+     "verify_an_export_in_an_isolated_interpreter",
+     "escalate_uncertain_values_with_candidates",
+     "resolve_missing_information",
+     "apply_hold_or_escalate_each_correction",
+     "import_skill_lsp_refactor_d111357a6928",
+     "import_skill_performance_testing_0fae51016040",
+     "import_skill_http_load_profiler_40c065cde27e"
+    ],
+    "before": [
+     "write_a_pinned_container_and_batch_job",
+     "deliver_the_best_available_result_when_blocked",
+     "test_driven_change_red_green_refactor",
+     "verify_an_export_in_an_isolated_interpreter",
+     "escalate_uncertain_values_with_candidates",
+     "resolve_missing_information",
+     "apply_hold_or_escalate_each_correction",
+     "import_skill_lsp_refactor_d111357a6928",
+     "library.supply.openapi_operations.87dccdecb2d8af415d16ba76.7170330b009de76c",
+     "import_skill_performance_testing_0fae51016040"
+    ],
+    "entered": [
+     "import_skill_http_load_profiler_40c065cde27e"
+    ],
+    "expected": [
+     "make_a_data_pipeline_safe_to_run_again"
+    ],
+    "expected_ranks": {
+     "make_a_data_pipeline_safe_to_run_again": [
+      null,
+      null
+     ]
+    },
+    "left": [
+     "library.supply.openapi_operations.87dccdecb2d8af415d16ba76.7170330b009de76c"
+    ],
+    "query": "safe to run the load twice"
+   },
+   {
+    "after": [
+     "normalize_and_recover_email_addresses",
+     "import_skill_latex_conference_template_organizer_a6c6fc066338",
+     "import_skill_ownership_enrichment_10d96a4945c7",
+     "import_skill_cco_clean_42e7dfd3de2d",
+     "import_skill_refactor_c2b80c0d3727",
+     "import_skill_sf_clean_gone_branches_f95d51606297",
+     "import_skill_refine_fe14c97929d8",
+     "import_command_fec_refactor_clean_b3ef9106903f",
+     "import_skill_git_workflow_and_versioning_f9f553d68c90",
+     "import_skill_remove_workspace_d17ee24aaa27"
+    ],
+    "before": [
+     "normalize_and_recover_email_addresses",
+     "import_skill_latex_conference_template_organizer_a6c6fc066338",
+     "import_skill_ownership_enrichment_10d96a4945c7",
+     "import_skill_cco_clean_42e7dfd3de2d",
+     "import_skill_refactor_c2b80c0d3727",
+     "import_skill_sf_clean_gone_branches_f95d51606297",
+     "import_skill_refine_fe14c97929d8",
+     "import_command_fec_refactor_clean_b3ef9106903f",
+     "import_skill_remove_workspace_d17ee24aaa27",
+     "import_skill_git_workflow_and_versioning_f9f553d68c90"
+    ],
+    "entered": [],
+    "expected": [
+     "profile_text_column_before_cleaning",
+     "canonicalize_company_legal_suffixes",
+     "restore_capitalisation_of_names",
+     "normalize_whitespace_and_unicode_text"
+    ],
+    "expected_ranks": {
+     "canonicalize_company_legal_suffixes": [
+      null,
+      null
+     ],
+     "normalize_whitespace_and_unicode_text": [
+      null,
+      null
+     ],
+     "profile_text_column_before_cleaning": [
+      null,
+      null
+     ],
+     "restore_capitalisation_of_names": [
+      null,
+      null
+     ]
+    },
+    "left": [],
+    "query": "clean up a messy spreadsheet of companies"
+   },
+   {
+    "after": [
+     "layer_exception_catalogs_with_precedence",
+     "escalate_uncertain_values_with_candidates",
+     "import_skill_ddw_help_de246cf47e02",
+     "import_skill_reorient_03df1d0b76f7",
+     "import_rules_boundary_setting_scripts_eb4be1a34dc6",
+     "import_skill_is_guide_ac561e33ff42",
+     "import_rules_reconnect_with_someone_b33a50298ee5",
+     "import_skill_gno_onboard_00a7a13f7663",
+     "import_rules_ai_context_primer_03f1c0792355",
+     "import_skill_pragmatic_howto_b0e55f0dcb63"
+    ],
+    "before": [
+     "layer_exception_catalogs_with_precedence",
+     "escalate_uncertain_values_with_candidates",
+     "import_skill_ddw_help_de246cf47e02",
+     "import_skill_reorient_03df1d0b76f7",
+     "import_rules_boundary_setting_scripts_eb4be1a34dc6",
+     "import_skill_is_guide_ac561e33ff42",
+     "import_rules_reconnect_with_someone_b33a50298ee5",
+     "import_rules_ai_context_primer_03f1c0792355",
+     "import_skill_gno_onboard_00a7a13f7663",
+     "import_skill_pragmatic_howto_b0e55f0dcb63"
+    ],
+    "entered": [],
+    "expected": [
+     "write_a_regression_test_that_pins_a_defect"
+    ],
+    "expected_ranks": {
+     "write_a_regression_test_that_pins_a_defect": [
+      null,
+      null
+     ]
+    },
+    "left": [],
+    "query": "i fixed a bug how do i stop it coming back"
+   },
+   {
+    "after": [
+     "test_driven_change_red_green_refactor",
+     "freeze_the_success_metric_before_measuring",
+     "find_duplicate_records_with_blocking_keys",
+     "plan_and_split_work_with_explicit_joins",
+     "analyse_errors_by_segment_and_cluster",
+     "propose_a_dedupe_without_deleting_rows",
+     "restore_capitalisation_of_names",
+     "copy_a_table_with_corrections_never_in_place",
+     "audit_data_splits_for_errors_and_leakage",
+     "write_a_pinned_container_and_batch_job"
+    ],
+    "before": [
+     "test_driven_change_red_green_refactor",
+     "freeze_the_success_metric_before_measuring",
+     "find_duplicate_records_with_blocking_keys",
+     "plan_and_split_work_with_explicit_joins",
+     "analyse_errors_by_segment_and_cluster",
+     "propose_a_dedupe_without_deleting_rows",
+     "restore_capitalisation_of_names",
+     "copy_a_table_with_corrections_never_in_place",
+     "write_a_pinned_container_and_batch_job",
+     "audit_data_splits_for_errors_and_leakage"
+    ],
+    "entered": [],
+    "expected": [
+     "write_a_regression_test_that_pins_a_defect"
+    ],
+    "expected_ranks": {
+     "write_a_regression_test_that_pins_a_defect": [
+      null,
+      null
+     ]
+    },
+    "left": [],
+    "query": "add a test that fails without the fix"
+   },
+   {
+    "after": [
+     "orient_on_a_task_and_write_its_contracts",
+     "measure_the_environment_before_relying_on_it",
+     "normalize_and_recover_email_addresses",
+     "apply_hold_or_escalate_each_correction",
+     "detect_malformed_values_by_dominant_pattern",
+     "import_skill_cesiumjs_interaction_fa3889784bc1",
+     "library.supply.creative_originals.4ca854f8e777a40dc6362eed.d73762175a63a6eb",
+     "library.supply.openapi_operations.f6e779879aa2ab1d049b41d5.4ce895fabb8e5f54",
+     "library.supply.openapi_operations.efefcdb64d98153bb4cfb29e.8bd304b0e5431a1c",
+     "import_skill_next_1fc4e9eb84cb"
+    ],
+    "before": [
+     "orient_on_a_task_and_write_its_contracts",
+     "measure_the_environment_before_relying_on_it",
+     "normalize_and_recover_email_addresses",
+     "apply_hold_or_escalate_each_correction",
+     "detect_malformed_values_by_dominant_pattern",
+     "import_skill_cesiumjs_interaction_fa3889784bc1",
+     "library.supply.openapi_operations.f6e779879aa2ab1d049b41d5.4ce895fabb8e5f54",
+     "library.supply.openapi_operations.efefcdb64d98153bb4cfb29e.8bd304b0e5431a1c",
+     "import_skill_next_1fc4e9eb84cb",
+     "library.supply.openapi_operations.78ea1b33534959fbfb52e5fe.91905e321f83c2e2"
+    ],
+    "entered": [
+     "library.supply.creative_originals.4ca854f8e777a40dc6362eed.d73762175a63a6eb"
+    ],
+    "expected": [
+     "choose_test_cases_from_boundaries_and_classes"
+    ],
+    "expected_ranks": {
+     "choose_test_cases_from_boundaries_and_classes": [
+      null,
+      null
+     ]
+    },
+    "left": [
+     "library.supply.openapi_operations.78ea1b33534959fbfb52e5fe.91905e321f83c2e2"
+    ],
+    "query": "pick input values at the edges of the allowed range"
+   },
+   {
+    "after": [
+     "test_driven_change_red_green_refactor",
+     "audit_data_splits_for_errors_and_leakage",
+     "plan_and_split_work_with_explicit_joins",
+     "verify_the_requested_output",
+     "import_skill_analyzing_test_flakiness_7f6cb0399e5b",
+     "library.supply.program_installs.ea3046cf2a73d7ab25c555d5.d2975b289ad35524",
+     "import_skill_obs_traces_4cc2ad0e7132",
+     "library.supply.function_extracts.9760451347db7607f9ba6355.a6c62891470d859a",
+     "library.supply.openapi_operations.77f2d9d9d998cc5f09dbb8a3.e2140d0ff9194e3c",
+     "library.supply.openapi_operations.a338101fd0038285499de653.2e8909fd7c5688d8"
+    ],
+    "before": [
+     "test_driven_change_red_green_refactor",
+     "audit_data_splits_for_errors_and_leakage",
+     "plan_and_split_work_with_explicit_joins",
+     "verify_the_requested_output",
+     "import_skill_analyzing_test_flakiness_7f6cb0399e5b",
+     "library.supply.program_installs.ea3046cf2a73d7ab25c555d5.d2975b289ad35524",
+     "import_skill_obs_traces_4cc2ad0e7132",
+     "library.supply.function_extracts.9760451347db7607f9ba6355.a6c62891470d859a",
+     "library.supply.openapi_operations.77f2d9d9d998cc5f09dbb8a3.e2140d0ff9194e3c",
+     "import_skill_quantized_export_17ec52cacdac"
+    ],
+    "entered": [
+     "library.supply.openapi_operations.a338101fd0038285499de653.2e8909fd7c5688d8"
+    ],
+    "expected": [
+     "isolate_a_flaky_test_before_trusting_it"
+    ],
+    "expected_ranks": {
+     "isolate_a_flaky_test_before_trusting_it": [
+      null,
+      null
+     ]
+    },
+    "left": [
+     "import_skill_quantized_export_17ec52cacdac"
+    ],
+    "query": "this test passes sometimes and fails sometimes"
+   },
+   {
+    "after": [
+     "choose_review_perspectives",
+     "import_skill_copilotkit_channels_306564cbbc34",
+     "import_skill_cargo_diagnostics_b9c863a659a8",
+     "import_subagent_qa_test_writer_73e4df744ccf",
+     "import_subagent_qa_implementer_bffb4b046267",
+     "library.supply.function_extracts.f137be3665cdc388ee90373b.c23d801ac3483cff",
+     "import_skill_interview_me_c6db6e77470f",
+     "import_subagent_rust_test_author_8cc0d2234f8f",
+     "library.supply.openapi_operations.f47718ba2cdd15d96b949213.a90753c3753a287a",
+     "import_skill_data_import_4bfdf8c467ba"
+    ],
+    "before": [
+     "choose_review_perspectives",
+     "import_skill_copilotkit_channels_306564cbbc34",
+     "import_skill_cargo_diagnostics_b9c863a659a8",
+     "import_subagent_qa_test_writer_73e4df744ccf",
+     "library.supply.function_extracts.f137be3665cdc388ee90373b.c23d801ac3483cff",
+     "import_subagent_qa_implementer_bffb4b046267",
+     "import_skill_interview_me_c6db6e77470f",
+     "import_subagent_rust_test_author_8cc0d2234f8f",
+     "library.supply.openapi_operations.f47718ba2cdd15d96b949213.a90753c3753a287a",
+     "library.supply.function_extracts.fa0e3864bb07cc74ff397e37.d0780e1b5d752385"
+    ],
+    "entered": [
+     "import_skill_data_import_4bfdf8c467ba"
+    ],
+    "expected": [
+     "review_error_paths_and_partial_failure"
+    ],
+    "expected_ranks": {
+     "review_error_paths_and_partial_failure": [
+      null,
+      null
+     ]
+    },
+    "left": [
+     "library.supply.function_extracts.fa0e3864bb07cc74ff397e37.d0780e1b5d752385"
+    ],
+    "query": "half the writes went through and half did not"
+   },
+   {
+    "after": [
+     "plan_and_split_work_with_explicit_joins",
+     "look_for_structure_the_model_missed",
+     "import_subagent_test_failure_analyzer_51c72e9a36fc",
+     "import_subagent_bizlogic_hunter_12652fa14a56",
+     "import_skill_debugging_5c8de4133f70",
+     "import_subagent_red_team_6f6775c9c7c9",
+     "import_subagent_bug_hunter_142368d88cef",
+     "import_subagent_review_correctness_3ff277bb8cf8",
+     "import_subagent_conductor_6271b1429ddf",
+     "import_subagent_debugger_a14d883be88e"
+    ],
+    "before": [
+     "plan_and_split_work_with_explicit_joins",
+     "look_for_structure_the_model_missed",
+     "import_subagent_test_failure_analyzer_51c72e9a36fc",
+     "import_subagent_bizlogic_hunter_12652fa14a56",
+     "import_skill_debugging_5c8de4133f70",
+     "import_subagent_red_team_6f6775c9c7c9",
+     "import_subagent_conductor_6271b1429ddf",
+     "import_subagent_bug_hunter_142368d88cef",
+     "import_subagent_review_correctness_3ff277bb8cf8",
+     "import_subagent_debugger_a14d883be88e"
+    ],
+    "entered": [],
+    "expected": [
+     "review_shared_state_for_ordering_defects"
+    ],
+    "expected_ranks": {
+     "review_shared_state_for_ordering_defects": [
+      null,
+      null
+     ]
+    },
+    "left": [],
+    "query": "look for race conditions in this code"
+   },
+   {
+    "after": [
+     "check_that_a_result_is_stable_and_generalizes",
+     "resolve_missing_information",
+     "decide_whether_a_step_needs_a_model",
+     "look_for_structure_the_model_missed",
+     "split_address_lines_into_components",
+     "propose_a_dedupe_without_deleting_rows",
+     "plan_and_split_work_with_explicit_joins",
+     "escalate_uncertain_values_with_candidates",
+     "detect_malformed_values_by_dominant_pattern",
+     "import_command_archive_plan_147f184b0e80"
+    ],
+    "before": [
+     "check_that_a_result_is_stable_and_generalizes",
+     "resolve_missing_information",
+     "decide_whether_a_step_needs_a_model",
+     "look_for_structure_the_model_missed",
+     "split_address_lines_into_components",
+     "propose_a_dedupe_without_deleting_rows",
+     "plan_and_split_work_with_explicit_joins",
+     "detect_malformed_values_by_dominant_pattern",
+     "escalate_uncertain_values_with_candidates",
+     "import_command_archive_plan_147f184b0e80"
+    ],
+    "entered": [],
+    "expected": [
+     "review_untrusted_input_for_injection"
+    ],
+    "expected_ranks": {
+     "review_untrusted_input_for_injection": [
+      null,
+      null
+     ]
+    },
+    "left": [],
+    "query": "a model answer is being passed straight into a shell command"
+   },
+   {
+    "after": [
+     "normalize_and_recover_email_addresses",
+     "normalize_website_addresses",
+     "library.supply.openapi_operations.aa54cb4223eb6be5c9d17351.04d4b7f56cfa0f5a",
+     "import_plugin_manifest_dot_skill_plugin_c5dd382a9115",
+     "import_skill_dot_canvas_designer_2b548570c14d",
+     "import_plugin_manifest_dot_skill_plugin_2a6a49d88932",
+     "import_protocol_server_configuration_dot_skill_mcp_d706ef8bdd7b",
+     "library.supply.creative_originals.32e23b2d4352099303e40624.6450c388b39175a3",
+     "library.supply.function_extracts.b4641c28dad7026301ca71d4.ca77bdb1c50977a1",
+     "library.supply.json_schemas.1512aadb8b3464a6a13848a9.bac5b07dc1321bae"
+    ],
+    "before": [
+     "normalize_and_recover_email_addresses",
+     "normalize_website_addresses",
+     "library.supply.openapi_operations.aa54cb4223eb6be5c9d17351.04d4b7f56cfa0f5a",
+     "import_plugin_manifest_dot_skill_plugin_c5dd382a9115",
+     "import_skill_dot_canvas_designer_2b548570c14d",
+     "import_plugin_manifest_dot_skill_plugin_2a6a49d88932",
+     "import_protocol_server_configuration_dot_skill_mcp_d706ef8bdd7b",
+     "library.supply.function_extracts.b4641c28dad7026301ca71d4.ca77bdb1c50977a1",
+     "library.supply.json_schemas.1512aadb8b3464a6a13848a9.bac5b07dc1321bae",
+     "library.supply.json_schemas.9fcc8b4ce60d9e0181dc7e2a.956e233dbcd5e384"
+    ],
+    "entered": [
+     "library.supply.creative_originals.32e23b2d4352099303e40624.6450c388b39175a3"
+    ],
+    "expected": [
+     "review_file_paths_for_traversal_and_link_escape"
+    ],
+    "expected_ranks": {
+     "review_file_paths_for_traversal_and_link_escape": [
+      null,
+      null
+     ]
+    },
+    "left": [
+     "library.supply.json_schemas.9fcc8b4ce60d9e0181dc7e2a.956e233dbcd5e384"
+    ],
+    "query": "stop dot dot slash in a download filename"
+   },
+   {
+    "after": [
+     "export_a_standalone_python_package",
+     "library.supply.openapi_operations.c4b1befe18b2f472bf444a41.c9f8f90588aed05a",
+     "library.supply.json_schemas.da1f7dd2216c812309e3cb77.d325c3bf5afbe2a0",
+     "library.supply.json_schemas.0e84ddf2cf1c5c0f4e99262d.45594e1b75dd0fef",
+     "import_skill_snippet_eval_b61d3c769455",
+     "import_skill_expo_skill_eval_e9da0c81f1f4",
+     "import_skill_eval_config_b9b1daf7b005",
+     "library.supply.openapi_operations.c1d98528a10c9ab535964321.607aa939ffdefff7",
+     "import_skill_agent_platform_eval_flywheel_a8a6f34034fa",
+     "import_plugin_manifest_avoid_ai_writing_plugin_88a043d40914"
+    ],
+    "before": [
+     "export_a_standalone_python_package",
+     "library.supply.openapi_operations.c4b1befe18b2f472bf444a41.c9f8f90588aed05a",
+     "library.supply.json_schemas.da1f7dd2216c812309e3cb77.d325c3bf5afbe2a0",
+     "library.supply.json_schemas.0e84ddf2cf1c5c0f4e99262d.45594e1b75dd0fef",
+     "import_skill_snippet_eval_b61d3c769455",
+     "import_skill_expo_skill_eval_e9da0c81f1f4",
+     "import_skill_eval_config_b9b1daf7b005",
+     "import_skill_agent_platform_eval_flywheel_a8a6f34034fa",
+     "library.supply.openapi_operations.c1d98528a10c9ab535964321.607aa939ffdefff7",
+     "import_plugin_manifest_avoid_ai_writing_plugin_88a043d40914"
+    ],
+    "entered": [],
+    "expected": [
+     "review_generated_output_before_it_is_executed"
+    ],
+    "expected_ranks": {
+     "review_generated_output_before_it_is_executed": [
+      null,
+      null
+     ]
+    },
+    "left": [],
+    "query": "avoid eval on a generated expression"
+   },
+   {
+    "after": [
+     "normalize_website_addresses",
+     "forecast_an_action_then_compare",
+     "detect_malformed_values_by_dominant_pattern",
+     "import_skill_unfolding_architecture_6601ae8a9907",
+     "import_skill_scientific_problem_selection_7eeef0ecf16e",
+     "import_skill_architect_58092b7ea91d",
+     "import_skill_brainstorming_6b468a652520",
+     "import_skill_distribution_strategist_b49614f8fd65",
+     "import_skill_brainstorming_74f8ce7cd2c5",
+     "import_skill_next_642b17fad7e7"
+    ],
+    "before": [
+     "normalize_website_addresses",
+     "forecast_an_action_then_compare",
+     "detect_malformed_values_by_dominant_pattern",
+     "import_skill_unfolding_architecture_6601ae8a9907",
+     "import_skill_scientific_problem_selection_7eeef0ecf16e",
+     "import_skill_architect_58092b7ea91d",
+     "import_skill_brainstorming_6b468a652520",
+     "import_skill_distribution_strategist_b49614f8fd65",
+     "import_skill_next_642b17fad7e7",
+     "import_skill_brainstorming_74f8ce7cd2c5"
+    ],
+    "entered": [],
+    "expected": [
+     "review_a_new_dependency_before_adding_it"
+    ],
+    "expected_ranks": {
+     "review_a_new_dependency_before_adding_it": [
+      null,
+      null
+     ]
+    },
+    "left": [],
+    "query": "should i add this library to the project"
+   },
+   {
+    "after": [
+     "read_the_train_validation_gap",
+     "import_skill_build_pipeline_patterns_24733d19d0dc",
+     "import_skill_unity_build_release_e421fe995a80",
+     "import_skill_unreal_build_release_c4c153312d25",
+     "library.supply.openapi_operations.7688a03eb04e8953e5c3fcbb.f092226f1b5fa0a0",
+     "import_skill_datasets_524e3b90da7c",
+     "library.supply.creative_originals.d046d4375177a29262227b27.c91fc2b93de3beea",
+     "library.supply.openapi_operations.129872f0a8dad4cca4860ecf.5c768d959dfb8c89",
+     "import_skill_bitmovin_observability_ad_report_d0ccfbd35b07",
+     "library.supply.openapi_operations.66ce863a6f324548407bc515.64e9736034f4708c"
+    ],
+    "before": [
+     "read_the_train_validation_gap",
+     "import_skill_build_pipeline_patterns_24733d19d0dc",
+     "import_skill_unity_build_release_e421fe995a80",
+     "import_skill_unreal_build_release_c4c153312d25",
+     "library.supply.openapi_operations.7688a03eb04e8953e5c3fcbb.f092226f1b5fa0a0",
+     "import_skill_datasets_524e3b90da7c",
+     "library.supply.openapi_operations.129872f0a8dad4cca4860ecf.5c768d959dfb8c89",
+     "import_skill_bitmovin_observability_ad_report_d0ccfbd35b07",
+     "library.supply.openapi_operations.66ce863a6f324548407bc515.64e9736034f4708c",
+     "import_skill_sc_sync_fa7eeaa9bd3c"
+    ],
+    "entered": [
+     "library.supply.creative_originals.d046d4375177a29262227b27.c91fc2b93de3beea"
+    ],
+    "expected": [
+     "pin_dependency_versions_and_verify_them"
+    ],
+    "expected_ranks": {
+     "pin_dependency_versions_and_verify_them": [
+      null,
+      null
+     ]
+    },
+    "left": [
+     "import_skill_sc_sync_fa7eeaa9bd3c"
+    ],
+    "query": "builds are not reproducible between machines"
+   },
+   {
+    "after": [
+     "deliver_the_best_available_result_when_blocked",
+     "report_observed_derived_assumed_and_unknown",
+     "export_a_standalone_python_package",
+     "find_duplicate_records_with_blocking_keys",
+     "check_for_existing_work_before_building",
+     "test_driven_change_red_green_refactor",
+     "verify_the_requested_output",
+     "verify_an_export_in_an_isolated_interpreter",
+     "review_an_accepted_solution_adversarially",
+     "measure_the_environment_before_relying_on_it"
+    ],
+    "before": [
+     "deliver_the_best_available_result_when_blocked",
+     "report_observed_derived_assumed_and_unknown",
+     "export_a_standalone_python_package",
+     "check_for_existing_work_before_building",
+     "find_duplicate_records_with_blocking_keys",
+     "test_driven_change_red_green_refactor",
+     "verify_the_requested_output",
+     "verify_an_export_in_an_isolated_interpreter",
+     "review_an_accepted_solution_adversarially",
+     "measure_the_environment_before_relying_on_it"
+    ],
+    "entered": [],
+    "expected": [
+     "pin_dependency_versions_and_verify_them"
+    ],
+    "expected_ranks": {
+     "pin_dependency_versions_and_verify_them": [
+      null,
+      null
+     ]
+    },
+    "left": [],
+    "query": "lock every package to an exact version and hash"
+   },
+   {
+    "after": [
+     "test_driven_change_red_green_refactor",
+     "detect_malformed_values_by_dominant_pattern",
+     "profile_text_column_before_cleaning",
+     "layer_exception_catalogs_with_precedence",
+     "propose_a_dedupe_without_deleting_rows",
+     "copy_a_table_with_corrections_never_in_place",
+     "choose_review_perspectives",
+     "write_a_pinned_container_and_batch_job",
+     "find_duplicate_records_with_blocking_keys",
+     "diagnose_a_stall_and_change_strategy"
+    ],
+    "before": [
+     "test_driven_change_red_green_refactor",
+     "detect_malformed_values_by_dominant_pattern",
+     "profile_text_column_before_cleaning",
+     "layer_exception_catalogs_with_precedence",
+     "propose_a_dedupe_without_deleting_rows",
+     "copy_a_table_with_corrections_never_in_place",
+     "write_a_pinned_container_and_batch_job",
+     "choose_review_perspectives",
+     "find_duplicate_records_with_blocking_keys",
+     "diagnose_a_stall_and_change_strategy"
+    ],
+    "entered": [],
+    "expected": [
+     "plan_a_schema_change_in_compatible_steps"
+    ],
+    "expected_ranks": {
+     "plan_a_schema_change_in_compatible_steps": [
+      null,
+      null
+     ]
+    },
+    "left": [],
+    "query": "change a column without taking the service down"
+   },
+   {
+    "after": [
+     "freeze_the_success_metric_before_measuring",
+     "copy_a_table_with_corrections_never_in_place",
+     "test_driven_change_red_green_refactor",
+     "verify_the_requested_output",
+     "propose_a_dedupe_without_deleting_rows",
+     "look_for_structure_the_model_missed",
+     "verify_an_export_in_an_isolated_interpreter",
+     "import_skill_62_marketing_review_global_6f593add4bed",
+     "import_skill_ce_noslop_0784f3141841",
+     "library.supply.openapi_operations.6c61ba2f640df62394ee1454.c9b1b5017617c616"
+    ],
+    "before": [
+     "freeze_the_success_metric_before_measuring",
+     "copy_a_table_with_corrections_never_in_place",
+     "verify_the_requested_output",
+     "test_driven_change_red_green_refactor",
+     "propose_a_dedupe_without_deleting_rows",
+     "look_for_structure_the_model_missed",
+     "verify_an_export_in_an_isolated_interpreter",
+     "import_skill_62_marketing_review_global_6f593add4bed",
+     "import_skill_ce_noslop_0784f3141841",
+     "library.supply.openapi_operations.6c61ba2f640df62394ee1454.c9b1b5017617c616"
+    ],
+    "entered": [],
+    "expected": [
+     "rehearse_a_migration_on_a_copy_of_real_data"
+    ],
+    "expected_ranks": {
+     "rehearse_a_migration_on_a_copy_of_real_data": [
+      null,
+      null
+     ]
+    },
+    "left": [],
+    "query": "practise the migration on a copy first"
+   },
+   {
+    "after": [
+     "test_driven_change_red_green_refactor",
+     "normalize_whitespace_and_unicode_text",
+     "propose_a_dedupe_without_deleting_rows",
+     "copy_a_table_with_corrections_never_in_place",
+     "choose_review_perspectives",
+     "write_a_pinned_container_and_batch_job",
+     "find_duplicate_records_with_blocking_keys",
+     "diagnose_a_stall_and_change_strategy",
+     "import_skill_contract_testing_562e1825e033",
+     "import_subagent_change_a1767b9650e6"
+    ],
+    "before": [
+     "test_driven_change_red_green_refactor",
+     "normalize_whitespace_and_unicode_text",
+     "propose_a_dedupe_without_deleting_rows",
+     "copy_a_table_with_corrections_never_in_place",
+     "write_a_pinned_container_and_batch_job",
+     "choose_review_perspectives",
+     "find_duplicate_records_with_blocking_keys",
+     "diagnose_a_stall_and_change_strategy",
+     "import_skill_contract_testing_562e1825e033",
+     "import_subagent_change_a1767b9650e6"
+    ],
+    "entered": [],
+    "expected": [
+     "version_an_interface_so_older_callers_keep_working"
+    ],
+    "expected_ranks": {
+     "version_an_interface_so_older_callers_keep_working": [
+      null,
+      null
+     ]
+    },
+    "left": [],
+    "query": "change the api without breaking existing clients"
+   },
+   {
+    "after": [
+     "check_that_a_result_is_stable_and_generalizes",
+     "apply_hold_or_escalate_each_correction",
+     "split_address_lines_into_components",
+     "resolve_missing_information",
+     "plan_and_split_work_with_explicit_joins",
+     "import_subagent_peer_review_critic_4c9bf93483ab",
+     "library.supply.openapi_operations.1e7ba02c06ae17687ef5bb6f.3d3f030b430114a6",
+     "import_subagent_become_researcher_b95a24107161",
+     "import_skill_ask_me_057a0d15e2f8",
+     "import_skill_cargo_quickstart_66fcf7ac4995"
+    ],
+    "before": [
+     "apply_hold_or_escalate_each_correction",
+     "check_that_a_result_is_stable_and_generalizes",
+     "split_address_lines_into_components",
+     "resolve_missing_information",
+     "plan_and_split_work_with_explicit_joins",
+     "import_subagent_peer_review_critic_4c9bf93483ab",
+     "library.supply.openapi_operations.1e7ba02c06ae17687ef5bb6f.3d3f030b430114a6",
+     "import_subagent_become_researcher_b95a24107161",
+     "import_skill_ask_me_057a0d15e2f8",
+     "import_skill_cargo_quickstart_66fcf7ac4995"
+    ],
+    "entered": [],
+    "expected": [
+     "return_errors_a_caller_can_act_on"
+    ],
+    "expected_ranks": {
+     "return_errors_a_caller_can_act_on": [
+      null,
+      null
+     ]
+    },
+    "left": [],
+    "query": "give callers a stable code they can branch on"
+   },
+   {
+    "after": [
+     "choose_review_perspectives",
+     "hand_over_a_result_its_consumer_can_use",
+     "propose_a_dedupe_without_deleting_rows",
+     "restore_capitalisation_of_names",
+     "layer_exception_catalogs_with_precedence",
+     "find_duplicate_records_with_blocking_keys",
+     "escalate_uncertain_values_with_candidates",
+     "carry_competing_readings_of_a_request",
+     "import_skill_quick_scan_b2d70fec3dcb",
+     "library.supply.data_tables.e03ef4c9193fbb3b0d81c917.402c1990eaca0202"
+    ],
+    "before": [
+     "choose_review_perspectives",
+     "hand_over_a_result_its_consumer_can_use",
+     "propose_a_dedupe_without_deleting_rows",
+     "restore_capitalisation_of_names",
+     "layer_exception_catalogs_with_precedence",
+     "find_duplicate_records_with_blocking_keys",
+     "escalate_uncertain_values_with_candidates",
+     "carry_competing_readings_of_a_request",
+     "library.supply.data_tables.e03ef4c9193fbb3b0d81c917.402c1990eaca0202",
+     "library.supply.data_tables.2a50f6d07d957f817b56c9b2.d74b7127053f2df2"
+    ],
+    "entered": [
+     "import_skill_quick_scan_b2d70fec3dcb"
+    ],
+    "expected": [
+     "bound_a_list_endpoint_with_paging_and_limits"
+    ],
+    "expected_ranks": {
+     "bound_a_list_endpoint_with_paging_and_limits": [
+      null,
+      null
+     ]
+    },
+    "left": [
+     "library.supply.data_tables.2a50f6d07d957f817b56c9b2.d74b7127053f2df2"
+    ],
+    "query": "someone asked for a hundred thousand rows in one request"
+   },
+   {
+    "after": [
+     "analyse_errors_by_segment_and_cluster",
+     "orient_on_a_task_and_write_its_contracts",
+     "diagnose_a_stall_and_change_strategy",
+     "forecast_an_action_then_compare",
+     "detect_malformed_values_by_dominant_pattern",
+     "deliver_the_best_available_result_when_blocked",
+     "normalize_and_recover_email_addresses",
+     "apply_hold_or_escalate_each_correction",
+     "restore_capitalisation_of_names",
+     "plan_and_split_work_with_explicit_joins"
+    ],
+    "before": [
+     "analyse_errors_by_segment_and_cluster",
+     "orient_on_a_task_and_write_its_contracts",
+     "diagnose_a_stall_and_change_strategy",
+     "forecast_an_action_then_compare",
+     "detect_malformed_values_by_dominant_pattern",
+     "normalize_and_recover_email_addresses",
+     "deliver_the_best_available_result_when_blocked",
+     "apply_hold_or_escalate_each_correction",
+     "restore_capitalisation_of_names",
+     "plan_and_split_work_with_explicit_joins"
+    ],
+    "entered": [],
+    "expected": [
+     "classify_a_failure_before_deciding_to_retry"
+    ],
+    "expected_ranks": {
+     "classify_a_failure_before_deciding_to_retry": [
+      null,
+      null
+     ]
+    },
+    "left": [],
+    "query": "should this failure be retried at all"
+   },
+   {
+    "after": [
+     "escalate_uncertain_values_with_candidates",
+     "carry_competing_readings_of_a_request",
+     "review_an_accepted_solution_adversarially",
+     "library.supply.creative_originals.12ec014894c83d8bbd49b4c2.9e958209c99b3896",
+     "library.supply.mcp_registry.911a7826db76969dfa98a806.8f76e5eb0668d9fb",
+     "import_subagent_cloud_saas_outage_triage_bf7b3fadf3de",
+     "library.supply.json_schemas.2c01d2048c9f51684dff794d.a8ea8032dc2c62e5",
+     "baltor_dietary_diversity",
+     "library.supply.json_schemas.6bf5787680f0cac923dc3759.561a9ae7b7d112a6",
+     "baltor_women_representation_share"
+    ],
+    "before": [
+     "escalate_uncertain_values_with_candidates",
+     "carry_competing_readings_of_a_request",
+     "review_an_accepted_solution_adversarially",
+     "hand_over_a_result_its_consumer_can_use",
+     "orient_on_a_task_and_write_its_contracts",
+     "choose_review_perspectives",
+     "library.supply.mcp_registry.911a7826db76969dfa98a806.8f76e5eb0668d9fb",
+     "import_subagent_cloud_saas_outage_triage_bf7b3fadf3de",
+     "baltor_dietary_diversity",
+     "baltor_women_representation_share"
+    ],
+    "entered": [
+     "library.supply.creative_originals.12ec014894c83d8bbd49b4c2.9e958209c99b3896",
+     "library.supply.json_schemas.2c01d2048c9f51684dff794d.a8ea8032dc2c62e5",
+     "library.supply.json_schemas.6bf5787680f0cac923dc3759.561a9ae7b7d112a6"
+    ],
+    "expected": [
+     "classify_a_failure_before_deciding_to_retry"
+    ],
+    "expected_ranks": {
+     "classify_a_failure_before_deciding_to_retry": [
+      null,
+      null
+     ]
+    },
+    "left": [
+     "hand_over_a_result_its_consumer_can_use",
+     "orient_on_a_task_and_write_its_contracts",
+     "choose_review_perspectives"
+    ],
+    "query": "tell a temporary outage apart from a bad request"
+   },
+   {
+    "after": [
+     "score_duplicate_pairs_by_weakest_signal",
+     "split_address_lines_into_components",
+     "library.supply.mcp_registry.911a7826db76969dfa98a806.8f76e5eb0668d9fb",
+     "import_rules_conflict_deescalation_674f4638d9f0",
+     "import_skill_pitch_position_9b32eea5a856",
+     "baltor_infrastructure_outage_accounting",
+     "import_skill_audit_microsegmentation_posture_fe2c65f2e1dd",
+     "import_skill_analyze_policy_rules_7c42461a8739",
+     "library.supply.openapi_operations.8289289dfbad945631fffd74.55a7a778aaf6c551",
+     "import_skill_diagnosis_5b8f43742619"
+    ],
+    "before": [
+     "score_duplicate_pairs_by_weakest_signal",
+     "split_address_lines_into_components",
+     "library.supply.mcp_registry.911a7826db76969dfa98a806.8f76e5eb0668d9fb",
+     "import_rules_conflict_deescalation_674f4638d9f0",
+     "import_skill_pitch_position_9b32eea5a856",
+     "import_skill_audit_microsegmentation_posture_fe2c65f2e1dd",
+     "baltor_infrastructure_outage_accounting",
+     "import_skill_analyze_policy_rules_7c42461a8739",
+     "library.supply.openapi_operations.8289289dfbad945631fffd74.55a7a778aaf6c551",
+     "import_skill_diagnosis_5b8f43742619"
+    ],
+    "entered": [],
+    "expected": [
+     "retry_with_backoff_inside_a_declared_budget"
+    ],
+    "expected_ranks": {
+     "retry_with_backoff_inside_a_declared_budget": [
+      null,
+      null
+     ]
+    },
+    "left": [],
+    "query": "our retries are making the outage worse"
+   },
+   {
+    "after": [
+     "write_a_pinned_container_and_batch_job",
+     "normalize_and_recover_email_addresses",
+     "apply_hold_or_escalate_each_correction",
+     "export_a_standalone_python_package",
+     "import_skill_compartmentalize_be7034908b68",
+     "library.supply.openapi_operations.2ab04d8c841b738467007555.780398f8a6ed6321",
+     "import_command_error_handling_specialist_df3561be19e8",
+     "library.supply.openapi_operations.7a371d0209119d14499a2d7c.f924ee6b6f09b3b5",
+     "import_subagent_overnight_preparer_84f2d84dc355",
+     "import_command_google_impression_share_2245d5fdfd94"
+    ],
+    "before": [
+     "write_a_pinned_container_and_batch_job",
+     "normalize_and_recover_email_addresses",
+     "apply_hold_or_escalate_each_correction",
+     "export_a_standalone_python_package",
+     "import_skill_compartmentalize_be7034908b68",
+     "library.supply.openapi_operations.2ab04d8c841b738467007555.780398f8a6ed6321",
+     "import_command_error_handling_specialist_df3561be19e8",
+     "library.supply.openapi_operations.7a371d0209119d14499a2d7c.f924ee6b6f09b3b5",
+     "import_command_google_impression_share_2245d5fdfd94",
+     "import_subagent_overnight_preparer_84f2d84dc355"
+    ],
+    "entered": [],
+    "expected": [
+     "keep_partial_work_when_a_long_job_is_interrupted"
+    ],
+    "expected_ranks": {
+     "keep_partial_work_when_a_long_job_is_interrupted": [
+      null,
+      null
+     ]
+    },
+    "left": [],
+    "query": "the overnight job died at hour six and lost everything"
+   },
+   {
+    "after": [
+     "import_command_save_4a0e7c595daa",
+     "import_skill_checkpointed_agent_loop_bb044b5ee26b",
+     "import_skill_apex_diagnose_1aa3aaf1726c",
+     "import_skill_reorient_03df1d0b76f7",
+     "import_command_resume_e3527a2644f3",
+     "import_skill_agent_checkpointing_0290b9b0fade",
+     "library.supply.openapi_operations.ebdaece52a6f8a34091247e4.2acd2febd3b2f1b1",
+     "import_command_evolve_6613a47a51a3",
+     "import_skill_memory_checkpoint_5b4bb145ca9a",
+     "import_skill_solo_run_processes_260920367b34"
+    ],
+    "before": [
+     "import_command_save_4a0e7c595daa",
+     "import_skill_checkpointed_agent_loop_bb044b5ee26b",
+     "import_skill_apex_diagnose_1aa3aaf1726c",
+     "import_skill_reorient_03df1d0b76f7",
+     "import_command_resume_e3527a2644f3",
+     "import_skill_agent_checkpointing_0290b9b0fade",
+     "import_skill_memory_checkpoint_5b4bb145ca9a",
+     "library.supply.openapi_operations.ebdaece52a6f8a34091247e4.2acd2febd3b2f1b1",
+     "import_command_evolve_6613a47a51a3",
+     "import_skill_progression_design_ba8438017a22"
+    ],
+    "entered": [
+     "import_skill_solo_run_processes_260920367b34"
+    ],
+    "expected": [
+     "keep_partial_work_when_a_long_job_is_interrupted"
+    ],
+    "expected_ranks": {
+     "keep_partial_work_when_a_long_job_is_interrupted": [
+      null,
+      null
+     ]
+    },
+    "left": [
+     "import_skill_progression_design_ba8438017a22"
+    ],
+    "query": "checkpoint a long run so a restart resumes"
+   },
+   {
+    "after": [
+     "score_duplicate_pairs_by_weakest_signal",
+     "test_driven_change_red_green_refactor",
+     "copy_a_table_with_corrections_never_in_place",
+     "propose_a_dedupe_without_deleting_rows",
+     "check_that_a_result_is_stable_and_generalizes",
+     "read_the_train_validation_gap",
+     "find_duplicate_records_with_blocking_keys",
+     "hand_over_a_result_its_consumer_can_use",
+     "verify_an_export_in_an_isolated_interpreter",
+     "import_skill_samocode_remote_6204f58bccae"
+    ],
+    "before": [
+     "score_duplicate_pairs_by_weakest_signal",
+     "test_driven_change_red_green_refactor",
+     "propose_a_dedupe_without_deleting_rows",
+     "copy_a_table_with_corrections_never_in_place",
+     "check_that_a_result_is_stable_and_generalizes",
+     "read_the_train_validation_gap",
+     "find_duplicate_records_with_blocking_keys",
+     "hand_over_a_result_its_consumer_can_use",
+     "verify_an_export_in_an_isolated_interpreter",
+     "import_skill_samocode_remote_6204f58bccae"
+    ],
+    "entered": [],
+    "expected": [
+     "rotate_a_credential_without_an_outage"
+    ],
+    "expected_ranks": {
+     "rotate_a_credential_without_an_outage": [
+      null,
+      null
+     ]
+    },
+    "left": [],
+    "query": "run two valid keys while callers move over"
+   },
+   {
+    "after": [
+     "escalate_uncertain_values_with_candidates",
+     "hand_over_a_result_its_consumer_can_use",
+     "write_a_pinned_container_and_batch_job",
+     "copy_a_table_with_corrections_never_in_place",
+     "resolve_missing_information",
+     "propose_a_dedupe_without_deleting_rows",
+     "test_driven_change_red_green_refactor",
+     "find_duplicate_records_with_blocking_keys",
+     "import_skill_sf_setup_automation_f1e4f59bd07f",
+     "import_rules_delegate_to_ai_305665a275f3"
+    ],
+    "before": [
+     "escalate_uncertain_values_with_candidates",
+     "hand_over_a_result_its_consumer_can_use",
+     "write_a_pinned_container_and_batch_job",
+     "copy_a_table_with_corrections_never_in_place",
+     "resolve_missing_information",
+     "propose_a_dedupe_without_deleting_rows",
+     "test_driven_change_red_green_refactor",
+     "find_duplicate_records_with_blocking_keys",
+     "import_rules_delegate_to_ai_305665a275f3",
+     "import_skill_sf_setup_automation_f1e4f59bd07f"
+    ],
+    "entered": [],
+    "expected": [
+     "write_a_log_line_that_is_safe_to_share"
+    ],
+    "expected_ranks": {
+     "write_a_log_line_that_is_safe_to_share": [
+      null,
+      null
+     ]
+    },
+    "left": [],
+    "query": "logs i can hand to support without leaking content"
+   },
+   {
+    "after": [
+     "verify_an_export_in_an_isolated_interpreter",
+     "profile_text_column_before_cleaning",
+     "layer_exception_catalogs_with_precedence",
+     "measure_the_environment_before_relying_on_it",
+     "import_skill_profile_2174d38e9f51",
+     "import_skill_valency_profile_2b6749dca523",
+     "library.supply.creative_originals.12ec014894c83d8bbd49b4c2.9e958209c99b3896",
+     "import_skill_multi_account_operator_f840040b69b0",
+     "library.supply.mcp_registry.cac8a6394135fa4aef3f5f00.0d0ed1dd49bcf805",
+     "library.supply.mcp_registry.bbd1062194189a903946d4e1.984b899d5358d7cb"
+    ],
+    "before": [
+     "verify_an_export_in_an_isolated_interpreter",
+     "profile_text_column_before_cleaning",
+     "layer_exception_catalogs_with_precedence",
+     "measure_the_environment_before_relying_on_it",
+     "import_skill_profile_2174d38e9f51",
+     "import_skill_valency_profile_2b6749dca523",
+     "import_skill_multi_account_operator_f840040b69b0",
+     "library.supply.mcp_registry.cac8a6394135fa4aef3f5f00.0d0ed1dd49bcf805",
+     "library.supply.mcp_registry.bbd1062194189a903946d4e1.984b899d5358d7cb",
+     "library.supply.mcp_registry.eda28ed60b6ef1806414a795.e2be3a94f1f8c35e"
+    ],
+    "entered": [
+     "library.supply.creative_originals.12ec014894c83d8bbd49b4c2.9e958209c99b3896"
+    ],
+    "expected": [
+     "read_a_profile_and_find_the_dominant_cost"
+    ],
+    "expected_ranks": {
+     "read_a_profile_and_find_the_dominant_cost": [
+      null,
+      null
+     ]
+    },
+    "left": [
+     "library.supply.mcp_registry.eda28ed60b6ef1806414a795.e2be3a94f1f8c35e"
+    ],
+    "query": "tell waiting on io apart from burning cpu in a profile"
+   },
+   {
+    "after": [
+     "check_for_existing_work_before_building",
+     "check_that_a_result_is_stable_and_generalizes",
+     "normalize_and_recover_email_addresses",
+     "apply_hold_or_escalate_each_correction",
+     "import_rules_makers_edge_functions_64e6c9984067",
+     "import_rules_makers_middleware_1146ba0a713f",
+     "library.supply.openapi_operations.90fd4b9711338a3400a0b6da.f233630f3b1be912",
+     "import_skill_stage_launch_00bec99c0f24",
+     "library.supply.openapi_operations.7a8bf31a2ee3fc56923f047b.399a52a7457dbe91",
+     "library.supply.openapi_operations.378812e3da3d87b574e63704.b87a0268e37a2c58"
+    ],
+    "before": [
+     "check_for_existing_work_before_building",
+     "check_that_a_result_is_stable_and_generalizes",
+     "normalize_and_recover_email_addresses",
+     "apply_hold_or_escalate_each_correction",
+     "import_rules_makers_edge_functions_64e6c9984067",
+     "import_rules_makers_middleware_1146ba0a713f",
+     "library.supply.openapi_operations.90fd4b9711338a3400a0b6da.f233630f3b1be912",
+     "import_skill_stage_launch_00bec99c0f24",
+     "library.supply.openapi_operations.7a8bf31a2ee3fc56923f047b.399a52a7457dbe91",
+     "library.supply.openapi_operations.1a9d5bf73051fe5ec9b5b53d.60994b1e1fb26f16"
+    ],
+    "entered": [
+     "library.supply.openapi_operations.378812e3da3d87b574e63704.b87a0268e37a2c58"
+    ],
+    "expected": [
+     "validate_input_at_the_boundary_and_refuse_early"
+    ],
+    "expected_ranks": {
+     "validate_input_at_the_boundary_and_refuse_early": [
+      null,
+      null
+     ]
+    },
+    "left": [
+     "library.supply.openapi_operations.1a9d5bf73051fe5ec9b5b53d.60994b1e1fb26f16"
+    ],
+    "query": "check the incoming payload at the edge"
+   },
+   {
+    "after": [
+     "forecast_an_action_then_compare",
+     "report_observed_derived_assumed_and_unknown",
+     "check_for_existing_work_before_building",
+     "verify_an_export_in_an_isolated_interpreter",
+     "carry_competing_readings_of_a_request",
+     "test_driven_change_red_green_refactor",
+     "measure_the_environment_before_relying_on_it",
+     "normalize_website_addresses",
+     "import_rules_conflict_deescalation_674f4638d9f0",
+     "import_skill_vord_guardrail_c54a59ffb99f"
+    ],
+    "before": [
+     "forecast_an_action_then_compare",
+     "report_observed_derived_assumed_and_unknown",
+     "check_for_existing_work_before_building",
+     "verify_an_export_in_an_isolated_interpreter",
+     "carry_competing_readings_of_a_request",
+     "measure_the_environment_before_relying_on_it",
+     "test_driven_change_red_green_refactor",
+     "normalize_website_addresses",
+     "import_rules_conflict_deescalation_674f4638d9f0",
+     "import_skill_vord_guardrail_c54a59ffb99f"
+    ],
+    "entered": [],
+    "expected": [
+     "write_a_data_contract_for_a_table_or_feed"
+    ],
+    "expected_ranks": {
+     "write_a_data_contract_for_a_table_or_feed": [
+      null,
+      null
+     ]
+    },
+    "left": [],
+    "query": "write down what this feed promises and how fresh it is"
+   },
+   {
+    "after": [
+     "escalate_uncertain_values_with_candidates",
+     "detect_malformed_values_by_dominant_pattern",
+     "apply_hold_or_escalate_each_correction",
+     "write_a_pinned_container_and_batch_job",
+     "choose_one_next_action",
+     "restore_capitalisation_of_names",
+     "profile_text_column_before_cleaning",
+     "read_the_train_validation_gap",
+     "library.supply.openapi_operations.4e0faa29bc881ae163fff86e.d5f53c686d07c82f",
+     "library.supply.creative_originals.7bf6c1bf99d5a50a9d870a48.587989e08e0b0bec"
+    ],
+    "before": [
+     "escalate_uncertain_values_with_candidates",
+     "detect_malformed_values_by_dominant_pattern",
+     "apply_hold_or_escalate_each_correction",
+     "write_a_pinned_container_and_batch_job",
+     "choose_one_next_action",
+     "restore_capitalisation_of_names",
+     "profile_text_column_before_cleaning",
+     "read_the_train_validation_gap",
+     "library.supply.openapi_operations.4e0faa29bc881ae163fff86e.d5f53c686d07c82f",
+     "library.supply.function_extracts.f5cca296e57b0baffa0e61f5.b17c4773aab26d12"
+    ],
+    "entered": [
+     "library.supply.creative_originals.7bf6c1bf99d5a50a9d870a48.587989e08e0b0bec"
+    ],
+    "expected": [
+     "handle_missing_values_without_inventing_them"
+    ],
+    "expected_ranks": {
+     "handle_missing_values_without_inventing_them": [
+      null,
+      null
+     ]
+    },
+    "left": [
+     "library.supply.function_extracts.f5cca296e57b0baffa0e61f5.b17c4773aab26d12"
+    ],
+    "query": "stop using minus one to mean no value"
+   },
+   {
+    "after": [
+     "decide_whether_a_step_needs_a_model",
+     "resolve_missing_information",
+     "apply_hold_or_escalate_each_correction",
+     "verify_an_export_in_an_isolated_interpreter",
+     "choose_one_next_action",
+     "deliver_the_best_available_result_when_blocked",
+     "look_for_structure_the_model_missed",
+     "measure_the_environment_before_relying_on_it",
+     "forecast_an_action_then_compare",
+     "import_skill_catchup_37a842b4feaa"
+    ],
+    "before": [
+     "decide_whether_a_step_needs_a_model",
+     "resolve_missing_information",
+     "apply_hold_or_escalate_each_correction",
+     "verify_an_export_in_an_isolated_interpreter",
+     "choose_one_next_action",
+     "deliver_the_best_available_result_when_blocked",
+     "look_for_structure_the_model_missed",
+     "measure_the_environment_before_relying_on_it",
+     "forecast_an_action_then_compare",
+     "import_skill_discernment_nudge_abe280c16400"
+    ],
+    "entered": [
+     "import_skill_catchup_37a842b4feaa"
+    ],
+    "expected": [
+     "assemble_the_context_for_one_step"
+    ],
+    "expected_ranks": {
+     "assemble_the_context_for_one_step": [
+      null,
+      null
+     ]
+    },
+    "left": [
+     "import_skill_discernment_nudge_abe280c16400"
+    ],
+    "query": "give the step only the material it needs to act on"
+   },
+   {
+    "after": [
+     "carry_competing_readings_of_a_request",
+     "measure_the_environment_before_relying_on_it",
+     "look_for_structure_the_model_missed",
+     "verify_the_requested_output",
+     "report_observed_derived_assumed_and_unknown",
+     "forecast_an_action_then_compare",
+     "orient_on_a_task_and_write_its_contracts",
+     "import_skill_is_guide_ac561e33ff42",
+     "import_skill_ddw_help_de246cf47e02",
+     "import_skill_forge_d55bde307dd4"
+    ],
+    "before": [
+     "carry_competing_readings_of_a_request",
+     "look_for_structure_the_model_missed",
+     "measure_the_environment_before_relying_on_it",
+     "verify_the_requested_output",
+     "report_observed_derived_assumed_and_unknown",
+     "forecast_an_action_then_compare",
+     "orient_on_a_task_and_write_its_contracts",
+     "import_skill_is_guide_ac561e33ff42",
+     "import_skill_ddw_help_de246cf47e02",
+     "import_skill_forge_d55bde307dd4"
+    ],
+    "entered": [],
+    "expected": [
+     "decide_what_to_leave_out_of_a_prompt"
+    ],
+    "expected_ranks": {
+     "decide_what_to_leave_out_of_a_prompt": [
+      null,
+      null
+     ]
+    },
+    "left": [],
+    "query": "what do i drop first when the input does not fit"
+   },
+   {
+    "after": [
+     "propose_a_dedupe_without_deleting_rows",
+     "report_observed_derived_assumed_and_unknown",
+     "forecast_an_action_then_compare",
+     "normalize_website_addresses",
+     "choose_one_next_action",
+     "decide_whether_a_step_needs_a_model",
+     "apply_hold_or_escalate_each_correction",
+     "import_command_learn_5177e1c64c6a",
+     "import_subagent_document_specialist_a4eaefd95386",
+     "import_subagent_stig_analyst_995b4f7c1999"
+    ],
+    "before": [
+     "propose_a_dedupe_without_deleting_rows",
+     "report_observed_derived_assumed_and_unknown",
+     "forecast_an_action_then_compare",
+     "normalize_website_addresses",
+     "choose_one_next_action",
+     "decide_whether_a_step_needs_a_model",
+     "apply_hold_or_escalate_each_correction",
+     "import_command_learn_5177e1c64c6a",
+     "import_subagent_stig_analyst_995b4f7c1999",
+     "import_subagent_document_specialist_a4eaefd95386"
+    ],
+    "entered": [],
+    "expected": [
+     "keep_instructions_and_supplied_text_apart"
+    ],
+    "expected_ranks": {
+     "keep_instructions_and_supplied_text_apart": [
+      null,
+      null
+     ]
+    },
+    "left": [],
+    "query": "keep my instruction and the pasted document separate"
+   },
+   {
+    "after": [
+     "decide_whether_a_step_needs_a_model",
+     "escalate_uncertain_values_with_candidates",
+     "look_for_structure_the_model_missed",
+     "check_that_a_result_is_stable_and_generalizes",
+     "choose_metrics_by_task_type_and_industry",
+     "hand_over_a_result_its_consumer_can_use",
+     "import_skill_jelly_16253e603d21",
+     "import_subagent_strategy_analyst_e1bc61c73d5b",
+     "import_skill_cesiumjs_interaction_fa3889784bc1",
+     "import_skill_agent_platform_eval_flywheel_a8a6f34034fa"
+    ],
+    "before": [
+     "decide_whether_a_step_needs_a_model",
+     "escalate_uncertain_values_with_candidates",
+     "look_for_structure_the_model_missed",
+     "check_that_a_result_is_stable_and_generalizes",
+     "choose_metrics_by_task_type_and_industry",
+     "hand_over_a_result_its_consumer_can_use",
+     "import_skill_jelly_16253e603d21",
+     "import_subagent_strategy_analyst_e1bc61c73d5b",
+     "import_skill_boltz_small_molecule_adme_8ba894153151",
+     "import_skill_cesiumjs_interaction_fa3889784bc1"
+    ],
+    "entered": [
+     "import_skill_agent_platform_eval_flywheel_a8a6f34034fa"
+    ],
+    "expected": [
+     "choose_a_smaller_model_for_a_bounded_decision"
+    ],
+    "expected_ranks": {
+     "choose_a_smaller_model_for_a_bounded_decision": [
+      null,
+      null
+     ]
+    },
+    "left": [
+     "import_skill_boltz_small_molecule_adme_8ba894153151"
+    ],
+    "query": "use a small model for picking one of five labels"
+   },
+   {
+    "after": [
+     "resolve_missing_information",
+     "detect_malformed_values_by_dominant_pattern",
+     "check_that_a_result_is_stable_and_generalizes",
+     "verify_the_requested_output",
+     "forecast_an_action_then_compare",
+     "check_for_existing_work_before_building",
+     "measure_the_environment_before_relying_on_it",
+     "library.supply.openapi_operations.a1baebf491ca71f6ccbbd0ac.40d7700a4de7c519",
+     "library.supply.openapi_operations.047340b9e1b39050b86d0faf.a7dcd0656d8778f1",
+     "import_skill_assessing_release_readiness_4e56eea97b2c"
+    ],
+    "before": [
+     "resolve_missing_information",
+     "detect_malformed_values_by_dominant_pattern",
+     "check_that_a_result_is_stable_and_generalizes",
+     "verify_the_requested_output",
+     "forecast_an_action_then_compare",
+     "check_for_existing_work_before_building",
+     "measure_the_environment_before_relying_on_it",
+     "library.supply.openapi_operations.a1baebf491ca71f6ccbbd0ac.40d7700a4de7c519",
+     "import_skill_assessing_release_readiness_4e56eea97b2c",
+     "library.supply.openapi_operations.047340b9e1b39050b86d0faf.a7dcd0656d8778f1"
+    ],
+    "entered": [],
+    "expected": [
+     "set_an_output_size_from_a_known_limit"
+    ],
+    "expected_ranks": {
+     "set_an_output_size_from_a_known_limit": [
+      null,
+      null
+     ]
+    },
+    "left": [],
+    "query": "the answer is being cut off halfway"
+   },
+   {
+    "after": [
+     "check_for_existing_work_before_building",
+     "plan_and_split_work_with_explicit_joins",
+     "test_driven_change_red_green_refactor",
+     "report_observed_derived_assumed_and_unknown",
+     "resolve_missing_information",
+     "check_that_a_result_is_stable_and_generalizes",
+     "normalize_website_addresses",
+     "write_a_pinned_container_and_batch_job",
+     "hand_over_a_result_its_consumer_can_use",
+     "import_subagent_mcos_code_reviewer_cad81c4ba190"
+    ],
+    "before": [
+     "check_for_existing_work_before_building",
+     "plan_and_split_work_with_explicit_joins",
+     "test_driven_change_red_green_refactor",
+     "report_observed_derived_assumed_and_unknown",
+     "resolve_missing_information",
+     "check_that_a_result_is_stable_and_generalizes",
+     "normalize_website_addresses",
+     "write_a_pinned_container_and_batch_job",
+     "hand_over_a_result_its_consumer_can_use",
+     "orient_on_a_task_and_write_its_contracts"
+    ],
+    "entered": [
+     "import_subagent_mcos_code_reviewer_cad81c4ba190"
+    ],
+    "expected": [
+     "write_acceptance_criteria_a_reviewer_can_check"
+    ],
+    "expected_ranks": {
+     "write_acceptance_criteria_a_reviewer_can_check": [
+      null,
+      null
+     ]
+    },
+    "left": [
+     "orient_on_a_task_and_write_its_contracts"
+    ],
+    "query": "write conditions for done a reviewer can check"
+   },
+   {
+    "after": [
+     "library.supply.openapi_operations.72129938e4487abfd16e52b6.a15716e1e9ac6500",
+     "library.supply.openapi_operations.2edca153c32eab474930079a.40195ea17fd35f53",
+     "library.supply.openapi_operations.7805cdeb42d4151ba93b9e5f.3381dbf53ef3468e",
+     "library.supply.openapi_operations.c1a275004da906eba582b6bb.0a9fe5423b9b3435",
+     "library.supply.openapi_operations.dc4840a4d24b691d9f1bb2b4.52c11cac238b9b29",
+     "import_skill_bg_111c32762388",
+     "library.supply.openapi_operations.79ca151d95b1d5eb918ebb7e.4900f3a59c4069f0",
+     "library.supply.openapi_operations.9e452a1385b815d7436e4328.75648d587a61464e",
+     "library.supply.openapi_operations.82000fd2d5ef25a435b5b730.4fbc7b386a3c09b2",
+     "library.supply.openapi_operations.b3d98afd68ba9cd767999faa.122869e4fb01dc98"
+    ],
+    "before": [
+     "split_address_lines_into_components",
+     "library.supply.openapi_operations.72129938e4487abfd16e52b6.a15716e1e9ac6500",
+     "library.supply.openapi_operations.2edca153c32eab474930079a.40195ea17fd35f53",
+     "library.supply.openapi_operations.7805cdeb42d4151ba93b9e5f.3381dbf53ef3468e",
+     "library.supply.openapi_operations.c1a275004da906eba582b6bb.0a9fe5423b9b3435",
+     "library.supply.openapi_operations.dc4840a4d24b691d9f1bb2b4.52c11cac238b9b29",
+     "import_skill_bg_111c32762388",
+     "library.supply.openapi_operations.79ca151d95b1d5eb918ebb7e.4900f3a59c4069f0",
+     "library.supply.openapi_operations.9e452a1385b815d7436e4328.75648d587a61464e",
+     "library.supply.openapi_operations.82000fd2d5ef25a435b5b730.4fbc7b386a3c09b2"
+    ],
+    "entered": [
+     "library.supply.openapi_operations.b3d98afd68ba9cd767999faa.122869e4fb01dc98"
+    ],
+    "expected": [
+     "separate_required_from_optional_in_a_request"
+    ],
+    "expected_ranks": {
+     "separate_required_from_optional_in_a_request": [
+      null,
+      null
+     ]
+    },
+    "left": [
+     "split_address_lines_into_components"
+    ],
+    "query": "sort this wish list into must have and nice to have"
+   },
+   {
+    "after": [
+     "verify_an_export_in_an_isolated_interpreter",
+     "forecast_an_action_then_compare",
+     "measure_the_environment_before_relying_on_it",
+     "hand_over_a_result_its_consumer_can_use",
+     "resolve_missing_information",
+     "profile_text_column_before_cleaning",
+     "import_skill_research_to_ship_899c36c5de9d",
+     "import_skill_loop_it_7b7e52c6652d",
+     "library.supply.openapi_operations.0228b0d77ac8b9bd905893f9.fa900e74b36dae6a",
+     "import_skill_ship_workflow_725ba41bb9b5"
+    ],
+    "before": [
+     "verify_an_export_in_an_isolated_interpreter",
+     "forecast_an_action_then_compare",
+     "measure_the_environment_before_relying_on_it",
+     "hand_over_a_result_its_consumer_can_use",
+     "resolve_missing_information",
+     "profile_text_column_before_cleaning",
+     "import_skill_research_to_ship_899c36c5de9d",
+     "library.supply.openapi_operations.0228b0d77ac8b9bd905893f9.fa900e74b36dae6a",
+     "import_skill_loop_it_7b7e52c6652d",
+     "library.supply.program_installs.4699768557ad0feb8e3737d4.80753db48d43360b"
+    ],
+    "entered": [
+     "import_skill_ship_workflow_725ba41bb9b5"
+    ],
+    "expected": [
+     "release_behind_a_switch_that_can_be_turned_off"
+    ],
+    "expected_ranks": {
+     "release_behind_a_switch_that_can_be_turned_off": [
+      null,
+      null
+     ]
+    },
+    "left": [
+     "library.supply.program_installs.4699768557ad0feb8e3737d4.80753db48d43360b"
+    ],
+    "query": "ship it turned off and switch it on slowly"
+   },
+   {
+    "after": [
+     "propose_a_dedupe_without_deleting_rows",
+     "write_a_pinned_container_and_batch_job",
+     "check_for_existing_work_before_building",
+     "check_that_a_result_is_stable_and_generalizes",
+     "split_address_lines_into_components",
+     "plan_and_split_work_with_explicit_joins",
+     "import_command_copilot_leak_2e98cc3b9cd2",
+     "import_command_copilot_leak_22435b46da75",
+     "import_skill_performance_report_4fd37f14cc70",
+     "import_subagent_jinbe_310e8d190f9c"
+    ],
+    "before": [
+     "propose_a_dedupe_without_deleting_rows",
+     "write_a_pinned_container_and_batch_job",
+     "check_for_existing_work_before_building",
+     "split_address_lines_into_components",
+     "check_that_a_result_is_stable_and_generalizes",
+     "plan_and_split_work_with_explicit_joins",
+     "import_command_copilot_leak_2e98cc3b9cd2",
+     "import_command_copilot_leak_22435b46da75",
+     "import_skill_performance_report_4fd37f14cc70",
+     "import_subagent_jinbe_310e8d190f9c"
+    ],
+    "entered": [],
+    "expected": [
+     "turn_an_incident_into_a_check_that_would_have_caught_it"
+    ],
+    "expected_ranks": {
+     "turn_an_incident_into_a_check_that_would_have_caught_it": [
+      null,
+      null
+     ]
+    },
+    "left": [],
+    "query": "turn last week's outage into an automatic check"
+   },
+   {
+    "after": [
+     "verify_an_export_in_an_isolated_interpreter",
+     "plan_and_split_work_with_explicit_joins",
+     "report_observed_derived_assumed_and_unknown",
+     "orient_on_a_task_and_write_its_contracts",
+     "review_an_accepted_solution_adversarially",
+     "deliver_the_best_available_result_when_blocked",
+     "carry_competing_readings_of_a_request",
+     "hand_over_a_result_its_consumer_can_use",
+     "normalize_whitespace_and_unicode_text",
+     "normalize_and_recover_email_addresses"
+    ],
+    "before": [
+     "verify_an_export_in_an_isolated_interpreter",
+     "plan_and_split_work_with_explicit_joins",
+     "report_observed_derived_assumed_and_unknown",
+     "orient_on_a_task_and_write_its_contracts",
+     "deliver_the_best_available_result_when_blocked",
+     "review_an_accepted_solution_adversarially",
+     "carry_competing_readings_of_a_request",
+     "hand_over_a_result_its_consumer_can_use",
+     "normalize_whitespace_and_unicode_text",
+     "normalize_and_recover_email_addresses"
+    ],
+    "entered": [],
+    "expected": [
+     "write_a_task_brief_for_an_agent"
+    ],
+    "expected_ranks": {
+     "write_a_task_brief_for_an_agent": [
+      null,
+      null
+     ]
+    },
+    "left": [],
+    "query": "write an assignment an agent can finish on its own"
+   },
+   {
+    "after": [
+     "choose_metrics_by_task_type_and_industry",
+     "apply_hold_or_escalate_each_correction",
+     "import_skill_accelerate_campaigns_7dac833d5297",
+     "library.supply.openapi_operations.b5d6b7f40720e5eed5b1f89c.37ab0b0986439ca3",
+     "import_skill_mcp_server_scaffold_aab612771ba3",
+     "library.supply.openapi_operations.246f0da48df6010f32c85de2.e7c7b0444b24c41c",
+     "library.supply.openapi_operations.2893c03baa51bd4e4c09afe1.f3f3e72d007cb944",
+     "library.supply.openapi_operations.80ba3fed72f59049e5f72ff4.ca0e0fe82d01c717",
+     "import_command_ng_folders_79bece4ee6d8",
+     "import_command_doctor_8be1b516dede"
+    ],
+    "before": [
+     "choose_metrics_by_task_type_and_industry",
+     "apply_hold_or_escalate_each_correction",
+     "import_skill_accelerate_campaigns_7dac833d5297",
+     "library.supply.openapi_operations.b5d6b7f40720e5eed5b1f89c.37ab0b0986439ca3",
+     "import_skill_mcp_server_scaffold_aab612771ba3",
+     "library.supply.openapi_operations.246f0da48df6010f32c85de2.e7c7b0444b24c41c",
+     "library.supply.openapi_operations.2893c03baa51bd4e4c09afe1.f3f3e72d007cb944",
+     "library.supply.openapi_operations.80ba3fed72f59049e5f72ff4.ca0e0fe82d01c717",
+     "import_command_doctor_8be1b516dede",
+     "import_command_ng_folders_79bece4ee6d8"
+    ],
+    "entered": [],
+    "expected": [
+     "state_the_permissions_and_limits_of_an_assignment"
+    ],
+    "expected_ranks": {
+     "state_the_permissions_and_limits_of_an_assignment": [
+      null,
+      null
+     ]
+    },
+    "left": [],
+    "query": "limit which commands and folders the agent may touch"
+   },
+   {
+    "after": [
+     "plan_and_split_work_with_explicit_joins",
+     "choose_review_perspectives",
+     "resolve_missing_information",
+     "score_duplicate_pairs_by_weakest_signal",
+     "check_for_existing_work_before_building",
+     "import_subagent_vesta_spec_10fe0da521d8",
+     "import_skill_skill_work_slicing_e70eea5dcf10",
+     "library.supply.openapi_operations.29ad8596b4bb7f5588bf5b7f.0ea272f90f40083b",
+     "import_skill_os_whats_next_68d655f2245c",
+     "import_skill_prototype_2afd26a9e305"
+    ],
+    "before": [
+     "plan_and_split_work_with_explicit_joins",
+     "choose_review_perspectives",
+     "score_duplicate_pairs_by_weakest_signal",
+     "resolve_missing_information",
+     "check_for_existing_work_before_building",
+     "import_subagent_vesta_spec_10fe0da521d8",
+     "library.supply.openapi_operations.29ad8596b4bb7f5588bf5b7f.0ea272f90f40083b",
+     "import_skill_skill_work_slicing_e70eea5dcf10",
+     "import_skill_prototype_2afd26a9e305",
+     "import_skill_os_whats_next_68d655f2245c"
+    ],
+    "entered": [],
+    "expected": [
+     "split_a_large_request_into_assignable_parts"
+    ],
+    "expected_ranks": {
+     "split_a_large_request_into_assignable_parts": [
+      null,
+      null
+     ]
+    },
+    "left": [],
+    "query": "cut the work so each piece can be checked alone"
+   },
+   {
+    "after": [
+     "split_address_lines_into_components",
+     "apply_hold_or_escalate_each_correction",
+     "library.supply.openapi_operations.5a4ee6b79f794989b8ee5212.ed3a10a1cccf9138",
+     "import_rules_spot_ai_mistakes_25e7a7447b74",
+     "import_skill_repo_map_0345c772e2bc",
+     "import_rules_using_semantic_anchors_a002f9f66dcd",
+     "import_command_briefing_claude_013574dcec95",
+     "import_skill_01_strategy_and_roadmap_b34dd996eb7f",
+     "import_skill_graphify_agents_7afd6316ab50",
+     "library.supply.openapi_operations.59993282b565b6739f5676ae.7911b1f8d896df00"
+    ],
+    "before": [
+     "split_address_lines_into_components",
+     "apply_hold_or_escalate_each_correction",
+     "library.supply.openapi_operations.5a4ee6b79f794989b8ee5212.ed3a10a1cccf9138",
+     "import_rules_spot_ai_mistakes_25e7a7447b74",
+     "import_skill_repo_map_0345c772e2bc",
+     "import_rules_using_semantic_anchors_a002f9f66dcd",
+     "import_command_briefing_claude_013574dcec95",
+     "import_skill_01_strategy_and_roadmap_b34dd996eb7f",
+     "import_skill_graphify_agents_7afd6316ab50",
+     "import_skill_cargo_hosting_94d97369d8d0"
+    ],
+    "entered": [
+     "library.supply.openapi_operations.59993282b565b6739f5676ae.7911b1f8d896df00"
+    ],
+    "expected": [
+     "supply_the_files_and_facts_an_assignment_needs"
+    ],
+    "expected_ranks": {
+     "supply_the_files_and_facts_an_assignment_needs": [
+      null,
+      null
+     ]
+    },
+    "left": [
+     "import_skill_cargo_hosting_94d97369d8d0"
+    ],
+    "query": "give the worker the files instead of describing where they are"
+   },
+   {
+    "after": [
+     "deliver_the_best_available_result_when_blocked",
+     "decide_whether_a_step_needs_a_model",
+     "check_for_existing_work_before_building",
+     "test_driven_change_red_green_refactor",
+     "choose_one_next_action",
+     "export_a_standalone_python_package",
+     "verify_the_requested_output",
+     "import_skill_unharness_de7951174d8b",
+     "library.supply.creative_originals.61c8aade4ba09d6075b524fc.e4d8dc5e58f86e46",
+     "library.supply.openapi_operations.5735840b97d455e028d6dd6e.150fc689df213a52"
+    ],
+    "before": [
+     "deliver_the_best_available_result_when_blocked",
+     "decide_whether_a_step_needs_a_model",
+     "check_for_existing_work_before_building",
+     "test_driven_change_red_green_refactor",
+     "choose_one_next_action",
+     "export_a_standalone_python_package",
+     "verify_the_requested_output",
+     "import_skill_unharness_de7951174d8b",
+     "import_skill_writing_plans_2881958f030d",
+     "library.supply.openapi_operations.5735840b97d455e028d6dd6e.150fc689df213a52"
+    ],
+    "entered": [
+     "library.supply.creative_originals.61c8aade4ba09d6075b524fc.e4d8dc5e58f86e46"
+    ],
+    "expected": [
+     "supply_the_files_and_facts_an_assignment_needs"
+    ],
+    "expected_ranks": {
+     "supply_the_files_and_facts_an_assignment_needs": [
+      null,
+      null
+     ]
+    },
+    "left": [
+     "import_skill_writing_plans_2881958f030d"
+    ],
+    "query": "exact paths and a revision for the material a step needs"
+   },
+   {
+    "after": [
+     "plan_and_split_work_with_explicit_joins",
+     "test_driven_change_red_green_refactor",
+     "verify_an_export_in_an_isolated_interpreter",
+     "decide_whether_a_step_needs_a_model",
+     "propose_a_dedupe_without_deleting_rows",
+     "look_for_structure_the_model_missed",
+     "copy_a_table_with_corrections_never_in_place",
+     "audit_data_splits_for_errors_and_leakage",
+     "write_a_pinned_container_and_batch_job",
+     "verify_the_requested_output"
+    ],
+    "before": [
+     "plan_and_split_work_with_explicit_joins",
+     "test_driven_change_red_green_refactor",
+     "verify_an_export_in_an_isolated_interpreter",
+     "propose_a_dedupe_without_deleting_rows",
+     "decide_whether_a_step_needs_a_model",
+     "look_for_structure_the_model_missed",
+     "copy_a_table_with_corrections_never_in_place",
+     "write_a_pinned_container_and_batch_job",
+     "audit_data_splits_for_errors_and_leakage",
+     "verify_the_requested_output"
+    ],
+    "entered": [],
+    "expected": [
+     "check_generated_code_against_the_request"
+    ],
+    "expected_ranks": {
+     "check_generated_code_against_the_request": [
+      null,
+      null
+     ]
+    },
+    "left": [],
+    "query": "test code the model wrote without using its own expectations"
+   },
+   {
+    "after": [
+     "report_observed_derived_assumed_and_unknown",
+     "check_for_existing_work_before_building",
+     "check_that_a_result_is_stable_and_generalizes",
+     "review_an_accepted_solution_adversarially",
+     "verify_an_export_in_an_isolated_interpreter",
+     "import_skill_fact_checking_b804b0ee0ec0",
+     "import_subagent_research_reviewer_8229e2b68b21",
+     "import_skill_claim_83ff1dbbb4b7",
+     "library.supply.openapi_operations.cc48c84b5a90f2ab6644715a.98577372dfe1b7e6",
+     "import_skill_aeo_audit_ba45126b6ea2"
+    ],
+    "before": [
+     "report_observed_derived_assumed_and_unknown",
+     "check_for_existing_work_before_building",
+     "check_that_a_result_is_stable_and_generalizes",
+     "review_an_accepted_solution_adversarially",
+     "verify_an_export_in_an_isolated_interpreter",
+     "import_skill_fact_checking_b804b0ee0ec0",
+     "import_subagent_research_reviewer_8229e2b68b21",
+     "import_skill_claim_83ff1dbbb4b7",
+     "import_skill_aeo_audit_ba45126b6ea2",
+     "library.supply.openapi_operations.cc48c84b5a90f2ab6644715a.98577372dfe1b7e6"
+    ],
+    "entered": [],
+    "expected": [
+     "reproduce_the_evidence_a_report_claims"
+    ],
+    "expected_ranks": {
+     "reproduce_the_evidence_a_report_claims": [
+      null,
+      null
+     ]
+    },
+    "left": [],
+    "query": "check the denominator and the exclusions behind an accuracy claim"
+   },
+   {
+    "after": [
+     "audit_data_splits_for_errors_and_leakage",
+     "import_rules_venue_access_check_e2f6bc037b39",
+     "library.supply.mcp_registry.81f485f90868a9f9ff787b9f.262f39baf7a66370",
+     "library.supply.program_installs.d188c4cb845c9971d70d4850.beb71734a7761b59",
+     "library.supply.openapi_operations.1471e7ed0f15db2c759c311f.6cdd2518dca5c175",
+     "library.supply.openapi_operations.339b70e93a40a8076d8211d8.31e25532c2c14cd3",
+     "library.supply.openapi_operations.08a0b0a62cf94e468f624ff5.9ad26fed8fcf2863",
+     "library.supply.openapi_operations.202f7e368d26a173fb11e77e.b7d36ad33cec2cde",
+     "library.supply.openapi_operations.2b2217c5ea518d2940d5859f.7d48995ad2c73a6c",
+     "library.supply.mcp_registry.053e5ff31eda023844685473.c5ecb357a42da816"
+    ],
+    "before": [
+     "audit_data_splits_for_errors_and_leakage",
+     "import_rules_venue_access_check_e2f6bc037b39",
+     "library.supply.mcp_registry.81f485f90868a9f9ff787b9f.262f39baf7a66370",
+     "library.supply.program_installs.d188c4cb845c9971d70d4850.beb71734a7761b59",
+     "library.supply.openapi_operations.1471e7ed0f15db2c759c311f.6cdd2518dca5c175",
+     "library.supply.openapi_operations.339b70e93a40a8076d8211d8.31e25532c2c14cd3",
+     "library.supply.openapi_operations.08a0b0a62cf94e468f624ff5.9ad26fed8fcf2863",
+     "library.supply.openapi_operations.202f7e368d26a173fb11e77e.b7d36ad33cec2cde",
+     "library.supply.openapi_operations.2b2217c5ea518d2940d5859f.7d48995ad2c73a6c",
+     "library.supply.openapi_operations.51f72e55ef1eaeecae766693.887658cc95fbaa92"
+    ],
+    "entered": [
+     "library.supply.mcp_registry.053e5ff31eda023844685473.c5ecb357a42da816"
+    ],
+    "expected": [],
+    "expected_ranks": {},
+    "left": [
+     "library.supply.openapi_operations.51f72e55ef1eaeecae766693.887658cc95fbaa92"
+    ],
+    "query": "recommend a restaurant near the office"
+   }
+  ],
+  "expected_search_items_lost": [],
+  "existing_public_good_grants_orphaned": 0,
+  "public_good_grants_serving_before_and_after": 448,
+  "base_bodies_locally_reverified": 1557669,
+  "native_dry_run": "passed before dispatch",
+  "native_complete_byte_verification": "required before activation; passed",
+  "ordinary_customer_check": {
+   "complete": true,
+   "requests": 35,
+   "packages": {
+    "new_creative": {
+     "identity": "library.supply.creative_originals.008598e6b349a5ea60d9bb72.979b66d3ba7053bd",
+     "digest": "979b66d3ba7053bd8c180a54d2418fd50006fc9a9d92d7f09504e7742d0464b9",
+     "exact_files_verified": 10,
+     "bytes": 78115
+    },
+    "earlier_cases": {
+     "identity": "library.supply.json_schemas.00561c34a326d8d387c002f1.b1876dca7c520f13",
+     "digest": "b1876dca7c520f1365aba2ed08171dd998672e8f08fb63f6a555df58b4fc85a8",
+     "exact_files_verified": 13,
+     "bytes": 55458
+    }
+   },
+   "usage_units_added": 1,
+   "wrong_digest": "refused",
+   "unauthenticated_manifest": {
+    "status": 401,
+    "code": "unauthorized"
+   },
+   "live_population": {
+    "packages": 256380,
+    "distinct_files": 1560856,
+    "complete": true
+   }
+  }
+ },
+ "transfer": {
+  "stage": "delta-creative-d25e6cb4-20261009-e86f48d07677",
+  "new_blobs": 3187,
+  "new_segments_and_item_lines": 415,
+  "batches": 2,
+  "objects_uploaded": 3602,
+  "payload_kib_reported": 32553,
+  "compressed_transfer_kib_reported": 20654,
+  "activation_wait_minutes": 1
+ },
+ "r2_mirror": {
+  "verified_objects": 3187,
+  "verified_bytes": 31534700,
+  "batches": 25,
+  "completed_at": "2026-10-09T18:19:09.975742+00:00"
+ },
+ "public_good_policy_changed": false,
+ "production_body_engine_changed": false,
+ "limits": [
+  "The 413 packages passed deterministic qualification; independent review is ongoing and they are served at the community tier.",
+  "The consequence verdict covers 354 stored judged queries and the 448-grant Public Good policy, not every query or grant.",
+  "The customer check retrieves two packages; it does not test checkout, model-driven use, a missing body or rollback."
+ ],
+ "private_evidence_root": "/home/username/baltor-private",
+ "evidence": [
+  "creative-publication-20261009-dd8349/consequences-dispatch.json",
+  "creative-publication-20261009-dd8349/reconciliation-02-stdout.json",
+  "creative-publication-20261009-dd8349/dry-run-01-result.json",
+  "creative-publication-20261009-dd8349/publication-01-started.json",
+  "creative-publication-20261009-dd8349/publication-01.stdout",
+  "creative-publication-20261009-dd8349/publication-01-reconciled.json",
+  "creative-publication-20261009-dd8349/customer-check-01/retrieval.json",
+  "r2-delta-creative-20261009-3eb3b0/progress.jsonl"
+ ]
+}
