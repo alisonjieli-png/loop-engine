@@ -262,8 +262,10 @@ setter before the getter with the text on the setter (`AbstractMesh.skeleton`).
 Babylon.js numbers Apache-2.0's clause 4 items "1." to "4." where the canonical
 text letters them "(a)" to "(d)". The licence normalizer read the canonical
 "(c) You must retain" as a copyright notice, so the Apache-2.0 template lacked
-"retain" and this copy was refused for adding it; the shared fix is commit
-`3361e35c` (licences.py and the template's words).
+"retain" and this copy was refused for adding it. The shared fix, its own
+commit ("Read Apache-2.0's clause 4(c) as licence text, not a copyright
+notice"), changes `_NOTICE_LINE` in licences.py and the Apache-2.0 template's
+words, and nothing else.
 
 ## Commands
 
