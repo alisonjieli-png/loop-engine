@@ -1,0 +1,48 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "split_conformal_intervals",
+  "title": "Split conformal prediction intervals",
+  "purpose": "Turn any point predictor into prediction intervals with a finite-sample coverage guarantee, using held-out calibration residuals and the exact ceil((n + 1)(1 - alpha)) quantile index, optionally per group (Mondrian), with a seeded coverage check on held-out data.",
+  "form": "library_module",
+  "dimension": "none",
+  "engine": {"name": "python", "minimum_version": "3.10"},
+  "tags": ["conformal prediction", "prediction intervals", "uncertainty", "coverage", "calibration set", "distribution-free"],
+  "files": [
+    {"path": "README.md", "role": "other"},
+    {"path": "split_conformal_intervals.py", "role": "executable_tool"},
+    {"path": "test_split_conformal_intervals.py", "role": "executable_tool"}
+  ],
+  "contract": {
+    "entry_points": [
+      {"name": "conformal_quantile", "arguments": "scores: non-conformity scores; alpha in (0, 1)", "returns": "{quantile (null when infinite), infinite, index, n}"},
+      {"name": "split_conformal", "arguments": "calibration_predictions; calibration_targets; test_predictions; alpha; calibration_groups and test_groups (optional, both or neither)", "returns": "{intervals: [[lower, upper]] with null for unbounded, quantiles: {group: q}}"},
+      {"name": "coverage", "arguments": "intervals; targets", "returns": "{coverage, mean_width, count}"},
+      {"name": "coverage_simulation", "arguments": "repetitions; calibration_size; test_size; alpha; noise; seed", "returns": "{mean_coverage, expected, repetitions}"}
+    ],
+    "assumptions": [
+      "Calibration and test points are exchangeable (for Mondrian intervals: exchangeable within each group).",
+      "The predictor was fitted on data disjoint from the calibration set."
+    ],
+    "guarantees": [
+      "P(y in interval) >= 1 - alpha marginally over calibration and test draws; below 1 - alpha + 1/(n + 1) when residuals have no ties.",
+      "The index k = ceil((n + 1)(1 - alpha)) is computed exactly from the decimal value of alpha; k > n gives an unbounded interval.",
+      "Mondrian intervals give the same guarantee within each group."
+    ],
+    "known_answers": [
+      {"name": "nine_residuals_alpha_10", "call": "conformal_quantile", "arguments": {"scores": [1, 2, 3, 4, 5, 6, 7, 8, 9], "alpha": 0.1}, "select": ["quantile"], "expect": 9.0},
+      {"name": "nine_residuals_alpha_20", "call": "conformal_quantile", "arguments": {"scores": [1, 2, 3, 4, 5, 6, 7, 8, 9], "alpha": 0.2}, "select": ["quantile"], "expect": 8.0},
+      {"name": "nine_residuals_alpha_5_unbounded", "call": "conformal_quantile", "arguments": {"scores": [1, 2, 3, 4, 5, 6, 7, 8, 9], "alpha": 0.05}, "select": ["infinite"], "expect": true},
+      {"name": "ten_residuals_alpha_10", "call": "conformal_quantile", "arguments": {"scores": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10], "alpha": 0.1}, "select": ["quantile"], "expect": 10.0},
+      {"name": "intervals", "call": "split_conformal", "arguments": {"calibration_predictions": [1, 2, 3], "calibration_targets": [1.5, 2.5, 2], "test_predictions": [10, 20], "alpha": 0.25}, "select": ["intervals"], "expect": [[9.0, 11.0], [19.0, 21.0]]},
+      {"name": "mondrian_quantiles", "call": "split_conformal", "arguments": {"calibration_predictions": [1, 2, 3, 4], "calibration_targets": [1.5, 2.5, 2, 4.1], "test_predictions": [10, 20], "alpha": 0.4, "calibration_groups": ["a", "a", "b", "b"], "test_groups": ["a", "b"]}, "select": ["intervals"], "expect": [[9.5, 10.5], [19.0, 21.0]], "tolerance": 1e-12},
+      {"name": "seeded_expected_coverage", "call": "coverage_simulation", "arguments": {"repetitions": 50, "calibration_size": 50, "test_size": 100, "alpha": 0.1, "noise": 1, "seed": 1}, "select": ["expected"], "expect": 0.9019607843137255, "tolerance": 1e-14},
+      {"name": "refuses_alpha_zero", "call": "conformal_quantile", "arguments": {"scores": [1, 2], "alpha": 0}, "raises": "ValueError"}
+    ],
+    "known_wrong": [
+      {"name": "no_uncorrected_quantile", "call": "conformal_quantile", "arguments": {"scores": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10], "alpha": 0.1}, "select": ["quantile"], "reject": 9.0, "why": "The plain empirical quantile uses index ceil(n (1 - alpha)) = 9 and under-covers; the finite-sample index is ceil((n + 1)(1 - alpha)) = 10."}
+    ]
+  },
+  "limits": "Marginal coverage only: it does not guarantee coverage for each input value, and under distribution shift the guarantee is lost. Absolute residuals give symmetric intervals of constant width per group. With few calibration points the interval can be unbounded. The simulation is a seeded consistency check on one synthetic model.",
+  "related": ["adaptive_conformal_inference", "anytime_confidence_sequence", "risk_coverage_curve"],
+  "technique_references": ["Distribution-free predictive inference for regression (Lei, G'Sell, Rinaldo, Tibshirani and Wasserman)", "Algorithmic Learning in a Random World (Vovk, Gammerman and Shafer)", "Mondrian conformal prediction"]
+}

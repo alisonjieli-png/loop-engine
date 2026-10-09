@@ -1,0 +1,50 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "delta_rule_associative_memory",
+  "title": "Delta-rule associative memory",
+  "purpose": "Store key-value pairs in a matrix with the error-correcting update M <- M + rate (v - M k) k^T, retrieve with M k, and compare with the Hebbian rule and the minimum-norm memory. Use it to test fast-weight or linear-attention memories for interference and capacity.",
+  "form": "library_module",
+  "dimension": "none",
+  "engine": {"name": "python", "minimum_version": "3.10"},
+  "tags": ["associative memory", "delta rule", "fast weights", "kaczmarz method", "hebbian learning", "linear attention"],
+  "files": [
+    {"path": "README.md", "role": "other"},
+    {"path": "delta_rule_associative_memory.py", "role": "executable_tool"},
+    {"path": "test_delta_rule_associative_memory.py", "role": "executable_tool"}
+  ],
+  "contract": {
+    "entry_points": [
+      {"name": "delta_update", "arguments": "memory: value_size by key_size matrix; key; value; rate > 0; normalize_by_key_norm: bool", "returns": "the updated memory"},
+      {"name": "hebbian_update", "arguments": "memory; key; value; rate", "returns": "memory + rate v k^T"},
+      {"name": "retrieve", "arguments": "memory; key", "returns": "M k"},
+      {"name": "store_pairs", "arguments": "keys: rows; values: rows; rate; sweeps (1 to 100000); rule: delta or hebbian; normalize_by_key_norm", "returns": "{memory, retrievals, errors, max_error}"},
+      {"name": "least_squares_memory", "arguments": "keys: linearly independent rows; values", "returns": "the minimum-norm memory V (K^T K)^-1 K^T"}
+    ],
+    "assumptions": [
+      "Keys and values are real vectors of fixed length; the memory starts at zero in store_pairs.",
+      "Exact one-shot storage needs rate * ||k||^2 = 1; stability needs 0 < rate * ||k||^2 < 2."
+    ],
+    "guarantees": [
+      "After a delta update with rate * ||k||^2 = 1, retrieving k returns v exactly (up to rounding).",
+      "Writes with keys orthogonal to k leave the retrieval of k unchanged.",
+      "With unit keys and rate 1, sweeps from zero converge to least_squares_memory when the keys are independent; divergence raises ValueError."
+    ],
+    "known_answers": [
+      {"name": "single_write", "call": "delta_update", "arguments": {"memory": [[0, 0], [0, 0]], "key": [1, 0], "value": [3, 4]}, "expect": [[3.0, 0.0], [4.0, 0.0]]},
+      {"name": "orthogonal_pairs", "call": "store_pairs", "arguments": {"keys": [[1, 0], [0, 1]], "values": [[3, 4], [5, 6]]}, "select": ["memory"], "expect": [[3.0, 5.0], [4.0, 6.0]]},
+      {"name": "correlated_keys_one_sweep", "call": "store_pairs", "arguments": {"keys": [[1, 0], [0.6, 0.8]], "values": [[1], [0]]}, "select": ["memory"], "expect": [[0.64, -0.48]], "tolerance": 1e-12},
+      {"name": "correlated_keys_errors", "call": "store_pairs", "arguments": {"keys": [[1, 0], [0.6, 0.8]], "values": [[1], [0]]}, "select": ["errors"], "expect": [0.36, 0.0], "tolerance": 1e-12},
+      {"name": "sweeps_reach_interpolation", "call": "store_pairs", "arguments": {"keys": [[1, 0], [0.6, 0.8]], "values": [[1], [0]], "sweeps": 200}, "select": ["memory"], "expect": [[1.0, -0.75]], "tolerance": 1e-9},
+      {"name": "minimum_norm_reference", "call": "least_squares_memory", "arguments": {"keys": [[1, 0], [0.6, 0.8]], "values": [[1], [0]]}, "expect": [[1.0, -0.75]], "tolerance": 1e-12},
+      {"name": "hebbian_crosstalk", "call": "store_pairs", "arguments": {"keys": [[1, 0], [0.6, 0.8]], "values": [[1], [0]], "rule": "hebbian"}, "select": ["errors"], "expect": [0.0, 0.6], "tolerance": 1e-12},
+      {"name": "normalized_rate_for_long_keys", "call": "store_pairs", "arguments": {"keys": [[2, 0], [0, 2]], "values": [[1], [2]], "normalize_by_key_norm": true}, "select": ["memory"], "expect": [[0.5, 1.0]]},
+      {"name": "refuses_unstable_rate", "call": "store_pairs", "arguments": {"keys": [[1, 0], [0.6, 0.8]], "values": [[1], [0]], "rate": 3, "sweeps": 2000}, "raises": "ValueError"}
+    ],
+    "known_wrong": [
+      {"name": "latest_pair_has_no_crosstalk", "call": "retrieve", "arguments": {"memory": [[0.64, -0.48]], "key": [0.6, 0.8]}, "reject": [0.6], "tolerance": 1e-9, "why": "The Hebbian sum v1 k1^T + v2 k2^T retrieves 0.6 for k2 because k1 and k2 overlap; the delta rule removes that crosstalk for the latest pair."}
+    ]
+  },
+  "limits": "Dense matrices for small key and value sizes (tens to a few hundred). Sweeps converge slowly when keys are nearly parallel. With more pairs than key dimensions the pairs cannot all be stored; sweeps then cycle instead of converging, and least_squares_memory refuses dependent keys. No forgetting, gating or decay terms are modelled.",
+  "related": ["ridge_penalty_from_linear_transform", "transient_amplification_profile"],
+  "technique_references": ["Widrow-Hoff delta rule (least mean squares)", "Kaczmarz method for linear systems", "Linear transformers are secretly fast weight programmers (Schlag, Irie and Schmidhuber)", "Hebbian outer-product associative memory"]
+}

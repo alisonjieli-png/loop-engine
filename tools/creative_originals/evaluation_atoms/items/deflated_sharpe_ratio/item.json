@@ -1,0 +1,50 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "deflated_sharpe_ratio",
+  "title": "Probabilistic and deflated Sharpe ratio",
+  "purpose": "Compute the probability that a strategy's true Sharpe ratio exceeds a benchmark given skewness, kurtosis and sample length, and deflate it for having picked the best of many trials by comparing against the expected maximum Sharpe ratio of pure-luck trials. Use it before reporting the best of a configuration search.",
+  "form": "library_module",
+  "dimension": "none",
+  "engine": {"name": "python", "minimum_version": "3.10"},
+  "tags": ["sharpe ratio", "multiple testing", "selection bias", "backtesting", "overfitting", "hyperparameter search"],
+  "files": [
+    {"path": "README.md", "role": "other"},
+    {"path": "deflated_sharpe_ratio.py", "role": "executable_tool"},
+    {"path": "test_deflated_sharpe_ratio.py", "role": "executable_tool"}
+  ],
+  "contract": {
+    "entry_points": [
+      {"name": "sharpe_moments", "arguments": "returns: at least 3 per-period returns with non-zero variance", "returns": "{sharpe, skewness, kurtosis (non-excess), observations}"},
+      {"name": "probabilistic_sharpe_ratio", "arguments": "sharpe; observations (>= 2); skewness (default 0); kurtosis (default 3); benchmark (default 0)", "returns": "PSR in [0, 1]"},
+      {"name": "expected_maximum_sharpe", "arguments": "trials (>= 2); variance of the trial Sharpe ratios", "returns": "the approximate expected maximum under zero true Sharpe"},
+      {"name": "expected_maximum_of_normals", "arguments": "count", "returns": "E[max of count standard normals] by quadrature"},
+      {"name": "deflated_sharpe_ratio", "arguments": "returns; trials; trial_sharpe_variance", "returns": "{sharpe, skewness, kurtosis, observations, expected_maximum, deflated, undeflated}"}
+    ],
+    "assumptions": [
+      "Returns are i.i.d. with a finite fourth moment; the PSR relies on the asymptotic normality of the estimated Sharpe ratio.",
+      "trials is the number of effectively independent configurations tried, and their Sharpe ratios are roughly Gaussian with the given variance.",
+      "All Sharpe ratios are per period (not annualized) and in the same units as the variance."
+    ],
+    "guarantees": [
+      "PSR(SR* = SR) = 0.5 exactly; PSR increases with the number of observations when SR > SR*.",
+      "expected_maximum_sharpe scales with sqrt(variance) and stays within 0.05 of the exact Gaussian expected maximum for 10 to 1000 trials (checked by quadrature).",
+      "Invalid inputs (zero variance, fewer than 2 trials, a non-positive variance term) raise ValueError."
+    ],
+    "known_answers": [
+      {"name": "psr_at_benchmark", "call": "probabilistic_sharpe_ratio", "arguments": {"sharpe": 0.1, "observations": 101, "benchmark": 0.1}, "expect": 0.5},
+      {"name": "psr_normal_returns", "call": "probabilistic_sharpe_ratio", "arguments": {"sharpe": 0.1, "observations": 101}, "expect": 0.8407413278013518, "tolerance": 1e-14},
+      {"name": "psr_fat_left_tail", "call": "probabilistic_sharpe_ratio", "arguments": {"sharpe": 0.1, "observations": 101, "skewness": -1, "kurtosis": 6}, "expect": 0.8284584164337798, "tolerance": 1e-14},
+      {"name": "expected_maximum_ten", "call": "expected_maximum_sharpe", "arguments": {"trials": 10, "variance": 1}, "expect": 1.57459830134575, "tolerance": 1e-13},
+      {"name": "exact_maximum_ten", "call": "expected_maximum_of_normals", "arguments": {"count": 10}, "expect": 1.5387527308351692, "tolerance": 1e-9},
+      {"name": "exact_maximum_two", "call": "expected_maximum_of_normals", "arguments": {"count": 2}, "expect": 0.5641895835477563, "tolerance": 1e-12},
+      {"name": "deflated_example", "call": "deflated_sharpe_ratio", "arguments": {"returns": [0.01, -0.005, 0.02, 0.0, 0.015, -0.01, 0.012, 0.007], "trials": 20, "trial_sharpe_variance": 0.04}, "select": ["deflated"], "expect": 0.6935746234922191, "tolerance": 1e-12},
+      {"name": "refuses_single_trial", "call": "expected_maximum_sharpe", "arguments": {"trials": 1, "variance": 1}, "raises": "ValueError"}
+    ],
+    "known_wrong": [
+      {"name": "selection_is_not_ignored", "call": "deflated_sharpe_ratio", "arguments": {"returns": [0.01, -0.005, 0.02, 0.0, 0.015, -0.01, 0.012, 0.007], "trials": 20, "trial_sharpe_variance": 0.04}, "select": ["deflated"], "reject": 0.9197064724068957, "tolerance": 1e-6, "why": "PSR against zero ignores that this series was the best of 20 tries; in the seeded test the best of 20 pure-noise strategies passes PSR > 0.95 in over 30 percent of runs."}
+    ]
+  },
+  "limits": "Asymptotic: with few observations or heavily dependent returns the PSR is approximate. The deflation needs the number of effectively independent trials and the variance of their Sharpe ratios, both of which must be estimated honestly (every configuration tried counts). The expected-maximum formula is an approximation to a Gaussian extreme value. It does not test for other forms of overfitting such as look-ahead bias.",
+  "related": ["backtest_overfitting_probability", "reality_check_spa_bootstrap", "multiple_comparison_adjustment"],
+  "technique_references": ["The Sharpe ratio efficient frontier (Bailey and Lopez de Prado)", "The deflated Sharpe ratio: correcting for selection bias, backtest overfitting and non-normality (Bailey and Lopez de Prado)", "Asymptotic distribution of the Sharpe ratio (Lo; Mertens)"]
+}

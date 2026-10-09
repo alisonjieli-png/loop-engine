@@ -1,0 +1,46 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "provenance_evidence_counting",
+  "title": "Provenance-aware evidence counting",
+  "purpose": "Count the independent observations behind a claim by following each report back to its root observations, so relayed, echoed and merged reports are not counted twice, and simulate non-backtracking relaying between agents. A claim relayed A to B to C and back to A counts as one observation.",
+  "form": "library_module",
+  "dimension": "none",
+  "engine": {"name": "python", "minimum_version": "3.10"},
+  "tags": ["evidence", "provenance", "double counting", "message passing", "non-backtracking", "multi-agent"],
+  "files": [
+    {"path": "README.md", "role": "other"},
+    {"path": "provenance_evidence_counting.py", "role": "executable_tool"},
+    {"path": "test_provenance_evidence_counting.py", "role": "executable_tool"}
+  ],
+  "contract": {
+    "entry_points": [
+      {"name": "count_independent_evidence", "arguments": "reports: [{id, agent, claim, observed: bool, sources: [report ids of the same claim]}]", "returns": "{claims: [{claim, reports, independent_observations, roots, unsupported_reports}], holdings: [{agent, claim, reports_held, independent_observations}]}"},
+      {"name": "relay_non_backtracking", "arguments": "edges: [[sender, receiver]]; origins: {agent: [observation ids]}; rounds: 1 to 10000", "returns": "{held, independent, naive, messages, rounds_used}"}
+    ],
+    "assumptions": [
+      "Every report either is a root observation or names the reports it rests on; the provenance links are complete and honest.",
+      "Two root observations are independent of each other; the tool cannot detect a shared hidden cause."
+    ],
+    "guarantees": [
+      "The independent count is the number of distinct root observations reachable through sources; relaying, echoing and merging never increase it.",
+      "Reports whose sources never reach a root are listed as unsupported and contribute nothing.",
+      "In the relay, an agent ends up holding exactly the observations whose origin can reach it along directed edges, given enough rounds."
+    ],
+    "known_answers": [
+      {"name": "relay_cycle_counts_once", "call": "count_independent_evidence", "arguments": {"reports": [{"id": "r1", "agent": "a", "claim": "x", "observed": true}, {"id": "r2", "agent": "b", "claim": "x", "sources": ["r1"]}, {"id": "r3", "agent": "c", "claim": "x", "sources": ["r2"]}, {"id": "r4", "agent": "a", "claim": "x", "sources": ["r3"]}]}, "select": ["claims", 0, "independent_observations"], "expect": 1},
+      {"name": "agent_holding_after_cycle", "call": "count_independent_evidence", "arguments": {"reports": [{"id": "r1", "agent": "a", "claim": "x", "observed": true}, {"id": "r2", "agent": "b", "claim": "x", "sources": ["r1"]}, {"id": "r3", "agent": "c", "claim": "x", "sources": ["r2"]}, {"id": "r4", "agent": "a", "claim": "x", "sources": ["r3"]}]}, "select": ["holdings", 0], "expect": {"agent": "a", "claim": "x", "reports_held": 2, "independent_observations": 1}},
+      {"name": "two_independent_roots", "call": "count_independent_evidence", "arguments": {"reports": [{"id": "r1", "agent": "a", "claim": "x", "observed": true}, {"id": "r5", "agent": "d", "claim": "x", "observed": true}, {"id": "r6", "agent": "c", "claim": "x", "sources": ["r1", "r5"]}]}, "select": ["claims", 0, "roots"], "expect": ["r1", "r5"]},
+      {"name": "circular_reporting_supports_nothing", "call": "count_independent_evidence", "arguments": {"reports": [{"id": "r7", "agent": "e", "claim": "y", "sources": ["r8"]}, {"id": "r8", "agent": "f", "claim": "y", "sources": ["r7"]}]}, "select": ["claims", 0], "expect": {"claim": "y", "reports": 2, "independent_observations": 0, "roots": [], "unsupported_reports": ["r7", "r8"]}},
+      {"name": "relay_cycle_simulation", "call": "relay_non_backtracking", "arguments": {"edges": [["a", "b"], ["b", "c"], ["c", "a"]], "origins": {"a": ["o1"]}, "rounds": 3}, "expect": {"held": {"a": ["o1"], "b": ["o1"], "c": ["o1"]}, "independent": {"a": 1, "b": 1, "c": 1}, "naive": {"a": 2, "b": 1, "c": 1}, "messages": 3, "rounds_used": 3}},
+      {"name": "no_echo_on_a_two_way_link", "call": "relay_non_backtracking", "arguments": {"edges": [["a", "b"], ["b", "a"]], "origins": {"a": ["o1"]}, "rounds": 5}, "select": ["naive"], "expect": {"a": 1, "b": 1}},
+      {"name": "two_observers_reach_a_third", "call": "relay_non_backtracking", "arguments": {"edges": [["a", "c"], ["d", "c"], ["c", "e"]], "origins": {"a": ["o1"], "d": ["o2"]}, "rounds": 4}, "select": ["independent"], "expect": {"a": 1, "c": 2, "d": 1, "e": 2}},
+      {"name": "refuses_unknown_source", "call": "count_independent_evidence", "arguments": {"reports": [{"id": "r1", "agent": "a", "claim": "x", "sources": ["r9"]}]}, "raises": "ValueError"}
+    ],
+    "known_wrong": [
+      {"name": "returning_claim_is_not_corroboration", "call": "relay_non_backtracking", "arguments": {"edges": [["a", "b"], ["b", "c"], ["c", "a"]], "origins": {"a": ["o1"]}, "rounds": 3}, "select": ["independent", "a"], "reject": 2, "why": "Counting messages, a receives its own observation back and counts it as a second, corroborating one."}
+    ]
+  },
+  "limits": "Counts are only as good as the provenance links: a report that hides its sources looks like a new root observation. Root observations are treated as independent even when they share an unrecorded cause. Reports may only cite reports about the same claim. The relay is a synchronous round-based simulation for small graphs (thousands of edges) and does not model message loss or delay.",
+  "related": ["covariance_intersection_fusion", "evidence_state_claims", "claim_staleness_graph"],
+  "technique_references": ["Data incest and double counting in decentralized estimation", "Non-backtracking message passing (belief propagation without echo)", "Circular reporting in intelligence analysis"]
+}

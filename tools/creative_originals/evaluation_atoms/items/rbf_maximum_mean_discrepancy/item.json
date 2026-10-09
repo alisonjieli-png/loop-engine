@@ -1,0 +1,46 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "rbf_maximum_mean_discrepancy",
+  "title": "Maximum mean discrepancy with an RBF kernel",
+  "purpose": "Compare two samples of vectors with the kernel maximum mean discrepancy: biased and unbiased estimators of MMD squared under a Gaussian kernel, the median-distance bandwidth, and a seeded permutation test. Use it to check whether two sets of outputs, embeddings or inputs come from one distribution.",
+  "form": "library_module",
+  "dimension": "none",
+  "engine": {"name": "python", "minimum_version": "3.10"},
+  "tags": ["two-sample test", "maximum mean discrepancy", "kernel methods", "distribution shift", "permutation test", "embeddings"],
+  "files": [
+    {"path": "README.md", "role": "other"},
+    {"path": "rbf_maximum_mean_discrepancy.py", "role": "executable_tool"},
+    {"path": "test_rbf_maximum_mean_discrepancy.py", "role": "executable_tool"}
+  ],
+  "contract": {
+    "entry_points": [
+      {"name": "mmd_squared", "arguments": "x_rows, y_rows: samples of equal dimension (up to 5000 rows each); bandwidth: sigma > 0 or null for the median heuristic; unbiased: bool", "returns": "{mmd_squared, bandwidth, estimator}"},
+      {"name": "permutation_test", "arguments": "x_rows; y_rows; bandwidth; permutations; seed", "returns": "{statistic, p_value, permutations, bandwidth}"},
+      {"name": "median_bandwidth", "arguments": "rows", "returns": "the median of the positive pairwise distances"}
+    ],
+    "assumptions": [
+      "Rows within each sample are exchangeable; under the null both samples come from one distribution.",
+      "The bandwidth is fixed before the permutations (the median heuristic uses the pooled sample, which permutations do not change)."
+    ],
+    "guarantees": [
+      "The biased estimate is non-negative and 0 for identical samples; the unbiased estimate is reported as computed, including negative values.",
+      "p = (1 + #{permuted statistic >= observed}) / (1 + B) is a valid p-value under exchangeability of the pooled sample.",
+      "Permutations use a seeded Fisher-Yates shuffle driven by random() only."
+    ],
+    "known_answers": [
+      {"name": "one_point_each", "call": "mmd_squared", "arguments": {"x_rows": [[0]], "y_rows": [[1]], "bandwidth": 1}, "select": ["mmd_squared"], "expect": 0.7869386805747332, "tolerance": 1e-14},
+      {"name": "two_points_biased", "call": "mmd_squared", "arguments": {"x_rows": [[0], [1]], "y_rows": [[2], [3]], "bandwidth": 1}, "select": ["mmd_squared"], "expect": 1.1623755483505829, "tolerance": 1e-14},
+      {"name": "two_points_unbiased", "call": "mmd_squared", "arguments": {"x_rows": [[0], [1]], "y_rows": [[2], [3]], "bandwidth": 1, "unbiased": true}, "select": ["mmd_squared"], "expect": 0.7689062080632163, "tolerance": 1e-14},
+      {"name": "identical_samples_biased", "call": "mmd_squared", "arguments": {"x_rows": [[0], [1]], "y_rows": [[0], [1]], "bandwidth": 1}, "select": ["mmd_squared"], "expect": 0.0},
+      {"name": "identical_samples_unbiased_negative", "call": "mmd_squared", "arguments": {"x_rows": [[0], [1]], "y_rows": [[0], [1]], "bandwidth": 1, "unbiased": true}, "select": ["mmd_squared"], "expect": -0.3934693402873666, "tolerance": 1e-14},
+      {"name": "median_heuristic", "call": "median_bandwidth", "arguments": {"rows": [[0], [1], [3]]}, "expect": 2.0},
+      {"name": "refuses_unbiased_with_one_row", "call": "mmd_squared", "arguments": {"x_rows": [[0]], "y_rows": [[1]], "unbiased": true}, "raises": "ValueError"}
+    ],
+    "known_wrong": [
+      {"name": "unbiased_not_clamped", "call": "mmd_squared", "arguments": {"x_rows": [[0], [1]], "y_rows": [[0], [1]], "bandwidth": 1, "unbiased": true}, "select": ["mmd_squared"], "reject": 0.0, "why": "Clamping the unbiased estimate at zero (or taking its square root) biases it upward and breaks its expectation."}
+    ]
+  },
+  "limits": "Quadratic cost in the pooled sample size: a few thousand rows at most, and permutation tests multiply that by the number of permutations. One Gaussian kernel with one bandwidth; the median heuristic is a convention, not an optimal choice, and the test's power depends on it. Rejecting the null says the samples differ, not how or whether the difference matters.",
+  "related": ["silent_concept_shift_twins", "linear_cka_similarity", "weighted_vendi_score"],
+  "technique_references": ["A kernel two-sample test (Gretton, Borgwardt, Rasch, Scholkopf and Smola)", "Median heuristic for the Gaussian kernel bandwidth", "Permutation tests with the (1 + count) / (1 + B) p-value"]
+}

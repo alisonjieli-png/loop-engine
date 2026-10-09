@@ -1,0 +1,49 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "transient_amplification_profile",
+  "title": "Transient amplification profile of a linear update",
+  "purpose": "Compute ||A^h||_2 over a horizon for a linear update x_(h+1) = A x_h, with the peak, the step after which the norm stays below 1, the spectral radius and the Gelfand bound. Use it to find updates that are stable in the limit but amplify perturbations first.",
+  "form": "library_module",
+  "dimension": "none",
+  "engine": {"name": "python", "minimum_version": "3.10"},
+  "tags": ["linear dynamics", "non-normal matrices", "transient growth", "spectral norm", "power iteration", "stability"],
+  "files": [
+    {"path": "README.md", "role": "other"},
+    {"path": "transient_amplification_profile.py", "role": "executable_tool"},
+    {"path": "test_transient_amplification_profile.py", "role": "executable_tool"}
+  ],
+  "contract": {
+    "entry_points": [
+      {"name": "transient_profile", "arguments": "matrix: square A (at most 60 rows); horizon: integer 1 to 5000", "returns": "{norms for h = 0..horizon, peak_norm, peak_step, amplifies, settles_below_one_at, spectral_radius (null above size 8), gelfand_bound, converged}"},
+      {"name": "spectral_norm", "arguments": "matrix: any rectangular matrix; iterations; tolerance", "returns": "{norm, iterations, converged}"},
+      {"name": "spectral_radius", "arguments": "matrix: square, at most 8 rows", "returns": "{radius, eigenvalues as [real, imaginary] pairs}"}
+    ],
+    "assumptions": [
+      "The update is linear and time-invariant: the same A at every step.",
+      "Norms are Euclidean (spectral) norms; another norm gives another profile."
+    ],
+    "guarantees": [
+      "Each norm is the Rayleigh-quotient limit of power iteration on B^T B from two deterministic starts; the tests match closed forms to 1e-12.",
+      "gelfand_bound = min over h >= 1 of ||A^h||^(1/h) is an upper bound on the spectral radius.",
+      "settles_below_one_at is the first step from which every norm up to the horizon is below 1, or null."
+    ],
+    "known_answers": [
+      {"name": "hump_norms", "call": "transient_profile", "arguments": {"matrix": [[0.8, 4], [0, 0.8]], "horizon": 6}, "select": ["norms"], "expect": [1.0, 4.1540659228538015, 6.463372488699383, 7.71398296330792, 8.212429054411118, 8.205086295321628, 7.87304844581219], "tolerance": 1e-12},
+      {"name": "hump_peak_step", "call": "transient_profile", "arguments": {"matrix": [[0.8, 4], [0, 0.8]], "horizon": 30}, "select": ["peak_step"], "expect": 4},
+      {"name": "hump_settles_at_21", "call": "transient_profile", "arguments": {"matrix": [[0.8, 4], [0, 0.8]], "horizon": 30}, "select": ["settles_below_one_at"], "expect": 21},
+      {"name": "hump_radius_below_one", "call": "spectral_radius", "arguments": {"matrix": [[0.8, 4], [0, 0.8]]}, "select": ["radius"], "expect": 0.8, "tolerance": 1e-7},
+      {"name": "rotation_does_not_amplify", "call": "transient_profile", "arguments": {"matrix": [[0.6883579685560397, -0.579795918513922], [0.579795918513922, 0.6883579685560397]], "horizon": 3}, "select": ["amplifies"], "expect": false},
+      {"name": "companion_roots", "call": "spectral_radius", "arguments": {"matrix": [[6, -11, 6], [1, 0, 0], [0, 1, 0]]}, "select": ["radius"], "expect": 3.0, "tolerance": 1e-10},
+      {"name": "two_by_two_norm", "call": "spectral_norm", "arguments": {"matrix": [[1, 2], [3, 4]]}, "select": ["norm"], "expect": 5.464985704219043, "tolerance": 1e-12},
+      {"name": "nilpotent_settles", "call": "transient_profile", "arguments": {"matrix": [[0, 1], [0, 0]], "horizon": 3}, "select": ["norms"], "expect": [1.0, 1.0, 0.0, 0.0]},
+      {"name": "refuses_non_square", "call": "transient_profile", "arguments": {"matrix": [[1, 2, 3], [4, 5, 6]], "horizon": 3}, "raises": "ValueError"}
+    ],
+    "known_wrong": [
+      {"name": "radius_below_one_still_amplifies", "call": "transient_profile", "arguments": {"matrix": [[0.8, 4], [0, 0.8]], "horizon": 10}, "select": ["amplifies"], "reject": false, "why": "Reading stability from eigenvalues alone predicts monotone decay 0.8^h; the non-normal coupling amplifies about eightfold first."},
+      {"name": "fourth_power_is_not_eigenvalue_forecast", "call": "transient_profile", "arguments": {"matrix": [[0.8, 4], [0, 0.8]], "horizon": 4}, "select": ["peak_norm"], "reject": 0.4096, "tolerance": 1e-6, "why": "0.8^4 is the eigenvalue-only forecast of ||A^4||; the true norm is about 8.21."}
+    ]
+  },
+  "limits": "Dense powers by repeated multiplication: meant for matrices up to about 60 rows and horizons up to a few thousand steps. Power iteration converges slowly when the top two singular values nearly coincide; the result reports converged. Eigenvalues come from the characteristic polynomial, so they are limited to 8 rows and a repeated eigenvalue is accurate to about 1e-8. Linear time-invariant updates only; it does not model nonlinear or time-varying dynamics.",
+  "related": ["delta_rule_associative_memory", "ridge_penalty_from_linear_transform"],
+  "technique_references": ["Pseudospectra and non-normal transient growth (Trefethen and Embree)", "Power iteration with Rayleigh quotient", "Gelfand spectral radius formula", "Faddeev-LeVerrier characteristic polynomial", "Durand-Kerner simultaneous root iteration"]
+}

@@ -1,0 +1,49 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "silent_concept_shift_twins",
+  "title": "Silent concept-shift twin datasets",
+  "purpose": "Generate two datasets whose inputs and targets have exactly the same marginal distributions while the input-target relationship is reversed, and compare them with input-only, target-only and joint statistics. Use it to show that a drift monitor reading inputs alone cannot detect a change of concept.",
+  "form": "library_module",
+  "dimension": "none",
+  "engine": {"name": "python", "minimum_version": "3.10"},
+  "tags": ["concept drift", "distribution shift", "drift monitoring", "synthetic data", "test fixtures", "evaluation"],
+  "files": [
+    {"path": "README.md", "role": "other"},
+    {"path": "silent_concept_shift_twins.py", "role": "executable_tool"},
+    {"path": "test_silent_concept_shift_twins.py", "role": "executable_tool"}
+  ],
+  "contract": {
+    "entry_points": [
+      {"name": "generate_twins", "arguments": "n_pairs (1 to 50000); dimension (1 to 100); seed; noise >= 0; slope (optional, length dimension); labels: bool", "returns": "{reference: {inputs, targets}, shifted: {inputs, targets}, slope}"},
+      {"name": "input_only_statistics", "arguments": "inputs_a; inputs_b", "returns": "{features: [{mean_gap, variance_gap, ks}], max_mean_gap, max_variance_gap, max_ks}"},
+      {"name": "target_only_statistics", "arguments": "targets_a; targets_b", "returns": "{mean_gap, variance_gap, ks}"},
+      {"name": "joint_statistics", "arguments": "inputs; targets", "returns": "{covariance: per-feature population covariance with the target}"},
+      {"name": "silent_shift_report", "arguments": "n_pairs; dimension; seed; noise; labels", "returns": "{input_max_ks, input_max_mean_gap, input_max_variance_gap, target_ks, target_mean_gap, input_statistics_identical, joint_covariance_reference, joint_covariance_shifted, joint_covariance_sum_max_abs, joint_sign_flipped}"}
+    ],
+    "assumptions": [
+      "The twins are a constructed fixture, not a model of any particular real shift.",
+      "Seeded draws use random.Random.random() only, so a seed gives the same twins on every Python version."
+    ],
+    "guarantees": [
+      "The two datasets hold identical multisets of input rows and identical multisets of targets, so every input-only or target-only statistic is equal on both.",
+      "Every input-target covariance of the shifted twin is exactly the negative of the reference one.",
+      "With labels the label multisets also match and the covariances still flip sign."
+    ],
+    "known_answers": [
+      {"name": "input_ks_is_zero", "call": "silent_shift_report", "arguments": {"n_pairs": 50, "dimension": 2, "seed": 3}, "select": ["input_max_ks"], "expect": 0.0, "tolerance": 0.0},
+      {"name": "target_ks_is_zero", "call": "silent_shift_report", "arguments": {"n_pairs": 50, "dimension": 2, "seed": 3}, "select": ["target_ks"], "expect": 0.0, "tolerance": 0.0},
+      {"name": "covariances_cancel_exactly", "call": "silent_shift_report", "arguments": {"n_pairs": 50, "dimension": 2, "seed": 3}, "select": ["joint_covariance_sum_max_abs"], "expect": 0.0, "tolerance": 0.0},
+      {"name": "reference_covariance", "call": "silent_shift_report", "arguments": {"n_pairs": 50, "dimension": 2, "seed": 3}, "select": ["joint_covariance_reference"], "expect": [-0.6981593281118293, -0.10728258940501816], "tolerance": 1e-12},
+      {"name": "labels_also_match", "call": "silent_shift_report", "arguments": {"n_pairs": 50, "dimension": 2, "seed": 3, "labels": true}, "select": ["input_statistics_identical"], "expect": true},
+      {"name": "small_fixture", "call": "generate_twins", "arguments": {"n_pairs": 2, "dimension": 1, "seed": 0, "noise": 0, "slope": [2]}, "select": ["shifted", "targets"], "expect": [-0.05810685836793094, 0.14740032421087185, -0.14740032421087185, 0.05810685836793094], "tolerance": 1e-12},
+      {"name": "ks_of_different_samples", "call": "target_only_statistics", "arguments": {"targets_a": [1, 2, 3], "targets_b": [1, 2, 4]}, "select": ["ks"], "expect": 0.3333333333333333, "tolerance": 1e-12},
+      {"name": "refuses_wrong_slope_length", "call": "generate_twins", "arguments": {"n_pairs": 5, "dimension": 2, "seed": 1, "slope": [1]}, "raises": "ValueError"}
+    ],
+    "known_wrong": [
+      {"name": "relationship_is_not_unchanged", "call": "silent_shift_report", "arguments": {"n_pairs": 50, "dimension": 2, "seed": 3}, "select": ["joint_sign_flipped"], "reject": false, "why": "An input-only monitor reports no drift on these twins, yet every input-target covariance has reversed sign."}
+    ]
+  },
+  "limits": "A linear relationship with Gaussian inputs and noise; real concept shifts are rarely this clean. The construction needs inputs symmetric under negation; it does not cover shifts that also move the input distribution. Statistics are basic (mean, variance, Kolmogorov-Smirnov, covariance); nothing here estimates the power of a particular drift detector.",
+  "related": ["rbf_maximum_mean_discrepancy", "mechanism_heldout_split", "correlation_source_decomposition"],
+  "technique_references": ["Concept drift versus covariate shift (Gama et al. survey of concept drift adaptation)", "Antithetic variates", "Two-sample Kolmogorov-Smirnov statistic"]
+}

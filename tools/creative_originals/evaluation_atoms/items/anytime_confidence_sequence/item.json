@@ -1,0 +1,46 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "anytime_confidence_sequence",
+  "title": "Anytime-valid confidence sequence for a bounded mean",
+  "purpose": "Give confidence intervals for the mean of bounded observations that hold at every time simultaneously, so results can be monitored after each run and stopped at any point. Includes a Hoeffding union-bound sequence, a betting (hedged capital) sequence and a seeded coverage simulation.",
+  "form": "library_module",
+  "dimension": "none",
+  "engine": {"name": "python", "minimum_version": "3.10"},
+  "tags": ["confidence sequence", "anytime-valid", "sequential testing", "betting martingale", "hoeffding", "optional stopping"],
+  "files": [
+    {"path": "README.md", "role": "other"},
+    {"path": "anytime_confidence_sequence.py", "role": "executable_tool"},
+    {"path": "test_anytime_confidence_sequence.py", "role": "executable_tool"}
+  ],
+  "contract": {
+    "entry_points": [
+      {"name": "hoeffding_sequence", "arguments": "observations in [lower_bound, upper_bound]; alpha in (0, 1); lower_bound; upper_bound", "returns": "{lower, upper, means, final, empty_at, method} as running intersections"},
+      {"name": "betting_sequence", "arguments": "observations; alpha; lower_bound; upper_bound; grid (20 to 2000 cells); cap in (0, 1)", "returns": "{lower, upper, means, final, empty_at, method}"},
+      {"name": "pointwise_wilson_sequence", "arguments": "0/1 observations; alpha", "returns": "the fixed-sample Wilson interval at each t, for comparison"},
+      {"name": "coverage_simulation", "arguments": "method: hoeffding, betting or pointwise_wilson; mean; length; replications; alpha; seed; grid", "returns": "{method, miscoverage, within_alpha, replications, length}"}
+    ],
+    "assumptions": [
+      "Observations lie in the stated bounds and share one conditional mean given the past (for example independent and identically distributed).",
+      "The level alpha is fixed before looking at the data."
+    ],
+    "guarantees": [
+      "hoeffding: P(mu leaves the interval at some t) <= alpha, by Hoeffding's inequality at level alpha / (t (t + 1)) and a union bound.",
+      "betting: the averaged capital (K+ + K-) / 2 at the true mean is a non-negative martingale, so P(it ever reaches 1 / alpha) <= alpha by Ville's inequality; the reported intervals contain every candidate mean the capital never rejects.",
+      "Running intersections keep the simultaneous guarantee; empty_at records a time when the intersection would have become empty."
+    ],
+    "known_answers": [
+      {"name": "hoeffding_final", "call": "hoeffding_sequence", "arguments": {"observations": [1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0], "alpha": 0.05}, "select": ["final"], "expect": [0.24990972899294184, 0.7540587545917605], "tolerance": 1e-12},
+      {"name": "betting_final", "call": "betting_sequence", "arguments": {"observations": [1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0], "alpha": 0.05}, "select": ["final"], "expect": [0.3575, 0.6455363008236269], "tolerance": 1e-9},
+      {"name": "betting_all_ones", "call": "betting_sequence", "arguments": {"observations": [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1], "alpha": 0.05}, "select": ["final"], "expect": [0.7383156370530031, 1.0], "tolerance": 1e-9},
+      {"name": "three_points_in_a_wide_range", "call": "hoeffding_sequence", "arguments": {"observations": [3, 5, 4], "alpha": 0.1, "lower_bound": 0, "upper_bound": 10}, "select": ["final"], "expect": [0.0, 10.0]},
+      {"name": "hoeffding_simulation_within_alpha", "call": "coverage_simulation", "arguments": {"method": "hoeffding", "mean": 0.3, "length": 200, "replications": 200, "alpha": 0.1, "seed": 1}, "select": ["within_alpha"], "expect": true},
+      {"name": "refuses_out_of_range_observation", "call": "hoeffding_sequence", "arguments": {"observations": [0.5, 1.5], "alpha": 0.1}, "raises": "ValueError"}
+    ],
+    "known_wrong": [
+      {"name": "peeking_is_not_anytime_valid", "call": "coverage_simulation", "arguments": {"method": "pointwise_wilson", "mean": 0.3, "length": 200, "replications": 200, "alpha": 0.1, "seed": 3}, "select": ["within_alpha"], "reject": true, "why": "A fixed-sample 90 percent interval checked after every observation misses the mean at some time in about 66 percent of these runs."}
+    ]
+  },
+  "limits": "Means of bounded observations only; the bounds must be known in advance. The Hoeffding sequence is conservative; the betting sequence is tighter but costs grid x n operations and is meant for up to a few thousand observations. Grid reporting rounds intervals outward by at most one cell. Guarantees need a constant conditional mean; under drift the sequence covers no single target.",
+  "related": ["bernoulli_sprt", "split_conformal_intervals", "dithered_sign_expectation"],
+  "technique_references": ["Estimating means of bounded random variables by betting (Waudby-Smith and Ramdas)", "Time-uniform, nonparametric, nonasymptotic confidence sequences (Howard, Ramdas, McAuliffe and Sekhon)", "Ville's inequality for non-negative supermartingales", "Hoeffding's inequality with a union bound over time"]
+}

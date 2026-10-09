@@ -1,0 +1,16 @@
+{
+  "record_type": "creative_original_family/v1",
+  "family": "evaluation_atoms",
+  "title": "Evaluation atoms for research and agent harnesses",
+  "description": "Small, exact, standard-library Python implementations of two kinds of component. The first kind is the statistics a research harness needs to compare learning systems: diversity and calibration measures, paired and multiple-comparison tests, anytime-valid and conformal intervals, overfitting corrections, fusion rules and data-split constructions. The second kind is the bounded-work contracts an agent harness needs: typed work results, conserved budget ledgers, coverage ledgers, applicability certificates, staleness and revocation graphs, idempotent effects and evidence states, each as a validator or a small ledger with a JSON Schema where the contract is a document. Every item is an importable module with input validation and a JSON command line. Its contract card lists the entry points, the assumptions, the guarantees, the known answers its tests reproduce and at least one known-wrong case its tests must refuse. Packages carry the shared helpers numerics.py, atom_cli.py and schema_lite.py and the shared test_package.py; nothing needs an engine, a network or a third-party package.",
+  "engine": {"name": "python", "minimum_version": "3.10", "notes": "Standard library only; tested with Python 3.10 and 3.14"},
+  "shared_files": [
+    {"path": "numerics.py", "role": "executable_tool"},
+    {"path": "atom_cli.py", "role": "executable_tool"},
+    {"path": "schema_lite.py", "role": "executable_tool"},
+    {"path": "test_package.py", "role": "executable_tool"}
+  ],
+  "native_verifier": null,
+  "generator_version": "1.0.0",
+  "default_dimension": "none"
+}

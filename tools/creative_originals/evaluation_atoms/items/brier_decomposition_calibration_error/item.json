@@ -1,0 +1,48 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "brier_decomposition_calibration_error",
+  "title": "Brier score decomposition and expected calibration error",
+  "purpose": "Split the Brier score of probability forecasts into reliability, resolution, uncertainty and the two within-bin terms that make the decomposition exact for binned forecasts, and compute the expected calibration error. Use it to tell miscalibration apart from lack of discrimination.",
+  "form": "library_module",
+  "dimension": "none",
+  "engine": {"name": "python", "minimum_version": "3.10"},
+  "tags": ["brier score", "calibration", "reliability", "resolution", "expected calibration error", "proper scoring rules"],
+  "files": [
+    {"path": "README.md", "role": "other"},
+    {"path": "brier_decomposition_calibration_error.py", "role": "executable_tool"},
+    {"path": "test_brier_decomposition_calibration_error.py", "role": "executable_tool"}
+  ],
+  "contract": {
+    "entry_points": [
+      {"name": "brier_decomposition", "arguments": "forecasts in [0, 1]; outcomes 0 or 1; bins (equal width, default 10)", "returns": "{brier, reliability, resolution, uncertainty, within_bin_variance, within_bin_covariance, identity_residual, bins}"},
+      {"name": "expected_calibration_error", "arguments": "forecasts; outcomes; bins", "returns": "{ece, max_gap, bins}"}
+    ],
+    "assumptions": [
+      "Outcomes are binary and forecasts are probabilities of outcome 1.",
+      "Bins are equal width on [0, 1]; a forecast of exactly 1 joins the last bin."
+    ],
+    "guarantees": [
+      "brier = reliability - resolution + uncertainty + within_bin_variance - within_bin_covariance up to rounding; identity_residual reports the difference.",
+      "With identical forecasts inside each bin the two within-bin terms are 0 and the three-term Murphy decomposition is recovered.",
+      "ECE is the count-weighted mean absolute gap between bin mean forecast and bin outcome rate."
+    ],
+    "known_answers": [
+      {"name": "constant_bins_brier", "call": "brier_decomposition", "arguments": {"forecasts": [0.1, 0.1, 0.9, 0.9], "outcomes": [0, 1, 1, 1]}, "select": ["brier"], "expect": 0.21, "tolerance": 1e-12},
+      {"name": "constant_bins_reliability", "call": "brier_decomposition", "arguments": {"forecasts": [0.1, 0.1, 0.9, 0.9], "outcomes": [0, 1, 1, 1]}, "select": ["reliability"], "expect": 0.085, "tolerance": 1e-12},
+      {"name": "constant_bins_resolution", "call": "brier_decomposition", "arguments": {"forecasts": [0.1, 0.1, 0.9, 0.9], "outcomes": [0, 1, 1, 1]}, "select": ["resolution"], "expect": 0.0625, "tolerance": 1e-12},
+      {"name": "constant_bins_uncertainty", "call": "brier_decomposition", "arguments": {"forecasts": [0.1, 0.1, 0.9, 0.9], "outcomes": [0, 1, 1, 1]}, "select": ["uncertainty"], "expect": 0.1875, "tolerance": 1e-12},
+      {"name": "varied_bins_within_variance", "call": "brier_decomposition", "arguments": {"forecasts": [0.12, 0.18, 0.85, 0.95], "outcomes": [0, 1, 1, 1], "bins": 2}, "select": ["within_bin_variance"], "expect": 0.0017, "tolerance": 1e-12},
+      {"name": "varied_bins_within_covariance", "call": "brier_decomposition", "arguments": {"forecasts": [0.12, 0.18, 0.85, 0.95], "outcomes": [0, 1, 1, 1], "bins": 2}, "select": ["within_bin_covariance"], "expect": 0.015, "tolerance": 1e-12},
+      {"name": "varied_bins_brier", "call": "brier_decomposition", "arguments": {"forecasts": [0.12, 0.18, 0.85, 0.95], "outcomes": [0, 1, 1, 1], "bins": 2}, "select": ["brier"], "expect": 0.17795, "tolerance": 1e-12},
+      {"name": "ece_constant_bins", "call": "expected_calibration_error", "arguments": {"forecasts": [0.1, 0.1, 0.9, 0.9], "outcomes": [0, 1, 1, 1]}, "select": ["ece"], "expect": 0.25, "tolerance": 1e-12},
+      {"name": "ece_varied_bins", "call": "expected_calibration_error", "arguments": {"forecasts": [0.12, 0.18, 0.85, 0.95], "outcomes": [0, 1, 1, 1], "bins": 2}, "select": ["ece"], "expect": 0.225, "tolerance": 1e-12},
+      {"name": "refuses_non_binary_outcome", "call": "brier_decomposition", "arguments": {"forecasts": [0.5], "outcomes": [0.5]}, "raises": "ValueError"}
+    ],
+    "known_wrong": [
+      {"name": "three_terms_are_not_the_score", "call": "brier_decomposition", "arguments": {"forecasts": [0.12, 0.18, 0.85, 0.95], "outcomes": [0, 1, 1, 1], "bins": 2}, "select": ["brier"], "reject": 0.19125, "tolerance": 1e-6, "why": "REL - RES + UNC equals the Brier score only when forecasts inside a bin are identical; here it overstates it by 0.0133."}
+    ]
+  },
+  "limits": "Equal-width bins only; reliability, resolution and ECE all depend on the binning, and ECE is biased upward for small bins. Binary outcomes only. No confidence intervals are computed.",
+  "related": ["multicalibration_audit", "isotonic_calibration_pav", "temperature_scaling_fit"],
+  "technique_references": ["A new vector partition of the probability score (Murphy)", "Two extra components in the Brier score decomposition (Stephenson, Coelho and Jolliffe)", "Expected calibration error (Naeini, Cooper and Hauskrecht)"]
+}

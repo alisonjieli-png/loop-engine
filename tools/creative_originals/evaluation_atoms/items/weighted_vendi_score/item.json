@@ -1,0 +1,52 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "weighted_vendi_score",
+  "title": "Weighted Vendi score",
+  "purpose": "Measure the effective number of distinct members in a weighted set from a similarity matrix or feature rows. Use it to compare the diversity of samples, prompts, solutions or ensemble members when members carry unequal weight or appear as duplicates.",
+  "form": "library_module",
+  "dimension": "none",
+  "engine": {"name": "python", "minimum_version": "3.10"},
+  "tags": ["diversity", "vendi score", "renyi entropy", "kernel", "eigenvalues", "weighted sets", "evaluation"],
+  "files": [
+    {"path": "README.md", "role": "other"},
+    {"path": "weighted_vendi_score.py", "role": "executable_tool"},
+    {"path": "test_weighted_vendi_score.py", "role": "executable_tool"}
+  ],
+  "contract": {
+    "entry_points": [
+      {"name": "weighted_vendi_score", "arguments": "similarity: n by n symmetric positive semidefinite matrix with unit diagonal; weights: n non-negative numbers with a positive sum, or null for equal weights; order: Renyi order q >= 0 (default 1)", "returns": "{score, order, eigenvalues: normalized and descending, weights: normalized, members}"},
+      {"name": "vendi_from_features", "arguments": "features: n non-zero rows of equal length; weights; order", "returns": "the weighted_vendi_score result plus similarity, the cosine matrix scored"}
+    ],
+    "assumptions": [
+      "The similarity matrix is a valid kernel: symmetric, positive semidefinite, with k(x, x) = 1.",
+      "Weights express how much each row counts; rows with weight 0 do not affect the score."
+    ],
+    "guarantees": [
+      "n mutually orthogonal members with equal weights score n; identical members score 1.",
+      "Splitting a member into identical clones whose weights sum to its weight leaves the score unchanged.",
+      "The score lies between 1 and the number of members with positive weight and does not increase with the order q.",
+      "Inputs that are not symmetric, not positive semidefinite or not unit-diagonal raise ValueError."
+    ],
+    "known_answers": [
+      {"name": "three_orthogonal_members", "call": "weighted_vendi_score", "arguments": {"similarity": [[1, 0, 0], [0, 1, 0], [0, 0, 1]]}, "select": ["score"], "expect": 3.0},
+      {"name": "clones_with_split_weight", "call": "weighted_vendi_score", "arguments": {"similarity": [[1, 1, 0], [1, 1, 0], [0, 0, 1]], "weights": [0.25, 0.25, 0.5]}, "select": ["score"], "expect": 2.0},
+      {"name": "clones_with_equal_weights", "call": "weighted_vendi_score", "arguments": {"similarity": [[1, 1, 0], [1, 1, 0], [0, 0, 1]]}, "select": ["score"], "expect": 1.8898815748423097},
+      {"name": "identical_members", "call": "weighted_vendi_score", "arguments": {"similarity": [[1, 1, 1], [1, 1, 1], [1, 1, 1]]}, "select": ["score"], "expect": 1.0},
+      {"name": "order_two", "call": "weighted_vendi_score", "arguments": {"similarity": [[1, 1, 0], [1, 1, 0], [0, 0, 1]], "order": 2}, "select": ["score"], "expect": 1.8},
+      {"name": "order_zero_counts_rank", "call": "weighted_vendi_score", "arguments": {"similarity": [[1, 1, 0], [1, 1, 0], [0, 0, 1]], "order": 0}, "select": ["score"], "expect": 2.0},
+      {"name": "partial_similarity", "call": "weighted_vendi_score", "arguments": {"similarity": [[1, 0.5], [0.5, 1]]}, "select": ["score"], "expect": 1.7547653506033232},
+      {"name": "partial_similarity_order_half", "call": "weighted_vendi_score", "arguments": {"similarity": [[1, 0.5], [0.5, 1]], "order": 0.5}, "select": ["score"], "expect": 1.8660254037844386},
+      {"name": "partial_similarity_weighted", "call": "weighted_vendi_score", "arguments": {"similarity": [[1, 0.5], [0.5, 1]], "weights": [3, 1]}, "select": ["score"], "expect": 1.575770643482069},
+      {"name": "cosine_features_with_a_repeat", "call": "vendi_from_features", "arguments": {"features": [[1, 0], [0, 1], [1, 0]]}, "select": ["score"], "expect": 1.8898815748423097},
+      {"name": "refuses_non_unit_diagonal", "call": "weighted_vendi_score", "arguments": {"similarity": [[2, 0], [0, 1]]}, "raises": "ValueError"},
+      {"name": "refuses_indefinite_kernel", "call": "weighted_vendi_score", "arguments": {"similarity": [[1, 2], [2, 1]]}, "raises": "ValueError"},
+      {"name": "refuses_negative_weight", "call": "weighted_vendi_score", "arguments": {"similarity": [[1, 0], [0, 1]], "weights": [1, -1]}, "raises": "ValueError"}
+    ],
+    "known_wrong": [
+      {"name": "clones_not_counted_as_members", "call": "weighted_vendi_score", "arguments": {"similarity": [[1, 1, 0], [1, 1, 0], [0, 0, 1]], "weights": [0.25, 0.25, 0.5]}, "select": ["score"], "reject": 1.8898815748423097, "why": "An unweighted score counts each clone as a separate member; with conserved weights the two clones are one member."}
+    ]
+  },
+  "limits": "Dense eigendecomposition by Jacobi rotations: intended for at most a few hundred members. Eigenvalues at or below 1e-12 are treated as zero, which matters for orders below 1. The score depends entirely on the chosen kernel; it says nothing about quality, coverage of a target distribution or usefulness of the members.",
+  "related": ["effective_rank_spectral_entropy", "influence_gini_lorenz"],
+  "technique_references": ["Vendi Score: a diversity evaluation metric for machine learning (Friedman and Dieng)", "Renyi entropy of order q", "Cyclic Jacobi eigenvalue method"]
+}

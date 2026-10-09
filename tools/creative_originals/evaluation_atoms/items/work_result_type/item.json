@@ -1,0 +1,49 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "work_result_type",
+  "title": "Typed work result with six outcomes",
+  "purpose": "Give every bounded unit of agent work exactly one typed outcome: completed with evidence, no change needed, needs input, needs scope expansion, unsupported, or budget exhausted with a checkpoint. Validate results against the schema and the rules a schema cannot state.",
+  "form": "schema",
+  "dimension": "none",
+  "engine": {"name": "python", "minimum_version": "3.10"},
+  "tags": ["agent contracts", "work result", "tagged union", "json schema", "validation", "bounded work"],
+  "files": [
+    {"path": "README.md", "role": "other"},
+    {"path": "schema.json", "role": "other"},
+    {"path": "work_result_type.py", "role": "executable_tool"},
+    {"path": "test_work_result_type.py", "role": "executable_tool"}
+  ],
+  "contract": {
+    "entry_points": [
+      {"name": "validate_work_result", "arguments": "result: one work result object", "returns": "{valid, outcome or null, terminal or null, errors}"},
+      {"name": "classify_work_result", "arguments": "result: a valid work result", "returns": "{outcome, terminal, next_step}; ValueError when invalid"},
+      {"name": "make_work_result", "arguments": "outcome: one of the six names; fields: the outcome's fields without record_type and outcome", "returns": "the complete result; ValueError when it would be invalid"}
+    ],
+    "assumptions": [
+      "References (file, commit, record, message, address) point at things the caller can fetch again.",
+      "The validator checks shape and internal consistency; it does not open references or rerun evidence."
+    ],
+    "guarantees": [
+      "A valid result matches exactly one of the six shapes; fields belonging to another outcome are refused.",
+      "A completed result cites at least one piece of evidence whose reference is not the artifact itself.",
+      "needs_input field names are unique; budget_exhausted obligations are unique; a scope expansion does not add and remove the same item."
+    ],
+    "known_answers": [
+      {"name": "completed_with_evidence", "call": "validate_work_result", "arguments": {"result": {"record_type": "work_result/v1", "outcome": "completed", "artifact": {"kind": "file", "locator": "src/report.py"}, "evidence": [{"claim": "unit tests pass", "method": "test", "reference": {"kind": "record", "locator": "runs/42"}}]}}, "expect": {"valid": true, "outcome": "completed", "terminal": true, "errors": []}},
+      {"name": "completed_without_evidence", "call": "validate_work_result", "arguments": {"result": {"record_type": "work_result/v1", "outcome": "completed", "artifact": {"kind": "file", "locator": "src/report.py"}, "evidence": []}}, "select": ["valid"], "expect": false},
+      {"name": "artifact_cited_as_its_own_evidence", "call": "validate_work_result", "arguments": {"result": {"record_type": "work_result/v1", "outcome": "completed", "artifact": {"kind": "file", "locator": "src/report.py"}, "evidence": [{"claim": "the file exists", "method": "inspection", "reference": {"kind": "file", "locator": "src/report.py"}}]}}, "select": ["valid"], "expect": false},
+      {"name": "fields_of_another_outcome", "call": "validate_work_result", "arguments": {"result": {"record_type": "work_result/v1", "outcome": "unsupported", "reason": "needs a GPU", "remaining_obligations": ["train"]}}, "select": ["valid"], "expect": false},
+      {"name": "unknown_outcome", "call": "validate_work_result", "arguments": {"result": {"record_type": "work_result/v1", "outcome": "done"}}, "select": ["outcome"], "expect": null},
+      {"name": "repeated_input_field", "call": "validate_work_result", "arguments": {"result": {"record_type": "work_result/v1", "outcome": "needs_input", "required_fields": [{"name": "region", "description": "deployment region"}, {"name": "region", "description": "again"}]}}, "select": ["valid"], "expect": false},
+      {"name": "budget_exhausted_is_resumable", "call": "classify_work_result", "arguments": {"result": {"record_type": "work_result/v1", "outcome": "budget_exhausted", "checkpoint": {"kind": "commit", "locator": "a1b2c3d"}, "remaining_obligations": ["migrate table b", "update docs"]}}, "select": ["terminal"], "expect": false},
+      {"name": "constructor_fills_record_type", "call": "make_work_result", "arguments": {"outcome": "unsupported", "fields": {"reason": "needs a GPU"}}, "expect": {"record_type": "work_result/v1", "outcome": "unsupported", "reason": "needs a GPU"}},
+      {"name": "classifier_refuses_invalid", "call": "classify_work_result", "arguments": {"result": {"record_type": "work_result/v1", "outcome": "completed"}}, "raises": "ValueError"}
+    ],
+    "known_wrong": [
+      {"name": "completion_needs_evidence", "call": "validate_work_result", "arguments": {"result": {"record_type": "work_result/v1", "outcome": "completed", "artifact": {"kind": "file", "locator": "src/report.py"}, "evidence": []}}, "select": ["valid"], "reject": true, "why": "A lenient check that only reads the outcome name would accept a completion claim with nothing behind it."}
+    ]
+  },
+  "limits": "Checks shape and internal consistency only: it does not fetch references, rerun tests or judge whether evidence supports the claim. Six outcomes are fixed by the schema; a new outcome needs a new record type. Text fields are limited to 2000 characters and field names to lower-case identifiers.",
+  "related": ["four_contract_work_item", "conserved_fuel_ledger", "evidence_state_claims"],
+  "technique_references": ["Tagged union (discriminated union) result types", "JSON Schema draft 2020-12 oneOf with const discriminators"]
+}

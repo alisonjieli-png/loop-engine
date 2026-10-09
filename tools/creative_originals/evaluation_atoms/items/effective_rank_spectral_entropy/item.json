@@ -1,0 +1,46 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "effective_rank_spectral_entropy",
+  "title": "Effective rank, participation ratio and stable rank",
+  "purpose": "Measure how many directions a representation matrix actually uses: the effective rank (exponential of the entropy of normalized singular values), the participation ratio of the eigenvalues and the stable rank. Use it to detect collapsed embeddings or compare the dimensionality of learned representations.",
+  "form": "library_module",
+  "dimension": "none",
+  "engine": {"name": "python", "minimum_version": "3.10"},
+  "tags": ["effective rank", "spectral entropy", "representation collapse", "dimensionality", "singular values", "embeddings"],
+  "files": [
+    {"path": "README.md", "role": "other"},
+    {"path": "effective_rank_spectral_entropy.py", "role": "executable_tool"},
+    {"path": "test_effective_rank_spectral_entropy.py", "role": "executable_tool"}
+  ],
+  "contract": {
+    "entry_points": [
+      {"name": "spectral_dimensions", "arguments": "matrix: rows are samples, columns are features; center: subtract column means first", "returns": "{singular_values, effective_rank, participation_ratio, stable_rank, numerical_rank}"},
+      {"name": "singular_values", "arguments": "matrix; center", "returns": "the singular values, descending"}
+    ],
+    "assumptions": [
+      "The scale of each feature is meaningful; the measures change if features are rescaled unequally.",
+      "Singular values at or below 1e-12 times the largest are treated as zero."
+    ],
+    "guarantees": [
+      "With k equal non-zero singular values, the effective rank, participation ratio and stable rank all equal k; a rank-one matrix gives 1.",
+      "All three are invariant to orthogonal transformations of rows or columns and to scaling the whole matrix.",
+      "1 <= effective rank <= numerical rank."
+    ],
+    "known_answers": [
+      {"name": "identity_three", "call": "spectral_dimensions", "arguments": {"matrix": [[1, 0, 0], [0, 1, 0], [0, 0, 1]]}, "select": ["effective_rank"], "expect": 3.0, "tolerance": 1e-12},
+      {"name": "unequal_spectrum_effective_rank", "call": "spectral_dimensions", "arguments": {"matrix": [[2, 0, 0], [0, 1, 0], [0, 0, 1]]}, "select": ["effective_rank"], "expect": 2.8284271247461903, "tolerance": 1e-12},
+      {"name": "unequal_spectrum_participation", "call": "spectral_dimensions", "arguments": {"matrix": [[2, 0, 0], [0, 1, 0], [0, 0, 1]]}, "select": ["participation_ratio"], "expect": 2.0, "tolerance": 1e-12},
+      {"name": "unequal_spectrum_stable_rank", "call": "spectral_dimensions", "arguments": {"matrix": [[2, 0, 0], [0, 1, 0], [0, 0, 1]]}, "select": ["stable_rank"], "expect": 1.5, "tolerance": 1e-12},
+      {"name": "rank_one", "call": "spectral_dimensions", "arguments": {"matrix": [[1, 2], [2, 4]]}, "select": ["effective_rank"], "expect": 1.0, "tolerance": 1e-12},
+      {"name": "three_by_two_singular_values", "call": "singular_values", "arguments": {"matrix": [[1, 2], [3, 4], [5, 6]]}, "expect": [9.525518091565107, 0.5143005806586431], "tolerance": 1e-12},
+      {"name": "three_by_two_effective_rank", "call": "spectral_dimensions", "arguments": {"matrix": [[1, 2], [3, 4], [5, 6]]}, "select": ["effective_rank"], "expect": 1.2239822297792067, "tolerance": 1e-12},
+      {"name": "refuses_zero_matrix", "call": "spectral_dimensions", "arguments": {"matrix": [[0, 0], [0, 0]]}, "raises": "ValueError"}
+    ],
+    "known_wrong": [
+      {"name": "not_the_eigenvalue_entropy", "call": "spectral_dimensions", "arguments": {"matrix": [[2, 0, 0], [0, 1, 0], [0, 0, 1]]}, "select": ["effective_rank"], "reject": 2.381101577952299, "tolerance": 1e-6, "why": "Taking the entropy of the eigenvalues sigma^2 instead of the singular values gives 2.38, a different measure than the effective rank."}
+    ]
+  },
+  "limits": "Dense Gram matrices: the smaller dimension should stay below a few hundred. The measures summarize a spectrum; they do not say which directions matter for a task, and the cutoff for zero singular values affects nearly rank-deficient matrices.",
+  "related": ["weighted_vendi_score", "linear_cka_similarity", "ledoit_wolf_shrinkage"],
+  "technique_references": ["The effective rank: a measure of effective dimensionality (Roy and Vetterli)", "Participation ratio of a covariance spectrum", "Stable rank (numerical rank) of a matrix"]
+}

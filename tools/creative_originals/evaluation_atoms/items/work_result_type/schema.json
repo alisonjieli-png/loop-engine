@@ -1,0 +1,135 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Work result",
+  "description": "The one outcome a bounded unit of work returns. Exactly one of six shapes, chosen by the outcome field: completed, no_change_needed, needs_input, needs_scope_expansion, unsupported or budget_exhausted.",
+  "type": "object",
+  "oneOf": [
+    {"$ref": "#/$defs/completed"},
+    {"$ref": "#/$defs/no_change_needed"},
+    {"$ref": "#/$defs/needs_input"},
+    {"$ref": "#/$defs/needs_scope_expansion"},
+    {"$ref": "#/$defs/unsupported"},
+    {"$ref": "#/$defs/budget_exhausted"}
+  ],
+  "$defs": {
+    "text": {"type": "string", "minLength": 1, "maxLength": 2000, "pattern": "\\S"},
+    "reference": {
+      "description": "Where something can be found again: a file, a commit, a record, a message or an address.",
+      "type": "object",
+      "required": ["kind", "locator"],
+      "additionalProperties": false,
+      "properties": {
+        "kind": {"enum": ["file", "commit", "record", "message", "address"]},
+        "locator": {"$ref": "#/$defs/text"},
+        "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+      }
+    },
+    "evidence": {
+      "description": "One observation that supports the outcome, how it was obtained and where it is kept.",
+      "type": "object",
+      "required": ["claim", "method", "reference"],
+      "additionalProperties": false,
+      "properties": {
+        "claim": {"$ref": "#/$defs/text"},
+        "method": {"enum": ["test", "measurement", "inspection", "citation", "external_confirmation"]},
+        "reference": {"$ref": "#/$defs/reference"}
+      }
+    },
+    "completed": {
+      "type": "object",
+      "required": ["record_type", "outcome", "artifact", "evidence"],
+      "additionalProperties": false,
+      "properties": {
+        "record_type": {"const": "work_result/v1"},
+        "outcome": {"const": "completed"},
+        "artifact": {"$ref": "#/$defs/reference"},
+        "evidence": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/evidence"}},
+        "notes": {"$ref": "#/$defs/text"}
+      }
+    },
+    "no_change_needed": {
+      "type": "object",
+      "required": ["record_type", "outcome", "evidence"],
+      "additionalProperties": false,
+      "properties": {
+        "record_type": {"const": "work_result/v1"},
+        "outcome": {"const": "no_change_needed"},
+        "evidence": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/evidence"}},
+        "notes": {"$ref": "#/$defs/text"}
+      }
+    },
+    "needs_input": {
+      "type": "object",
+      "required": ["record_type", "outcome", "required_fields"],
+      "additionalProperties": false,
+      "properties": {
+        "record_type": {"const": "work_result/v1"},
+        "outcome": {"const": "needs_input"},
+        "required_fields": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "required": ["name", "description"],
+            "additionalProperties": false,
+            "properties": {
+              "name": {"type": "string", "pattern": "^[a-z][a-z0-9_]{0,63}$"},
+              "description": {"$ref": "#/$defs/text"},
+              "type": {"enum": ["text", "number", "integer", "boolean", "choice", "file", "secret_reference"]},
+              "choices": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/text"}}
+            }
+          }
+        },
+        "notes": {"$ref": "#/$defs/text"}
+      }
+    },
+    "needs_scope_expansion": {
+      "type": "object",
+      "required": ["record_type", "outcome", "reason", "proposed_scope"],
+      "additionalProperties": false,
+      "properties": {
+        "record_type": {"const": "work_result/v1"},
+        "outcome": {"const": "needs_scope_expansion"},
+        "reason": {"$ref": "#/$defs/text"},
+        "proposed_scope": {
+          "type": "object",
+          "required": ["add"],
+          "additionalProperties": false,
+          "properties": {
+            "add": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/text"}},
+            "remove": {"type": "array", "items": {"$ref": "#/$defs/text"}}
+          }
+        },
+        "notes": {"$ref": "#/$defs/text"}
+      }
+    },
+    "unsupported": {
+      "type": "object",
+      "required": ["record_type", "outcome", "reason"],
+      "additionalProperties": false,
+      "properties": {
+        "record_type": {"const": "work_result/v1"},
+        "outcome": {"const": "unsupported"},
+        "reason": {"$ref": "#/$defs/text"},
+        "notes": {"$ref": "#/$defs/text"}
+      }
+    },
+    "budget_exhausted": {
+      "type": "object",
+      "required": ["record_type", "outcome", "checkpoint", "remaining_obligations"],
+      "additionalProperties": false,
+      "properties": {
+        "record_type": {"const": "work_result/v1"},
+        "outcome": {"const": "budget_exhausted"},
+        "checkpoint": {"$ref": "#/$defs/reference"},
+        "remaining_obligations": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/text"}},
+        "consumed": {
+          "type": "object",
+          "additionalProperties": {"type": "number", "minimum": 0},
+          "propertyNames": {"pattern": "^[a-z][a-z0-9_]{0,63}$"}
+        },
+        "notes": {"$ref": "#/$defs/text"}
+      }
+    }
+  }
+}

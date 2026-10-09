@@ -1,0 +1,44 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "behavioral_equivalence_relabeling",
+  "title": "Method-blind relabeling and behavioral equivalence",
+  "purpose": "Replace candidate names with seeded neutral labels kept in a separate key, and group candidates whose outputs on the same probe inputs are identical, with optional rounding. Use it to blind judges to method names and to stop counting behaviorally identical variants as separate results.",
+  "form": "library_module",
+  "dimension": "none",
+  "engine": {"name": "python", "minimum_version": "3.10"},
+  "tags": ["blinding", "deduplication", "equivalence classes", "evaluation hygiene", "judge bias", "fingerprints"],
+  "files": [
+    {"path": "README.md", "role": "other"},
+    {"path": "behavioral_equivalence_relabeling.py", "role": "executable_tool"},
+    {"path": "test_behavioral_equivalence_relabeling.py", "role": "executable_tool"}
+  ],
+  "contract": {
+    "entry_points": [
+      {"name": "blind_labels", "arguments": "names: unique text or integer names; seed", "returns": "{mapping: {name: label}, key: {label: name}}"},
+      {"name": "equivalence_classes", "arguments": "outputs: {candidate: [probe outputs]} with equal lengths; decimals: optional rounding (0 to 15)", "returns": "{classes: [{members, fingerprint}], class_count, candidate_count}"},
+      {"name": "blind_report", "arguments": "outputs; seed; decimals", "returns": "{classes in blind labels, class_count, key}"}
+    ],
+    "assumptions": [
+      "Every candidate was run on the same probe inputs in the same order.",
+      "Equal outputs on the probes are taken as equal behaviour on those probes only."
+    ],
+    "guarantees": [
+      "Labels come from a seeded Fisher-Yates shuffle of the sorted names, so their order carries no information about the names; the same seed gives the same labels on every Python version.",
+      "Classes are an equivalence relation: rounding to fixed decimals, never a tolerance, decides equality.",
+      "Each class carries the SHA-256 of the canonical JSON of its (rounded) outputs."
+    ],
+    "known_answers": [
+      {"name": "two_identical_one_different", "call": "equivalence_classes", "arguments": {"outputs": {"A": [1, 2, 3], "B": [1, 2, 3], "C": [1, 2, 4]}}, "select": ["classes"], "expect": [{"members": ["A", "B"], "fingerprint": "a615eeaee21de5179de080de8c3052c8da901138406ba71c38c032845f7d54f4"}, {"members": ["C"], "fingerprint": "33a1c10fd7cb2b79058ab93874877d6234886e4a8a123d9f2a2c9277f6f2efc5"}]},
+      {"name": "rounding_merges_float_noise", "call": "equivalence_classes", "arguments": {"outputs": {"x": [0.30000000000000004], "y": [0.3]}, "decimals": 9}, "select": ["class_count"], "expect": 1},
+      {"name": "twelve_blind_labels", "call": "blind_labels", "arguments": {"names": ["m0", "m1", "m2", "m3", "m4", "m5", "m6", "m7", "m8", "m9", "m10", "m11"], "seed": 1}, "select": ["mapping"], "expect": {"m6": "candidate_01", "m9": "candidate_02", "m2": "candidate_03", "m0": "candidate_04", "m3": "candidate_05", "m4": "candidate_06", "m8": "candidate_07", "m11": "candidate_08", "m10": "candidate_09", "m5": "candidate_10", "m7": "candidate_11", "m1": "candidate_12"}},
+      {"name": "blind_classes", "call": "blind_report", "arguments": {"outputs": {"A": [1, 2, 3], "B": [1, 2, 3], "C": [1, 2, 4]}, "seed": 5}, "select": ["key"], "expect": {"candidate_1": "A", "candidate_2": "C", "candidate_3": "B"}},
+      {"name": "refuses_unequal_probe_counts", "call": "equivalence_classes", "arguments": {"outputs": {"a": [1, 2], "b": [1]}}, "raises": "ValueError"}
+    ],
+    "known_wrong": [
+      {"name": "float_noise_does_not_split_a_class", "call": "equivalence_classes", "arguments": {"outputs": {"x": [0.30000000000000004], "y": [0.3]}, "decimals": 9}, "select": ["class_count"], "reject": 2, "why": "Exact float comparison treats 0.1 + 0.2 and 0.3 as different behaviour."}
+    ]
+  },
+  "limits": "Equality on a finite probe set is evidence of equal behaviour on those probes only; candidates may differ elsewhere. Rounding boundaries can separate values that differ by less than the rounding step. Blind labels hide names, not tell-tale output styles a reader may still recognize.",
+  "related": ["equal_cohort_comparison", "weighted_vendi_score", "independent_acceptance_check"],
+  "technique_references": ["Blinded evaluation and allocation concealment", "Equivalence classes by canonical fingerprint", "Fisher-Yates shuffle"]
+}

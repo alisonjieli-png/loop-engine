@@ -1,0 +1,45 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "equal_cohort_comparison",
+  "title": "Equal-cohort comparison with separate coverage",
+  "purpose": "Compare candidates only on the rows every candidate scored, and report separately how much of the declared universe each one covered. Missing scores are never counted as zero and never dropped per candidate, so a candidate cannot look better by skipping hard rows.",
+  "form": "function",
+  "dimension": "none",
+  "engine": {"name": "python", "minimum_version": "3.10"},
+  "tags": ["evaluation", "missing data", "paired comparison", "coverage", "benchmark hygiene", "leaderboards"],
+  "files": [
+    {"path": "README.md", "role": "other"},
+    {"path": "equal_cohort_comparison.py", "role": "executable_tool"},
+    {"path": "test_equal_cohort_comparison.py", "role": "executable_tool"}
+  ],
+  "contract": {
+    "entry_points": [
+      {"name": "compare_on_common_cohort", "arguments": "scores: {candidate: {row_id: number or null}}; universe: optional list of declared row ids; higher_is_better: bool; reference: optional candidate for paired differences", "returns": "{cohort, cohort_size, comparable, means, coverage: {candidate: {scored, universe, fraction}}, ranking, excluded_rows, paired_differences}"}
+    ],
+    "assumptions": [
+      "A missing score means the candidate produced no valid score for that row; it carries no value.",
+      "Rows in the cohort are comparable across candidates (same input, same scoring rule)."
+    ],
+    "guarantees": [
+      "Every reported mean uses exactly the cohort rows, the same set for every candidate.",
+      "Coverage is reported per candidate against the declared universe and never enters the means.",
+      "With an empty cohort the means are null and the ranking is empty; nothing is imputed."
+    ],
+    "known_answers": [
+      {"name": "cohort_rows", "call": "compare_on_common_cohort", "arguments": {"scores": {"a": {"r1": 0.9, "r2": 0.8, "r3": null}, "b": {"r1": 0.7, "r2": 0.6, "r3": 0.1, "r4": 0.2}}}, "select": ["cohort"], "expect": ["r1", "r2"]},
+      {"name": "cohort_means", "call": "compare_on_common_cohort", "arguments": {"scores": {"a": {"r1": 0.9, "r2": 0.8, "r3": null}, "b": {"r1": 0.7, "r2": 0.6, "r3": 0.1, "r4": 0.2}}}, "select": ["means"], "expect": {"a": 0.85, "b": 0.65}},
+      {"name": "coverage_separate", "call": "compare_on_common_cohort", "arguments": {"scores": {"a": {"r1": 0.9, "r2": 0.8, "r3": null}, "b": {"r1": 0.7, "r2": 0.6, "r3": 0.1, "r4": 0.2}}}, "select": ["coverage", "a"], "expect": {"scored": 2, "universe": 4, "fraction": 0.5}},
+      {"name": "paired_difference", "call": "compare_on_common_cohort", "arguments": {"scores": {"a": {"r1": 0.9, "r2": 0.8, "r3": null}, "b": {"r1": 0.7, "r2": 0.6, "r3": 0.1, "r4": 0.2}}, "reference": "b"}, "select": ["paired_differences", "a", "mean_difference"], "expect": 0.2},
+      {"name": "empty_cohort_not_comparable", "call": "compare_on_common_cohort", "arguments": {"scores": {"a": {"r1": null}, "b": {"r1": 1}}}, "select": ["means"], "expect": {"a": null, "b": null}},
+      {"name": "declared_universe", "call": "compare_on_common_cohort", "arguments": {"scores": {"a": {"r1": 1}, "b": {"r1": 0, "r2": 1}}, "universe": ["r1", "r2", "r3"]}, "select": ["excluded_rows"], "expect": {"r2": ["a"], "r3": ["a", "b"]}},
+      {"name": "refuses_row_outside_universe", "call": "compare_on_common_cohort", "arguments": {"scores": {"a": {"r9": 1}}, "universe": ["r1"]}, "raises": "ValueError"}
+    ],
+    "known_wrong": [
+      {"name": "missing_is_not_zero", "call": "compare_on_common_cohort", "arguments": {"scores": {"a": {"r1": 0.9, "r2": 0.8, "r3": null}, "b": {"r1": 0.7, "r2": 0.6, "r3": 0.1, "r4": 0.2}}}, "select": ["means", "a"], "reject": 0.425, "tolerance": 1e-6, "why": "Counting a's two missing rows as zero mixes its failure rate into its quality score."},
+      {"name": "not_own_rows_mean", "call": "compare_on_common_cohort", "arguments": {"scores": {"a": {"r1": 0.9, "r2": 0.8, "r3": null}, "b": {"r1": 0.7, "r2": 0.6, "r3": 0.1, "r4": 0.2}}}, "select": ["means", "b"], "reject": 0.4, "tolerance": 1e-6, "why": "Averaging b over its own four rows includes the hard rows a skipped, so the two means describe different tasks."}
+    ]
+  },
+  "limits": "Means only; no interval or significance test is computed (use a paired test on the cohort rows). A small cohort can describe an unrepresentative subset: always read the coverage next to the means. Row ids must match exactly across candidates; it does not reconcile differently named rows.",
+  "related": ["clustered_standard_errors", "attempt_population_accounting", "correlation_source_decomposition"],
+  "technique_references": ["Complete-case comparison on a common cohort", "Separation of coverage and conditional quality in evaluation reporting"]
+}

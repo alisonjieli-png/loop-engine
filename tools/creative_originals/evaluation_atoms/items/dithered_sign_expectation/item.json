@@ -1,0 +1,50 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "dithered_sign_expectation",
+  "title": "Dithered sign expectation and its inverse",
+  "purpose": "Compute the mean of sign(x + noise) for Gaussian or uniform dither, 2 Phi(x/sigma) - 1 or x/a, check it against a seeded Monte Carlo estimate with its standard error, and invert it to recover x from an observed mean of one-bit readings.",
+  "form": "library_module",
+  "dimension": "none",
+  "engine": {"name": "python", "minimum_version": "3.10"},
+  "tags": ["dithering", "one-bit quantization", "sign estimator", "monte carlo", "normal distribution", "debiasing"],
+  "files": [
+    {"path": "README.md", "role": "other"},
+    {"path": "dithered_sign_expectation.py", "role": "executable_tool"},
+    {"path": "test_dithered_sign_expectation.py", "role": "executable_tool"}
+  ],
+  "contract": {
+    "entry_points": [
+      {"name": "sign_expectation", "arguments": "x: number; sigma > 0 (Gaussian standard deviation or uniform half-width); dither: gaussian or uniform", "returns": "E[sign(x + noise)] in [-1, 1]"},
+      {"name": "monte_carlo_sign_expectation", "arguments": "x; sigma; samples (1 to 2000000); seed (non-negative integer); dither", "returns": "{estimate, exact, standard_error, z_score, samples}"},
+      {"name": "recover_offset", "arguments": "mean_sign: observed mean of dithered signs; sigma; dither", "returns": "the x whose dithered sign has that mean"}
+    ],
+    "assumptions": [
+      "The dither is independent of x and of the other draws, with the stated distribution and scale.",
+      "sign(0) = 0; with continuous dither this happens with probability 0."
+    ],
+    "guarantees": [
+      "Gaussian: E[sign(x + sigma Z)] = 2 Phi(x / sigma) - 1, computed as erf(x / (sigma sqrt 2)).",
+      "Uniform on [-a, a]: x / a inside [-a, a], sign(x) outside.",
+      "recover_offset inverts sign_expectation; the Monte Carlo standard error is sqrt((1 - m^2) / N)."
+    ],
+    "known_answers": [
+      {"name": "zero_offset", "call": "sign_expectation", "arguments": {"x": 0, "sigma": 1}, "expect": 0.0},
+      {"name": "one_sigma", "call": "sign_expectation", "arguments": {"x": 1, "sigma": 1}, "expect": 0.6826894921370859, "tolerance": 1e-14},
+      {"name": "ninety_five_percent", "call": "sign_expectation", "arguments": {"x": 1.959963984540054, "sigma": 1}, "expect": 0.95, "tolerance": 1e-14},
+      {"name": "half_sigma", "call": "sign_expectation", "arguments": {"x": 2, "sigma": 4}, "expect": 0.3829249225480262, "tolerance": 1e-14},
+      {"name": "uniform_is_linear", "call": "sign_expectation", "arguments": {"x": 0.25, "sigma": 1, "dither": "uniform"}, "expect": 0.25},
+      {"name": "uniform_saturates", "call": "sign_expectation", "arguments": {"x": 2, "sigma": 1, "dither": "uniform"}, "expect": 1.0},
+      {"name": "recover_one_sigma", "call": "recover_offset", "arguments": {"mean_sign": 0.6826894921370859, "sigma": 1}, "expect": 1.0, "tolerance": 1e-12},
+      {"name": "seeded_monte_carlo", "call": "monte_carlo_sign_expectation", "arguments": {"x": 0.3, "sigma": 1, "samples": 20000, "seed": 8}, "select": ["estimate"], "expect": 0.2365, "tolerance": 1e-12},
+      {"name": "seeded_monte_carlo_exact", "call": "monte_carlo_sign_expectation", "arguments": {"x": 0.3, "sigma": 1, "samples": 20000, "seed": 8}, "select": ["exact"], "expect": 0.23582284437790524, "tolerance": 1e-14},
+      {"name": "refuses_zero_sigma", "call": "sign_expectation", "arguments": {"x": 1, "sigma": 0}, "raises": "ValueError"}
+    ],
+    "known_wrong": [
+      {"name": "not_the_undithered_sign", "call": "sign_expectation", "arguments": {"x": 0.3, "sigma": 1}, "reject": 1.0, "tolerance": 1e-6, "why": "Without dither the mean sign is 1 for every positive x and the magnitude is lost."},
+      {"name": "not_the_small_signal_slope", "call": "sign_expectation", "arguments": {"x": 1, "sigma": 1}, "reject": 0.7978845608028654, "tolerance": 1e-6, "why": "Extrapolating the slope sqrt(2/pi) at zero overstates the mean once x is comparable to sigma."}
+    ]
+  },
+  "limits": "Gaussian and uniform dither only, with a known scale. Inversion of the Gaussian form needs a mean strictly inside (-1, 1) and loses precision near the ends, where the curve is flat. The Monte Carlo check uses a Box-Muller generator on random() and is a consistency check, not a proof.",
+  "related": ["anytime_confidence_sequence", "covariance_intersection_fusion"],
+  "technique_references": ["Dithered quantization (Roberts; Schuchman)", "Gaussian error function identity 2 Phi(z) - 1 = erf(z / sqrt 2)", "Box-Muller transform"]
+}

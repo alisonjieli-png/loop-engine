@@ -1,0 +1,49 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "ridge_penalty_from_linear_transform",
+  "title": "Ridge penalty induced by a frozen linear transform",
+  "purpose": "Compute the generalized ridge penalty (A A^T)^-1 that weight decay on trainable weights w induces on the effective coefficients beta = A w, and fit both routes to confirm they give the same coefficients. Use it to read reparameterized or overparameterized linear layers as explicit penalties.",
+  "form": "library_module",
+  "dimension": "none",
+  "engine": {"name": "python", "minimum_version": "3.10"},
+  "tags": ["ridge regression", "weight decay", "reparameterization", "implicit regularization", "linear algebra", "penalty matrix"],
+  "files": [
+    {"path": "README.md", "role": "other"},
+    {"path": "ridge_penalty_from_linear_transform.py", "role": "executable_tool"},
+    {"path": "test_ridge_penalty_from_linear_transform.py", "role": "executable_tool"}
+  ],
+  "contract": {
+    "entry_points": [
+      {"name": "induced_penalty", "arguments": "transform: k by m matrix A with full row rank (k <= m)", "returns": "{penalty_matrix: (A A^T)^-1, eigenvalues, rows, columns}"},
+      {"name": "fit_through_transform", "arguments": "features: n by k; targets: n; transform: k by m; ridge > 0", "returns": "{weights: w, coefficients: A w}"},
+      {"name": "fit_generalized_ridge", "arguments": "features: n by k; targets: n; penalty_matrix: k by k symmetric positive semidefinite; ridge > 0", "returns": "{coefficients: (X^T X + ridge P)^-1 X^T y}"},
+      {"name": "compile_penalty", "arguments": "features, targets, transform, ridge", "returns": "{penalty_matrix, eigenvalues, coefficients_via_weights, coefficients_via_penalty, max_abs_difference}"}
+    ],
+    "assumptions": [
+      "A is frozen and has full row rank, so A A^T is invertible.",
+      "Only w is trained, with the penalty ridge * ||w||^2 and squared error loss."
+    ],
+    "guarantees": [
+      "The coefficients from training w equal the generalized ridge coefficients with P = (A A^T)^-1, up to rounding.",
+      "A = [I, I] gives P = I / 2; c copies of the identity give I / c; scaling A by c divides P by c^2.",
+      "A transform without full row rank raises ValueError."
+    ],
+    "known_answers": [
+      {"name": "duplicated_columns_halve_the_penalty", "call": "induced_penalty", "arguments": {"transform": [[1, 0, 1, 0], [0, 1, 0, 1]]}, "select": ["penalty_matrix"], "expect": [[0.5, 0.0], [0.0, 0.5]]},
+      {"name": "diagonal_transform", "call": "induced_penalty", "arguments": {"transform": [[2, 0], [0, 1]]}, "select": ["penalty_matrix"], "expect": [[0.25, 0.0], [0.0, 1.0]]},
+      {"name": "single_row_transform", "call": "induced_penalty", "arguments": {"transform": [[1, 2, 3]]}, "select": ["penalty_matrix"], "expect": [[0.07142857142857142]]},
+      {"name": "overlapping_columns", "call": "induced_penalty", "arguments": {"transform": [[1, 1, 0], [0, 1, 1]]}, "select": ["penalty_matrix"], "expect": [[0.6666666666666666, -0.3333333333333333], [-0.3333333333333333, 0.6666666666666666]]},
+      {"name": "fit_through_duplicated_columns", "call": "fit_through_transform", "arguments": {"features": [[1, 0], [0, 1], [1, 1]], "targets": [1, 2, 4], "transform": [[1, 0, 1, 0], [0, 1, 0, 1]], "ridge": 1}, "select": ["coefficients"], "expect": [1.2380952380952381, 1.9047619047619047]},
+      {"name": "plain_ridge_at_half_strength", "call": "fit_generalized_ridge", "arguments": {"features": [[1, 0], [0, 1], [1, 1]], "targets": [1, 2, 4], "penalty_matrix": [[1, 0], [0, 1]], "ridge": 0.5}, "select": ["coefficients"], "expect": [1.2380952380952381, 1.9047619047619047]},
+      {"name": "both_routes_agree", "call": "compile_penalty", "arguments": {"features": [[1, 0], [0, 1], [1, 1]], "targets": [1, 2, 4], "transform": [[1, 1, 0], [0, 1, 1]], "ridge": 0.7}, "select": ["max_abs_difference"], "expect": 0.0},
+      {"name": "refuses_rank_deficient_transform", "call": "induced_penalty", "arguments": {"transform": [[1, 1], [2, 2]]}, "raises": "ValueError"},
+      {"name": "refuses_tall_transform", "call": "induced_penalty", "arguments": {"transform": [[1], [2]]}, "raises": "ValueError"}
+    ],
+    "known_wrong": [
+      {"name": "penalty_is_not_left_at_full_strength", "call": "fit_through_transform", "arguments": {"features": [[1, 0], [0, 1], [1, 1]], "targets": [1, 2, 4], "transform": [[1, 0, 1, 0], [0, 1, 0, 1]], "ridge": 1}, "select": ["coefficients"], "reject": [1.125, 1.625], "tolerance": 1e-6, "why": "Plain ridge at the original strength ignores that duplicated columns halve the effective penalty."}
+    ]
+  },
+  "limits": "Dense linear algebra for small k and m (tens). Requires ridge > 0 and a full-row-rank transform; a rank-deficient A has no finite induced penalty in the missing directions. Squared error only: for other losses the penalty identity still holds but the fitted coefficients come from a different optimizer. Says nothing about generalization or which penalty is better for a task.",
+  "related": ["ledoit_wolf_shrinkage", "delta_rule_associative_memory"],
+  "technique_references": ["Generalized ridge regression (Hoerl and Kennard)", "Minimum-norm solution of an underdetermined linear system", "Push-through identity for matrix inverses", "Householder QR least squares"]
+}

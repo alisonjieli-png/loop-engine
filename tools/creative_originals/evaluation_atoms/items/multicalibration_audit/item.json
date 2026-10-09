@@ -1,0 +1,44 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "multicalibration_audit",
+  "title": "Multicalibration audit by prediction bin and group",
+  "purpose": "Report the mean residual (outcome minus prediction) in every prediction bin for every declared group and for the whole population, flag cells beyond a tolerance, and repair violations by iterative patching. Finds miscalibration that cancels out in the overall reliability bins.",
+  "form": "library_module",
+  "dimension": "none",
+  "engine": {"name": "python", "minimum_version": "3.10"},
+  "tags": ["calibration", "multicalibration", "fairness audit", "subgroup analysis", "reliability", "post-processing"],
+  "files": [
+    {"path": "README.md", "role": "other"},
+    {"path": "multicalibration_audit.py", "role": "executable_tool"},
+    {"path": "test_multicalibration_audit.py", "role": "executable_tool"}
+  ],
+  "contract": {
+    "entry_points": [
+      {"name": "multicalibration_audit", "arguments": "predictions in [0, 1]; outcomes in [0, 1]; groups: {name: [row indices]} (may overlap); bins; tolerance > 0; minimum_count", "returns": "{cells, violations, max_abs_residual, max_weighted_violation, calibrated_overall, multicalibrated}"},
+      {"name": "multicalibrate", "arguments": "the audit arguments plus max_rounds", "returns": "{predictions (patched), rounds, patches, audit (after patching)}"}
+    ],
+    "assumptions": [
+      "Groups are declared in advance; the audit only checks the groups it is given.",
+      "Cells smaller than minimum_count are reported but never flagged; their residuals are noisy."
+    ],
+    "guarantees": [
+      "Each cell's residual is the exact mean of outcome minus prediction over its rows; the implicit group all is always audited.",
+      "Each patch of a flagged cell lowers the squared error by at least minimum_count x tolerance^2, so multicalibrate stops; on return without hitting max_rounds no cell is flagged.",
+      "A prediction of exactly 1 joins the last bin."
+    ],
+    "known_answers": [
+      {"name": "overall_calibrated", "call": "multicalibration_audit", "arguments": {"predictions": [0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5], "outcomes": [1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0], "groups": {"g1": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9], "g2": [10, 11, 12, 13, 14, 15, 16, 17, 18, 19]}}, "select": ["calibrated_overall"], "expect": true},
+      {"name": "groups_miscalibrated", "call": "multicalibration_audit", "arguments": {"predictions": [0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5], "outcomes": [1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0], "groups": {"g1": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9], "g2": [10, 11, 12, 13, 14, 15, 16, 17, 18, 19]}}, "select": ["max_abs_residual"], "expect": 0.2, "tolerance": 1e-12},
+      {"name": "group_one_cell", "call": "multicalibration_audit", "arguments": {"predictions": [0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5], "outcomes": [1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0], "groups": {"g1": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9], "g2": [10, 11, 12, 13, 14, 15, 16, 17, 18, 19]}}, "select": ["violations", 0], "expect": {"group": "g1", "bin": 5, "bin_range": [0.5, 0.6], "count": 10, "mean_prediction": 0.5, "mean_outcome": 0.7, "residual": 0.2, "mass": 0.5, "weighted_violation": 0.1, "violation": true}, "tolerance": 1e-12},
+      {"name": "patched_predictions", "call": "multicalibrate", "arguments": {"predictions": [0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5], "outcomes": [1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0], "groups": {"g1": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9], "g2": [10, 11, 12, 13, 14, 15, 16, 17, 18, 19]}}, "select": ["predictions"], "expect": [0.7, 0.7, 0.7, 0.7, 0.7, 0.7, 0.7, 0.7, 0.7, 0.7, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3], "tolerance": 1e-12},
+      {"name": "patching_ends_multicalibrated", "call": "multicalibrate", "arguments": {"predictions": [0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5], "outcomes": [1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0], "groups": {"g1": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9], "g2": [10, 11, 12, 13, 14, 15, 16, 17, 18, 19]}}, "select": ["audit", "multicalibrated"], "expect": true},
+      {"name": "refuses_reserved_group_name", "call": "multicalibration_audit", "arguments": {"predictions": [0.5, 0.5], "outcomes": [1, 0], "groups": {"all": [0]}}, "raises": "ValueError"}
+    ],
+    "known_wrong": [
+      {"name": "overall_bins_hide_group_errors", "call": "multicalibration_audit", "arguments": {"predictions": [0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5], "outcomes": [1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0], "groups": {"g1": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9], "g2": [10, 11, 12, 13, 14, 15, 16, 17, 18, 19]}}, "select": ["multicalibrated"], "reject": true, "why": "An audit of the overall bins sees residual 0 and passes, while each group is off by 0.2 in opposite directions."}
+    ]
+  },
+  "limits": "Equal-width bins only; residuals in sparse cells are noisy and no confidence interval is computed. The audit covers only the declared groups, not every computable subgroup. Patching changes predictions on the audit data itself: evaluate the patched predictor on fresh data before trusting it.",
+  "related": ["brier_decomposition_calibration_error", "correlation_source_decomposition", "isotonic_calibration_pav"],
+  "technique_references": ["Multicalibration: calibration for the (computationally-identifiable) masses (Hebert-Johnson, Kim, Reingold and Rothblum)", "Reliability diagrams with equal-width bins"]
+}

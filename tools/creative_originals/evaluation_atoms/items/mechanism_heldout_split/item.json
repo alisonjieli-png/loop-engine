@@ -1,0 +1,44 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "mechanism_heldout_split",
+  "title": "Mechanism-held-out splits for synthetic task suites",
+  "purpose": "Split a synthetic task suite by generating mechanism so that no template, rule family or simulator appears on both sides, build balanced mechanism-level folds, and detect leakage in any given split. Measures transfer to unseen mechanisms instead of recall of seen ones.",
+  "form": "library_module",
+  "dimension": "none",
+  "engine": {"name": "python", "minimum_version": "3.10"},
+  "tags": ["data splits", "held-out evaluation", "group k-fold", "leakage", "synthetic benchmarks", "generalization"],
+  "files": [
+    {"path": "README.md", "role": "other"},
+    {"path": "mechanism_heldout_split.py", "role": "executable_tool"},
+    {"path": "test_mechanism_heldout_split.py", "role": "executable_tool"}
+  ],
+  "contract": {
+    "entry_points": [
+      {"name": "split_by_mechanism", "arguments": "tasks: [{id, mechanism}] with unique ids and at least two mechanisms; holdout_fraction in (0, 1); seed", "returns": "{train_ids, test_ids, train_mechanisms, test_mechanisms, leaked_mechanisms, counts}"},
+      {"name": "group_k_folds", "arguments": "tasks; folds (2 to the number of mechanisms)", "returns": "{folds, fold_mechanisms, fold_sizes}"},
+      {"name": "leakage", "arguments": "tasks; train_ids; test_ids", "returns": "{leaked_mechanisms, leaked_test_tasks, overlapping_ids}"}
+    ],
+    "assumptions": [
+      "Each task is labelled with the mechanism that generated it, and tasks of different mechanisms do not share hidden structure.",
+      "Seeded shuffles use random.Random.random() only, so a seed gives the same split on every Python version."
+    ],
+    "guarantees": [
+      "split_by_mechanism holds out k = max(1, min(M - 1, floor(fraction M + 0.5))) whole mechanisms chosen by a seeded Fisher-Yates shuffle of the sorted names; no mechanism is on both sides.",
+      "group_k_folds partitions every task and every mechanism into exactly one fold, assigning mechanisms largest first to the least loaded fold.",
+      "leakage lists every mechanism present on both sides of a split."
+    ],
+    "known_answers": [
+      {"name": "folds_of_six_tasks", "call": "group_k_folds", "arguments": {"tasks": [{"id": "t1", "mechanism": "m1"}, {"id": "t2", "mechanism": "m1"}, {"id": "t3", "mechanism": "m2"}, {"id": "t4", "mechanism": "m3"}, {"id": "t5", "mechanism": "m3"}, {"id": "t6", "mechanism": "m3"}], "folds": 2}, "select": ["folds"], "expect": [["t4", "t5", "t6"], ["t1", "t2", "t3"]]},
+      {"name": "random_split_leaks", "call": "leakage", "arguments": {"tasks": [{"id": "t1", "mechanism": "m1"}, {"id": "t2", "mechanism": "m1"}, {"id": "t3", "mechanism": "m2"}, {"id": "t4", "mechanism": "m3"}, {"id": "t5", "mechanism": "m3"}, {"id": "t6", "mechanism": "m3"}], "train_ids": ["t1", "t3", "t4"], "test_ids": ["t2", "t5", "t6"]}, "select": ["leaked_mechanisms"], "expect": ["m1", "m3"]},
+      {"name": "seeded_holdout", "call": "split_by_mechanism", "arguments": {"tasks": [{"id": "t1", "mechanism": "m1"}, {"id": "t2", "mechanism": "m1"}, {"id": "t3", "mechanism": "m2"}, {"id": "t4", "mechanism": "m3"}, {"id": "t5", "mechanism": "m3"}, {"id": "t6", "mechanism": "m3"}], "holdout_fraction": 0.34, "seed": 0}, "select": ["test_ids"], "expect": ["t1", "t2"]},
+      {"name": "seeded_holdout_five_generators", "call": "split_by_mechanism", "arguments": {"tasks": [{"id": "q0", "mechanism": "gen0"}, {"id": "q1", "mechanism": "gen1"}, {"id": "q2", "mechanism": "gen2"}, {"id": "q3", "mechanism": "gen3"}, {"id": "q4", "mechanism": "gen4"}, {"id": "q5", "mechanism": "gen0"}, {"id": "q6", "mechanism": "gen1"}, {"id": "q7", "mechanism": "gen2"}, {"id": "q8", "mechanism": "gen3"}, {"id": "q9", "mechanism": "gen4"}, {"id": "q10", "mechanism": "gen0"}, {"id": "q11", "mechanism": "gen1"}], "holdout_fraction": 0.4, "seed": 7}, "select": ["test_mechanisms"], "expect": ["gen2", "gen3"]},
+      {"name": "refuses_single_mechanism", "call": "split_by_mechanism", "arguments": {"tasks": [{"id": "a", "mechanism": "m"}, {"id": "b", "mechanism": "m"}], "holdout_fraction": 0.5, "seed": 1}, "raises": "ValueError"}
+    ],
+    "known_wrong": [
+      {"name": "task_level_split_is_not_clean", "call": "leakage", "arguments": {"tasks": [{"id": "t1", "mechanism": "m1"}, {"id": "t2", "mechanism": "m1"}, {"id": "t3", "mechanism": "m2"}, {"id": "t4", "mechanism": "m3"}, {"id": "t5", "mechanism": "m3"}, {"id": "t6", "mechanism": "m3"}], "train_ids": ["t1", "t3", "t4"], "test_ids": ["t2", "t5", "t6"]}, "select": ["leaked_mechanisms"], "reject": [], "why": "Splitting tasks at random puts generators m1 and m3 on both sides, so the test side measures recall of seen mechanisms."}
+    ]
+  },
+  "limits": "Mechanism labels are trusted as given; mechanisms that share hidden structure (two templates with the same solution procedure) still leak. Greedy fold assignment balances task counts approximately, not optimally. Holding out whole mechanisms leaves fewer, larger test units, so estimates have more variance than task-level splits.",
+  "related": ["purged_walk_forward_splits", "silent_concept_shift_twins", "ngram_overlap_contamination"],
+  "technique_references": ["Group k-fold cross-validation", "Leave-one-group-out evaluation", "Fisher-Yates shuffle"]
+}

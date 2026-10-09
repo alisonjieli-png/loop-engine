@@ -1,0 +1,49 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "covariance_intersection_fusion",
+  "title": "Covariance intersection fusion",
+  "purpose": "Fuse two mean and covariance estimates whose errors may be correlated in an unknown way, choosing the weight that minimizes the trace or determinant of the fused covariance. Use it when evidence sources may share inputs, so the independence rule would overstate certainty.",
+  "form": "library_module",
+  "dimension": "none",
+  "engine": {"name": "python", "minimum_version": "3.10"},
+  "tags": ["data fusion", "covariance intersection", "uncertainty", "estimation", "correlated errors", "evidence combination"],
+  "files": [
+    {"path": "README.md", "role": "other"},
+    {"path": "covariance_intersection_fusion.py", "role": "executable_tool"},
+    {"path": "test_covariance_intersection_fusion.py", "role": "executable_tool"}
+  ],
+  "contract": {
+    "entry_points": [
+      {"name": "covariance_intersection", "arguments": "mean_a, covariance_a, mean_b, covariance_b: two estimates of equal dimension with positive definite covariances; criterion: trace or determinant; omega: optional fixed weight in [0, 1]", "returns": "{mean, covariance, omega, objective}"},
+      {"name": "independent_fusion", "arguments": "mean_a, covariance_a, mean_b, covariance_b", "returns": "{mean, covariance} under the assumption of independent errors"},
+      {"name": "conservative_margin", "arguments": "claimed_covariance, actual_covariance", "returns": "{smallest_eigenvalue of claimed minus actual, conservative}"}
+    ],
+    "assumptions": [
+      "Each input covariance is a consistent (not optimistic) description of its own estimate's error.",
+      "Nothing is known about the cross-covariance of the two errors."
+    ],
+    "guarantees": [
+      "For every omega in [0, 1] and every valid cross-covariance, the fused covariance minus the true fused error covariance is positive semidefinite.",
+      "Fusing an estimate with an exact duplicate returns the same mean and covariance.",
+      "The returned omega minimizes the chosen criterion over [0, 1] to about 1e-16; a flat objective returns omega = 0.5."
+    ],
+    "known_answers": [
+      {"name": "duplicate_is_unchanged", "call": "covariance_intersection", "arguments": {"mean_a": [1, 2], "covariance_a": [[2, 0.5], [0.5, 1]], "mean_b": [1, 2], "covariance_b": [[2, 0.5], [0.5, 1]]}, "select": ["covariance"], "expect": [[2.0, 0.5], [0.5, 1.0]]},
+      {"name": "symmetric_pair_covariance", "call": "covariance_intersection", "arguments": {"mean_a": [0, 0], "covariance_a": [[1, 0], [0, 4]], "mean_b": [1, 1], "covariance_b": [[4, 0], [0, 1]]}, "select": ["covariance"], "expect": [[1.6, 0.0], [0.0, 1.6]]},
+      {"name": "symmetric_pair_mean", "call": "covariance_intersection", "arguments": {"mean_a": [0, 0], "covariance_a": [[1, 0], [0, 4]], "mean_b": [1, 1], "covariance_b": [[4, 0], [0, 1]]}, "select": ["mean"], "expect": [0.2, 0.8]},
+      {"name": "symmetric_pair_omega", "call": "covariance_intersection", "arguments": {"mean_a": [0, 0], "covariance_a": [[1, 0], [0, 4]], "mean_b": [1, 1], "covariance_b": [[4, 0], [0, 1]]}, "select": ["omega"], "expect": 0.5},
+      {"name": "correlated_pair_exact_rationals", "call": "covariance_intersection", "arguments": {"mean_a": [0, 0], "covariance_a": [[2, 1], [1, 2]], "mean_b": [1, 0], "covariance_b": [[1, 0], [0, 3]]}, "select": ["mean"], "expect": [0.6428571428571429, 0.21428571428571427]},
+      {"name": "fixed_omega", "call": "covariance_intersection", "arguments": {"mean_a": [0, 0], "covariance_a": [[1, 0], [0, 4]], "mean_b": [1, 1], "covariance_b": [[4, 0], [0, 1]], "omega": 0.25}, "select": ["covariance"], "expect": [[2.2857142857142856, 0.0], [0.0, 1.2307692307692308]]},
+      {"name": "one_dimension_keeps_better_estimate", "call": "covariance_intersection", "arguments": {"mean_a": [0], "covariance_a": [[1]], "mean_b": [3], "covariance_b": [[4]]}, "select": ["mean"], "expect": [0.0]},
+      {"name": "independent_rule_halves_a_duplicate", "call": "independent_fusion", "arguments": {"mean_a": [1, 2], "covariance_a": [[2, 0.5], [0.5, 1]], "mean_b": [1, 2], "covariance_b": [[2, 0.5], [0.5, 1]]}, "select": ["covariance"], "expect": [[1.0, 0.25], [0.25, 0.5]]},
+      {"name": "margin_detects_optimism", "call": "conservative_margin", "arguments": {"claimed_covariance": [[1, 0], [0, 1]], "actual_covariance": [[2, 0], [0, 0.5]]}, "expect": {"smallest_eigenvalue": -1.0, "conservative": false}},
+      {"name": "refuses_indefinite_covariance", "call": "covariance_intersection", "arguments": {"mean_a": [0, 0], "covariance_a": [[1, 2], [2, 1]], "mean_b": [0, 0], "covariance_b": [[1, 0], [0, 1]]}, "raises": "ValueError"}
+    ],
+    "known_wrong": [
+      {"name": "duplicate_does_not_shrink", "call": "covariance_intersection", "arguments": {"mean_a": [1, 2], "covariance_a": [[2, 0.5], [0.5, 1]], "mean_b": [1, 2], "covariance_b": [[2, 0.5], [0.5, 1]]}, "select": ["covariance"], "reject": [[1.0, 0.25], [0.25, 0.5]], "tolerance": 1e-6, "why": "Halving the covariance of a duplicate, as the independence rule does, counts the same evidence twice."}
+    ]
+  },
+  "limits": "Two estimates per call; fuse more by repeated calls, which is conservative but not the joint optimum. Dense matrices for small dimensions (tens). Covariance intersection is conservative by construction and can be loose when the errors are in fact independent; it does not detect inconsistent inputs or outliers, and a covariance that is itself optimistic stays optimistic after fusion.",
+  "related": ["provenance_evidence_counting", "ledoit_wolf_shrinkage"],
+  "technique_references": ["Covariance intersection (Julier and Uhlmann)", "Convexity of trace and log-determinant of an inverse affine matrix function", "Bisection on a monotone derivative"]
+}

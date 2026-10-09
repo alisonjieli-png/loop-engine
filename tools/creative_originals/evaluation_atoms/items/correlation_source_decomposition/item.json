@@ -1,0 +1,46 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "correlation_source_decomposition",
+  "title": "Within-group and between-group covariance decomposition",
+  "purpose": "Split the covariance between a score Y and a prediction P into the expected within-group covariance and the covariance of group means, exactly, using rational arithmetic. Use it to see whether a correlation comes from differences between tasks or sources rather than from agreement inside each group.",
+  "form": "library_module",
+  "dimension": "none",
+  "engine": {"name": "python", "minimum_version": "3.10"},
+  "tags": ["covariance", "law of total covariance", "simpson paradox", "grouped data", "exact arithmetic", "evaluation"],
+  "files": [
+    {"path": "README.md", "role": "other"},
+    {"path": "correlation_source_decomposition.py", "role": "executable_tool"},
+    {"path": "test_correlation_source_decomposition.py", "role": "executable_tool"}
+  ],
+  "contract": {
+    "entry_points": [
+      {"name": "decompose_covariance", "arguments": "y, p: equal-length lists of numbers; groups: one text or integer label per row", "returns": "{total_covariance, within_group, between_group, identity_residual, total_correlation, within_share, between_share, sign_conflict, groups}"},
+      {"name": "decompose_variance", "arguments": "y; groups", "returns": "{total_variance, within_group, between_group, identity_residual, groups}"}
+    ],
+    "assumptions": [
+      "Moments are population moments (divide by n) with empirical group weights n_g / n; this is what makes the identity exact.",
+      "Each row belongs to exactly one group."
+    ],
+    "guarantees": [
+      "total_covariance = within_group + between_group exactly in rational arithmetic on the exact binary values of the inputs; identity_residual is 0.0.",
+      "One group gives between_group 0; one row per group gives within_group 0.",
+      "Results are rounded to float only at the end."
+    ],
+    "known_answers": [
+      {"name": "zero_total_hides_two_signs", "call": "decompose_covariance", "arguments": {"y": [1, 3, 5, 7], "p": [2, 4, 1, 3], "groups": ["a", "a", "b", "b"]}, "select": ["within_group"], "expect": 1.0},
+      {"name": "between_part_is_negative", "call": "decompose_covariance", "arguments": {"y": [1, 3, 5, 7], "p": [2, 4, 1, 3], "groups": ["a", "a", "b", "b"]}, "select": ["between_group"], "expect": -1.0},
+      {"name": "total_is_zero", "call": "decompose_covariance", "arguments": {"y": [1, 3, 5, 7], "p": [2, 4, 1, 3], "groups": ["a", "a", "b", "b"]}, "select": ["total_covariance"], "expect": 0.0},
+      {"name": "sign_conflict_flagged", "call": "decompose_covariance", "arguments": {"y": [1, 3, 5, 7], "p": [2, 4, 1, 3], "groups": ["a", "a", "b", "b"]}, "select": ["sign_conflict"], "expect": true},
+      {"name": "residual_exactly_zero_for_decimals", "call": "decompose_covariance", "arguments": {"y": [0.1, 0.2, 0.3, 0.7, 0.11], "p": [0.3, 0.1, 0.2, 0.9, 0.4], "groups": [1, 2, 1, 2, 2]}, "select": ["identity_residual"], "expect": 0.0, "tolerance": 0.0},
+      {"name": "decimal_example_within", "call": "decompose_covariance", "arguments": {"y": [0.1, 0.2, 0.3, 0.7, 0.11], "p": [0.3, 0.1, 0.2, 0.9, 0.4], "groups": [1, 2, 1, 2, 2]}, "select": ["within_group"], "expect": 0.04253333333333333, "tolerance": 1e-12},
+      {"name": "total_variance_split", "call": "decompose_variance", "arguments": {"y": [1, 2, 3, 4], "groups": ["a", "a", "b", "b"]}, "expect": {"total_variance": 1.25, "within_group": 0.25, "between_group": 1.0, "identity_residual": 0.0, "groups": [{"group": "a", "count": 2, "weight": 0.5, "mean_y": 1.5, "mean_p": 1.5, "covariance": 0.25}, {"group": "b", "count": 2, "weight": 0.5, "mean_y": 3.5, "mean_p": 3.5, "covariance": 0.25}]}},
+      {"name": "refuses_length_mismatch", "call": "decompose_covariance", "arguments": {"y": [1, 2], "p": [1], "groups": ["a", "a"]}, "raises": "ValueError"}
+    ],
+    "known_wrong": [
+      {"name": "within_part_is_not_the_total", "call": "decompose_covariance", "arguments": {"y": [1, 3, 5, 7], "p": [2, 4, 1, 3], "groups": ["a", "a", "b", "b"]}, "select": ["total_covariance"], "reject": 1.0, "why": "Averaging the per-group covariances drops the between-group term; here it reports 1 while the overall covariance is 0."}
+    ]
+  },
+  "limits": "Population moments only; sample (n - 1) moments do not satisfy the identity. Rational arithmetic is exact but slow for very long inputs (tens of thousands of rows are fine). The decomposition describes the data at hand; it does not say which grouping is causally relevant, and correlations themselves do not decompose additively.",
+  "related": ["simpson_reversal_audit", "equal_cohort_comparison", "multicalibration_audit"],
+  "technique_references": ["Law of total covariance", "Law of total variance", "Simpson's paradox (Simpson)", "Exact rational arithmetic with fractions.Fraction"]
+}

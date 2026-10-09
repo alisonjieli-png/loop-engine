@@ -1,0 +1,44 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "ledoit_wolf_shrinkage",
+  "title": "Ledoit-Wolf covariance shrinkage",
+  "purpose": "Shrink a sample covariance toward a scaled identity with the Ledoit-Wolf intensity, giving a well-conditioned, positive definite estimate even when there are fewer observations than variables. Use it before inverting a covariance of metrics, features or embeddings estimated from few runs.",
+  "form": "library_module",
+  "dimension": "none",
+  "engine": {"name": "python", "minimum_version": "3.10"},
+  "tags": ["covariance estimation", "shrinkage", "ledoit-wolf", "regularization", "high-dimensional statistics", "conditioning"],
+  "files": [
+    {"path": "README.md", "role": "other"},
+    {"path": "ledoit_wolf_shrinkage.py", "role": "executable_tool"},
+    {"path": "test_ledoit_wolf_shrinkage.py", "role": "executable_tool"}
+  ],
+  "contract": {
+    "entry_points": [
+      {"name": "ledoit_wolf", "arguments": "rows: at least 2 observations of p variables; assume_centered: bool", "returns": "{covariance, sample_covariance, shrinkage, target_scale, d_squared, b_bar_squared, smallest_eigenvalue, sample_smallest_eigenvalue}"},
+      {"name": "shrink", "arguments": "covariance: symmetric p by p; shrinkage in [0, 1]", "returns": "shrinkage (trace / p) I + (1 - shrinkage) covariance"}
+    ],
+    "assumptions": [
+      "Observations are independent and identically distributed with finite fourth moments (the setting of the consistency result).",
+      "The sample covariance divides by n, as in the Ledoit-Wolf derivation."
+    ],
+    "guarantees": [
+      "shrinkage = min(bbar^2, d^2) / d^2 lies in [0, 1]; it is 0 when the sample covariance is already a multiple of the identity.",
+      "With shrinkage > 0 and a positive target scale the estimate is positive definite, even when p > n.",
+      "Scaling the data by c scales the estimate by c^2 and leaves the shrinkage unchanged; rotating the data rotates the estimate."
+    ],
+    "known_answers": [
+      {"name": "five_by_two_shrinkage", "call": "ledoit_wolf", "arguments": {"rows": [[1, 2], [2, 1], [3, 4], [4, 3], [5, 7]]}, "select": ["shrinkage"], "expect": 0.5783759124087591, "tolerance": 1e-12},
+      {"name": "five_by_two_covariance", "call": "ledoit_wolf", "arguments": {"rows": [[1, 2], [2, 1], [3, 4], [4, 3], [5, 7]]}, "select": ["covariance"], "expect": [[2.6477810218978104, 1.0118978102189782], [1.0118978102189782, 3.59221897810219]], "tolerance": 1e-12},
+      {"name": "five_by_two_terms", "call": "ledoit_wolf", "arguments": {"rows": [[1, 2], [2, 1], [3, 4], [4, 3], [5, 7]]}, "select": ["d_squared"], "expect": 7.0144, "tolerance": 1e-12},
+      {"name": "three_points_full_shrinkage", "call": "ledoit_wolf", "arguments": {"rows": [[1, 0], [0, 1], [-1, -1]]}, "select": ["covariance"], "expect": [[0.6666666666666666, 0.0], [0.0, 0.6666666666666666]], "tolerance": 1e-12},
+      {"name": "fixed_intensity", "call": "shrink", "arguments": {"covariance": [[2, 1], [1, 4]], "shrinkage": 0.5}, "expect": [[2.5, 0.5], [0.5, 3.5]]},
+      {"name": "refuses_single_row", "call": "ledoit_wolf", "arguments": {"rows": [[1, 2]]}, "raises": "ValueError"}
+    ],
+    "known_wrong": [
+      {"name": "not_left_singular", "call": "ledoit_wolf", "arguments": {"rows": [[1, 2, 3, 4, 5], [2, 1, 0, 1, 2], [0, 0, 1, 3, 1]]}, "select": ["smallest_eigenvalue"], "reject": 0.0, "tolerance": 1e-6, "why": "With 3 observations of 5 variables the sample covariance is singular; using it unshrunk makes its inverse undefined."}
+    ]
+  },
+  "limits": "Single target (scaled identity); other targets such as constant correlation or a diagonal are not included. The intensity is an estimate of the loss-minimizing value with an asymptotic guarantee, not the oracle intensity for a given small sample. Dense p by p matrices: meant for p up to a few hundred.",
+  "related": ["covariance_intersection_fusion", "ridge_penalty_from_linear_transform", "effective_rank_spectral_entropy"],
+  "technique_references": ["A well-conditioned estimator for large-dimensional covariance matrices (Ledoit and Wolf)", "Linear shrinkage toward a scaled identity target"]
+}

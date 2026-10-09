@@ -1,0 +1,47 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "hodge_edge_flow_decomposition",
+  "title": "Hodge decomposition of edge flows",
+  "purpose": "Split a flow on the edges of a small graph (pairwise preferences, score differences, transfers) into a gradient explained by a global potential, curl circulating around filled triangles, and harmonic circulation around holes. Shows how much of a set of pairwise comparisons is consistent with a single ranking.",
+  "form": "library_module",
+  "dimension": "none",
+  "engine": {"name": "python", "minimum_version": "3.10"},
+  "tags": ["hodge decomposition", "hodgerank", "pairwise comparisons", "graph flows", "ranking consistency", "cycles"],
+  "files": [
+    {"path": "README.md", "role": "other"},
+    {"path": "hodge_edge_flow_decomposition.py", "role": "executable_tool"},
+    {"path": "test_hodge_edge_flow_decomposition.py", "role": "executable_tool"}
+  ],
+  "contract": {
+    "entry_points": [
+      {"name": "hodge_decomposition", "arguments": "nodes; edges: [[tail, head]] with one edge per node pair; flow: one number per edge; triangles: [[a, b, c]] 2-cells, or fill_triangles: true for every 3-clique", "returns": "{gradient, curl, harmonic, potential, triangle_circulation, norms, betti_1, max_cross_product}"},
+      {"name": "flow_from_potential", "arguments": "nodes; edges; values: one number per node", "returns": "the flow values[tail] - values[head] on each edge"}
+    ],
+    "assumptions": [
+      "The flow on edge (u, v) means flow from u to v; reversing an edge's orientation negates its value.",
+      "Which 3-cycles count as filled is a modelling choice: declared triangles or every 3-clique."
+    ],
+    "guarantees": [
+      "gradient + curl + harmonic equals the flow; the three parts are pairwise orthogonal because B1 B2 = 0.",
+      "The curl and harmonic parts are divergence-free; the gradient and harmonic parts have zero circulation around every declared triangle.",
+      "A flow x_u - x_v is a gradient of the potential -x: its curl and harmonic parts are zero on any graph; potentials sum to zero on each connected component."
+    ],
+    "known_answers": [
+      {"name": "filled_triangle_cycle_is_curl", "call": "hodge_decomposition", "arguments": {"nodes": [0, 1, 2], "edges": [[0, 1], [1, 2], [0, 2]], "flow": [1, 1, -1], "triangles": [[0, 1, 2]]}, "select": ["curl"], "expect": [1.0, 1.0, -1.0]},
+      {"name": "unfilled_cycle_is_harmonic", "call": "hodge_decomposition", "arguments": {"nodes": [0, 1, 2], "edges": [[0, 1], [1, 2], [0, 2]], "flow": [1, 1, -1]}, "select": ["harmonic"], "expect": [1.0, 1.0, -1.0]},
+      {"name": "hole_has_betti_one", "call": "hodge_decomposition", "arguments": {"nodes": [0, 1, 2], "edges": [[0, 1], [1, 2], [0, 2]], "flow": [1, 1, -1]}, "select": ["betti_1"], "expect": 1},
+      {"name": "pairwise_difference_flow", "call": "flow_from_potential", "arguments": {"nodes": [0, 1, 2], "edges": [[0, 1], [1, 2], [0, 2]], "values": [3, 1, 0]}, "expect": [2.0, 1.0, 3.0]},
+      {"name": "difference_flow_is_all_gradient", "call": "hodge_decomposition", "arguments": {"nodes": [0, 1, 2], "edges": [[0, 1], [1, 2], [0, 2]], "flow": [2, 1, 3]}, "select": ["gradient"], "expect": [2.0, 1.0, 3.0], "tolerance": 1e-12},
+      {"name": "difference_flow_potential", "call": "hodge_decomposition", "arguments": {"nodes": [0, 1, 2], "edges": [[0, 1], [1, 2], [0, 2]], "flow": [2, 1, 3]}, "select": ["potential"], "expect": {"0": -1.6666666666666667, "1": 0.3333333333333333, "2": 1.3333333333333333}, "tolerance": 1e-12},
+      {"name": "mixed_flow_curl", "call": "hodge_decomposition", "arguments": {"nodes": ["a", "b", "c", "d"], "edges": [["a", "b"], ["b", "c"], ["c", "a"], ["c", "d"]], "flow": [1, 2, 3, 4], "fill_triangles": true}, "select": ["curl"], "expect": [2.0, 2.0, 2.0, 0.0], "tolerance": 1e-12},
+      {"name": "square_cycle_is_harmonic", "call": "hodge_decomposition", "arguments": {"nodes": [0, 1, 2, 3], "edges": [[0, 1], [1, 2], [2, 3], [0, 3]], "flow": [1, 1, 1, -1]}, "select": ["harmonic"], "expect": [1.0, 1.0, 1.0, -1.0], "tolerance": 1e-12},
+      {"name": "refuses_missing_triangle_edge", "call": "hodge_decomposition", "arguments": {"nodes": [0, 1, 2], "edges": [[0, 1], [1, 2]], "flow": [1, 2], "triangles": [[0, 1, 2]]}, "raises": "ValueError"}
+    ],
+    "known_wrong": [
+      {"name": "difference_flow_has_no_cycle_part", "call": "hodge_decomposition", "arguments": {"nodes": [0, 1, 2], "edges": [[0, 1], [1, 2], [0, 2]], "flow": [2, 1, 3]}, "select": ["harmonic"], "reject": [2.0, 1.0, 3.0], "tolerance": 1e-6, "why": "Pairwise differences x_u - x_v on a cycle look cyclic but are a gradient by construction; reading them as circulation is the trap."}
+    ]
+  },
+  "limits": "Dense least squares through pseudo-inverses: meant for graphs of up to about a hundred edges. Only 2-cells that are triangles are supported. The decomposition is unweighted; weighted HodgeRank (edge weights from comparison counts) is not included. It describes the flow; it does not test whether the curl part is statistically significant.",
+  "related": ["bradley_terry_ratings", "correlation_source_decomposition"],
+  "technique_references": ["Statistical ranking and combinatorial Hodge theory (Jiang, Lim, Yao and Ye)", "Discrete Hodge decomposition on simplicial complexes", "Moore-Penrose pseudo-inverse least squares"]
+}
