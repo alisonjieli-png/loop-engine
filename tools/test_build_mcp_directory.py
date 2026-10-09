@@ -369,6 +369,24 @@ class IncrementalSync(unittest.TestCase):
             listings, refused = listings_of(later.entries.values())
             self.assertEqual([item.key for item in refused], ["com.example/notes"])
 
+    def test_a_page_with_no_answer_is_asked_again_and_an_http_error_still_stops(self):
+        with tempfile.TemporaryDirectory(prefix="directory-retry-") as folder:
+            state = directory_state.DirectoryState(Path(folder))
+            first = {"servers": [FIXTURE[0]], "metadata": {"nextCursor": "io.github.alice/postgres-tool:1.0.0"}}
+            second = {"servers": [FIXTURE[1]], "metadata": {}}
+            pages = Pages([(200, first), (None, None), (200, second)])
+            result = directory_state.sync_registry(state, pages, now="2026-09-24T10:00:00Z")
+            self.assertTrue(result["complete"])
+            self.assertEqual(pages.queries[1], pages.queries[2])
+        with tempfile.TemporaryDirectory(prefix="directory-retry-") as folder:
+            # Known wrong: a registry that never answers stops the run after the bounded attempts, resumable.
+            state = directory_state.DirectoryState(Path(folder))
+            pages = Pages([(None, None)] * directory_state.TRANSIENT_ATTEMPTS)
+            result = directory_state.sync_registry(state, pages, now="2026-09-24T10:00:00Z")
+            self.assertFalse(result["complete"])
+            self.assertEqual(result["stopped"], "status None")
+            self.assertEqual(len(pages.queries), directory_state.TRANSIENT_ATTEMPTS)
+
     def test_a_seed_page_that_does_not_hold_its_recorded_bytes_is_refused(self):
         with tempfile.TemporaryDirectory(prefix="directory-seed-") as folder:
             page_file = Path(folder) / "page.json"

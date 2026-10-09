@@ -32,6 +32,11 @@ SYNC_RECORD_TYPE = "mcp_directory_registry_sync/v1"
 SNAPSHOT_RECORD_TYPE = "mcp_directory_source_snapshot/v1"
 OVERLAP = timedelta(hours=1)
 CHECKPOINT_PAGES = 10
+#: A page whose request got no HTTP answer at all (a timeout or a dropped connection) is asked again this many
+#: times in one run, after a pause charged to the request budget. The scheduled refresh stopped two days running
+#: (October 8 and 9, 2026) on one such failure deep in a full traversal; an HTTP error still stops the run.
+TRANSIENT_ATTEMPTS = 3
+TRANSIENT_PAUSE_SECONDS = 5.0
 FULL, INCREMENTAL = "full", "incremental"
 GITHUB_API_HOST = "api.github.com"
 
@@ -151,6 +156,19 @@ def seed_from_research(state: DirectoryState, acquisitions, request_logs) -> dic
     return state.sync["seeded_from"]
 
 
+def _get_with_transient_retries(transport, query: dict):
+    """One registry page, asked again after a pause when the request got no HTTP answer at all."""
+    response = transport.get(REGISTRY_HOST, REGISTRY_LIST_PATH, query)
+    for _attempt in range(TRANSIENT_ATTEMPTS - 1):
+        if response.status is not None:
+            break
+        pause = getattr(getattr(transport, "budget", None), "pause", None)
+        if pause is not None:
+            pause(TRANSIENT_PAUSE_SECONDS, f"{REGISTRY_HOST} gave no answer; asking again")
+        response = transport.get(REGISTRY_HOST, REGISTRY_LIST_PATH, query)
+    return response
+
+
 def sync_registry(state: DirectoryState, transport, *, now: str = "", maximum_pages: int = 2000) -> dict:
     """Read the registry from the saved cursor, a full traversal first and then only what changed.
 
@@ -173,7 +191,7 @@ def sync_registry(state: DirectoryState, transport, *, now: str = "", maximum_pa
                 query["updated_since"] = run["updated_since"]
             if run["cursor"]:
                 query["cursor"] = run["cursor"]
-            response = transport.get(REGISTRY_HOST, REGISTRY_LIST_PATH, query)
+            response = _get_with_transient_retries(transport, query)
             if response.status != 200:
                 stopped = f"status {response.status}"
                 break
