@@ -7,6 +7,11 @@ candidates and leaves them unchanged. The output is ordinary
 with its own `operation_constraint_cases` state scope. Nothing here admits
 or publishes a package.
 
+The current run plan is `api_constraint_case_plan/v2`. It binds an optional
+case-job exclusion snapshot and the complete source population before selecting
+an explicit parent range. An earlier plan keeps its bytes; start a new run
+instead of rewriting it to match this version.
+
 A case has a valid baseline, one field/value edit and one expected failure.
 The generator requires exactly one matching error from
 `jsonschema.Draft202012Validator`: validator name, schema path and instance
@@ -134,6 +139,60 @@ groups before their case jobs enter the duplicate comparison. This is a
 caller-declared comparison corpus, not an automatic claim to have scanned
 every served package. Global publication still needs the parent's complete
 served/admitted comparison scope and exact digest reconciliation.
+
+## Larger campaigns
+
+`case-exclusions` verifies existing candidate bytes and replays their case
+groups with the independent schema checker. It writes a frozen list of known
+case jobs. This is a comparison artifact, not approval or proof of worldwide
+originality. Keep its bytes unchanged while a campaign uses it.
+
+```sh
+PYTHONPATH=src:tools python tools/build_library_supply.py case-exclusions \
+  --group-root /home/username/baltor-private/prior-cases/packages \
+  --maximum-groups 5000 \
+  --output /home/username/baltor-private/next-case-exclusions.json \
+  --authorize-output-writes
+```
+
+`constraint-campaign` partitions each source population into sorted parent
+ranges. Each batch runs through the existing Starting Practitioner Loop. The
+campaign excludes known jobs before grouping and carries completed ranges into
+the next exclusion snapshot. Shared runtime and licence files still count once
+by digest. It does not add cohort file counts and call the sum unique files.
+
+```sh
+PYTHONPATH=src:tools python tools/build_library_supply.py constraint-campaign \
+  --parent-run /home/username/baltor-private/contract-parents-a \
+  --parent-run /home/username/baltor-private/contract-parents-b \
+  --exclude-case-jobs /home/username/baltor-private/next-case-exclusions.json \
+  --run-folder /home/username/baltor-private/case-campaign \
+  --maximum-contracts 100000 --maximum-cases 1000000 \
+  --maximum-candidate-bytes 6442450944 --maximum-invocations 2000 \
+  --maximum-campaign-seconds 7200 --shard-size 500 \
+  --batch-size 100 --maximum-seconds 30 --max-batches 1
+```
+
+This command previews the frozen source plan. Add `--authorize-output-writes`
+to produce candidates from a clean committed checkout. `--max-batches` limits
+one invocation; the case, byte, time and invocation ceilings cover the entire
+campaign and cannot be raised on resume. A million is a ceiling here, not a
+forecast. The source population determines the available jobs.
+
+Repeat the same command after a clean partial batch. Changed sources, changed
+exclusions, altered receipts and changed limits refuse continuation. An
+unanswered dispatch requires inspection of its native child journal before
+any retry. A failed child holds the campaign. Preserve its evidence and repair
+the cause in a new run; do not remove the failed event.
+
+The campaign checks its deadline and free-space floor between native batches.
+Each native batch also has a POSIX wall timer, including its source and resume
+checks, controlled by `--maximum-batch-wall-seconds`. An existing process timer
+is never replaced. Initial campaign enumeration and final snapshot work remain
+outside that batch timer. An operator requiring a hard deadline for the whole
+process must provide an outer supervisor. Network,
+model calls, source writes, admission and publication remain outside this
+driver. Global payload accounting and qualification are separate final stages.
 
 These generators were authored with OpenAI. The native review and admission
 commands must use `--producer-family openai`; the case-group declaration

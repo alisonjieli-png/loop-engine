@@ -391,6 +391,14 @@ reported as global coverage. Repeat `--known-bundle-license` for the exact
 licences of that comparison source when the host defaults do not cover it.
 These arguments authorize no publication and do not widen admission policy.
 
+For a large prior case population, pass `--known-case-exclusions SNAPSHOT`
+instead of thousands of `--known-constraint-groups` arguments. Create the
+snapshot with `build_library_supply.py case-exclusions`, which verifies and
+replays the source groups. Qualification records the exact snapshot digest
+and applies the same native case-job duplicate rule. The snapshot defines the
+comparison population; it does not approve any component or establish global
+semantic novelty.
+
 ```bash
 PYTHONPATH=src:tools python tools/qualify_generated_components.py self-test \
   --output SELF-TEST.json --work-root WORK

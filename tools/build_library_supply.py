@@ -490,18 +490,57 @@ def constraint_cases(args) -> dict:
     """Extend frozen parent contracts with digest-bound, isolated case data."""
     import hashlib
     from component_qualification import components
-    from supply_lines import (api_contract_run, constraint_case_run, constraint_case_construction,
+    from supply_lines import (api_contract_run, constraint_case_run, constraint_case_construction, constraint_case_exclusions,
                               constraint_case_packages, constraint_case_runtime, packaging, schema_check)
     args.run_folder = _outside(args.run_folder)
     if args.authorize_output_writes and free_gigabytes(args.run_folder) < args.minimum_free_gigabytes:
         raise SystemExit("free_space_below_the_floor")
     revision = code_revision(False)
     modules = (components, api_contract_run, constraint_case_run, constraint_case_construction, constraint_case_packages,
-               constraint_case_runtime, packaging, records, schema_check)
+               constraint_case_runtime, constraint_case_exclusions, packaging, records, schema_check)
     code = b"".join(Path(module.__file__).read_bytes() for module in modules) + Path(__file__).read_bytes()
     result = constraint_case_run.run_as_loop(args, revision=revision, licence_text=LICENCE_FILE.read_bytes(),
                                             generator_digest=hashlib.sha256(code).hexdigest())
     print(json.dumps(result, indent=1, sort_keys=True))
+    return result
+
+
+def constraint_campaign(args) -> dict:
+    """Run a frozen, cumulative-budget campaign through the existing supply Loop."""
+    import hashlib
+    from supply_lines import (api_contract_run, case_campaign, constraint_case_construction,
+                              constraint_case_exclusions, constraint_case_packages, constraint_case_run,
+                              constraint_case_runtime, packaging, schema_check)
+    args.run_folder = _outside(args.run_folder)
+    revision = code_revision(args.authorize_output_writes)
+    modules = (api_contract_run, case_campaign, constraint_case_construction, constraint_case_exclusions,
+               constraint_case_packages, constraint_case_run, constraint_case_runtime, packaging, records, schema_check)
+    digest = hashlib.sha256(b"".join(Path(module.__file__).read_bytes() for module in modules) + Path(__file__).read_bytes()).hexdigest()
+    result = case_campaign.run(args, revision=revision, licence_text=LICENCE_FILE.read_bytes(), generator_digest=digest)
+    print(json.dumps(result, sort_keys=True, indent=1))
+    return result
+
+
+def case_exclusions(args) -> dict:
+    """Create a private, replay-verified snapshot for pre-generation duplicate exclusion."""
+    from supply_lines import api_contract_run, constraint_case_exclusions as exclusions
+    output = _outside(api_contract_run._safe_path(args.output))
+    groups = []
+    for value in sorted(set(args.group_root)):
+        root = api_contract_run._safe_path(value)
+        if not root.is_dir() or output == root or root in output.parents:
+            raise ValueError("case_exclusions_output_or_source_invalid")
+        for folder in sorted(root.iterdir()):
+            if len(groups) >= args.maximum_groups:
+                raise ValueError("case_exclusions_group_bound")
+            groups.append(folder)
+    record = exclusions.snapshot(groups, previous=args.previous, maximum_groups=args.maximum_groups)
+    result = {"record_type": exclusions.RECORD_TYPE, "case_jobs": len(record["job_ids"]),
+              "groups": len(record["sources"]), "written": args.authorize_output_writes,
+              "approval": False, "network_calls": 0, "model_calls": 0}
+    if args.authorize_output_writes:
+        result["snapshot"] = exclusions.write(output, record)
+    print(json.dumps(result, sort_keys=True, indent=1))
     return result
 
 
@@ -618,12 +657,38 @@ def parser() -> argparse.ArgumentParser:
     cases.add_argument("--parent-run", action="append", required=True)
     cases.add_argument("--run-folder", required=True)
     cases.add_argument("--maximum-contracts", type=int, required=True)
+    cases.add_argument("--parent-offset", type=int, default=0, help="first parent in the pinned sorted source population")
+    cases.add_argument("--parent-limit", type=int, help="explicit bounded shard; omitted means all remaining parents")
+    cases.add_argument("--expected-parent-population", help="require this exact digest of the complete parent population before effects")
+    cases.add_argument("--exclude-case-jobs", type=Path, help="frozen verified-case exclusion snapshot; changing it refuses resume")
     cases.add_argument("--maximum-cases", type=int, required=True)
     cases.add_argument("--maximum-candidate-bytes", type=int, default=64 * 1024 * 1024)
     cases.add_argument("--batch-size", type=int, default=25, help="parent contracts per invocation")
     cases.add_argument("--maximum-seconds", type=float, default=60)
     cases.add_argument("--authorize-output-writes", action="store_true", help="generate local case files and run local checks; no provider call or publication")
     cases.add_argument("--minimum-free-gigabytes", type=float, default=MINIMUM_FREE_GIGABYTES)
+    campaign = commands.add_parser("constraint-campaign", help="bounded multi-source case campaign with global job exclusions")
+    campaign.add_argument("--parent-run", action="append", required=True)
+    campaign.add_argument("--run-folder", required=True)
+    campaign.add_argument("--exclude-case-jobs", type=Path)
+    campaign.add_argument("--maximum-contracts", type=int, required=True)
+    campaign.add_argument("--maximum-cases", type=int, required=True)
+    campaign.add_argument("--maximum-candidate-bytes", type=int, required=True)
+    campaign.add_argument("--maximum-invocations", type=int, required=True)
+    campaign.add_argument("--maximum-campaign-seconds", type=int, required=True)
+    campaign.add_argument("--shard-size", type=int, default=500)
+    campaign.add_argument("--batch-size", type=int, default=100)
+    campaign.add_argument("--maximum-seconds", type=float, default=60)
+    campaign.add_argument("--maximum-batch-wall-seconds", type=int, default=180, help="POSIX deadline including native source and resume checks")
+    campaign.add_argument("--max-batches", type=int, default=1, help="native batches this invocation; whole-run ceilings stay frozen")
+    campaign.add_argument("--minimum-free-gigabytes", type=float, default=MINIMUM_FREE_GIGABYTES)
+    campaign.add_argument("--authorize-output-writes", action="store_true")
+    known = commands.add_parser("case-exclusions", help="replay existing groups once and freeze case-job exclusions")
+    known.add_argument("--group-root", action="append", required=True, help="directory containing exact candidate package folders")
+    known.add_argument("--previous", type=Path, help="extend an existing immutable snapshot into a new output")
+    known.add_argument("--output", type=Path, required=True)
+    known.add_argument("--maximum-groups", type=int, required=True)
+    known.add_argument("--authorize-output-writes", action="store_true")
     five = commands.add_parser("report")
     five.add_argument("--store-root", default="/home/username/baltor-library/import-store")
     five.add_argument("--library-bundle", required=True, help="the served release bundle folder; a candidate whose "
@@ -648,6 +713,8 @@ def main(argv=None) -> int:
      "functions": functions, "schemas": schemas, "curated-schemas": curated_schemas, "api-schemas": api_schemas,
      "api-contracts": api_contracts,
      "constraint-cases": constraint_cases,
+     "constraint-campaign": constraint_campaign,
+     "case-exclusions": case_exclusions,
      "manim-scenes": manim_scenes, "api-tool-servers": api_tool_servers, "report": report}[args.command](args)
     return 0
 

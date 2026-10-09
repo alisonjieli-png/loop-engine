@@ -48,5 +48,28 @@ class KnownBundleTests(unittest.TestCase):
             cli._known_digests(self.segmented)
 
 
+class KnownCaseSnapshotTests(unittest.TestCase):
+    def test_frozen_job_population_maps_to_native_duplicate_keys(self):
+        from supply_lines import constraint_case_exclusions as exclusions
+        from component_qualification import checks
+        with tempfile.TemporaryDirectory() as temporary:
+            path = Path(temporary) / "comparison.json"
+            record = {"record_type": exclusions.RECORD_TYPE, "job_ids": ["a" * 64], "sources": [
+                {"record_id": "fixture.case.group", "package_digest": "b" * 64, "case_job_set_sha256": "c" * 64}]}
+            binding = exclusions.write(path, record)
+            known, bindings = cli._known_case_exclusions([path])
+            self.assertEqual(known, {checks.CONSTRAINT_CASE_JOB_PREFIX + "a" * 64:
+                                    "case-exclusion-snapshot:" + binding["sha256"]})
+            self.assertEqual(bindings, [binding])
+            self.assertEqual(cli._known_case_exclusions([]), ({}, []))
+
+    def test_unknown_snapshot_shape_is_not_silently_ignored(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            path = Path(temporary) / "comparison.json"
+            path.write_text('{"record_type":"unrecognized/v1","job_ids":[],"sources":[]}')
+            with self.assertRaises(ValueError):
+                cli._known_case_exclusions([path])
+
+
 if __name__ == "__main__":
     unittest.main()

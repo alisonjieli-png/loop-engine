@@ -71,6 +71,18 @@ def _known_digests(bundle: "Path | None", accepted_licenses=()) -> dict:
     return {entry.item.digest: entry.identity for entry in verified.items}
 
 
+def _known_case_exclusions(paths) -> tuple:
+    """Frozen comparison artifacts avoid one command-line argument per prior group."""
+    from tools.supply_lines.constraint_case_exclusions import read
+    known, bindings = {}, []
+    for path in paths:
+        jobs, binding = read(path)
+        bindings.append(binding)
+        for job in jobs:
+            known[checks.CONSTRAINT_CASE_JOB_PREFIX + job] = "case-exclusion-snapshot:" + binding["sha256"]
+    return known, bindings
+
+
 def command_self_test(options) -> dict:
     context = checks.QualificationContext.load(ROOT, sandbox_settings=_sandbox(options), work_root=options.work_root)
     record = controls.self_test(context, qualify.code_revision(ROOT))
@@ -97,6 +109,8 @@ def command_qualify(options) -> dict:
         print(json.dumps({"progress": done, "of": total, "seconds": round(seconds, 1)}), flush=True)
 
     known = _known_digests(options.known_bundle, getattr(options, "known_bundle_license", ()))
+    excluded, exclusion_bindings = _known_case_exclusions(getattr(options, "known_case_exclusions", ()) or ())
+    known.update(excluded)
     from tools.component_qualification.components import from_folder
     context = checks.QualificationContext.load(ROOT)
     for known_folder in getattr(options, "known_constraint_groups", ()) or ():
@@ -111,6 +125,7 @@ def command_qualify(options) -> dict:
                                    workers=options.workers, known_digests=known,
                                    output=folder / "qualification.jsonl", progress=progress,
                                    reuse_paths=options.reuse, check_ids=_check_ids(options.checks))
+    summary["known_case_exclusion_snapshots"] = exclusion_bindings
     (folder / "run.json").write_text(json.dumps(summary, indent=1, sort_keys=True) + "\n")
     return {key: summary[key] for key in ("components", "qualified", "refused", "unreadable", "reused", "seconds",
                                           "throughput")}
@@ -183,6 +198,8 @@ def main(argv=None) -> int:
                                       "Uses the normal host defaults when omitted; does not change admission policy.")
             command.add_argument("--known-constraint-groups", type=Path, action="append", default=[],
                                  help="Prior exact case-group candidate folders; replay and reject overlapping case jobs across runs.")
+            command.add_argument("--known-case-exclusions", type=Path, action="append", default=[],
+                                 help="Frozen case-exclusion snapshots produced by case-exclusions; exact bytes are bound in the report.")
             command.add_argument("--reuse", action="append", default=[],
                                  help="An earlier qualification.jsonl; a component with the same record version and "
                                       "package digest, checked by this committed qualifier revision, keeps its "

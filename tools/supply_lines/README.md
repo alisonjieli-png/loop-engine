@@ -51,6 +51,41 @@ adapters the run uses: none is a graph vertex, a role, a mode or a runtime
 type, and choosing one grants no authority. Network reads need
 `--authorize-network-reads`, and store writes need `--authorize-store-writes`.
 
+## Scaling supply
+
+Use the existing lines for distinct source jobs, then qualify their outputs.
+A count of new file bytes does not establish a new capability. Track the
+source job, generated payload digest, check result and served release separately.
+
+| Material | Existing generation owner | Distinct job and next requirement |
+| --- | --- | --- |
+| API endpoints and cloud APIs | `openapi_operations`, directory and Google Discovery modes | One host, method and path. Generated clients do not create or prove a live upstream endpoint. Keep authentication, effects and mock-test coverage explicit. |
+| Validation material | `api-contracts`, `constraint-cases`, `constraint-campaign` | A decoded API edge or isolated schema constraint. The campaign carries known jobs across bounded source ranges; global qualification follows. |
+| Cloud tools and MCP connections | `mcp_registry`, `api_tool_servers`, `program_installs` | A named server or tool capability at a pinned version. A connection recipe is not an installed or remotely tested service. |
+| Lists and reference data | `data_tables`, `publisher_tables` | A collection, table or statistical series with its own reuse rights and schema. Rows, countries and output-format variants do not automatically become new jobs. |
+| Maintained research and feeds | `knowledge_radar`, `query_multiplier`, source-reading profiles | A dated decision or collection with sources and freshness conditions. A profile is passive configuration; collection access and recurring execution need separate qualification. |
+| Original tools and workflows | Existing idea matrix, native preparation and solution-graph owners | A distinct task with an acceptance check, reference behavior and a known-wrong control. Parameter changes share one implementation. |
+
+The first scale implementation is the offline case campaign described in
+[constraint cases](CONSTRAINT-CASES.md#larger-campaigns). It can inspect up to
+100,000 parent contracts and exclude up to two million known case jobs. Those
+are input bounds, not a measured production result. The other lines keep their
+own operators and qualification requirements; this campaign does not silently
+enable them or turn a provider listing into executable access.
+
+Three duplicate checks answer different questions. Exact payload digests find
+repeated bytes. Native job keys find another wrapper for the same operation,
+series or constraint. The existing global comparison tools find related text
+for review. None of these proves a mathematical algorithm or business idea is
+new to the world. Record a semantic novelty claim only with its comparison
+population and evidence.
+
+For a million-file target, first measure eligible source jobs, the number of
+new payloads retained per job, qualification throughput, storage and publication
+capacity. Reuse unchanged source caches and common code. Hold unsupported
+contracts and unclear licences as findings. Grow the supported source or task
+population when the useful jobs run out; do not fill the gap with renamed files.
+
 ## The lines
 
 ```text

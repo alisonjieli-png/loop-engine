@@ -13,11 +13,12 @@ from component_qualification.components import from_folder
 
 from . import api_contract_run as atomic
 from . import constraint_case_construction as construction
+from . import constraint_case_exclusions as exclusions
 from . import constraint_case_packages as packages
 from . import constraint_case_runtime as runtime
 from .records import JSON_SCHEMAS, OPERATION_CONSTRAINT_CASE_SCOPE, RUN_RECORD_TYPE
 
-PLAN_TYPE = "api_constraint_case_plan/v1"
+PLAN_TYPE = "api_constraint_case_plan/v2"
 EVENT_TYPE = "api_constraint_case_event/v2"
 RETAINED_TYPE = "api_constraint_case_retained/v1"
 EVENT_FIELDS = {"record_type", "sequence", "previous_sha256", "parent_record_id", "record_path", "record_sha256",
@@ -162,6 +163,17 @@ def run(args, *, revision, licence_text, generator_digest):
             or not 1 <= args.batch_size <= 10_000 or not 0 < args.maximum_seconds <= 43_200):
         raise ValueError("constraint_run_bounds_invalid")
     parents = inputs(args.parent_run, args.maximum_contracts)
+    population = len(parents)
+    population_digest = runtime.fingerprint([row[0] for row in parents])
+    offset, limit = getattr(args, "parent_offset", 0), getattr(args, "parent_limit", None)
+    if (type(offset) is not int or not 0 <= offset <= population
+            or limit is not None and (type(limit) is not int or not 1 <= limit <= 100_000)):
+        raise ValueError("constraint_parent_selection_invalid")
+    expected = getattr(args, "expected_parent_population", None)
+    if expected is not None and expected != population_digest:
+        raise ValueError("constraint_parent_population_changed")
+    parents = parents[offset:None if limit is None else offset + limit]
+    excluded, exclusion_binding = exclusions.read(getattr(args, "exclude_case_jobs", None))
     output_path = atomic._safe_path(args.run_folder)
     for source in args.parent_run:
         source_path = atomic._safe_path(source)
@@ -171,10 +183,15 @@ def run(args, *, revision, licence_text, generator_digest):
         raise ValueError("constraint_parent_generated_licence_changed")
     plan = {"record_type": PLAN_TYPE, "generator_revision": revision, "generator_digest": generator_digest,
             "scope": OPERATION_CONSTRAINT_CASE_SCOPE, "producer_family": packages.PRODUCER_FAMILY,
+            "parent_selection": {"population": population, "population_sha256": population_digest,
+                                 "offset": offset, "limit": limit}, "case_exclusions": exclusion_binding,
             "independent_oracle_version": construction.ORACLE_VERSION,
             "inputs": [row[0] for row in parents], "maximum_cases": args.maximum_cases,
             "maximum_candidate_bytes": args.maximum_candidate_bytes, "maximum_files_per_group": runtime.MAX_FILES,
             "network_calls_authorized": 0, "model_calls_authorized": 0, "publication_authorized": False}
+    # Refuse a plan that cannot be read on restart. Use explicit shards, never
+    # silently drop parents or raise the individual case-file byte bound.
+    runtime.decode(runtime.encode({"plan": plan}), maximum=8 * 1024 * 1024)
     if not args.authorize_output_writes:
         return {"record_type": RUN_RECORD_TYPE, "line": JSON_SCHEMAS, "scope": OPERATION_CONSTRAINT_CASE_SCOPE,
                 "plan": plan, "written": False, "candidate_files": 0}
@@ -202,8 +219,9 @@ def run(args, *, revision, licence_text, generator_digest):
             if processed >= args.batch_size or time.monotonic() - started >= args.maximum_seconds:
                 break
             cases, baseline_bodies, accounting = construction.construct(parent.payloads["contract.schema.json"], baselines)
-            unique = [case for case in cases if case["job_id"] not in seen]
-            accounting["case_jobs_already_generated"] = len(cases) - len(unique)
+            unique = [case for case in cases if case["job_id"] not in seen and case["job_id"] not in excluded]
+            accounting["case_jobs_already_generated"] = sum(case["job_id"] in seen for case in cases)
+            accounting["case_jobs_previously_known"] = sum(case["job_id"] in excluded for case in cases)
             with tempfile.TemporaryDirectory(prefix="case-groups-", dir=atomic._staging_directory(folder)) as staging:
                 atomic._safe_path(staging)
                 built = packages.generate(parent, unique, baseline_bodies, revision=revision,
@@ -252,7 +270,7 @@ def run(args, *, revision, licence_text, generator_digest):
         counter = Counter()
         findings = Counter()
         for row in rows:
-            for key in ("supported_jobs", "accepted_cases", "probe_attempts", "case_jobs_already_generated"):
+            for key in ("supported_jobs", "accepted_cases", "probe_attempts", "case_jobs_already_generated", "case_jobs_previously_known"):
                 counter[key] += row["case_accounting"].get(key, 0)
             findings.update(row["case_accounting"].get("findings", {}))
         for snapshot, _parent, _baselines in parents:
@@ -260,8 +278,12 @@ def run(args, *, revision, licence_text, generator_digest):
             if (checked.package.package_digest != snapshot["package_digest"]
                     or runtime.sha((Path(snapshot["folder"]) / "candidate.json").read_bytes()) != snapshot["candidate_sha256"]):
                 raise ValueError("constraint_parent_changed_during_generation")
+        if exclusions.read(getattr(args, "exclude_case_jobs", None))[1] != exclusion_binding:
+            raise ValueError("constraint_exclusions_changed_during_generation")
         report = {"record_type": RUN_RECORD_TYPE, "line": JSON_SCHEMAS, "scope": OPERATION_CONSTRAINT_CASE_SCOPE,
             "producer_family": packages.PRODUCER_FAMILY, "source_contracts": len(parents), "parents_processed": len(rows),
+            "parent_population": population, "parent_selection": plan["parent_selection"],
+            "excluded_known_case_jobs": len(excluded),
             "independent_oracle_version": construction.ORACLE_VERSION,
             "parents_this_invocation": processed, "case_jobs": len(seen), "new_case_jobs": len(seen) - prior_cases,
             "groups": sum(len(row["groups"]) for row in rows), "new_groups": sum(len(row["groups"]) for row in rows) - prior_groups,
