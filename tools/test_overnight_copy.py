@@ -108,6 +108,9 @@ class OvernightCopyTests(unittest.TestCase):
         for fact in ("own model access", "call", "time", "checkpoints", "morning report", "$29 a month",
                      "machine that runs the job", "The local harness is free"):
             self.assertIn(fact, view)
+        for fact in ("One harness per step", "Turn it on", "leave it off", "qualified fresh-instance profile",
+                     "does not establish task success"):
+            self.assertIn(fact, view)
         for row in read_marked(page):
             if "data-overnight-tools" in row["attrs"]:
                 self.assertEqual(row["attrs"]["data-overnight-tools"], "local")
