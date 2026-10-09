@@ -1,0 +1,153 @@
+{
+ "asset": "desk_lamp",
+ "behaviors": [
+  {
+   "joint": "lower_tilt",
+   "name": "aim",
+   "trigger": "script"
+  }
+ ],
+ "description": "A desk lamp: a weighted base, two arms and a shade, each tilting about the X axis.",
+ "forward_axis": "+Z",
+ "joints": [
+  {
+   "axis": [
+    1.0,
+    0.0,
+    0.0
+   ],
+   "limits_deg": [
+    -45.0,
+    45.0
+   ],
+   "name": "lower_tilt",
+   "part": "LowerArm",
+   "type": "revolute"
+  },
+  {
+   "axis": [
+    1.0,
+    0.0,
+    0.0
+   ],
+   "limits_deg": [
+    -100.0,
+    0.0
+   ],
+   "name": "elbow",
+   "part": "UpperArm",
+   "type": "revolute"
+  },
+  {
+   "axis": [
+    1.0,
+    0.0,
+    0.0
+   ],
+   "limits_deg": [
+    -60.0,
+    30.0
+   ],
+   "name": "shade_tilt",
+   "part": "Shade",
+   "type": "revolute"
+  }
+ ],
+ "materials": [
+  {
+   "metallic": 1.0,
+   "name": "Metal",
+   "roughness": 0.4
+  },
+  {
+   "name": "ShadeFabric",
+   "roughness": 0.9
+  }
+ ],
+ "parts": [
+  {
+   "center_m": [
+    0.0,
+    0.015,
+    0.0
+   ],
+   "dimensions_m": [
+    0.2,
+    0.03,
+    0.2
+   ],
+   "material": "Metal",
+   "name": "Base",
+   "pivot_m": [
+    0.0,
+    0.0,
+    0.0
+   ]
+  },
+  {
+   "center_m": [
+    0.0,
+    0.18,
+    0.0
+   ],
+   "dimensions_m": [
+    0.03,
+    0.3,
+    0.03
+   ],
+   "material": "Metal",
+   "name": "LowerArm",
+   "parent": "Base",
+   "pivot_m": [
+    0.0,
+    0.03,
+    0.0
+   ]
+  },
+  {
+   "center_m": [
+    0.0,
+    0.48,
+    0.0
+   ],
+   "dimensions_m": [
+    0.03,
+    0.3,
+    0.03
+   ],
+   "material": "Metal",
+   "name": "UpperArm",
+   "parent": "LowerArm",
+   "pivot_m": [
+    0.0,
+    0.33,
+    0.0
+   ]
+  },
+  {
+   "center_m": [
+    0.0,
+    0.66,
+    0.0
+   ],
+   "dimensions_m": [
+    0.12,
+    0.1,
+    0.12
+   ],
+   "material": [
+    "ShadeFabric"
+   ],
+   "name": "Shade",
+   "parent": "UpperArm",
+   "pivot_m": [
+    0.0,
+    0.63,
+    0.0
+   ]
+  }
+ ],
+ "record_type": "asset_specification/v1",
+ "units": "metre",
+ "up_axis": "+Y"
+}

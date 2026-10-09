@@ -1,0 +1,37 @@
+{
+ "clips": [
+  {
+   "duration_s": 1.2,
+   "name": "Open",
+   "targets": [
+    {
+     "node": "DoorPanel",
+     "path": "rotation"
+    }
+   ]
+  },
+  {
+   "duration_s": 1.2,
+   "name": "Close",
+   "targets": [
+    {
+     "node": "DoorPanel",
+     "path": "rotation"
+    }
+   ]
+  },
+  {
+   "duration_s": 0.4,
+   "name": "HandlePress",
+   "targets": [
+    {
+     "node": "DoorHandle",
+     "path": "rotation"
+    }
+   ]
+  }
+ ],
+ "fps": 24.0,
+ "record_type": "animation_declaration/v1",
+ "source": "door.blend"
+}

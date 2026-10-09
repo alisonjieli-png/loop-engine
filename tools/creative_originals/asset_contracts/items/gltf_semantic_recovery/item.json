@@ -1,0 +1,265 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "gltf_semantic_recovery",
+  "title": "glTF semantic recovery against an asset specification",
+  "purpose": "Recover what an asset means from the file alone (named parts, hierarchy, real dimensions in metres, pivots, part materials, clips with durations) and compare it with a declared asset specification, naming the likely cause of each mismatch.",
+  "form": "library_module",
+  "asset_role": null,
+  "dimension": "3d",
+  "engine": {
+    "name": "python",
+    "minimum_version": "3.10"
+  },
+  "tags": [
+    "gltf",
+    "asset specification",
+    "semantic check",
+    "dimensions",
+    "units",
+    "hierarchy",
+    "animation clips",
+    "3d asset"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "role": "other"
+    },
+    {
+      "path": "gltf_semantic_recovery.py",
+      "role": "executable_tool"
+    },
+    {
+      "path": "test_gltf_semantic_recovery.py",
+      "role": "executable_tool"
+    },
+    {
+      "path": "fixtures/bad_centimetres.gltf",
+      "role": "skill_asset"
+    },
+    {
+      "path": "fixtures/bad_flattened.gltf",
+      "role": "skill_asset"
+    },
+    {
+      "path": "fixtures/bad_no_clips.gltf",
+      "role": "skill_asset"
+    },
+    {
+      "path": "fixtures/bad_renamed_material.gltf",
+      "role": "skill_asset"
+    },
+    {
+      "path": "fixtures/bad_short_clip.gltf",
+      "role": "skill_asset"
+    },
+    {
+      "path": "fixtures/bad_spec_part_without_name.spec.json",
+      "role": "skill_asset"
+    },
+    {
+      "path": "fixtures/bad_unnamed_panel.gltf",
+      "role": "skill_asset"
+    },
+    {
+      "path": "fixtures/bad_z_up.gltf",
+      "role": "skill_asset"
+    },
+    {
+      "path": "fixtures/door.gltf",
+      "role": "skill_asset"
+    },
+    {
+      "path": "fixtures/door.spec.json",
+      "role": "skill_asset"
+    }
+  ],
+  "contract": {
+    "entry_points": [
+      {
+        "name": "recover",
+        "kind": "function",
+        "signature": "recover(asset: gltfio.Asset) -> dict of parts, clips, materials, unnamed_nodes, scene_dimensions_m"
+      },
+      {
+        "name": "compare",
+        "kind": "function",
+        "signature": "compare(facts: dict, spec: dict, report: asset_report.Report) -> None"
+      },
+      {
+        "name": "check",
+        "kind": "function",
+        "signature": "check(asset_path, spec_path=None) -> asset_report.Report"
+      },
+      {
+        "name": "run",
+        "kind": "function",
+        "signature": "run(argv: list) -> dict (the JSON report)"
+      },
+      {
+        "name": "main",
+        "kind": "command_line",
+        "usage": "python3 gltf_semantic_recovery.py ASSET.gltf [--spec SPEC.json]"
+      }
+    ],
+    "inputs": [
+      {
+        "name": "asset",
+        "format": "glTF 2.0 (.gltf or .glb)"
+      },
+      {
+        "name": "spec",
+        "format": "asset_specification/v1 JSON: parts (name, parent, dimensions_m, measure own or subtree, pivot_m, material, tolerance_m), materials, clips (name, duration_s, tolerance_s), tolerance_m",
+        "optional": true
+      }
+    ],
+    "report": {
+      "record_type": "asset_contract_report/v1",
+      "tool": "gltf_semantic_recovery",
+      "subject": "the asset file name",
+      "ok": "true when every specified fact matches (always true without a spec, unless the file is unreadable)",
+      "failures": "list of {code, where (part, material or clip name), detail with the likely cause}",
+      "warnings": "unnamed_nodes, clip_starts_late",
+      "facts": "parts (index, name, path, parent, parent_index, pivot_m, dimensions_m, bounds_m, subtree_dimensions_m, materials), clips (name, start_s, length_s, channels), materials, unnamed_nodes, scene_dimensions_m"
+    },
+    "failures_detected": [
+      "asset_unreadable",
+      "specification_invalid",
+      "part_missing",
+      "part_ambiguous",
+      "part_parent_mismatch",
+      "part_dimensions_mismatch",
+      "part_pivot_mismatch",
+      "part_material_mismatch",
+      "material_missing",
+      "clip_missing",
+      "clip_duration_mismatch"
+    ],
+    "proves": "The named parts, parents, rest-pose world dimensions and pivots, part materials, material list and clip play lengths that a reader recovers from the file equal the specification within the stated tolerances.",
+    "does_not_prove": "That the geometry has the intended shape, that the clips move the parts plausibly, or that joints work. Dimensions are axis-aligned world boxes at the rest pose, not oriented or tight measurements.",
+    "fixtures": [
+      {
+        "argv": [
+          "fixtures/door.gltf",
+          "--spec",
+          "fixtures/door.spec.json"
+        ],
+        "expect": "pass"
+      },
+      {
+        "argv": [
+          "fixtures/door.gltf"
+        ],
+        "expect": "pass"
+      },
+      {
+        "argv": [
+          "fixtures/bad_centimetres.gltf",
+          "--spec",
+          "fixtures/door.spec.json"
+        ],
+        "expect": "fail",
+        "codes": [
+          "part_dimensions_mismatch",
+          "part_pivot_mismatch"
+        ]
+      },
+      {
+        "argv": [
+          "fixtures/bad_z_up.gltf",
+          "--spec",
+          "fixtures/door.spec.json"
+        ],
+        "expect": "fail",
+        "codes": [
+          "part_dimensions_mismatch"
+        ]
+      },
+      {
+        "argv": [
+          "fixtures/bad_flattened.gltf",
+          "--spec",
+          "fixtures/door.spec.json"
+        ],
+        "expect": "fail",
+        "codes": [
+          "part_parent_mismatch"
+        ]
+      },
+      {
+        "argv": [
+          "fixtures/bad_unnamed_panel.gltf",
+          "--spec",
+          "fixtures/door.spec.json"
+        ],
+        "expect": "fail",
+        "codes": [
+          "part_missing",
+          "part_parent_mismatch"
+        ]
+      },
+      {
+        "argv": [
+          "fixtures/bad_no_clips.gltf",
+          "--spec",
+          "fixtures/door.spec.json"
+        ],
+        "expect": "fail",
+        "codes": [
+          "clip_missing"
+        ]
+      },
+      {
+        "argv": [
+          "fixtures/bad_renamed_material.gltf",
+          "--spec",
+          "fixtures/door.spec.json"
+        ],
+        "expect": "fail",
+        "codes": [
+          "material_missing",
+          "part_material_mismatch"
+        ]
+      },
+      {
+        "argv": [
+          "fixtures/bad_short_clip.gltf",
+          "--spec",
+          "fixtures/door.spec.json"
+        ],
+        "expect": "fail",
+        "codes": [
+          "clip_duration_mismatch"
+        ]
+      },
+      {
+        "argv": [
+          "fixtures/door.gltf",
+          "--spec",
+          "fixtures/bad_spec_part_without_name.spec.json"
+        ],
+        "expect": "fail",
+        "codes": [
+          "specification_invalid"
+        ]
+      }
+    ]
+  },
+  "limits": "Parts are matched by exact node name; renamed parts are reported missing with similar names as a hint. Dimensions are axis-aligned boxes in world axes at the rest pose, so a rotated part measures larger than its own extents. Skinned meshes are measured at their bind pose without skinning. Unit and axis hints recognise one uniform factor (centimetres, millimetres, inches, feet, decimetres) or a Y and Z swap, not combinations.",
+  "related": [
+    "asset_specification_schema",
+    "gltf_structural_validator",
+    "axes_units_converter"
+  ],
+  "technique_references": [
+    "glTF 2.0 specification: node hierarchy, TRS and matrix transforms, metres and +Y up",
+    "Axis-aligned bounding boxes transformed by their eight corners",
+    "Uniform scale factor detection by per-axis ratios"
+  ],
+  "native_checks": [
+    "checker_matches_contract",
+    "godot_recovers_the_same_facts",
+    "blender_recovers_the_same_facts",
+    "comparator_rejects_altered_engine_facts"
+  ]
+}

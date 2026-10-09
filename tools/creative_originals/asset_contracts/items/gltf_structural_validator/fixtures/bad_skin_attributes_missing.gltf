@@ -1,0 +1,510 @@
+{
+ "accessors": [
+  {
+   "bufferView": 0,
+   "componentType": 5126,
+   "count": 6,
+   "max": [
+    0.05000000074505806,
+    1.0,
+    0.0
+   ],
+   "min": [
+    -0.05000000074505806,
+    0.0,
+    0.0
+   ],
+   "type": "VEC3"
+  },
+  {
+   "bufferView": 1,
+   "componentType": 5126,
+   "count": 6,
+   "type": "VEC3"
+  },
+  {
+   "bufferView": 2,
+   "componentType": 5126,
+   "count": 6,
+   "type": "VEC2"
+  },
+  {
+   "bufferView": 3,
+   "componentType": 5121,
+   "count": 6,
+   "type": "VEC4"
+  },
+  {
+   "bufferView": 4,
+   "componentType": 5126,
+   "count": 6,
+   "type": "VEC4"
+  },
+  {
+   "bufferView": 5,
+   "componentType": 5123,
+   "count": 12,
+   "type": "SCALAR"
+  },
+  {
+   "bufferView": 6,
+   "componentType": 5126,
+   "count": 24,
+   "max": [
+    0.05000000074505806,
+    0.05000000074505806,
+    0.009999999776482582
+   ],
+   "min": [
+    -0.05000000074505806,
+    0.0,
+    -0.009999999776482582
+   ],
+   "type": "VEC3"
+  },
+  {
+   "bufferView": 7,
+   "componentType": 5126,
+   "count": 24,
+   "type": "VEC3"
+  },
+  {
+   "bufferView": 8,
+   "componentType": 5126,
+   "count": 24,
+   "type": "VEC2"
+  },
+  {
+   "bufferView": 9,
+   "componentType": 5123,
+   "count": 36,
+   "type": "SCALAR"
+  },
+  {
+   "bufferView": 10,
+   "componentType": 5123,
+   "count": 4,
+   "type": "SCALAR"
+  },
+  {
+   "bufferView": 11,
+   "componentType": 5126,
+   "count": 4,
+   "type": "VEC3"
+  },
+  {
+   "componentType": 5126,
+   "count": 24,
+   "max": [
+    0.0,
+    0.029999999329447746,
+    0.0
+   ],
+   "min": [
+    0.0,
+    0.0,
+    0.0
+   ],
+   "sparse": {
+    "count": 4,
+    "indices": {
+     "bufferView": 10,
+     "componentType": 5123
+    },
+    "values": {
+     "bufferView": 11
+    }
+   },
+   "type": "VEC3"
+  },
+  {
+   "bufferView": 12,
+   "componentType": 5126,
+   "count": 2,
+   "type": "MAT4"
+  },
+  {
+   "bufferView": 13,
+   "componentType": 5126,
+   "count": 3,
+   "max": [
+    1.0
+   ],
+   "min": [
+    0.0
+   ],
+   "type": "SCALAR"
+  },
+  {
+   "bufferView": 14,
+   "componentType": 5126,
+   "count": 9,
+   "type": "VEC4"
+  },
+  {
+   "bufferView": 15,
+   "componentType": 5126,
+   "count": 3,
+   "max": [
+    0.5
+   ],
+   "min": [
+    0.0
+   ],
+   "type": "SCALAR"
+  },
+  {
+   "bufferView": 16,
+   "componentType": 5126,
+   "count": 3,
+   "type": "SCALAR"
+  },
+  {
+   "bufferView": 17,
+   "componentType": 5126,
+   "count": 2,
+   "max": [
+    1.0
+   ],
+   "min": [
+    0.0
+   ],
+   "type": "SCALAR"
+  },
+  {
+   "bufferView": 18,
+   "componentType": 5126,
+   "count": 2,
+   "type": "VEC3"
+  }
+ ],
+ "animations": [
+  {
+   "channels": [
+    {
+     "sampler": 0,
+     "target": {
+      "node": 2,
+      "path": "rotation"
+     }
+    }
+   ],
+   "name": "Bend",
+   "samplers": [
+    {
+     "input": 14,
+     "interpolation": "CUBICSPLINE",
+     "output": 15
+    }
+   ]
+  },
+  {
+   "channels": [
+    {
+     "sampler": 0,
+     "target": {
+      "node": 3,
+      "path": "weights"
+     }
+    }
+   ],
+   "name": "Raise",
+   "samplers": [
+    {
+     "input": 16,
+     "interpolation": "STEP",
+     "output": 17
+    }
+   ]
+  },
+  {
+   "channels": [
+    {
+     "sampler": 0,
+     "target": {
+      "node": 3,
+      "path": "translation"
+     }
+    }
+   ],
+   "name": "Slide",
+   "samplers": [
+    {
+     "input": 18,
+     "interpolation": "LINEAR",
+     "output": 19
+    }
+   ]
+  }
+ ],
+ "asset": {
+  "generator": "asset_contracts fixture builder for gltf_structural_validator",
+  "version": "2.0"
+ },
+ "bufferViews": [
+  {
+   "buffer": 0,
+   "byteLength": 72,
+   "byteOffset": 0,
+   "target": 34962
+  },
+  {
+   "buffer": 0,
+   "byteLength": 72,
+   "byteOffset": 72,
+   "target": 34962
+  },
+  {
+   "buffer": 0,
+   "byteLength": 48,
+   "byteOffset": 144,
+   "target": 34962
+  },
+  {
+   "buffer": 0,
+   "byteLength": 24,
+   "byteOffset": 192,
+   "target": 34962
+  },
+  {
+   "buffer": 0,
+   "byteLength": 96,
+   "byteOffset": 216,
+   "target": 34962
+  },
+  {
+   "buffer": 0,
+   "byteLength": 24,
+   "byteOffset": 312,
+   "target": 34963
+  },
+  {
+   "buffer": 0,
+   "byteLength": 288,
+   "byteOffset": 336,
+   "target": 34962
+  },
+  {
+   "buffer": 0,
+   "byteLength": 288,
+   "byteOffset": 624,
+   "target": 34962
+  },
+  {
+   "buffer": 0,
+   "byteLength": 192,
+   "byteOffset": 912,
+   "target": 34962
+  },
+  {
+   "buffer": 0,
+   "byteLength": 72,
+   "byteOffset": 1104,
+   "target": 34963
+  },
+  {
+   "buffer": 0,
+   "byteLength": 8,
+   "byteOffset": 1176
+  },
+  {
+   "buffer": 0,
+   "byteLength": 48,
+   "byteOffset": 1184
+  },
+  {
+   "buffer": 0,
+   "byteLength": 128,
+   "byteOffset": 1232
+  },
+  {
+   "buffer": 0,
+   "byteLength": 12,
+   "byteOffset": 1360
+  },
+  {
+   "buffer": 0,
+   "byteLength": 144,
+   "byteOffset": 1372
+  },
+  {
+   "buffer": 0,
+   "byteLength": 12,
+   "byteOffset": 1516
+  },
+  {
+   "buffer": 0,
+   "byteLength": 12,
+   "byteOffset": 1528
+  },
+  {
+   "buffer": 0,
+   "byteLength": 8,
+   "byteOffset": 1540
+  },
+  {
+   "buffer": 0,
+   "byteLength": 24,
+   "byteOffset": 1548
+  }
+ ],
+ "buffers": [
+  {
+   "byteLength": 1572,
+   "uri": "data:application/octet-stream;base64,zcxMvQAAAAAAAAAAzcxMPQAAAAAAAAAAzcxMvQAAAD8AAAAAzcxMPQAAAD8AAAAAzcxMvQAAgD8AAAAAzcxMPQAAgD8AAAAAAAAAAAAAAAAAAIA/AAAAAAAAAAAAAIA/AAAAAAAAAAAAAIA/AAAAAAAAAAAAAIA/AAAAAAAAAAAAAIA/AAAAAAAAAAAAAIA/AAAAAAAAAAAAAIA/AAAAAAAAAAAAAAA/AACAPwAAAD8AAAAAAACAPwAAgD8AAIA/AAEAAAABAAAAAQAAAAEAAAABAAAAAQAAAACAPwAAAAAAAAAAAAAAAAAAgD8AAAAAAAAAAAAAAAAAAAA/AAAAPwAAAAAAAAAAAAAAPwAAAD8AAAAAAAAAAAAAAAAAAIA/AAAAAAAAAAAAAAAAAACAPwAAAAAAAAAAAAABAAMAAAADAAIAAgADAAUAAgAFAAQAzcxMPQAAAAAK1yO8zcxMPc3MTD0K1yO8zcxMPc3MTD0K1yM8zcxMPQAAAAAK1yM8zcxMvQAAAAAK1yO8zcxMvQAAAAAK1yM8zcxMvc3MTD0K1yM8zcxMvc3MTD0K1yO8zcxMvc3MTD0K1yO8zcxMvc3MTD0K1yM8zcxMPc3MTD0K1yM8zcxMPc3MTD0K1yO8zcxMvQAAAAAK1yO8zcxMPQAAAAAK1yO8zcxMPQAAAAAK1yM8zcxMvQAAAAAK1yM8zcxMvQAAAAAK1yM8zcxMPQAAAAAK1yM8zcxMPc3MTD0K1yM8zcxMvc3MTD0K1yM8zcxMvQAAAAAK1yO8zcxMvc3MTD0K1yO8zcxMPc3MTD0K1yO8zcxMPQAAAAAK1yO8AACAPwAAAAAAAAAAAACAPwAAAAAAAAAAAACAPwAAAAAAAAAAAACAPwAAAAAAAAAAAACAvwAAAAAAAAAAAACAvwAAAAAAAAAAAACAvwAAAAAAAAAAAACAvwAAAAAAAAAAAAAAAAAAgD8AAAAAAAAAAAAAgD8AAAAAAAAAAAAAgD8AAAAAAAAAAAAAgD8AAAAAAAAAAAAAgL8AAAAAAAAAAAAAgL8AAAAAAAAAAAAAgL8AAAAAAAAAAAAAgL8AAAAAAAAAAAAAAAAAAIA/AAAAAAAAAAAAAIA/AAAAAAAAAAAAAIA/AAAAAAAAAAAAAIA/AAAAAAAAAAAAAIC/AAAAAAAAAAAAAIC/AAAAAAAAAAAAAIC/AAAAAAAAAAAAAIC/AAAAAAAAgD8AAIA/AACAPwAAgD8AAAAAAAAAAAAAAAAAAAAAAACAPwAAAAAAAAAAAACAPwAAAAAAAIA/AACAPwAAAAAAAIA/AACAPwAAgD8AAIA/AAAAAAAAAAAAAAAAAAAAAAAAgD8AAAAAAAAAAAAAgD8AAAAAAACAPwAAgD8AAAAAAACAPwAAgD8AAIA/AACAPwAAAAAAAAAAAAAAAAAAAAAAAIA/AAAAAAAAAAAAAIA/AAAAAAAAgD8AAIA/AAABAAIAAAACAAMABAAFAAYABAAGAAcACAAJAAoACAAKAAsADAANAA4ADAAOAA8AEAARABIAEAASABMAFAAVABYAFAAWABcAAQACAAYABwAAAAAAj8L1PAAAAAAAAAAAj8L1PAAAAAAAAAAAj8L1PAAAAAAAAAAAj8L1PAAAAAAAAIA/AAAAAAAAAAAAAAAAAAAAAAAAgD8AAAAAAAAAAAAAAAAAAAAAAACAPwAAAAAAAAAAAAAAAAAAAAAAAIA/AACAPwAAAAAAAAAAAAAAAAAAAAAAAIA/AAAAAAAAAAAAAAAAAAAAAAAAgD8AAAAAAAAAAAAAAL8AAAAAAACAPwAAAAAAAAA/AACAPwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAIA/AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAO6DhD7qRnc/AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAIA/AAAAAAAAAAAAAAAAAAAAAAAAAAAAAIA+AAAAPwAAAAAAAIA/AAAAAAAAAAAAAIA/mpmZPgAAAAAAAAAAmpmZPgAAAADNzEw+"
+  }
+ ],
+ "images": [
+  {
+   "name": "Checker",
+   "uri": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAAECAYAAACp8Z5+AAAAG0lEQVR42mP4cGfL/xM2Gv9hNAMyB0QzEFQBAALmLVERSR/EAAAAAElFTkSuQmCC"
+  }
+ ],
+ "materials": [
+  {
+   "name": "StripRubber",
+   "pbrMetallicRoughness": {
+    "baseColorFactor": [
+     1.0,
+     1.0,
+     1.0,
+     1.0
+    ],
+    "baseColorTexture": {
+     "index": 0
+    },
+    "metallicFactor": 0.0,
+    "roughnessFactor": 0.9
+   }
+  },
+  {
+   "name": "TabPlastic",
+   "pbrMetallicRoughness": {
+    "baseColorFactor": [
+     0.20000000298023224,
+     0.4000000059604645,
+     0.8999999761581421,
+     1.0
+    ],
+    "metallicFactor": 0.0,
+    "roughnessFactor": 0.5
+   }
+  }
+ ],
+ "meshes": [
+  {
+   "name": "StripMesh",
+   "primitives": [
+    {
+     "attributes": {
+      "NORMAL": 1,
+      "POSITION": 0,
+      "TEXCOORD_0": 2,
+      "WEIGHTS_0": 4
+     },
+     "indices": 5,
+     "material": 0
+    }
+   ]
+  },
+  {
+   "extras": {
+    "targetNames": [
+     "Raise"
+    ]
+   },
+   "name": "TabMesh",
+   "primitives": [
+    {
+     "attributes": {
+      "NORMAL": 7,
+      "POSITION": 6,
+      "TEXCOORD_0": 8
+     },
+     "indices": 9,
+     "material": 1,
+     "targets": [
+      {
+       "POSITION": 12
+      }
+     ]
+    }
+   ],
+   "weights": [
+    0.0
+   ]
+  }
+ ],
+ "nodes": [
+  {
+   "children": [
+    1,
+    4
+   ],
+   "name": "StripRig"
+  },
+  {
+   "children": [
+    2
+   ],
+   "name": "StripBone0"
+  },
+  {
+   "name": "StripBone1",
+   "translation": [
+    0.0,
+    0.5,
+    0.0
+   ]
+  },
+  {
+   "mesh": 1,
+   "name": "Tab",
+   "translation": [
+    0.3,
+    0.0,
+    0.0
+   ]
+  },
+  {
+   "mesh": 0,
+   "name": "Strip",
+   "skin": 0
+  }
+ ],
+ "samplers": [
+  {
+   "magFilter": 9728,
+   "minFilter": 9728,
+   "wrapS": 33071,
+   "wrapT": 33071
+  }
+ ],
+ "scene": 0,
+ "scenes": [
+  {
+   "name": "StripScene",
+   "nodes": [
+    0,
+    3
+   ]
+  }
+ ],
+ "skins": [
+  {
+   "inverseBindMatrices": 13,
+   "joints": [
+    1,
+    2
+   ],
+   "name": "StripSkin",
+   "skeleton": 1
+  }
+ ],
+ "textures": [
+  {
+   "sampler": 0,
+   "source": 0
+  }
+ ]
+}

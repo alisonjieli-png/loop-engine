@@ -1,0 +1,46 @@
+{
+ "asset": "door.gltf",
+ "joints": [
+  {
+   "axis": [
+    0.0,
+    1.0,
+    0.0
+   ],
+   "limits": [
+    0.0,
+    95.0
+   ],
+   "name": "door_hinge",
+   "node": "DoorPanel",
+   "pivot": [
+    0.0,
+    0.0,
+    0.0
+   ],
+   "rest": 0.0,
+   "type": "hinge"
+  },
+  {
+   "axis": [
+    0.0,
+    0.0,
+    1.0
+   ],
+   "limits": [
+    -35.0,
+    0.0
+   ],
+   "name": "handle_lever",
+   "node": "DoorPanel",
+   "pivot": [
+    0.0,
+    0.0,
+    0.0
+   ],
+   "rest": 0.0,
+   "type": "hinge"
+  }
+ ],
+ "record_type": "articulation_manifest/v1"
+}

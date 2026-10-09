@@ -1,0 +1,345 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "gltf_structural_validator",
+  "title": "glTF 2.0 structural validator",
+  "purpose": "Check that a .gltf or .glb file is internally consistent before an engine loads it: buffers, views, accessors, indices, materials, textures, the node graph, skins and animation samplers. Run it after every export and before every import.",
+  "form": "library_module",
+  "asset_role": null,
+  "dimension": "3d",
+  "engine": {
+    "name": "python",
+    "minimum_version": "3.10"
+  },
+  "tags": [
+    "gltf",
+    "validator",
+    "3d asset",
+    "accessor",
+    "skin",
+    "animation",
+    "scene graph",
+    "export check"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "role": "other"
+    },
+    {
+      "path": "gltf_structural_validator.py",
+      "role": "executable_tool"
+    },
+    {
+      "path": "test_gltf_structural_validator.py",
+      "role": "executable_tool"
+    },
+    {
+      "path": "fixtures/bad_accessor_out_of_bounds.gltf",
+      "role": "skill_asset"
+    },
+    {
+      "path": "fixtures/bad_attribute_counts.gltf",
+      "role": "skill_asset"
+    },
+    {
+      "path": "fixtures/bad_buffer_length.gltf",
+      "role": "skill_asset"
+    },
+    {
+      "path": "fixtures/bad_cubic_output_count.gltf",
+      "role": "skill_asset"
+    },
+    {
+      "path": "fixtures/bad_index_out_of_range.gltf",
+      "role": "skill_asset"
+    },
+    {
+      "path": "fixtures/bad_inverse_bind_count.gltf",
+      "role": "skill_asset"
+    },
+    {
+      "path": "fixtures/bad_key_times.gltf",
+      "role": "skill_asset"
+    },
+    {
+      "path": "fixtures/bad_node_cycle.gltf",
+      "role": "skill_asset"
+    },
+    {
+      "path": "fixtures/bad_position_bounds.gltf",
+      "role": "skill_asset"
+    },
+    {
+      "path": "fixtures/bad_rotation_not_unit.gltf",
+      "role": "skill_asset"
+    },
+    {
+      "path": "fixtures/bad_skin_attributes_missing.gltf",
+      "role": "skill_asset"
+    },
+    {
+      "path": "fixtures/bad_texture_reference.gltf",
+      "role": "skill_asset"
+    },
+    {
+      "path": "fixtures/good_door.gltf",
+      "role": "skill_asset"
+    },
+    {
+      "path": "fixtures/good_skinned_strip.gltf",
+      "role": "skill_asset"
+    }
+  ],
+  "contract": {
+    "entry_points": [
+      {
+        "name": "validate_file",
+        "kind": "function",
+        "signature": "validate_file(path) -> asset_report.Report"
+      },
+      {
+        "name": "validate",
+        "kind": "function",
+        "signature": "validate(asset: gltfio.Asset, subject: str = '') -> asset_report.Report"
+      },
+      {
+        "name": "run",
+        "kind": "function",
+        "signature": "run(argv: list) -> dict (the JSON report)"
+      },
+      {
+        "name": "main",
+        "kind": "command_line",
+        "usage": "python3 gltf_structural_validator.py ASSET.gltf"
+      }
+    ],
+    "inputs": [
+      {
+        "name": "asset",
+        "format": "glTF 2.0 JSON (.gltf with embedded base64 or sibling buffers) or binary glTF (.glb)"
+      }
+    ],
+    "report": {
+      "record_type": "asset_contract_report/v1",
+      "tool": "gltf_structural_validator",
+      "subject": "the file name",
+      "ok": "true exactly when no rule failed",
+      "failures": "list of {code, where, detail}",
+      "warnings": "list of {code, where, detail}: buffer_longer_than_declared, primitive_without_positions, texture_without_source, image_format_unrecognized, node_unreachable",
+      "facts": "counts per top-level array, container, generator, extensions_used, node_names, mesh_names, material_names, animation_names; when no rule failed also triangles, scene_bounds (metres, glTF axes) and animations (name, duration, channels)"
+    },
+    "failures_detected": [
+      "file_unreadable",
+      "json_invalid",
+      "asset_header_invalid",
+      "asset_version_unsupported",
+      "property_type_invalid",
+      "extension_required_not_used",
+      "buffer_invalid",
+      "buffer_unresolved",
+      "buffer_length_mismatch",
+      "buffer_reference_invalid",
+      "buffer_view_out_of_range",
+      "byte_stride_invalid",
+      "buffer_view_target_invalid",
+      "buffer_view_reference_invalid",
+      "accessor_type_invalid",
+      "accessor_count_invalid",
+      "accessor_normalized_invalid",
+      "accessor_misaligned",
+      "accessor_out_of_bounds",
+      "accessor_min_max_invalid",
+      "accessor_min_max_mismatch",
+      "accessor_min_max_missing",
+      "accessor_value_not_finite",
+      "accessor_reference_invalid",
+      "sparse_invalid",
+      "mesh_primitive_invalid",
+      "attribute_type_invalid",
+      "attribute_count_mismatch",
+      "index_type_invalid",
+      "index_out_of_range",
+      "index_restart_value",
+      "primitive_mode_invalid",
+      "primitive_count_invalid",
+      "material_reference_invalid",
+      "morph_target_invalid",
+      "material_value_invalid",
+      "texture_reference_invalid",
+      "sampler_reference_invalid",
+      "sampler_value_invalid",
+      "image_reference_invalid",
+      "image_source_invalid",
+      "image_unresolved",
+      "node_reference_invalid",
+      "mesh_reference_invalid",
+      "skin_reference_invalid",
+      "camera_reference_invalid",
+      "node_transform_conflict",
+      "node_transform_invalid",
+      "node_rotation_not_unit",
+      "node_multiple_parents",
+      "node_cycle",
+      "node_skin_without_mesh",
+      "scene_reference_invalid",
+      "scene_node_not_root",
+      "skin_joint_invalid",
+      "skin_inverse_bind_invalid",
+      "skin_inverse_bind_count_mismatch",
+      "skin_skeleton_not_ancestor",
+      "skin_attributes_missing",
+      "skin_joint_index_out_of_range",
+      "animation_sampler_reference_invalid",
+      "animation_target_invalid",
+      "animation_channel_duplicate",
+      "animation_input_invalid",
+      "animation_input_negative",
+      "animation_input_not_increasing",
+      "animation_interpolation_invalid",
+      "animation_output_invalid",
+      "animation_output_count_mismatch"
+    ],
+    "proves": "Every index the file uses points at an existing entry; every accessor lies inside its buffer view and buffer, is aligned, and its declared min and max equal the data; primitives have consistent attribute counts and in-range indices; the node graph is a forest with one parent per node; skins and animation samplers have the counts and types the glTF 2.0 data model requires.",
+    "does_not_prove": "That the asset looks right, has sensible dimensions, names or materials, that its extensions are supported by a given engine, that textures decode, or that animation motion is plausible. It is not the Khronos glTF-Validator and does not implement every rule of the specification.",
+    "fixtures": [
+      {
+        "argv": [
+          "fixtures/good_door.gltf"
+        ],
+        "expect": "pass"
+      },
+      {
+        "argv": [
+          "fixtures/good_skinned_strip.gltf"
+        ],
+        "expect": "pass"
+      },
+      {
+        "argv": [
+          "fixtures/bad_accessor_out_of_bounds.gltf"
+        ],
+        "expect": "fail",
+        "codes": [
+          "accessor_out_of_bounds"
+        ]
+      },
+      {
+        "argv": [
+          "fixtures/bad_index_out_of_range.gltf"
+        ],
+        "expect": "fail",
+        "codes": [
+          "index_out_of_range"
+        ]
+      },
+      {
+        "argv": [
+          "fixtures/bad_node_cycle.gltf"
+        ],
+        "expect": "fail",
+        "codes": [
+          "node_cycle"
+        ]
+      },
+      {
+        "argv": [
+          "fixtures/bad_inverse_bind_count.gltf"
+        ],
+        "expect": "fail",
+        "codes": [
+          "skin_inverse_bind_count_mismatch"
+        ]
+      },
+      {
+        "argv": [
+          "fixtures/bad_key_times.gltf"
+        ],
+        "expect": "fail",
+        "codes": [
+          "animation_input_not_increasing"
+        ]
+      },
+      {
+        "argv": [
+          "fixtures/bad_cubic_output_count.gltf"
+        ],
+        "expect": "fail",
+        "codes": [
+          "animation_output_count_mismatch"
+        ]
+      },
+      {
+        "argv": [
+          "fixtures/bad_position_bounds.gltf"
+        ],
+        "expect": "fail",
+        "codes": [
+          "accessor_min_max_mismatch"
+        ]
+      },
+      {
+        "argv": [
+          "fixtures/bad_buffer_length.gltf"
+        ],
+        "expect": "fail",
+        "codes": [
+          "buffer_length_mismatch"
+        ]
+      },
+      {
+        "argv": [
+          "fixtures/bad_texture_reference.gltf"
+        ],
+        "expect": "fail",
+        "codes": [
+          "texture_reference_invalid"
+        ]
+      },
+      {
+        "argv": [
+          "fixtures/bad_attribute_counts.gltf"
+        ],
+        "expect": "fail",
+        "codes": [
+          "attribute_count_mismatch"
+        ]
+      },
+      {
+        "argv": [
+          "fixtures/bad_rotation_not_unit.gltf"
+        ],
+        "expect": "fail",
+        "codes": [
+          "node_rotation_not_unit"
+        ]
+      },
+      {
+        "argv": [
+          "fixtures/bad_skin_attributes_missing.gltf"
+        ],
+        "expect": "fail",
+        "codes": [
+          "skin_attributes_missing"
+        ]
+      }
+    ]
+  },
+  "limits": "Pure Python: an asset with one million vertices and one million indices took about 8 seconds on the build host under load (October 9, 2026). Extension contents (KHR_*, EXT_*) are not validated, only extensionsRequired against extensionsUsed. Images are checked for existence and PNG or JPEG magic bytes, not decoded. Sparse accessors, matrix column padding and GLB containers are supported. Animation pointer targets are accepted without further checks. Rules of the specification outside the listed failure codes are not checked.",
+  "related": [
+    "gltf_semantic_recovery",
+    "animation_export_trap_checker",
+    "web_delivery_budget_checker"
+  ],
+  "technique_references": [
+    "glTF 2.0 specification: buffers, buffer views and accessors (alignment, byte stride, sparse storage, min and max)",
+    "glTF 2.0 specification: meshes, primitives, attribute semantics and morph targets",
+    "glTF 2.0 specification: nodes, scenes, skins and animations (samplers, interpolation, output counts)",
+    "Iterative depth-first search with open and done marks for cycle detection"
+  ],
+  "native_checks": [
+    "checker_matches_contract",
+    "godot_agrees_on_known_good",
+    "blender_agrees_on_known_good",
+    "known_wrong_refused_with_engine_reactions"
+  ]
+}

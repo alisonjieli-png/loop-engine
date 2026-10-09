@@ -1,0 +1,329 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "godot_scene_linter",
+  "title": "Godot .tscn and .tres parser and linter",
+  "purpose": "Parse Godot 4 text scenes and resources and find what fails or silently vanishes on load: missing resource files, unknown or forward resource ids, missing node parents, repeated sibling names, untyped nodes, broken connections, several roots, syntax and format errors.",
+  "form": "library_module",
+  "asset_role": null,
+  "dimension": "3d",
+  "engine": {
+    "name": "python",
+    "minimum_version": "3.10"
+  },
+  "tags": [
+    "godot",
+    "tscn",
+    "tres",
+    "linter",
+    "parser",
+    "scene",
+    "references",
+    "ci check"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "role": "other"
+    },
+    {
+      "path": "godot_scene_linter.py",
+      "role": "executable_tool"
+    },
+    {
+      "path": "test_godot_scene_linter.py",
+      "role": "executable_tool"
+    },
+    {
+      "path": "fixtures/project/materials/bad_brass_missing_texture.tres",
+      "role": "skill_asset"
+    },
+    {
+      "path": "fixtures/project/materials/wood.tres",
+      "role": "skill_asset"
+    },
+    {
+      "path": "fixtures/project/project.godot",
+      "role": "skill_asset"
+    },
+    {
+      "path": "fixtures/project/scenes/bad_connection.tscn",
+      "role": "skill_asset"
+    },
+    {
+      "path": "fixtures/project/scenes/bad_duplicate_sibling.tscn",
+      "role": "skill_asset"
+    },
+    {
+      "path": "fixtures/project/scenes/bad_forward_sub_resource.tscn",
+      "role": "skill_asset"
+    },
+    {
+      "path": "fixtures/project/scenes/bad_future_format.tscn",
+      "role": "skill_asset"
+    },
+    {
+      "path": "fixtures/project/scenes/bad_missing_material.tscn",
+      "role": "skill_asset"
+    },
+    {
+      "path": "fixtures/project/scenes/bad_parent_path.tscn",
+      "role": "skill_asset"
+    },
+    {
+      "path": "fixtures/project/scenes/bad_syntax.tscn",
+      "role": "skill_asset"
+    },
+    {
+      "path": "fixtures/project/scenes/bad_two_roots.tscn",
+      "role": "skill_asset"
+    },
+    {
+      "path": "fixtures/project/scenes/bad_unknown_ext_id.tscn",
+      "role": "skill_asset"
+    },
+    {
+      "path": "fixtures/project/scenes/bad_unknown_sub_id.tscn",
+      "role": "skill_asset"
+    },
+    {
+      "path": "fixtures/project/scenes/bad_untyped_node.tscn",
+      "role": "skill_asset"
+    },
+    {
+      "path": "fixtures/project/scenes/door.tscn",
+      "role": "skill_asset"
+    },
+    {
+      "path": "fixtures/project/scenes/godot3_door.tscn",
+      "role": "skill_asset"
+    },
+    {
+      "path": "fixtures/project/scenes/room.tscn",
+      "role": "skill_asset"
+    },
+    {
+      "path": "fixtures/project/scripts/door_controller.gd",
+      "role": "skill_asset"
+    }
+  ],
+  "contract": {
+    "entry_points": [
+      {
+        "name": "parse",
+        "kind": "function",
+        "signature": "parse(text) -> list of sections {kind, attributes, properties: [(key, raw value, line)], line}; raises ParseError"
+      },
+      {
+        "name": "node_paths",
+        "kind": "function",
+        "signature": "node_paths(path, project) -> every node path a scene defines, with the nodes of instanced scenes"
+      },
+      {
+        "name": "lint",
+        "kind": "function",
+        "signature": "lint(path, project=None) -> asset_report.Report"
+      },
+      {
+        "name": "run",
+        "kind": "function",
+        "signature": "run(argv: list) -> dict (the JSON report)"
+      },
+      {
+        "name": "main",
+        "kind": "command_line",
+        "usage": "python3 godot_scene_linter.py FILE.tscn [--project PROJECT_FOLDER]"
+      }
+    ],
+    "inputs": [
+      {
+        "name": "file",
+        "format": "Godot text scene (.tscn) or text resource (.tres), format 3 or 4 (format 2 with a warning)"
+      },
+      {
+        "name": "project",
+        "format": "the folder holding project.godot; found by walking up from the file when omitted",
+        "optional": true
+      }
+    ],
+    "report": {
+      "record_type": "asset_contract_report/v1",
+      "tool": "godot_scene_linter",
+      "subject": "the file name",
+      "ok": "true when no rule fails",
+      "failures": "list of {code, where (line), detail}",
+      "warnings": "project_root_unknown, godot3_format, ext_resource_unused, sub_resource_unused",
+      "facts": "kind, format, project, ext_resources (id, type, path, exists), sub_resources (id, type), nodes (path, name, type, instance), connections"
+    },
+    "failures_detected": [
+      "file_unreadable",
+      "syntax_invalid",
+      "header_invalid",
+      "format_unsupported",
+      "ext_resource_invalid",
+      "ext_resource_id_repeated",
+      "ext_resource_missing_file",
+      "ext_resource_reference_unknown",
+      "sub_resource_id_repeated",
+      "sub_resource_reference_unknown",
+      "sub_resource_forward_reference",
+      "root_node_count",
+      "node_parent_missing",
+      "node_name_repeated",
+      "node_type_missing",
+      "connection_node_missing",
+      "resource_section_missing"
+    ],
+    "proves": "The file parses; every res:// external resource exists under the project root; every ExtResource and SubResource id is declared, sub-resources before their first use; the scene has one root, every node a known parent (including nodes of instanced scenes), a type or an instance, and a unique name among its siblings; every connection joins existing nodes.",
+    "does_not_prove": "That property values are valid for their class, that scripts compile, that signals and methods exist, or that uid:// references resolve (the uid cache is not read).",
+    "fixtures": [
+      {
+        "argv": [
+          "fixtures/project/scenes/door.tscn"
+        ],
+        "expect": "pass"
+      },
+      {
+        "argv": [
+          "fixtures/project/scenes/room.tscn"
+        ],
+        "expect": "pass"
+      },
+      {
+        "argv": [
+          "fixtures/project/materials/wood.tres"
+        ],
+        "expect": "pass"
+      },
+      {
+        "argv": [
+          "fixtures/project/scenes/godot3_door.tscn"
+        ],
+        "expect": "pass"
+      },
+      {
+        "argv": [
+          "fixtures/project/materials/bad_brass_missing_texture.tres"
+        ],
+        "expect": "fail",
+        "codes": [
+          "ext_resource_missing_file"
+        ]
+      },
+      {
+        "argv": [
+          "fixtures/project/scenes/bad_missing_material.tscn"
+        ],
+        "expect": "fail",
+        "codes": [
+          "ext_resource_missing_file"
+        ]
+      },
+      {
+        "argv": [
+          "fixtures/project/scenes/bad_unknown_ext_id.tscn"
+        ],
+        "expect": "fail",
+        "codes": [
+          "ext_resource_reference_unknown"
+        ]
+      },
+      {
+        "argv": [
+          "fixtures/project/scenes/bad_unknown_sub_id.tscn"
+        ],
+        "expect": "fail",
+        "codes": [
+          "sub_resource_reference_unknown"
+        ]
+      },
+      {
+        "argv": [
+          "fixtures/project/scenes/bad_forward_sub_resource.tscn"
+        ],
+        "expect": "fail",
+        "codes": [
+          "sub_resource_forward_reference"
+        ]
+      },
+      {
+        "argv": [
+          "fixtures/project/scenes/bad_parent_path.tscn"
+        ],
+        "expect": "fail",
+        "codes": [
+          "node_parent_missing"
+        ]
+      },
+      {
+        "argv": [
+          "fixtures/project/scenes/bad_duplicate_sibling.tscn"
+        ],
+        "expect": "fail",
+        "codes": [
+          "node_name_repeated"
+        ]
+      },
+      {
+        "argv": [
+          "fixtures/project/scenes/bad_connection.tscn"
+        ],
+        "expect": "fail",
+        "codes": [
+          "connection_node_missing"
+        ]
+      },
+      {
+        "argv": [
+          "fixtures/project/scenes/bad_syntax.tscn"
+        ],
+        "expect": "fail",
+        "codes": [
+          "syntax_invalid"
+        ]
+      },
+      {
+        "argv": [
+          "fixtures/project/scenes/bad_two_roots.tscn"
+        ],
+        "expect": "fail",
+        "codes": [
+          "root_node_count"
+        ]
+      },
+      {
+        "argv": [
+          "fixtures/project/scenes/bad_untyped_node.tscn"
+        ],
+        "expect": "fail",
+        "codes": [
+          "node_type_missing"
+        ]
+      },
+      {
+        "argv": [
+          "fixtures/project/scenes/bad_future_format.tscn"
+        ],
+        "expect": "fail",
+        "codes": [
+          "format_unsupported"
+        ]
+      }
+    ]
+  },
+  "limits": "Resources are checked by res:// path only; uid-only references are not resolved. Property values are scanned for ExtResource and SubResource references but not type-checked. Signals and methods named by connections are not checked. Nodes inside instanced scenes are found by parsing those scenes (eight levels deep at most). Godot 3 scenes (format 2) are parsed with a warning, because Godot 4.7 converts their class names on load.",
+  "related": [
+    "asset_path_portability_checker",
+    "clean_reopen_procedure",
+    "articulation_manifest_godot_builder"
+  ],
+  "technique_references": [
+    "Godot 4 text scene and resource format: sections, header attributes, multi-line values",
+    "Bracket and string aware scanning of multi-line values",
+    "Scene tree path resolution with instanced sub-scenes"
+  ],
+  "native_checks": [
+    "checker_matches_contract",
+    "godot_loads_known_good_files_as_parsed",
+    "each_known_wrong_file_has_a_visible_effect_in_godot"
+  ]
+}

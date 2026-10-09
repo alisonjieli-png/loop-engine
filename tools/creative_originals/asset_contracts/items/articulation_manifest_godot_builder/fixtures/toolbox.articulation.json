@@ -1,0 +1,46 @@
+{
+ "asset": "toolbox.gltf",
+ "joints": [
+  {
+   "axis": [
+    1.0,
+    0.0,
+    0.0
+   ],
+   "limits": [
+    -110.0,
+    0.0
+   ],
+   "name": "lid_hinge",
+   "node": "Lid",
+   "pivot": [
+    0.0,
+    -0.01,
+    -0.15
+   ],
+   "rest": 0.0,
+   "type": "hinge"
+  },
+  {
+   "axis": [
+    0.0,
+    0.0,
+    1.0
+   ],
+   "limits": [
+    0.0,
+    0.2
+   ],
+   "name": "tray_slide",
+   "node": "Tray",
+   "pivot": [
+    0.0,
+    0.0,
+    0.0
+   ],
+   "rest": 0.0,
+   "type": "slider"
+  }
+ ],
+ "record_type": "articulation_manifest/v1"
+}

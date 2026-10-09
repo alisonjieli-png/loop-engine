@@ -1,0 +1,343 @@
+{
+ "$schema": "https://json-schema.org/draft/2020-12/schema",
+ "title": "asset_specification/v1",
+ "description": "What a 3D asset must be: its named parts with hierarchy, real dimensions, pivots and materials, its joints with axes and limits, its clips and its behaviors. Lengths in metres, axes in the asset's own frame at the rest pose.",
+ "type": "object",
+ "required": [
+  "record_type",
+  "asset",
+  "units",
+  "up_axis",
+  "parts"
+ ],
+ "additionalProperties": false,
+ "properties": {
+  "record_type": {
+   "const": "asset_specification/v1"
+  },
+  "asset": {
+   "type": "string",
+   "pattern": "^[a-z][a-z0-9_]{1,63}$"
+  },
+  "description": {
+   "type": "string",
+   "maxLength": 500
+  },
+  "units": {
+   "const": "metre"
+  },
+  "up_axis": {
+   "enum": [
+    "+Y",
+    "+Z"
+   ]
+  },
+  "forward_axis": {
+   "enum": [
+    "+X",
+    "-X",
+    "+Y",
+    "-Y",
+    "+Z",
+    "-Z"
+   ]
+  },
+  "tolerance_m": {
+   "type": "number",
+   "exclusiveMinimum": 0,
+   "maximum": 1
+  },
+  "parts": {
+   "type": "array",
+   "minItems": 1,
+   "items": {
+    "$ref": "#/$defs/part"
+   }
+  },
+  "materials": {
+   "type": "array",
+   "items": {
+    "$ref": "#/$defs/material"
+   }
+  },
+  "joints": {
+   "type": "array",
+   "items": {
+    "$ref": "#/$defs/joint"
+   }
+  },
+  "clips": {
+   "type": "array",
+   "items": {
+    "$ref": "#/$defs/clip"
+   }
+  },
+  "behaviors": {
+   "type": "array",
+   "items": {
+    "$ref": "#/$defs/behavior"
+   }
+  }
+ },
+ "$defs": {
+  "name": {
+   "type": "string",
+   "minLength": 1,
+   "maxLength": 63,
+   "pattern": "^[A-Za-z0-9_][A-Za-z0-9_ -]*$",
+   "description": "Letters, digits, underscore, space and hyphen: names Godot and Blender keep unchanged."
+  },
+  "vector3": {
+   "type": "array",
+   "minItems": 3,
+   "maxItems": 3,
+   "items": {
+    "type": "number"
+   }
+  },
+  "size3": {
+   "type": "array",
+   "minItems": 3,
+   "maxItems": 3,
+   "items": {
+    "type": "number",
+    "minimum": 0
+   }
+  },
+  "range": {
+   "type": "array",
+   "minItems": 2,
+   "maxItems": 2,
+   "items": {
+    "type": "number"
+   }
+  },
+  "unit_interval": {
+   "type": "number",
+   "minimum": 0,
+   "maximum": 1
+  },
+  "part": {
+   "type": "object",
+   "required": [
+    "name"
+   ],
+   "additionalProperties": false,
+   "properties": {
+    "name": {
+     "$ref": "#/$defs/name"
+    },
+    "parent": {
+     "anyOf": [
+      {
+       "$ref": "#/$defs/name"
+      },
+      {
+       "type": "null"
+      }
+     ]
+    },
+    "dimensions_m": {
+     "$ref": "#/$defs/size3"
+    },
+    "measure": {
+     "enum": [
+      "own",
+      "subtree"
+     ]
+    },
+    "center_m": {
+     "$ref": "#/$defs/vector3"
+    },
+    "pivot_m": {
+     "$ref": "#/$defs/vector3"
+    },
+    "material": {
+     "anyOf": [
+      {
+       "$ref": "#/$defs/name"
+      },
+      {
+       "type": "array",
+       "minItems": 1,
+       "items": {
+        "$ref": "#/$defs/name"
+       }
+      }
+     ]
+    },
+    "tolerance_m": {
+     "type": "number",
+     "exclusiveMinimum": 0,
+     "maximum": 1
+    },
+    "role": {
+     "enum": [
+      "static",
+      "moving",
+      "handle",
+      "collision",
+      "decoration"
+     ]
+    },
+    "description": {
+     "type": "string",
+     "maxLength": 300
+    }
+   }
+  },
+  "material": {
+   "type": "object",
+   "required": [
+    "name"
+   ],
+   "additionalProperties": false,
+   "properties": {
+    "name": {
+     "$ref": "#/$defs/name"
+    },
+    "base_color": {
+     "type": "array",
+     "minItems": 4,
+     "maxItems": 4,
+     "items": {
+      "$ref": "#/$defs/unit_interval"
+     }
+    },
+    "metallic": {
+     "$ref": "#/$defs/unit_interval"
+    },
+    "roughness": {
+     "$ref": "#/$defs/unit_interval"
+    },
+    "description": {
+     "type": "string",
+     "maxLength": 300
+    }
+   }
+  },
+  "joint": {
+   "type": "object",
+   "required": [
+    "name",
+    "type",
+    "part",
+    "axis"
+   ],
+   "additionalProperties": false,
+   "properties": {
+    "name": {
+     "$ref": "#/$defs/name"
+    },
+    "type": {
+     "enum": [
+      "revolute",
+      "prismatic",
+      "continuous",
+      "fixed"
+     ]
+    },
+    "part": {
+     "$ref": "#/$defs/name"
+    },
+    "axis": {
+     "$ref": "#/$defs/vector3"
+    },
+    "limits_deg": {
+     "$ref": "#/$defs/range"
+    },
+    "limits_m": {
+     "$ref": "#/$defs/range"
+    },
+    "rest": {
+     "type": "number"
+    },
+    "description": {
+     "type": "string",
+     "maxLength": 300
+    }
+   }
+  },
+  "clip": {
+   "type": "object",
+   "required": [
+    "name"
+   ],
+   "additionalProperties": false,
+   "properties": {
+    "name": {
+     "$ref": "#/$defs/name"
+    },
+    "duration_s": {
+     "type": "number",
+     "minimum": 0
+    },
+    "tolerance_s": {
+     "type": "number",
+     "exclusiveMinimum": 0
+    },
+    "loop": {
+     "type": "boolean"
+    },
+    "targets": {
+     "type": "array",
+     "items": {
+      "type": "object",
+      "required": [
+       "part",
+       "path"
+      ],
+      "additionalProperties": false,
+      "properties": {
+       "part": {
+        "$ref": "#/$defs/name"
+       },
+       "path": {
+        "enum": [
+         "translation",
+         "rotation",
+         "scale",
+         "weights"
+        ]
+       }
+      }
+     }
+    },
+    "description": {
+     "type": "string",
+     "maxLength": 300
+    }
+   }
+  },
+  "behavior": {
+   "type": "object",
+   "required": [
+    "name"
+   ],
+   "additionalProperties": false,
+   "properties": {
+    "name": {
+     "$ref": "#/$defs/name"
+    },
+    "joint": {
+     "$ref": "#/$defs/name"
+    },
+    "clip": {
+     "$ref": "#/$defs/name"
+    },
+    "trigger": {
+     "enum": [
+      "interact",
+      "proximity",
+      "timer",
+      "script"
+     ]
+    },
+    "description": {
+     "type": "string",
+     "maxLength": 300
+    }
+   }
+  }
+ }
+}

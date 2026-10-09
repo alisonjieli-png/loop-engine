@@ -1,0 +1,267 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "animation_export_trap_checker",
+  "title": "Animation export trap checker with a Blender declare and repair procedure",
+  "purpose": "Catch exports that keep every mesh but lose animation: only the playing action exported, clips merged, channels without targets, clips baked to one pose or over the whole scene range. Ships the Blender scripts that declare a scene's clips and put every action on its own NLA track.",
+  "form": "library_module",
+  "asset_role": null,
+  "dimension": "3d",
+  "engine": {
+    "name": "python",
+    "minimum_version": "3.10"
+  },
+  "tags": [
+    "gltf",
+    "animation",
+    "export",
+    "blender",
+    "nla",
+    "clips",
+    "procedure",
+    "4d"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "role": "other"
+    },
+    {
+      "path": "animation_export_trap_checker.py",
+      "role": "executable_tool"
+    },
+    {
+      "path": "test_animation_export_trap_checker.py",
+      "role": "executable_tool"
+    },
+    {
+      "path": "procedure/declare_clips_blender.py",
+      "role": "executable_tool"
+    },
+    {
+      "path": "procedure/push_actions_to_nla.py",
+      "role": "executable_tool"
+    },
+    {
+      "path": "fixtures/bad_active_action_only.gltf",
+      "role": "skill_asset"
+    },
+    {
+      "path": "fixtures/bad_declaration_path.clips.json",
+      "role": "skill_asset"
+    },
+    {
+      "path": "fixtures/bad_merged_clips.gltf",
+      "role": "skill_asset"
+    },
+    {
+      "path": "fixtures/bad_no_animations.gltf",
+      "role": "skill_asset"
+    },
+    {
+      "path": "fixtures/bad_scene_range_bake.gltf",
+      "role": "skill_asset"
+    },
+    {
+      "path": "fixtures/bad_static_clip.gltf",
+      "role": "skill_asset"
+    },
+    {
+      "path": "fixtures/bad_unresolved_target.gltf",
+      "role": "skill_asset"
+    },
+    {
+      "path": "fixtures/door.clips.json",
+      "role": "skill_asset"
+    },
+    {
+      "path": "fixtures/door.gltf",
+      "role": "skill_asset"
+    }
+  ],
+  "contract": {
+    "entry_points": [
+      {
+        "name": "export_clips",
+        "kind": "function",
+        "signature": "export_clips(asset: gltfio.Asset) -> list of {index, name, length_s, channels: [{node, node_name, path, resolved, keys, moving}]}"
+      },
+      {
+        "name": "read_declaration",
+        "kind": "function",
+        "signature": "read_declaration(value, report) -> list of declared clips or None"
+      },
+      {
+        "name": "compare",
+        "kind": "function",
+        "signature": "compare(declared, clips, report) -> None"
+      },
+      {
+        "name": "check",
+        "kind": "function",
+        "signature": "check(asset_path, declaration_path) -> asset_report.Report"
+      },
+      {
+        "name": "run",
+        "kind": "function",
+        "signature": "run(argv: list) -> dict (the JSON report)"
+      },
+      {
+        "name": "main",
+        "kind": "command_line",
+        "usage": "python3 animation_export_trap_checker.py EXPORT.gltf --declared DECLARATION.json"
+      },
+      {
+        "name": "procedure/declare_clips_blender.py",
+        "kind": "blender_script",
+        "usage": "blender --background SCENE.blend --python procedure/declare_clips_blender.py -- DECLARATION.json"
+      },
+      {
+        "name": "procedure/push_actions_to_nla.py",
+        "kind": "blender_script",
+        "usage": "blender --background SCENE.blend --python procedure/push_actions_to_nla.py -- FIXED.blend"
+      }
+    ],
+    "inputs": [
+      {
+        "name": "asset",
+        "format": "the exported glTF 2.0 (.gltf or .glb)"
+      },
+      {
+        "name": "declared",
+        "format": "animation_declaration/v1 (clips: name, duration_s, tolerance_s, targets: node and path) or the clips of an asset_specification/v1 (targets name a part)"
+      }
+    ],
+    "report": {
+      "record_type": "asset_contract_report/v1",
+      "tool": "animation_export_trap_checker",
+      "subject": "the export file name",
+      "ok": "true when every declared clip is present with its targets, moves, and plays its declared length, and every channel resolves",
+      "failures": "list of {code, where (clip name or clip channel), detail}",
+      "warnings": "none",
+      "facts": "export_clips (name, length_s, channels with node_name, path, resolved, keys, moving) and declared_clips"
+    },
+    "failures_detected": [
+      "asset_unreadable",
+      "declaration_invalid",
+      "animations_missing",
+      "clip_missing",
+      "clips_merged",
+      "clip_target_missing",
+      "channel_target_unresolved",
+      "clip_static",
+      "clip_duration_mismatch"
+    ],
+    "proves": "The export carries a clip of each declared name, each declared target (node and path) has a resolved channel in it, at least one channel of it changes value, its play length is within tolerance of the declaration, and no channel of any clip points at a missing node.",
+    "does_not_prove": "That the motion is the intended motion (only that something moves), that interpolation matches the source curves, or that an engine plays the clip on the right node at run time.",
+    "fixtures": [
+      {
+        "argv": [
+          "fixtures/door.gltf",
+          "--declared",
+          "fixtures/door.clips.json"
+        ],
+        "expect": "pass"
+      },
+      {
+        "argv": [
+          "fixtures/bad_no_animations.gltf",
+          "--declared",
+          "fixtures/door.clips.json"
+        ],
+        "expect": "fail",
+        "codes": [
+          "animations_missing",
+          "clip_missing"
+        ]
+      },
+      {
+        "argv": [
+          "fixtures/bad_active_action_only.gltf",
+          "--declared",
+          "fixtures/door.clips.json"
+        ],
+        "expect": "fail",
+        "codes": [
+          "clip_missing"
+        ]
+      },
+      {
+        "argv": [
+          "fixtures/bad_unresolved_target.gltf",
+          "--declared",
+          "fixtures/door.clips.json"
+        ],
+        "expect": "fail",
+        "codes": [
+          "channel_target_unresolved",
+          "clip_target_missing"
+        ]
+      },
+      {
+        "argv": [
+          "fixtures/bad_static_clip.gltf",
+          "--declared",
+          "fixtures/door.clips.json"
+        ],
+        "expect": "fail",
+        "codes": [
+          "clip_static"
+        ]
+      },
+      {
+        "argv": [
+          "fixtures/bad_merged_clips.gltf",
+          "--declared",
+          "fixtures/door.clips.json"
+        ],
+        "expect": "fail",
+        "codes": [
+          "clips_merged",
+          "clip_missing"
+        ]
+      },
+      {
+        "argv": [
+          "fixtures/bad_scene_range_bake.gltf",
+          "--declared",
+          "fixtures/door.clips.json"
+        ],
+        "expect": "fail",
+        "codes": [
+          "clip_duration_mismatch"
+        ]
+      },
+      {
+        "argv": [
+          "fixtures/door.gltf",
+          "--declared",
+          "fixtures/bad_declaration_path.clips.json"
+        ],
+        "expect": "fail",
+        "codes": [
+          "declaration_invalid"
+        ]
+      }
+    ]
+  },
+  "limits": "Clips are matched by exact name; a renamed clip is reported missing with similar names as a hint. Motion is detected as any output value changing by more than 1e-5, so a quaternion that flips sign without turning counts as motion. The Blender scripts read actions through slots and channel bags (Blender 4.4 and later) and fall back to plain F-curves; they handle object, bone and shape key channels, not drivers, constraints or geometry nodes animation. The declared play length is the last frame of the action range divided by the scene frame rate.",
+  "related": [
+    "gltf_structural_validator",
+    "gltf_semantic_recovery",
+    "blender_godot_export_checklist"
+  ],
+  "technique_references": [
+    "glTF 2.0 specification: animations, channels, samplers and interpolation",
+    "Blender NLA tracks and strips as the unit of separate glTF clips",
+    "Blender layered actions: slots and channel bags"
+  ],
+  "native_checks": [
+    "checker_matches_contract",
+    "godot_plays_the_same_clips",
+    "blender_plays_the_same_clips",
+    "comparator_rejects_altered_engine_facts",
+    "trap_reproduced_by_blender_default_export",
+    "procedure_fix_exports_every_declared_clip",
+    "godot_plays_the_repaired_export"
+  ]
+}

@@ -1,0 +1,305 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "articulation_loss_checker",
+  "title": "Articulation loss checker for exports that drop joint information",
+  "purpose": "Catch exports that keep every mesh but lose what joints need: parts joined into their parent, origins moved off the hinge, node frames rotated, hierarchies flattened, and joint records in custom properties left out by a default export.",
+  "form": "library_module",
+  "asset_role": null,
+  "dimension": "3d",
+  "engine": {
+    "name": "python",
+    "minimum_version": "3.10"
+  },
+  "tags": [
+    "articulation",
+    "joints",
+    "export",
+    "gltf",
+    "blender",
+    "pivot",
+    "extras",
+    "regression check"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "role": "other"
+    },
+    {
+      "path": "articulation_loss_checker.py",
+      "role": "executable_tool"
+    },
+    {
+      "path": "test_articulation_loss_checker.py",
+      "role": "executable_tool"
+    },
+    {
+      "path": "fixtures/bad_manifest.articulation.json",
+      "role": "skill_asset"
+    },
+    {
+      "path": "fixtures/door_reference.articulation.json",
+      "role": "skill_asset"
+    },
+    {
+      "path": "fixtures/door_reference.gltf",
+      "role": "skill_asset"
+    },
+    {
+      "path": "fixtures/door_reordered.gltf",
+      "role": "skill_asset"
+    },
+    {
+      "path": "fixtures/export_extras_mismatch.gltf",
+      "role": "skill_asset"
+    },
+    {
+      "path": "fixtures/export_flattened.gltf",
+      "role": "skill_asset"
+    },
+    {
+      "path": "fixtures/export_frame_rotated.gltf",
+      "role": "skill_asset"
+    },
+    {
+      "path": "fixtures/export_joined.gltf",
+      "role": "skill_asset"
+    },
+    {
+      "path": "fixtures/export_origin_to_geometry.gltf",
+      "role": "skill_asset"
+    },
+    {
+      "path": "fixtures/export_without_extras.gltf",
+      "role": "skill_asset"
+    }
+  ],
+  "contract": {
+    "entry_points": [
+      {
+        "name": "joint_facts",
+        "kind": "function",
+        "signature": "joint_facts(asset, joint) -> presence, parent, has_geometry, world_pivot, world_axis, extras"
+      },
+      {
+        "name": "compare",
+        "kind": "function",
+        "signature": "compare(joints, export, reference, extras_required, tolerance_m, tolerance_deg, report) -> rows"
+      },
+      {
+        "name": "check",
+        "kind": "function",
+        "signature": "check(export_path, manifest_path, reference_path=None, extras_required=False, tolerance_m=0.001, tolerance_deg=0.5) -> asset_report.Report"
+      },
+      {
+        "name": "run",
+        "kind": "function",
+        "signature": "run(argv: list) -> dict (the JSON report)"
+      },
+      {
+        "name": "main",
+        "kind": "command_line",
+        "usage": "python3 articulation_loss_checker.py EXPORT.gltf --manifest MANIFEST.json [--reference REFERENCE.gltf] [--extras required]"
+      }
+    ],
+    "inputs": [
+      {
+        "name": "export",
+        "format": "the exported glTF 2.0 (.gltf or .glb)"
+      },
+      {
+        "name": "manifest",
+        "format": "articulation_manifest/v1 JSON"
+      },
+      {
+        "name": "reference",
+        "format": "a glTF export known to keep the joints",
+        "optional": true
+      },
+      {
+        "name": "extras",
+        "format": "required or optional: whether each joint node must carry extras.joint"
+      }
+    ],
+    "report": {
+      "record_type": "asset_contract_report/v1",
+      "tool": "articulation_loss_checker",
+      "subject": "the export file name",
+      "ok": "true when every joint survives",
+      "failures": "list of {code, where (joint name), detail}",
+      "warnings": "none",
+      "facts": "joints (per joint the export facts and, with a reference, the reference facts: present, count, parent, has_geometry, world_pivot, world_axis, extras), reference, extras_required"
+    },
+    "failures_detected": [
+      "asset_unreadable",
+      "reference_unreadable",
+      "manifest_invalid",
+      "joint_node_missing",
+      "joint_node_ambiguous",
+      "joint_node_without_geometry",
+      "pivot_moved",
+      "joint_axis_changed",
+      "joint_parent_changed",
+      "joint_extras_missing",
+      "joint_extras_mismatch"
+    ],
+    "proves": "Each joint's node exists exactly once with geometry at or below it; with a reference, its world pivot, world axis and parent are unchanged within tolerance (1 mm, 0.5 degrees by default); with extras required, its node carries a joint record equal to the manifest.",
+    "does_not_prove": "That the joint moves the right geometry, or that the joint values are sensible. A reference export must itself be right: the tool compares, it does not judge the reference.",
+    "fixtures": [
+      {
+        "argv": [
+          "fixtures/door_reference.gltf",
+          "--manifest",
+          "fixtures/door_reference.articulation.json",
+          "--reference",
+          "fixtures/door_reference.gltf",
+          "--extras",
+          "required"
+        ],
+        "expect": "pass"
+      },
+      {
+        "argv": [
+          "fixtures/door_reordered.gltf",
+          "--manifest",
+          "fixtures/door_reference.articulation.json",
+          "--reference",
+          "fixtures/door_reference.gltf",
+          "--extras",
+          "required"
+        ],
+        "expect": "pass"
+      },
+      {
+        "argv": [
+          "fixtures/export_without_extras.gltf",
+          "--manifest",
+          "fixtures/door_reference.articulation.json",
+          "--reference",
+          "fixtures/door_reference.gltf"
+        ],
+        "expect": "pass"
+      },
+      {
+        "argv": [
+          "fixtures/export_without_extras.gltf",
+          "--manifest",
+          "fixtures/door_reference.articulation.json",
+          "--reference",
+          "fixtures/door_reference.gltf",
+          "--extras",
+          "required"
+        ],
+        "expect": "fail",
+        "codes": [
+          "joint_extras_missing"
+        ]
+      },
+      {
+        "argv": [
+          "fixtures/export_extras_mismatch.gltf",
+          "--manifest",
+          "fixtures/door_reference.articulation.json",
+          "--reference",
+          "fixtures/door_reference.gltf",
+          "--extras",
+          "required"
+        ],
+        "expect": "fail",
+        "codes": [
+          "joint_extras_mismatch"
+        ]
+      },
+      {
+        "argv": [
+          "fixtures/export_origin_to_geometry.gltf",
+          "--manifest",
+          "fixtures/door_reference.articulation.json",
+          "--reference",
+          "fixtures/door_reference.gltf",
+          "--extras",
+          "required"
+        ],
+        "expect": "fail",
+        "codes": [
+          "pivot_moved"
+        ]
+      },
+      {
+        "argv": [
+          "fixtures/export_frame_rotated.gltf",
+          "--manifest",
+          "fixtures/door_reference.articulation.json",
+          "--reference",
+          "fixtures/door_reference.gltf",
+          "--extras",
+          "required"
+        ],
+        "expect": "fail",
+        "codes": [
+          "joint_axis_changed"
+        ]
+      },
+      {
+        "argv": [
+          "fixtures/export_joined.gltf",
+          "--manifest",
+          "fixtures/door_reference.articulation.json",
+          "--reference",
+          "fixtures/door_reference.gltf",
+          "--extras",
+          "required"
+        ],
+        "expect": "fail",
+        "codes": [
+          "joint_node_missing"
+        ]
+      },
+      {
+        "argv": [
+          "fixtures/export_flattened.gltf",
+          "--manifest",
+          "fixtures/door_reference.articulation.json",
+          "--reference",
+          "fixtures/door_reference.gltf",
+          "--extras",
+          "required"
+        ],
+        "expect": "fail",
+        "codes": [
+          "joint_parent_changed"
+        ]
+      },
+      {
+        "argv": [
+          "fixtures/door_reference.gltf",
+          "--manifest",
+          "fixtures/bad_manifest.articulation.json"
+        ],
+        "expect": "fail",
+        "codes": [
+          "manifest_invalid"
+        ]
+      }
+    ]
+  },
+  "limits": "Nodes are found by exact name, so a renamed node reads as missing. The extras record is read from extras.joint and compared on type, axis, pivot and limits. Pivot and axis checks need a reference export. The reference and the export are compared in their own scene roots; a change of the whole asset's root transform shows as moved pivots.",
+  "related": [
+    "articulation_manifest_godot_builder",
+    "animation_export_trap_checker",
+    "blender_godot_export_checklist"
+  ],
+  "technique_references": [
+    "World pivot as the world matrix applied to the local pivot",
+    "World axis as the world rotation applied to the local axis, compared by angle",
+    "glTF 2.0 extras on nodes; Blender custom properties exported as extras",
+    "Blender object origin set to geometry and object join as sources of joint loss"
+  ],
+  "native_checks": [
+    "checker_matches_contract",
+    "godot_sees_the_same_joint_facts",
+    "blender_sees_the_same_joint_facts",
+    "each_blender_loss_is_caught",
+    "godot_reads_the_carried_joint_record"
+  ]
+}

@@ -1,0 +1,187 @@
+{
+ "asset": "cabinet_with_drawer",
+ "behaviors": [
+  {
+   "clip": "OpenDrawer",
+   "joint": "drawer_slide",
+   "name": "pull_drawer",
+   "trigger": "interact"
+  },
+  {
+   "clip": "OpenDoor",
+   "joint": "door_hinge",
+   "name": "open_door",
+   "trigger": "interact"
+  }
+ ],
+ "clips": [
+  {
+   "duration_s": 0.8,
+   "name": "OpenDrawer",
+   "targets": [
+    {
+     "part": "Drawer",
+     "path": "translation"
+    }
+   ]
+  },
+  {
+   "duration_s": 1.0,
+   "name": "OpenDoor",
+   "targets": [
+    {
+     "part": "CabinetDoor",
+     "path": "rotation"
+    }
+   ]
+  }
+ ],
+ "description": "A low cabinet with a drawer that slides out of the front and a door hinged on its left edge.",
+ "forward_axis": "+Z",
+ "joints": [
+  {
+   "axis": [
+    0.0,
+    0.0,
+    1.0
+   ],
+   "limits_m": [
+    0.0,
+    0.35
+   ],
+   "name": "drawer_slide",
+   "part": "Drawer",
+   "rest": 0.0,
+   "type": "prismatic"
+  },
+  {
+   "axis": [
+    0.0,
+    1.0,
+    0.0
+   ],
+   "limits_deg": [
+    -110.0,
+    0.0
+   ],
+   "name": "door_hinge",
+   "part": "CabinetDoor",
+   "rest": 0.0,
+   "type": "revolute"
+  }
+ ],
+ "materials": [
+  {
+   "base_color": [
+    0.6,
+    0.45,
+    0.3,
+    1.0
+   ],
+   "name": "Oak",
+   "roughness": 0.7
+  },
+  {
+   "base_color": [
+    0.8,
+    0.65,
+    0.3,
+    1.0
+   ],
+   "metallic": 1.0,
+   "name": "Brass",
+   "roughness": 0.3
+  }
+ ],
+ "parts": [
+  {
+   "center_m": [
+    0.0,
+    0.45,
+    0.0
+   ],
+   "dimensions_m": [
+    0.8,
+    0.9,
+    0.5
+   ],
+   "material": "Oak",
+   "name": "Cabinet",
+   "parent": null,
+   "pivot_m": [
+    0.0,
+    0.0,
+    0.0
+   ],
+   "role": "static"
+  },
+  {
+   "center_m": [
+    0.0,
+    0.76,
+    0.02
+   ],
+   "colour": "red",
+   "dimensions_m": [
+    0.7,
+    0.18,
+    0.46
+   ],
+   "material": "Oak",
+   "name": "Drawer",
+   "parent": "Cabinet",
+   "pivot_m": [
+    0.0,
+    0.76,
+    0.25
+   ],
+   "role": "moving"
+  },
+  {
+   "center_m": [
+    0.0,
+    0.76,
+    0.265
+   ],
+   "dimensions_m": [
+    0.16,
+    0.025,
+    0.03
+   ],
+   "material": "Brass",
+   "name": "DrawerPull",
+   "parent": "Drawer",
+   "pivot_m": [
+    0.0,
+    0.76,
+    0.265
+   ],
+   "role": "handle"
+  },
+  {
+   "center_m": [
+    -0.2,
+    0.33,
+    0.26
+   ],
+   "dimensions_m": [
+    0.38,
+    0.55,
+    0.02
+   ],
+   "material": "Oak",
+   "name": "CabinetDoor",
+   "parent": "Cabinet",
+   "pivot_m": [
+    -0.39,
+    0.33,
+    0.26
+   ],
+   "role": "moving"
+  }
+ ],
+ "record_type": "asset_specification/v1",
+ "tolerance_m": 0.005,
+ "units": "metre",
+ "up_axis": "+Y"
+}

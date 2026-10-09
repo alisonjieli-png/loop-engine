@@ -1,0 +1,85 @@
+{
+ "$schema": "https://json-schema.org/draft/2020-12/schema",
+ "title": "articulation_manifest/v1",
+ "description": "Joints for a glTF asset that has none: each joint names the node it moves, a hinge or slider type, a unit axis and a pivot in the node's own frame at rest, limits (degrees for a hinge, metres for a slider) and a rest value.",
+ "type": "object",
+ "required": [
+  "record_type",
+  "joints"
+ ],
+ "additionalProperties": false,
+ "properties": {
+  "record_type": {
+   "const": "articulation_manifest/v1"
+  },
+  "asset": {
+   "type": "string",
+   "minLength": 1
+  },
+  "joints": {
+   "type": "array",
+   "items": {
+    "$ref": "#/$defs/joint"
+   }
+  }
+ },
+ "$defs": {
+  "vector3": {
+   "type": "array",
+   "minItems": 3,
+   "maxItems": 3,
+   "items": {
+    "type": "number"
+   }
+  },
+  "joint": {
+   "type": "object",
+   "required": [
+    "name",
+    "type",
+    "node",
+    "axis",
+    "limits"
+   ],
+   "additionalProperties": false,
+   "properties": {
+    "name": {
+     "type": "string",
+     "minLength": 1,
+     "maxLength": 63
+    },
+    "type": {
+     "enum": [
+      "hinge",
+      "slider"
+     ]
+    },
+    "node": {
+     "type": "string",
+     "minLength": 1
+    },
+    "axis": {
+     "$ref": "#/$defs/vector3"
+    },
+    "pivot": {
+     "$ref": "#/$defs/vector3"
+    },
+    "limits": {
+     "type": "array",
+     "minItems": 2,
+     "maxItems": 2,
+     "items": {
+      "type": "number"
+     }
+    },
+    "rest": {
+     "type": "number"
+    },
+    "description": {
+     "type": "string",
+     "maxLength": 300
+    }
+   }
+  }
+ }
+}

@@ -1,0 +1,136 @@
+{
+ "asset": "interior_door",
+ "behaviors": [
+  {
+   "clip": "Open",
+   "joint": "door_hinge",
+   "name": "open_door",
+   "trigger": "interact"
+  }
+ ],
+ "clips": [
+  {
+   "duration_s": 1.2,
+   "name": "Open",
+   "targets": [
+    {
+     "part": "DoorPanel",
+     "path": "rotation"
+    }
+   ]
+  },
+  {
+   "duration_s": 1.2,
+   "name": "Close",
+   "targets": [
+    {
+     "part": "DoorPanel",
+     "path": "rotation"
+    }
+   ]
+  },
+  {
+   "duration_s": 0.4,
+   "name": "HandlePress",
+   "targets": [
+    {
+     "part": "DoorHandle",
+     "path": "rotation"
+    }
+   ]
+  }
+ ],
+ "description": "An interior door in its frame, hinged on its left edge, with a lever handle.",
+ "forward_axis": "+Z",
+ "joints": [
+  {
+   "axis": [
+    0.0,
+    1.0,
+    0.0
+   ],
+   "limits_deg": [
+    0.0,
+    90.0
+   ],
+   "name": "door_hinge",
+   "part": "DoorPanel",
+   "type": "revolute"
+  },
+  {
+   "axis": [
+    0.0,
+    0.0,
+    1.0
+   ],
+   "limits_deg": [
+    -30.0,
+    0.0
+   ],
+   "name": "handle_lever",
+   "part": "DoorHandle",
+   "type": "revolute"
+  }
+ ],
+ "materials": [
+  {
+   "name": "PaintedFrame"
+  },
+  {
+   "name": "Wood"
+  },
+  {
+   "name": "BrushedSteel"
+  }
+ ],
+ "parts": [
+  {
+   "dimensions_m": [
+    1.1,
+    2.1,
+    0.15
+   ],
+   "material": "PaintedFrame",
+   "name": "DoorFrame",
+   "parent": null,
+   "pivot_m": [
+    0.0,
+    0.0,
+    0.0
+   ]
+  },
+  {
+   "dimensions_m": [
+    0.9,
+    2.0,
+    0.04
+   ],
+   "material": "Wood",
+   "parent": "DoorFrame",
+   "pivot_m": [
+    -0.45,
+    0.0,
+    0.0
+   ]
+  },
+  {
+   "dimensions_m": [
+    0.12,
+    0.03,
+    0.04
+   ],
+   "material": "BrushedSteel",
+   "name": "DoorHandle",
+   "parent": "DoorPanel",
+   "pivot_m": [
+    0.33,
+    1.0,
+    0.02
+   ]
+  }
+ ],
+ "record_type": "asset_specification/v1",
+ "tolerance_m": 0.005,
+ "units": "metre",
+ "up_axis": "+Y"
+}

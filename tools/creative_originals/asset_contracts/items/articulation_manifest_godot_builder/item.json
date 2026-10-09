@@ -1,0 +1,296 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "articulation_manifest_godot_builder",
+  "title": "Articulation manifest with a Godot runtime joint builder",
+  "purpose": "Give a glTF asset working hinges and sliders: a manifest binds joints (axis, pivot, limits) to named nodes, a checker validates the binding and predicts poses at the limits, and a Godot 4 node applies it at run time with clamping, clips and a saved scene.",
+  "form": "library_module",
+  "asset_role": null,
+  "dimension": "3d",
+  "engine": {
+    "name": "python",
+    "minimum_version": "3.10"
+  },
+  "tags": [
+    "articulation",
+    "joints",
+    "hinge",
+    "slider",
+    "godot",
+    "gltf",
+    "forward kinematics",
+    "animation player"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "role": "other"
+    },
+    {
+      "path": "articulation_manifest_godot_builder.py",
+      "role": "executable_tool"
+    },
+    {
+      "path": "test_articulation_manifest_godot_builder.py",
+      "role": "executable_tool"
+    },
+    {
+      "path": "schema.json",
+      "role": "configuration"
+    },
+    {
+      "path": "godot/articulated_asset.gd",
+      "role": "skill_asset"
+    },
+    {
+      "path": "godot/articulation_probe.gd",
+      "role": "skill_asset"
+    },
+    {
+      "path": "fixtures/bad_axis_zero.articulation.json",
+      "role": "skill_asset"
+    },
+    {
+      "path": "fixtures/bad_duplicate_names.gltf",
+      "role": "skill_asset"
+    },
+    {
+      "path": "fixtures/bad_joint_type.articulation.json",
+      "role": "skill_asset"
+    },
+    {
+      "path": "fixtures/bad_limits_reversed.articulation.json",
+      "role": "skill_asset"
+    },
+    {
+      "path": "fixtures/bad_node_jointed_twice.articulation.json",
+      "role": "skill_asset"
+    },
+    {
+      "path": "fixtures/bad_node_missing.articulation.json",
+      "role": "skill_asset"
+    },
+    {
+      "path": "fixtures/bad_record_type.articulation.json",
+      "role": "skill_asset"
+    },
+    {
+      "path": "fixtures/door.articulation.json",
+      "role": "skill_asset"
+    },
+    {
+      "path": "fixtures/door.gltf",
+      "role": "skill_asset"
+    },
+    {
+      "path": "fixtures/toolbox.articulation.json",
+      "role": "skill_asset"
+    },
+    {
+      "path": "fixtures/toolbox.gltf",
+      "role": "skill_asset"
+    }
+  ],
+  "contract": {
+    "entry_points": [
+      {
+        "name": "read_manifest",
+        "kind": "function",
+        "signature": "read_manifest(value, document, report) -> list of bound joints"
+      },
+      {
+        "name": "joint_motion",
+        "kind": "function",
+        "signature": "joint_motion(joint, value) -> 4x4 local motion"
+      },
+      {
+        "name": "pose",
+        "kind": "function",
+        "signature": "pose(document, joints, values) -> node index -> world matrix"
+      },
+      {
+        "name": "predictions",
+        "kind": "function",
+        "signature": "predictions(document, joints) -> per joint world matrix and pivot at both limits"
+      },
+      {
+        "name": "check",
+        "kind": "function",
+        "signature": "check(asset_path, manifest_path) -> asset_report.Report"
+      },
+      {
+        "name": "run",
+        "kind": "function",
+        "signature": "run(argv: list) -> dict (the JSON report)"
+      },
+      {
+        "name": "main",
+        "kind": "command_line",
+        "usage": "python3 articulation_manifest_godot_builder.py ASSET.gltf --manifest MANIFEST.json"
+      },
+      {
+        "name": "godot/articulated_asset.gd",
+        "kind": "godot_node_script",
+        "usage": "preload, .new(), add to the tree, load_asset(gltf, manifest), set_joint(name, value), build_animation_player(), save_scene(path)"
+      },
+      {
+        "name": "godot/articulation_probe.gd",
+        "kind": "godot_scene_tree_script",
+        "usage": "godot --headless --path PROJECT --script res://articulation_probe.gd -- OUT.json load ASSET.gltf MANIFEST.json [SAVE.tscn]"
+      },
+      {
+        "name": "schema.json",
+        "kind": "json_schema",
+        "dialect": "https://json-schema.org/draft/2020-12/schema"
+      }
+    ],
+    "inputs": [
+      {
+        "name": "asset",
+        "format": "glTF 2.0 (.gltf or .glb)"
+      },
+      {
+        "name": "manifest",
+        "format": "articulation_manifest/v1 JSON (schema.json)"
+      }
+    ],
+    "report": {
+      "record_type": "asset_contract_report/v1",
+      "tool": "articulation_manifest_godot_builder",
+      "subject": "the asset file name",
+      "ok": "true when every joint binds",
+      "failures": "list of {code, where (joint name), detail}",
+      "warnings": "joint_moves_nothing",
+      "facts": "joints: per bound joint the node, type, limits, and at each limit the world_matrix (3 rows of 4) and world_pivot"
+    },
+    "failures_detected": [
+      "asset_unreadable",
+      "manifest_invalid",
+      "joint_type_invalid",
+      "node_missing",
+      "node_ambiguous",
+      "node_jointed_twice",
+      "axis_invalid",
+      "pivot_invalid",
+      "limits_invalid",
+      "joint_name_repeated"
+    ],
+    "proves": "Every joint names exactly one node, no node carries two joints, axes are unit vectors, pivots are finite, and limits are ordered around the rest value; the reported poses are the forward kinematics of the manifest.",
+    "does_not_prove": "That the motion is free of collisions, that the limits match the real object, or that a physics engine would behave the same way (the Godot node sets transforms; it adds no physics joints).",
+    "fixtures": [
+      {
+        "argv": [
+          "fixtures/door.gltf",
+          "--manifest",
+          "fixtures/door.articulation.json"
+        ],
+        "expect": "pass"
+      },
+      {
+        "argv": [
+          "fixtures/toolbox.gltf",
+          "--manifest",
+          "fixtures/toolbox.articulation.json"
+        ],
+        "expect": "pass"
+      },
+      {
+        "argv": [
+          "fixtures/bad_duplicate_names.gltf",
+          "--manifest",
+          "fixtures/door.articulation.json"
+        ],
+        "expect": "fail",
+        "codes": [
+          "node_ambiguous"
+        ]
+      },
+      {
+        "argv": [
+          "fixtures/door.gltf",
+          "--manifest",
+          "fixtures/bad_node_missing.articulation.json"
+        ],
+        "expect": "fail",
+        "codes": [
+          "node_missing"
+        ]
+      },
+      {
+        "argv": [
+          "fixtures/door.gltf",
+          "--manifest",
+          "fixtures/bad_axis_zero.articulation.json"
+        ],
+        "expect": "fail",
+        "codes": [
+          "axis_invalid"
+        ]
+      },
+      {
+        "argv": [
+          "fixtures/door.gltf",
+          "--manifest",
+          "fixtures/bad_limits_reversed.articulation.json"
+        ],
+        "expect": "fail",
+        "codes": [
+          "limits_invalid"
+        ]
+      },
+      {
+        "argv": [
+          "fixtures/door.gltf",
+          "--manifest",
+          "fixtures/bad_joint_type.articulation.json"
+        ],
+        "expect": "fail",
+        "codes": [
+          "joint_type_invalid"
+        ]
+      },
+      {
+        "argv": [
+          "fixtures/door.gltf",
+          "--manifest",
+          "fixtures/bad_node_jointed_twice.articulation.json"
+        ],
+        "expect": "fail",
+        "codes": [
+          "node_jointed_twice"
+        ]
+      },
+      {
+        "argv": [
+          "fixtures/door.gltf",
+          "--manifest",
+          "fixtures/bad_record_type.articulation.json"
+        ],
+        "expect": "fail",
+        "codes": [
+          "manifest_invalid"
+        ]
+      }
+    ]
+  },
+  "limits": "Hinges and sliders only; no ball, planar or coupled joints. Axes and pivots are in the moving node's own frame at rest. The Godot node moves nodes by transform, not with physics joints, and its clips approximate a hinge arc with ten linear steps (exact at every step). Node names are matched exactly against the glTF names, so a renamed node breaks the binding. The saved scene embeds meshes and materials as sub-resources.",
+  "related": [
+    "asset_specification_schema",
+    "articulation_loss_checker",
+    "gltf_semantic_recovery"
+  ],
+  "technique_references": [
+    "Forward kinematics with rest transform times joint motion",
+    "Rotation about an axis through a pivot: T(p) R(axis, angle) T(-p)",
+    "Godot 4 GLTFDocument and GLTFState run-time loading, AnimationLibrary, PackedScene.pack with owners",
+    "JSON Schema draft 2020-12"
+  ],
+  "native_checks": [
+    "checker_matches_contract",
+    "schema_agrees_with_jsonschema",
+    "godot_moves_each_joint_to_its_limits",
+    "godot_joint_player_reaches_each_limit",
+    "godot_reopens_the_built_scene",
+    "godot_builder_refuses_each_known_wrong_binding",
+    "blender_finds_every_bound_node"
+  ]
+}

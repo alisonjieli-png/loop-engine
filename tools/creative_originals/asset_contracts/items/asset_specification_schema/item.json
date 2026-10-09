@@ -1,0 +1,297 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "asset_specification_schema",
+  "title": "Asset specification schema with validator and blockout generator",
+  "purpose": "Declare what a 3D asset must be before it is modelled: parts with parents, dimensions, centres, pivots and materials; joints with axes and limits; clips and behaviors. Validate a specification and generate a placeholder glTF that realises it.",
+  "form": "schema",
+  "asset_role": null,
+  "dimension": "3d",
+  "engine": {
+    "name": "python",
+    "minimum_version": "3.10"
+  },
+  "tags": [
+    "json schema",
+    "asset specification",
+    "contract",
+    "joints",
+    "blockout",
+    "gltf",
+    "3d asset",
+    "validator"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "role": "other"
+    },
+    {
+      "path": "asset_specification_schema.py",
+      "role": "executable_tool"
+    },
+    {
+      "path": "schema.json",
+      "role": "configuration"
+    },
+    {
+      "path": "test_asset_specification_schema.py",
+      "role": "executable_tool"
+    },
+    {
+      "path": "fixtures/bad_axis_zero.spec.json",
+      "role": "skill_asset"
+    },
+    {
+      "path": "fixtures/bad_behavior_reference.spec.json",
+      "role": "skill_asset"
+    },
+    {
+      "path": "fixtures/bad_clip_target.spec.json",
+      "role": "skill_asset"
+    },
+    {
+      "path": "fixtures/bad_dotted_name.spec.json",
+      "role": "skill_asset"
+    },
+    {
+      "path": "fixtures/bad_joint_unknown_part.spec.json",
+      "role": "skill_asset"
+    },
+    {
+      "path": "fixtures/bad_limits_reversed.spec.json",
+      "role": "skill_asset"
+    },
+    {
+      "path": "fixtures/bad_material_unknown.spec.json",
+      "role": "skill_asset"
+    },
+    {
+      "path": "fixtures/bad_negative_dimension.spec.json",
+      "role": "skill_asset"
+    },
+    {
+      "path": "fixtures/bad_parent_cycle.spec.json",
+      "role": "skill_asset"
+    },
+    {
+      "path": "fixtures/bad_unknown_field.spec.json",
+      "role": "skill_asset"
+    },
+    {
+      "path": "fixtures/bad_unknown_parent.spec.json",
+      "role": "skill_asset"
+    },
+    {
+      "path": "fixtures/cabinet_with_drawer.spec.json",
+      "role": "skill_asset"
+    },
+    {
+      "path": "fixtures/desk_lamp.spec.json",
+      "role": "skill_asset"
+    }
+  ],
+  "contract": {
+    "entry_points": [
+      {
+        "name": "schema.json",
+        "kind": "json_schema",
+        "dialect": "https://json-schema.org/draft/2020-12/schema"
+      },
+      {
+        "name": "validate",
+        "kind": "function",
+        "signature": "validate(spec: dict) -> asset_report.Report"
+      },
+      {
+        "name": "blockout",
+        "kind": "function",
+        "signature": "blockout(spec: dict) -> glTF document (dict) of boxes, pivots, materials and joint limit clips"
+      },
+      {
+        "name": "check",
+        "kind": "function",
+        "signature": "check(spec_path, blockout_path=None) -> asset_report.Report"
+      },
+      {
+        "name": "run",
+        "kind": "function",
+        "signature": "run(argv: list) -> dict (the JSON report)"
+      },
+      {
+        "name": "main",
+        "kind": "command_line",
+        "usage": "python3 asset_specification_schema.py SPEC.json [--blockout OUT.gltf]"
+      }
+    ],
+    "inputs": [
+      {
+        "name": "spec",
+        "format": "asset_specification/v1 JSON (schema.json)"
+      },
+      {
+        "name": "blockout",
+        "format": "path of a .gltf to write when the specification is valid",
+        "optional": true
+      }
+    ],
+    "report": {
+      "record_type": "asset_contract_report/v1",
+      "tool": "asset_specification_schema",
+      "subject": "the specification file name",
+      "ok": "true when the schema and every cross-reference rule hold",
+      "failures": "list of {code, where (JSON path or name), detail}",
+      "warnings": "several_roots",
+      "facts": "parts, roots, joints, clips, materials, depth (and blockout when written)"
+    },
+    "failures_detected": [
+      "specification_unreadable",
+      "schema_violation",
+      "part_name_repeated",
+      "parent_unknown",
+      "parent_cycle",
+      "joint_part_unknown",
+      "joint_part_repeated",
+      "joint_axis_zero",
+      "joint_axis_not_unit",
+      "joint_limits_invalid",
+      "clip_name_repeated",
+      "clip_target_unknown",
+      "behavior_reference_unknown",
+      "material_name_repeated",
+      "material_unknown"
+    ],
+    "proves": "The document matches schema.json and its cross-references hold: unique part, clip and material names, parents that exist without cycles, joints on existing parts (one per part) with unit axes and limits that suit the joint type, clip targets and behavior references that exist, part materials that are declared.",
+    "does_not_prove": "That a real model satisfies the specification (gltf_semantic_recovery compares a model with it) or that the declared motion is physically plausible. The blockout is a placeholder of boxes, not a model.",
+    "fixtures": [
+      {
+        "argv": [
+          "fixtures/cabinet_with_drawer.spec.json"
+        ],
+        "expect": "pass"
+      },
+      {
+        "argv": [
+          "fixtures/desk_lamp.spec.json"
+        ],
+        "expect": "pass"
+      },
+      {
+        "argv": [
+          "fixtures/bad_parent_cycle.spec.json"
+        ],
+        "expect": "fail",
+        "codes": [
+          "parent_cycle"
+        ]
+      },
+      {
+        "argv": [
+          "fixtures/bad_unknown_parent.spec.json"
+        ],
+        "expect": "fail",
+        "codes": [
+          "parent_unknown"
+        ]
+      },
+      {
+        "argv": [
+          "fixtures/bad_joint_unknown_part.spec.json"
+        ],
+        "expect": "fail",
+        "codes": [
+          "joint_part_unknown"
+        ]
+      },
+      {
+        "argv": [
+          "fixtures/bad_limits_reversed.spec.json"
+        ],
+        "expect": "fail",
+        "codes": [
+          "joint_limits_invalid"
+        ]
+      },
+      {
+        "argv": [
+          "fixtures/bad_axis_zero.spec.json"
+        ],
+        "expect": "fail",
+        "codes": [
+          "joint_axis_zero"
+        ]
+      },
+      {
+        "argv": [
+          "fixtures/bad_clip_target.spec.json"
+        ],
+        "expect": "fail",
+        "codes": [
+          "clip_target_unknown"
+        ]
+      },
+      {
+        "argv": [
+          "fixtures/bad_behavior_reference.spec.json"
+        ],
+        "expect": "fail",
+        "codes": [
+          "behavior_reference_unknown"
+        ]
+      },
+      {
+        "argv": [
+          "fixtures/bad_negative_dimension.spec.json"
+        ],
+        "expect": "fail",
+        "codes": [
+          "schema_violation"
+        ]
+      },
+      {
+        "argv": [
+          "fixtures/bad_unknown_field.spec.json"
+        ],
+        "expect": "fail",
+        "codes": [
+          "schema_violation"
+        ]
+      },
+      {
+        "argv": [
+          "fixtures/bad_material_unknown.spec.json"
+        ],
+        "expect": "fail",
+        "codes": [
+          "material_unknown"
+        ]
+      },
+      {
+        "argv": [
+          "fixtures/bad_dotted_name.spec.json"
+        ],
+        "expect": "fail",
+        "codes": [
+          "schema_violation"
+        ]
+      }
+    ]
+  },
+  "limits": "Rest poses carry no rotation: the blockout places parts by translation only, and joint axes are read in the asset frame. Names are limited to letters, digits, underscore, space and hyphen so that Godot and Blender keep them unchanged. Continuous and fixed joints get no limit clip. The standard-library schema check implements the keywords this schema uses, not all of JSON Schema.",
+  "related": [
+    "gltf_semantic_recovery",
+    "articulation_manifest_godot_builder",
+    "animation_export_trap_checker"
+  ],
+  "technique_references": [
+    "JSON Schema draft 2020-12: type, properties, required, additionalProperties, $ref and $defs",
+    "Parent chain walking for cycle detection",
+    "Axis-angle to unit quaternion conversion",
+    "glTF 2.0 specification: nodes, meshes and animation channels"
+  ],
+  "native_checks": [
+    "checker_matches_contract",
+    "schema_agrees_with_jsonschema",
+    "godot_realises_each_valid_specification",
+    "blender_realises_each_valid_specification"
+  ]
+}

@@ -1,0 +1,9 @@
+{
+ "joints": [
+  {
+   "name": "door_hinge",
+   "node": "DoorPanel"
+  }
+ ],
+ "record_type": "articulation_manifest/v1"
+}

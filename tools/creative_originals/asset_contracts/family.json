@@ -1,0 +1,17 @@
+{
+  "record_type": "creative_original_family/v1",
+  "family": "asset_contracts",
+  "title": "Asset contracts, validators and procedures for 3D and 2D pipelines",
+  "description": "Validators, schemas and executable procedures that catch the ways 3D and 2D assets break between tools: structural glTF defects, meaning that cannot be recovered from the file, animation clips an exporter dropped, joints lost on export, axis and unit mix-ups, broken Godot scene references, invalid OBJ, MTL and URDF files, texture set and normal map convention errors, licence terms that differ between an API and its assets, budgets, and projects that do not reopen cleanly. Each item is a standard-library Python checker with a JSON report, known-good and known-wrong fixtures and a contract card. The native verifier opens the same fixtures in Godot 4.7.2 and Blender 5.2.1 and compares what the engines read with what the checker reports; procedure items run their procedure in an engine and check the engine's own output.",
+  "engine": {"name": "python", "minimum_version": "3.10", "notes": "Checkers need the standard library only. Native verification compares their facts with Godot 4.7.2 and Blender 5.2.1."},
+  "shared_files": [
+    {"path": "gltfio.py", "role": "executable_tool"},
+    {"path": "asset_report.py", "role": "executable_tool"},
+    {"path": "pngio.py", "role": "executable_tool"},
+    {"path": "schema_lite.py", "role": "executable_tool"},
+    {"path": "test_package.py", "role": "executable_tool"}
+  ],
+  "native_verifier": "native.py",
+  "generator_version": "1.0.0",
+  "default_dimension": "3d"
+}

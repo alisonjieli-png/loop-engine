@@ -1,0 +1,221 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "axes_units_converter",
+  "title": "Axes, handedness and units checker and converter for glTF",
+  "purpose": "Diagnose a glTF that is Z-up, mirrored or in the wrong unit (checked against expected dimensions and triangle winding) and convert it between up axes, handedness, front-face winding and units, transforming nodes, meshes, skins and animations.",
+  "form": "library_module",
+  "asset_role": null,
+  "dimension": "3d",
+  "engine": {
+    "name": "python",
+    "minimum_version": "3.10"
+  },
+  "tags": [
+    "gltf",
+    "coordinate system",
+    "up axis",
+    "handedness",
+    "units",
+    "converter",
+    "blender",
+    "winding"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "role": "other"
+    },
+    {
+      "path": "axes_units_converter.py",
+      "role": "executable_tool"
+    },
+    {
+      "path": "test_axes_units_converter.py",
+      "role": "executable_tool"
+    },
+    {
+      "path": "fixtures/door.gltf",
+      "role": "skill_asset"
+    },
+    {
+      "path": "fixtures/door_centimetres.gltf",
+      "role": "skill_asset"
+    },
+    {
+      "path": "fixtures/door_mirrored.gltf",
+      "role": "skill_asset"
+    },
+    {
+      "path": "fixtures/door_z_up.gltf",
+      "role": "skill_asset"
+    }
+  ],
+  "contract": {
+    "entry_points": [
+      {
+        "name": "conversion",
+        "kind": "function",
+        "signature": "conversion(source, target='gltf', unit_m=1.0, target_unit_m=1.0) -> (Q, k, flip)"
+      },
+      {
+        "name": "convert_document",
+        "kind": "function",
+        "signature": "convert_document(asset, Q, k, flip) -> glTF document with one embedded buffer"
+      },
+      {
+        "name": "winding_agreement",
+        "kind": "function",
+        "signature": "winding_agreement(asset) -> share of triangles that wind with their normals"
+      },
+      {
+        "name": "check",
+        "kind": "function",
+        "signature": "check(path, expected=None, tolerance=0.005) -> asset_report.Report"
+      },
+      {
+        "name": "convert",
+        "kind": "function",
+        "signature": "convert(source_path, target_path, source, target='gltf', unit_m=1.0, expected=None, tolerance=0.005) -> asset_report.Report"
+      },
+      {
+        "name": "run",
+        "kind": "function",
+        "signature": "run(argv: list) -> dict (the JSON report)"
+      },
+      {
+        "name": "main",
+        "kind": "command_line",
+        "usage": "python3 axes_units_converter.py check ASSET.gltf --expect-dimensions X Y Z | convert IN.gltf OUT.gltf --from CONVENTION [--to CONVENTION] [--unit-m U]"
+      }
+    ],
+    "inputs": [
+      {
+        "name": "asset",
+        "format": "glTF 2.0 (.gltf or .glb)"
+      },
+      {
+        "name": "expect-dimensions",
+        "format": "the scene box size in metres along glTF X, Y and Z",
+        "optional": true
+      },
+      {
+        "name": "conventions",
+        "format": "gltf (+Y up, +Z front, right-handed, counter-clockwise), z_up_right (+Z up, -Y front, right-handed, counter-clockwise), y_up_left_cw, z_up_left_cw"
+      }
+    ],
+    "report": {
+      "record_type": "asset_contract_report/v1",
+      "tool": "axes_units_converter",
+      "subject": "the checked or written file name",
+      "ok": "true when the measurements match the expectation and triangles wind with their normals",
+      "failures": "list of {code, where, detail with the conversion that repairs it}",
+      "warnings": "none",
+      "facts": "dimensions_m, bounds_m, tallest_axis, winding_agreement; after convert also converted_from, matrix, unit_factor, mirrored, winding_reversed"
+    },
+    "failures_detected": [
+      "asset_unreadable",
+      "expectation_invalid",
+      "up_axis_mismatch",
+      "unit_scale_mismatch",
+      "dimensions_mismatch",
+      "winding_inverted",
+      "conversion_unsupported"
+    ],
+    "proves": "check: the scene box equals the expected dimensions within tolerance, or the report names the axis swap or uniform unit factor that explains it, and at least half of the triangles wind with their stored normals. convert: every node transform, vertex attribute, morph target, inverse bind matrix and animation output is mapped by the same change of basis and unit, so world geometry keeps its shape in the new convention.",
+    "does_not_prove": "Which way the asset should face (forward is a declaration, not something measured), that cameras and lights still look the right way (their local -Z convention is not corrected), or that quantized data converts (it is refused).",
+    "fixtures": [
+      {
+        "argv": [
+          "check",
+          "fixtures/door.gltf",
+          "--expect-dimensions",
+          "1.1",
+          "2.1",
+          "0.15"
+        ],
+        "expect": "pass"
+      },
+      {
+        "argv": [
+          "check",
+          "fixtures/door_z_up.gltf"
+        ],
+        "expect": "pass"
+      },
+      {
+        "argv": [
+          "check",
+          "fixtures/door_z_up.gltf",
+          "--expect-dimensions",
+          "1.1",
+          "2.1",
+          "0.15"
+        ],
+        "expect": "fail",
+        "codes": [
+          "up_axis_mismatch"
+        ]
+      },
+      {
+        "argv": [
+          "check",
+          "fixtures/door_centimetres.gltf",
+          "--expect-dimensions",
+          "1.1",
+          "2.1",
+          "0.15"
+        ],
+        "expect": "fail",
+        "codes": [
+          "unit_scale_mismatch"
+        ]
+      },
+      {
+        "argv": [
+          "check",
+          "fixtures/door_mirrored.gltf",
+          "--expect-dimensions",
+          "1.1",
+          "2.1",
+          "0.15"
+        ],
+        "expect": "fail",
+        "codes": [
+          "winding_inverted"
+        ]
+      },
+      {
+        "argv": [
+          "check",
+          "fixtures/door.gltf",
+          "--expect-dimensions",
+          "1.1",
+          "2.1",
+          "-1"
+        ],
+        "expect": "fail",
+        "codes": [
+          "expectation_invalid"
+        ]
+      }
+    ]
+  },
+  "limits": "Conventions are signed axis permutations with a uniform unit factor; arbitrary rotations are not offered. Quantized (integer) positions, normals or animation outputs are refused. Sparse accessors become dense, interleaved data becomes tightly packed, and every buffer is embedded in the output. Cameras and lights keep their node transform change but get no correction rotation. Winding agreement needs stored normals. The diagnosis recognises one axis swap or one uniform unit factor, not combinations.",
+  "related": [
+    "gltf_semantic_recovery",
+    "gltf_structural_validator",
+    "blender_godot_export_checklist"
+  ],
+  "technique_references": [
+    "Change of basis by conjugation: M L M^-1 for node transforms",
+    "Quaternion of Q R Q^T for a signed axis permutation: the axis is a pseudovector",
+    "Triangle winding against vertex normals as a mirroring test",
+    "glTF 2.0 specification: +Y up, +Z front, metres, right-handed"
+  ],
+  "native_checks": [
+    "checker_matches_contract",
+    "repaired_fixtures_match_the_door_in_both_engines",
+    "blender_export_mistakes_are_diagnosed_and_repaired",
+    "round_trip_matches_in_godot_and_blender"
+  ]
+}

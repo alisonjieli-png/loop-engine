@@ -1,5 +1,35 @@
 schema: hardcoding_allowlist/v1
 entries:
+- finding_id: hardcoding.de60817b5f889de3432d79ec
+  owner: "tools.creative_originals.asset_contracts.items.articulation_manifest_godot_builder.item.json:contract.entry_points[9].dialect"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed October 9, 2026: the contract card names the JSON Schema 2020-12 dialect of the item's self-contained schema.json, not a network destination; nothing fetches it. Standard identifier, not a deployment or provider choice."
+  created_on: '2026-10-09'
+  expires_on: '2027-01-09'
+- finding_id: hardcoding.bd590345a21aa6c940189446
+  owner: "tools.creative_originals.asset_contracts.items.articulation_manifest_godot_builder.schema.json:$schema"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed October 9, 2026: the JSON Schema 2020-12 dialect identifier of a self-contained schema that uses only local references; the package tests validate it offline. Standard identifier, not a deployment or provider choice."
+  created_on: '2026-10-09'
+  expires_on: '2027-01-09'
+- finding_id: hardcoding.2d3531701640ce1de863512a
+  owner: "tools.creative_originals.asset_contracts.items.asset_specification_schema.item.json:contract.entry_points[0].dialect"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed October 9, 2026: the contract card names the JSON Schema 2020-12 dialect of the item's self-contained schema.json, not a network destination; nothing fetches it. Standard identifier, not a deployment or provider choice."
+  created_on: '2026-10-09'
+  expires_on: '2027-01-09'
+- finding_id: hardcoding.527720786441f2bf3899a830
+  owner: "tools.creative_originals.asset_contracts.items.asset_specification_schema.schema.json:$schema"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed October 9, 2026: the JSON Schema 2020-12 dialect identifier of a self-contained schema; its package test pins the value and checks every keyword offline. Standard identifier, not a deployment or provider choice."
+  created_on: '2026-10-09'
+  expires_on: '2027-01-09'
+- finding_id: hardcoding.a02266e1dc3c1423b10ed27b
+  owner: "tools.creative_originals.evaluation_atoms.items.work_result_type.schema.json:$schema"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed October 9, 2026: the JSON Schema 2020-12 dialect identifier of a self-contained schema; its package tests check the embedded copy matches and validates offline. Standard identifier, not a deployment or provider choice."
+  created_on: '2026-10-09'
+  expires_on: '2027-01-09'
 - finding_id: hardcoding.cd95089cf658d4a903038ea7
   owner: tools.operator_credentials.json:api_keys.rapidapi-owner-fourth.environment
   classification: SECRET_OR_CREDENTIAL_REFERENCE
