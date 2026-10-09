@@ -220,6 +220,26 @@ The [qualification record](../../docs/research/KAGGLE-METADATA-CLI-QUALIFICATION
 separates transport, authentication, source evidence and rights. Offline
 checks: `PYTHONPATH=src:tools python -m unittest tools.test_kaggle_metadata`.
 
+## Structured benchmark lookups
+
+`huggingface_benchmark_leaderboard` uses the existing
+`knowledge_radar_source/v1` edge with `dataset` (one `owner/repository`
+identity) and `limit` (1 to 60). It adapts Hugging Face's documented
+[leaderboard API](https://huggingface.co/docs/hub/leaderboard-data-guide)
+instead of maintaining a second ranking system. One bounded request retains
+reported scores, ranks, source verification flags and result-file references.
+The upstream SDK was considered; the existing bounded transport keeps this
+small response within the radar's current pacing, byte and request limits.
+
+The adapter makes no local benchmark claim. Missing metric definitions,
+benchmark and harness revisions, measurement dates and reuse rights remain
+unknown. Freeform notes and author profiles are excluded. The source contract
+permits live lookup; publishing a result in a stored feed or file requires a
+separate rights qualification for the selected benchmark and result source.
+No scheduled question or public feed is enabled by installing this adapter.
+Offline fixture checks are in `tools/test_huggingface_benchmarks.py`; those
+checks do not establish a successful live read.
+
 ## Private Trendshift reads
 
 [`tools/read_trendshift.py`](../read_trendshift.py) reads one source selection

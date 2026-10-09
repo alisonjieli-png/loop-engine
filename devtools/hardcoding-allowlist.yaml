@@ -78,6 +78,12 @@ entries:
   rationale: "Reviewed October 9, 2026: other.invalid is a reserved non-provider origin used only by a known-wrong asset-origin control. No request is dispatched to it. The browser suite requires the control to be refused and still checks the exact digest and version of allowed same-origin assets."
   created_on: '2026-10-09'
   expires_on: '2027-01-09'
+- finding_id: hardcoding.6bf18f1bd4a5f56ca174eb3f
+  owner: tools.creative_originals.threejs_modules.items.post_depth_fog.item.json:limits
+  classification: RESOURCE_OR_TEMPLATE
+  rationale: "Reviewed October 9, 2026: this exact descriptive limitation belongs to the versioned creative item contract, already bound by the item's source digest and native evidence. It explains planar depth, colour space and supported render targets; it is not an executable instruction template or provider selection. The native WebGL verifier and package checks passed on these exact bytes. Changed text remains a new finding."
+  created_on: '2026-10-09'
+  expires_on: '2027-01-09'
 - finding_id: hardcoding.12bfb212a1fd99c79a00c83b
   owner: "loop_engine.core.service_runtime.feed_source_collections.json:sources[28].url"
   classification: STRATEGY_OR_PROVIDER_BINDING
