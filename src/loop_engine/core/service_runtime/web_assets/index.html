@@ -141,7 +141,7 @@
       <section class="demos" id="demos" aria-labelledby="demos-title"><div class="section-title"><h2 id="demos-title">Start to finish, for three kinds of work.</h2></div>
       <ul class="demo-grid">
 <li class="demo-card" data-demo-card="simple"><p class="demo-card-kind">A simple task</p><h3>Clean a customer file</h3><p>Five small steps. Each one searches the library, downloads only the file it chose and shows where the harness reads it.</p><a class="text-link" href="/demo" data-page="demo">Watch the five steps</a></li>
-<li class="demo-card" data-demo-card="overnight"><p class="demo-card-kind">A long task, overnight</p><h3>Run a long job while you sleep</h3><p>The local engine is built to run a big job in small steps, each started with only its own files and checked before the next builds on it.</p><a class="text-link" href="/overnight" data-page="overnight">How a night of work runs</a></li>
+<li class="demo-card" data-demo-card="overnight"><p class="demo-card-kind">Local queue example</p><h3>Keep work queued while you are away</h3><p>See how to set call and time limits, keep task checkpoints and review a morning report with your own model access.</p><a class="text-link" href="/overnight" data-page="overnight">See the local workflow</a></li>
 <li class="demo-card" data-demo-card="kaggle"><p class="demo-card-kind">A Kaggle solution</p><h3>From the metric to the submission</h3><p>Six steps of a tabular competition, from fixing the metric to writing the submission.</p><a class="text-link" href="/demo/kaggle" data-page="demo-kaggle">Follow the competition</a></li>
       </ul></section>
       </div>
@@ -160,7 +160,7 @@
       <div class="home-band band-plain" data-band="use-cases">
       <section class="use-cases" id="use-cases" aria-labelledby="use-cases-title"><div class="section-title"><h2 id="use-cases-title">What you get back.</h2></div>
       <ul class="use-case-grid">
-<li class="use-case" data-use-case="overnight"><h3>Solve complex problems overnight</h3><p>Hand a big job to a small or local model before you log off. The Baltor Harness breaks it into small steps and gives each one only the files it needs, so the work keeps moving while you sleep.</p><a class="text-link" href="/overnight" data-page="overnight">How overnight work runs</a></li>
+<li class="use-case" data-use-case="overnight"><h3>Keep track of overnight work</h3><p>Run a bounded local queue on your own machine with your own model access. Set call and time limits, keep task checkpoints and review a morning report.</p><a class="text-link" href="/overnight" data-page="overnight">How overnight work runs</a></li>
 <li class="use-case" data-use-case="efficiency"><h3>More efficient operation</h3><p>Built so each step carries only the context it needs, reuses proven code instead of writing it again, and runs on the smallest model that does the job well.</p><a class="text-link" href="/efficiency" data-page="efficiency">Where the savings come from</a></li>
 <li class="use-case" data-use-case="learning"><h3>Learning and optimization, built in</h3><p>Every run leaves a record of what worked, what failed and which setup was fastest. Baltor is designed to use those records to set up the next task better.</p><a class="text-link" href="/learning" data-page="learning">How it keeps improving</a></li>
       </ul></section>
@@ -226,7 +226,7 @@
     </section>
     <section data-view="overnight" hidden class="use-case-page" aria-labelledby="overnight-title">
       <div class="content-intro" data-band="overnight-intro"><div class="night-intro"><div><h1 id="overnight-title">Hand off the big job before you log off</h1><p class="lede">Run a local queue of tasks with your own model access. Set a call budget and time limit, keep task checkpoints and review a morning report.</p><div class="actions"><a class="button primary" href="/get-started" data-page="get-started" data-access-state="waiting"><span data-access-label>Get started</span></a><a class="button secondary" href="/setup#start-connect" data-page="setup">Set up the Baltor Harness</a></div></div>
-        <figure class="night-card" aria-labelledby="overnight-example-title"><p class="night-card-head"><span id="overnight-example-title">What you come back to</span><span>07:00</span></p><ol class="night-list"><li><span class="night-time">23:10</span><span>Profile the columns</span><span class="night-state">Checked</span></li><li><span class="night-time">23:42</span><span>Split the addresses</span><span class="night-state">Checked</span></li><li><span class="night-time">01:15</span><span>Find duplicates</span><span class="night-state">Checked</span></li><li><span class="night-time">02:03</span><span>Propose merges</span><span class="night-state is-waiting">Waiting for you</span></li></ol><figcaption class="night-note">An example night. Your steps, times and results will differ.</figcaption></figure></div></div>
+        <figure class="night-card" aria-labelledby="overnight-example-title" data-overnight-example="illustrative"><p class="night-card-head"><span id="overnight-example-title">Example morning report</span><span>07:00</span></p><ol class="night-list"><li><span class="night-time">23:10</span><span>Profile the columns</span><span class="night-state">Checked</span></li><li><span class="night-time">23:42</span><span>Split the addresses</span><span class="night-state">Checked</span></li><li><span class="night-time">01:15</span><span>Find duplicates</span><span class="night-state">Checked</span></li><li><span class="night-time">02:03</span><span>Propose merges</span><span class="night-state is-waiting">Waiting for you</span></li></ol><figcaption class="night-note">Illustrative workflow, not a recorded run. Times and outcomes are examples.</figcaption></figure></div></div>
       <div class="content-band" data-band="overnight-tools">
         <section class="overnight-toolbox" data-overnight-tools="local" aria-labelledby="overnight-tools-title">
           <h2 id="overnight-tools-title">Local overnight tools <span class="preview-label">Preview</span></h2>
@@ -236,22 +236,22 @@
       </div>
       <div class="content-band" data-band="overnight-body">
         <ul class="content-cells">
-          <li class="content-cell"><h2>A record of every step</h2><p>Its files, its checks and its result, so you can see what happened.</p></li>
-          <li class="content-cell"><h2>Work checked as it goes</h2><p>An independent check accepts each result before the next step builds on it.</p></li>
+          <li class="content-cell"><h2>Keep an attempt record</h2><p>See which attempts finished, failed or need review, with their retained task checkpoints.</p></li>
+          <li class="content-cell"><h2>Review outputs before accepting them</h2><p>A finished process is not an accepted result. Check the artifacts against the task's acceptance criteria.</p></li>
           <li class="content-cell"><h2>Your model access</h2><p>Use your provider account or local endpoint. Call limits control how many requests the queue can make.</p></li>
         </ul>
       </div>
       <div class="content-band" data-band="overnight-how-band">
         <div class="content-rows">
         <section class="content-row" aria-labelledby="overnight-how"><h2 id="overnight-how">How a night of work runs</h2><div><ol class="number-list">
-<li><span><strong>Describe the job.</strong> One task, with the files it works on and what a good result looks like.</span></li>
-<li><span><strong>Small steps.</strong> The Baltor Harness breaks the task into small steps with clear inputs and outputs.</span></li>
-<li><span><strong>Only what each step needs.</strong> Every step asks the library for its skills, tools and instructions, and gets only those.</span></li>
-<li><span><strong>A fresh start per step.</strong> Each step can run in its own freshly started harness, so a long job never piles up in one crowded session.</span></li>
-<li><span><strong>Checked results.</strong> An independent check accepts each result before the next step builds on it.</span></li>
+<li><span><strong>Choose the tasks.</strong> List your task files, permitted inputs and the checks that determine success.</span></li>
+<li><span><strong>Set the limits.</strong> Choose model-call allocations and a queue deadline before dispatch.</span></li>
+<li><span><strong>Choose reusable files.</strong> Search Baltor and make selected versions available to your harness.</span></li>
+<li><span><strong>Keep task checkpoints.</strong> Preserve attempt state. Review interrupted or unknown work before retrying within the remaining allowance.</span></li>
+<li><span><strong>Review the morning report.</strong> Inspect results and check the produced artifacts before accepting the work.</span></li>
         </ol></div></section>
         <section class="content-row" aria-labelledby="overnight-need"><h2 id="overnight-need">What you need</h2><div><ul class="check-list"><li>A model you can reach: a model on your computer, Ollama Cloud, a machine on your network or a provider key</li><li>The Baltor Harness on the machine that runs the job. <a href="/can-i-run">Can I run it?</a></li><li>An Agent Feeds + Harness Files account for the library</li></ul></div></section>
-        <section class="content-row" aria-labelledby="overnight-choice"><h2 id="overnight-choice">One harness per step, your choice</h2><div><p>Starting a fresh harness for every step keeps each step small and focused, which is what lets a small model go the distance. Turn it on for long runs, and off for a quick task that runs in one session.</p></div></section>
+        <section class="content-row" aria-labelledby="overnight-choice"><h2 id="overnight-choice">One harness per step, your choice</h2><div><p>Turn it on with a qualified fresh-instance profile, or leave it off for a session-based setup. Check your selected harness's settings. Start with one short task and inspect its artifacts before leaving a longer queue unattended.</p><p>A fresh process separates context; it does not establish task success. The <a class="text-link" href="/docs/container-worker">worker guide</a> explains the supported profiles and their limits.</p></div></section>
         </div>
       </div>
       <div class="content-band is-closing" data-band="overnight-closing"><div class="close-band"><div><h2>Try it on tonight's job</h2><p>Agent Feeds + Harness Files, $29 a month. The Baltor Harness is free.</p></div><a class="button primary" href="/get-started" data-page="get-started">Get started</a></div></div>

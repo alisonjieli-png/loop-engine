@@ -22,7 +22,7 @@ const categoryProblems=state=>[...(/^Harness and agent optimized operation\.$/m.
 const statesThePlanAndPrice=text=>/^Agent Feeds \+ Harness Files \$29 a month\b/.test(text)&&!/United States dollars|per month/i.test(text);
 const cardProblems=(cards,order)=>[...(JSON.stringify(cards.map(card=>card.name))!==JSON.stringify(order)?["the cards are "+JSON.stringify(cards.map(card=>card.name))]:[]),
   ...cards.filter(card=>!card.shown||!card.title).map(card=>card.name+" is not shown under its own heading"),...cards.filter(card=>card.tags>0||cardStatusWords.test(card.text)).map(card=>card.name+" carries a status")];
-const useCaseTitles={overnight:"Solve complex problems overnight",efficiency:"More efficient operation",learning:"Learning and optimization, built in"};
+const useCaseTitles={overnight:"Keep track of overnight work",efficiency:"More efficient operation",learning:"Learning and optimization, built in"};
 const useCaseProblems=cards=>[...cardProblems(cards,["overnight","efficiency","learning"]),...cards.filter(card=>useCaseTitles[card.name]!==card.title||JSON.stringify(card.links)!==JSON.stringify(["/"+card.name])).map(card=>card.name+" is titled or linked another way")];
 const heroActionProblems=state=>[...(JSON.stringify(state.primary)===JSON.stringify([["hero-primary","Get started","/get-started"]])?[]:["the hero's primary actions are "+JSON.stringify(state.primary)]),
   ...(JSON.stringify(state.secondary)===JSON.stringify([["hero-setup","Get set up","/setup"]])?[]:["the hero's secondary actions are "+JSON.stringify(state.secondary)]),...(state.journey===1?[]:[state.journey+" hero links lead into the access journey"]),
@@ -149,7 +149,7 @@ try{
     ...useCaseProblems(await liveCards('[data-view="home"] [data-use-case]',"useCase"))];
   check("live_homepage_cards_carry_no_status_word_and_link_the_three_use_cases",liveCardProblems.length===0);
   check("card_check_rejects_a_status_word_and_a_missing_use_case",cardProblems([{name:"skills",title:"Skills",text:"Skills Available now",tags:1,links:[],shown:true}],["skills"]).length===1
-    &&useCaseProblems([{name:"overnight",title:"Solve complex problems overnight",text:"",tags:0,links:["/overnight"],shown:true}]).length===1);
+    &&useCaseProblems([{name:"overnight",title:"Keep track of overnight work",text:"",tags:0,links:["/overnight"],shown:true}]).length===1);
   /* The hero shows the working directory one step gets and no worked example, as the owner asked on September 24, 2026: no
      search, no reference, no digest and no download in the hero band. */
   const liveHeroDirectory=await page.evaluate(()=>{const band=document.querySelector('[data-view="home"] [data-band="hero"]');
@@ -329,7 +329,7 @@ try{
   /* /waitlist opens the same funnel as an older address, and each use case the owner named opens its own page. */
   await page.goto(origin+"/waitlist");await page.waitForFunction(()=>document.querySelector("#service-status").textContent.includes("Service available"));
   check("live_waitlist_address_opens_the_get_started_funnel",await page.evaluate(()=>JSON.stringify([...document.querySelectorAll("[data-view]")].filter(item=>!item.hidden).map(item=>item.dataset.view)))==='["start"]'&&(await page.title()).endsWith("| Get started"));
-  for(const [address,view,title] of [["/use-cases","use-cases","Use cases"],["/overnight","overnight","Solve complex problems overnight"],["/efficiency","efficiency","More efficient operation"],["/learning","learning","Learning and optimization, built in"]]){
+  for(const [address,view,title] of [["/use-cases","use-cases","Use cases"],["/overnight","overnight","Local overnight queue and morning reports"],["/efficiency","efficiency","More efficient operation"],["/learning","learning","Learning and optimization, built in"]]){
     const direct=await page.request.get(origin+address,{maxRedirects:0});
     await page.goto(origin+address);
     check("live_use_case_page_opens_"+view,direct.status()===200&&(direct.headers()["content-type"]||"").startsWith("text/html")&&await page.evaluate(()=>JSON.stringify([...document.querySelectorAll("[data-view]")].filter(item=>!item.hidden).map(item=>item.dataset.view)))===JSON.stringify([view])

@@ -1058,8 +1058,8 @@
      },
      {
       "address": "/overnight",
-      "title": "Solve complex problems overnight",
-      "description": "Hand a long job to a small or local model before you log off, with each step getting only the files it needs."
+      "title": "Local overnight queue and morning reports",
+      "description": "Run a bounded local queue with your own model access. Set call and time limits, retain task checkpoints and review a morning report."
      },
      {
       "address": "/efficiency",

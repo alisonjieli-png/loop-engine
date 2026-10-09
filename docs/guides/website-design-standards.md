@@ -146,7 +146,9 @@ The owner, September 23, 2026: "improve the design so people don't have to
 scroll down so far to get all of the details."
 
 - At 1440 by 900 the first screen shows the page's h1, its lead line and its
-  one primary action. On the homepage and on Pricing it also shows the price.
+  primary task action. Pricing is a separate section below the homepage
+  introduction, never a stack of plan cards inside the hero. On Pricing, the
+  first screen starts the comparison and shows its first price.
 - At 390 by 844 the first screen shows the h1 and the primary action.
 - At every window size the first screen shows a primary action. The header's
   action counts, and on a phone it stands beside the menu button.
@@ -181,11 +183,21 @@ hero band was 1,249 pixels tall and How it works was 6,144 pixels.
 
 ## Buttons, cards, badges and forms
 
-- One primary action per view. A primary action is `.button.primary` or
-  `button.primary`, on `--button` with `--button-ink`. The same action
-  repeated (the same words to the same address) counts once. A disabled
-  primary button still counts, so a step that cannot run yet uses the quiet
-  style. Other actions are `.button.secondary`, `.quiet` or `.text-link`.
+- Give each page one primary task. Its introduction makes that task clear;
+  other actions use `.button.secondary`, `.quiet` or `.text-link`. Primary
+  controls use `--button` with `--button-ink` and an explicit action label.
+- Comparison cards may each have one emphasized choice action for their
+  distinct offering. Keep the cards together under a comparison heading,
+  give each a clear name and destination, and keep secondary explanations
+  visually quieter. These choices serve the page's comparison task; they
+  are not permission to style unrelated links as primary actions.
+- A shared header, footer and closing section may retain their navigation
+  and access actions. Repeating the page's main action near the end is
+  allowed. Do not remove useful navigation or hide choices to satisfy a
+  whole-page button count.
+- A disabled primary button still needs a clear unavailable state. A step
+  that cannot run yet uses the quiet style and explains the missing
+  prerequisite. It must not resemble an available purchase or execution.
 - Buttons are at least 44 pixels tall (48 for the page's own actions) with
   `--radius-button`; fields use `--radius-field`.
 - Cards are `--paper` with a 1 pixel `--border`, `--radius-card`, and padding
@@ -198,6 +210,16 @@ hero band was 1,249 pixels tall and How it works was 6,144 pixels.
   Live.
 - Every field has a visible label. Its edge is `--field-edge`, which meets 3
   to 1 against white and the ground.
+
+Check action hierarchy by decision scope: the page introduction, each
+comparison card and the shared navigation. Preserve the one-primary-task
+limit for ordinary page content. The full-layout checker currently counts
+all `.primary` controls in a view together. Keep those findings visible while
+its scope checks are reconciled; do not raise the global limit to an arbitrary
+button count. Known-wrong controls must still reject unrelated competing
+actions, multiple emphasized actions in one card, missing destinations and
+hidden choices. Contrast, touch targets, focus, overflow and link checks apply
+to every control in every scope.
 
 ## Header anatomy
 
@@ -259,7 +281,8 @@ line, which the privacy notice publishes.
 - A short lead line: the first paragraph after the h1, one or two sentences.
 - Sections under h2 headings that carry an id, so the dated inventory can
   follow them.
-- One primary action.
+- One primary task with the action hierarchy described above; comparison
+  choices and shared navigation retain their own controls.
 - The title is "Baltor | " and the page title of the site map, and the page
   names `https://baltor.ai` and its address as its canonical address.
 - The service writes the title, the page's one-line description from the site
@@ -358,19 +381,36 @@ its content.
   check the full-library price and measured download unit separately from
   the feed price, free period, consent and availability wording.
 
-The October 8 homepage opens with a short outcome-led heading and names the
-three audiences beside it. Get started still opens the existing account flow;
-Get set up still opens the connection guide. The two offer cards show their
-own prices and available scope. Marketing counts distinct files, not packages.
-Exact package groupings remain in technical retrieval records and the
-library's technical disclosure. An unmeasured file population stays unknown.
+The homepage opens with a short outcome-led heading and names the three
+audiences beside it. Get started opens the existing account flow; Get set up
+opens the connection guide. The separate pricing section presents three
+distinct offerings: Agent Feeds, Harness Files, and Overnight / AFK Work.
+State the included lower offerings on each card. Use the same names and scope
+on the pricing, feeds, library and overnight pages without repeating a full
+pricing grid on every page.
 
-`tools/check_offering_launch.mjs` measures header bounds and the two offers at
+Agent Feeds shows its $4.99 standard monthly price, free period and paid
+opt-in. Harness Files includes Agent Feeds and the full library at the current
+$29 monthly checkout price. Overnight / AFK Work is an included local Preview
+at no extra charge with Harness Files. Its card names run limits, task
+checkpoints and morning reports, with the customer's own worker and model
+access. It is not a paid hosted supervision service. A different proposed
+price stays out of a purchase path until billing, access and delivery agree.
+
+Different card treatments identify the offerings; they do not establish
+popularity or measured value. Do not add Most popular, Best value or adoption
+claims without evidence. Marketing counts distinct files, not packages. Exact
+package groupings remain in technical retrieval records and the library's
+technical disclosure. An unmeasured file population stays unknown.
+
+`tools/check_offering_launch.mjs` measures header bounds and the three offers at
 80, 100 and 125 percent zoom-equivalent desktop layouts, tablet, phone and
 landscape sizes, in both actual appearances. It preserves screenshots and
-source digests, and rejects a deliberately clipped header and removed pricing
-or consent wording. These are headless viewport/density emulations, not a
-measurement of the owner's browser session.
+source digests, and rejects a deliberately clipped header, a missing third
+offering, pricing cards in the introduction hero, and removed pricing or
+consent wording. Preview checks distinguish local tools from hosted execution.
+These are headless viewport/density emulations, not a measurement of the
+owner's browser session.
 
 ## Regression rule
 
