@@ -44,9 +44,10 @@ RUN_RECORD_TYPE = "library_supply_run/v1"
 #: The supply lines, one per kind of fact source. publisher_tables reads an official publisher's own HTTPS address
 #: (a statistical series, a database release), where data_tables reads a GitHub file.
 (MCP_REGISTRY, OPENAPI_OPERATIONS, PROGRAM_INSTALLS, DATA_TABLES, FUNCTION_EXTRACTS, JSON_SCHEMAS,
- MANIM_SCENES, API_TOOL_SERVERS, PUBLISHER_TABLES, CREATIVE_ASSETS, CREATIVE_ORIGINALS) = LINES = (
+ MANIM_SCENES, API_TOOL_SERVERS, PUBLISHER_TABLES, CREATIVE_ASSETS, CREATIVE_ORIGINALS, ENGINE_API_CARDS) = LINES = (
     "mcp_registry", "openapi_operations", "program_installs", "data_tables", "function_extracts", "json_schemas",
-    "manim_scenes", "api_tool_servers", "publisher_tables", "creative_assets", "creative_originals")
+    "manim_scenes", "api_tool_servers", "publisher_tables", "creative_assets", "creative_originals",
+    "engine_api_cards")
 #: How the text of every supply package was authored, and the review profile it needs. The panel has no such
 #: profile yet (tools/candidate_review reads original and imported packages only), so an export holds these.
 AUTHORING = "generated_from_licensed_facts"
@@ -145,6 +146,15 @@ REFUSAL_REASONS = {
     CREATIVE_ORIGINALS: ("family_invalid", "item_invalid", "native_evidence_missing", "native_evidence_stale",
                          "native_check_failed", "blocked_by_static_check", "package_above_review_bound",
                          "package_path_invalid"),
+    # Version-pinned engine API cards (tools/engine_api_cards): an unreadable fact, a licence the line cannot copy,
+    # a build that is not the release's, a class the reference cannot describe, native evidence that does not hold
+    # for the card's bytes, a failing package test, and the shared packaging refusals.
+    ENGINE_API_CARDS: ("source_unreadable", "licence_not_on_allowlist", "licence_signals_disagree", "licence_unknown",
+                       "engine_binary_unverified", "reference_unreadable", "duplicate_class", "documentation_missing",
+                       "documentation_structure_differs", "no_api_surface", "native_evidence_missing",
+                       "native_evidence_stale", "native_evidence_invalid", "native_check_failed",
+                       "generated_test_failed", "blocked_by_static_check", "package_above_review_bound",
+                       "package_path_invalid"),
 }
 #: The forms each line may declare, and the harness kind it serves them as.
 LINE_FORMS = {MCP_REGISTRY: {"mcp_server": "protocol_server_configuration"},
@@ -170,7 +180,10 @@ LINE_FORMS = {MCP_REGISTRY: {"mcp_server": "protocol_server_configuration"},
               CREATIVE_ORIGINALS: {"library_module": "code_module", "function": "code_module",
                                    "code_example": "code_module", "evaluation_set": "code_module",
                                    "template": "template", "three_d_model": "three_d_model",
-                                   "schema": "contract_schema"}}
+                                   "schema": "contract_schema"},
+              # A card is the contract of one class of a pinned engine release (its exact surface, its text and its
+              # renames), served as the contract schema a harness reads before writing code against the class.
+              ENGINE_API_CARDS: {"schema": "contract_schema"}}
 CANDIDATE_FIELDS = ("record_type", "record_id", "upstream_key", "line", "kind", "native_format", "component_form",
                     "name", "description", "package", "package_digest", "files", "licence", "provenance",
                     "placements", "declared_effects", "effect_evidence", "credentials", "tests", "findings",
@@ -258,7 +271,10 @@ STATE_SCOPES = ("", "apis_guru_directory", "google_discovery", "api_components",
                 OPERATION_CONTRACT_SCOPE, OPERATION_CONSTRAINT_CASE_SCOPE,
                 # The creative line keeps one state per source, so a complete run of one source never withdraws
                 # another's packages.
-                "polyhaven", "ambientcg", "godot_demo_projects")
+                "polyhaven", "ambientcg", "godot_demo_projects",
+                # The engine API card line keeps one state per engine and API version, so a complete run of one
+                # release never withdraws the cards of another.
+                "godot_4_7")
 
 
 def state_record_id(line: str, scope: str = "") -> str:

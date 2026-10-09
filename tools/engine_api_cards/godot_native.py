@@ -17,6 +17,8 @@ from __future__ import annotations
 import hashlib
 import json
 import shutil
+import subprocess
+import tempfile
 from pathlib import Path
 
 from creative_originals import engines
@@ -71,16 +73,22 @@ def file_sha256(path: Path) -> str:
     return digest.hexdigest()
 
 
+def build_version(binary: Path) -> str:
+    """The version line a Godot build prints for --version, run with an isolated HOME; "" when it prints none."""
+    with tempfile.TemporaryDirectory(prefix="baltor-godot-version-") as home:
+        completed = subprocess.run([str(binary), "--version"], capture_output=True, text=True, timeout=120,
+                                   env=engines._isolated_environment(Path(home)))
+    lines = [line.strip() for line in completed.stdout.splitlines() if line.strip()[:1].isdigit()]
+    return lines[0] if lines else ""
+
+
 def locate(path: "str | None" = None) -> engines.Engine:
     """The Godot build to use: the given path, else the pinned build tools/creative_originals/engines.py finds."""
     if path:
         binary = Path(path).resolve()
         if not binary.is_file():
             raise NativeError("engine_missing", str(binary))
-        located = engines.locate(ENGINE_NAME)
-        if Path(located.path).resolve() == binary:
-            return located
-        return engines.Engine(ENGINE_NAME, str(binary), "unknown", file_sha256(binary))
+        return engines.Engine(ENGINE_NAME, str(binary), build_version(binary), file_sha256(binary))
     try:
         return engines.locate(ENGINE_NAME)
     except engines.EngineUnavailable as error:

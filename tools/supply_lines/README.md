@@ -209,18 +209,33 @@ Supply lines (each writes library_supply_candidate/v1 records)
 │   │   a headless Godot import when Godot 4 is installed (else recorded as skipped)
 │   └── the same creative_fetch.py, blender_load.py, godot_load.gd, godot_project_check.py and tests
 │       in every package (creative_files/), run offline against a loopback server and a recording bpy
-└── creative_originals: one package per item of Baltor's own creative families (creative_originals.py)
-    ├── source: tools/creative_originals/<family>/items/<identity>/ and the family's shared/ files at the
-    │   pinned commit, each a fact by its raw.githubusercontent.com address and SHA-256 (MIT); the files are
-    │   verbatim copies of those facts, and component.json is the contract card a harness reads first
-    ├── kinds and forms: code modules (library_module, function, code_example, evaluation_set), template,
-    │   three_d_model and schema; the job key is component.json job.family and job.identity
-    ├── native evidence: a family with a native verifier (Godot 4.7.2, Blender 5.2.1) must hold a passed
-    │   record for the item's exact bytes, written beforehand by tools/creative_originals/verify.py; the
-    │   record and the captured preview.png travel in the package; a missing, stale or failed record
-    │   refuses the item by name
-    └── qualification runs the package's own Python tests and mutation in the sandbox; the engine-side
-        behavior is the native record's observation, which the sandbox does not repeat
+├── creative_originals: one package per item of Baltor's own creative families (creative_originals.py)
+│   ├── source: tools/creative_originals/<family>/items/<identity>/ and the family's shared/ files at the
+│   │   pinned commit, each a fact by its raw.githubusercontent.com address and SHA-256 (MIT); the files are
+│   │   verbatim copies of those facts, and component.json is the contract card a harness reads first
+│   ├── kinds and forms: code modules (library_module, function, code_example, evaluation_set), template,
+│   │   three_d_model and schema; the job key is component.json job.family and job.identity
+│   ├── native evidence: a family with a native verifier (Godot 4.7.2, Blender 5.2.1) must hold a passed
+│   │   record for the item's exact bytes, written beforehand by tools/creative_originals/verify.py; the
+│   │   record and the captured preview.png travel in the package; a missing, stale or failed record
+│   │   refuses the item by name
+│   └── qualification runs the package's own Python tests and mutation in the sandbox; the engine-side
+│       behavior is the native record's observation, which the sandbox does not repeat
+└── engine_api_cards: one version-pinned API contract card per class of a pinned engine release (engine_api_cards.py)
+    ├── kind contract_schema, form schema; one card format (tools/engine_api_cards), one adapter per engine;
+    │   Godot 4.7.2-stable first, the job key component.json job.engine, job.version and job.class
+    ├── surface: the official build's --doctool dump (1,076 classes); the build proven the member of the release
+    │   asset whose SHA-256 GitHub publishes, its version naming the tag's commit
+    ├── text: the class reference XML at the tag, each file proven by blob identity, MIT by LICENSE.txt and the
+    │   last matching COPYRIGHT.txt stanza (Expat); its structure must equal the dump's; BBCode to Markdown as
+    │   the engine's make_rst.py reads it; the CC BY 3.0 documentation site is never read
+    ├── renames: the engine's own Godot 3 to 4 map, only where it attributes a rename to the class and the new
+    │   name is on the class's surface
+    ├── files: README.md (members-N.md past 240,000 bytes), api.json, component.json, the shared api_card.py and
+    │   test_api_card.py (the documents agree with api.json; known-wrong controls), verification/native.json,
+    │   LICENSE, UPSTREAM-LICENSE (the engine's LICENSE.txt) and ATTRIBUTION.md
+    └── native evidence: one run of the same build checks every card (ClassDB, Variant types, the global
+        scopes); a missing, stale, invalid or failed record refuses the class by name
 ```
 
 Beside the lines, `verbatim_code_sources.json` and
@@ -309,6 +324,7 @@ what it no longer supplies.
 | ahujasid/blender-mcp | Rejected as an engine: it downloads Poly Haven assets live without pinning, so a scene cannot be rebuilt from the same bytes. Its idea of an HDRI on the world and a texture on a material is kept in blender_load.py. |
 | godotengine/godot-demo-projects | Adopted as the source of editable projects (MIT). Per-asset notices decide each project; one archive of the commit replaces thousands of single-file reads. |
 | three.js loaders (HDRLoader, EXRLoader, GLTFLoader, MTLLoader and OBJLoader, TextureLoader) | Adopted in the README snippets, which `node --check` parses; HDRLoader is RGBELoader before r180. |
+| Godot's `--doctool`, its class reference XML and `make_rst.py` | Adopted for the engine API card line: the build's own surface, the repository's MIT text compared with it by structure, and the generator's meaning of each BBCode tag, written as Markdown ([engine API cards](../engine_api_cards/README.md)). |
 
 ## Commands
 
@@ -354,6 +370,9 @@ PYTHONPATH=src:tools python tools/build_library_supply.py creative-assets \
   --run-folder /home/username/baltor-library/supply/creative-assets/DATE \
   --authorize-network-reads --authorize-store-writes [--source polyhaven|ambientcg|godot_demo_projects] \
   [--asset ID] [--maximum-assets N] [--resolution 4k] [--digest-cache FOLDER] [--godot PATH]
+PYTHONPATH=src:tools python tools/build_library_supply.py engine-api-cards \
+  --run-folder /home/username/baltor-library/supply/engine-api-cards/DATE \
+  --authorize-network-reads --authorize-store-writes [--class NAME] [--godot PATH] [--workers 8]
 PYTHONPATH=src:tools python tools/build_library_supply.py report \
   --library-bundle /home/username/baltor-bundles/RELEASE --output REPORT.json [--admission-folder ADMISSION]
 ```

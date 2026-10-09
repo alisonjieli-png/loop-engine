@@ -47,6 +47,8 @@ DOCS_PLACEHOLDER = "$DOCS_URL"
 PARAGRAPH_BREAK = "\n\n"
 #: Characters plain text escapes, and the line starts Markdown would read as a block.
 _ESCAPED = {"\\": "\\\\", "`": "\\`", "*": "\\*", "[": "\\[", "]": "\\]"}
+#: Emphasis by underscore needs a word boundary: an underscore inside a word (snake_case) stays as it is.
+UNDERSCORE, SPACE = "_", " "
 _BLOCK_START = re.compile(r"^(#|>|[-+*](?=\s)|=|~|\d+(?=[.)](?:\s|$)))")
 _HTML_START = re.compile(r"<(?=[A-Za-z/!?])")
 
@@ -77,10 +79,10 @@ def escape_text(text: str, line_start: bool = False) -> str:
     for index, character in enumerate(text):
         if character in _ESCAPED:
             out.append(_ESCAPED[character])
-        elif character == "_":
+        elif character == UNDERSCORE:
             before = text[index - 1] if index else " "
             after = text[index + 1] if index + 1 < len(text) else " "
-            out.append("_" if before.isalnum() and after.isalnum() else "\\_")
+            out.append(UNDERSCORE if before.isalnum() and after.isalnum() else "\\" + UNDERSCORE)
         else:
             out.append(character)
     escaped = _HTML_START.sub("\\\\<", "".join(out))
@@ -164,7 +166,7 @@ def inline(text: str, context: Context) -> str:
             out.append(EMPHASIS[name])
         elif name == BREAK and not is_closing:
             out.append(PARAGRAPH_BREAK)
-            while after < len(text) and text[after] == " ":
+            while after < len(text) and text[after] == SPACE:
                 after += 1
             position, line_start = after, True
             continue
