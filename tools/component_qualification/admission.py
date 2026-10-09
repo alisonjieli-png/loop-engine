@@ -105,6 +105,9 @@ def admit(qualification_folder: Path, review_path: Path, store_root: "Path | Non
     from tools.write_reviewed_catalogue import (FACET_ATTRIBUTES, HARNESS_KIND_ATTRIBUTE, STEP_FUNCTIONS_ATTRIBUTE,
                                                 TIER_ATTRIBUTE, declare, item_attributes)
     from tools.candidate_review.native import NativeReviewFile
+    from loop_engine.core.service_runtime.catalogue_attributes import ASSET_ROLE_ATTRIBUTE
+    from .checks import QualificationContext, declared_asset_role
+    policy = QualificationContext.load(root).policy
     qualification = {}
     with open(Path(qualification_folder) / "qualification.jsonl", encoding="utf-8") as stream:
         for line in stream:
@@ -203,6 +206,10 @@ def admit(qualification_folder: Path, review_path: Path, store_root: "Path | Non
             spec = {"title": component.candidate.get("name") or identity, "component_form": component.form,
                     "provenance": {"harness_kind": component.kind}}
             attributes, engines = item_attributes(reference, spec, component.package, files, is_import=True)
+            # The asset role its package states (qualification refused a reference or creative form without one).
+            role = declared_asset_role(component, policy)
+            if role is not None:
+                attributes["asset_role"] = role
             body_path = f"bodies/{identity}.md"
             declared = []
             for file in component.package.files:
@@ -262,9 +269,11 @@ def admit(qualification_folder: Path, review_path: Path, store_root: "Path | Non
     items_record = {"record_type": "starter_catalogue_candidate_items/v2", "source_revision": _revision(root),
                     "previous_source_revisions": [], "source_digests": {}, "publication": "not_published",
                     "items": items}
+    # The asset role is declared only when an item carries one, so other folders keep the schema they had.
     schema = declare(json.loads((root / "examples/29_intelligence_service/starter-catalogue/attribute-schema.json")
                                 .read_text(encoding="utf-8")),
-                     TIER_ATTRIBUTE, HARNESS_KIND_ATTRIBUTE, STEP_FUNCTIONS_ATTRIBUTE, *FACET_ATTRIBUTES)
+                     TIER_ATTRIBUTE, HARNESS_KIND_ATTRIBUTE, STEP_FUNCTIONS_ATTRIBUTE, *FACET_ATTRIBUTES,
+                     *((ASSET_ROLE_ATTRIBUTE,) if any("asset_role" in item["attributes"] for item in items) else ()))
     output.mkdir(parents=True)
     for relative, payload in sorted(bodies.items()):
         target = output / relative

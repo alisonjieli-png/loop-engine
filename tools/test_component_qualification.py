@@ -268,14 +268,16 @@ class NewRuleTests(unittest.TestCase):
         self.assertIsNone(checks.mutant(controls.configuration_fixture(REVISION), self.policy))
 
 
-def _creative(identity, resolutions, *, source="polyhaven", sha256="a" * 64):
-    """A creative asset recipe as the creative line writes it: its job and its pinned variants in creative.json."""
+def _creative(identity, resolutions, *, source="polyhaven", sha256="a" * 64, role="editable_source"):
+    """A creative asset recipe as the creative line writes it: its job, its asset with the role a harness gives it
+    (none when ``role`` is None) and its pinned variants in creative.json."""
     variants = [{"id": f"gltf-{resolution}", "resolution": resolution, "main": f"{identity}_{resolution}.gltf",
                  "total_bytes": 10, "files": [{"path": f"{identity}_{resolution}.gltf", "role": "model",
                                                "url": f"https://dl.example.org/{identity}_{resolution}.gltf",
                                                "size_bytes": 10, "sha256": sha256}]} for resolution in resolutions]
+    asset = {"type": "model", "name": identity, **({"asset_role": role} if role is not None else {})}
     manifest = {"record_type": "creative_asset_manifest/v1", "job": {"source": source, "identity": identity},
-                "asset": {"type": "model", "name": identity}, "hosts": ["dl.example.org"],
+                "asset": asset, "hosts": ["dl.example.org"],
                 "default_variant": variants[0]["id"], "variants": variants}
     files = {"creative.json": json.dumps(manifest, indent=1).encode(), "LICENSE": controls.MIT_TEXT.encode(),
              "creative_fetch.py": b"def fetch(variant):\n    return variant\n",
@@ -310,6 +312,79 @@ class CreativeLineTests(unittest.TestCase):
         codes = [code for code, _detail in licence.run(_creative("apple", ["1k"], sha256="not a digest"),
                                                        context).findings]
         self.assertIn("download_not_pinned", codes)
+
+    def test_a_creative_form_must_state_its_asset_role_where_the_policy_says(self):
+        context = _context()
+        context.duplicates = {}
+        manifest = next(check for check in checks.CHECKS if check.check_id == "manifest")
+
+        def role_findings(component):
+            return [finding for finding in manifest.run(component, context).findings
+                    if finding[0].startswith("asset_role")]
+
+        stated = _creative("apple", ["1k"])
+        self.assertEqual(checks.declared_asset_role(stated, self.policy), "editable_source")
+        self.assertEqual(role_findings(stated), [])
+        # Known wrong: a 3D model that does not say what a harness does with it, or says something outside the
+        # vocabulary, is refused by name before admission could write it.
+        self.assertEqual(role_findings(_creative("apple", ["1k"], role=None)),
+                         [("asset_role_undeclared", "the artifact declares no asset_role")])
+        self.assertEqual(role_findings(_creative("apple", ["1k"], role="inspiration")),
+                         [("asset_role_invalid", "the artifact declares the asset role 'inspiration'")])
+        # A line whose policy names no role file is not asked for one by this rule.
+        self.assertEqual(checks.asset_role_findings(controls.code_fixture(REVISION), self.policy), [])
+
+    def test_qualified_admission_serves_the_stated_asset_role_and_the_release_reader_needs_it(self):
+        from build_catalogue_release_bundle import build
+        from loop_engine.core.service_runtime.records import ServiceRuntimeError
+        from tools.component_qualification import qualified_admission
+
+        def sourced(component, name):
+            # The provenance a stored creative candidate names: its origin host, its source and the API record read.
+            record = json.loads(json.dumps(dict(component.candidate)))
+            record["provenance"].update({"origin_host": "api.polyhaven.com", "repository": "polyhaven",
+                                         "path": f"files/{name}"})
+            return component.replaced(candidate=record)
+
+        stated = sourced(_creative("apple", ["1k"]), "apple")
+        unstated = sourced(_creative("pear", ["1k"], role=None), "pear")
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder)
+            qualification = root / "qualification"
+            qualification.mkdir()
+            qualification.joinpath("qualification.jsonl").write_text("".join(json.dumps(
+                {"identity": component.identity, "outcome": "qualified", "line": component.line,
+                 "record_version": component.record_version, "batch": component.batch,
+                 "package_digest": component.package.package_digest, "vetting": {"implementation_tested": "fixture"},
+                 "qualifier": {"tool": "tools/component_qualification", "version": "1.0.0",
+                               "code_revision": "c" * 40, "uncommitted_changes": False},
+                 "self_test_sha256": "0" * 64, "checks": []}) + "\n" for component in (stated, unstated)))
+            ledger = root / "decisions.jsonl"
+            decisions.create(ledger, created_at="2026-10-09T00:00:00Z", created_by="fixture")
+            held = root / "held.json"
+            held.write_text(json.dumps({"record_type": qualified_admission.HELD_RECORD, "held": []}))
+            admitted = (root / "admitted").resolve()
+            result = qualified_admission.admit_qualified(
+                qualification, None, ledger, held, admitted, "2026-10-09", ROOT,
+                components={component.identity: component for component in (stated, unstated)})
+            # Known wrong: the package that states no role is left out by name, never written for the release.
+            self.assertEqual((result["admitted"], result["left_out"]), (1, {"asset_role_undeclared": 1}))
+            items = json.loads((admitted / "items.json").read_text())["items"]
+            self.assertEqual([(item["reference"]["identity"], item["attributes"]["asset_role"]) for item in items],
+                             [(stated.identity, "editable_source")])
+            declared = {row["name"] for row in json.loads((admitted / "attribute-schema.json").read_text())["attributes"]}
+            self.assertIn("asset_role", declared)
+            # The release reader serves the row with its role.
+            _schema, lines, _payloads = build(admitted, accepted_licenses=["MIT"])
+            self.assertEqual([(line["attributes"]["component_form"], line["attributes"]["asset_role"])
+                              for line in lines], [("three_d_model", "editable_source")])
+            # Known wrong: the same row written without its role is refused by the release reader.
+            record = json.loads((admitted / "items.json").read_text())
+            del record["items"][0]["attributes"]["asset_role"]
+            (admitted / "items.json").write_text(json.dumps(record))
+            with self.assertRaises(ServiceRuntimeError) as caught:
+                build(admitted, accepted_licenses=["MIT"])
+            self.assertEqual(caught.exception.code, "artifact_interpretation_required")
 
 
 class ReuseTests(unittest.TestCase):

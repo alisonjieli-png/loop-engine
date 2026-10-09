@@ -12,9 +12,11 @@ admit-qualified (deterministic; reads, never calls a model)
 ├── hold  a generator version (supply line and version) whose recorded defect rate in the ledger is at or
 │         above the tolerance, or that the held-versions file names (``line/version`` or ``line/*``)
 ├── leave out  a component a reviewer rejected (ledger, by identity or package digest), a component of a held
-│              version, a component qualification refused
+│              version, a component qualification refused, a reference or creative form whose package does not
+│              state its asset role where its line's policy says (asset_role_undeclared)
 └── write  items.json, reviews.json, the exact files, the attribute schema, admission-report.json and
-           decided.txt, into a new folder that appears only when complete
+           decided.txt, into a new folder that appears only when complete; a stated asset role is served as
+           the item's asset_role attribute, which the schema then declares
 ```
 
 Each row is a community row with the approval state ``qualified`` and the rule
@@ -142,9 +144,12 @@ def admit_qualified(qualification_folder: Path, store_root: "Path | None", decis
                                                 STEP_FUNCTIONS_ATTRIBUTE, TIER_ATTRIBUTE, declare, item_attributes)
     from tools.candidate_review.native import NativeReviewFile
     from tools.candidate_review.verdicts import APPROVE
+    from loop_engine.core.service_runtime.catalogue_attributes import ASSET_ROLE_ATTRIBUTE
+    from . import checks
     output = Path(output)
     if output.exists():
         _refuse("output_exists", f"{output} exists; an admission folder is written once")
+    policy = checks.QualificationContext.load(root).policy
     ledger = decisions.DecisionLedger.open(decisions_path, for_append=False)
     held_file = read_held(held_path)
     qualification_path = Path(qualification_folder) / "qualification.jsonl"
@@ -198,6 +203,14 @@ def admit_qualified(qualification_folder: Path, store_root: "Path | None", decis
             spec = {"title": component.candidate.get("name") or identity, "component_form": component.form,
                     "provenance": {"harness_kind": component.kind}}
             attributes, engines = item_attributes(reference, spec, component.package, files, is_import=True)
+            # A reference or creative form is served with the asset role its package states, read where its line's
+            # policy says; the release bundle refuses such a form without one, so it is left out here instead.
+            if checks.asset_role_findings(component, policy):
+                left_out["asset_role_undeclared"] += 1
+                continue
+            role = checks.declared_asset_role(component, policy)
+            if role is not None:
+                attributes["asset_role"] = role
             body_path = f"bodies/{identity}.md"
             declared = []
             for file in component.package.files:
@@ -270,10 +283,13 @@ def admit_qualified(qualification_folder: Path, store_root: "Path | None", decis
     items_record = {"record_type": "starter_catalogue_candidate_items/v2", "source_revision": revision,
                     "previous_source_revisions": [], "source_digests": {}, "publication": "not_published",
                     "items": items}
+    # The asset role is declared only when an admitted item carries one, so a folder without a reference or creative
+    # form keeps the schema, and the schema digest, it had before the role was served.
     schema = declare(json.loads((root / "examples/29_intelligence_service/starter-catalogue/attribute-schema.json")
                                 .read_text(encoding="utf-8")),
                      TIER_ATTRIBUTE, HARNESS_KIND_ATTRIBUTE, STEP_FUNCTIONS_ATTRIBUTE, COMPONENT_FORM_ATTRIBUTE,
-                     *FACET_ATTRIBUTES)
+                     *FACET_ATTRIBUTES,
+                     *((ASSET_ROLE_ATTRIBUTE,) if any("asset_role" in item["attributes"] for item in items) else ()))
     (partial / "items.json").write_text(json.dumps(items_record, indent=1, sort_keys=True) + "\n")
     (partial / "reviews.json").write_text(json.dumps(record, indent=1, sort_keys=True) + "\n")
     (partial / "attribute-schema.json").write_text(json.dumps(schema, indent=2) + "\n")

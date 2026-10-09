@@ -515,9 +515,12 @@ measured.
 - creative_fetch.py was exercised against a loopback server; the dry runs read the
   origins only through the generator's own streamed downloads.
 - The reference forms need an asset_role attribute when they are served
-  (catalogue_attributes.asset_role_problems); creative.json and the record's
-  repository field carry it, but admission does not yet copy it into the served
-  attributes.
+  (catalogue_attributes.asset_role_problems). creative.json states it
+  (`asset.asset_role`), and the qualification policy names that field for the
+  line: the manifest check refuses a package whose role is missing
+  (`asset_role_undeclared`) or outside the vocabulary (`asset_role_invalid`),
+  and admission serves the stated role as the item's `asset_role` attribute
+  (October 9, 2026).
 - A Godot project's headless import runs only with Godot 4 on the path or named
   by `--godot`; otherwise it is recorded as skipped.
 - BOSL2's parametric OpenSCAD modules are not supplied yet.

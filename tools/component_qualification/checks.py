@@ -4,7 +4,8 @@
 Qualification of one generated component (every check runs; any refusal refuses the component)
 ├── source identity checked
 │   ├── manifest: record type, authoring, line, kind and form, identity bound to the package digest,
-│   │   the record's file list equal to the package, required files present
+│   │   the record's file list equal to the package, required files present, and the asset role a
+│   │   reference or creative form needs where the line's policy names the file that states it
 │   └── licence_provenance: an accepted licence expression (every identifier on the accepted list, no
 │       WITH exception), licence texts and attribution present, every file's digest in the attribution,
 │       the generator's version and code revision (a commit this repository holds), each fact source
@@ -51,6 +52,7 @@ except ImportError:  # pragma: no cover - exercised on 3.10
     import tomli as tomllib
 
 from loop_engine.core.facets import EFFECTS
+from loop_engine.core.service_runtime.catalogue_attributes import asset_role_problems
 from loop_engine.core.service_runtime.catalogue_packages import EXECUTABLE_ROLES
 
 from . import sandbox as sandbox_module
@@ -223,6 +225,7 @@ class ManifestCheck:
         for required in line["required_files"]:
             if required not in paths:
                 findings.append(("required_file_missing", required))
+        findings += asset_role_findings(component, policy)
         if line["shape"] == "code":
             modules, tests = sandbox_module.python_modules(component)
             if not modules:
@@ -850,6 +853,35 @@ def python_assignment(component, name: str):
     except (ValueError, SyntaxError):
         return None
     return None
+
+
+def declared_asset_role(component, policy) -> "str | None":
+    """The asset role a component's package states, read where its line's policy says (the line's asset_role rule:
+    a JSON file of the package and the dotted field that holds the role); None when the line names no such rule
+    or the package states no role there. The role is what a harness does with a reference or creative artifact
+    (catalogue_attributes.ASSET_ROLES), and admission serves it as the item's asset_role attribute."""
+    rule = policy["lines"].get(component.line, {}).get("asset_role")
+    if not rule:
+        return None
+    try:
+        value = json.loads(component.text(rule["json_file"]) or "null")
+    except ValueError:
+        return None
+    for key in str(rule["field"]).split("."):
+        value = value.get(key) if isinstance(value, dict) else None
+    return value if isinstance(value, str) else None
+
+
+def asset_role_findings(component, policy) -> list:
+    """For a line whose policy names where its packages state an asset role: the role a reference or creative form
+    must declare, missing or outside the vocabulary. The release bundle refuses such a form served without one
+    (catalogue_bundle.validated_attributes), so it is refused here, before admission writes it."""
+    if not policy["lines"].get(component.line, {}).get("asset_role"):
+        return []
+    role = declared_asset_role(component, policy)
+    code = "asset_role_undeclared" if role is None else "asset_role_invalid"
+    return [(code, problem) for problem in asset_role_problems(component.form, {} if role is None
+                                                               else {"asset_role": role})]
 
 
 def job_key(component, policy) -> "str | None":

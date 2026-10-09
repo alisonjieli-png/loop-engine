@@ -63,7 +63,9 @@ Generated component admission
 │   │   each of its known-wrong controls; one failure stops the run
 │   ├── per component, in parallel workers
 │   │   ├── manifest: record type, authoring, line, kind and form, identity bound
-│   │   │   to the package digest, file list, required files
+│   │   │   to the package digest, file list, required files, and the asset role of
+│   │   │   a reference or creative form where the line's policy names the package
+│   │   │   file that states it (asset_role_undeclared, asset_role_invalid)
 │   │   ├── licence_provenance: accepted licence expression, licence texts,
 │   │   │   attribution naming every file digest, generator version and commit,
 │   │   │   pinned fact sources, pinned launcher packages and downloads, and
@@ -120,7 +122,9 @@ Generated component admission from October 5, 2026
 │   │   tolerance in the decision ledger, or named in the held-versions file
 │   │   the lead controls (line/version or line/*)
 │   ├── left out: a component a reviewer rejected (ledger, by identity or
-│   │   package digest)
+│   │   package digest), and a reference or creative form whose package does
+│   │   not state its asset role (asset_role_undeclared); a stated role is
+│   │   served as the item's asset_role attribute, which the schema declares
 │   └── rows: community tier, approval state "qualified", rule
 │       "deterministic_qualification_independent_review_ongoing", one decision
 │       from the named deterministic participant; never recorded as reviewed
