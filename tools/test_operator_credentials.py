@@ -49,7 +49,9 @@ class CredentialTests(unittest.TestCase):
         for primary, secondary in (("anthropic-model-primary", "anthropic-model-secondary"),
                                    ("rapidapi-reddit34-primary", "rapidapi-owner-secondary"),
                                    ("rapidapi-reddit34-primary", "rapidapi-owner-third"),
-                                   ("rapidapi-owner-secondary", "rapidapi-owner-third")):
+                                   ("rapidapi-owner-secondary", "rapidapi-owner-third"),
+                                   ("rapidapi-owner-third", "rapidapi-owner-fourth"),
+                                   ("rapidapi-owner-secondary", "rapidapi-owner-fourth")):
             first, second = references[primary], references[secondary]
             self.assertNotEqual(tuple(first[name] for name in ("service", "account", "purpose")),
                                 tuple(second[name] for name in ("service", "account", "purpose")))
@@ -58,7 +60,8 @@ class CredentialTests(unittest.TestCase):
             self.assertNotIn("token", second)
 
     def test_research_references_resolve_separate_fake_keyring_items(self):
-        names = ("rapidapi-reddit34-primary", "rapidapi-owner-secondary", "rapidapi-owner-third")
+        names = ("rapidapi-reddit34-primary", "rapidapi-owner-secondary", "rapidapi-owner-third",
+                 "rapidapi-owner-fourth")
         data = tool.references()
         rows = [KeyItem(("fixture-research-" + str(index)).encode(), {
             "application": "loop-engine", **{field: data["api_keys"][name][field]

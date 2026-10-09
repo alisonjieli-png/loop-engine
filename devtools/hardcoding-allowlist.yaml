@@ -1,5 +1,11 @@
 schema: hardcoding_allowlist/v1
 entries:
+- finding_id: hardcoding.cd95089cf658d4a903038ea7
+  owner: tools.operator_credentials.json:api_keys.rapidapi-owner-fourth.environment
+  classification: SECRET_OR_CREDENTIAL_REFERENCE
+  rationale: "Reviewed October 9: the public environment-variable name of the fourth owner-supplied research key in the existing operator credential registry, not a secret. Fake-keyring tests verify that all four research references select distinct service/account/purpose bindings and never consult the live keyring, and a known-wrong alias of the third reference fails them. The resolver and provider adapters retain credential handling, shared quotas, destination limits and effect authority. No whole-file exclusion applies."
+  created_on: '2026-10-09'
+  expires_on: '2027-01-09'
 - finding_id: hardcoding.29104ab09a67e1984b41a2da
   owner: tools.operator_credentials.json:api_keys.rapidapi-owner-third.environment
   classification: SECRET_OR_CREDENTIAL_REFERENCE
