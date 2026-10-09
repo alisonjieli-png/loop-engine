@@ -467,7 +467,7 @@ const demoFactProblems=steps=>[...(steps.length?[]:["the demonstration shows no 
    a state is the known-wrong case. Each use case links to its own page. */
 const kindOrder=["skills","instructions","tools","agents","hooks","servers"],useCaseOrder=["overnight","efficiency","learning"],demoCardOrder=["simple","overnight","kaggle"];
 const demoCardPages={simple:"/demo",overnight:"/overnight",kaggle:"/demo/kaggle"};
-const useCaseTitles={overnight:"Solve complex problems overnight",efficiency:"More efficient operation",learning:"Learning and optimization, built in"};
+const useCaseTitles={overnight:"Keep track of overnight work",efficiency:"More efficient operation",learning:"Learning and optimization, built in"};
 const homeCards=(target,selector,key)=>target.evaluate(([selector,key])=>[...document.querySelectorAll(selector)].map(node=>({name:node.dataset[key]||"",
   title:node.querySelector("h3")?.textContent.replace(/\s+/g," ").trim()||"",text:node.textContent.replace(/\s+/g," ").trim(),tags:node.querySelectorAll(".status-tag, [data-status]").length,
   links:[...node.querySelectorAll("a[href]")].map(link=>link.getAttribute("href")),shown:node.getClientRects().length>0})),[selector,key]);

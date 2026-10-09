@@ -8,6 +8,7 @@ from pathlib import Path
 from tempfile import TemporaryDirectory
 import unittest
 from unittest.mock import patch
+from uuid import UUID
 
 from knowledge_radar.community_store import CommunityStore
 from knowledge_radar.community_work import open_queue, reconcile_definition, work_once
@@ -173,14 +174,46 @@ class IntakeTests(unittest.TestCase):
         for row in CommunityStore(self.options.state).query(kind="run"):
             self.assertNotIn(TOKEN, json.dumps(row))
 
+    def assert_auth_identity_absent(self, records):
+        """Reject identity fields and values, not coincidental digits inside opaque trace IDs."""
+        text = json.dumps(records)
+        self.assertNotIn(TOKEN, text)
+        self.assertNotIn("fixture-private-identity", text)
+        def inspect(value):
+            if isinstance(value, dict):
+                self.assertTrue({"username", "userId"}.isdisjoint(value))
+                for nested in value.values():
+                    inspect(nested)
+            elif isinstance(value, list):
+                for nested in value:
+                    inspect(nested)
+            else:
+                self.assertNotEqual(value, 987)
+                self.assertNotEqual(value, "987")
+                if isinstance(value, str):
+                    self.assertNotRegex(value, r"(?<![0-9A-Fa-f])987(?![0-9A-Fa-f])")
+        inspect(records)
+
     def test_auth_uses_ephemeral_body_and_does_not_retain_identity(self):
-        result, opener = self.read(KaggleRequest(AUTH), body=encoded({"active": True, "username": "fixture-private-identity", "userId": 987}))
+        # This is the collision observed in CI: unrelated UUID bytes can contain
+        # the short fixture account ID without storing the account identity.
+        with patch("knowledge_radar.community_store.uuid4", return_value=UUID(hex="a" * 29 + "987")):
+            result, opener = self.read(KaggleRequest(AUTH), body=encoded({"active": True, "username": "fixture-private-identity", "userId": 987}))
         self.assertEqual(json.loads(opener.calls[0].data), {"token": TOKEN})
         self.assertEqual(result["authentication_proof"], "active_account_token")
+        self.assertFalse(result["account_identity_retained"])
+        self.assertEqual(result["items"], [])
         all_records = CommunityStore(self.options.state).query(kind="run")
-        text = json.dumps([result, all_records])
-        self.assertNotIn(TOKEN, text);self.assertNotIn("fixture-private-identity", text);self.assertNotIn("987", text)
+        self.assertIn("987", result["loop_id"])
+        self.assert_auth_identity_absent([result, all_records])
         self.assertEqual(result["wire_request"]["body"], {})
+
+    def test_auth_privacy_check_rejects_identity_fields_values_and_credentials(self):
+        for leaked in ({"userId": 987}, {"username": "other"}, {"metadata": {"id": 987}},
+                       {"metadata": ["987"]}, {"note": "account:987"}, {"note": "id=987"},
+                       {"note": "fixture-private-identity"}, {"token": TOKEN}):
+            with self.subTest(leaked=leaked), self.assertRaises(AssertionError):
+                self.assert_auth_identity_absent([{"loop_id": "a" * 29 + "987"}, leaked])
 
     def test_invalid_auth_is_not_proved_by_http200(self):
         result, _ = self.read(KaggleRequest(AUTH), body=encoded({"active": False, "username": "fixture"}))
