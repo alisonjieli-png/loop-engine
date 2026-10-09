@@ -5,8 +5,9 @@
 
 The family's ``native.py`` defines ``verify(context) -> {"engine": dict, "checks": [...], "preview": bytes|None}``.
 ``context`` carries family, item, family_dir, item_dir, shared_dir, workspace (an empty folder of its own) and the
-engines module. A record binds the item digest (every item and shared byte), so editing an item makes its old record
-stale; an unchanged item's record is reused unless --force. A verifier that raises produces a failed record with the
+engines module. A record binds the item digest (every item and shared byte) and the verifier digest (native.py and the
+family's other files outside items/ and shared/), so editing an item or the verifier makes its old record stale; a
+record whose item and verifier are unchanged is reused unless --force. A verifier that raises produces a failed record with the
 error, never a pass. Records carry no time stamp: the same bytes and engine give the same record.
 """
 from __future__ import annotations
@@ -23,7 +24,7 @@ from pathlib import Path
 from types import SimpleNamespace
 
 from . import engines
-from .assemble import item_digest, json_bytes
+from .assemble import item_digest, json_bytes, verifier_digest
 from .pngio import PngError, decode
 from .records import EVIDENCE_RECORD, FAILED, PASSED, CreativeRecordError, item_identities, read_family, read_item
 
@@ -42,6 +43,7 @@ def _verifier(family_directory: Path, family: dict):
 
 def verify_item(family_directory: Path, family: dict, module, identity: str, output: Path, force: bool) -> dict:
     target = output / family["family"] / f"{identity}.json"
+    verifier = verifier_digest(family_directory, family)
     try:
         item = read_item(family_directory, identity, family)
         digest = item_digest(family_directory, identity, family, item)
@@ -50,7 +52,7 @@ def verify_item(family_directory: Path, family: dict, module, identity: str, out
     if target.is_file() and not force:
         try:
             previous = json.loads(target.read_text())
-            if previous.get("item_digest") == digest:
+            if previous.get("item_digest") == digest and previous.get("verifier_digest") == verifier:
                 return {"identity": identity, "state": previous["state"], "reused": True}
         except (OSError, ValueError):
             pass
@@ -89,7 +91,7 @@ def verify_item(family_directory: Path, family: dict, module, identity: str, out
     if state != PASSED:
         preview, preview_record = None, None
     record = {"record_type": EVIDENCE_RECORD, "family": family["family"], "identity": identity, "item_digest": digest,
-              "engine": engine, "checks": checks, "state": state, "preview": preview_record}
+              "verifier_digest": verifier, "engine": engine, "checks": checks, "state": state, "preview": preview_record}
     target.parent.mkdir(parents=True, exist_ok=True)
     target.write_bytes(json_bytes(record))
     image_path = target.with_suffix(".png")

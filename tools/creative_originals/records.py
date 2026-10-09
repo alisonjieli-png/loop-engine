@@ -226,17 +226,20 @@ def families(root: Path) -> list:
     return sorted(path.name for path in root.iterdir() if (path / "family.json").is_file())
 
 
-def read_evidence(data: bytes, family: str, identity: str, item_digest: str) -> dict:
-    """An evidence record, checked against the item it claims to describe."""
+def read_evidence(data: bytes, family: str, identity: str, item_digest: str, verifier_digest: "str | None") -> dict:
+    """An evidence record, checked against the item it claims to describe and the verifier that must have made it."""
     try:
         record = json.loads(data)
     except (UnicodeDecodeError, json.JSONDecodeError):
         raise CreativeRecordError("evidence_unreadable") from None
-    expected = {"record_type", "family", "identity", "item_digest", "engine", "checks", "state", "preview"}
+    expected = {"record_type", "family", "identity", "item_digest", "verifier_digest", "engine", "checks", "state",
+                "preview"}
     if not isinstance(record, dict) or set(record) != expected or record["record_type"] != EVIDENCE_RECORD:
         raise CreativeRecordError("evidence_invalid", "record shape")
     if (record["family"], record["identity"], record["item_digest"]) != (family, identity, item_digest):
         raise CreativeRecordError("evidence_stale", f"{family}/{identity} evidence describes other bytes")
+    if record["verifier_digest"] != verifier_digest:
+        raise CreativeRecordError("evidence_stale", f"{family}/{identity} evidence came from another verifier")
     if record["state"] not in EVIDENCE_STATES or not isinstance(record["checks"], list) or not record["checks"]:
         raise CreativeRecordError("evidence_invalid", "state and checks")
     for check in record["checks"]:

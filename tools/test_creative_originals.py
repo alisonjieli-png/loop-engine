@@ -242,6 +242,31 @@ class AssemblyTests(unittest.TestCase):
             assemble.package_entries(self.family, "square_item", evidence=record.read_bytes())
         self.assertEqual(caught.exception.reason, "native_check_failed")
 
+    def test_a_changed_verifier_makes_old_evidence_stale(self):
+        self.assertEqual(self.run_verify(), 0)
+        record = self.evidence / "demo_family" / "square_item.json"
+        evidence, preview = record.read_bytes(), record.with_suffix(".png").read_bytes()
+        self.assertEqual(json.loads(evidence)["verifier_digest"],
+                         assemble.verifier_digest(self.family, records.read_family(self.family)))
+        # Known wrong: the verifier changes while the item does not; the old record no longer proves anything.
+        native = self.family / "native.py"
+        native.write_text(native.read_text() + "\n# a changed verifier\n")
+        with self.assertRaises(records.CreativeRecordError) as caught:
+            assemble.package_entries(self.family, "square_item", evidence=evidence, preview=preview)
+        self.assertEqual(caught.exception.reason, "evidence_stale")
+        self.assertEqual(self.run_verify(), 0, "the changed verifier runs again instead of reusing the record")
+        fresh = record.read_bytes()
+        self.assertNotEqual(json.loads(fresh)["verifier_digest"], json.loads(evidence)["verifier_digest"])
+        assemble.package_entries(self.family, "square_item", evidence=fresh, preview=record.with_suffix(".png").read_bytes())
+        # A support file beside native.py counts as the verifier too; bytecode does not.
+        (self.family / "support").mkdir()
+        (self.family / "support" / "fixture.txt").write_text("fixture\n")
+        before = assemble.verifier_digest(self.family, records.read_family(self.family))
+        self.assertNotEqual(before, json.loads(fresh)["verifier_digest"])
+        (self.family / "__pycache__").mkdir(exist_ok=True)
+        (self.family / "__pycache__" / "native.cpython-310.pyc").write_bytes(b"cache")
+        self.assertEqual(assemble.verifier_digest(self.family, records.read_family(self.family)), before)
+
     def test_failing_package_test_is_reported(self):
         self.assertEqual(self.run_verify(), 0)
         item = self.family / "items" / "square_item" / "item.json"

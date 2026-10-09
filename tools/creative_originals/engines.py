@@ -101,6 +101,13 @@ def locate(name: str) -> Engine:
     raise EngineUnavailable(f"{name} not found; set {ENVIRONMENT_VARIABLES[name]} (searched {candidates})")
 
 
+#: The variables systemd-run needs to reach the user's service manager for the memory scope. The engine inside the
+#: scope gets them only when the caller passed them: ENV_PROGRAM otherwise resets the runtime folder to the isolated
+#: one and drops the bus address.
+USER_BUS_VARIABLES = (RUNTIME_DIRECTORY_VARIABLE, BUS_ADDRESS_VARIABLE) = ("XDG_RUNTIME_DIR", "DBUS_SESSION_BUS_ADDRESS")
+ENV_PROGRAM = "/usr/bin/env"
+
+
 def _isolated_environment(home: Path) -> dict:
     return {"HOME": str(home), "XDG_CONFIG_HOME": str(home / ".config"), "XDG_DATA_HOME": str(home / ".local/share"),
             "XDG_CACHE_HOME": str(home / ".cache"), "XDG_RUNTIME_DIR": str(home / ".runtime"),
@@ -123,16 +130,29 @@ def run(engine: Engine, arguments: list, *, workspace: Path, timeout: int = 180,
             return {"returncode": None, "timed_out": False, "seconds": 0.0, "stdout": "", "stderr": "",
                     "error": "xvfb-run is not installed", "command": command}
         command = ["xvfb-run", "-a", "-s", f"-screen 0 {VIRTUAL_SCREEN}", *command]
-    if shutil.which("systemd-run"):
+    bus = {name: os.environ[name] for name in USER_BUS_VARIABLES if os.environ.get(name)}
+    scoped = False
+    if shutil.which("systemd-run") and len(bus) == len(USER_BUS_VARIABLES):
         probe = subprocess.run(["systemd-run", "--user", "--scope", "--quiet", "--collect", "true"],
                                capture_output=True, timeout=30)
         if probe.returncode == 0:
+            scoped = True
+            # Inside the scope the engine keeps what the caller chose: a caller that passes the session's own
+            # runtime folder or bus (some verifiers do, for audio) keeps it; otherwise the engine is isolated.
+            chosen = environment or {}
+            wrapper = [ENV_PROGRAM, f"{RUNTIME_DIRECTORY_VARIABLE}="
+                                    f"{chosen.get(RUNTIME_DIRECTORY_VARIABLE, home / '.runtime')}"]
+            if BUS_ADDRESS_VARIABLE not in chosen:
+                wrapper[1:1] = ["-u", BUS_ADDRESS_VARIABLE]
             command = ["systemd-run", "--user", "--scope", "--quiet", "--collect", "-p", f"MemoryMax={memory}",
-                       "-p", "MemorySwapMax=256M", "--", *command]
+                       "-p", "MemorySwapMax=256M", "--", *wrapper, *command]
     started = time.monotonic()
     env = _isolated_environment(home)
     if environment:
         env.update(environment)
+    if scoped:
+        # systemd-run itself must reach the user manager; the env wrapper above restores isolation for the engine.
+        env.update(bus)
     try:
         completed = subprocess.run(command, cwd=workspace, env=env, capture_output=True, text=True,
                                    errors="replace", timeout=timeout)
@@ -150,4 +170,4 @@ def run(engine: Engine, arguments: list, *, workspace: Path, timeout: int = 180,
     return outcome
 
 
-__all__ = ["Engine", "EngineUnavailable", "locate", "run", "VIRTUAL_SCREEN"]
+__all__ = ["Engine", "EngineUnavailable", "locate", "run", "VIRTUAL_SCREEN", "USER_BUS_VARIABLES"]

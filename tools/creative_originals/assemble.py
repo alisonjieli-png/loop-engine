@@ -93,6 +93,28 @@ def item_digest(family_directory: Path, identity: str, family: "dict | None" = N
     return _digest(json.dumps(rows, sort_keys=True).encode())
 
 
+#: Family folders and files outside the verifier: items and shared files are bound by the item digest, family.json by
+#: the family version, and bytecode is a cache.
+VERIFIER_EXCLUDED_TOP = frozenset({"items", "shared", "family.json"})
+BYTECODE_FOLDER, BYTECODE_SUFFIX = "__pycache__", ".pyc"
+
+
+def verifier_digest(family_directory: Path, family: dict) -> "str | None":
+    """The digest of the family's verifier: native.py and every other family file outside items/ and shared/
+    (support scripts, fixtures). Evidence binds it, so a changed verifier makes every earlier record stale."""
+    if family["native_verifier"] is None:
+        return None
+    family_directory = Path(family_directory)
+    rows = []
+    for path in sorted(family_directory.rglob("*")):
+        relative = path.relative_to(family_directory)
+        if (not path.is_file() or relative.parts[0] in VERIFIER_EXCLUDED_TOP or BYTECODE_FOLDER in relative.parts
+                or path.suffix == BYTECODE_SUFFIX):
+            continue
+        rows.append((relative.as_posix(), _digest(path.read_bytes())))
+    return _digest(json.dumps(rows, sort_keys=True).encode())
+
+
 def component_card(family: dict, item: dict, files: list, evidence: "dict | None", revision: str) -> dict:
     native = {"state": "not_run", "checks": [], "engine": None}
     if evidence is not None:
@@ -125,7 +147,8 @@ def package_entries(family_directory: Path, identity: str, *, evidence: "bytes |
     if family["native_verifier"] is not None:
         if evidence is None:
             raise CreativeRecordError("evidence_missing", f"{family['family']}/{identity} has a native verifier")
-        record = read_evidence(evidence, family["family"], identity, item_digest(family_directory, identity, family, item))
+        record = read_evidence(evidence, family["family"], identity, item_digest(family_directory, identity, family, item),
+                               verifier_digest(family_directory, family))
         if record["state"] != "passed":
             raise CreativeRecordError("native_check_failed", f"{family['family']}/{identity}")
         expected = record["preview"]
@@ -202,6 +225,6 @@ def repository_licence() -> bytes:
     return (repository_root() / "LICENSE").read_bytes()
 
 
-__all__ = ["Entry", "LINE", "REPOSITORY", "json_bytes", "source_files", "item_digest", "component_card",
+__all__ = ["Entry", "LINE", "REPOSITORY", "json_bytes", "source_files", "item_digest", "verifier_digest", "component_card",
            "package_entries", "write_package", "run_package_tests", "assemble_and_test", "repository_root",
            "repository_licence"]

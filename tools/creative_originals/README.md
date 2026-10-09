@@ -187,8 +187,10 @@ Recipes measured on this host on October 9, 2026:
   printed JSON line. Blender 5.2 exports glTF as `GLB` or `GLTF_SEPARATE`
   (`GLTF_EMBEDDED` no longer exists). About 3 s per item.
 
-The evidence record binds the item digest, so an edited item needs a new run.
-It carries the engine build's SHA-256 and no time stamp.
+The evidence record binds the item digest and the verifier digest (native.py and
+every other family file outside items/ and shared/), so an edited item or an
+edited verifier needs a new run. It carries the engine build's SHA-256 and no
+time stamp.
 
 ## Commands
 
