@@ -13,7 +13,8 @@ Sandbox run (engine bwrap_rlimits, or systemd_scope_bwrap which adds cgroup task
 │   cleared environment, the work folder (mounted at /home/work) the only writable path
 ├── resource limits on every process: CPU seconds, address space, file size, open files, no core files
 ├── wall-clock timeout for the whole run; the process group is killed on expiry
-└── the system interpreter in isolated-environment mode (-E -s -B): no user site, no PYTHON* variables
+├── the system interpreter in isolated-environment mode (-E -s -B): no user site, no PYTHON* variables
+└── node --test with the TAP reporter for root test_*.mjs files, when the package has them (same limits)
 ```
 
 The engines are the existing library ingestion sandbox (`sandbox_argv`, bubblewrap with no network)
@@ -68,6 +69,10 @@ for module in spec["modules"]:
     report["imports"].append({"module": module, **run(isolated + ["-c", importer, module], spec["import_seconds"])})
 if spec["tests"]:
     report["tests"] = run(isolated + ["-m", "unittest", "-v"] + spec["tests"], spec["test_seconds"])
+report["node_tests"] = None
+if spec.get("node_tests"):
+    report["node_tests"] = run([spec["node"], "--test", "--test-reporter=tap"] + spec["node_tests"],
+                               spec["test_seconds"])
 sys.stdout.write("\n" + spec["marker"] + json.dumps(report) + "\n")
 sys.stdout.flush()
 '''
@@ -104,6 +109,8 @@ class SandboxSettings:
     python: str = "/usr/bin/python3"
     bwrap: str = "bwrap"
     limits: SandboxLimits = SandboxLimits()
+    #: The JavaScript runtime for root test_*.mjs files (node --test); needed only by packages that hold them.
+    node: str = "/usr/bin/node"
 
     def __post_init__(self):
         if self.engine not in ENGINES:
@@ -116,6 +123,9 @@ class SandboxSettings:
         if self.engine == "systemd_scope_bwrap" and not shutil.which("systemd-run"):
             missing.append("systemd-run")
         return (not missing, f"missing {missing}" if missing else "")
+
+    def node_available(self) -> bool:
+        return os.path.isabs(self.node) and bool(shutil.which(self.node))
 
     def works(self) -> bool:
         """Whether this machine can start the sandbox at all (user namespaces may be refused), by running a
@@ -140,6 +150,29 @@ def python_modules(component) -> tuple:
             continue
         (tests if path.stem.startswith("test_") else modules).append(path.stem)
     return tuple(sorted(modules)), tuple(sorted(tests))
+
+
+def javascript_modules(component) -> tuple:
+    """(modules, test files): root-level ES modules (.mjs), tests named test_*.mjs."""
+    modules, tests = [], []
+    for entry in component.package.files:
+        path = PurePosixPath(entry.path)
+        if path.suffix != ".mjs" or len(path.parts) != 1 or not _MODULE_NAME.fullmatch(path.stem):
+            continue
+        (tests if path.stem.startswith("test_") else modules).append(path.name)
+    return tuple(sorted(modules)), tuple(sorted(tests))
+
+
+_TAP_COUNT = re.compile(r"^# (tests|suites|pass|fail|cancelled|skipped|todo) (\d+)\s*$", re.MULTILINE)
+
+
+def parse_tap(stdout: str) -> dict:
+    """The summary node --test printed with the TAP reporter: tests, pass, fail, cancelled, skipped, todo."""
+    counts = {"tests": 0, "pass": 0, "fail": 0, "cancelled": 0, "skipped": 0, "todo": 0}
+    for name, value in _TAP_COUNT.findall(stdout):
+        if name in counts:
+            counts[name] = int(value)
+    return counts
 
 
 def _limits(limits: SandboxLimits):
@@ -203,13 +236,16 @@ def parse_unittest(stderr: str) -> dict:
 def run_component(component, settings: SandboxSettings, work_root: Path) -> dict:
     """One sandbox run: import every declared module, run every test module, record what happened."""
     modules, tests = python_modules(component)
+    _javascript, node_tests = javascript_modules(component)
     record = {"record_type": SANDBOX_RECORD, "engine": settings.engine, "limits": settings.limits.to_dict(),
-              "modules": list(modules), "test_modules": list(tests), "ran": False}
-    if not modules and not tests:
+              "modules": list(modules), "test_modules": list(tests), "node_test_files": list(node_tests),
+              "ran": False}
+    if not modules and not tests and not node_tests:
         return record | {"reason": "no_python_entry_points_or_tests"}
     work = Path(work_root) / f"{component.package.package_digest[:24]}-{secrets.token_hex(4)}"
     marker = "SANDBOX-REPORT-" + secrets.token_hex(16) + ":"
     spec = json.dumps({"modules": list(modules), "tests": list(tests), "marker": marker,
+                       "node": settings.node, "node_tests": list(node_tests),
                        "import_seconds": settings.limits.import_seconds,
                        "test_seconds": settings.limits.test_seconds}) + "\n"
     started = time.monotonic()
@@ -259,4 +295,14 @@ def run_component(component, settings: SandboxSettings, work_root: Path) -> dict
         record["tests"] = {**parsed, "passed": passed, "timed_out": tests_row["timed_out"],
                            "exit": tests_row["exit"], "seconds": tests_row["seconds"],
                            "tail": "" if passed else tests_row["stderr"][-TAIL_CHARACTERS:]}
+    node_row = report.get("node_tests")
+    if node_row is None:
+        record["node_tests"] = None
+    else:
+        counts = parse_tap(node_row["stdout"])
+        passed = (node_row["exit"] == 0 and not node_row["timed_out"] and counts["fail"] == 0
+                  and counts["cancelled"] == 0 and counts["pass"] >= 1)
+        record["node_tests"] = {**counts, "passed": passed, "timed_out": node_row["timed_out"],
+                                "exit": node_row["exit"], "seconds": node_row["seconds"],
+                                "tail": "" if passed else (node_row["stdout"] + node_row["stderr"])[-TAIL_CHARACTERS:]}
     return record

@@ -1146,6 +1146,9 @@ class SandboxCheck:
                           and PurePosixPath(entry.path).suffix.lower() not in context.policy["tested_code_suffixes"])
         if untested:
             return _result(self, [("code_language_not_tested", ", ".join(untested)[:240])])
+        _javascript, node_tests = sandbox_module.javascript_modules(component)
+        if node_tests and not context.sandbox_settings.node_available():
+            return _result(self, [("sandbox_unavailable", f"node is not installed at {context.sandbox_settings.node}")])
         run = sandbox_module.run_component(component, context.sandbox_settings, context.work_root)
         findings = []
         if not run["ran"]:
@@ -1156,10 +1159,10 @@ class SandboxCheck:
         for row in run["imports"]:
             if not row["ok"]:
                 findings.append(("entry_point_import_failed", f"{row['module']}: {row['tail'][-160:]}"))
-        tests_row = run["tests"]
-        if tests_row is None:
+        tests_row, node_row = run["tests"], run.get("node_tests")
+        if tests_row is None and node_row is None:
             findings.append(("no_tests_ran", "the package declares no test module"))
-        else:
+        if tests_row is not None:
             executed = tests_row["ran"] - tests_row["skipped"]
             if tests_row["timed_out"]:
                 findings.append(("tests_timed_out", f"the tests ran past {context.sandbox_settings.limits.test_seconds} s"))
@@ -1167,9 +1170,16 @@ class SandboxCheck:
                 findings.append(("tests_failed", tests_row["tail"][-240:]))
             elif executed < 1:
                 findings.append(("no_test_executed", f"{tests_row['ran']} ran, {tests_row['skipped']} skipped"))
+        if node_row is not None:
+            if node_row["timed_out"]:
+                findings.append(("tests_timed_out", f"the node tests ran past {context.sandbox_settings.limits.test_seconds} s"))
+            elif not node_row["passed"]:
+                findings.append(("javascript_tests_failed", node_row["tail"][-240:]))
         summary = {"interpreter": run.get("interpreter"), "wall_seconds": run["wall_seconds"],
                    "tests": None if tests_row is None else {key: tests_row[key] for key in
-                                                            ("ran", "skipped", "failures", "errors", "passed")}}
+                                                            ("ran", "skipped", "failures", "errors", "passed")},
+                   "node_tests": None if node_row is None else {key: node_row[key] for key in
+                                                                ("tests", "pass", "fail", "skipped", "passed")}}
         return _result(self, findings, (json.dumps(summary, sort_keys=True),))
 
 
@@ -1199,23 +1209,81 @@ class _Mutator(ast.NodeTransformer):
         return node
 
 
+_JS_FUNCTION = re.compile(r"^export\s+(default\s+)?(?:async\s+)?function\s*\*?\s*([A-Za-z_$][\w$]*)?\s*\(", re.MULTILINE)
+_JS_CLASS = re.compile(r"^export\s+(default\s+)?class\s+([A-Za-z_$][\w$]*)", re.MULTILINE)
+_JS_BINDING = re.compile(r"^export\s+(?:const|let|var)\s+([A-Za-z_$][\w$]*)\s*=", re.MULTILINE)
+_JS_LIST = re.compile(r"^export\s*\{([^}]*)\}\s*(?:from\s*['\"][^'\"]*['\"])?\s*;?\s*$", re.MULTILINE)
+_JS_REEXPORT_ALL = re.compile(r"^export\s+\*\s+from\s+['\"][^'\"]+['\"]\s*;?\s*$", re.MULTILINE)
+
+
+def javascript_mutant(text: str, replacement: str) -> tuple:
+    """(module text, exports replaced): the same export names, every one a function or class that throws.
+
+    The module's own body is dropped, so no exported implementation survives; re-exports of other root modules
+    stay, because those modules are mutated too. A module that exports nothing is returned unchanged."""
+    functions, classes, bindings, default = [], [], [], False
+    for is_default, name in _JS_FUNCTION.findall(text):
+        if is_default:
+            default = True
+        elif name:
+            functions.append(name)
+    for is_default, name in _JS_CLASS.findall(text):
+        if is_default:
+            default = True
+        else:
+            classes.append(name)
+    bindings += _JS_BINDING.findall(text)
+    for group in _JS_LIST.findall(text):
+        for part in group.split(","):
+            alias = part.strip().split(" as ")[-1].strip()
+            if alias == "default":
+                default = True
+            elif alias:
+                bindings.append(alias)
+    if re.search(r"^export\s+default\s", text, re.MULTILINE):
+        default = True
+    names = list(dict.fromkeys(functions + classes + bindings))
+    if not names and not default:
+        return text, 0
+    lines = ["// qualification mutant: every export is replaced by one that throws",
+             f"const qualificationMutant = () => {{ {replacement} }};"]
+    lines += [f"export function {name}(...args) {{ return qualificationMutant(args); }}" for name in functions]
+    lines += [f"export class {name} {{ constructor() {{ qualificationMutant(); }} }}" for name in classes
+              if name not in functions]
+    lines += [f"export const {name} = qualificationMutant;" for name in bindings
+              if name not in functions and name not in classes]
+    lines += _JS_REEXPORT_ALL.findall(text)
+    if default:
+        lines.append("export default qualificationMutant;")
+    return "\n".join(lines) + "\n", len(names) + int(default)
+
+
 def mutant(component, policy) -> "tuple | None":
-    """(mutated component, functions replaced) with every public implementation raising; None without code."""
+    """(mutated component, functions replaced, languages mutated) with every public implementation raising; None
+    without code. Python root modules and root ES modules (.mjs) are both rewritten."""
     modules, tests = sandbox_module.python_modules(component)
-    if not modules or not tests:
-        return None
-    payloads, replaced = dict(component.payloads), 0
-    for module in modules:
-        path = module + ".py"
-        tree = ast.parse(component.text(path) or "")
-        mutator = _Mutator(policy["mutation"]["replacement"])
-        mutator.visit(tree)
-        if mutator.mutated:
-            payloads[path] = (ast.unparse(ast.fix_missing_locations(tree)) + "\n").encode()
-            replaced += mutator.mutated
+    scripts, node_tests = sandbox_module.javascript_modules(component)
+    payloads, replaced, languages = dict(component.payloads), 0, set()
+    if modules and tests:
+        for module in modules:
+            path = module + ".py"
+            tree = ast.parse(component.text(path) or "")
+            mutator = _Mutator(policy["mutation"]["replacement"])
+            mutator.visit(tree)
+            if mutator.mutated:
+                payloads[path] = (ast.unparse(ast.fix_missing_locations(tree)) + "\n").encode()
+                replaced += mutator.mutated
+                languages.add("python")
+    if scripts and node_tests:
+        for script in scripts:
+            text, count = javascript_mutant(component.text(script) or "", policy["mutation"]["javascript_replacement"])
+            if count:
+                payloads[script] = text.encode()
+                replaced += count
+                languages.add("javascript")
     if not replaced:
         return None
-    return component.replaced(payloads=payloads), replaced
+    return component.replaced(payloads=payloads), replaced, languages
 
 
 class MutationCheck:
@@ -1232,18 +1300,25 @@ class MutationCheck:
         built = mutant(component, context.policy)
         if built is None:
             return _result(self, [("nothing_to_mutate", "no public function or method in a root module with tests")])
-        mutated, replaced = built
+        mutated, replaced, languages = built
         run = sandbox_module.run_component(mutated, context.sandbox_settings, context.work_root)
-        tests_row = run.get("tests")
-        if run.get("timed_out") or (tests_row is not None and tests_row["timed_out"]):
+        tests_row, node_row = run.get("tests"), run.get("node_tests")
+        if run.get("timed_out") or any(row is not None and row["timed_out"] for row in (tests_row, node_row)):
             return _result(self, [("mutation_timed_out", "the mutant's tests did not finish within the limits")])
-        if not run["ran"] or tests_row is None:
+        suites = {"python": tests_row, "javascript": node_row}
+        if not run["ran"] or any(suites[language] is None for language in languages):
             return _result(self, [("mutation_run_failed", run.get("reason", "") + " " + run.get("stderr_tail", "")[-160:])])
-        if tests_row["passed"]:
+        surviving = sorted(language for language in languages if suites[language]["passed"])
+        if surviving:
             return _result(self, [("tests_accept_a_broken_implementation",
-                                   f"{replaced} public implementations replaced; the tests still pass")])
-        return _result(self, [], (json.dumps({"replaced": replaced, "mutant_tests": {
-            key: tests_row[key] for key in ("ran", "failures", "errors", "skipped")}}, sort_keys=True),))
+                                   f"{replaced} public implementations replaced; the {', '.join(surviving)} tests "
+                                   "still pass")])
+        evidence = {"replaced": replaced, "languages": sorted(languages)}
+        if tests_row is not None:
+            evidence["mutant_tests"] = {key: tests_row[key] for key in ("ran", "failures", "errors", "skipped")}
+        if node_row is not None:
+            evidence["mutant_node_tests"] = {key: node_row[key] for key in ("tests", "pass", "fail")}
+        return _result(self, [], (json.dumps(evidence, sort_keys=True),))
 
 
 CHECKS = (ManifestCheck(), LicenceProvenanceCheck(), ParseCheck(), SchemaCheck(), EffectsCheck(), SafetyCheck(),

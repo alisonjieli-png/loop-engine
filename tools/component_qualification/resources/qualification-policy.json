@@ -502,7 +502,8 @@
    "code"
   ],
   "replacement": "raise RuntimeError('qualification mutant: this implementation was replaced')",
-  "reason": "The written criteria require verification that rejects a known-wrong result. Every public function and public method of each root module is replaced by one that raises, and the package's own tests must then fail. On September 28, 2026 the Tactical reviewer approved every planted package whose code was broken in ways its tests could not see; this check needs no reviewer."
+  "reason": "The written criteria require verification that rejects a known-wrong result. Every public function and public method of each root module is replaced by one that raises, and the package's own tests must then fail. On September 28, 2026 the Tactical reviewer approved every planted package whose code was broken in ways its tests could not see; this check needs no reviewer.",
+  "javascript_replacement": "throw new Error('qualification mutant: this implementation was replaced');"
  },
  "download_schemes": [
   "https",
@@ -515,9 +516,10 @@
  ],
  "address_reason": "A fact source or an upstream copy is pinned by an https address and its SHA-256; a download may use another transport because its digest is checked where it is installed.",
  "tested_code_suffixes": [
-  ".py"
+  ".py",
+  ".mjs"
  ],
- "tested_code_reason": "The sandbox runs Python modules and their unittest tests, and the mutation check rewrites Python. A package holding code in another language is refused until its runner and mutation are declared here, so that implementation_tested never covers code nothing ran. Builder e announced JavaScript clients for the API line on September 28, 2026; node 22 is installed at /usr/bin/node for the runner.",
+ "tested_code_reason": "The sandbox runs Python modules and their unittest tests, and the mutation check rewrites Python. A package holding code in another language is refused until its runner and mutation are declared here, so that implementation_tested never covers code nothing ran. Builder e announced JavaScript clients for the API line on September 28, 2026; node 22 is installed at /usr/bin/node for the runner. On October 9, 2026 the sandbox gained a JavaScript runner: root test_*.mjs files run with node --test (TAP reporter) under the same namespaces and limits, and the mutation check replaces every export of a root .mjs module with one that throws. Plain .js and .cjs files still have no declared runner and stay refused.",
  "environment_findings": [
   "sandbox_timed_out",
   "tests_timed_out",

@@ -378,6 +378,19 @@ def _png(corrupt: bool = False) -> bytes:
     return bytes(data)
 
 
+_SCALE_MODULE = "export function scale(value, factor) {\n  return value * factor;\n}\n"
+def _scale_test(expected: int) -> str:
+    return ("import test from 'node:test';\nimport assert from 'node:assert/strict';\n"
+            "import { scale } from './scale.mjs';\n\n"
+            f"test('scales', () => {{\n  assert.equal(scale(3, 4), {expected});\n}});\n")
+
+
+def _with_javascript(component, expected: int = 12) -> GeneratedComponent:
+    """A root ES module and its node:test file beside the package's Python (a JavaScript client's shape)."""
+    changed = _add_file(component, "scale.mjs", _SCALE_MODULE)
+    return _add_file(changed, "test_scale.mjs", _scale_test(expected))
+
+
 _SVG_ENTITY = ('<?xml version="1.0"?>\n<!DOCTYPE svg [<!ENTITY word "expanded">]>\n'
                '<svg xmlns="http://www.w3.org/2000/svg" width="8" height="8"><title>&word;</title></svg>\n')
 
@@ -444,6 +457,13 @@ CONTROLS = (
             lambda c: _edit(c, "greeting_table.py", lambda text: text + "\ndef broken(:\n    pass\n")),
     Control("json_trailing_comma", "parse", "configuration", "document_does_not_parse",
             lambda c: _edit(c, "opencode.json", lambda text: text.rstrip().rstrip("}") + ",}\n")),
+    Control("javascript_tests_pass", "sandbox", "code", "", lambda c: _with_javascript(c)),
+    Control("javascript_test_fails", "sandbox", "code", "javascript_tests_failed",
+            lambda c: _with_javascript(c, expected=13)),
+    Control("javascript_tests_accept_anything", "mutation", "code", "tests_accept_a_broken_implementation",
+            lambda c: _add_file(_add_file(c, "scale.mjs", _SCALE_MODULE), "test_scale.mjs",
+                                "import test from 'node:test';\nimport './scale.mjs';\n\n"
+                                "test('anything', () => {});\n")),
     Control("png_corrupted", "parse", "code", "binary_does_not_decode",
             lambda c: _add_bytes(c, "preview.png", _png(corrupt=True))),
     Control("png_verified", "parse", "code", "", lambda c: _add_bytes(c, "preview.png", _png())),
@@ -490,9 +510,10 @@ CONTROLS = (
     Control("failing_test", "sandbox", "code", "tests_failed",
             lambda c: _add_file(c, "test_control_fails.py", "import unittest\n\n\nclass Control(unittest.TestCase):\n"
                                 "    def test_fails(self):\n        self.assertEqual(1, 2)\n")),
+    # Plain .js has no declared runner (root .mjs files run with node --test), so it stays refused.
     Control("untested_language", "sandbox", "api", "code_language_not_tested",
-            lambda c: _add_file(c, "get_greeting.mjs", "export async function getGreeting(language) {\n"
-                                "  return { language };\n}\n")),
+            lambda c: _add_file(c, "get_greeting.js", "module.exports.getGreeting = async function (language) {\n"
+                                "  return { language };\n};\n")),
     Control("module_does_not_import", "sandbox", "code", "entry_point_import_failed",
             lambda c: _add_file(c, "control_module.py", "raise ImportError('control: this module never imports')\n")),
     Control("network_interface_visible", "sandbox", "code", "tests_failed",

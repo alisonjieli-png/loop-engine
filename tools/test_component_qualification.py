@@ -260,12 +260,38 @@ class NewRuleTests(unittest.TestCase):
         self.assertEqual(checks.recognized_licences(bsd3, self.policy), {"BSD-3-Clause"})
 
     def test_mutant_replaces_public_implementations_only(self):
-        mutated, replaced = checks.mutant(controls.api_fixture(REVISION), self.policy)
+        mutated, replaced, languages = checks.mutant(controls.api_fixture(REVISION), self.policy)
         text = mutated.text("get_greeting.py")
-        self.assertEqual(replaced, 1)
+        self.assertEqual((replaced, languages), (1, {"python"}))
         self.assertIn("qualification mutant", text)
         self.assertIn("class ApiError", text)
         self.assertIsNone(checks.mutant(controls.configuration_fixture(REVISION), self.policy))
+
+    def test_javascript_mutant_keeps_every_export_name_and_drops_the_body(self):
+        source = ("import { helper } from './helper.mjs';\n"
+                  "export function scale(value, factor) { return helper(value) * factor; }\n"
+                  "export async function load(path) { return path; }\n"
+                  "export class Grid { constructor(size) { this.size = size; } }\n"
+                  "export const lerp = (a, b, t) => a + (b - a) * t;\n"
+                  "const local = 1;\nexport { local as unit };\nexport * from './more.mjs';\n"
+                  "export default function main() { return 0; }\n")
+        text, count = checks.javascript_mutant(source, self.policy["mutation"]["javascript_replacement"])
+        self.assertEqual(count, 6)
+        for name in ("export function scale(", "export function load(", "export class Grid",
+                     "export const lerp =", "export const unit =", "export * from './more.mjs'",
+                     "export default qualificationMutant"):
+            self.assertIn(name, text)
+        self.assertNotIn("helper(value)", text)
+        self.assertNotIn("import ", text)
+        unchanged, none = checks.javascript_mutant("const x = 1;\n", "throw new Error('m');")
+        self.assertEqual((unchanged, none), ("const x = 1;\n", 0))
+
+    def test_tap_summary_is_parsed(self):
+        from tools.component_qualification import sandbox
+        tap = "TAP version 13\n# tests 3\n# suites 0\n# pass 2\n# fail 1\n# cancelled 0\n# skipped 0\n# todo 0\n"
+        self.assertEqual(sandbox.parse_tap(tap), {"tests": 3, "pass": 2, "fail": 1, "cancelled": 0, "skipped": 0,
+                                                  "todo": 0})
+        self.assertEqual(sandbox.parse_tap("no summary")["pass"], 0)
 
 
 def _creative(identity, resolutions, *, source="polyhaven", sha256="a" * 64, role="editable_source"):
