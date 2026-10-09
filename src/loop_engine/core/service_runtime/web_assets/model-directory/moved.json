@@ -111,6 +111,11 @@
    "since": "2026-10-08"
   },
   {
+   "address": "/models/anthonymikinka-gpt2-coreml-kv-cache-try1",
+   "reason": "not_listed",
+   "since": "2026-10-09"
+  },
+  {
    "address": "/models/anthropic-claude-opus-4-1",
    "reason": "refused_source",
    "since": "2026-09-27"
@@ -156,6 +161,16 @@
    "since": "2026-10-08"
   },
   {
+   "address": "/models/ateron-gemma-4-novelist-eclipse-31b",
+   "reason": "not_listed",
+   "since": "2026-10-09"
+  },
+  {
+   "address": "/models/ateron-gemma-4-writers-31b",
+   "reason": "not_listed",
+   "since": "2026-10-09"
+  },
+  {
    "address": "/models/baidu-ernie-4-5-vl-424b-a47b-pt",
    "reason": "refused_source",
    "since": "2026-09-27"
@@ -179,6 +194,11 @@
    "address": "/models/bench-labs-tinctura-v1",
    "reason": "not_listed",
    "since": "2026-10-04"
+  },
+  {
+   "address": "/models/bennydaball-z-image-engineer-v6",
+   "reason": "not_listed",
+   "since": "2026-10-09"
   },
   {
    "address": "/models/bigcode-gpt-bigcode-santacoder",
@@ -326,11 +346,6 @@
    "since": "2026-09-28"
   },
   {
-   "address": "/models/crumb-bloom-560m-rlhf-sd2-prompter-aesthetic",
-   "reason": "not_listed",
-   "since": "2026-09-29"
-  },
-  {
    "address": "/models/cyber-pal-security-cyberpal2-0-20b",
    "reason": "not_listed",
    "since": "2026-10-07"
@@ -394,11 +409,6 @@
    "address": "/models/deepseek-ai-deepseek-math-7b-instruct",
    "reason": "not_listed",
    "since": "2026-10-01"
-  },
-  {
-   "address": "/models/deepseek-ai-deepseek-moe-16b-base",
-   "reason": "not_listed",
-   "since": "2026-10-04"
   },
   {
    "address": "/models/del-taiseiozaki-tengentoppa-llm-jp-13b-reasoning-it",
@@ -476,6 +486,11 @@
    "since": "2026-10-03"
   },
   {
+   "address": "/models/final-bench-darwin-397b-jgos",
+   "reason": "not_listed",
+   "since": "2026-10-09"
+  },
+  {
    "address": "/models/final-bench-darwin-397b-ztc",
    "reason": "not_listed",
    "since": "2026-09-29"
@@ -496,6 +511,11 @@
    "since": "2026-09-27"
   },
   {
+   "address": "/models/gritlm-gritlm-7b",
+   "reason": "not_listed",
+   "since": "2026-10-09"
+  },
+  {
    "address": "/models/gronlp-gpt2-small-dutch",
    "reason": "not_listed",
    "since": "2026-10-03"
@@ -504,11 +524,6 @@
    "address": "/models/gryphe-gemma-4-12b-styletune",
    "reason": "not_listed",
    "since": "2026-10-06"
-  },
-  {
-   "address": "/models/gryphe-pantheon-reasoning-26b-a4b-1-1-v2",
-   "reason": "not_listed",
-   "since": "2026-10-02"
   },
   {
    "address": "/models/h2oai-h2ovl-mississippi-800m",
@@ -546,6 +561,11 @@
    "since": "2026-10-07"
   },
   {
+   "address": "/models/hotchpotch-japanese-reranker-cross-encoder-base-v1",
+   "reason": "not_listed",
+   "since": "2026-10-09"
+  },
+  {
    "address": "/models/hpai-bsc-iris-14b",
    "reason": "not_listed",
    "since": "2026-09-29"
@@ -566,14 +586,19 @@
    "since": "2026-10-03"
   },
   {
-   "address": "/models/huihui-ai-huihui-qwen3-4b-abliterated-v2",
+   "address": "/models/huihui-ai-huihui-qwen3-coder-30b-a3b-instruct-abliterated",
    "reason": "not_listed",
-   "since": "2026-10-01"
+   "since": "2026-10-09"
   },
   {
    "address": "/models/huihui-ai-huihui-spark-x2-5-4b-abliterated",
    "reason": "not_listed",
    "since": "2026-10-02"
+  },
+  {
+   "address": "/models/huihui-ai-huihui-xing4-0-29b-a4b-abliterated",
+   "reason": "not_listed",
+   "since": "2026-10-09"
   },
   {
    "address": "/models/huihui-ai-qwen2-5-7b-instruct-abliterated-v2",
@@ -626,6 +651,11 @@
    "since": "2026-09-28"
   },
   {
+   "address": "/models/insraq-qwen3-5-4b-emperoai-qwen3-8-distill-heretic-abliterated",
+   "reason": "not_listed",
+   "since": "2026-10-09"
+  },
+  {
    "address": "/models/itsrishub-sawyer-0-5b",
    "reason": "not_listed",
    "since": "2026-09-29"
@@ -656,11 +686,6 @@
    "since": "2026-10-02"
   },
   {
-   "address": "/models/juspay-xor",
-   "reason": "not_listed",
-   "since": "2026-10-08"
-  },
-  {
    "address": "/models/juspay-xor-lite",
    "reason": "not_listed",
    "since": "2026-10-07"
@@ -689,6 +714,11 @@
    "address": "/models/kwaipilot-kat-coder-pro-v2-5",
    "reason": "refused_source",
    "since": "2026-09-27"
+  },
+  {
+   "address": "/models/kwaipilot-kat-dev-72b-exp",
+   "reason": "not_listed",
+   "since": "2026-10-09"
   },
   {
    "address": "/models/laap-ai-qwen-base-invoicev1-01-1-5b",
@@ -734,6 +764,11 @@
    "address": "/models/llava-hf-llava-1-5-13b-hf",
    "reason": "not_listed",
    "since": "2026-09-29"
+  },
+  {
+   "address": "/models/llm-jp-llm-jp-4-1-32b-a3b-thinking",
+   "reason": "not_listed",
+   "since": "2026-10-09"
   },
   {
    "address": "/models/llm-os-models-fabliq-8b-agent-reasoning",
@@ -856,6 +891,11 @@
    "since": "2026-10-01"
   },
   {
+   "address": "/models/mlabonne-gemma-3-27b-it-abliterated",
+   "reason": "not_listed",
+   "since": "2026-10-09"
+  },
+  {
    "address": "/models/mlabonne-lfm2-5-230m-chess",
    "reason": "not_listed",
    "since": "2026-09-29"
@@ -916,6 +956,11 @@
    "since": "2026-09-28"
   },
   {
+   "address": "/models/nousresearch-k2-merged-3-5t-bf16",
+   "reason": "not_listed",
+   "since": "2026-10-09"
+  },
+  {
    "address": "/models/nousresearch-nomos-1",
    "reason": "not_listed",
    "since": "2026-10-04"
@@ -949,6 +994,11 @@
    "address": "/models/nvidia-nemotron-3-nano-omni-30b-a3b-reasoning-bf16",
    "reason": "not_listed",
    "since": "2026-10-01"
+  },
+  {
+   "address": "/models/nvidia-nvidia-nemotron-3-5-lightning-30b-a3b-base-bf16",
+   "reason": "not_listed",
+   "since": "2026-10-09"
   },
   {
    "address": "/models/oceanlabs-ocean-1-4b",
@@ -1104,6 +1154,11 @@
    "address": "/models/opengvlab-internvl3-8b-hf",
    "reason": "not_listed",
    "since": "2026-10-08"
+  },
+  {
+   "address": "/models/ordalietech-solon-embeddings-base-0-1",
+   "reason": "not_listed",
+   "since": "2026-10-09"
   },
   {
    "address": "/models/outeai-lite-oute-1-300m",
@@ -1391,11 +1446,6 @@
    "since": "2026-10-05"
   },
   {
-   "address": "/models/shaleen123-medicaledi-llm-reasoning-final",
-   "reason": "not_listed",
-   "since": "2026-10-08"
-  },
-  {
    "address": "/models/skt-a-x-k2",
    "reason": "not_listed",
    "since": "2026-10-07"
@@ -1409,6 +1459,11 @@
    "address": "/models/slayerlab-pollock-mini-lm-125m",
    "reason": "not_listed",
    "since": "2026-09-27"
+  },
+  {
+   "address": "/models/solintellegence-sol-lite-2",
+   "reason": "not_listed",
+   "since": "2026-10-09"
   },
   {
    "address": "/models/stardoc-ai-teleocr",
@@ -1436,9 +1491,29 @@
    "since": "2026-09-29"
   },
   {
+   "address": "/models/techdotus-tokle-spab-3m",
+   "reason": "not_listed",
+   "since": "2026-10-09"
+  },
+  {
+   "address": "/models/telperionai-qwen3-8-27b-mla",
+   "reason": "not_listed",
+   "since": "2026-10-09"
+  },
+  {
    "address": "/models/tencent-simple-attention-sparsification",
    "reason": "not_listed",
    "since": "2026-10-05"
+  },
+  {
+   "address": "/models/terrycraddock-tinyllama-v1-1-tree-of-thoughts",
+   "reason": "not_listed",
+   "since": "2026-10-09"
+  },
+  {
+   "address": "/models/tesslate-uigen-x-32b-0727",
+   "reason": "not_listed",
+   "since": "2026-10-09"
   },
   {
    "address": "/models/thedrummer-skyfall-36b-v2",
@@ -1451,9 +1526,19 @@
    "since": "2026-09-27"
   },
   {
+   "address": "/models/tinyllama-tinyllama-1-1b-step-50k-105b",
+   "reason": "not_listed",
+   "since": "2026-10-09"
+  },
+  {
    "address": "/models/togethercomputer-tev1-0-8b-experimental",
    "reason": "not_listed",
    "since": "2026-10-08"
+  },
+  {
+   "address": "/models/togethercomputer-tev1-4b-experimental",
+   "reason": "not_listed",
+   "since": "2026-10-09"
   },
   {
    "address": "/models/tomaarsen-ms-marco-ettin-17m-reranker",
@@ -1474,6 +1559,11 @@
    "address": "/models/trl-internal-testing-tiny-bartmodel",
    "reason": "not_listed",
    "since": "2026-10-04"
+  },
+  {
+   "address": "/models/trl-internal-testing-tiny-gemma4forconditionalgeneration",
+   "reason": "not_listed",
+   "since": "2026-10-09"
   },
   {
    "address": "/models/trl-internal-testing-tiny-qwen2forcausallm-r1-distill",
@@ -1606,9 +1696,9 @@
    "since": "2026-09-27"
   },
   {
-   "address": "/models/xformai-opt-125m-gqa-ub-6-best-for-kv-cache",
+   "address": "/models/xformai-facebook-opt-125m-qcqa-ub-6-best-for-kv-cache",
    "reason": "not_listed",
-   "since": "2026-10-02"
+   "since": "2026-10-09"
   },
   {
    "address": "/models/xhtoken-spark-x2-5-1-7b",
@@ -1636,14 +1726,14 @@
    "since": "2026-10-02"
   },
   {
+   "address": "/models/yuhan123-vicuna-13b-self-consistency-neg-exp-var-4",
+   "reason": "not_listed",
+   "since": "2026-10-09"
+  },
+  {
    "address": "/models/yuhan123-vicuna-13b-self-consistency-neg-exp-var-5",
    "reason": "not_listed",
    "since": "2026-09-30"
-  },
-  {
-   "address": "/models/yuhan123-vicuna-13b-self-consistency-random-var-2",
-   "reason": "not_listed",
-   "since": "2026-10-01"
   },
   {
    "address": "/models/yuhan123-vicuna-13b-self-consistency-random-var-4",
@@ -1654,6 +1744,11 @@
    "address": "/models/yuuyuuyuuyuu-swift-1-5-qwen3-8-27b-orcarouter-nvfp4-dflash2-ninfer",
    "reason": "not_listed",
    "since": "2026-10-05"
+  },
+  {
+   "address": "/models/yuxinlu1-gemma-4-12b-agentic-fable5-composer2-5-v2-3-5x-tau2",
+   "reason": "not_listed",
+   "since": "2026-10-09"
   },
   {
    "address": "/models/z-ai-glm-5-3-prime",
