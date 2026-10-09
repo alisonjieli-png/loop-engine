@@ -3,7 +3,7 @@
 Kind: generated view. Do not edit by hand. The only task authority is
 [roadmap.yaml](roadmap.yaml); change it, then run
 `PYTHONPATH=src:tools .venv/bin/python tools/build_development_tracker.py`.
-Source fingerprint: `sha256:bac9a84c12c99ca6545147dcafabc9fc233ee179fde0edd07879fff79d8adef8`.
+Source fingerprint: `sha256:2cd4720c645221023c8a982b373c4df00efc091d16595aa2e1381462d48ca5cd`.
 
 ## Where things stand
 
@@ -19,9 +19,9 @@ Source fingerprint: `sha256:bac9a84c12c99ca6545147dcafabc9fc233ee179fde0edd07879
 
 Each subtask lives in its owning step in roadmap.yaml. A local check does not complete a task that requires publication.
 
-Completed within their stated scope: 10 of 60 subtasks.
+Completed within their stated scope: 13 of 60 subtasks.
 
-Next eligible subtask: S-6.215.07: Publish the reconciled contract delta
+Next eligible subtask: S-6.215.11: Qualify and admit the new case groups
 
 | Order | Task | State | Completion required | Next action or dependency |
 |---:|---|---|---|---|
@@ -33,13 +33,13 @@ Next eligible subtask: S-6.215.07: Publish the reconciled contract delta
 | 6 | [x] S-6.215.04: Build the additions bundle | offline_verified | offline_verified | Use bundle 26c50a60 in the preservation check. |
 | 7 | [x] S-6.215.05: Check retrieval and grant preservation | offline_verified | offline_verified | Perform exact metadata and body reconciliation. |
 | 8 | [x] S-6.215.06: Reconcile the complete release and its bodies | offline_verified | offline_verified | Use the exact completed proof for the next guarded publication after the prioritized website release. |
-| 9 | [ ] S-6.215.07: Publish the reconciled contract delta | ready | published | Publish only after the exact reconciliation and live preflight pass. |
-| 10 | [ ] S-6.215.08: Verify the new catalogue as a customer | ready | live_qualified | Waiting on S-6.215.07 |
-| 11 | [ ] S-6.215.09: Mirror the new bodies and refresh public counts | proposed | live_qualified | Waiting on S-6.215.08 |
+| 9 | [x] S-6.215.07: Publish the reconciled contract delta | published | published | Publish the next qualified delta against the release live at that time, with the publisher that stages objects as the service user. |
+| 10 | [x] S-6.215.08: Verify the new catalogue as a customer | live_qualified | live_qualified | Repeat for each later publication with one new and one earlier package. |
+| 11 | [x] S-6.215.09: Mirror the new bodies and refresh public counts | live_qualified | live_qualified | Mirror each later publication's new bodies after its customer check. |
 | 12 | [x] S-6.215.10: Complete the repaired case-generation pilot | offline_verified | offline_verified | Qualify and globally deduplicate the completed pilot. |
 | 13 | [ ] S-6.215.11: Qualify and admit the new case groups | building | offline_verified | Qualify the 379-group pilot separately, then combine only non-overlapping admitted material through the release owner. Use the larger campaign's cleared admission, not its initial 6,733-group folder. |
-| 14 | [ ] S-6.215.12: Publish the qualified case delta | proposed | published | Waiting on S-6.215.11, S-6.215.08 |
-| 15 | [ ] S-6.215.13: Measure and broaden production capacity | building | offline_verified | Waiting on S-6.215.08 |
+| 14 | [ ] S-6.215.12: Publish the qualified case delta | proposed | published | Waiting on S-6.215.11 |
+| 15 | [ ] S-6.215.13: Measure and broaden production capacity | building | offline_verified | Integrate the retained-record repair into the release owner's next application release. Prepare a fresh bounded recovery with updated exclusions and enough disk headroom for generation, qualification and publication. Preserve the old failed journal and keep Claude's creative lane separate. |
 | 16 | [ ] S-6.214.01: Define canonical source counting | ready | offline_verified | Write and test the source-counting rules in the existing source owner. |
 | 17 | [ ] S-6.214.02: Build the source coverage census | ready | offline_verified | Waiting on S-6.214.01 |
 | 18 | [ ] S-6.214.03: Normalize the supplied provider operations | building | offline_verified | Waiting on S-6.214.01 |
@@ -64,14 +64,14 @@ Next eligible subtask: S-6.215.07: Publish the reconciled contract delta
 | 37 | [ ] S-6.218.07: Verify customer isolation and abuse controls | proposed | live_qualified | Waiting on S-6.218.06 |
 | 38 | [ ] S-6.218.08: Reconcile top-tier entitlements and pricing | proposed | live_qualified | Waiting on S-6.218.07 |
 | 39 | [ ] S-6.218.09: Launch and monitor the qualified hosted-tool pilot | proposed | published | Waiting on S-6.218.08 |
-| 40 | [ ] S-6.13.01: Qualify authenticated R2 file delivery | ready | live_qualified | Waiting on S-6.215.09 |
+| 40 | [ ] S-6.13.01: Qualify authenticated R2 file delivery | ready | live_qualified | Prepare a bounded delivery canary; keep Fly delivery until it passes. |
 | 41 | [ ] S-6.13.02: Place bounded collectors and durable jobs on Cloudflare | proposed | live_qualified | Waiting on S-6.214.06 |
 | 42 | [ ] S-6.13.03: Evaluate the customer authentication boundary | ready | offline_verified | Document the migration evidence needed and cost; do not replace login solely because DNS uses Cloudflare. |
 | 43 | [ ] S-6.12.01: Add private-by-default customer submissions | ready | live_qualified | Implement a narrow customer upload flow before adding a public contribution CTA. |
 | 44 | [ ] S-6.12.02: Add sharing and public-library submission controls | proposed | live_qualified | Waiting on S-6.12.01 |
 | 45 | [ ] S-6.12.03: Reconcile the three offering cards and new-signup prices | building | live_qualified | Review and deploy compatible billing readers before an additive new-signup price migration; qualify the hosted upper tier before sale. |
 | 46 | [ ] S-6.24.01: Prove one bounded overnight customer task | ready | live_qualified | Retain current provider holds; do not reset the earlier token ceiling. |
-| 47 | [ ] S-6.24.02: Verify OpenCode and another harness against live Baltor | ready | live_qualified | Waiting on S-6.215.08 |
+| 47 | [ ] S-6.24.02: Verify OpenCode and another harness against live Baltor | ready | live_qualified | Run the customer path on this PC without borrowing administrator access. |
 | 48 | [ ] S-6.201.01: Recover the authorized TensorArt asset history | blocked | offline_verified | Resolve the missing target-account access without forwarding cookies to third parties. |
 | 49 | [ ] S-6.201.02: Complete one editable creative project and revision | ready | offline_verified | Select a small end-to-end creative proof rather than expanding untested templates. |
 | 50 | [ ] S-6.201.03: Produce a rights-cleared product demonstration | proposed | published | Waiting on S-6.201.02 |
@@ -114,11 +114,11 @@ Acceptance: The exact CI-passed revision is deployed through the guarded workflo
 2. Dispatch the guarded deployment once and reconcile the remote result.
 3. Close the deployment gate; record image, revision, rollback and all-host checks.
 
-Evidence: Release 83 from 4a1f0879: exact CI 37881941313, guarded deployment 37882543337, gate closed, rollback release 82. All ten hosts pass the independent offering/Terms/health checks; Cloudflare export 9ed7e6ba5a3f matches all 2,544 files.
+Evidence: Release 84 from 3aba8319: exact CI 37914979120, guarded deployment 37935281471, gate closed, image c6d1532de4df, rollback release 83. Local suites on the exact tree: browser 977/977 with 197/197 wrong controls, offering 483/483, service smoke 766/766. All ten hosts pass the independent offering/Terms/health checks (426/426); Cloudflare export 7d2c719ca8ab matches all 2,544 files; route audit 67 pages, 277 views, 407 links, zero problems.
 
 Next: Keep application deployment and catalogue publication from overlapping.
 
-Comment: The fifty-read pulse passed with one 23.9-second capabilities response. Application release does not publish the pending catalogue addition.
+Comment: The fifty-read pulse passed with no slow response. Release 84 corrects the overstated overnight copy found in the release-83 review. Application release does not publish catalogue additions.
 
 ### S-6.215.01 Record the current live file baseline
 
@@ -218,7 +218,7 @@ Comment: Large outputs use the existing offload volume. The local memory cap was
 
 ### S-6.215.07 Publish the reconciled contract delta
 
-Owner step: S-6.215. State: ready. Completion requires: published.
+Owner step: S-6.215. State: published. Completion requires: published.
 
 Acceptance: The live pointer commits exactly the reconciled release without changing prior grants.
 
@@ -226,15 +226,15 @@ Acceptance: The live pointer commits exactly the reconciled release without chan
 2. Run the existing guarded delta publisher once.
 3. Reconcile an unknown outcome before retrying any effect.
 
-Evidence: Not yet recorded.
+Evidence: Live since October 9 07:46 UTC: release a4ba2053, content 7741e196, catalogue state revision 39, 249,610 packages and 1,473,065 distinct files (31,459 additions, 120,036 new bodies, 0 replaced or withdrawn). All 218,151 prior versions and 448 Public Good grants preserved. The first attempt stopped before activation because staged objects kept the workstation owner; an exact-stage ownership repair and a native recovery completed it.
 
-Next: Publish only after the exact reconciliation and live preflight pass.
+Next: Publish the next qualified delta against the release live at that time, with the publisher that stages objects as the service user.
 
-Comment: Expected total is 1,473,065 files, not two million. No publication has been dispatched for this batch.
+Comment: Record: artifacts/architecture-audit-2026-09-19/catalogue-api-contracts-2026-10-09.json. The publisher fix stages archive members as UID 65534 and ends the wait on a typed native error.
 
 ### S-6.215.08 Verify the new catalogue as a customer
 
-Owner step: S-6.215. State: ready. Completion requires: live_qualified.
+Owner step: S-6.215. State: live_qualified. Completion requires: live_qualified.
 
 Acceptance: Live counts and exact permitted downloads agree with the release, and previous access still works.
 
@@ -242,15 +242,15 @@ Acceptance: Live counts and exact permitted downloads agree with the release, an
 2. Search and download selected new and old packages with an ordinary account.
 3. Check missing-body, denial, digest, usage and rollback behavior.
 
-Evidence: Not yet recorded.
+Evidence: After release 84, a non-staff account read the live population (249,610 packages, 1,473,065 distinct files, complete), then searched and downloaded one new a4ba2053 contract (9 exact files) and one October 6 data table (8 exact files). A wrong digest was refused 404 and an unauthenticated manifest request 401; usage rose by exactly 2 units in 29 requests with no retry. 526,935 files remain to the two-million milestone.
 
-Next: Record the actual served count and remaining gap.
+Next: Repeat for each later publication with one new and one earlier package.
 
-Comment: Do not announce a count from a local bundle.
+Comment: Missing-body and rollback paths were not exercised. The shipped client sends only catalogue routes, so session and usage were read directly with the same credential.
 
 ### S-6.215.09 Mirror the new bodies and refresh public counts
 
-Owner step: S-6.215. State: proposed. Completion requires: live_qualified.
+Owner step: S-6.215. State: live_qualified. Completion requires: live_qualified.
 
 Acceptance: New R2 objects match their digests and every published count reflects the active catalogue.
 
@@ -258,11 +258,11 @@ Acceptance: New R2 objects match their digests and every published count reflect
 2. Verify readback and preserve private bucket access.
 3. Refresh the existing edge export and check all product hosts.
 
-Evidence: Not yet recorded.
+Evidence: R2 delta complete October 9 10:38 UTC: 938 batches, 120,036 objects written and read back (GET 200 each), 223,812,995 bytes; an independent 32-object sample matched. R2 now covers all 1,473,065 bodies across three scopes. Cloudflare export 7d2c719ca8ab reads the live population; the homepage and library show 1,473,065 files and all ten hosts passed the release-84 checks.
 
-Next: Start only after the catalogue publication is reconciled.
+Next: Mirror each later publication's new bodies after its customer check.
 
-Comment: Mirroring does not switch authenticated body delivery to R2.
+Comment: Mirroring does not switch authenticated body delivery to R2. The prepared operator's feed gate sent a query string the live feed refuses; it was corrected before running.
 
 ### S-6.215.10 Complete the repaired case-generation pilot
 

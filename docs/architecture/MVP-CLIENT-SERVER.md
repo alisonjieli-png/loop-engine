@@ -2,7 +2,7 @@
 
 Kind: product architecture with measured local implementation and proposed hosting.
 Date: 2026-09-19. The [current deployment](#current-deployment) section was
-added on 2026-09-20 and last checked on 2026-10-09, after Fly release 83.
+added on 2026-09-20 and last checked on 2026-10-09, after Fly release 84.
 
 The hosted product manages accounts, subscriptions, and access to intelligence.
 The customer runs Loop Engine and the selected harnesses. A hosted intelligence
@@ -48,23 +48,29 @@ section. Update this section in the same change that records a new release.
 Public registration is enabled. The site offers the existing monthly plan;
 these deployment checks alone do not establish a fully qualified paid service.
 
-The running image is Fly release 83, from
-`4a1f087966c4584f5a0fd490c87a97049ba285a2`, image
-`sha256:d765fa8be32b654c44c0c9262383a4abfd57e9a2976f7bda11a1967b661f36e4`.
-Exact CI `37881941313` and guarded deployment `37882543337` passed; the gate
-is closed. The full local browser rerun passed 977 checks and all 197 mutants.
-The live offering/layout matrix passed 483 checks. Independent read-only
-review passed 426 checks across 68 desktop/phone views on all ten hosts,
-including twenty unchanged Terms comparisons. The all-host pulse passed fifty
-reads, with one 23.9-second capabilities response retained as a latency
-finding. A fresh full public route audit passed 67 pages, 277 views and 436
-links. It checks rendering and navigation, not every authenticated journey or
-marketing claim; the separate overnight copy review remains follow-up work.
+The running image is Fly release 84, from
+`3aba83195515e1d956da6c20b60b5af167975576`, image
+`sha256:c6d1532de4dff5dfbe8330c667b3e4a5cd216332c78a6c6c6dc1f1f12ee3caa6`.
+Exact CI `37914979120` and guarded deployment `37935281471` passed; the gate
+is closed. On a fresh worktree of that revision the full local browser suite
+passed 977 checks and all 197 mutants, the offering matrix 483 checks and the
+service smoke 766 checks. The live offering/layout matrix passed 483 checks.
+Independent read-only review passed 426 checks across 68 desktop/phone views
+on all ten hosts, including twenty Terms comparisons unchanged since release
+83. The all-host pulse passed fifty reads with no slow response. A fresh full
+public route audit passed 67 pages, 277 views and 407 links. It checks
+rendering and navigation, not every authenticated journey or marketing claim.
+This release corrects the overnight copy that the release-83 review found
+overstated: the homepage and overnight page now describe a bounded local queue
+with call and time limits, task checkpoints and a morning report, label the
+example night as illustrative and say that a finished process is not an
+accepted result. The feeds page compares the three offerings.
 
 All nine product hostnames now serve public assets through Cloudflare and
 forward dynamic requests to Fly. The technical Fly hostname remains a direct
-fallback. Export `9ed7e6ba5a3f...` contains 2,544 files, all verified on
-`baltor.ai` against their exact bodies and required headers. Disable proxying on the saved DNS
+fallback. Export `7d2c719ca8ab...` contains 2,544 files, all verified on
+`baltor.ai` against their exact bodies and required headers. It reads the live
+population, so the homepage shows the 1,473,065 files served now. Disable proxying on the saved DNS
 records to recover the direct paths; do not delete the routes or resources.
 
 The homepage and pricing page show three distinct cards: Agent Feeds,
@@ -82,10 +88,13 @@ Thirteen curated decision-source
 collections and a live catalogue specimen are available. Local per-agent
 reading profiles are implemented; hosted saved preferences, agent assignments
 and personalized research delivery remain unfinished. The proposed Supervised
-Runs tier is not active. The [release record](../../artifacts/architecture-audit-2026-09-19/pilot-release-83.json)
+Runs tier is not active. The [release record](../../artifacts/architecture-audit-2026-09-19/pilot-release-84.json)
 binds the application, public export, live checks and separate follow-ups.
-Release 82 is the compatible image rollback, at
-`sha256:6869edf6c244f5c1c0caa75017c9dcde5f8b6eaaf536c41c54e61d0bb1fffebc`.
+Release 83 is the compatible image rollback, at
+`sha256:d765fa8be32b654c44c0c9262383a4abfd57e9a2976f7bda11a1967b661f36e4`,
+with export `9ed7e6ba5a3f...` as the edge rollback. The release-84 `src` tree
+equals that of `ccd35b35`; later commits add tools, creative originals, the
+case-generation repair and supply code that the image does not contain.
 This source includes the model-directory refresh, repaired private supply
 journals, isolated constraint-case generation, bounded overnight operator and
 account handoff. Available local overnight tools are labelled Preview, with
@@ -107,19 +116,28 @@ It is not a third paid hosted plan. The flexible price clause is published;
 reconcile a new-signup Price without changing existing subscriptions or grants.
 Hosted Overnight / AFK Work needs actual coordination, isolation, recovery
 and checkout before sale.
-The separate October 8 catalogue addition now serves 218,151 entries and
-1,353,029 distinct files, release `1694fb4a5b35...`. It adds 24 independently
-reviewed SDG tools and 192 distinct files, preserving every previous version.
-No previously found expected result was lost across 354 saved queries, and
-all previous Public Good grants remain valid. The [publication record](../../artifacts/architecture-audit-2026-09-19/catalogue-original-sdg-2026-10-08.json)
-separates native tests and serving. The release-78 follow-up additionally
+The October 9 catalogue publication now serves 249,610 packages and
+1,473,065 distinct files, release `a4ba2053f715...`, content `7741e196ac4e...`,
+catalogue state revision 39. It adds 31,459 qualified API-contract packages
+and 120,036 distinct files, preserving every previous version. No previously
+found expected result was lost across 354 saved queries, and all 448 Public
+Good grants remain valid. Its first attempt stopped before activation because
+the staged objects kept the workstation owner; an exact-stage ownership repair
+and a native recovery published it at 07:46 UTC, and the publisher now stages
+objects as the service user. An ordinary non-staff account retrieved one new
+package (9 exact files) and one from October 6 (8 files); a wrong digest and an
+unauthenticated request were refused. The [publication record](../../artifacts/architecture-audit-2026-09-19/catalogue-api-contracts-2026-10-09.json)
+binds these checks. The October 8 SDG addition remains in its
+[own record](../../artifacts/architecture-audit-2026-09-19/catalogue-original-sdg-2026-10-08.json),
+which separates native tests and serving. The release-78 follow-up additionally
 retrieves all nine exact files of the new statistical-release-timeliness
 tool as an ordinary no-plan customer, preserves paid usage and passes its
 isolated declared example, schemas and calendar-oracle checks.
 Volume body storage, custom SQLite search and Supabase identity remain
-selected. R2 has verified the preceding 1,352,837 files and a separate
-192-body delta: complete current-catalogue coverage across two scopes, not
-a fresh full rerun or a body-engine switch. Public Good policy `9f0f5cfe...`
+selected. R2 has verified the preceding 1,352,837 files, a separate 192-body
+delta and the 120,036 new bodies of release `a4ba2053`: complete
+current-catalogue coverage across three scopes, not a fresh full rerun or a
+body-engine switch. Public Good policy `9f0f5cfe...`
 preserves 424 grants and adds the 24 SDG tools, for 448 available groups and
 1,128 distinct useful files across all 17 goals. Limits are unchanged;
 new grants expire October 31 at 00:00 UTC. The complete granted group remains

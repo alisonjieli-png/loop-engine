@@ -5,6 +5,19 @@
   "releases": [
    {
     "kind": "service",
+    "number": 84,
+    "at": "2026-10-09T13:16:19Z",
+    "lines": [
+     "Correct the overnight copy on the homepage, the overnight page and its site-map entry: a bounded local queue with call and time limits, task checkpoints and a morning report; the example night is labelled illustrative; a finished process is not an accepted result.",
+     "Feeds page: compare three offerings and describe Overnight / AFK Work as the included local Preview.",
+     "Disk search index builds flush each data file and directory before the atomic rename instead of a global sync.",
+     "The static export now reads the live population: the homepage shows 1,473,065 files."
+    ],
+    "seen_after_release": "",
+    "not_shown": 1
+   },
+   {
+    "kind": "service",
     "number": 83,
     "at": "2026-10-09T04:12:23Z",
     "lines": [

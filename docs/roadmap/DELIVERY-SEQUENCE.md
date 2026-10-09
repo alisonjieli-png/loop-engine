@@ -15,11 +15,12 @@ refuses a completed task with an unfinished prerequisite. Publishing an
 artifact does not substitute for testing its live behavior.
 
 Current milestone: two million useful served harness component files, then
-the longer-term ten-million target. The last live observation is 1,353,029
-distinct files. The admitted contract batch has 120,036 net-new digests and
-passed preservation checks over 354 judged queries and 448 Public Good grants.
-Its final reconciliation is complete; it is not yet published. The expected
-post-publication count is 1,473,065, leaving 526,935 to the next milestone.
+the longer-term ten-million target. The last live observation, after Fly
+release 84 on October 9, is 1,473,065 distinct files in 249,610 packages
+(release `a4ba2053...`). The contract batch added 120,036 net-new digests,
+preserved every prior version and all 448 Public Good grants, passed an
+ordinary-account retrieval check and is mirrored to R2. That leaves 526,935
+files to the next milestone.
 
 Release 83 completes the owner's three-offering presentation priority.
 Pricing sits outside the hero in its own section, with
@@ -227,9 +228,11 @@ with durable local quotas, a live feed specimen, local per-agent reading
 profiles, Trendshift/Kaggle research tools, MCP setup and atomic supply code.
 New code does not itself activate a collector or grant content admission.
 
-The October 8 SDG publication is now live: release `1694fb4a...` adds 24
-original tools and 192 distinct file bodies, for 1,353,029 served files.
-All previous versions remain. The consequence check lost none of the
+The October 9 contract publication is live: release `a4ba2053...` adds
+31,459 API-contract packages and 120,036 distinct file bodies, for 1,473,065
+served files. Before it, the October 8 SDG publication (release `1694fb4a...`)
+added 24 original tools and 192 distinct file bodies, for 1,353,029 served
+files. All previous versions remain. The consequence check lost none of the
 previously found expectations across 354 judged queries and orphaned no
 Public Good grants. The additive free-access policy now has 448 groups and
 1,128 distinct useful files, preserving all 424 prior grants and limits.
@@ -259,7 +262,7 @@ evidence-version and unfinished-attempt checks.
 | --- | --- | --- |
 | Payment and connection repairs | Live in release 70 | Ten hosts passed 2,118 browser checks; five token quickstarts and the 15-step real Claude Code OAuth journey passed. |
 | Search and intake repairs | Release 71 deployed; live checks complete | Exact source `ec1df775`; CI `37487555685`; deployment `37488883326`. The repaired search preserves all 70 previously found expectations and finds 95 in the retained before/after comparison. |
-| Million-file publication | Milestone retained; additive SDG release live | The original `50b666f5...` milestone added 981,843 distinct files. Current release `1694fb4a...` serves 1,353,029 distinct files after 192 new SDG bodies, with every old version preserved. Earlier failed attempts and exact publication reconciliation remain recorded. |
+| Million-file publication | Milestone retained; additive SDG release live | The original `50b666f5...` milestone added 981,843 distinct files. Current release `a4ba2053...` serves 1,473,065 distinct files after 120,036 new contract bodies, with every old version preserved. Earlier failed attempts and exact publication reconciliation remain recorded. |
 | Storage headroom | Done | Existing Fly volume extended from 25 to 50 GB, with 39 GB free at readback and no restart. Added provisioned storage: $3.75/month; traffic and snapshots are separate. |
 | Empty Public Good goals | All 17 populated; 24 more admitted tools now granted | Policy `9f0f5cfe...` preserves the previous 424 grants and limits, adding 24 Community tools and 72 useful bodies: 448 groups / 1,128 distinct useful files. Full groups remain accessible; useful-path labels do not create path-specific permissions. |
 | Cloudflare | All nine product hostnames at the edge; current R2 body coverage complete | Release 78 exports 2,530 verified public files. R2 coverage is two verified scopes, not a fresh full rerun. Dynamic requests retain the Fly origin and its authorization/accounting. Production body and D1 selection remain pending. |
@@ -278,7 +281,7 @@ delay a ready publication or exhaust memory, storage or provider allowances.
 
 | Workstream | Prepared or verified | Current release cycle | Following cycle | Acceptance |
 | --- | --- | --- | --- | --- |
-| Ten-million-file supply | 1,353,029 distinct files live; listing repaired | ACTIVE: bounded private atom generation; independently review candidates | Expand qualified code, data, native assets and source-backed feeds | GATE: 10,000,000 distinct served digests with preserved access and useful family coverage |
+| Ten-million-file supply | 1,473,065 distinct files live; listing repaired | ACTIVE: bounded private atom generation; independently review candidates | Expand qualified code, data, native assets and source-backed feeds | GATE: 10,000,000 distinct served digests with preserved access and useful family coverage |
 | Public Good coverage | All 17 goals; 448 groups / 1,128 useful files live | DONE: new SDG exact download and isolated deterministic customer use | Preserve access through next release | Broaden useful coverage |
 | Cloudflare storage and delivery | All nine product hostnames; all current file bodies mirrored | NEXT: qualify R2 customer delivery and failure/revocation behavior | Select verified bodies and measure the D1 alternative | GATE: live integrity, authorization, failure recovery and measured cost |
 | Internal repository and paper intelligence | Existing radar and query executor contracts | ACTIVE: pin sources, observations, ranking rules and worker deployment | Cloudflare acquisition, private raw storage and checked production | GATE: repeatable current-source results and recovery from duplicate delivery |

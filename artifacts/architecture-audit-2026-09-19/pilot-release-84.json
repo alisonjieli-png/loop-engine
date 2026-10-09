@@ -1,0 +1,184 @@
+{
+ "record_type": "pilot_release_record/v1",
+ "release": 84,
+ "app": "baltor-pilot",
+ "source_revision": "3aba83195515e1d956da6c20b60b5af167975576",
+ "image": "registry.fly.io/baltor-pilot@sha256:c6d1532de4dff5dfbe8330c667b3e4a5cd216332c78a6c6c6dc1f1f12ee3caa6",
+ "rollback_release": 83,
+ "rollback_image": "registry.fly.io/baltor-pilot@sha256:d765fa8be32b654c44c0c9262383a4abfd57e9a2976f7bda11a1967b661f36e4",
+ "owner_local_date": "2026-10-09",
+ "deployed_at": "2026-10-09T13:16:19Z",
+ "ci_run": 37914979120,
+ "ci_conclusion": "success",
+ "deploy_run": 37935281471,
+ "deploy_workflow_conclusion": "success",
+ "deployment_gate_after": false,
+ "operator": "Claude release operator, sub-agent of the Claude Code session, while Codex has no usage until October 15",
+ "catalogue": {
+  "release_id": "a4ba2053f7151d5c277a939b3525be98542f9ee2ac08e252a962e4721ea63d0b",
+  "content_digest": "7741e196ac4efcceefdfa7fcdea58a4f44423a9c710db1dbd13728d90c5a81c3",
+  "packages": 249610,
+  "distinct_files": 1473065,
+  "distinct_file_bytes": 8163675302,
+  "changed_by_this_application_release": false,
+  "publication_record": "catalogue-api-contracts-2026-10-09.json"
+ },
+ "changes": [
+  "Correct the overnight copy on the homepage, the overnight page and its site-map entry: a bounded local queue with call and time limits, task checkpoints and a morning report; the example night is labelled illustrative; a finished process is not an accepted result.",
+  "Feeds page: compare three offerings and describe Overnight / AFK Work as the included local Preview.",
+  "Disk search index builds flush each data file and directory before the atomic rename instead of a global sync.",
+  "Served from public main 3aba8319, whose src tree is identical to ccd35b35; later main commits add tools, creative originals and supply code that the service image does not contain.",
+  "The static export now reads the live population: the homepage shows 1,473,065 files."
+ ],
+ "cloudflare": {
+  "worker": "baltor-web-edge",
+  "export_id": "7d2c719ca8ab319859fba94534218e9232076f1b1f5a2b52db20169d7670d2b4",
+  "worker_deployment": "644cb0cce97445c688096008d9a76123",
+  "deployed_at": "2026-10-09T13:19:15Z",
+  "static_files": 2544,
+  "static_bytes": 75929457,
+  "packages_read_from_live_capabilities": 249610,
+  "origin_mode": "all",
+  "production_hostnames": [
+   "baltor.ai",
+   "www.baltor.ai",
+   "app.baltor.ai",
+   "docs.baltor.ai",
+   "status.baltor.ai",
+   "examples.baltor.ai",
+   "demo.baltor.ai",
+   "deck.baltor.ai",
+   "redteam.baltor.ai"
+  ],
+  "direct_fallback_hostname": "baltor-pilot.fly.dev",
+  "production_routes_changed": false,
+  "rollback_export_id": "9ed7e6ba5a3f5e64e9ab2ff1b5ebd8304a92cc9c5d2e453740a15b40e91d118a",
+  "rollback_worker_deployment": "63f2165009414f149ef734b7edfc56b1"
+ },
+ "checks": {
+  "service_smoke": {
+   "passed": 766,
+   "total": 766
+  },
+  "local_browser": {
+   "passed": 977,
+   "total": 977,
+   "mutants_detected": 197,
+   "mutants_total": 197,
+   "evidence_sha256": "5b2c3b5281520bafbc1fc462c3981819f2b3ade6e56d46e7ef75c2a9dd734f97"
+  },
+  "local_offering_matrix": {
+   "passed": 483,
+   "total": 483,
+   "evidence_sha256": "ee0e92238dbe5f229863c80d97a2ff6f02969d9eb7fdaf42807e0d81e0e7a737"
+  },
+  "live_offering_matrix": {
+   "passed": 483,
+   "total": 483,
+   "evidence_sha256": "58020ebd2f107227ab3f4a95c0fd35ef1f1dd2673491658bc478110d0c826a4a"
+  },
+  "independent_live_checks": {
+   "passed": 426,
+   "total": 426,
+   "hostnames": 10,
+   "views": 68,
+   "unchanged_terms_comparisons": 20,
+   "browser_errors": 0,
+   "evidence_sha256": "5784dfe3313c047bbe56393a2f37d1a4a5b2af31339c9c6b76b57ab91071be09"
+  },
+  "edge_readback": {
+   "passed": 2544,
+   "total": 2544,
+   "scope": "exact bodies, required headers and export marker on baltor.ai",
+   "evidence_sha256": "1eb4d1b6650aba157d1d73d4ed3316d7692547db2b412ae8e688dd1847c0d975"
+  },
+  "pulse": {
+   "reads": 50,
+   "problems": 0,
+   "slow": 0,
+   "passed": true,
+   "evidence_sha256": "14ee726ab4c68a0623dc67b07b0ea57b092222dc6d92959fc92b170dd066c4b2"
+  },
+  "live_full_public_route_map": {
+   "pages": 67,
+   "views": 277,
+   "links_checked": 407,
+   "automated_problems": 0,
+   "passed": true,
+   "evidence_sha256": "2ac23c7e2dc1dc80ad91069cf44db34fb23e80d8eae259fc78fc0566736f49c8"
+  },
+  "provider_readback": {
+   "release_status": "complete",
+   "machine_state": "started",
+   "machine_health": "passing",
+   "evidence_sha256": "3beef3e377353af6ca9f84e8705733ae2920bd490b390d2c4792f1cece87ef50"
+  },
+  "catalogue_customer_check": {
+   "complete": true,
+   "requests": 29,
+   "packages": {
+    "new_a4ba2053": {
+     "identity": "library.supply.json_schemas.000312e08c3110127d823b5f.7a3ff3cbc6a0fecb",
+     "digest": "7a3ff3cbc6a0fecb47d4915615a56428d4951718704d935e307deb661d4020fc",
+     "exact_files_verified": 9,
+     "bytes": 35034
+    },
+    "old_20261006": {
+     "identity": "library.supply.data_tables.008d39c0ec00b5f09c867861.951a487eafd79bc3",
+     "digest": "951a487eafd79bc3b4b90e0527352b3f35f73fa931c012e2339e017c334ed897",
+     "exact_files_verified": 8,
+     "bytes": 36492
+    }
+   },
+   "usage_units_added": 2,
+   "wrong_digest_refused": true,
+   "unauthenticated_manifest_refused": {
+    "status": 401,
+    "code": "unauthorized"
+   },
+   "live_population": {
+    "packages": 249610,
+    "distinct_files": 1473065,
+    "complete": true
+   },
+   "evidence_sha256": "d179a95bea7891e9b2c3ed52a6b2240324bb94139bc43857af24c1b59091355b"
+  },
+  "r2_delta_for_catalogue_a4ba2053": {
+   "verified_objects": 120036,
+   "verified_bytes": 223812995,
+   "batches": 938,
+   "requests": {
+    "PUT": 120037,
+    "GET": 120036
+   },
+   "coverage_after": 1473065,
+   "serving_selection_changed": false
+  }
+ },
+ "limits": [
+  "Checks use headless Chromium and emulated viewports, not a physical device or the owner's browser session.",
+  "The route audit checks public rendering and navigation, not every authenticated journey or the truth of every marketing sentence.",
+  "The customer check uses a non-staff engineering account with an operator-funded entitlement; it does not test checkout, model-driven use, a missing body or rollback.",
+  "No candidate files were published, provider products activated, models called, identity migrated or body-storage engine changed by this application release. R2 holds verified copies; Fly volume body storage stays selected."
+ ],
+ "private_evidence": [
+  "release84-20261009-ecfe97/release84-deployment.json",
+  "release84-20261009-ecfe97/release84-provider-readback.json",
+  "release84-20261009-ecfe97/workspace-3aba8319-01.json",
+  "release84-20261009-ecfe97/offering-3aba8319-01/report.json",
+  "release84-20261009-ecfe97/service-smoke-3aba8319-01.txt",
+  "release84-20261009-ecfe97/live/pulse-01.json",
+  "release84-20261009-ecfe97/live/offering-live-01/report.json",
+  "release84-20261009-ecfe97/live/independent/attempt-01/report.json",
+  "release84-20261009-ecfe97/live/route-audit-01/report.json",
+  "release84-20261009-ecfe97/customer-check-02/retrieval.json",
+  "repo-disk-review-20261007-1uZpT8/cloudflare-site-release84-01/events.jsonl",
+  "repo-disk-review-20261007-1uZpT8/release84-edge-readback-01.json",
+  "r2-delta-20261009-6pLxEO/progress.jsonl"
+ ],
+ "retained_attempts": [
+  "The same pre-release suites first passed on ccd35b35 (977/977 with 197/197 wrong controls, 483/483, 766/766). Main then moved to 3aba8319, which changes only tools/ files the image does not contain; every suite was rerun on a fresh worktree of 3aba8319 before dispatch.",
+  "The prepared R2 delta operator requested the feed with a cache-busting query string, which the live feed refuses with invalid_feed_request; its gate was changed to the plain path with a no-store requirement and three new controls before it ran.",
+  "Customer check attempt 01 stopped after its first request because the shipped client sends only catalogue routes; attempt 02 read session and usage directly with the same credential and budget and passed."
+ ]
+}

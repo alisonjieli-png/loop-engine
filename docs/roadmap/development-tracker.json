@@ -28,11 +28,11 @@
   },
   {
    "acceptance": "The exact CI-passed revision is deployed through the guarded workflow, with the gate closed and rollback recorded.",
-   "comment": "The fifty-read pulse passed with one 23.9-second capabilities response. Application release does not publish the pending catalogue addition.",
+   "comment": "The fifty-read pulse passed with no slow response. Release 84 corrects the overstated overnight copy found in the release-83 review. Application release does not publish catalogue additions.",
    "complete": true,
    "completion_status": "published",
    "depends_on": [],
-   "evidence": "Release 83 from 4a1f0879: exact CI 37881941313, guarded deployment 37882543337, gate closed, rollback release 82. All ten hosts pass the independent offering/Terms/health checks; Cloudflare export 9ed7e6ba5a3f matches all 2,544 files.",
+   "evidence": "Release 84 from 3aba8319: exact CI 37914979120, guarded deployment 37935281471, gate closed, image c6d1532de4df, rollback release 83. Local suites on the exact tree: browser 977/977 with 197/197 wrong controls, offering 483/483, service smoke 766/766. All ten hosts pass the independent offering/Terms/health checks (426/426); Cloudflare export 7d2c719ca8ab matches all 2,544 files; route audit 67 pages, 277 views, 407 links, zero problems.",
    "id": "S-6.35.01",
    "next_action": "Keep application deployment and catalogue publication from overlapping.",
    "owner_step": "S-6.35",
@@ -171,70 +171,66 @@
   },
   {
    "acceptance": "The live pointer commits exactly the reconciled release without changing prior grants.",
-   "comment": "Expected total is 1,473,065 files, not two million. No publication has been dispatched for this batch.",
-   "complete": false,
+   "comment": "Record: artifacts/architecture-audit-2026-09-19/catalogue-api-contracts-2026-10-09.json. The publisher fix stages archive members as UID 65534 and ends the wait on a typed native error.",
+   "complete": true,
    "completion_status": "published",
    "depends_on": [
     "S-6.215.06"
    ],
-   "evidence": "",
+   "evidence": "Live since October 9 07:46 UTC: release a4ba2053, content 7741e196, catalogue state revision 39, 249,610 packages and 1,473,065 distinct files (31,459 additions, 120,036 new bodies, 0 replaced or withdrawn). All 218,151 prior versions and 448 Public Good grants preserved. The first attempt stopped before activation because staged objects kept the workstation owner; an exact-stage ownership repair and a native recovery completed it.",
    "id": "S-6.215.07",
-   "next_action": "Publish only after the exact reconciliation and live preflight pass.",
+   "next_action": "Publish the next qualified delta against the release live at that time, with the publisher that stages objects as the service user.",
    "owner_step": "S-6.215",
    "procedure": [
     "Recheck live baseline, deployment activity and publication ownership.",
     "Run the existing guarded delta publisher once.",
     "Reconcile an unknown outcome before retrying any effect."
    ],
-   "status": "ready",
+   "status": "published",
    "title": "Publish the reconciled contract delta",
    "waiting_on": []
   },
   {
    "acceptance": "Live counts and exact permitted downloads agree with the release, and previous access still works.",
-   "comment": "Do not announce a count from a local bundle.",
-   "complete": false,
+   "comment": "Missing-body and rollback paths were not exercised. The shipped client sends only catalogue routes, so session and usage were read directly with the same credential.",
+   "complete": true,
    "completion_status": "live_qualified",
    "depends_on": [
     "S-6.215.07"
    ],
-   "evidence": "",
+   "evidence": "After release 84, a non-staff account read the live population (249,610 packages, 1,473,065 distinct files, complete), then searched and downloaded one new a4ba2053 contract (9 exact files) and one October 6 data table (8 exact files). A wrong digest was refused 404 and an unauthenticated manifest request 401; usage rose by exactly 2 units in 29 requests with no retry. 526,935 files remain to the two-million milestone.",
    "id": "S-6.215.08",
-   "next_action": "Record the actual served count and remaining gap.",
+   "next_action": "Repeat for each later publication with one new and one earlier package.",
    "owner_step": "S-6.215",
    "procedure": [
     "Read the live release and complete file population.",
     "Search and download selected new and old packages with an ordinary account.",
     "Check missing-body, denial, digest, usage and rollback behavior."
    ],
-   "status": "ready",
+   "status": "live_qualified",
    "title": "Verify the new catalogue as a customer",
-   "waiting_on": [
-    "S-6.215.07"
-   ]
+   "waiting_on": []
   },
   {
    "acceptance": "New R2 objects match their digests and every published count reflects the active catalogue.",
-   "comment": "Mirroring does not switch authenticated body delivery to R2.",
-   "complete": false,
+   "comment": "Mirroring does not switch authenticated body delivery to R2. The prepared operator's feed gate sent a query string the live feed refuses; it was corrected before running.",
+   "complete": true,
    "completion_status": "live_qualified",
    "depends_on": [
     "S-6.215.08"
    ],
-   "evidence": "",
+   "evidence": "R2 delta complete October 9 10:38 UTC: 938 batches, 120,036 objects written and read back (GET 200 each), 223,812,995 bytes; an independent 32-object sample matched. R2 now covers all 1,473,065 bodies across three scopes. Cloudflare export 7d2c719ca8ab reads the live population; the homepage and library show 1,473,065 files and all ten hosts passed the release-84 checks.",
    "id": "S-6.215.09",
-   "next_action": "Start only after the catalogue publication is reconciled.",
+   "next_action": "Mirror each later publication's new bodies after its customer check.",
    "owner_step": "S-6.215",
    "procedure": [
     "Mirror only the new approved body digests.",
     "Verify readback and preserve private bucket access.",
     "Refresh the existing edge export and check all product hosts."
    ],
-   "status": "proposed",
+   "status": "live_qualified",
    "title": "Mirror the new bodies and refresh public counts",
-   "waiting_on": [
-    "S-6.215.08"
-   ]
+   "waiting_on": []
   },
   {
    "acceptance": "Every parent in the frozen pilot is processed with preserved lineage and bounded accounting.",
@@ -297,8 +293,7 @@
    "status": "proposed",
    "title": "Publish the qualified case delta",
    "waiting_on": [
-    "S-6.215.11",
-    "S-6.215.08"
+    "S-6.215.11"
    ]
   },
   {
@@ -320,9 +315,7 @@
    ],
    "status": "building",
    "title": "Measure and broaden production capacity",
-   "waiting_on": [
-    "S-6.215.08"
-   ]
+   "waiting_on": []
   },
   {
    "acceptance": "An independently maintained upstream collection has one source identity regardless of provider, alias or query.",
@@ -881,9 +874,7 @@
    ],
    "status": "ready",
    "title": "Qualify authenticated R2 file delivery",
-   "waiting_on": [
-    "S-6.215.09"
-   ]
+   "waiting_on": []
   },
   {
    "acceptance": "A selected acquisition or coordination workload passes its contract and failure tests within the approved infrastructure allowance.",
@@ -1026,9 +1017,7 @@
    ],
    "status": "ready",
    "title": "Verify OpenCode and another harness against live Baltor",
-   "waiting_on": [
-    "S-6.215.08"
-   ]
+   "waiting_on": []
   },
   {
    "acceptance": "A bounded export from the exact owner account includes available images and generation provenance with coverage limits.",
@@ -1297,7 +1286,7 @@
   }
  ],
  "execution_counts": {
-  "complete": 10,
+  "complete": 13,
   "total": 60
  },
  "lanes": {
@@ -6736,5 +6725,5 @@
  ],
  "record_type": "development_tracker/v2",
  "source": "docs/roadmap/roadmap.yaml",
- "source_fingerprint": "sha256:bac9a84c12c99ca6545147dcafabc9fc233ee179fde0edd07879fff79d8adef8"
+ "source_fingerprint": "sha256:2cd4720c645221023c8a982b373c4df00efc091d16595aa2e1381462d48ca5cd"
 }
