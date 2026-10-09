@@ -1,0 +1,162 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "material_fabric_weave",
+  "title": "Plain-weave fabric material with thread bump",
+  "purpose": "Build a woven cloth node material on UV coordinates: warp and weft threads that alternate over and under by cell parity, rounded thread profiles that drive bump and edge shading, two thread colours and Principled sheen. Use it for clothing, upholstery, flags and furniture.",
+  "form": "library_module",
+  "asset_role": null,
+  "dimension": "3d",
+  "engine": {
+    "name": "blender",
+    "minimum_version": "4.2"
+  },
+  "tags": [
+    "blender",
+    "material",
+    "shader nodes",
+    "fabric",
+    "cloth",
+    "weave",
+    "procedural texture"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "role": "other"
+    },
+    {
+      "path": "material_fabric_weave.py",
+      "role": "executable_tool"
+    },
+    {
+      "path": "test_material_fabric_weave.py",
+      "role": "executable_tool"
+    }
+  ],
+  "contract": {
+    "module": "material_fabric_weave",
+    "entry_points": {
+      "core": "material_graph",
+      "blender": "create",
+      "operator": "baltor.material_fabric_weave",
+      "expectations": "expectations"
+    },
+    "parameters": [
+      {
+        "name": "material_name",
+        "type": "string",
+        "default": "Baltor Fabric",
+        "minimum": null,
+        "maximum": null,
+        "unit": "text",
+        "description": "Name of the new material."
+      },
+      {
+        "name": "threads",
+        "type": "float",
+        "default": 60.0,
+        "minimum": 1.0,
+        "maximum": 5000.0,
+        "unit": "1/uv",
+        "description": "Threads per UV unit in each direction."
+      },
+      {
+        "name": "warp_color",
+        "type": "vector",
+        "default": [
+          0.12,
+          0.2,
+          0.45
+        ],
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "unit": "linear RGB",
+        "description": "Colour of the warp threads (along V)."
+      },
+      {
+        "name": "weft_color",
+        "type": "vector",
+        "default": [
+          0.6,
+          0.55,
+          0.45
+        ],
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "unit": "linear RGB",
+        "description": "Colour of the weft threads (along U)."
+      },
+      {
+        "name": "sheen",
+        "type": "float",
+        "default": 0.6,
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "unit": "ratio",
+        "description": "Sheen weight of the Principled BSDF."
+      },
+      {
+        "name": "bump",
+        "type": "float",
+        "default": 0.35,
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "unit": "ratio",
+        "description": "Strength of the thread bump."
+      },
+      {
+        "name": "assign",
+        "type": "bool",
+        "default": true,
+        "minimum": null,
+        "maximum": null,
+        "unit": "flag",
+        "description": "Assign the material to the active object."
+      }
+    ],
+    "outputs": {
+      "kind": "node_graph",
+      "description": "One material with a node tree; assigned to the active object.",
+      "at_defaults": {
+        "nodes": 19,
+        "links": 23
+      }
+    },
+    "units": "metres",
+    "axes": "Blender Z up, -Y forward",
+    "blender_minimum": "4.2",
+    "verification": {
+      "fixture": "sphere",
+      "preview": {
+        "floor": true,
+        "view": [
+          0.6,
+          -1.4,
+          0.5
+        ]
+      }
+    }
+  },
+  "limits": "Plain weave only; twill, satin and knits are not modelled. Threads are straight and evenly spaced with no fibre fuzz, slubs or irregularity. The pattern follows the UV map, so it needs reasonable UVs and aliases when threads are smaller than a pixel. Rendered here with Cycles CPU only. Verified in Blender 5.2.1; written for the 4.2 API.",
+  "related": [
+    "material_leather_grain",
+    "anim_cloth_flag",
+    "util_texel_density"
+  ],
+  "technique_references": [
+    "Plain weave by parity of floor(u) + floor(v)",
+    "Thread profile sin(pi * f)",
+    "Sheen lobe of the Principled BSDF for cloth"
+  ],
+  "native_checks": [
+    "addon_install_and_enable",
+    "operator_runs_with_defaults",
+    "blender_data_matches_core",
+    "addon_disable_unregisters",
+    "script_mode_runs",
+    "clean_reopen_addon_file",
+    "clean_reopen_script_file",
+    "gltf_separate_export",
+    "engine_output_clean"
+  ]
+}

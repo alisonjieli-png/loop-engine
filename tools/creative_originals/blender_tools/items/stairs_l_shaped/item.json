@@ -1,0 +1,202 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "stairs_l_shaped",
+  "title": "L-shaped stairs with a landing or winders",
+  "purpose": "Generate quarter-turn stairs: two straight flights joined by a square landing or by three winder treads cut at 30 degree steps from the inner corner, turning left or right, with an optional support block. Use it where a stair must turn a corner.",
+  "form": "library_module",
+  "asset_role": null,
+  "dimension": "3d",
+  "engine": {
+    "name": "blender",
+    "minimum_version": "4.2"
+  },
+  "tags": [
+    "blender",
+    "procedural",
+    "stairs",
+    "winder",
+    "landing",
+    "architecture",
+    "mesh generator"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "role": "other"
+    },
+    {
+      "path": "stairs_l_shaped.py",
+      "role": "executable_tool"
+    },
+    {
+      "path": "test_stairs_l_shaped.py",
+      "role": "executable_tool"
+    }
+  ],
+  "contract": {
+    "module": "stairs_l_shaped",
+    "entry_points": {
+      "core": "build_geometry",
+      "blender": "create",
+      "operator": "baltor.stairs_l_shaped",
+      "expectations": "expectations"
+    },
+    "parameters": [
+      {
+        "name": "first_steps",
+        "type": "int",
+        "default": 6,
+        "minimum": 1,
+        "maximum": 60,
+        "unit": "count",
+        "description": "Treads in the first flight, along +Y."
+      },
+      {
+        "name": "second_steps",
+        "type": "int",
+        "default": 5,
+        "minimum": 1,
+        "maximum": 60,
+        "unit": "count",
+        "description": "Treads in the second flight, after the turn."
+      },
+      {
+        "name": "corner",
+        "type": "choice",
+        "default": "winders",
+        "minimum": null,
+        "maximum": null,
+        "unit": "mode",
+        "choices": [
+          "landing",
+          "winders"
+        ],
+        "description": "Fill the corner with one landing or three winder treads."
+      },
+      {
+        "name": "turn",
+        "type": "choice",
+        "default": "right",
+        "minimum": null,
+        "maximum": null,
+        "unit": "mode",
+        "choices": [
+          "right",
+          "left"
+        ],
+        "description": "Direction of the second flight seen from the first."
+      },
+      {
+        "name": "rise",
+        "type": "float",
+        "default": 0.18,
+        "minimum": 0.05,
+        "maximum": 0.4,
+        "unit": "m",
+        "description": "Height of one step, also between the landing and its neighbours."
+      },
+      {
+        "name": "going",
+        "type": "float",
+        "default": 0.27,
+        "minimum": 0.1,
+        "maximum": 0.6,
+        "unit": "m",
+        "description": "Horizontal depth of one straight tread."
+      },
+      {
+        "name": "width",
+        "type": "float",
+        "default": 0.9,
+        "minimum": 0.3,
+        "maximum": 6.0,
+        "unit": "m",
+        "description": "Width of both flights; the corner square has this side."
+      },
+      {
+        "name": "tread_thickness",
+        "type": "float",
+        "default": 0.05,
+        "minimum": 0.01,
+        "maximum": 0.3,
+        "unit": "m",
+        "description": "Thickness of every tread and of the landing."
+      },
+      {
+        "name": "support",
+        "type": "bool",
+        "default": true,
+        "minimum": null,
+        "maximum": null,
+        "unit": "flag",
+        "description": "Add a block under the corner from the floor to the corner treads."
+      }
+    ],
+    "outputs": {
+      "kind": "mesh",
+      "object": "L-Shaped Stairs",
+      "closed": true,
+      "description": "One mesh object named L-Shaped Stairs made of closed treads.",
+      "at_defaults": {
+        "vertices": 116,
+        "faces": 88,
+        "bounds": [
+          [
+            -0.45,
+            0.0,
+            0.0
+          ],
+          [
+            1.8,
+            2.52,
+            2.52
+          ]
+        ],
+        "volume": 1.089878,
+        "euler": 30,
+        "report": {
+          "total_rises": 14,
+          "total_height_m": 2.52,
+          "corner_treads": 3,
+          "walking_line_turn_degrees": 90.0
+        }
+      }
+    },
+    "units": "metres",
+    "axes": "Blender Z up, -Y forward",
+    "blender_minimum": "4.2",
+    "verification": {
+      "fixture": "none",
+      "preview": {
+        "floor": true,
+        "view": [
+          -1.0,
+          -1.2,
+          0.9
+        ]
+      }
+    }
+  },
+  "limits": "Winders radiate from the inner corner, so their inner ends are very narrow; real stairs often offset the pivot to keep a minimum inner tread, which this generator does not do. No stringers, risers or handrail. Parts are separate closed solids in one mesh. Verified in Blender 5.2.1; written for the 4.2 API.",
+  "related": [
+    "stairs_straight",
+    "stairs_spiral",
+    "railing_along_path"
+  ],
+  "technique_references": [
+    "Quarter-turn stair with three winders at 30 degree increments",
+    "Ray and square intersection for winder outlines",
+    "Mirroring a mesh with reversed face winding"
+  ],
+  "native_checks": [
+    "addon_install_and_enable",
+    "operator_runs_with_defaults",
+    "blender_data_matches_core",
+    "addon_disable_unregisters",
+    "script_mode_runs",
+    "clean_reopen_addon_file",
+    "clean_reopen_script_file",
+    "gltf_separate_export",
+    "engine_output_clean"
+  ]
+}

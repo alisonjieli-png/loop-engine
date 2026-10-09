@@ -1,0 +1,153 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "material_neon_emission",
+  "title": "Neon tube material with a glass sheath",
+  "purpose": "Build a neon sign material: an emissive gas core, whitened at the face-on centre, mixed by the Fresnel term with a clear glass sheath that takes over toward the silhouette. Use it for signs, cyberpunk scenes, bars and stylized lighting.",
+  "form": "library_module",
+  "asset_role": null,
+  "dimension": "3d",
+  "engine": {
+    "name": "blender",
+    "minimum_version": "4.2"
+  },
+  "tags": [
+    "blender",
+    "material",
+    "shader nodes",
+    "neon",
+    "emission",
+    "glow",
+    "signage"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "role": "other"
+    },
+    {
+      "path": "material_neon_emission.py",
+      "role": "executable_tool"
+    },
+    {
+      "path": "test_material_neon_emission.py",
+      "role": "executable_tool"
+    }
+  ],
+  "contract": {
+    "module": "material_neon_emission",
+    "entry_points": {
+      "core": "material_graph",
+      "blender": "create",
+      "operator": "baltor.material_neon_emission",
+      "expectations": "expectations",
+      "fixture": "fixture"
+    },
+    "parameters": [
+      {
+        "name": "material_name",
+        "type": "string",
+        "default": "Baltor Neon",
+        "minimum": null,
+        "maximum": null,
+        "unit": "text",
+        "description": "Name of the new material."
+      },
+      {
+        "name": "color",
+        "type": "vector",
+        "default": [
+          1.0,
+          0.08,
+          0.35
+        ],
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "unit": "linear RGB",
+        "description": "Colour of the gas glow."
+      },
+      {
+        "name": "strength",
+        "type": "float",
+        "default": 12.0,
+        "minimum": 0.0,
+        "maximum": 10000.0,
+        "unit": "ratio",
+        "description": "Emission strength of the core."
+      },
+      {
+        "name": "core_whiteness",
+        "type": "float",
+        "default": 0.35,
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "unit": "ratio",
+        "description": "How far the face-on centre shifts toward white."
+      },
+      {
+        "name": "sheath",
+        "type": "float",
+        "default": 0.35,
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "unit": "ratio",
+        "description": "Fresnel blend toward the glass sheath at the silhouette."
+      },
+      {
+        "name": "assign",
+        "type": "bool",
+        "default": true,
+        "minimum": null,
+        "maximum": null,
+        "unit": "flag",
+        "description": "Assign the material to the active object."
+      }
+    ],
+    "outputs": {
+      "kind": "node_graph",
+      "object": "Neon Tube Demo",
+      "description": "One emissive material with a node tree; assigned to the active object.",
+      "at_defaults": {
+        "nodes": 6,
+        "links": 6
+      }
+    },
+    "units": "metres",
+    "axes": "Blender Z up, -Y forward",
+    "blender_minimum": "4.2",
+    "verification": {
+      "fixture": "module",
+      "preview": {
+        "floor": true,
+        "lights": "scene",
+        "world_strength": 0.05,
+        "view": [
+          0.0,
+          -1.5,
+          0.3
+        ]
+      }
+    }
+  },
+  "limits": "Emission lights the scene only in renderers that treat emissive meshes as lights (Cycles does, with noise); EEVEE needs light probes or extra lamps. No bloom: add glare in the compositor. The white core is a stylized ramp, not a gas discharge spectrum. Rendered here with Cycles CPU only. Verified in Blender 5.2.1; written for the 4.2 API.",
+  "related": [
+    "material_hologram",
+    "compositor_glare_vignette",
+    "light_night_moon"
+  ],
+  "technique_references": [
+    "Layer Weight facing and Fresnel terms",
+    "Mix of emission and glass by Fresnel",
+    "Colour ramp toward white for an overexposed core"
+  ],
+  "native_checks": [
+    "addon_install_and_enable",
+    "operator_runs_with_defaults",
+    "blender_data_matches_core",
+    "addon_disable_unregisters",
+    "script_mode_runs",
+    "clean_reopen_addon_file",
+    "clean_reopen_script_file",
+    "gltf_separate_export",
+    "engine_output_clean"
+  ]
+}

@@ -1,0 +1,159 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "material_metal_f0_library",
+  "title": "Metal materials from a reflectance table",
+  "purpose": "Build a fully metallic Principled material for gold, silver, copper, aluminium, iron, titanium, chromium, nickel, platinum, zinc, brass or cobalt from a table of approximate normal-incidence reflectance values, with roughness variation and optional brushing. Use it for jewellery, hardware and props.",
+  "form": "library_module",
+  "asset_role": null,
+  "dimension": "3d",
+  "engine": {
+    "name": "blender",
+    "minimum_version": "4.2"
+  },
+  "tags": [
+    "blender",
+    "material",
+    "metal",
+    "pbr",
+    "reflectance",
+    "shader nodes",
+    "product"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "role": "other"
+    },
+    {
+      "path": "material_metal_f0_library.py",
+      "role": "executable_tool"
+    },
+    {
+      "path": "test_material_metal_f0_library.py",
+      "role": "executable_tool"
+    }
+  ],
+  "contract": {
+    "module": "material_metal_f0_library",
+    "entry_points": {
+      "core": "material_graph",
+      "blender": "create",
+      "operator": "baltor.material_metal_f0_library",
+      "expectations": "expectations"
+    },
+    "parameters": [
+      {
+        "name": "metal",
+        "type": "choice",
+        "default": "gold",
+        "minimum": null,
+        "maximum": null,
+        "unit": "name",
+        "choices": [
+          "aluminium",
+          "brass",
+          "chromium",
+          "cobalt",
+          "copper",
+          "gold",
+          "iron",
+          "nickel",
+          "platinum",
+          "silver",
+          "titanium",
+          "zinc"
+        ],
+        "description": "Metal to look up in the reflectance table."
+      },
+      {
+        "name": "roughness",
+        "type": "float",
+        "default": 0.22,
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "unit": "ratio",
+        "description": "Surface roughness."
+      },
+      {
+        "name": "roughness_variation",
+        "type": "float",
+        "default": 0.05,
+        "minimum": 0.0,
+        "maximum": 0.5,
+        "unit": "ratio",
+        "description": "How far a fine noise varies the roughness."
+      },
+      {
+        "name": "brushed",
+        "type": "float",
+        "default": 0.0,
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "unit": "ratio",
+        "description": "Anisotropy for a brushed finish; 0 is plain polished or matte metal."
+      },
+      {
+        "name": "assign",
+        "type": "bool",
+        "default": true,
+        "minimum": null,
+        "maximum": null,
+        "unit": "flag",
+        "description": "Assign the material to the active object."
+      }
+    ],
+    "outputs": {
+      "kind": "node_graph",
+      "description": "One metallic material named Baltor and the metal name; assigned to the active object.",
+      "at_defaults": {
+        "nodes": 5,
+        "links": 4,
+        "report": {
+          "metal": "gold",
+          "f0_linear": [
+            1.0,
+            0.77,
+            0.34
+          ],
+          "f0_luminance": 0.787852
+        }
+      }
+    },
+    "units": "metres",
+    "axes": "Blender Z up, -Y forward",
+    "blender_minimum": "4.2",
+    "verification": {
+      "fixture": "monkey",
+      "preview": {
+        "floor": true,
+        "view": [
+          0.3,
+          -1.4,
+          0.35
+        ]
+      }
+    }
+  },
+  "limits": "The F0 values are approximate linear sRGB reflectances rounded to two decimals; the edge tint of real metals is left to the Principled BSDF's default model, and oxidation, patina and scratches are not included. Brass and similar alloys vary with composition. Brushed anisotropy needs tangents that follow the brushing direction. Rendered here with Cycles CPU only. Verified in Blender 5.2.1; written for the 4.2 API.",
+  "related": [
+    "material_car_paint",
+    "material_rust_paint",
+    "material_edge_wear"
+  ],
+  "technique_references": [
+    "Normal-incidence reflectance (F0) as the base colour of a metallic BSDF",
+    "Approximate F0 values derived from measured complex refractive indices",
+    "Anisotropic specular for brushed metal"
+  ],
+  "native_checks": [
+    "addon_install_and_enable",
+    "operator_runs_with_defaults",
+    "blender_data_matches_core",
+    "addon_disable_unregisters",
+    "script_mode_runs",
+    "clean_reopen_addon_file",
+    "clean_reopen_script_file",
+    "gltf_separate_export",
+    "engine_output_clean"
+  ]
+}

@@ -1,0 +1,197 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "stairs_spiral",
+  "title": "Spiral staircase generator",
+  "purpose": "Generate a spiral staircase mesh with wedge treads, a central column, balusters and a helical handrail from rise, turn and radius parameters. Use it for towers, lofts and level blockouts.",
+  "form": "library_module",
+  "asset_role": null,
+  "dimension": "3d",
+  "engine": {
+    "name": "blender",
+    "minimum_version": "4.2"
+  },
+  "tags": [
+    "blender",
+    "procedural",
+    "stairs",
+    "spiral",
+    "architecture",
+    "mesh generator",
+    "handrail"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "role": "other"
+    },
+    {
+      "path": "stairs_spiral.py",
+      "role": "executable_tool"
+    }
+  ],
+  "contract": {
+    "module": "stairs_spiral",
+    "entry_points": {
+      "core": "build_geometry",
+      "blender": "create",
+      "operator": "baltor.stairs_spiral",
+      "expectations": "expectations"
+    },
+    "parameters": [
+      {
+        "name": "steps",
+        "type": "int",
+        "default": 16,
+        "minimum": 3,
+        "maximum": 120,
+        "unit": "count",
+        "description": "Number of treads."
+      },
+      {
+        "name": "total_height",
+        "type": "float",
+        "default": 3.0,
+        "minimum": 0.5,
+        "maximum": 20.0,
+        "unit": "m",
+        "description": "Floor to the top of the last tread."
+      },
+      {
+        "name": "turn_degrees",
+        "type": "float",
+        "default": 360.0,
+        "minimum": 30.0,
+        "maximum": 1440.0,
+        "unit": "degree",
+        "description": "Total rotation from the first tread to the end of the last."
+      },
+      {
+        "name": "inner_radius",
+        "type": "float",
+        "default": 0.15,
+        "minimum": 0.05,
+        "maximum": 2.0,
+        "unit": "m",
+        "description": "Radius of the central column, where the treads start."
+      },
+      {
+        "name": "outer_radius",
+        "type": "float",
+        "default": 1.1,
+        "minimum": 0.3,
+        "maximum": 6.0,
+        "unit": "m",
+        "description": "Outer radius of the treads; must exceed inner_radius by at least 0.2 m."
+      },
+      {
+        "name": "tread_thickness",
+        "type": "float",
+        "default": 0.05,
+        "minimum": 0.01,
+        "maximum": 0.3,
+        "unit": "m",
+        "description": "Thickness of each tread slab."
+      },
+      {
+        "name": "arc_segments",
+        "type": "int",
+        "default": 2,
+        "minimum": 1,
+        "maximum": 12,
+        "unit": "count",
+        "description": "Segments along the outer arc of each tread and of the handrail per tread."
+      },
+      {
+        "name": "column_sides",
+        "type": "int",
+        "default": 16,
+        "minimum": 3,
+        "maximum": 64,
+        "unit": "count",
+        "description": "Sides of the central column prism."
+      },
+      {
+        "name": "handrail",
+        "type": "bool",
+        "default": true,
+        "minimum": null,
+        "maximum": null,
+        "unit": "flag",
+        "description": "Add a square-section helical handrail and one baluster per tread."
+      },
+      {
+        "name": "rail_height",
+        "type": "float",
+        "default": 0.9,
+        "minimum": 0.5,
+        "maximum": 1.5,
+        "unit": "m",
+        "description": "Height of the handrail above the tread nosing line."
+      },
+      {
+        "name": "clockwise",
+        "type": "bool",
+        "default": false,
+        "minimum": null,
+        "maximum": null,
+        "unit": "flag",
+        "description": "Climb clockwise seen from above instead of counter-clockwise."
+      }
+    ],
+    "outputs": {
+      "kind": "mesh",
+      "object": "Spiral Stairs",
+      "closed": true,
+      "description": "One mesh object named Spiral Stairs with a UVMap layer; origin at the column base.",
+      "at_defaults": {
+        "vertices": 484,
+        "faces": 404,
+        "bounds": [
+          [
+            -1.1,
+            -1.1,
+            0.0
+          ],
+          [
+            1.1,
+            1.1,
+            4.1125
+          ]
+        ],
+        "volume": 0.422410237,
+        "euler": 68
+      }
+    },
+    "units": "metres",
+    "axes": "Blender Z up, -Y forward",
+    "blender_minimum": "4.2",
+    "verification": {
+      "fixture": "none",
+      "preview": {
+        "floor": true
+      }
+    }
+  },
+  "limits": "One mesh object made of separate closed solids that touch but are not merged, so booleans need a merge first. The handrail is a square section swept along the helix with the section kept vertical, not a circular profile, and the balusters are square posts. Treads are flat slabs with no nosing profile. No building code check is made. Verified in Blender 5.2.1; written for the 4.2 API.",
+  "related": [
+    "stairs_straight",
+    "stairs_l_shaped",
+    "railing_along_path"
+  ],
+  "technique_references": [
+    "Annular sector solids with outward counter-clockwise winding",
+    "Helix sweep of a square section in the radial and vertical frame",
+    "Box projection UVs by dominant normal axis at one unit per metre"
+  ],
+  "native_checks": [
+    "addon_install_and_enable",
+    "operator_runs_with_defaults",
+    "blender_data_matches_core",
+    "addon_disable_unregisters",
+    "script_mode_runs",
+    "clean_reopen_addon_file",
+    "clean_reopen_script_file",
+    "gltf_separate_export",
+    "engine_output_clean"
+  ]
+}

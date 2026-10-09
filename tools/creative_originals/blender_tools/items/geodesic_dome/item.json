@@ -1,0 +1,185 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "geodesic_dome",
+  "title": "Geodesic dome with strut length classes",
+  "purpose": "Generate a geodesic dome of any frequency from a vertex-up icosahedron, as hexagonal struts with hubs or as a closed panel shell, and list the distinct strut lengths with counts and chord factors. Use it for domes, greenhouses, sci-fi habitats and build planning.",
+  "form": "library_module",
+  "asset_role": null,
+  "dimension": "3d",
+  "engine": {
+    "name": "blender",
+    "minimum_version": "4.2"
+  },
+  "tags": [
+    "blender",
+    "procedural",
+    "geodesic",
+    "dome",
+    "architecture",
+    "icosahedron",
+    "mesh generator"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "role": "other"
+    },
+    {
+      "path": "geodesic_dome.py",
+      "role": "executable_tool"
+    },
+    {
+      "path": "test_geodesic_dome.py",
+      "role": "executable_tool"
+    }
+  ],
+  "contract": {
+    "module": "geodesic_dome",
+    "entry_points": {
+      "core": "build_geometry",
+      "blender": "create",
+      "operator": "baltor.geodesic_dome",
+      "expectations": "expectations"
+    },
+    "parameters": [
+      {
+        "name": "frequency",
+        "type": "int",
+        "default": 2,
+        "minimum": 1,
+        "maximum": 10,
+        "unit": "count",
+        "description": "Divisions of each icosahedron edge; even values give a flat rim."
+      },
+      {
+        "name": "radius",
+        "type": "float",
+        "default": 3.0,
+        "minimum": 0.05,
+        "maximum": 1000.0,
+        "unit": "m",
+        "description": "Radius of the sphere the hubs lie on."
+      },
+      {
+        "name": "mode",
+        "type": "choice",
+        "default": "struts",
+        "minimum": null,
+        "maximum": null,
+        "unit": "mode",
+        "choices": [
+          "struts",
+          "panels"
+        ],
+        "description": "Struts with hubs, or a closed panel shell."
+      },
+      {
+        "name": "strut_radius",
+        "type": "float",
+        "default": 0.035,
+        "minimum": 0.001,
+        "maximum": 10.0,
+        "unit": "m",
+        "description": "Radius of each hexagonal strut (struts mode)."
+      },
+      {
+        "name": "hub_radius",
+        "type": "float",
+        "default": 0.07,
+        "minimum": 0.001,
+        "maximum": 20.0,
+        "unit": "m",
+        "description": "Radius of each hub (struts mode)."
+      },
+      {
+        "name": "thickness",
+        "type": "float",
+        "default": 0.08,
+        "minimum": 0.001,
+        "maximum": 50.0,
+        "unit": "m",
+        "description": "Shell thickness (panels mode)."
+      }
+    ],
+    "outputs": {
+      "kind": "mesh",
+      "object": "Geodesic Dome",
+      "closed": true,
+      "description": "One mesh object named Geodesic Dome standing on z = 0.",
+      "at_defaults": {
+        "vertices": 1092,
+        "faces": 1040,
+        "bounds": [
+          [
+            -3.059545557,
+            -2.912715105,
+            -0.059545557
+          ],
+          [
+            3.059545557,
+            2.912715105,
+            3.059545557
+          ]
+        ],
+        "volume": 0.368321028,
+        "euler": 182,
+        "report": {
+          "hubs": 26,
+          "struts": 65,
+          "panels": 40,
+          "strut_classes": [
+            {
+              "length_m": 1.639599,
+              "count": 30,
+              "chord_factor": 0.546533
+            },
+            {
+              "length_m": 1.854102,
+              "count": 35,
+              "chord_factor": 0.618034
+            }
+          ],
+          "rim": "flat",
+          "height_m": 3.0
+        }
+      }
+    },
+    "units": "metres",
+    "axes": "Blender Z up, -Y forward",
+    "blender_minimum": "4.2",
+    "verification": {
+      "fixture": "none",
+      "preview": {
+        "floor": true,
+        "view": [
+          1.0,
+          -1.3,
+          0.8
+        ]
+      }
+    }
+  },
+  "limits": "Class I subdivision with the vertex-up orientation only; other classes, orientations and truncations (such as 5/8 domes) are not available. Odd frequencies end in a stepped rim. Struts are straight hexagonal prisms that overlap the hubs; connector design, panel joints and loads are not modelled. Verified in Blender 5.2.1; written for the 4.2 API.",
+  "related": [
+    "space_truss_octet",
+    "lowpoly_planet",
+    "honeycomb_panel"
+  ],
+  "technique_references": [
+    "Class I geodesic subdivision of icosahedron faces into a triangular grid",
+    "Projection of grid points onto the sphere",
+    "Chord factors of geodesic struts",
+    "Hemisphere cut along the equator of a vertex-up icosahedron"
+  ],
+  "native_checks": [
+    "addon_install_and_enable",
+    "operator_runs_with_defaults",
+    "blender_data_matches_core",
+    "addon_disable_unregisters",
+    "script_mode_runs",
+    "clean_reopen_addon_file",
+    "clean_reopen_script_file",
+    "gltf_separate_export",
+    "engine_output_clean"
+  ]
+}

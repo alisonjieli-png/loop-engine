@@ -1,0 +1,169 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "material_hologram",
+  "title": "Hologram material with scanlines and glitch bands",
+  "purpose": "Build a see-through hologram material: thin glowing scanlines from world height, a bright Fresnel rim and noisy horizontal glitch bands, used both as emission strength and as the mix toward a transparent shader. Use it for sci-fi interfaces, projections and ghostly effects.",
+  "form": "library_module",
+  "asset_role": null,
+  "dimension": "3d",
+  "engine": {
+    "name": "blender",
+    "minimum_version": "4.2"
+  },
+  "tags": [
+    "blender",
+    "material",
+    "shader nodes",
+    "hologram",
+    "sci-fi",
+    "emission",
+    "transparent"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "role": "other"
+    },
+    {
+      "path": "material_hologram.py",
+      "role": "executable_tool"
+    },
+    {
+      "path": "test_material_hologram.py",
+      "role": "executable_tool"
+    }
+  ],
+  "contract": {
+    "module": "material_hologram",
+    "entry_points": {
+      "core": "material_graph",
+      "blender": "create",
+      "operator": "baltor.material_hologram",
+      "expectations": "expectations"
+    },
+    "parameters": [
+      {
+        "name": "material_name",
+        "type": "string",
+        "default": "Baltor Hologram",
+        "minimum": null,
+        "maximum": null,
+        "unit": "text",
+        "description": "Name of the new material."
+      },
+      {
+        "name": "color",
+        "type": "vector",
+        "default": [
+          0.1,
+          0.75,
+          1.0
+        ],
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "unit": "linear RGB",
+        "description": "Colour of the hologram light."
+      },
+      {
+        "name": "line_density",
+        "type": "float",
+        "default": 40.0,
+        "minimum": 1.0,
+        "maximum": 5000.0,
+        "unit": "1/m",
+        "description": "Scanlines per metre of world height."
+      },
+      {
+        "name": "line_width",
+        "type": "float",
+        "default": 0.25,
+        "minimum": 0.01,
+        "maximum": 0.9,
+        "unit": "ratio",
+        "description": "Share of each line period that glows."
+      },
+      {
+        "name": "rim",
+        "type": "float",
+        "default": 0.6,
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "unit": "ratio",
+        "description": "Strength of the Fresnel rim."
+      },
+      {
+        "name": "glitch",
+        "type": "float",
+        "default": 0.5,
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "unit": "ratio",
+        "description": "How much the glitch bands dim the hologram."
+      },
+      {
+        "name": "brightness",
+        "type": "float",
+        "default": 4.0,
+        "minimum": 0.0,
+        "maximum": 1000.0,
+        "unit": "ratio",
+        "description": "Emission strength at full brightness."
+      },
+      {
+        "name": "assign",
+        "type": "bool",
+        "default": true,
+        "minimum": null,
+        "maximum": null,
+        "unit": "flag",
+        "description": "Assign the material to the active object."
+      }
+    ],
+    "outputs": {
+      "kind": "node_graph",
+      "description": "One transparent emissive material; assigned to the active object.",
+      "at_defaults": {
+        "nodes": 16,
+        "links": 17
+      }
+    },
+    "units": "metres",
+    "axes": "Blender Z up, -Y forward",
+    "blender_minimum": "4.2",
+    "verification": {
+      "fixture": "monkey",
+      "preview": {
+        "floor": true,
+        "lights": "scene",
+        "world_strength": 0.05,
+        "view": [
+          0.3,
+          -1.4,
+          0.35
+        ]
+      }
+    }
+  },
+  "limits": "Static: scanlines and glitches do not move unless you animate the mapping or a value. Lines follow world Z, so they stay horizontal when the object rotates. Transparency through a Transparent BSDF costs extra samples; EEVEE needs blended or dithered render settings. Rendered here with Cycles CPU only. Verified in Blender 5.2.1; written for the 4.2 API.",
+  "related": [
+    "material_neon_emission",
+    "material_wireframe_overlay",
+    "material_hex_energy_shield"
+  ],
+  "technique_references": [
+    "Scanlines from the fractional part of height times density",
+    "Fresnel rim from the Layer Weight node",
+    "Thresholded noise along one axis for bands"
+  ],
+  "native_checks": [
+    "addon_install_and_enable",
+    "operator_runs_with_defaults",
+    "blender_data_matches_core",
+    "addon_disable_unregisters",
+    "script_mode_runs",
+    "clean_reopen_addon_file",
+    "clean_reopen_script_file",
+    "gltf_separate_export",
+    "engine_output_clean"
+  ]
+}

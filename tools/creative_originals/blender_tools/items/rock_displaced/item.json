@@ -1,0 +1,206 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "rock_displaced",
+  "title": "Displaced icosphere rock with fractured facets",
+  "purpose": "Generate a closed rock mesh from a seed: an icosphere displaced by fractal value noise, sheared by random planes into flat facets and flattened at the base. Use it for props, scatter sources and level dressing.",
+  "form": "library_module",
+  "asset_role": null,
+  "dimension": "3d",
+  "engine": {
+    "name": "blender",
+    "minimum_version": "4.2"
+  },
+  "tags": [
+    "blender",
+    "procedural",
+    "rock",
+    "noise",
+    "icosphere",
+    "mesh generator",
+    "environment"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "role": "other"
+    },
+    {
+      "path": "rock_displaced.py",
+      "role": "executable_tool"
+    },
+    {
+      "path": "test_rock_displaced.py",
+      "role": "executable_tool"
+    }
+  ],
+  "contract": {
+    "module": "rock_displaced",
+    "entry_points": {
+      "core": "build_geometry",
+      "blender": "create",
+      "operator": "baltor.rock_displaced",
+      "expectations": "expectations"
+    },
+    "parameters": [
+      {
+        "name": "seed",
+        "type": "int",
+        "default": 3,
+        "minimum": 0,
+        "maximum": 1000000,
+        "unit": "seed",
+        "description": "Random seed; the same seed gives the same rock."
+      },
+      {
+        "name": "subdivisions",
+        "type": "int",
+        "default": 3,
+        "minimum": 1,
+        "maximum": 6,
+        "unit": "count",
+        "description": "Times each triangle is split in four (10 * 4^n + 2 vertices)."
+      },
+      {
+        "name": "radius",
+        "type": "float",
+        "default": 0.5,
+        "minimum": 0.01,
+        "maximum": 100.0,
+        "unit": "m",
+        "description": "Radius before noise and scaling."
+      },
+      {
+        "name": "dimensions",
+        "type": "vector",
+        "default": [
+          1.3,
+          1.0,
+          0.75
+        ],
+        "minimum": 0.05,
+        "maximum": 10.0,
+        "unit": "ratio",
+        "description": "Scale along X, Y and Z applied after the noise."
+      },
+      {
+        "name": "roughness",
+        "type": "float",
+        "default": 0.35,
+        "minimum": 0.0,
+        "maximum": 0.9,
+        "unit": "ratio",
+        "description": "Largest radial displacement as a share of the radius."
+      },
+      {
+        "name": "frequency",
+        "type": "float",
+        "default": 1.6,
+        "minimum": 0.1,
+        "maximum": 20.0,
+        "unit": "1/radius",
+        "description": "Base frequency of the noise on the unit sphere."
+      },
+      {
+        "name": "octaves",
+        "type": "int",
+        "default": 4,
+        "minimum": 1,
+        "maximum": 8,
+        "unit": "count",
+        "description": "Noise octaves; each doubles the frequency and halves the amplitude."
+      },
+      {
+        "name": "cuts",
+        "type": "int",
+        "default": 5,
+        "minimum": 0,
+        "maximum": 20,
+        "unit": "count",
+        "description": "Random planes that shear off flat facets."
+      },
+      {
+        "name": "cut_depth",
+        "type": "float",
+        "default": 0.18,
+        "minimum": 0.0,
+        "maximum": 0.6,
+        "unit": "ratio",
+        "description": "How deep each cut reaches, as a share of the radius."
+      },
+      {
+        "name": "flat_base",
+        "type": "float",
+        "default": 0.25,
+        "minimum": 0.0,
+        "maximum": 0.9,
+        "unit": "ratio",
+        "description": "Share of the height below which vertices are flattened onto the base; 0 keeps it round."
+      },
+      {
+        "name": "smooth",
+        "type": "bool",
+        "default": false,
+        "minimum": null,
+        "maximum": null,
+        "unit": "flag",
+        "description": "Shade smooth instead of flat."
+      }
+    ],
+    "outputs": {
+      "kind": "mesh",
+      "object": "Rock",
+      "closed": true,
+      "description": "One closed mesh object named Rock with a UVMap and one material slot.",
+      "at_defaults": {
+        "vertices": 642,
+        "faces": 1280,
+        "bounds": [
+          [
+            -0.645030863,
+            -0.41842892,
+            0.0
+          ],
+          [
+            0.694309441,
+            0.487360355,
+            0.715106697
+          ]
+        ],
+        "volume": 0.439868034,
+        "euler": 2
+      }
+    },
+    "units": "metres",
+    "axes": "Blender Z up, -Y forward",
+    "blender_minimum": "4.2",
+    "verification": {
+      "fixture": "none",
+      "preview": {
+        "floor": true
+      }
+    }
+  },
+  "limits": "Displacement is radial, so overhangs and deep cracks cannot form. The noise is value noise on an integer lattice, which shows mild grid alignment at low octave counts. Strong cuts or a high flat base can produce long thin triangles. One material slot with a flat colour; no texture or weathering. Verified in Blender 5.2.1; written for the 4.2 API.",
+  "related": [
+    "boulder_field_hulls",
+    "lowpoly_planet",
+    "material_concrete"
+  ],
+  "technique_references": [
+    "Icosphere by recursive four-way triangle subdivision projected to the sphere",
+    "Value noise with quintic fade and integer hash lattice, fractal sum of octaves",
+    "Planar cuts by projecting points beyond a half-space onto its plane",
+    "Spherical UV mapping with seam correction per face"
+  ],
+  "native_checks": [
+    "addon_install_and_enable",
+    "operator_runs_with_defaults",
+    "blender_data_matches_core",
+    "addon_disable_unregisters",
+    "script_mode_runs",
+    "clean_reopen_addon_file",
+    "clean_reopen_script_file",
+    "gltf_separate_export",
+    "engine_output_clean"
+  ]
+}

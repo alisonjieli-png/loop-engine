@@ -1,0 +1,163 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "material_glass_tinted",
+  "title": "Tinted glass with Beer-Lambert absorption",
+  "purpose": "Build a glass material whose colour deepens with thickness: the tint is given as transmittance at a reference thickness and converted to exact Volume Absorption density and colour, under a clear transmissive surface. Use it for bottles, stained glass, gems and liquids.",
+  "form": "library_module",
+  "asset_role": null,
+  "dimension": "3d",
+  "engine": {
+    "name": "blender",
+    "minimum_version": "4.2"
+  },
+  "tags": [
+    "blender",
+    "material",
+    "shader nodes",
+    "glass",
+    "transmission",
+    "volume",
+    "physics"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "role": "other"
+    },
+    {
+      "path": "material_glass_tinted.py",
+      "role": "executable_tool"
+    },
+    {
+      "path": "test_material_glass_tinted.py",
+      "role": "executable_tool"
+    }
+  ],
+  "contract": {
+    "module": "material_glass_tinted",
+    "entry_points": {
+      "core": "material_graph",
+      "blender": "create",
+      "operator": "baltor.material_glass_tinted",
+      "expectations": "expectations"
+    },
+    "parameters": [
+      {
+        "name": "material_name",
+        "type": "string",
+        "default": "Baltor Tinted Glass",
+        "minimum": null,
+        "maximum": null,
+        "unit": "text",
+        "description": "Name of the new material."
+      },
+      {
+        "name": "tint",
+        "type": "vector",
+        "default": [
+          0.55,
+          0.85,
+          0.7
+        ],
+        "minimum": 0.001,
+        "maximum": 1.0,
+        "unit": "linear RGB",
+        "description": "Fraction of red, green and blue light that passes the reference thickness."
+      },
+      {
+        "name": "reference_thickness",
+        "type": "float",
+        "default": 0.5,
+        "minimum": 0.0001,
+        "maximum": 100.0,
+        "unit": "m",
+        "description": "Thickness at which the tint applies."
+      },
+      {
+        "name": "ior",
+        "type": "float",
+        "default": 1.5,
+        "minimum": 1.0,
+        "maximum": 3.0,
+        "unit": "ratio",
+        "description": "Index of refraction (window glass about 1.5)."
+      },
+      {
+        "name": "roughness",
+        "type": "float",
+        "default": 0.0,
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "unit": "ratio",
+        "description": "Surface roughness; above 0 gives frosted glass."
+      },
+      {
+        "name": "assign",
+        "type": "bool",
+        "default": true,
+        "minimum": null,
+        "maximum": null,
+        "unit": "flag",
+        "description": "Assign the material to the active object."
+      }
+    ],
+    "outputs": {
+      "kind": "node_graph",
+      "description": "One material with a surface and a volume; assigned to the active object.",
+      "at_defaults": {
+        "nodes": 3,
+        "links": 2,
+        "report": {
+          "absorption_per_m": [
+            1.195674,
+            0.325038,
+            0.71335
+          ],
+          "volume_density": 1.195674,
+          "volume_color": [
+            0.0,
+            0.728155117,
+            0.403390985
+          ]
+        }
+      }
+    },
+    "units": "metres",
+    "axes": "Blender Z up, -Y forward",
+    "blender_minimum": "4.2",
+    "verification": {
+      "fixture": "monkey",
+      "preview": {
+        "floor": true,
+        "view": [
+          0.3,
+          -1.4,
+          0.45
+        ],
+        "samples": 24
+      }
+    }
+  },
+  "limits": "Absorption needs closed, correctly oriented meshes and a renderer that traces volumes inside objects (Cycles); EEVEE approximates refraction and volumes differently. No dispersion, no thin-film and no scattering inside the glass. Caustics depend on the renderer settings. Rendered here with Cycles CPU only. Verified in Blender 5.2.1; written for the 4.2 API.",
+  "related": [
+    "material_soap_bubble",
+    "lathe_profile",
+    "material_water_surface"
+  ],
+  "technique_references": [
+    "Beer-Lambert law T = exp(-a d)",
+    "Absorption coefficient a = -ln(T) / d per channel",
+    "Volume Absorption extinction density * (1 - colour)"
+  ],
+  "native_checks": [
+    "addon_install_and_enable",
+    "operator_runs_with_defaults",
+    "blender_data_matches_core",
+    "addon_disable_unregisters",
+    "script_mode_runs",
+    "clean_reopen_addon_file",
+    "clean_reopen_script_file",
+    "gltf_separate_export",
+    "engine_output_clean"
+  ]
+}

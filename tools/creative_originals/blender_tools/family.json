@@ -1,0 +1,13 @@
+{
+  "record_type": "creative_original_family/v1",
+  "family": "blender_tools",
+  "title": "Original Blender Python tools",
+  "description": "Blender Python tools for procedural modelling, node materials, camera and light rigs, animation setups and scene utilities. Each item is one module with two layers. A pure-Python core returns the geometry, node graph, keyframes or report as plain data and runs without Blender; a thin bpy layer (create or run, an operator under baltor.<identity>, register and unregister, bl_info and a script mode) builds that data in Blender. The contract card lists the entry points, every parameter with its unit and range, and the known answers of the core at the defaults. Package tests check the core with meshcheck.py and graphcheck.py and refuse known-wrong inputs. The native check runs each tool in Blender three ways: installed and enabled as a legacy add-on with the operator run at its defaults, run as a script, and reopened from the saved .blend in a fresh process that never loads the tool. Both files are compared with the expectations the core computes, meshes are exported as glTF and checked, and a small Cycles CPU preview is rendered.",
+  "engine": {"name": "blender", "minimum_version": "4.2", "notes": "Verified with Blender 5.2.1 LTS in background mode; written against the 4.2 Python API"},
+  "shared_files": [{"path": "test_package.py", "role": "executable_tool"},
+                   {"path": "meshcheck.py", "role": "executable_tool"},
+                   {"path": "graphcheck.py", "role": "executable_tool"}],
+  "native_verifier": "native.py",
+  "generator_version": "1.0.0",
+  "default_dimension": "3d"
+}

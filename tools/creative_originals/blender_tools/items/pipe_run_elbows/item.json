@@ -1,0 +1,175 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "pipe_run_elbows",
+  "title": "Pipe run with bent elbows and flanges",
+  "purpose": "Sweep a pipe along a polyline of corner points, replacing every corner by a tangent elbow of a given bend radius, with a twist-free section and optional flanges at the ends and joints. Use it for plumbing, industrial plants, sci-fi corridors and cable conduits.",
+  "form": "library_module",
+  "asset_role": null,
+  "dimension": "3d",
+  "engine": {
+    "name": "blender",
+    "minimum_version": "4.2"
+  },
+  "tags": [
+    "blender",
+    "procedural",
+    "pipe",
+    "elbow",
+    "sweep",
+    "industrial",
+    "mesh generator"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "role": "other"
+    },
+    {
+      "path": "pipe_run_elbows.py",
+      "role": "executable_tool"
+    },
+    {
+      "path": "test_pipe_run_elbows.py",
+      "role": "executable_tool"
+    }
+  ],
+  "contract": {
+    "module": "pipe_run_elbows",
+    "entry_points": {
+      "core": "build_geometry",
+      "blender": "create",
+      "operator": "baltor.pipe_run_elbows",
+      "expectations": "expectations"
+    },
+    "parameters": [
+      {
+        "name": "points",
+        "type": "string",
+        "default": "0,0,0; 2.5,0,0; 2.5,2,0; 2.5,2,1.6; 0.5,2,1.6",
+        "minimum": null,
+        "maximum": null,
+        "unit": "m",
+        "description": "Centreline corners as x,y,z separated by semicolons."
+      },
+      {
+        "name": "radius",
+        "type": "float",
+        "default": 0.08,
+        "minimum": 0.002,
+        "maximum": 5.0,
+        "unit": "m",
+        "description": "Outer radius of the pipe."
+      },
+      {
+        "name": "bend_radius",
+        "type": "float",
+        "default": 0.24,
+        "minimum": 0.004,
+        "maximum": 50.0,
+        "unit": "m",
+        "description": "Centreline radius of every elbow; at least the pipe radius."
+      },
+      {
+        "name": "sides",
+        "type": "int",
+        "default": 16,
+        "minimum": 3,
+        "maximum": 128,
+        "unit": "count",
+        "description": "Sides of the pipe section."
+      },
+      {
+        "name": "bend_segments",
+        "type": "int",
+        "default": 10,
+        "minimum": 1,
+        "maximum": 96,
+        "unit": "count",
+        "description": "Segments along a 90 degree elbow; other angles scale."
+      },
+      {
+        "name": "flanges",
+        "type": "bool",
+        "default": true,
+        "minimum": null,
+        "maximum": null,
+        "unit": "flag",
+        "description": "Add flanges at both ends and at every elbow joint."
+      },
+      {
+        "name": "flange_ratio",
+        "type": "float",
+        "default": 1.6,
+        "minimum": 1.05,
+        "maximum": 4.0,
+        "unit": "ratio",
+        "description": "Flange radius divided by the pipe radius."
+      }
+    ],
+    "outputs": {
+      "kind": "mesh",
+      "object": "Pipe Run",
+      "closed": true,
+      "description": "One smooth-shaded closed mesh object named Pipe Run.",
+      "at_defaults": {
+        "vertices": 816,
+        "faces": 690,
+        "bounds": [
+          [
+            -0.024,
+            -0.128,
+            -0.128
+          ],
+          [
+            2.628,
+            2.128,
+            1.728
+          ]
+        ],
+        "volume": 0.171821665,
+        "euler": 18,
+        "report": {
+          "elbows": 3,
+          "bend_angles_degrees": [
+            90.0,
+            90.0,
+            90.0
+          ],
+          "centreline_length_m": 7.789811,
+          "flanges": 8
+        }
+      }
+    },
+    "units": "metres",
+    "axes": "Blender Z up, -Y forward",
+    "blender_minimum": "4.2",
+    "verification": {
+      "fixture": "none",
+      "preview": {
+        "floor": true
+      }
+    }
+  },
+  "limits": "Solid pipe without an inner bore; the wall thickness is not modelled. Elbows are circular arcs of one bend radius; tees, reducers and valves are not generated. Flanges are plain cylinders that overlap the pipe rather than being merged with it. A path that turns back on itself, or a run shorter than its two elbows need, is refused. Verified in Blender 5.2.1; written for the 4.2 API.",
+  "related": [
+    "catenary_cable",
+    "chain_links_curve",
+    "railing_along_path"
+  ],
+  "technique_references": [
+    "Tangent arc fillet: tangent length R tan(theta / 2), centre on the bisector",
+    "Rotation-minimising frames by the double reflection method (Wang et al. 2008)",
+    "Rodrigues rotation for points on the elbow arc"
+  ],
+  "native_checks": [
+    "addon_install_and_enable",
+    "operator_runs_with_defaults",
+    "blender_data_matches_core",
+    "addon_disable_unregisters",
+    "script_mode_runs",
+    "clean_reopen_addon_file",
+    "clean_reopen_script_file",
+    "gltf_separate_export",
+    "engine_output_clean"
+  ]
+}

@@ -1,0 +1,275 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "light_three_point",
+  "title": "Three-point light rig with illuminance ratios",
+  "purpose": "Add key, fill and rim area lights aimed at a target, placed by azimuth and elevation, with fill and rim powers derived from illuminance ratios at their distances. Use it to light a subject for product, character or turntable renders.",
+  "form": "library_module",
+  "asset_role": null,
+  "dimension": "3d",
+  "engine": {
+    "name": "blender",
+    "minimum_version": "4.2"
+  },
+  "tags": [
+    "blender",
+    "lighting",
+    "light rig",
+    "three point lighting",
+    "area light",
+    "studio",
+    "rendering"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "role": "other"
+    },
+    {
+      "path": "light_three_point.py",
+      "role": "executable_tool"
+    },
+    {
+      "path": "test_light_three_point.py",
+      "role": "executable_tool"
+    }
+  ],
+  "contract": {
+    "module": "light_three_point",
+    "entry_points": {
+      "core": "rig_layout",
+      "blender": "create",
+      "operator": "baltor.light_three_point",
+      "expectations": "expectations"
+    },
+    "parameters": [
+      {
+        "name": "target",
+        "type": "vector",
+        "default": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "minimum": -10000.0,
+        "maximum": 10000.0,
+        "unit": "m",
+        "description": "Point the three lights aim at; the rig empty sits here."
+      },
+      {
+        "name": "key_distance",
+        "type": "float",
+        "default": 4.0,
+        "minimum": 0.1,
+        "maximum": 1000.0,
+        "unit": "m",
+        "description": "Distance from the target to the key light."
+      },
+      {
+        "name": "fill_distance",
+        "type": "float",
+        "default": 4.5,
+        "minimum": 0.1,
+        "maximum": 1000.0,
+        "unit": "m",
+        "description": "Distance from the target to the fill light."
+      },
+      {
+        "name": "rim_distance",
+        "type": "float",
+        "default": 4.0,
+        "minimum": 0.1,
+        "maximum": 1000.0,
+        "unit": "m",
+        "description": "Distance from the target to the rim light."
+      },
+      {
+        "name": "key_azimuth",
+        "type": "float",
+        "default": 40.0,
+        "minimum": -180.0,
+        "maximum": 180.0,
+        "unit": "degree",
+        "description": "Key light angle around Z; 0 is in front (-Y), positive toward +X."
+      },
+      {
+        "name": "key_elevation",
+        "type": "float",
+        "default": 35.0,
+        "minimum": -30.0,
+        "maximum": 89.0,
+        "unit": "degree",
+        "description": "Key light angle above the target's horizontal plane."
+      },
+      {
+        "name": "fill_azimuth",
+        "type": "float",
+        "default": -55.0,
+        "minimum": -180.0,
+        "maximum": 180.0,
+        "unit": "degree",
+        "description": "Fill light angle around Z."
+      },
+      {
+        "name": "fill_elevation",
+        "type": "float",
+        "default": 12.0,
+        "minimum": -30.0,
+        "maximum": 89.0,
+        "unit": "degree",
+        "description": "Fill light angle above the horizontal plane."
+      },
+      {
+        "name": "rim_azimuth",
+        "type": "float",
+        "default": 160.0,
+        "minimum": -180.0,
+        "maximum": 180.0,
+        "unit": "degree",
+        "description": "Rim light angle around Z; near 180 places it behind the subject."
+      },
+      {
+        "name": "rim_elevation",
+        "type": "float",
+        "default": 45.0,
+        "minimum": -30.0,
+        "maximum": 89.0,
+        "unit": "degree",
+        "description": "Rim light angle above the horizontal plane."
+      },
+      {
+        "name": "key_power",
+        "type": "float",
+        "default": 120.0,
+        "minimum": 1.0,
+        "maximum": 1000000.0,
+        "unit": "W",
+        "description": "Power of the key area light."
+      },
+      {
+        "name": "key_fill_ratio",
+        "type": "float",
+        "default": 3.0,
+        "minimum": 1.0,
+        "maximum": 32.0,
+        "unit": "ratio",
+        "description": "Key illuminance divided by fill illuminance at the target."
+      },
+      {
+        "name": "rim_ratio",
+        "type": "float",
+        "default": 1.0,
+        "minimum": 0.0,
+        "maximum": 8.0,
+        "unit": "ratio",
+        "description": "Rim illuminance relative to the key at the target."
+      },
+      {
+        "name": "light_size",
+        "type": "float",
+        "default": 1.0,
+        "minimum": 0.01,
+        "maximum": 50.0,
+        "unit": "m",
+        "description": "Edge of the square key and fill area lights; the rim light is half this size."
+      },
+      {
+        "name": "key_color",
+        "type": "vector",
+        "default": [
+          1.0,
+          0.92,
+          0.82
+        ],
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "unit": "linear RGB",
+        "description": "Key light colour."
+      },
+      {
+        "name": "fill_color",
+        "type": "vector",
+        "default": [
+          0.82,
+          0.9,
+          1.0
+        ],
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "unit": "linear RGB",
+        "description": "Fill light colour."
+      },
+      {
+        "name": "rim_color",
+        "type": "vector",
+        "default": [
+          1.0,
+          1.0,
+          1.0
+        ],
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "unit": "linear RGB",
+        "description": "Rim light colour."
+      }
+    ],
+    "outputs": {
+      "kind": "rig",
+      "object": "Three Point Rig",
+      "description": "An empty with three parented area lights constrained to aim at it.",
+      "at_defaults": {
+        "objects": 4,
+        "report": {
+          "powers_w": {
+            "Key Light": 120.0,
+            "Fill Light": 50.625,
+            "Rim Light": 120.0
+          },
+          "illuminance_relative_to_key": {
+            "Key Light": 1.0,
+            "Fill Light": 0.333333333,
+            "Rim Light": 1.0
+          }
+        }
+      }
+    },
+    "units": "metres",
+    "axes": "Blender Z up, -Y forward",
+    "blender_minimum": "4.2",
+    "verification": {
+      "fixture": "monkey",
+      "preview": {
+        "floor": true,
+        "lights": "scene",
+        "world_strength": 0.15,
+        "view": [
+          0.0,
+          -1.0,
+          0.25
+        ]
+      }
+    }
+  },
+  "limits": "Powers follow the inverse square law from each light's centre, which is approximate for area lights that are large compared with their distance. The ratios hold at the target point only. Colours are linear RGB values, not colour temperatures. The lights stay aimed by Track To constraints on the rig empty; glTF export keeps their positions but not the constraints. Verified in Blender 5.2.1 with Cycles; written for the 4.2 API.",
+  "related": [
+    "light_product_softbox",
+    "light_golden_hour",
+    "camera_turntable"
+  ],
+  "technique_references": [
+    "Three-point lighting: key, fill and rim (back) light",
+    "Inverse square law to hold illuminance ratios across distances",
+    "Spherical coordinates for light placement",
+    "Euler XYZ angles that point the -Z axis along a direction"
+  ],
+  "native_checks": [
+    "addon_install_and_enable",
+    "operator_runs_with_defaults",
+    "blender_data_matches_core",
+    "addon_disable_unregisters",
+    "script_mode_runs",
+    "clean_reopen_addon_file",
+    "clean_reopen_script_file",
+    "gltf_separate_export",
+    "engine_output_clean"
+  ]
+}

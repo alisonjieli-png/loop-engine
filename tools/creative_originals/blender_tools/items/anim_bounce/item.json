@@ -1,0 +1,216 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "anim_bounce",
+  "title": "Bounce animation with exact parabolic arcs",
+  "purpose": "Key a bouncing motion on the active object from drop height, restitution and gravity: exact parabolic arcs, decaying rebounds, constant travel and optional squash at contacts. Use it for balls, props and motion tests.",
+  "form": "library_module",
+  "asset_role": null,
+  "dimension": "3d",
+  "engine": {
+    "name": "blender",
+    "minimum_version": "4.2"
+  },
+  "tags": [
+    "blender",
+    "animation",
+    "keyframes",
+    "bounce",
+    "physics",
+    "f-curve",
+    "squash and stretch"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "role": "other"
+    },
+    {
+      "path": "anim_bounce.py",
+      "role": "executable_tool"
+    },
+    {
+      "path": "test_anim_bounce.py",
+      "role": "executable_tool"
+    }
+  ],
+  "contract": {
+    "module": "anim_bounce",
+    "entry_points": {
+      "core": "keyframes",
+      "blender": "create",
+      "operator": "baltor.anim_bounce",
+      "expectations": "expectations",
+      "fixture": "fixture"
+    },
+    "parameters": [
+      {
+        "name": "drop_height",
+        "type": "float",
+        "default": 2.0,
+        "minimum": 0.01,
+        "maximum": 1000.0,
+        "unit": "m",
+        "description": "Height of the object's lowest point above the ground at the first apex."
+      },
+      {
+        "name": "ground_z",
+        "type": "float",
+        "default": 0.0,
+        "minimum": -10000.0,
+        "maximum": 10000.0,
+        "unit": "m",
+        "description": "Height of the ground plane."
+      },
+      {
+        "name": "radius",
+        "type": "float",
+        "default": 0.25,
+        "minimum": 0.001,
+        "maximum": 1000.0,
+        "unit": "m",
+        "description": "Distance from the object origin down to its lowest point; measured when measure_radius."
+      },
+      {
+        "name": "measure_radius",
+        "type": "bool",
+        "default": true,
+        "minimum": null,
+        "maximum": null,
+        "unit": "flag",
+        "description": "Measure the radius from the active object's bounding box instead of using radius."
+      },
+      {
+        "name": "restitution",
+        "type": "float",
+        "default": 0.65,
+        "minimum": 0.05,
+        "maximum": 0.95,
+        "unit": "ratio",
+        "description": "Rebound speed divided by impact speed."
+      },
+      {
+        "name": "gravity",
+        "type": "float",
+        "default": 9.81,
+        "minimum": 0.1,
+        "maximum": 100.0,
+        "unit": "m/s^2",
+        "description": "Gravitational acceleration."
+      },
+      {
+        "name": "fps",
+        "type": "float",
+        "default": 24.0,
+        "minimum": 1.0,
+        "maximum": 240.0,
+        "unit": "frame/s",
+        "description": "Frames per second; the operator fills it from the scene."
+      },
+      {
+        "name": "start_frame",
+        "type": "int",
+        "default": 1,
+        "minimum": -100000,
+        "maximum": 100000,
+        "unit": "frame",
+        "description": "Frame of the first apex."
+      },
+      {
+        "name": "bounces",
+        "type": "int",
+        "default": 6,
+        "minimum": 1,
+        "maximum": 60,
+        "unit": "count",
+        "description": "Most rebounds to key after the first contact."
+      },
+      {
+        "name": "min_height",
+        "type": "float",
+        "default": 0.02,
+        "minimum": 0.0001,
+        "maximum": 10.0,
+        "unit": "m",
+        "description": "Stop when a rebound apex would be lower than this."
+      },
+      {
+        "name": "travel_speed",
+        "type": "float",
+        "default": 0.8,
+        "minimum": 0.0,
+        "maximum": 100.0,
+        "unit": "m/s",
+        "description": "Constant horizontal speed along +X."
+      },
+      {
+        "name": "squash",
+        "type": "float",
+        "default": 0.15,
+        "minimum": 0.0,
+        "maximum": 0.6,
+        "unit": "ratio",
+        "description": "Vertical squash at the first contact, scaled down with impact speed for later contacts."
+      }
+    ],
+    "outputs": {
+      "kind": "keyframes",
+      "object": "Bounce Ball",
+      "description": "Keyframes on the active object: location Z with free handles, location X linear, scale squash keys.",
+      "at_defaults": {
+        "channels": 5,
+        "keys": 35,
+        "report": {
+          "contacts": 6,
+          "duration_s": 2.735118055,
+          "last_frame": 67,
+          "apex_heights_m": [
+            2.0,
+            0.845,
+            0.3570125,
+            0.150837781,
+            0.063728963,
+            0.026925487
+          ]
+        }
+      }
+    },
+    "units": "metres",
+    "axes": "Blender Z up, -Y forward",
+    "blender_minimum": "4.2",
+    "verification": {
+      "fixture": "module",
+      "preview": {
+        "floor": true,
+        "frame": 17,
+        "view": [
+          0.3,
+          -1.0,
+          0.25
+        ]
+      }
+    }
+  },
+  "limits": "Point-mass free fall with a constant restitution: no air drag, spin, rolling or deformation physics. The squash is a stylized scale key at each contact, scaled with impact speed, and it lowers the contact key by radius times squash so the object stays on the ground. Motion is along +X on a flat ground only. Keys sit on fractional frames. Verified in Blender 5.2.1, where F-curves live in the action's channel bag; the 4.2 code path uses action.fcurves and was not run.",
+  "related": [
+    "anim_easing_presets",
+    "anim_rigid_body_drop",
+    "anim_spring_follow"
+  ],
+  "technique_references": [
+    "Free fall: t = sqrt(2 h / g), apex height times restitution squared per bounce",
+    "Degree elevation of a quadratic Bezier to a cubic: handles at one third of the span",
+    "Cubic Bezier F-curve evaluation by solving for the curve parameter",
+    "Volume-preserving squash: scale z by 1 - s and x, y by 1 / sqrt(1 - s)"
+  ],
+  "native_checks": [
+    "addon_install_and_enable",
+    "operator_runs_with_defaults",
+    "blender_data_matches_core",
+    "addon_disable_unregisters",
+    "script_mode_runs",
+    "clean_reopen_addon_file",
+    "clean_reopen_script_file",
+    "gltf_separate_export",
+    "engine_output_clean"
+  ]
+}

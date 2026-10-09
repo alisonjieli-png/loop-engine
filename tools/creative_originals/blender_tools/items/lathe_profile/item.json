@@ -1,0 +1,161 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "lathe_profile",
+  "title": "Lathe a profile into a solid or a hollow shell",
+  "purpose": "Revolve a list of radius and height points around Z into a solid of revolution, with poles on the axis, Chaikin rounding, partial sweeps and an optional wall thickness that turns an outline into a closed hollow vessel. Use it for vases, bottles, cups, lamps and turned parts.",
+  "form": "library_module",
+  "asset_role": null,
+  "dimension": "3d",
+  "engine": {
+    "name": "blender",
+    "minimum_version": "4.2"
+  },
+  "tags": [
+    "blender",
+    "procedural",
+    "lathe",
+    "revolve",
+    "vase",
+    "solid of revolution",
+    "mesh generator"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "role": "other"
+    },
+    {
+      "path": "lathe_profile.py",
+      "role": "executable_tool"
+    },
+    {
+      "path": "test_lathe_profile.py",
+      "role": "executable_tool"
+    }
+  ],
+  "contract": {
+    "module": "lathe_profile",
+    "entry_points": {
+      "core": "build_geometry",
+      "blender": "create",
+      "operator": "baltor.lathe_profile",
+      "expectations": "expectations"
+    },
+    "parameters": [
+      {
+        "name": "profile",
+        "type": "string",
+        "default": "0,0; 0.09,0; 0.12,0.03; 0.15,0.12; 0.155,0.22; 0.12,0.32; 0.07,0.38; 0.06,0.44; 0.075,0.47",
+        "minimum": null,
+        "maximum": null,
+        "unit": "m",
+        "description": "Profile points as radius,height pairs from bottom to top, separated by semicolons."
+      },
+      {
+        "name": "segments",
+        "type": "int",
+        "default": 48,
+        "minimum": 3,
+        "maximum": 512,
+        "unit": "count",
+        "description": "Segments around the axis."
+      },
+      {
+        "name": "thickness",
+        "type": "float",
+        "default": 0.006,
+        "minimum": 0.0,
+        "maximum": 10.0,
+        "unit": "m",
+        "description": "Wall thickness of a hollow shell; 0 revolves the profile as given."
+      },
+      {
+        "name": "rounding",
+        "type": "int",
+        "default": 2,
+        "minimum": 0,
+        "maximum": 5,
+        "unit": "count",
+        "description": "Chaikin corner-cutting passes applied to the profile first."
+      },
+      {
+        "name": "angle",
+        "type": "float",
+        "default": 360.0,
+        "minimum": 1.0,
+        "maximum": 360.0,
+        "unit": "degree",
+        "description": "Sweep angle; below 360 the cut faces are left open."
+      },
+      {
+        "name": "smooth",
+        "type": "bool",
+        "default": true,
+        "minimum": null,
+        "maximum": null,
+        "unit": "flag",
+        "description": "Shade smooth."
+      }
+    ],
+    "outputs": {
+      "kind": "mesh",
+      "object": "Lathe",
+      "closed": true,
+      "description": "One closed mesh object named Lathe with a UVMap, axis along Z.",
+      "at_defaults": {
+        "vertices": 2786,
+        "faces": 2832,
+        "bounds": [
+          [
+            -0.153125,
+            -0.153125,
+            0.0
+          ],
+          [
+            0.153125,
+            0.153125,
+            0.472683282
+          ]
+        ],
+        "volume": 0.002312068,
+        "euler": 2
+      }
+    },
+    "units": "metres",
+    "axes": "Blender Z up, -Y forward",
+    "blender_minimum": "4.2",
+    "verification": {
+      "fixture": "none",
+      "preview": {
+        "floor": true,
+        "view": [
+          1.0,
+          -1.3,
+          0.6
+        ]
+      }
+    }
+  },
+  "limits": "The shell offset moves each profile point along its averaged normal, so very sharp inner corners or walls thicker than the local curvature allows can fold; such outlines are refused only when the offset crosses the axis. A shell needs a full sweep and an open top. UVs are cylindrical and stretch near the poles. Verified in Blender 5.2.1; written for the 4.2 API.",
+  "related": [
+    "chess_set_staunton",
+    "barrel_staves",
+    "material_glass_tinted"
+  ],
+  "technique_references": [
+    "Surface of revolution with single pole vertices on the axis",
+    "Chaikin corner cutting for open polylines",
+    "Profile offset along averaged vertex normals to build a wall"
+  ],
+  "native_checks": [
+    "addon_install_and_enable",
+    "operator_runs_with_defaults",
+    "blender_data_matches_core",
+    "addon_disable_unregisters",
+    "script_mode_runs",
+    "clean_reopen_addon_file",
+    "clean_reopen_script_file",
+    "gltf_separate_export",
+    "engine_output_clean"
+  ]
+}

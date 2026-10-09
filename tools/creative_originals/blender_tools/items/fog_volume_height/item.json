@@ -1,0 +1,186 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "fog_volume_height",
+  "title": "Height fog volume with exponential falloff",
+  "purpose": "Add a box of volumetric fog whose density falls off exponentially with height above its base and drifts in noise patches, with scattering colour and anisotropy, shown as bounds in the viewport. Use it for morning mist, valleys, dungeons and atmospheric depth.",
+  "form": "library_module",
+  "asset_role": null,
+  "dimension": "3d",
+  "engine": {
+    "name": "blender",
+    "minimum_version": "4.2"
+  },
+  "tags": [
+    "blender",
+    "volume",
+    "fog",
+    "atmosphere",
+    "lighting",
+    "principled volume",
+    "cycles"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "role": "other"
+    },
+    {
+      "path": "fog_volume_height.py",
+      "role": "executable_tool"
+    },
+    {
+      "path": "test_fog_volume_height.py",
+      "role": "executable_tool"
+    }
+  ],
+  "contract": {
+    "module": "fog_volume_height",
+    "entry_points": {
+      "core": "build_geometry",
+      "blender": "create",
+      "operator": "baltor.fog_volume_height",
+      "expectations": "expectations"
+    },
+    "parameters": [
+      {
+        "name": "size",
+        "type": "vector",
+        "default": [
+          6.0,
+          6.0,
+          3.0
+        ],
+        "minimum": 0.01,
+        "maximum": 100000.0,
+        "unit": "m",
+        "description": "Width, depth and height of the fog box."
+      },
+      {
+        "name": "density",
+        "type": "float",
+        "default": 0.25,
+        "minimum": 0.0,
+        "maximum": 1000.0,
+        "unit": "1/m",
+        "description": "Fog density at the bottom of the box."
+      },
+      {
+        "name": "falloff",
+        "type": "float",
+        "default": 1.2,
+        "minimum": 0.001,
+        "maximum": 100000.0,
+        "unit": "m",
+        "description": "Height over which the density falls to 1 / e (about 37 percent)."
+      },
+      {
+        "name": "breakup",
+        "type": "float",
+        "default": 0.6,
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "unit": "ratio",
+        "description": "How much noise varies the density, as a share of it."
+      },
+      {
+        "name": "noise_scale",
+        "type": "float",
+        "default": 0.35,
+        "minimum": 0.001,
+        "maximum": 1000.0,
+        "unit": "1/m",
+        "description": "Frequency of the noise patches."
+      },
+      {
+        "name": "color",
+        "type": "vector",
+        "default": [
+          0.85,
+          0.88,
+          0.92
+        ],
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "unit": "linear RGB",
+        "description": "Scattering colour of the fog."
+      },
+      {
+        "name": "anisotropy",
+        "type": "float",
+        "default": 0.3,
+        "minimum": -0.95,
+        "maximum": 0.95,
+        "unit": "ratio",
+        "description": "Forward (positive) or backward (negative) scattering."
+      }
+    ],
+    "outputs": {
+      "kind": "mesh",
+      "object": "Height Fog",
+      "closed": true,
+      "description": "A box mesh named Height Fog with the volume material Baltor Height Fog.",
+      "at_defaults": {
+        "vertices": 8,
+        "faces": 6,
+        "bounds": [
+          [
+            -3.0,
+            -3.0,
+            0.0
+          ],
+          [
+            3.0,
+            3.0,
+            3.0
+          ]
+        ],
+        "volume": 108.0,
+        "euler": 2,
+        "nodes": 13,
+        "links": 13,
+        "report": {
+          "density_at_base": 0.25,
+          "density_at_top": 0.02052125,
+          "visibility_at_base_m": 12.0
+        }
+      }
+    },
+    "units": "metres",
+    "axes": "Blender Z up, -Y forward",
+    "blender_minimum": "4.2",
+    "verification": {
+      "fixture": "monkey",
+      "preview": {
+        "floor": true,
+        "samples": 24,
+        "view": [
+          0.5,
+          -1.4,
+          0.35
+        ]
+      }
+    }
+  },
+  "limits": "Volumetric rendering is slow and noisy at low sample counts; EEVEE renders volumes with its own approximations. The fog fills only its box, so its edges show if the box is smaller than the view. Density follows the box's own base height from its origin, not the scene floor. The visibility in the report is the rough 3 / density rule for a dense medium. Verified in Blender 5.2.1 with Cycles CPU; written for the 4.2 API.",
+  "related": [
+    "world_sky_sun",
+    "light_night_moon",
+    "material_glass_tinted"
+  ],
+  "technique_references": [
+    "Exponential height fog d0 exp(-(z - base) / h)",
+    "Principled Volume with Henyey-Greenstein anisotropy",
+    "Noise breakup of density"
+  ],
+  "native_checks": [
+    "addon_install_and_enable",
+    "operator_runs_with_defaults",
+    "blender_data_matches_core",
+    "addon_disable_unregisters",
+    "script_mode_runs",
+    "clean_reopen_addon_file",
+    "clean_reopen_script_file",
+    "gltf_separate_export",
+    "engine_output_clean"
+  ]
+}

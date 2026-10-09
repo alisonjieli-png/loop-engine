@@ -1,0 +1,208 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "material_marble_veins",
+  "title": "Polished marble material with turbulent veins",
+  "purpose": "Build a node material for polished marble: thin veins from a noise-bent sine, soft clouding, a faint vein bump, slight subsurface and a clear coat, with vein count, width, direction and colours as parameters. Use it for floors, counters, statues and luxury interiors.",
+  "form": "library_module",
+  "asset_role": null,
+  "dimension": "3d",
+  "engine": {
+    "name": "blender",
+    "minimum_version": "4.2"
+  },
+  "tags": [
+    "blender",
+    "material",
+    "shader nodes",
+    "marble",
+    "stone",
+    "procedural texture",
+    "cycles"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "role": "other"
+    },
+    {
+      "path": "material_marble_veins.py",
+      "role": "executable_tool"
+    },
+    {
+      "path": "test_material_marble_veins.py",
+      "role": "executable_tool"
+    }
+  ],
+  "contract": {
+    "module": "material_marble_veins",
+    "entry_points": {
+      "core": "material_graph",
+      "blender": "create",
+      "operator": "baltor.material_marble_veins",
+      "expectations": "expectations"
+    },
+    "parameters": [
+      {
+        "name": "material_name",
+        "type": "string",
+        "default": "Baltor Marble",
+        "minimum": null,
+        "maximum": null,
+        "unit": "text",
+        "description": "Name of the new material."
+      },
+      {
+        "name": "vein_frequency",
+        "type": "float",
+        "default": 2.5,
+        "minimum": 0.1,
+        "maximum": 200.0,
+        "unit": "1/m",
+        "description": "Veins per metre across the vein direction."
+      },
+      {
+        "name": "turbulence",
+        "type": "float",
+        "default": 0.45,
+        "minimum": 0.0,
+        "maximum": 2.0,
+        "unit": "m",
+        "description": "How far noise bends the veins."
+      },
+      {
+        "name": "turbulence_scale",
+        "type": "float",
+        "default": 1.6,
+        "minimum": 0.05,
+        "maximum": 100.0,
+        "unit": "1/m",
+        "description": "Frequency of the bending noise."
+      },
+      {
+        "name": "sharpness",
+        "type": "float",
+        "default": 6.0,
+        "minimum": 1.0,
+        "maximum": 80.0,
+        "unit": "exponent",
+        "description": "Higher values give thinner veins."
+      },
+      {
+        "name": "direction",
+        "type": "float",
+        "default": 35.0,
+        "minimum": -180.0,
+        "maximum": 180.0,
+        "unit": "degree",
+        "description": "Rotation of the vein pattern around the object's Z axis."
+      },
+      {
+        "name": "stone_color",
+        "type": "vector",
+        "default": [
+          0.8,
+          0.77,
+          0.72
+        ],
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "unit": "linear RGB",
+        "description": "Colour of the stone."
+      },
+      {
+        "name": "vein_color",
+        "type": "vector",
+        "default": [
+          0.18,
+          0.17,
+          0.17
+        ],
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "unit": "linear RGB",
+        "description": "Colour at the centre of a vein."
+      },
+      {
+        "name": "clouding",
+        "type": "float",
+        "default": 0.35,
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "unit": "ratio",
+        "description": "Strength of the soft clouding noise."
+      },
+      {
+        "name": "roughness",
+        "type": "float",
+        "default": 0.12,
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "unit": "ratio",
+        "description": "Roughness of the stone under the coat."
+      },
+      {
+        "name": "coat",
+        "type": "float",
+        "default": 0.4,
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "unit": "ratio",
+        "description": "Weight of the clear polish coat."
+      },
+      {
+        "name": "assign",
+        "type": "bool",
+        "default": true,
+        "minimum": null,
+        "maximum": null,
+        "unit": "flag",
+        "description": "Assign the material to the active object."
+      }
+    ],
+    "outputs": {
+      "kind": "node_graph",
+      "description": "One material with a node tree; assigned to the active object.",
+      "at_defaults": {
+        "nodes": 17,
+        "links": 19
+      }
+    },
+    "units": "metres",
+    "axes": "Blender Z up, -Y forward",
+    "blender_minimum": "4.2",
+    "verification": {
+      "fixture": "cube",
+      "preview": {
+        "floor": true,
+        "view": [
+          1.0,
+          -1.3,
+          0.9
+        ]
+      }
+    }
+  },
+  "limits": "The veins are a single family of turbulent sine bands, so they run broadly parallel; branching and crossing veins of real marble are not reproduced. Object coordinates tie the pattern to the object's scale. The subsurface weight is small and stylized, not measured. Rendered here with Cycles CPU only. Verified in Blender 5.2.1; written for the 4.2 API.",
+  "related": [
+    "material_wood_rings",
+    "material_ceramic_tile",
+    "material_concrete"
+  ],
+  "technique_references": [
+    "Turbulence marble: sin of a coordinate plus scaled noise",
+    "Vein width by raising 1 - |sin| to a power",
+    "Soft light blend for clouding",
+    "Clear coat layer of the Principled BSDF"
+  ],
+  "native_checks": [
+    "addon_install_and_enable",
+    "operator_runs_with_defaults",
+    "blender_data_matches_core",
+    "addon_disable_unregisters",
+    "script_mode_runs",
+    "clean_reopen_addon_file",
+    "clean_reopen_script_file",
+    "gltf_separate_export",
+    "engine_output_clean"
+  ]
+}

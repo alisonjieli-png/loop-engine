@@ -1,0 +1,191 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "picket_fence",
+  "title": "Picket fence along a path",
+  "purpose": "Build a picket fence that follows a path of ground points: capped posts at corners and at even bay spacing, two rails per bay following the ground slope, and evenly spaced pickets with pointed, flat, round or dog-ear tops. Use it for gardens, farms, suburbs and game levels.",
+  "form": "library_module",
+  "asset_role": null,
+  "dimension": "3d",
+  "engine": {
+    "name": "blender",
+    "minimum_version": "4.2"
+  },
+  "tags": [
+    "blender",
+    "procedural",
+    "fence",
+    "picket",
+    "garden",
+    "architecture",
+    "mesh generator"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "role": "other"
+    },
+    {
+      "path": "picket_fence.py",
+      "role": "executable_tool"
+    },
+    {
+      "path": "test_picket_fence.py",
+      "role": "executable_tool"
+    }
+  ],
+  "contract": {
+    "module": "picket_fence",
+    "entry_points": {
+      "core": "build_geometry",
+      "blender": "create",
+      "operator": "baltor.picket_fence",
+      "expectations": "expectations"
+    },
+    "parameters": [
+      {
+        "name": "points",
+        "type": "string",
+        "default": "0,0,0; 4,0,0; 4,3,0.3",
+        "minimum": null,
+        "maximum": null,
+        "unit": "m",
+        "description": "Ground path as x,y,z points separated by semicolons."
+      },
+      {
+        "name": "height",
+        "type": "float",
+        "default": 1.0,
+        "minimum": 0.2,
+        "maximum": 5.0,
+        "unit": "m",
+        "description": "Height of the pickets above the ground."
+      },
+      {
+        "name": "post_spacing",
+        "type": "float",
+        "default": 2.0,
+        "minimum": 0.5,
+        "maximum": 10.0,
+        "unit": "m",
+        "description": "Largest distance between neighbouring posts."
+      },
+      {
+        "name": "post_size",
+        "type": "float",
+        "default": 0.09,
+        "minimum": 0.02,
+        "maximum": 0.5,
+        "unit": "m",
+        "description": "Side of the square posts."
+      },
+      {
+        "name": "picket_width",
+        "type": "float",
+        "default": 0.075,
+        "minimum": 0.01,
+        "maximum": 0.5,
+        "unit": "m",
+        "description": "Width of each picket."
+      },
+      {
+        "name": "picket_gap",
+        "type": "float",
+        "default": 0.05,
+        "minimum": 0.005,
+        "maximum": 0.5,
+        "unit": "m",
+        "description": "Target gap between pickets; the actual gap is adjusted to fill each bay evenly."
+      },
+      {
+        "name": "picket_thickness",
+        "type": "float",
+        "default": 0.02,
+        "minimum": 0.005,
+        "maximum": 0.2,
+        "unit": "m",
+        "description": "Thickness of each picket."
+      },
+      {
+        "name": "top",
+        "type": "choice",
+        "default": "pointed",
+        "minimum": null,
+        "maximum": null,
+        "unit": "style",
+        "choices": [
+          "pointed",
+          "flat",
+          "round",
+          "dog_ear"
+        ],
+        "description": "Shape of the picket tops."
+      }
+    ],
+    "outputs": {
+      "kind": "mesh",
+      "object": "Picket Fence",
+      "closed": true,
+      "description": "One mesh object named Picket Fence with post, rail and picket material slots.",
+      "at_defaults": {
+        "vertices": 629,
+        "faces": 457,
+        "bounds": [
+          [
+            -0.045,
+            -0.045,
+            0.0
+          ],
+          [
+            4.045,
+            3.045,
+            1.425
+          ]
+        ],
+        "volume": 0.1484805,
+        "euler": 130,
+        "report": {
+          "posts": 5,
+          "rails": 8,
+          "pickets": 52,
+          "path_length_m": 7.0
+        }
+      }
+    },
+    "units": "metres",
+    "axes": "Blender Z up, -Y forward",
+    "blender_minimum": "4.2",
+    "verification": {
+      "fixture": "none",
+      "preview": {
+        "floor": true,
+        "view": [
+          0.4,
+          -1.4,
+          0.6
+        ]
+      }
+    }
+  },
+  "limits": "Pickets stay vertical and their bottoms step along a straight ground line between path points; uneven terrain between points is not followed. No gates, diagonal braces or rail joinery. Every part is a separate closed solid that touches its neighbours. Verified in Blender 5.2.1; written for the 4.2 API.",
+  "related": [
+    "chain_link_fence",
+    "railing_along_path",
+    "material_wood_rings"
+  ],
+  "technique_references": [
+    "Even subdivision of path segments into bays no longer than a maximum",
+    "Even redistribution of the remaining gap between pickets",
+    "Closed hexahedra from three edge vectors with a positive triple product"
+  ],
+  "native_checks": [
+    "addon_install_and_enable",
+    "operator_runs_with_defaults",
+    "blender_data_matches_core",
+    "addon_disable_unregisters",
+    "script_mode_runs",
+    "clean_reopen_addon_file",
+    "clean_reopen_script_file",
+    "gltf_separate_export",
+    "engine_output_clean"
+  ]
+}

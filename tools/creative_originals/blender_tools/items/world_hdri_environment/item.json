@@ -1,0 +1,155 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "world_hdri_environment",
+  "title": "HDRI environment world with a solid camera backdrop",
+  "purpose": "Build an image-based lighting world from an equirectangular image with rotation, strength and saturation, and optionally show the camera a solid colour while the image still lights the scene and fills reflections. Use it for product shots, look development and outdoor lighting.",
+  "form": "library_module",
+  "asset_role": null,
+  "dimension": "3d",
+  "engine": {
+    "name": "blender",
+    "minimum_version": "4.2"
+  },
+  "tags": [
+    "blender",
+    "world",
+    "hdri",
+    "image based lighting",
+    "environment",
+    "lighting",
+    "product"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "role": "other"
+    },
+    {
+      "path": "world_hdri_environment.py",
+      "role": "executable_tool"
+    },
+    {
+      "path": "test_world_hdri_environment.py",
+      "role": "executable_tool"
+    }
+  ],
+  "contract": {
+    "module": "world_hdri_environment",
+    "entry_points": {
+      "core": "world_graph",
+      "blender": "create",
+      "operator": "baltor.world_hdri_environment",
+      "expectations": "expectations",
+      "fixture": "fixture"
+    },
+    "parameters": [
+      {
+        "name": "image_path",
+        "type": "string",
+        "default": "//textures/baltor_sky_demo.png",
+        "minimum": null,
+        "maximum": null,
+        "unit": "path",
+        "description": "Equirectangular image (.hdr, .exr, .png, .jpg); // is relative to the .blend."
+      },
+      {
+        "name": "rotation",
+        "type": "float",
+        "default": 0.0,
+        "minimum": -360.0,
+        "maximum": 360.0,
+        "unit": "degree",
+        "description": "Rotation of the environment about Z."
+      },
+      {
+        "name": "strength",
+        "type": "float",
+        "default": 1.0,
+        "minimum": 0.0,
+        "maximum": 1000.0,
+        "unit": "ratio",
+        "description": "Strength of the environment light."
+      },
+      {
+        "name": "saturation",
+        "type": "float",
+        "default": 1.0,
+        "minimum": 0.0,
+        "maximum": 2.0,
+        "unit": "ratio",
+        "description": "Saturation of the image; 1 leaves it unchanged."
+      },
+      {
+        "name": "backdrop",
+        "type": "choice",
+        "default": "image",
+        "minimum": null,
+        "maximum": null,
+        "unit": "mode",
+        "choices": [
+          "image",
+          "solid"
+        ],
+        "description": "What camera rays see: the image or a solid colour."
+      },
+      {
+        "name": "backdrop_color",
+        "type": "vector",
+        "default": [
+          0.05,
+          0.05,
+          0.055
+        ],
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "unit": "linear RGB",
+        "description": "Colour the camera sees in solid backdrop mode."
+      }
+    ],
+    "outputs": {
+      "kind": "node_graph",
+      "object": "HDRI Test Sphere",
+      "description": "A world named Baltor HDRI with the image loaded, set as the scene world.",
+      "at_defaults": {
+        "nodes": 6,
+        "links": 5
+      }
+    },
+    "units": "metres",
+    "axes": "Blender Z up, -Y forward",
+    "blender_minimum": "4.2",
+    "verification": {
+      "fixture": "module",
+      "preview": {
+        "floor": true,
+        "lights": "scene",
+        "view": [
+          0.3,
+          -1.4,
+          0.35
+        ]
+      }
+    }
+  },
+  "limits": "Needs an image file; the demo fixture writes a small 8-bit PNG sky, which lights only roughly because it holds no high dynamic range. No ground projection, sun extraction or importance map tuning. The solid backdrop uses the Light Path node, which Cycles honours fully and EEVEE only partly. Rendered here with Cycles CPU only. Verified in Blender 5.2.1; written for the 4.2 API.",
+  "related": [
+    "world_sky_sun",
+    "world_gradient_studio",
+    "light_product_softbox"
+  ],
+  "technique_references": [
+    "Equirectangular environment lookup with a Z rotation",
+    "Light Path camera ray mask to separate backdrop from lighting",
+    "Hue Saturation adjustment of an environment"
+  ],
+  "native_checks": [
+    "addon_install_and_enable",
+    "operator_runs_with_defaults",
+    "blender_data_matches_core",
+    "addon_disable_unregisters",
+    "script_mode_runs",
+    "clean_reopen_addon_file",
+    "clean_reopen_script_file",
+    "engine_output_clean"
+  ]
+}

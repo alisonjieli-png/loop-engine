@@ -1,0 +1,179 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "material_toon_bands",
+  "title": "Toon bands material from a fixed light direction",
+  "purpose": "Build a cel-style material whose flat colour bands come from a half-Lambert term against a light direction given as a parameter, with an ink rim from the facing angle, emitted so it looks the same in Cycles, EEVEE and the viewport. Use it for stylized characters, props and illustrations.",
+  "form": "library_module",
+  "asset_role": null,
+  "dimension": "3d",
+  "engine": {
+    "name": "blender",
+    "minimum_version": "4.2"
+  },
+  "tags": [
+    "blender",
+    "material",
+    "shader nodes",
+    "toon",
+    "cel shading",
+    "stylized",
+    "npr"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "role": "other"
+    },
+    {
+      "path": "material_toon_bands.py",
+      "role": "executable_tool"
+    },
+    {
+      "path": "test_material_toon_bands.py",
+      "role": "executable_tool"
+    }
+  ],
+  "contract": {
+    "module": "material_toon_bands",
+    "entry_points": {
+      "core": "material_graph",
+      "blender": "create",
+      "operator": "baltor.material_toon_bands",
+      "expectations": "expectations"
+    },
+    "parameters": [
+      {
+        "name": "material_name",
+        "type": "string",
+        "default": "Baltor Toon",
+        "minimum": null,
+        "maximum": null,
+        "unit": "text",
+        "description": "Name of the new material."
+      },
+      {
+        "name": "lit_color",
+        "type": "vector",
+        "default": [
+          0.95,
+          0.55,
+          0.2
+        ],
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "unit": "linear RGB",
+        "description": "Colour of the brightest band."
+      },
+      {
+        "name": "shadow_color",
+        "type": "vector",
+        "default": [
+          0.18,
+          0.05,
+          0.12
+        ],
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "unit": "linear RGB",
+        "description": "Colour of the darkest band."
+      },
+      {
+        "name": "bands",
+        "type": "int",
+        "default": 3,
+        "minimum": 2,
+        "maximum": 8,
+        "unit": "count",
+        "description": "Number of flat colour bands."
+      },
+      {
+        "name": "light_direction",
+        "type": "vector",
+        "default": [
+          0.5,
+          -0.4,
+          0.75
+        ],
+        "minimum": -1.0,
+        "maximum": 1.0,
+        "unit": "direction",
+        "description": "Direction toward the light in world space; normalised."
+      },
+      {
+        "name": "rim_color",
+        "type": "vector",
+        "default": [
+          0.02,
+          0.01,
+          0.02
+        ],
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "unit": "linear RGB",
+        "description": "Colour of the ink rim."
+      },
+      {
+        "name": "rim_width",
+        "type": "float",
+        "default": 0.25,
+        "minimum": 0.0,
+        "maximum": 0.9,
+        "unit": "ratio",
+        "description": "Width of the rim; 0 turns it off."
+      },
+      {
+        "name": "assign",
+        "type": "bool",
+        "default": true,
+        "minimum": null,
+        "maximum": null,
+        "unit": "flag",
+        "description": "Assign the material to the active object."
+      }
+    ],
+    "outputs": {
+      "kind": "node_graph",
+      "description": "One emissive material with a node tree; assigned to the active object.",
+      "at_defaults": {
+        "nodes": 10,
+        "links": 9
+      }
+    },
+    "units": "metres",
+    "axes": "Blender Z up, -Y forward",
+    "blender_minimum": "4.2",
+    "verification": {
+      "fixture": "monkey",
+      "preview": {
+        "floor": true,
+        "view": [
+          0.3,
+          -1.4,
+          0.35
+        ]
+      }
+    }
+  },
+  "limits": "Stylized and not physically based: scene lights, shadows and bounce light do not affect it, because the light direction is a material parameter and the colour is emitted. The rim follows the facing angle, so flat faces seen edge-on darken entirely; it is not a true outline. Rendered here with Cycles CPU only. Verified in Blender 5.2.1; written for the 4.2 API.",
+  "related": [
+    "material_hologram",
+    "isometric_camera",
+    "sprite_sheet_renderer"
+  ],
+  "technique_references": [
+    "Half-Lambert term (N . L) * 0.5 + 0.5",
+    "Quantisation by a constant-interpolation colour ramp",
+    "Facing term of the Layer Weight node for a rim"
+  ],
+  "native_checks": [
+    "addon_install_and_enable",
+    "operator_runs_with_defaults",
+    "blender_data_matches_core",
+    "addon_disable_unregisters",
+    "script_mode_runs",
+    "clean_reopen_addon_file",
+    "clean_reopen_script_file",
+    "gltf_separate_export",
+    "engine_output_clean"
+  ]
+}

@@ -1,0 +1,171 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "material_cavity_dirt",
+  "title": "Cavity dirt material with vertical streaks",
+  "purpose": "Build a grime node material where dirt collects in crevices found by ambient occlusion and runs down in vertical streaks from a noise stretched along Z, darkening and roughening a base colour. Use it for buildings, statues, machinery and props that need dirt in the right places.",
+  "form": "library_module",
+  "asset_role": null,
+  "dimension": "3d",
+  "engine": {
+    "name": "blender",
+    "minimum_version": "4.2"
+  },
+  "tags": [
+    "blender",
+    "material",
+    "shader nodes",
+    "dirt",
+    "grime",
+    "ambient occlusion",
+    "weathering"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "role": "other"
+    },
+    {
+      "path": "material_cavity_dirt.py",
+      "role": "executable_tool"
+    },
+    {
+      "path": "test_material_cavity_dirt.py",
+      "role": "executable_tool"
+    }
+  ],
+  "contract": {
+    "module": "material_cavity_dirt",
+    "entry_points": {
+      "core": "material_graph",
+      "blender": "create",
+      "operator": "baltor.material_cavity_dirt",
+      "expectations": "expectations"
+    },
+    "parameters": [
+      {
+        "name": "material_name",
+        "type": "string",
+        "default": "Baltor Cavity Dirt",
+        "minimum": null,
+        "maximum": null,
+        "unit": "text",
+        "description": "Name of the new material."
+      },
+      {
+        "name": "base_color",
+        "type": "vector",
+        "default": [
+          0.7,
+          0.68,
+          0.62
+        ],
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "unit": "linear RGB",
+        "description": "Colour of the clean surface."
+      },
+      {
+        "name": "dirt_color",
+        "type": "vector",
+        "default": [
+          0.09,
+          0.07,
+          0.05
+        ],
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "unit": "linear RGB",
+        "description": "Colour of the dirt."
+      },
+      {
+        "name": "ao_distance",
+        "type": "float",
+        "default": 0.3,
+        "minimum": 0.001,
+        "maximum": 50.0,
+        "unit": "m",
+        "description": "How far the occlusion looks for nearby geometry."
+      },
+      {
+        "name": "dirt_amount",
+        "type": "float",
+        "default": 0.5,
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "unit": "ratio",
+        "description": "How much of the surface the dirt reaches."
+      },
+      {
+        "name": "streaks",
+        "type": "float",
+        "default": 0.35,
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "unit": "ratio",
+        "description": "Weight of the vertical streaks."
+      },
+      {
+        "name": "streak_scale",
+        "type": "float",
+        "default": 6.0,
+        "minimum": 0.1,
+        "maximum": 500.0,
+        "unit": "1/m",
+        "description": "Frequency of the streaks across the surface."
+      },
+      {
+        "name": "assign",
+        "type": "bool",
+        "default": true,
+        "minimum": null,
+        "maximum": null,
+        "unit": "flag",
+        "description": "Assign the material to the active object."
+      }
+    ],
+    "outputs": {
+      "kind": "node_graph",
+      "description": "One material with a node tree; assigned to the active object.",
+      "at_defaults": {
+        "nodes": 11,
+        "links": 11
+      }
+    },
+    "units": "metres",
+    "axes": "Blender Z up, -Y forward",
+    "blender_minimum": "4.2",
+    "verification": {
+      "fixture": "monkey",
+      "preview": {
+        "floor": true,
+        "view": [
+          0.3,
+          -1.4,
+          0.35
+        ]
+      }
+    }
+  },
+  "limits": "Cavities come from the Ambient Occlusion shader node: ray traced in Cycles, screen-space approximated in EEVEE, so results differ. Streaks follow object Z and do not know about ledges or drip sources. Dirt is colour and roughness only, without bump. Rendered here with Cycles CPU only. Verified in Blender 5.2.1; written for the 4.2 API.",
+  "related": [
+    "material_edge_wear",
+    "material_rust_paint",
+    "util_vertex_ao_bake"
+  ],
+  "technique_references": [
+    "Ambient occlusion as a cavity mask (1 - AO)",
+    "Anisotropic noise by scaling one axis of the coordinates",
+    "Soft threshold by map range"
+  ],
+  "native_checks": [
+    "addon_install_and_enable",
+    "operator_runs_with_defaults",
+    "blender_data_matches_core",
+    "addon_disable_unregisters",
+    "script_mode_runs",
+    "clean_reopen_addon_file",
+    "clean_reopen_script_file",
+    "gltf_separate_export",
+    "engine_output_clean"
+  ]
+}

@@ -1,0 +1,164 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "material_pbr_from_folder",
+  "title": "PBR material from a folder of maps",
+  "purpose": "Build a full PBR material from a folder of texture maps by recognising each file from the words in its name: base colour, roughness or gloss, metallic, normal (OpenGL or DirectX), height, ambient occlusion, opacity and emission, with the right colour spaces. Use it to import texture sets fast.",
+  "form": "library_module",
+  "asset_role": null,
+  "dimension": "3d",
+  "engine": {
+    "name": "blender",
+    "minimum_version": "4.2"
+  },
+  "tags": [
+    "blender",
+    "material",
+    "pbr",
+    "texture import",
+    "normal map",
+    "shader nodes",
+    "pipeline"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "role": "other"
+    },
+    {
+      "path": "material_pbr_from_folder.py",
+      "role": "executable_tool"
+    },
+    {
+      "path": "test_material_pbr_from_folder.py",
+      "role": "executable_tool"
+    }
+  ],
+  "contract": {
+    "module": "material_pbr_from_folder",
+    "entry_points": {
+      "core": "material_graph",
+      "blender": "create",
+      "operator": "baltor.material_pbr_from_folder",
+      "expectations": "expectations",
+      "fixture": "fixture"
+    },
+    "parameters": [
+      {
+        "name": "material_name",
+        "type": "string",
+        "default": "Baltor PBR",
+        "minimum": null,
+        "maximum": null,
+        "unit": "text",
+        "description": "Name of the new material."
+      },
+      {
+        "name": "folder",
+        "type": "string",
+        "default": "//textures/pbr_demo",
+        "minimum": null,
+        "maximum": null,
+        "unit": "path",
+        "description": "Folder with the maps; // is relative to the .blend file."
+      },
+      {
+        "name": "uv_scale",
+        "type": "float",
+        "default": 1.0,
+        "minimum": 0.001,
+        "maximum": 10000.0,
+        "unit": "repeats",
+        "description": "Repeats of the maps per UV unit."
+      },
+      {
+        "name": "normal_strength",
+        "type": "float",
+        "default": 1.0,
+        "minimum": 0.0,
+        "maximum": 10.0,
+        "unit": "ratio",
+        "description": "Strength of the normal map."
+      },
+      {
+        "name": "displacement_scale",
+        "type": "float",
+        "default": 0.02,
+        "minimum": 0.0,
+        "maximum": 10.0,
+        "unit": "m",
+        "description": "Height of the displacement from the height map."
+      },
+      {
+        "name": "ao_strength",
+        "type": "float",
+        "default": 1.0,
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "unit": "ratio",
+        "description": "How strongly ambient occlusion darkens the base colour."
+      },
+      {
+        "name": "assign",
+        "type": "bool",
+        "default": true,
+        "minimum": null,
+        "maximum": null,
+        "unit": "flag",
+        "description": "Assign the material to the active object."
+      }
+    ],
+    "outputs": {
+      "kind": "node_graph",
+      "object": "PBR Demo Sphere",
+      "description": "One material with image nodes; assigned to the active object.",
+      "at_defaults": {
+        "nodes": 15,
+        "links": 20,
+        "report": {
+          "channels": {
+            "ao": "rock_wall_ao.png",
+            "base_color": "rock_wall_basecolor.png",
+            "height": "rock_wall_height.png",
+            "normal": "rock_wall_normal_dx.png",
+            "roughness": "rock_wall_roughness.png"
+          },
+          "normal_convention": "directx",
+          "ignored": [
+            "rock_wall_preview.txt"
+          ],
+          "duplicates": []
+        }
+      }
+    },
+    "units": "metres",
+    "axes": "Blender Z up, -Y forward",
+    "blender_minimum": "4.2",
+    "verification": {
+      "fixture": "module",
+      "preview": {
+        "floor": true
+      }
+    }
+  },
+  "limits": "Recognition is by file name tokens only; files with unusual names are listed as ignored, and when two files match one channel the first in sorted order wins and the rest are reported. Packed channel maps (such as ORM) and UDIM tile sets are not split. Height goes through the Displacement node, which renders as bump unless the material's displacement method is changed. Verified in Blender 5.2.1; written for the 4.2 API.",
+  "related": [
+    "material_triplanar_box",
+    "util_relative_paths",
+    "util_texel_density"
+  ],
+  "technique_references": [
+    "File name tokenisation with camel case and separator splitting",
+    "Colour space by channel: sRGB for colour, Non-Color for data maps",
+    "DirectX to OpenGL normal conversion by inverting green"
+  ],
+  "native_checks": [
+    "addon_install_and_enable",
+    "operator_runs_with_defaults",
+    "blender_data_matches_core",
+    "addon_disable_unregisters",
+    "script_mode_runs",
+    "clean_reopen_addon_file",
+    "clean_reopen_script_file",
+    "engine_output_clean"
+  ]
+}

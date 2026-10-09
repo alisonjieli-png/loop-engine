@@ -1,0 +1,179 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "catenary_cable",
+  "title": "Catenary cable between two points",
+  "purpose": "Hang a cable between two anchor points as an exact catenary for a given slack, swept as a round tube, and report the sag, the lowest point and the tension ratio at the anchors. Use it for power lines, ropes, hoses and hanging wires.",
+  "form": "library_module",
+  "asset_role": null,
+  "dimension": "3d",
+  "engine": {
+    "name": "blender",
+    "minimum_version": "4.2"
+  },
+  "tags": [
+    "blender",
+    "procedural",
+    "cable",
+    "catenary",
+    "rope",
+    "physics",
+    "mesh generator"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "role": "other"
+    },
+    {
+      "path": "catenary_cable.py",
+      "role": "executable_tool"
+    },
+    {
+      "path": "test_catenary_cable.py",
+      "role": "executable_tool"
+    }
+  ],
+  "contract": {
+    "module": "catenary_cable",
+    "entry_points": {
+      "core": "build_geometry",
+      "blender": "create",
+      "operator": "baltor.catenary_cable",
+      "expectations": "expectations"
+    },
+    "parameters": [
+      {
+        "name": "start",
+        "type": "vector",
+        "default": [
+          0.0,
+          0.0,
+          3.0
+        ],
+        "minimum": -100000.0,
+        "maximum": 100000.0,
+        "unit": "m",
+        "description": "First anchor point."
+      },
+      {
+        "name": "end",
+        "type": "vector",
+        "default": [
+          6.0,
+          1.5,
+          2.4
+        ],
+        "minimum": -100000.0,
+        "maximum": 100000.0,
+        "unit": "m",
+        "description": "Second anchor point; must differ horizontally from start."
+      },
+      {
+        "name": "slack",
+        "type": "float",
+        "default": 1.05,
+        "minimum": 1.0001,
+        "maximum": 5.0,
+        "unit": "ratio",
+        "description": "Cable length divided by the straight distance between the anchors."
+      },
+      {
+        "name": "radius",
+        "type": "float",
+        "default": 0.015,
+        "minimum": 0.0005,
+        "maximum": 2.0,
+        "unit": "m",
+        "description": "Radius of the cable."
+      },
+      {
+        "name": "segments",
+        "type": "int",
+        "default": 48,
+        "minimum": 4,
+        "maximum": 1000,
+        "unit": "count",
+        "description": "Segments along the cable."
+      },
+      {
+        "name": "sides",
+        "type": "int",
+        "default": 8,
+        "minimum": 3,
+        "maximum": 64,
+        "unit": "count",
+        "description": "Sides of the cable section."
+      }
+    ],
+    "outputs": {
+      "kind": "mesh",
+      "object": "Catenary Cable",
+      "closed": true,
+      "description": "One smooth-shaded closed mesh named Catenary Cable in world coordinates.",
+      "at_defaults": {
+        "vertices": 392,
+        "faces": 386,
+        "bounds": [
+          [
+            -0.008293521,
+            -0.014552137,
+            1.791593767
+          ],
+          [
+            6.006850603,
+            1.514552137,
+            3.012467881
+          ]
+        ],
+        "volume": 0.004151771,
+        "euler": 2,
+        "report": {
+          "parameter_a_m": 5.662091564,
+          "length_m": 6.524379281,
+          "sag_below_chord_m": 0.869374077,
+          "lowest_point_z_m": 1.806589687,
+          "anchor_tension_over_horizontal": [
+            1.210771991,
+            1.104804083
+          ]
+        }
+      }
+    },
+    "units": "metres",
+    "axes": "Blender Z up, -Y forward",
+    "blender_minimum": "4.2",
+    "verification": {
+      "fixture": "none",
+      "preview": {
+        "floor": true,
+        "view": [
+          0.3,
+          -1.5,
+          0.35
+        ]
+      }
+    }
+  },
+  "limits": "A uniform, perfectly flexible and inextensible cable under gravity only: no wind, stiffness, stretch or point loads. The anchors must differ horizontally; a vertical hang is refused. Very large slack values make a deep U that the segment count may sample coarsely. Verified in Blender 5.2.1; written for the 4.2 API.",
+  "related": [
+    "pipe_run_elbows",
+    "chain_links_curve",
+    "rope_twisted"
+  ],
+  "technique_references": [
+    "Catenary y = a cosh((x - x0) / a) + c through two points with a given arc length",
+    "Bisection on the monotone function 2 a sinh(h / (2 a))",
+    "Parallel transport of a section frame along a sampled curve"
+  ],
+  "native_checks": [
+    "addon_install_and_enable",
+    "operator_runs_with_defaults",
+    "blender_data_matches_core",
+    "addon_disable_unregisters",
+    "script_mode_runs",
+    "clean_reopen_addon_file",
+    "clean_reopen_script_file",
+    "gltf_separate_export",
+    "engine_output_clean"
+  ]
+}

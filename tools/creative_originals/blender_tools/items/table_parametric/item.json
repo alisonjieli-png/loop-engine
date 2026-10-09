@@ -1,0 +1,197 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "table_parametric",
+  "title": "Parametric table with tapered, round or turned legs",
+  "purpose": "Generate a table from overall size: a top with rounded corners, four inset legs in tapered, round or turned style, and aprons under the top, each a closed solid. Use it for interiors, product scenes and furniture blockouts.",
+  "form": "library_module",
+  "asset_role": null,
+  "dimension": "3d",
+  "engine": {
+    "name": "blender",
+    "minimum_version": "4.2"
+  },
+  "tags": [
+    "blender",
+    "procedural",
+    "furniture",
+    "table",
+    "interior",
+    "mesh generator",
+    "parametric"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "role": "other"
+    },
+    {
+      "path": "table_parametric.py",
+      "role": "executable_tool"
+    },
+    {
+      "path": "test_table_parametric.py",
+      "role": "executable_tool"
+    }
+  ],
+  "contract": {
+    "module": "table_parametric",
+    "entry_points": {
+      "core": "build_geometry",
+      "blender": "create",
+      "operator": "baltor.table_parametric",
+      "expectations": "expectations"
+    },
+    "parameters": [
+      {
+        "name": "length",
+        "type": "float",
+        "default": 1.6,
+        "minimum": 0.3,
+        "maximum": 10.0,
+        "unit": "m",
+        "description": "Length of the top along X."
+      },
+      {
+        "name": "width",
+        "type": "float",
+        "default": 0.9,
+        "minimum": 0.3,
+        "maximum": 5.0,
+        "unit": "m",
+        "description": "Width of the top along Y."
+      },
+      {
+        "name": "height",
+        "type": "float",
+        "default": 0.75,
+        "minimum": 0.2,
+        "maximum": 2.0,
+        "unit": "m",
+        "description": "Floor to the top surface."
+      },
+      {
+        "name": "top_thickness",
+        "type": "float",
+        "default": 0.035,
+        "minimum": 0.008,
+        "maximum": 0.2,
+        "unit": "m",
+        "description": "Thickness of the top."
+      },
+      {
+        "name": "corner_radius",
+        "type": "float",
+        "default": 0.06,
+        "minimum": 0.0,
+        "maximum": 2.5,
+        "unit": "m",
+        "description": "Radius of the rounded top corners; 0 for square corners."
+      },
+      {
+        "name": "leg_style",
+        "type": "choice",
+        "default": "tapered",
+        "minimum": null,
+        "maximum": null,
+        "unit": "style",
+        "choices": [
+          "tapered",
+          "round",
+          "turned"
+        ],
+        "description": "Leg shape."
+      },
+      {
+        "name": "leg_size",
+        "type": "float",
+        "default": 0.06,
+        "minimum": 0.015,
+        "maximum": 0.4,
+        "unit": "m",
+        "description": "Width of the legs at the top."
+      },
+      {
+        "name": "leg_inset",
+        "type": "float",
+        "default": 0.05,
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "unit": "m",
+        "description": "Distance from the top's edge to the legs' outer faces."
+      },
+      {
+        "name": "apron_height",
+        "type": "float",
+        "default": 0.09,
+        "minimum": 0.0,
+        "maximum": 0.5,
+        "unit": "m",
+        "description": "Height of the aprons under the top; 0 leaves them out."
+      },
+      {
+        "name": "corner_segments",
+        "type": "int",
+        "default": 6,
+        "minimum": 1,
+        "maximum": 32,
+        "unit": "count",
+        "description": "Segments per rounded corner and per quarter of a round leg."
+      }
+    ],
+    "outputs": {
+      "kind": "mesh",
+      "object": "Table",
+      "closed": true,
+      "description": "One mesh object named Table standing on z = 0.",
+      "at_defaults": {
+        "vertices": 120,
+        "faces": 78,
+        "bounds": [
+          [
+            -0.8,
+            -0.45,
+            0.0
+          ],
+          [
+            0.8,
+            0.45,
+            0.75
+          ]
+        ],
+        "volume": 0.065479162,
+        "euler": 18
+      }
+    },
+    "units": "metres",
+    "axes": "Blender Z up, -Y forward",
+    "blender_minimum": "4.2",
+    "verification": {
+      "fixture": "none",
+      "preview": {
+        "floor": true
+      }
+    }
+  },
+  "limits": "Four-legged rectangular tables only; no pedestal, drawers, stretchers or joinery detail. Turned legs use one fixed bead profile scaled to the leg size. Parts touch but are not merged, and edges are sharp without bevels. Verified in Blender 5.2.1; written for the 4.2 API.",
+  "related": [
+    "chair_parametric",
+    "bookcase_shelves",
+    "material_wood_rings"
+  ],
+  "technique_references": [
+    "Rounded rectangle from quarter-circle corners",
+    "Lofting closed solids through rings of equal vertex count",
+    "Square ring with matching vertex count by projecting angles onto the square"
+  ],
+  "native_checks": [
+    "addon_install_and_enable",
+    "operator_runs_with_defaults",
+    "blender_data_matches_core",
+    "addon_disable_unregisters",
+    "script_mode_runs",
+    "clean_reopen_addon_file",
+    "clean_reopen_script_file",
+    "gltf_separate_export",
+    "engine_output_clean"
+  ]
+}

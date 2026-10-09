@@ -1,0 +1,204 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "material_terrain_slope_height",
+  "title": "Terrain material blending by slope and height",
+  "purpose": "Build a landscape node material that puts rock on slopes steeper than a set angle, snow above a ragged world-height line but only where the ground is flat enough, and grass elsewhere, all in world space. Use it on terrains, mountains and dioramas.",
+  "form": "library_module",
+  "asset_role": null,
+  "dimension": "3d",
+  "engine": {
+    "name": "blender",
+    "minimum_version": "4.2"
+  },
+  "tags": [
+    "blender",
+    "material",
+    "shader nodes",
+    "terrain",
+    "landscape",
+    "slope",
+    "snow"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "role": "other"
+    },
+    {
+      "path": "material_terrain_slope_height.py",
+      "role": "executable_tool"
+    },
+    {
+      "path": "test_material_terrain_slope_height.py",
+      "role": "executable_tool"
+    }
+  ],
+  "contract": {
+    "module": "material_terrain_slope_height",
+    "entry_points": {
+      "core": "material_graph",
+      "blender": "create",
+      "operator": "baltor.material_terrain_slope_height",
+      "expectations": "expectations",
+      "fixture": "fixture"
+    },
+    "parameters": [
+      {
+        "name": "material_name",
+        "type": "string",
+        "default": "Baltor Terrain Blend",
+        "minimum": null,
+        "maximum": null,
+        "unit": "text",
+        "description": "Name of the new material."
+      },
+      {
+        "name": "grass_color",
+        "type": "vector",
+        "default": [
+          0.07,
+          0.16,
+          0.035
+        ],
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "unit": "linear RGB",
+        "description": "Colour of flat low ground."
+      },
+      {
+        "name": "rock_color",
+        "type": "vector",
+        "default": [
+          0.2,
+          0.18,
+          0.16
+        ],
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "unit": "linear RGB",
+        "description": "Colour of steep ground."
+      },
+      {
+        "name": "snow_color",
+        "type": "vector",
+        "default": [
+          0.85,
+          0.87,
+          0.9
+        ],
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "unit": "linear RGB",
+        "description": "Colour of high flat ground."
+      },
+      {
+        "name": "rock_slope",
+        "type": "float",
+        "default": 32.0,
+        "minimum": 1.0,
+        "maximum": 89.0,
+        "unit": "degree",
+        "description": "Slope angle where ground turns from grass to rock."
+      },
+      {
+        "name": "slope_blend",
+        "type": "float",
+        "default": 10.0,
+        "minimum": 0.5,
+        "maximum": 60.0,
+        "unit": "degree",
+        "description": "Width of the grass to rock transition."
+      },
+      {
+        "name": "snow_height",
+        "type": "float",
+        "default": 2.2,
+        "minimum": -10000.0,
+        "maximum": 10000.0,
+        "unit": "m",
+        "description": "World height of the snow line."
+      },
+      {
+        "name": "snow_blend",
+        "type": "float",
+        "default": 0.4,
+        "minimum": 0.001,
+        "maximum": 1000.0,
+        "unit": "m",
+        "description": "Height over which snow fades in."
+      },
+      {
+        "name": "snow_max_slope",
+        "type": "float",
+        "default": 40.0,
+        "minimum": 1.0,
+        "maximum": 89.0,
+        "unit": "degree",
+        "description": "Steepest slope that holds snow."
+      },
+      {
+        "name": "breakup",
+        "type": "float",
+        "default": 0.5,
+        "minimum": 0.0,
+        "maximum": 100.0,
+        "unit": "m",
+        "description": "How far noise moves the snow line up and down."
+      },
+      {
+        "name": "assign",
+        "type": "bool",
+        "default": true,
+        "minimum": null,
+        "maximum": null,
+        "unit": "flag",
+        "description": "Assign the material to the active object."
+      }
+    ],
+    "outputs": {
+      "kind": "node_graph",
+      "object": "Terrain Demo Hill",
+      "description": "One material with a node tree; assigned to the active object.",
+      "at_defaults": {
+        "nodes": 16,
+        "links": 20
+      }
+    },
+    "units": "metres",
+    "axes": "Blender Z up, -Y forward",
+    "blender_minimum": "4.2",
+    "verification": {
+      "fixture": "module",
+      "preview": {
+        "floor": false,
+        "view": [
+          1.0,
+          -1.3,
+          0.8
+        ]
+      }
+    }
+  },
+  "limits": "Three flat colours with roughness only; no texture detail per layer, no displacement and no erosion or flow information. World space inputs mean the blend changes when the object is rotated, by design. Shading normals from smooth shading soften the slope test on coarse meshes. Rendered here with Cycles CPU only. Verified in Blender 5.2.1; written for the 4.2 API.",
+  "related": [
+    "heightmap_terrain",
+    "impact_crater",
+    "material_snow_overlay"
+  ],
+  "technique_references": [
+    "Slope from the Z component of the world normal (cosine of the slope angle)",
+    "Snow line from world height shifted by noise",
+    "Flatness mask to keep snow off cliffs"
+  ],
+  "native_checks": [
+    "addon_install_and_enable",
+    "operator_runs_with_defaults",
+    "blender_data_matches_core",
+    "addon_disable_unregisters",
+    "script_mode_runs",
+    "clean_reopen_addon_file",
+    "clean_reopen_script_file",
+    "gltf_separate_export",
+    "engine_output_clean"
+  ]
+}

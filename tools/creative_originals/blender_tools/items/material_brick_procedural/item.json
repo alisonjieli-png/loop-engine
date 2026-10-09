@@ -1,0 +1,216 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "material_brick_procedural",
+  "title": "Procedural brick material sized in metres",
+  "purpose": "Build a brick node material whose brick width, course height and mortar joint are plain metres, oriented to a wall or floor plane, with two-colour brick variation, grime, rough mortar and raised bricks. Use it for walls and paving without texture files.",
+  "form": "library_module",
+  "asset_role": null,
+  "dimension": "3d",
+  "engine": {
+    "name": "blender",
+    "minimum_version": "4.2"
+  },
+  "tags": [
+    "blender",
+    "material",
+    "shader nodes",
+    "brick",
+    "masonry",
+    "procedural texture",
+    "architecture"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "role": "other"
+    },
+    {
+      "path": "material_brick_procedural.py",
+      "role": "executable_tool"
+    },
+    {
+      "path": "test_material_brick_procedural.py",
+      "role": "executable_tool"
+    }
+  ],
+  "contract": {
+    "module": "material_brick_procedural",
+    "entry_points": {
+      "core": "material_graph",
+      "blender": "create",
+      "operator": "baltor.material_brick_procedural",
+      "expectations": "expectations"
+    },
+    "parameters": [
+      {
+        "name": "material_name",
+        "type": "string",
+        "default": "Baltor Brick",
+        "minimum": null,
+        "maximum": null,
+        "unit": "text",
+        "description": "Name of the new material."
+      },
+      {
+        "name": "orientation",
+        "type": "choice",
+        "default": "wall_xz",
+        "minimum": null,
+        "maximum": null,
+        "unit": "plane",
+        "choices": [
+          "wall_xz",
+          "wall_yz",
+          "floor_xy"
+        ],
+        "description": "Plane the courses lie in: rows run up the wall's Z, or along Y on a floor."
+      },
+      {
+        "name": "brick_width",
+        "type": "float",
+        "default": 0.225,
+        "minimum": 0.01,
+        "maximum": 5.0,
+        "unit": "m",
+        "description": "Brick length plus one joint."
+      },
+      {
+        "name": "row_height",
+        "type": "float",
+        "default": 0.075,
+        "minimum": 0.005,
+        "maximum": 2.0,
+        "unit": "m",
+        "description": "Course height plus one joint."
+      },
+      {
+        "name": "mortar_size",
+        "type": "float",
+        "default": 0.01,
+        "minimum": 0.0,
+        "maximum": 0.2,
+        "unit": "m",
+        "description": "Mortar joint width."
+      },
+      {
+        "name": "offset",
+        "type": "float",
+        "default": 0.5,
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "unit": "ratio",
+        "description": "Shift of every other course as a share of the brick width."
+      },
+      {
+        "name": "color_a",
+        "type": "vector",
+        "default": [
+          0.42,
+          0.12,
+          0.06
+        ],
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "unit": "linear RGB",
+        "description": "First brick colour."
+      },
+      {
+        "name": "color_b",
+        "type": "vector",
+        "default": [
+          0.3,
+          0.1,
+          0.06
+        ],
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "unit": "linear RGB",
+        "description": "Second brick colour; bricks vary between the two."
+      },
+      {
+        "name": "mortar_color",
+        "type": "vector",
+        "default": [
+          0.5,
+          0.48,
+          0.44
+        ],
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "unit": "linear RGB",
+        "description": "Mortar colour."
+      },
+      {
+        "name": "grime",
+        "type": "float",
+        "default": 0.4,
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "unit": "ratio",
+        "description": "How strongly the grime noise darkens the surface."
+      },
+      {
+        "name": "bump",
+        "type": "float",
+        "default": 0.5,
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "unit": "ratio",
+        "description": "Strength of the raised-brick bump."
+      },
+      {
+        "name": "assign",
+        "type": "bool",
+        "default": true,
+        "minimum": null,
+        "maximum": null,
+        "unit": "flag",
+        "description": "Assign the material to the active object."
+      }
+    ],
+    "outputs": {
+      "kind": "node_graph",
+      "description": "One material with a node tree; assigned to the active object.",
+      "at_defaults": {
+        "nodes": 12,
+        "links": 16
+      }
+    },
+    "units": "metres",
+    "axes": "Blender Z up, -Y forward",
+    "blender_minimum": "4.2",
+    "verification": {
+      "fixture": "cube",
+      "preview": {
+        "floor": true,
+        "view": [
+          1.0,
+          -1.4,
+          0.5
+        ]
+      }
+    }
+  },
+  "limits": "Running bond with one offset only; English, Flemish and other bonds need the brick wall generator. Bricks are raised by bump, not displacement, so silhouettes stay flat. Object coordinates tie the pattern to the object's origin and scale. Rendered here with Cycles CPU only. Verified in Blender 5.2.1; written for the 4.2 API.",
+  "related": [
+    "brick_wall_bonds",
+    "material_ceramic_tile",
+    "material_concrete"
+  ],
+  "technique_references": [
+    "Brick Texture node at unit scale so its sizes are object-space metres",
+    "Swizzling object coordinates to orient a planar pattern",
+    "Mortar mask driving bump and roughness"
+  ],
+  "native_checks": [
+    "addon_install_and_enable",
+    "operator_runs_with_defaults",
+    "blender_data_matches_core",
+    "addon_disable_unregisters",
+    "script_mode_runs",
+    "clean_reopen_addon_file",
+    "clean_reopen_script_file",
+    "gltf_separate_export",
+    "engine_output_clean"
+  ]
+}

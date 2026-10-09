@@ -1,0 +1,253 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "util_batch_rename",
+  "title": "Batch rename objects by rule",
+  "purpose": "Rename many objects at once by rule: strip .001 suffixes, find and replace with optional regular expressions, apply a case style, add a prefix and suffix, and number only the names that would collide. Use it to prepare scenes for export and naming conventions.",
+  "form": "library_module",
+  "asset_role": null,
+  "dimension": "3d",
+  "engine": {
+    "name": "blender",
+    "minimum_version": "4.2"
+  },
+  "tags": [
+    "blender",
+    "utility",
+    "rename",
+    "naming convention",
+    "batch",
+    "pipeline",
+    "scene cleanup"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "role": "other"
+    },
+    {
+      "path": "util_batch_rename.py",
+      "role": "executable_tool"
+    },
+    {
+      "path": "test_util_batch_rename.py",
+      "role": "executable_tool"
+    }
+  ],
+  "contract": {
+    "module": "util_batch_rename",
+    "entry_points": {
+      "core": "plan_renames",
+      "blender": "run",
+      "operator": "baltor.util_batch_rename",
+      "expectations": "expectations",
+      "fixture": "fixture"
+    },
+    "parameters": [
+      {
+        "name": "prefix",
+        "type": "string",
+        "default": "SM_",
+        "minimum": null,
+        "maximum": null,
+        "unit": "text",
+        "description": "Text put in front of every name (not repeated when already present)."
+      },
+      {
+        "name": "suffix",
+        "type": "string",
+        "default": "",
+        "minimum": null,
+        "maximum": null,
+        "unit": "text",
+        "description": "Text put after every name, before any number."
+      },
+      {
+        "name": "find",
+        "type": "string",
+        "default": "",
+        "minimum": null,
+        "maximum": null,
+        "unit": "text",
+        "description": "Text or regular expression to replace; empty skips this step."
+      },
+      {
+        "name": "replace",
+        "type": "string",
+        "default": "",
+        "minimum": null,
+        "maximum": null,
+        "unit": "text",
+        "description": "Replacement for find; with use_regex it may use groups such as \\1."
+      },
+      {
+        "name": "use_regex",
+        "type": "bool",
+        "default": false,
+        "minimum": null,
+        "maximum": null,
+        "unit": "flag",
+        "description": "Treat find as a Python regular expression."
+      },
+      {
+        "name": "case",
+        "type": "choice",
+        "default": "snake",
+        "minimum": null,
+        "maximum": null,
+        "unit": "style",
+        "choices": [
+          "keep",
+          "lower",
+          "upper",
+          "snake",
+          "pascal"
+        ],
+        "description": "Case style applied to the words of the name."
+      },
+      {
+        "name": "strip_duplicate_suffix",
+        "type": "bool",
+        "default": true,
+        "minimum": null,
+        "maximum": null,
+        "unit": "flag",
+        "description": "Remove Blender's .001 style suffix first."
+      },
+      {
+        "name": "numbering",
+        "type": "choice",
+        "default": "duplicates",
+        "minimum": null,
+        "maximum": null,
+        "unit": "mode",
+        "choices": [
+          "none",
+          "duplicates",
+          "always"
+        ],
+        "description": "Number every name, only names that would collide, or none."
+      },
+      {
+        "name": "start",
+        "type": "int",
+        "default": 1,
+        "minimum": 0,
+        "maximum": 100000,
+        "unit": "count",
+        "description": "First number of a numbered group."
+      },
+      {
+        "name": "padding",
+        "type": "int",
+        "default": 2,
+        "minimum": 1,
+        "maximum": 6,
+        "unit": "digits",
+        "description": "Digits of each number, padded with zeros."
+      },
+      {
+        "name": "separator",
+        "type": "string",
+        "default": "_",
+        "minimum": null,
+        "maximum": null,
+        "unit": "text",
+        "description": "Text between a name and its number."
+      },
+      {
+        "name": "scope",
+        "type": "choice",
+        "default": "selected",
+        "minimum": null,
+        "maximum": null,
+        "unit": "mode",
+        "choices": [
+          "selected",
+          "all"
+        ],
+        "description": "Rename the selected objects or every object in the file."
+      },
+      {
+        "name": "rename_data",
+        "type": "bool",
+        "default": true,
+        "minimum": null,
+        "maximum": null,
+        "unit": "flag",
+        "description": "Give single-user object data (meshes, curves, lights) the new object name."
+      }
+    ],
+    "outputs": {
+      "kind": "report",
+      "description": "Objects renamed in place; the plan is returned as a report.",
+      "at_defaults": {
+        "report": {
+          "renames": [
+            [
+              "Cube",
+              "SM_cube_01"
+            ],
+            [
+              "Cube.001",
+              "SM_cube_02"
+            ],
+            [
+              "Cube.002",
+              "SM_cube_03"
+            ],
+            [
+              "Sphere",
+              "SM_sphere"
+            ],
+            [
+              "lampPost",
+              "SM_lamp_post"
+            ],
+            [
+              "Old Barrel",
+              "SM_old_barrel"
+            ],
+            [
+              "SM_rock",
+              "SM_rock"
+            ]
+          ],
+          "renamed": 6,
+          "unchanged": 1,
+          "numbered": 3
+        }
+      }
+    },
+    "units": "metres",
+    "axes": "Blender Z up, -Y forward",
+    "blender_minimum": "4.2",
+    "verification": {
+      "fixture": "module",
+      "preview": {
+        "floor": true
+      }
+    }
+  },
+  "limits": "Renames objects and, when they have a single user, their data; materials, collections and other data blocks keep their names. Case splitting is a heuristic for ASCII words and digit runs. Names are cut to 63 bytes, so very long names lose their end. Regular expressions use Python syntax. Verified in Blender 5.2.1; written for the 4.2 API.",
+  "related": [
+    "util_naming_linter",
+    "util_batch_export_collections",
+    "util_scene_audit"
+  ],
+  "technique_references": [
+    "Two-pass renaming through temporary names to avoid automatic .001 suffixes",
+    "Word splitting at case changes and digit runs with regular expressions",
+    "Collision-free numbering within groups of equal names"
+  ],
+  "native_checks": [
+    "addon_install_and_enable",
+    "operator_runs_with_defaults",
+    "blender_data_matches_core",
+    "addon_disable_unregisters",
+    "script_mode_runs",
+    "clean_reopen_addon_file",
+    "clean_reopen_script_file",
+    "gltf_separate_export",
+    "engine_output_clean"
+  ]
+}

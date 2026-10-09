@@ -1,0 +1,187 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "spur_gear_involute",
+  "title": "Involute spur gear",
+  "purpose": "Generate a spur gear with true involute tooth flanks from module, tooth count and pressure angle, with backlash, face width and an optional bore, and report its pitch, tip, root and base diameters. Use it for mechanisms, gear trains and machine props that must mesh.",
+  "form": "library_module",
+  "asset_role": null,
+  "dimension": "3d",
+  "engine": {
+    "name": "blender",
+    "minimum_version": "4.2"
+  },
+  "tags": [
+    "blender",
+    "procedural",
+    "gear",
+    "involute",
+    "mechanical",
+    "mesh generator",
+    "cad"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "role": "other"
+    },
+    {
+      "path": "spur_gear_involute.py",
+      "role": "executable_tool"
+    },
+    {
+      "path": "test_spur_gear_involute.py",
+      "role": "executable_tool"
+    }
+  ],
+  "contract": {
+    "module": "spur_gear_involute",
+    "entry_points": {
+      "core": "build_geometry",
+      "blender": "create",
+      "operator": "baltor.spur_gear_involute",
+      "expectations": "expectations"
+    },
+    "parameters": [
+      {
+        "name": "teeth",
+        "type": "int",
+        "default": 18,
+        "minimum": 6,
+        "maximum": 300,
+        "unit": "count",
+        "description": "Number of teeth."
+      },
+      {
+        "name": "module",
+        "type": "float",
+        "default": 0.01,
+        "minimum": 0.0002,
+        "maximum": 1.0,
+        "unit": "m",
+        "description": "Module: pitch diameter divided by teeth (0.01 m is a module 10 gear)."
+      },
+      {
+        "name": "pressure_angle",
+        "type": "float",
+        "default": 20.0,
+        "minimum": 10.0,
+        "maximum": 35.0,
+        "unit": "degree",
+        "description": "Pressure angle of the involute."
+      },
+      {
+        "name": "face_width",
+        "type": "float",
+        "default": 0.04,
+        "minimum": 0.0005,
+        "maximum": 5.0,
+        "unit": "m",
+        "description": "Thickness of the gear along Z."
+      },
+      {
+        "name": "bore_diameter",
+        "type": "float",
+        "default": 0.03,
+        "minimum": 0.0,
+        "maximum": 10.0,
+        "unit": "m",
+        "description": "Diameter of the central hole; 0 for a solid gear."
+      },
+      {
+        "name": "backlash",
+        "type": "float",
+        "default": 0.0002,
+        "minimum": 0.0,
+        "maximum": 0.05,
+        "unit": "m",
+        "description": "Tooth thickness removed on the pitch circle, measured along the arc."
+      },
+      {
+        "name": "flank_samples",
+        "type": "int",
+        "default": 6,
+        "minimum": 2,
+        "maximum": 40,
+        "unit": "count",
+        "description": "Points along each involute flank."
+      },
+      {
+        "name": "smooth_bore_sides",
+        "type": "int",
+        "default": 32,
+        "minimum": 8,
+        "maximum": 256,
+        "unit": "count",
+        "description": "Segments of the bore circle."
+      }
+    ],
+    "outputs": {
+      "kind": "mesh",
+      "object": "Spur Gear",
+      "closed": true,
+      "description": "One closed mesh object named Spur Gear, axis along Z, centred on the origin.",
+      "at_defaults": {
+        "vertices": 640,
+        "faces": 960,
+        "bounds": [
+          [
+            -0.09999396,
+            -0.098999698,
+            -0.02
+          ],
+          [
+            0.09999396,
+            0.098999698,
+            0.02
+          ]
+        ],
+        "volume": 0.00095633,
+        "euler": 0,
+        "report": {
+          "pitch_diameter_m": 0.18,
+          "tip_diameter_m": 0.2,
+          "root_diameter_m": 0.155,
+          "base_diameter_m": 0.169144672,
+          "circular_pitch_m": 0.031415927,
+          "centre_distance_to_same_gear_m": 0.18
+        }
+      }
+    },
+    "units": "metres",
+    "axes": "Blender Z up, -Y forward",
+    "blender_minimum": "4.2",
+    "verification": {
+      "fixture": "none",
+      "preview": {
+        "floor": true,
+        "view": [
+          0.6,
+          -1.0,
+          1.4
+        ]
+      }
+    }
+  },
+  "limits": "Standard full-depth teeth only (addendum one module, dedendum 1.25 modules); no profile shift, no undercut or trochoid root fillet, so gears below about 17 teeth at 20 degrees are not exact near the root. The root between teeth is a straight chord, not an arc. No helix, hub or keyway. Fine for rendering and animation; check tolerances before manufacturing. Verified in Blender 5.2.1; written for the 4.2 API.",
+  "related": [
+    "gear_rack",
+    "anim_gear_train_drivers",
+    "hex_bolt_nut"
+  ],
+  "technique_references": [
+    "Involute of a circle and the involute function inv(a) = tan(a) - a",
+    "Tooth thickness of half the circular pitch on the pitch circle",
+    "Annulus triangulation by merging two angle-sorted loops"
+  ],
+  "native_checks": [
+    "addon_install_and_enable",
+    "operator_runs_with_defaults",
+    "blender_data_matches_core",
+    "addon_disable_unregisters",
+    "script_mode_runs",
+    "clean_reopen_addon_file",
+    "clean_reopen_script_file",
+    "gltf_separate_export",
+    "engine_output_clean"
+  ]
+}

@@ -1,0 +1,179 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "world_sky_sun",
+  "title": "Physical sky with a matching sun lamp",
+  "purpose": "Build a physical sky world and a sun lamp whose direction matches the sky's sun exactly, from one elevation and compass bearing, with the sky's sun disc off so the lamp gives sharp direct light. Use it for exteriors, architecture and time-of-day studies.",
+  "form": "library_module",
+  "asset_role": null,
+  "dimension": "3d",
+  "engine": {
+    "name": "blender",
+    "minimum_version": "4.2"
+  },
+  "tags": [
+    "blender",
+    "world",
+    "sky",
+    "sun",
+    "lighting",
+    "exterior",
+    "time of day"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "role": "other"
+    },
+    {
+      "path": "world_sky_sun.py",
+      "role": "executable_tool"
+    },
+    {
+      "path": "test_world_sky_sun.py",
+      "role": "executable_tool"
+    }
+  ],
+  "contract": {
+    "module": "world_sky_sun",
+    "entry_points": {
+      "core": "sky_setup",
+      "blender": "create",
+      "operator": "baltor.world_sky_sun",
+      "expectations": "expectations"
+    },
+    "parameters": [
+      {
+        "name": "elevation",
+        "type": "float",
+        "default": 28.0,
+        "minimum": -10.0,
+        "maximum": 90.0,
+        "unit": "degree",
+        "description": "Sun height above the horizon."
+      },
+      {
+        "name": "azimuth",
+        "type": "float",
+        "default": 135.0,
+        "minimum": 0.0,
+        "maximum": 360.0,
+        "unit": "degree",
+        "description": "Compass bearing of the sun, clockwise from +Y (0 is +Y, 90 is +X)."
+      },
+      {
+        "name": "sun_strength",
+        "type": "float",
+        "default": 2.2,
+        "minimum": 0.0,
+        "maximum": 1000.0,
+        "unit": "W/m^2",
+        "description": "Irradiance of the sun lamp."
+      },
+      {
+        "name": "sun_angle",
+        "type": "float",
+        "default": 0.545,
+        "minimum": 0.0,
+        "maximum": 30.0,
+        "unit": "degree",
+        "description": "Angular diameter of the sun lamp; larger values soften shadows."
+      },
+      {
+        "name": "world_strength",
+        "type": "float",
+        "default": 0.12,
+        "minimum": 0.0,
+        "maximum": 100.0,
+        "unit": "ratio",
+        "description": "Strength of the sky background."
+      },
+      {
+        "name": "sky_sun_disc",
+        "type": "bool",
+        "default": false,
+        "minimum": null,
+        "maximum": null,
+        "unit": "flag",
+        "description": "Also draw the sun disc in the sky texture (it then lights the scene as well)."
+      },
+      {
+        "name": "air_density",
+        "type": "float",
+        "default": 1.0,
+        "minimum": 0.0,
+        "maximum": 10.0,
+        "unit": "ratio",
+        "description": "Air density of the sky model."
+      },
+      {
+        "name": "haze",
+        "type": "float",
+        "default": 1.0,
+        "minimum": 0.0,
+        "maximum": 10.0,
+        "unit": "ratio",
+        "description": "Dust or aerosol density of the sky model."
+      }
+    ],
+    "outputs": {
+      "kind": "rig",
+      "object": "Baltor Sky Sun",
+      "description": "A world named Baltor Sky set as the scene world, and a sun lamp named Baltor Sky Sun.",
+      "at_defaults": {
+        "nodes": 3,
+        "links": 2,
+        "objects": 1,
+        "report": {
+          "sun_direction": [
+            0.62433823,
+            -0.62433823,
+            0.469471563
+          ],
+          "light_travel_direction": [
+            -0.62433823,
+            0.62433823,
+            -0.469471563
+          ],
+          "sun_above_horizon": true
+        }
+      }
+    },
+    "units": "metres",
+    "axes": "Blender Z up, -Y forward",
+    "blender_minimum": "4.2",
+    "verification": {
+      "fixture": "monkey",
+      "preview": {
+        "floor": true,
+        "lights": "scene",
+        "view": [
+          0.3,
+          -1.4,
+          0.35
+        ]
+      }
+    }
+  },
+  "limits": "The bearing convention (clockwise from +Y, as the Sky Texture sun rotation) was measured on Blender 5.2.1 only. Uses the multiple scattering sky where Blender offers it and the Nishita sky otherwise; their colours differ. Lamp strength is a free parameter, not derived from the sky model, so sky and sun brightness are balanced by eye. Rendered here with Cycles CPU only. Verified in Blender 5.2.1; written for the 4.2 API.",
+  "related": [
+    "light_golden_hour",
+    "world_hdri_environment",
+    "world_gradient_studio"
+  ],
+  "technique_references": [
+    "Sun direction from elevation and bearing on the unit sphere",
+    "Light rotation that points a lamp's -Z axis along a direction",
+    "Equirectangular panorama render used to measure the sky's sun convention"
+  ],
+  "native_checks": [
+    "addon_install_and_enable",
+    "operator_runs_with_defaults",
+    "blender_data_matches_core",
+    "addon_disable_unregisters",
+    "script_mode_runs",
+    "clean_reopen_addon_file",
+    "clean_reopen_script_file",
+    "gltf_separate_export",
+    "engine_output_clean"
+  ]
+}

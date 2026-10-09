@@ -1,0 +1,200 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "brick_wall_bonds",
+  "title": "Brick wall in English, Flemish and other bonds",
+  "purpose": "Generate a brick wall course by course in stretcher, stack, English, Flemish or common bond, with mortar joints, cut bricks at the ends, queen closers and seeded colour variation. Use it for architecture, ruins and game environments that need real brick geometry.",
+  "form": "library_module",
+  "asset_role": null,
+  "dimension": "3d",
+  "engine": {
+    "name": "blender",
+    "minimum_version": "4.2"
+  },
+  "tags": [
+    "blender",
+    "procedural",
+    "brick",
+    "masonry",
+    "bond pattern",
+    "architecture",
+    "mesh generator"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "role": "other"
+    },
+    {
+      "path": "brick_wall_bonds.py",
+      "role": "executable_tool"
+    },
+    {
+      "path": "test_brick_wall_bonds.py",
+      "role": "executable_tool"
+    }
+  ],
+  "contract": {
+    "module": "brick_wall_bonds",
+    "entry_points": {
+      "core": "build_geometry",
+      "blender": "create",
+      "operator": "baltor.brick_wall_bonds",
+      "expectations": "expectations"
+    },
+    "parameters": [
+      {
+        "name": "bond",
+        "type": "choice",
+        "default": "english",
+        "minimum": null,
+        "maximum": null,
+        "unit": "pattern",
+        "choices": [
+          "stretcher",
+          "stack",
+          "english",
+          "flemish",
+          "common"
+        ],
+        "description": "Bond pattern."
+      },
+      {
+        "name": "length",
+        "type": "float",
+        "default": 2.0,
+        "minimum": 0.3,
+        "maximum": 30.0,
+        "unit": "m",
+        "description": "Wall length along +X."
+      },
+      {
+        "name": "courses",
+        "type": "int",
+        "default": 12,
+        "minimum": 1,
+        "maximum": 200,
+        "unit": "count",
+        "description": "Number of brick courses."
+      },
+      {
+        "name": "brick",
+        "type": "vector",
+        "default": [
+          0.215,
+          0.1025,
+          0.065
+        ],
+        "minimum": 0.01,
+        "maximum": 1.0,
+        "unit": "m",
+        "description": "Brick length, width and height."
+      },
+      {
+        "name": "joint",
+        "type": "float",
+        "default": 0.01,
+        "minimum": 0.002,
+        "maximum": 0.05,
+        "unit": "m",
+        "description": "Mortar joint thickness."
+      },
+      {
+        "name": "header_every",
+        "type": "int",
+        "default": 6,
+        "minimum": 2,
+        "maximum": 12,
+        "unit": "count",
+        "description": "Common bond: one header course in every this many courses."
+      },
+      {
+        "name": "recess",
+        "type": "float",
+        "default": 0.006,
+        "minimum": 0.0,
+        "maximum": 0.03,
+        "unit": "m",
+        "description": "How far the mortar core sits behind the brick faces."
+      },
+      {
+        "name": "seed",
+        "type": "int",
+        "default": 1,
+        "minimum": 0,
+        "maximum": 1000000,
+        "unit": "seed",
+        "description": "Seed for the spread of the three brick colours."
+      }
+    ],
+    "outputs": {
+      "kind": "mesh",
+      "object": "Brick Wall",
+      "closed": true,
+      "description": "One mesh object named Brick Wall with four material slots.",
+      "at_defaults": {
+        "vertices": 1784,
+        "faces": 1338,
+        "bounds": [
+          [
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            2.0,
+            0.215,
+            0.89
+          ]
+        ],
+        "volume": 0.667451,
+        "euler": 446,
+        "report": {
+          "bricks": 222,
+          "stretchers": 96,
+          "headers": 102,
+          "closers": 6,
+          "cuts": 18,
+          "wall_thickness_m": 0.215,
+          "face_area_m2": 1.78,
+          "bricks_per_m2_of_face": 124.719
+        }
+      }
+    },
+    "units": "metres",
+    "axes": "Blender Z up, -Y forward",
+    "blender_minimum": "4.2",
+    "verification": {
+      "fixture": "none",
+      "preview": {
+        "floor": true,
+        "view": [
+          0.6,
+          -1.4,
+          0.45
+        ]
+      }
+    }
+  },
+  "limits": "Straight walls only; no openings, corners that interlock with a return wall, arches or chamfers. Bricks are sharp boxes without bevels. The mortar is a recessed core box, not tooled joint profiles. Brick sizes default to UK metric bricks; set others with the brick parameter. Verified in Blender 5.2.1; written for the 4.2 API.",
+  "related": [
+    "material_brick_procedural",
+    "facade_window_grid",
+    "tiled_floor_patterns"
+  ],
+  "technique_references": [
+    "Masonry bonds: stretcher, stack, English, Flemish and common (American)",
+    "Queen closer to offset header courses by a quarter brick",
+    "Seeded integer hash to assign material slots"
+  ],
+  "native_checks": [
+    "addon_install_and_enable",
+    "operator_runs_with_defaults",
+    "blender_data_matches_core",
+    "addon_disable_unregisters",
+    "script_mode_runs",
+    "clean_reopen_addon_file",
+    "clean_reopen_script_file",
+    "gltf_separate_export",
+    "engine_output_clean"
+  ]
+}

@@ -1,0 +1,202 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "barrel_staves",
+  "title": "Barrel from bulged staves, hoops and heads",
+  "purpose": "Generate a cooper-style barrel: separate bulged staves with gaps, iron hoops that follow the bilge and recessed head discs, each a closed solid with its own material slot, plus the outer volume in litres. Use it for taverns, cellars, ships and game props.",
+  "form": "library_module",
+  "asset_role": null,
+  "dimension": "3d",
+  "engine": {
+    "name": "blender",
+    "minimum_version": "4.2"
+  },
+  "tags": [
+    "blender",
+    "procedural",
+    "barrel",
+    "prop",
+    "staves",
+    "medieval",
+    "mesh generator"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "role": "other"
+    },
+    {
+      "path": "barrel_staves.py",
+      "role": "executable_tool"
+    },
+    {
+      "path": "test_barrel_staves.py",
+      "role": "executable_tool"
+    }
+  ],
+  "contract": {
+    "module": "barrel_staves",
+    "entry_points": {
+      "core": "build_geometry",
+      "blender": "create",
+      "operator": "baltor.barrel_staves",
+      "expectations": "expectations"
+    },
+    "parameters": [
+      {
+        "name": "height",
+        "type": "float",
+        "default": 0.9,
+        "minimum": 0.05,
+        "maximum": 20.0,
+        "unit": "m",
+        "description": "Height of the staves."
+      },
+      {
+        "name": "head_radius",
+        "type": "float",
+        "default": 0.28,
+        "minimum": 0.02,
+        "maximum": 10.0,
+        "unit": "m",
+        "description": "Outer radius at the top and bottom."
+      },
+      {
+        "name": "bilge_radius",
+        "type": "float",
+        "default": 0.34,
+        "minimum": 0.02,
+        "maximum": 10.0,
+        "unit": "m",
+        "description": "Outer radius at mid height; at least the head radius."
+      },
+      {
+        "name": "staves",
+        "type": "int",
+        "default": 20,
+        "minimum": 6,
+        "maximum": 120,
+        "unit": "count",
+        "description": "Number of staves."
+      },
+      {
+        "name": "stave_thickness",
+        "type": "float",
+        "default": 0.025,
+        "minimum": 0.002,
+        "maximum": 1.0,
+        "unit": "m",
+        "description": "Radial thickness of each stave."
+      },
+      {
+        "name": "gap",
+        "type": "float",
+        "default": 0.002,
+        "minimum": 0.0,
+        "maximum": 0.05,
+        "unit": "m",
+        "description": "Gap between neighbouring staves at the head radius."
+      },
+      {
+        "name": "rows",
+        "type": "int",
+        "default": 12,
+        "minimum": 2,
+        "maximum": 96,
+        "unit": "count",
+        "description": "Segments along the height of each stave and hoop."
+      },
+      {
+        "name": "hoops",
+        "type": "int",
+        "default": 4,
+        "minimum": 0,
+        "maximum": 12,
+        "unit": "count",
+        "description": "Number of hoops, placed symmetrically."
+      },
+      {
+        "name": "hoop_width",
+        "type": "float",
+        "default": 0.045,
+        "minimum": 0.005,
+        "maximum": 1.0,
+        "unit": "m",
+        "description": "Height of each hoop band."
+      },
+      {
+        "name": "heads",
+        "type": "bool",
+        "default": true,
+        "minimum": null,
+        "maximum": null,
+        "unit": "flag",
+        "description": "Close the barrel with two recessed head discs."
+      }
+    ],
+    "outputs": {
+      "kind": "mesh",
+      "object": "Barrel",
+      "closed": true,
+      "description": "One mesh object named Barrel with stave, hoop and head material slots.",
+      "at_defaults": {
+        "vertices": 1840,
+        "faces": 1724,
+        "bounds": [
+          [
+            -0.3423665,
+            -0.3423665,
+            0.0
+          ],
+          [
+            0.3423665,
+            0.3423665,
+            0.9
+          ]
+        ],
+        "volume": 0.053906815,
+        "euler": 44,
+        "report": {
+          "staves": 20,
+          "hoops": 4,
+          "outer_volume_litres": 290.435
+        }
+      }
+    },
+    "units": "metres",
+    "axes": "Blender Z up, -Y forward",
+    "blender_minimum": "4.2",
+    "verification": {
+      "fixture": "none",
+      "preview": {
+        "floor": true,
+        "view": [
+          1.0,
+          -1.3,
+          0.75
+        ]
+      }
+    }
+  },
+  "limits": "The bilge is a parabola in height, not a measured cooperage curve. Staves are faceted (one chord per stave across its width) and have no bevel, chime chamfer or bung hole. Hoops are plain rectangular bands with no rivets. The volume is the outer volume from the profile, not the inner capacity. Verified in Blender 5.2.1; written for the 4.2 API.",
+  "related": [
+    "crate_planks",
+    "lathe_profile",
+    "material_wood_rings"
+  ],
+  "technique_references": [
+    "Parabolic bilge profile r(z) = r_head + (r_bilge - r_head)(1 - (2z/H - 1)^2)",
+    "Closed slabs from a two-sided grid with side walls",
+    "Rectangular-section rings as closed genus-one solids"
+  ],
+  "native_checks": [
+    "addon_install_and_enable",
+    "operator_runs_with_defaults",
+    "blender_data_matches_core",
+    "addon_disable_unregisters",
+    "script_mode_runs",
+    "clean_reopen_addon_file",
+    "clean_reopen_script_file",
+    "gltf_separate_export",
+    "engine_output_clean"
+  ]
+}

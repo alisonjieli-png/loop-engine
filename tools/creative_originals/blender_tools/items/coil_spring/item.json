@@ -1,0 +1,195 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "coil_spring",
+  "title": "Helical compression spring with spring rate",
+  "purpose": "Generate a compression spring as a round wire swept along a helix with closed end coils, and report its free length, solid length and spring rate from the wire material. Use it for mechanisms, suspension props and machine details.",
+  "form": "library_module",
+  "asset_role": null,
+  "dimension": "3d",
+  "engine": {
+    "name": "blender",
+    "minimum_version": "4.2"
+  },
+  "tags": [
+    "blender",
+    "procedural",
+    "spring",
+    "helix",
+    "mechanical",
+    "mesh generator",
+    "sweep"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "role": "other"
+    },
+    {
+      "path": "coil_spring.py",
+      "role": "executable_tool"
+    },
+    {
+      "path": "test_coil_spring.py",
+      "role": "executable_tool"
+    }
+  ],
+  "contract": {
+    "module": "coil_spring",
+    "entry_points": {
+      "core": "build_geometry",
+      "blender": "create",
+      "operator": "baltor.coil_spring",
+      "expectations": "expectations"
+    },
+    "parameters": [
+      {
+        "name": "mean_diameter",
+        "type": "float",
+        "default": 0.04,
+        "minimum": 0.002,
+        "maximum": 5.0,
+        "unit": "m",
+        "description": "Mean coil diameter D, centre of wire to centre of wire."
+      },
+      {
+        "name": "wire_diameter",
+        "type": "float",
+        "default": 0.004,
+        "minimum": 0.0002,
+        "maximum": 0.5,
+        "unit": "m",
+        "description": "Wire diameter d."
+      },
+      {
+        "name": "active_coils",
+        "type": "float",
+        "default": 6.0,
+        "minimum": 0.5,
+        "maximum": 200.0,
+        "unit": "turns",
+        "description": "Active coils n between the closed ends."
+      },
+      {
+        "name": "pitch",
+        "type": "float",
+        "default": 0.011,
+        "minimum": 0.0002,
+        "maximum": 2.0,
+        "unit": "m",
+        "description": "Rise per active coil; must exceed the wire diameter."
+      },
+      {
+        "name": "end_coils",
+        "type": "float",
+        "default": 1.0,
+        "minimum": 0.0,
+        "maximum": 5.0,
+        "unit": "turns",
+        "description": "Closed coils at each end, climbing one wire diameter per turn."
+      },
+      {
+        "name": "clockwise",
+        "type": "bool",
+        "default": false,
+        "minimum": null,
+        "maximum": null,
+        "unit": "flag",
+        "description": "Left-hand winding instead of right-hand."
+      },
+      {
+        "name": "samples_per_turn",
+        "type": "int",
+        "default": 28,
+        "minimum": 6,
+        "maximum": 128,
+        "unit": "count",
+        "description": "Sweep samples per turn."
+      },
+      {
+        "name": "wire_sides",
+        "type": "int",
+        "default": 10,
+        "minimum": 3,
+        "maximum": 48,
+        "unit": "count",
+        "description": "Sides of the round wire section."
+      },
+      {
+        "name": "shear_modulus",
+        "type": "float",
+        "default": 79300000000.0,
+        "minimum": 1000000.0,
+        "maximum": 500000000000.0,
+        "unit": "Pa",
+        "description": "Shear modulus G of the wire material (spring steel is about 79.3 GPa)."
+      }
+    ],
+    "outputs": {
+      "kind": "mesh",
+      "object": "Coil Spring",
+      "closed": true,
+      "description": "One closed, smooth-shaded mesh object named Coil Spring along +Z.",
+      "at_defaults": {
+        "vertices": 2250,
+        "faces": 2242,
+        "bounds": [
+          [
+            -0.022,
+            -0.022,
+            9.8844e-05
+          ],
+          [
+            0.022,
+            0.022,
+            0.077901156
+          ]
+        ],
+        "volume": 1.1733e-05,
+        "euler": 2,
+        "report": {
+          "total_turns": 8.0,
+          "free_length_m": 0.078,
+          "solid_length_m": 0.036,
+          "spring_rate_n_per_m": 6608.333333,
+          "spring_index": 10.0
+        }
+      }
+    },
+    "units": "metres",
+    "axes": "Blender Z up, -Y forward",
+    "blender_minimum": "4.2",
+    "verification": {
+      "fixture": "none",
+      "preview": {
+        "floor": true,
+        "view": [
+          1.0,
+          -1.2,
+          0.4
+        ]
+      }
+    }
+  },
+  "limits": "Ends are closed but not ground flat, so the spring does not stand on a flat face. The height changes pitch abruptly where active coils meet end coils. The rate uses the basic formula G d^4 / (8 D^3 n) without the Wahl curvature correction and assumes small deflections. Extension spring hooks are not modelled. Verified in Blender 5.2.1; written for the 4.2 API.",
+  "related": [
+    "rope_twisted",
+    "anim_piston_crank",
+    "hex_bolt_nut"
+  ],
+  "technique_references": [
+    "Helix sweep in the radial and tangent frame without twist",
+    "Piecewise pitch for closed end coils",
+    "Helical spring rate k = G d^4 / (8 D^3 n)"
+  ],
+  "native_checks": [
+    "addon_install_and_enable",
+    "operator_runs_with_defaults",
+    "blender_data_matches_core",
+    "addon_disable_unregisters",
+    "script_mode_runs",
+    "clean_reopen_addon_file",
+    "clean_reopen_script_file",
+    "gltf_separate_export",
+    "engine_output_clean"
+  ]
+}

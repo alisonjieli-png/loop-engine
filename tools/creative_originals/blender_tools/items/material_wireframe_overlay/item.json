@@ -1,0 +1,171 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "material_wireframe_overlay",
+  "title": "Wireframe overlay material",
+  "purpose": "Build a material that renders every polygon edge as a glowing line over a base surface, with the line width in pixels or metres and an optional fade on surfaces seen edge-on. Use it for technical renders, topology presentations, sci-fi looks and blueprint styles.",
+  "form": "library_module",
+  "asset_role": null,
+  "dimension": "3d",
+  "engine": {
+    "name": "blender",
+    "minimum_version": "4.2"
+  },
+  "tags": [
+    "blender",
+    "material",
+    "shader nodes",
+    "wireframe",
+    "topology",
+    "technical",
+    "stylized"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "role": "other"
+    },
+    {
+      "path": "material_wireframe_overlay.py",
+      "role": "executable_tool"
+    },
+    {
+      "path": "test_material_wireframe_overlay.py",
+      "role": "executable_tool"
+    }
+  ],
+  "contract": {
+    "module": "material_wireframe_overlay",
+    "entry_points": {
+      "core": "material_graph",
+      "blender": "create",
+      "operator": "baltor.material_wireframe_overlay",
+      "expectations": "expectations"
+    },
+    "parameters": [
+      {
+        "name": "material_name",
+        "type": "string",
+        "default": "Baltor Wireframe",
+        "minimum": null,
+        "maximum": null,
+        "unit": "text",
+        "description": "Name of the new material."
+      },
+      {
+        "name": "line_color",
+        "type": "vector",
+        "default": [
+          0.2,
+          0.9,
+          1.0
+        ],
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "unit": "linear RGB",
+        "description": "Colour of the edge lines."
+      },
+      {
+        "name": "surface_color",
+        "type": "vector",
+        "default": [
+          0.02,
+          0.03,
+          0.05
+        ],
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "unit": "linear RGB",
+        "description": "Colour of the faces between the lines."
+      },
+      {
+        "name": "line_width",
+        "type": "float",
+        "default": 1.2,
+        "minimum": 0.01,
+        "maximum": 100.0,
+        "unit": "px or m",
+        "description": "Line width in pixels, or in metres when use_pixel_size is false."
+      },
+      {
+        "name": "use_pixel_size",
+        "type": "bool",
+        "default": true,
+        "minimum": null,
+        "maximum": null,
+        "unit": "flag",
+        "description": "Measure the line width in pixels on screen instead of metres on the surface."
+      },
+      {
+        "name": "line_strength",
+        "type": "float",
+        "default": 3.0,
+        "minimum": 0.0,
+        "maximum": 1000.0,
+        "unit": "ratio",
+        "description": "Emission strength of the lines."
+      },
+      {
+        "name": "fade_grazing",
+        "type": "float",
+        "default": 0.4,
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "unit": "ratio",
+        "description": "How much lines fade on surfaces seen edge-on."
+      },
+      {
+        "name": "assign",
+        "type": "bool",
+        "default": true,
+        "minimum": null,
+        "maximum": null,
+        "unit": "flag",
+        "description": "Assign the material to the active object."
+      }
+    ],
+    "outputs": {
+      "kind": "node_graph",
+      "description": "One material with a node tree; assigned to the active object.",
+      "at_defaults": {
+        "nodes": 8,
+        "links": 7
+      }
+    },
+    "units": "metres",
+    "axes": "Blender Z up, -Y forward",
+    "blender_minimum": "4.2",
+    "verification": {
+      "fixture": "monkey",
+      "preview": {
+        "floor": true,
+        "view": [
+          0.3,
+          -1.4,
+          0.35
+        ]
+      }
+    }
+  },
+  "limits": "Relies on the Wireframe shader node, which Cycles renders; EEVEE does not support it and shows the base surface only. Edges come from the triangulated render mesh, so n-gons show their internal triangulation. Lines are emissive and do not cast shadows. Rendered here with Cycles CPU only. Verified in Blender 5.2.1; written for the 4.2 API.",
+  "related": [
+    "material_hologram",
+    "util_polygon_budget",
+    "material_uv_checker"
+  ],
+  "technique_references": [
+    "Wireframe shader node in pixel or world size",
+    "Facing term to fade lines at grazing angles",
+    "Mix of a surface and an emission"
+  ],
+  "native_checks": [
+    "addon_install_and_enable",
+    "operator_runs_with_defaults",
+    "blender_data_matches_core",
+    "addon_disable_unregisters",
+    "script_mode_runs",
+    "clean_reopen_addon_file",
+    "clean_reopen_script_file",
+    "gltf_separate_export",
+    "engine_output_clean"
+  ]
+}

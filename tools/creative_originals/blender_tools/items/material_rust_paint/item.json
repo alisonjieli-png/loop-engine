@@ -1,0 +1,167 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "material_rust_paint",
+  "title": "Rust over paint material with chipped edges",
+  "purpose": "Build a painted steel node material that rusts in noise patches and in crevices found by ambient occlusion, with a thin ring of bare steel where the paint chips, and coverage, cavity weight and chip width as parameters. Use it for ships, machines, vehicles and post-industrial scenes.",
+  "form": "library_module",
+  "asset_role": null,
+  "dimension": "3d",
+  "engine": {
+    "name": "blender",
+    "minimum_version": "4.2"
+  },
+  "tags": [
+    "blender",
+    "material",
+    "shader nodes",
+    "rust",
+    "weathering",
+    "procedural texture",
+    "metal"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "role": "other"
+    },
+    {
+      "path": "material_rust_paint.py",
+      "role": "executable_tool"
+    },
+    {
+      "path": "test_material_rust_paint.py",
+      "role": "executable_tool"
+    }
+  ],
+  "contract": {
+    "module": "material_rust_paint",
+    "entry_points": {
+      "core": "material_graph",
+      "blender": "create",
+      "operator": "baltor.material_rust_paint",
+      "expectations": "expectations"
+    },
+    "parameters": [
+      {
+        "name": "material_name",
+        "type": "string",
+        "default": "Baltor Rusty Paint",
+        "minimum": null,
+        "maximum": null,
+        "unit": "text",
+        "description": "Name of the new material."
+      },
+      {
+        "name": "paint_color",
+        "type": "vector",
+        "default": [
+          0.05,
+          0.2,
+          0.12
+        ],
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "unit": "linear RGB",
+        "description": "Colour of the paint."
+      },
+      {
+        "name": "coverage",
+        "type": "float",
+        "default": 0.45,
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "unit": "ratio",
+        "description": "How much of the surface rusts; 0 none, 1 nearly all."
+      },
+      {
+        "name": "cavity_weight",
+        "type": "float",
+        "default": 0.6,
+        "minimum": 0.0,
+        "maximum": 2.0,
+        "unit": "ratio",
+        "description": "How strongly crevices (low ambient occlusion) attract rust."
+      },
+      {
+        "name": "ao_distance",
+        "type": "float",
+        "default": 0.15,
+        "minimum": 0.001,
+        "maximum": 10.0,
+        "unit": "m",
+        "description": "Search distance of the ambient occlusion used for cavities."
+      },
+      {
+        "name": "chip_width",
+        "type": "float",
+        "default": 0.05,
+        "minimum": 0.0,
+        "maximum": 0.3,
+        "unit": "ratio",
+        "description": "Width of the bare steel ring around rust, in units of the rust field."
+      },
+      {
+        "name": "rust_scale",
+        "type": "float",
+        "default": 3.0,
+        "minimum": 0.05,
+        "maximum": 200.0,
+        "unit": "1/m",
+        "description": "Frequency of the rust patches."
+      },
+      {
+        "name": "assign",
+        "type": "bool",
+        "default": true,
+        "minimum": null,
+        "maximum": null,
+        "unit": "flag",
+        "description": "Assign the material to the active object."
+      }
+    ],
+    "outputs": {
+      "kind": "node_graph",
+      "description": "One material with a node tree; assigned to the active object.",
+      "at_defaults": {
+        "nodes": 16,
+        "links": 18
+      }
+    },
+    "units": "metres",
+    "axes": "Blender Z up, -Y forward",
+    "blender_minimum": "4.2",
+    "verification": {
+      "fixture": "monkey",
+      "preview": {
+        "floor": true,
+        "view": [
+          0.3,
+          -1.4,
+          0.4
+        ]
+      }
+    }
+  },
+  "limits": "The cavity term uses the Ambient Occlusion shader node, which Cycles evaluates by ray tracing and EEVEE approximates in screen space, so rust in crevices differs between them. Rust spreads by noise thresholds, not by any corrosion model, and has no streaks below edges. Rendered here with Cycles CPU only. Verified in Blender 5.2.1; written for the 4.2 API.",
+  "related": [
+    "material_edge_wear",
+    "material_cavity_dirt",
+    "material_car_paint"
+  ],
+  "technique_references": [
+    "Nested threshold masks from one scalar field for rust and chipped paint",
+    "Ambient occlusion as a cavity mask",
+    "Mixing three Principled shaders by masks"
+  ],
+  "native_checks": [
+    "addon_install_and_enable",
+    "operator_runs_with_defaults",
+    "blender_data_matches_core",
+    "addon_disable_unregisters",
+    "script_mode_runs",
+    "clean_reopen_addon_file",
+    "clean_reopen_script_file",
+    "gltf_separate_export",
+    "engine_output_clean"
+  ]
+}

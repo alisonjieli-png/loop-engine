@@ -1,0 +1,180 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "material_car_paint",
+  "title": "Metallic flake car paint with a flip colour",
+  "purpose": "Build a car paint node material: a two-tone colour that flips at grazing angles, Voronoi metal flakes that tilt the base layer's normal so they sparkle, and a smooth clear coat on its own normal. Use it for vehicles, product renders and toys.",
+  "form": "library_module",
+  "asset_role": null,
+  "dimension": "3d",
+  "engine": {
+    "name": "blender",
+    "minimum_version": "4.2"
+  },
+  "tags": [
+    "blender",
+    "material",
+    "shader nodes",
+    "car paint",
+    "metallic",
+    "clear coat",
+    "automotive"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "role": "other"
+    },
+    {
+      "path": "material_car_paint.py",
+      "role": "executable_tool"
+    },
+    {
+      "path": "test_material_car_paint.py",
+      "role": "executable_tool"
+    }
+  ],
+  "contract": {
+    "module": "material_car_paint",
+    "entry_points": {
+      "core": "material_graph",
+      "blender": "create",
+      "operator": "baltor.material_car_paint",
+      "expectations": "expectations"
+    },
+    "parameters": [
+      {
+        "name": "material_name",
+        "type": "string",
+        "default": "Baltor Car Paint",
+        "minimum": null,
+        "maximum": null,
+        "unit": "text",
+        "description": "Name of the new material."
+      },
+      {
+        "name": "base_color",
+        "type": "vector",
+        "default": [
+          0.45,
+          0.02,
+          0.03
+        ],
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "unit": "linear RGB",
+        "description": "Colour seen face on."
+      },
+      {
+        "name": "flip_color",
+        "type": "vector",
+        "default": [
+          0.12,
+          0.0,
+          0.05
+        ],
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "unit": "linear RGB",
+        "description": "Colour at grazing angles."
+      },
+      {
+        "name": "metallic",
+        "type": "float",
+        "default": 0.75,
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "unit": "ratio",
+        "description": "Metallic weight of the base layer."
+      },
+      {
+        "name": "base_roughness",
+        "type": "float",
+        "default": 0.38,
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "unit": "ratio",
+        "description": "Roughness of the base layer under the coat."
+      },
+      {
+        "name": "flake_scale",
+        "type": "float",
+        "default": 1500.0,
+        "minimum": 10.0,
+        "maximum": 100000.0,
+        "unit": "1/m",
+        "description": "Flakes per metre."
+      },
+      {
+        "name": "flake_strength",
+        "type": "float",
+        "default": 0.3,
+        "minimum": 0.0,
+        "maximum": 2.0,
+        "unit": "ratio",
+        "description": "How far flakes tilt the base normal."
+      },
+      {
+        "name": "coat_roughness",
+        "type": "float",
+        "default": 0.03,
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "unit": "ratio",
+        "description": "Roughness of the clear coat."
+      },
+      {
+        "name": "assign",
+        "type": "bool",
+        "default": true,
+        "minimum": null,
+        "maximum": null,
+        "unit": "flag",
+        "description": "Assign the material to the active object."
+      }
+    ],
+    "outputs": {
+      "kind": "node_graph",
+      "description": "One material with a node tree; assigned to the active object.",
+      "at_defaults": {
+        "nodes": 11,
+        "links": 10
+      }
+    },
+    "units": "metres",
+    "axes": "Blender Z up, -Y forward",
+    "blender_minimum": "4.2",
+    "verification": {
+      "fixture": "monkey",
+      "preview": {
+        "floor": true,
+        "view": [
+          0.3,
+          -1.4,
+          0.4
+        ]
+      }
+    }
+  },
+  "limits": "Flakes come from Voronoi cells in object space, so their size scales with the object and they alias at a distance unless enough samples are rendered. The flip colour uses a facing ramp, not measured pearlescent data, and the paint is not physically based beyond the Principled BSDF. Rendered here with Cycles CPU only. Verified in Blender 5.2.1; written for the 4.2 API.",
+  "related": [
+    "material_glass_tinted",
+    "material_rust_paint",
+    "light_product_softbox"
+  ],
+  "technique_references": [
+    "Layer Weight facing term driving a colour ramp for a flip colour",
+    "Normal perturbation by random Voronoi cell colours for flakes",
+    "Separate coat normal over a perturbed base normal"
+  ],
+  "native_checks": [
+    "addon_install_and_enable",
+    "operator_runs_with_defaults",
+    "blender_data_matches_core",
+    "addon_disable_unregisters",
+    "script_mode_runs",
+    "clean_reopen_addon_file",
+    "clean_reopen_script_file",
+    "gltf_separate_export",
+    "engine_output_clean"
+  ]
+}

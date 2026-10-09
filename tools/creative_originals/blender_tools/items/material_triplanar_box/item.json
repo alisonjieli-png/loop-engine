@@ -1,0 +1,154 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "material_triplanar_box",
+  "title": "Triplanar box-projected image material",
+  "purpose": "Build an image material that needs no UV map: object coordinates scaled to a texture size in metres feed an Image Texture in box projection with a soft blend, using a given image or a generated UV grid. Use it for scanned or generated meshes, kitbash parts and blockouts.",
+  "form": "library_module",
+  "asset_role": null,
+  "dimension": "3d",
+  "engine": {
+    "name": "blender",
+    "minimum_version": "4.2"
+  },
+  "tags": [
+    "blender",
+    "material",
+    "shader nodes",
+    "triplanar",
+    "box projection",
+    "image texture",
+    "uv free"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "role": "other"
+    },
+    {
+      "path": "material_triplanar_box.py",
+      "role": "executable_tool"
+    },
+    {
+      "path": "test_material_triplanar_box.py",
+      "role": "executable_tool"
+    }
+  ],
+  "contract": {
+    "module": "material_triplanar_box",
+    "entry_points": {
+      "core": "material_graph",
+      "blender": "create",
+      "operator": "baltor.material_triplanar_box",
+      "expectations": "expectations"
+    },
+    "parameters": [
+      {
+        "name": "material_name",
+        "type": "string",
+        "default": "Baltor Triplanar",
+        "minimum": null,
+        "maximum": null,
+        "unit": "text",
+        "description": "Name of the new material."
+      },
+      {
+        "name": "image_path",
+        "type": "string",
+        "default": "",
+        "minimum": null,
+        "maximum": null,
+        "unit": "path",
+        "description": "Image file to project; empty generates a UV grid image."
+      },
+      {
+        "name": "texture_size",
+        "type": "float",
+        "default": 1.0,
+        "minimum": 0.001,
+        "maximum": 10000.0,
+        "unit": "m",
+        "description": "World size of one repeat of the image."
+      },
+      {
+        "name": "blend",
+        "type": "float",
+        "default": 0.25,
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "unit": "ratio",
+        "description": "Width of the soft blend between the three projections."
+      },
+      {
+        "name": "grid_resolution",
+        "type": "int",
+        "default": 512,
+        "minimum": 16,
+        "maximum": 4096,
+        "unit": "px",
+        "description": "Side of the generated grid image when no path is given."
+      },
+      {
+        "name": "roughness",
+        "type": "float",
+        "default": 0.5,
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "unit": "ratio",
+        "description": "Roughness of the surface."
+      },
+      {
+        "name": "assign",
+        "type": "bool",
+        "default": true,
+        "minimum": null,
+        "maximum": null,
+        "unit": "flag",
+        "description": "Assign the material to the active object."
+      }
+    ],
+    "outputs": {
+      "kind": "node_graph",
+      "description": "One material with a box-projected image; assigned to the active object.",
+      "at_defaults": {
+        "nodes": 5,
+        "links": 4
+      }
+    },
+    "units": "metres",
+    "axes": "Blender Z up, -Y forward",
+    "blender_minimum": "4.2",
+    "verification": {
+      "fixture": "monkey",
+      "preview": {
+        "floor": true,
+        "view": [
+          0.3,
+          -1.4,
+          0.35
+        ]
+      }
+    }
+  },
+  "limits": "Box projection follows object axes, so rotating the object rotates the projection with it and curved surfaces show stretching in the blend zones. Normal maps are not projected; this is a colour texture tool. The generated grid is for judging scale and seams, not final look. Rendered here with Cycles CPU only. Verified in Blender 5.2.1; written for the 4.2 API.",
+  "related": [
+    "material_pbr_from_folder",
+    "util_uv_box_project",
+    "util_texel_density"
+  ],
+  "technique_references": [
+    "Box (triplanar) projection of an image along the three object axes",
+    "Texture size in metres by scaling object coordinates",
+    "Generated UV grid image"
+  ],
+  "native_checks": [
+    "addon_install_and_enable",
+    "operator_runs_with_defaults",
+    "blender_data_matches_core",
+    "addon_disable_unregisters",
+    "script_mode_runs",
+    "clean_reopen_addon_file",
+    "clean_reopen_script_file",
+    "gltf_separate_export",
+    "engine_output_clean"
+  ]
+}
