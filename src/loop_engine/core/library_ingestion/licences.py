@@ -70,8 +70,14 @@ _TRAILING_SECTIONS = ((r"appendix: how to apply the apache license", r"limitatio
                       (r"creative commons is not a party to its public licen[cs]es",
                        r"creative commons may be contacted at\W+creativecommons\.org"))
 #: A holder notice has a copyright mark or a year. A wrapped disclaimer can
-#: start with "COPYRIGHT HOLDERS BE LIABLE" and must remain licence text.
-_NOTICE_LINE = re.compile(r"\s*(?:copyright(?:\s*\(c\)|\s*©|\s+\d{4}\b)|\(c\)|©)")
+#: start with "COPYRIGHT HOLDERS BE LIABLE" and must remain licence text. So
+#: must Apache-2.0's clause 4(c), "(c) You must retain, ...": its "(c)" is the
+#: clause's letter, not a copyright mark. Read as a notice, the clause left the
+#: Apache-2.0 template without "retain", and a copy that numbers its clauses
+#: ("3. You must retain", Babylon.js's license.md) was refused for adding it
+#: (October 9, 2026). The template's words were rebuilt from the same pinned
+#: canonical text (licence_templates.json): they gain "c" and "retain" only.
+_NOTICE_LINE = re.compile(r"\s*(?:copyright(?:\s*\(c\)|\s*©|\s+\d{4}\b)|\(c\)(?!\s+you\s+must\b)|©)")
 _PLACEHOLDER = re.compile(r"\[[^\]]{0,40}\]|<[^>]{0,40}>|\{[^}]{0,40}\}")
 #: Words that state a condition. A plain copyright notice names a holder and a year, so a line
 #: set aside as a notice, or a placeholder set aside as a name, that carries one of these words

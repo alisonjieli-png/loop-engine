@@ -65,6 +65,25 @@ class LicenceRuleChecks(unittest.TestCase):
             self.assertNotEqual(_decide({"skills/demo/SKILL.md": support.skill("demo")},
                                        {"LICENSE": wrong}, github="Apache-2.0").decision, VERBATIM)
 
+    def test_an_apache_copy_that_numbers_its_clauses_is_recognized_and_a_holder_notice_stays_a_notice(self):
+        # Babylon.js's license.md numbers clause 4(c) "3." instead of "(c)": until October 9, 2026 the normalizer read
+        # the canonical "(c) You must retain" as a copyright notice, so the template lacked "retain" and this copy
+        # was refused for adding it.
+        text = (Path(__file__).with_name("fixtures") / "licence-texts/google-api-client-LICENSE.txt").read_text()
+        numbered = text
+        for letter, number in (("(a) You must give", "1. You must give"), ("(b) You must cause", "2. You must cause"),
+                               ("(c) You must retain", "3. You must retain"), ("(d) If the Work", "4. If the Work")):
+            self.assertIn(letter, numbered)
+            numbered = numbered.replace(letter, number, 1)
+        self.assertEqual(match_licence(numbered).spdx, "Apache-2.0")
+        self.assertEqual(_decide({"skills/demo/SKILL.md": support.skill("demo")}, {"LICENSE": numbered},
+                                 github="Apache-2.0").decision, VERBATIM)
+        # Known wrong: a holder notice written with the mark alone is still set aside as a notice, and a clause that
+        # adds an obligation is still refused.
+        self.assertEqual(match_licence(text + "\n(c) 2026 Example Corp\n").spdx, "Apache-2.0")
+        self.assertIsNone(match_licence(numbered.replace("3. You must retain", "3. You must pay a monthly "
+                                                                                 "subscription and retain")).spdx)
+
     def test_wrapped_copyright_disclaimer_is_not_a_holder_notice(self):
         # This wrapping occurs in python-validators/validators' MIT licence.
         text = support.MIT.replace("COPYRIGHT HOLDERS", "\nCOPYRIGHT HOLDERS")
