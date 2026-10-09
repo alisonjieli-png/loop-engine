@@ -1,7 +1,7 @@
 # Baltor plugin package for ChatGPT and Codex
 
 Kind: submission package. This folder is what the owner uploads to OpenAI's
-plugin portal (https://platform.openai.com/plugins) to list Baltor in the
+plugin portal (<https://platform.openai.com/plugins>) to list Baltor in the
 directory that ChatGPT and Codex share. The requirements it answers, with the
 source and the date each was read, are in
 [the ChatGPT app guide](../../docs/guides/chatgpt-app.md).
@@ -35,11 +35,11 @@ portal by the owner:
 
 - **Reviewer credentials.** A dedicated Baltor account that signs in with an
   email address and a password, with no code by email or text message. Make
-  it through Baltor's own sign-up at https://baltor.ai/get-started with an
+  it through Baltor's own sign-up at <https://baltor.ai/get-started> with an
   address the owner reads, choose its password on the page the link opens,
   then have a superadmin grant it free monthly Baltor Pro from Administration
   so that every review case can download. Enter the address, the password and
-  the sign-in page https://baltor.ai/login in **Review details**. Keep the
+  the sign-in page <https://baltor.ai/login> in **Review details**. Keep the
   account for later reviews.
 - **The demonstration video.** Record the five positive and three negative
   cases in ChatGPT on the web and on a phone, with the app connected, and give

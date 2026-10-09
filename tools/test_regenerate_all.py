@@ -27,6 +27,7 @@ import regenerate_all as tool  # noqa: E402
 #: Tools with a check mode that are not views, each with the reason.
 NOT_VIEWS = {"owner_requests_ledger.py": "checks the hand-kept ledger against the roadmap and writes no committed file",
              "build_feed_reading_profile.py": "checks a caller-selected private profile folder; no committed view or repository output is generated",
+             "build_chatgpt_app_package.py": "checks the committed plugin package against OpenAI's submission rules; its --zip archive goes to a path the caller names and is never committed",
              "regenerate_all.py": "the runner itself"}
 GIT = ("git", "-c", "user.name=Regeneration test", "-c", "user.email=regeneration@example.invalid",
        "-c", "core.hooksPath=/dev/null", "-c", "commit.gpgsign=false")

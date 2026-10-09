@@ -12,7 +12,7 @@ OpenAI's plugin guidelines, read on October 5, 2026, require a published
 privacy policy that states, at minimum, "the categories of personal data
 collected, the purposes of use, the categories of recipients, data retention
 timelines, and any controls offered to your users"
-(https://developers.openai.com/plugins/plugin-guidelines, section Privacy
+(<https://developers.openai.com/plugins/plugin-guidelines>, section Privacy
 policy). The approved notice already states the categories, the purposes, the
 recipients and the controls. Two things are missing or only implied:
 
@@ -73,14 +73,14 @@ Proposed text for "Contact", once mail to a support address is delivered and
 the address is set as `http.support_email`:
 
 > Baltor.AI, 1428 Bryn Mawr St, Saxton, PA 16678, United States, or by email
-> at support@baltor.ai. The support page, https://baltor.ai/support, lists
+> at <support@baltor.ai>. The support page, <https://baltor.ai/support>, lists
 > every way to reach Baltor.
 >
 > Questions that contain no personal data can also go to the public issue
 > tracker of the repository. Do not post personal data in a public issue.
 
 Until that address works, only the second sentence of the first paragraph
-changes: "The support page, https://baltor.ai/support, lists every way to
+changes: "The support page, <https://baltor.ai/support>, lists every way to
 reach Baltor."
 
 ## Not needed by the directory, for the owner's consideration
