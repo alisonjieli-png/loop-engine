@@ -1,0 +1,258 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "riveted_plates",
+  "title": "Riveted metal plates",
+  "purpose": "Generate tileable PBR maps of riveted plating: a grid of lapped plates at slightly different heights, rows of domed or flush rivets along every edge, rust or dirt streaks running down from each rivet, and paint worn on rivet heads and edges. Use for ship hulls, tanks, airframes and steampunk props.",
+  "form": "function",
+  "asset_role": null,
+  "dimension": "3d",
+  "engine": {
+    "name": "python",
+    "minimum_version": "3.10"
+  },
+  "tags": [
+    "texture",
+    "pbr",
+    "tileable",
+    "metal",
+    "rivets",
+    "plates",
+    "hull",
+    "steampunk",
+    "procedural"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "role": "other"
+    },
+    {
+      "path": "riveted_plates.py",
+      "role": "executable_tool"
+    },
+    {
+      "path": "material.tres",
+      "role": "skill_asset"
+    },
+    {
+      "path": "blender_material.py",
+      "role": "executable_tool"
+    }
+  ],
+  "contract": {
+    "entry_point": "generate",
+    "module": "riveted_plates.py",
+    "signature": "generate(width=256, height=256, seed=0, preset=\"default\", directx_normal=False, **parameters) -> {map name: {\"channels\", \"colour_space\", \"pixels\"}}",
+    "command_line": "python riveted_plates.py --size 1024 --seed 7 --preset NAME --out DIR [--width W --height H] [--set NAME=VALUE] [--directx-normal] [--orm]",
+    "maps": [
+      {
+        "name": "albedo",
+        "channels": 3,
+        "colour_space": "srgb",
+        "convention": "gltf_base_color",
+        "range": [
+          0.02,
+          0.95
+        ]
+      },
+      {
+        "name": "normal",
+        "channels": 3,
+        "colour_space": "linear",
+        "convention": "opengl_y_up"
+      },
+      {
+        "name": "roughness",
+        "channels": 1,
+        "colour_space": "linear",
+        "convention": "gltf_roughness",
+        "range": [
+          0.12,
+          1.0
+        ]
+      },
+      {
+        "name": "metallic",
+        "channels": 1,
+        "colour_space": "linear",
+        "convention": "gltf_metallic"
+      },
+      {
+        "name": "height",
+        "channels": 1,
+        "colour_space": "linear",
+        "convention": "white_is_high"
+      },
+      {
+        "name": "ao",
+        "channels": 1,
+        "colour_space": "linear",
+        "convention": "white_is_unoccluded"
+      }
+    ],
+    "parameters": [
+      {
+        "name": "plates_across",
+        "type": "int",
+        "default": 2,
+        "minimum": 1,
+        "maximum": 8,
+        "meaning": "Plates across the tile."
+      },
+      {
+        "name": "plate_rows",
+        "type": "int",
+        "default": 2,
+        "minimum": 1,
+        "maximum": 8,
+        "meaning": "Plate rows down the tile."
+      },
+      {
+        "name": "rivets_per_edge",
+        "type": "int",
+        "default": 9,
+        "minimum": 2,
+        "maximum": 30,
+        "meaning": "Rivets along each plate edge."
+      },
+      {
+        "name": "rivet_size",
+        "type": "float",
+        "default": 0.012,
+        "minimum": 0.003,
+        "maximum": 0.03,
+        "meaning": "Rivet head radius in texture units."
+      },
+      {
+        "name": "rivet_height",
+        "type": "float",
+        "default": 0.8,
+        "minimum": 0.05,
+        "maximum": 1.0,
+        "meaning": "Rivet head height (low values give flush rivets)."
+      },
+      {
+        "name": "paint",
+        "type": "float",
+        "default": 1.0,
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "meaning": "Paint coverage (0 bare metal plates)."
+      },
+      {
+        "name": "streaks",
+        "type": "float",
+        "default": 0.4,
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "meaning": "Rust or dirt streaks below the rivets."
+      },
+      {
+        "name": "plate_variation",
+        "type": "float",
+        "default": 0.4,
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "meaning": "Tone difference between plates."
+      },
+      {
+        "name": "hue_shift",
+        "type": "float",
+        "default": 0.0,
+        "minimum": -0.5,
+        "maximum": 0.5,
+        "meaning": "Hue rotation of the albedo in turns."
+      },
+      {
+        "name": "saturation",
+        "type": "float",
+        "default": 1.0,
+        "minimum": 0.0,
+        "maximum": 2.0,
+        "meaning": "Albedo saturation multiplier."
+      },
+      {
+        "name": "brightness",
+        "type": "float",
+        "default": 1.0,
+        "minimum": 0.5,
+        "maximum": 1.0,
+        "meaning": "Albedo brightness multiplier."
+      }
+    ],
+    "presets": [
+      {
+        "name": "default",
+        "description": "Grey painted ship hull plating with rust streaks.",
+        "values": {}
+      },
+      {
+        "name": "steampunk_brass",
+        "description": "Bare brass plates with copper rivets.",
+        "values": {
+          "paint": 0.0,
+          "streaks": 0.15,
+          "plates_across": 3,
+          "plate_rows": 2,
+          "rivets_per_edge": 7,
+          "rivet_size": 0.015
+        }
+      },
+      {
+        "name": "airframe",
+        "description": "Aluminium aircraft skin with flush rivets.",
+        "values": {
+          "paint": 0.0,
+          "rivet_height": 0.12,
+          "rivet_size": 0.005,
+          "rivets_per_edge": 18,
+          "streaks": 0.1,
+          "plates_across": 3,
+          "plate_rows": 4,
+          "plate_variation": 0.6
+        }
+      },
+      {
+        "name": "rusty_tank",
+        "description": "Dark iron tank with heavy rust runs.",
+        "values": {
+          "paint": 0.4,
+          "streaks": 0.9,
+          "plate_variation": 0.6
+        }
+      }
+    ],
+    "tileable": true,
+    "default_size": 256,
+    "cost_seconds_1024": 18.9,
+    "peak_memory_mb_1024": 630,
+    "godot_material": "material.tres",
+    "godot_texture_folder": "res://baltor/textures/riveted_plates/",
+    "blender_builder": "blender_material.build_material(folder)"
+  },
+  "limits": "Plates form a regular grid; real plating staggers its seams and follows frames and curvature. Rivets run in straight rows just inside each edge. Streaks always run toward the bottom of the tile. Occlusion is a blurred-height estimate, not ray traced.",
+  "related": [
+    "corrugated_sheet",
+    "diamond_plate",
+    "scifi_greeble_panels"
+  ],
+  "technique_references": [
+    "Plate grid with a per-plate height for lapped seams",
+    "Domed and flush rivet head stamps",
+    "Downward exponential trail per column, swept twice for wrap-around",
+    "Height-driven paint wear on rivet heads and plate edges"
+  ],
+  "native_checks": [
+    "command_line_generates_declared_maps",
+    "maps_decode",
+    "maps_have_declared_size_and_channels",
+    "maps_tile_without_a_seam",
+    "normal_vectors_unit_length_facing_out",
+    "maps_carry_detail",
+    "godot_imports_the_maps",
+    "godot_material_template_loads_every_map",
+    "godot_compatibility_render",
+    "capture_shows_the_textured_surface",
+    "blender_builds_the_material"
+  ]
+}

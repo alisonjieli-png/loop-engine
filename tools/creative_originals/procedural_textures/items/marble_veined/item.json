@@ -1,0 +1,256 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "marble_veined",
+  "title": "Veined marble",
+  "purpose": "Generate tileable PBR maps of polished or honed marble with long branching veins, soft clouds and fine secondary veins. Use for floors, counters, wall cladding and sculpture bases.",
+  "form": "function",
+  "asset_role": null,
+  "dimension": "3d",
+  "engine": {
+    "name": "python",
+    "minimum_version": "3.10"
+  },
+  "tags": [
+    "texture",
+    "pbr",
+    "tileable",
+    "marble",
+    "stone",
+    "veins",
+    "polished",
+    "procedural"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "role": "other"
+    },
+    {
+      "path": "marble_veined.py",
+      "role": "executable_tool"
+    },
+    {
+      "path": "material.tres",
+      "role": "skill_asset"
+    },
+    {
+      "path": "blender_material.py",
+      "role": "executable_tool"
+    }
+  ],
+  "contract": {
+    "entry_point": "generate",
+    "module": "marble_veined.py",
+    "signature": "generate(width=256, height=256, seed=0, preset=\"default\", directx_normal=False, **parameters) -> {map name: {\"channels\", \"colour_space\", \"pixels\"}}",
+    "command_line": "python marble_veined.py --size 1024 --seed 7 --preset NAME --out DIR [--width W --height H] [--set NAME=VALUE] [--directx-normal] [--orm]",
+    "maps": [
+      {
+        "name": "albedo",
+        "channels": 3,
+        "colour_space": "srgb",
+        "convention": "gltf_base_color",
+        "range": [
+          0.02,
+          0.92
+        ]
+      },
+      {
+        "name": "normal",
+        "channels": 3,
+        "colour_space": "linear",
+        "convention": "opengl_y_up"
+      },
+      {
+        "name": "roughness",
+        "channels": 1,
+        "colour_space": "linear",
+        "convention": "gltf_roughness",
+        "range": [
+          0.04,
+          0.8
+        ]
+      },
+      {
+        "name": "height",
+        "channels": 1,
+        "colour_space": "linear",
+        "convention": "white_is_high"
+      },
+      {
+        "name": "ao",
+        "channels": 1,
+        "colour_space": "linear",
+        "convention": "white_is_unoccluded"
+      }
+    ],
+    "parameters": [
+      {
+        "name": "vein_spacing",
+        "type": "int",
+        "default": 2,
+        "minimum": 1,
+        "maximum": 8,
+        "meaning": "Noise cells across the veins: higher values give more, closer veins."
+      },
+      {
+        "name": "vein_direction",
+        "type": "int",
+        "default": 0,
+        "minimum": 0,
+        "maximum": 4,
+        "meaning": "Vein run: 0 falling diagonal, 1 rising diagonal, 2 horizontal, 3 vertical, 4 steep diagonal."
+      },
+      {
+        "name": "vein_width",
+        "type": "float",
+        "default": 0.008,
+        "minimum": 0.002,
+        "maximum": 0.04,
+        "meaning": "Average width of the main veins in texture units."
+      },
+      {
+        "name": "flow",
+        "type": "float",
+        "default": 0.06,
+        "minimum": 0.0,
+        "maximum": 0.2,
+        "meaning": "Domain warp in texture units: how much the veins meander."
+      },
+      {
+        "name": "secondary_veins",
+        "type": "float",
+        "default": 0.5,
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "meaning": "Strength of the thin secondary veins."
+      },
+      {
+        "name": "cloudiness",
+        "type": "float",
+        "default": 0.5,
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "meaning": "Soft tonal clouds in the stone between veins."
+      },
+      {
+        "name": "polish",
+        "type": "float",
+        "default": 0.85,
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "meaning": "Surface finish from honed (0, matte) to polished (1, glossy)."
+      },
+      {
+        "name": "hue_shift",
+        "type": "float",
+        "default": 0.0,
+        "minimum": -0.5,
+        "maximum": 0.5,
+        "meaning": "Hue rotation of the albedo in turns."
+      },
+      {
+        "name": "saturation",
+        "type": "float",
+        "default": 1.0,
+        "minimum": 0.0,
+        "maximum": 2.0,
+        "meaning": "Albedo saturation multiplier."
+      },
+      {
+        "name": "brightness",
+        "type": "float",
+        "default": 1.0,
+        "minimum": 0.5,
+        "maximum": 1.5,
+        "meaning": "Albedo brightness multiplier."
+      }
+    ],
+    "presets": [
+      {
+        "name": "default",
+        "description": "White stone with soft grey diagonal veins, polished.",
+        "values": {}
+      },
+      {
+        "name": "calacatta",
+        "description": "Warm white stone with bold, widely spaced grey and gold veins.",
+        "values": {
+          "vein_spacing": 1,
+          "vein_width": 0.018,
+          "flow": 0.1,
+          "secondary_veins": 0.35,
+          "vein_direction": 1
+        }
+      },
+      {
+        "name": "nero",
+        "description": "Black stone with sharp white veins.",
+        "values": {
+          "vein_spacing": 2,
+          "vein_width": 0.005,
+          "flow": 0.07,
+          "secondary_veins": 0.85,
+          "vein_direction": 4,
+          "cloudiness": 0.3
+        }
+      },
+      {
+        "name": "verde",
+        "description": "Dark green serpentine marble with pale meandering veins, honed.",
+        "values": {
+          "vein_spacing": 4,
+          "vein_width": 0.005,
+          "flow": 0.14,
+          "secondary_veins": 0.9,
+          "polish": 0.35,
+          "vein_direction": 2,
+          "cloudiness": 0.8
+        }
+      },
+      {
+        "name": "rosso",
+        "description": "Red-brown marble with cream veins and strong clouds.",
+        "values": {
+          "vein_spacing": 3,
+          "vein_width": 0.01,
+          "flow": 0.12,
+          "secondary_veins": 0.6,
+          "cloudiness": 0.9,
+          "vein_direction": 3
+        }
+      }
+    ],
+    "tileable": true,
+    "default_size": 256,
+    "cost_seconds_1024": 24.1,
+    "peak_memory_mb_1024": 985,
+    "godot_material": "material.tres",
+    "godot_texture_folder": "res://baltor/textures/marble_veined/",
+    "blender_builder": "blender_material.build_material(folder)"
+  },
+  "limits": "Veins are zero crossings of warped anisotropic noise, an approximation of mineral-filled fractures, not a geological simulation; vein directions are limited to five whole-tile shears so the texture repeats. Relief is very shallow by design. Colours are artistic, not measured from named quarries. Occlusion is a blurred-height estimate.",
+  "related": [
+    "granite_speckled",
+    "terrazzo"
+  ],
+  "technique_references": [
+    "Zero crossings of anisotropic fractional Brownian motion as vein curves",
+    "Distance to an isoline from the field gradient for constant-width lines",
+    "Domain warping with tileable gradient noise",
+    "Whole-tile shear as a torus automorphism",
+    "Height to tangent-space normal by central differences"
+  ],
+  "native_checks": [
+    "command_line_generates_declared_maps",
+    "maps_decode",
+    "maps_have_declared_size_and_channels",
+    "maps_tile_without_a_seam",
+    "normal_vectors_unit_length_facing_out",
+    "maps_carry_detail",
+    "godot_imports_the_maps",
+    "godot_material_template_loads_every_map",
+    "godot_compatibility_render",
+    "capture_shows_the_textured_surface",
+    "blender_builds_the_material"
+  ]
+}

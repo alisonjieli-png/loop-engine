@@ -1,0 +1,268 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "brick_courses",
+  "title": "Brick wall courses in four bonds",
+  "purpose": "Generate tileable PBR maps of a brick wall in running, Flemish, English or stack bond, with recessed mortar, rounded and chipped edges and per-brick colour. Use for building walls, chimneys and garden walls.",
+  "form": "function",
+  "asset_role": null,
+  "dimension": "3d",
+  "engine": {
+    "name": "python",
+    "minimum_version": "3.10"
+  },
+  "tags": [
+    "texture",
+    "pbr",
+    "tileable",
+    "brick",
+    "masonry",
+    "wall",
+    "mortar",
+    "procedural"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "role": "other"
+    },
+    {
+      "path": "brick_courses.py",
+      "role": "executable_tool"
+    },
+    {
+      "path": "material.tres",
+      "role": "skill_asset"
+    },
+    {
+      "path": "blender_material.py",
+      "role": "executable_tool"
+    }
+  ],
+  "contract": {
+    "entry_point": "generate",
+    "module": "brick_courses.py",
+    "signature": "generate(width=256, height=256, seed=0, preset=\"default\", directx_normal=False, **parameters) -> {map name: {\"channels\", \"colour_space\", \"pixels\"}}",
+    "command_line": "python brick_courses.py --size 1024 --seed 7 --preset NAME --out DIR [--width W --height H] [--set NAME=VALUE] [--directx-normal] [--orm]",
+    "maps": [
+      {
+        "name": "albedo",
+        "channels": 3,
+        "colour_space": "srgb",
+        "convention": "gltf_base_color",
+        "range": [
+          0.03,
+          0.9
+        ]
+      },
+      {
+        "name": "normal",
+        "channels": 3,
+        "colour_space": "linear",
+        "convention": "opengl_y_up"
+      },
+      {
+        "name": "roughness",
+        "channels": 1,
+        "colour_space": "linear",
+        "convention": "gltf_roughness",
+        "range": [
+          0.15,
+          1.0
+        ]
+      },
+      {
+        "name": "height",
+        "channels": 1,
+        "colour_space": "linear",
+        "convention": "white_is_high"
+      },
+      {
+        "name": "ao",
+        "channels": 1,
+        "colour_space": "linear",
+        "convention": "white_is_unoccluded"
+      }
+    ],
+    "parameters": [
+      {
+        "name": "bond",
+        "type": "int",
+        "default": 0,
+        "minimum": 0,
+        "maximum": 3,
+        "meaning": "0 running (stretchers offset by half a brick), 1 Flemish (headers and stretchers alternate in each course), 2 English (stretcher and header courses alternate), 3 stack (joints aligned)."
+      },
+      {
+        "name": "course_pairs",
+        "type": "int",
+        "default": 4,
+        "minimum": 1,
+        "maximum": 12,
+        "meaning": "Pairs of courses across the tile height; every bond repeats after two courses."
+      },
+      {
+        "name": "bricks_per_course",
+        "type": "int",
+        "default": 3,
+        "minimum": 1,
+        "maximum": 10,
+        "meaning": "Stretchers per course across the tile width (Flemish: header and stretcher pairs)."
+      },
+      {
+        "name": "mortar_width",
+        "type": "float",
+        "default": 0.012,
+        "minimum": 0.002,
+        "maximum": 0.04,
+        "meaning": "Joint width in texture units (fractions of the tile width)."
+      },
+      {
+        "name": "joint_depth",
+        "type": "float",
+        "default": 0.5,
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "meaning": "How far the mortar sits below the brick faces: 0 flush, 1 deeply raked."
+      },
+      {
+        "name": "bevel",
+        "type": "float",
+        "default": 0.008,
+        "minimum": 0.001,
+        "maximum": 0.03,
+        "meaning": "Width of the rounded brick edge in texture units."
+      },
+      {
+        "name": "chipping",
+        "type": "float",
+        "default": 0.3,
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "meaning": "Broken and eroded brick edges, 0 crisp to 1 heavily damaged."
+      },
+      {
+        "name": "colour_variation",
+        "type": "float",
+        "default": 0.5,
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "meaning": "Spread of colour between bricks."
+      },
+      {
+        "name": "grime",
+        "type": "float",
+        "default": 0.2,
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "meaning": "Soot and dirt in the joints and on the faces."
+      },
+      {
+        "name": "hue_shift",
+        "type": "float",
+        "default": 0.0,
+        "minimum": -0.5,
+        "maximum": 0.5,
+        "meaning": "Hue rotation of the albedo in turns."
+      },
+      {
+        "name": "saturation",
+        "type": "float",
+        "default": 1.0,
+        "minimum": 0.0,
+        "maximum": 2.0,
+        "meaning": "Albedo saturation multiplier."
+      },
+      {
+        "name": "brightness",
+        "type": "float",
+        "default": 1.0,
+        "minimum": 0.5,
+        "maximum": 1.5,
+        "meaning": "Albedo brightness multiplier."
+      }
+    ],
+    "presets": [
+      {
+        "name": "default",
+        "description": "Red clay bricks in running bond with light grey mortar.",
+        "values": {}
+      },
+      {
+        "name": "weathered",
+        "description": "Old dark bricks, chipped edges, deep joints, soot and white salt bloom.",
+        "values": {
+          "chipping": 0.8,
+          "joint_depth": 0.8,
+          "grime": 0.7,
+          "colour_variation": 0.8
+        }
+      },
+      {
+        "name": "flemish_buff",
+        "description": "Buff yellow bricks in Flemish bond with darker headers.",
+        "values": {
+          "bond": 1,
+          "bricks_per_course": 2,
+          "chipping": 0.15
+        }
+      },
+      {
+        "name": "english_brown",
+        "description": "Brown bricks in English bond with dark mortar.",
+        "values": {
+          "bond": 2,
+          "bricks_per_course": 3,
+          "grime": 0.35
+        }
+      },
+      {
+        "name": "glazed_stack",
+        "description": "Glossy white glazed bricks in stack bond with thin flush joints.",
+        "values": {
+          "bond": 3,
+          "bricks_per_course": 4,
+          "course_pairs": 6,
+          "mortar_width": 0.006,
+          "joint_depth": 0.25,
+          "chipping": 0.05,
+          "colour_variation": 0.15,
+          "grime": 0.05,
+          "bevel": 0.004
+        }
+      }
+    ],
+    "tileable": true,
+    "default_size": 256,
+    "cost_seconds_1024": 16.1,
+    "peak_memory_mb_1024": 655,
+    "godot_material": "material.tres",
+    "godot_texture_folder": "res://baltor/textures/brick_courses/",
+    "blender_builder": "blender_material.build_material(folder)"
+  },
+  "limits": "Bricks are flat rectangles with rounded edges; there are no corner returns, cut bricks or openings. The bond repeats every two courses, so a tile shows an even number of courses. Salt bloom, soot and chips are noise-driven approximations. Occlusion is a blurred-height estimate, not ray traced. Colours are artistic, not measured from real clay.",
+  "related": [
+    "basketweave_pavers",
+    "pixel_stone_bricks",
+    "ashlar_masonry"
+  ],
+  "technique_references": [
+    "Running, Flemish, English and stack bond layouts in texture space",
+    "Per-cell hashing for brick colour and tilt",
+    "Fractional Brownian motion of tileable gradient noise",
+    "Height to tangent-space normal by central differences",
+    "Cavity occlusion from blurred height"
+  ],
+  "native_checks": [
+    "command_line_generates_declared_maps",
+    "maps_decode",
+    "maps_have_declared_size_and_channels",
+    "maps_tile_without_a_seam",
+    "normal_vectors_unit_length_facing_out",
+    "maps_carry_detail",
+    "godot_imports_the_maps",
+    "godot_material_template_loads_every_map",
+    "godot_compatibility_render",
+    "capture_shows_the_textured_surface",
+    "blender_builds_the_material"
+  ]
+}

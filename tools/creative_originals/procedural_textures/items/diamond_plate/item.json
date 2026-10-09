@@ -1,0 +1,235 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "diamond_plate",
+  "title": "Diamond tread plate",
+  "purpose": "Generate tileable PBR maps of diamond tread plate (checker plate): elongated raised lugs in alternating diagonals, polished lug tops, dirt in the valleys and paint worn through to bare metal. Use for floors, steps, ramps, truck beds and industrial props.",
+  "form": "function",
+  "asset_role": null,
+  "dimension": "3d",
+  "engine": {
+    "name": "python",
+    "minimum_version": "3.10"
+  },
+  "tags": [
+    "texture",
+    "pbr",
+    "tileable",
+    "metal",
+    "tread plate",
+    "checker plate",
+    "industrial",
+    "procedural"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "role": "other"
+    },
+    {
+      "path": "diamond_plate.py",
+      "role": "executable_tool"
+    },
+    {
+      "path": "material.tres",
+      "role": "skill_asset"
+    },
+    {
+      "path": "blender_material.py",
+      "role": "executable_tool"
+    }
+  ],
+  "contract": {
+    "entry_point": "generate",
+    "module": "diamond_plate.py",
+    "signature": "generate(width=256, height=256, seed=0, preset=\"default\", directx_normal=False, **parameters) -> {map name: {\"channels\", \"colour_space\", \"pixels\"}}",
+    "command_line": "python diamond_plate.py --size 1024 --seed 7 --preset NAME --out DIR [--width W --height H] [--set NAME=VALUE] [--directx-normal] [--orm]",
+    "maps": [
+      {
+        "name": "albedo",
+        "channels": 3,
+        "colour_space": "srgb",
+        "convention": "gltf_base_color",
+        "range": [
+          0.02,
+          0.95
+        ]
+      },
+      {
+        "name": "normal",
+        "channels": 3,
+        "colour_space": "linear",
+        "convention": "opengl_y_up"
+      },
+      {
+        "name": "roughness",
+        "channels": 1,
+        "colour_space": "linear",
+        "convention": "gltf_roughness",
+        "range": [
+          0.08,
+          1.0
+        ]
+      },
+      {
+        "name": "metallic",
+        "channels": 1,
+        "colour_space": "linear",
+        "convention": "gltf_metallic"
+      },
+      {
+        "name": "height",
+        "channels": 1,
+        "colour_space": "linear",
+        "convention": "white_is_high"
+      },
+      {
+        "name": "ao",
+        "channels": 1,
+        "colour_space": "linear",
+        "convention": "white_is_unoccluded"
+      }
+    ],
+    "parameters": [
+      {
+        "name": "lugs_across",
+        "type": "int",
+        "default": 6,
+        "minimum": 2,
+        "maximum": 20,
+        "meaning": "Lug cells across the tile (and down it)."
+      },
+      {
+        "name": "lug_length",
+        "type": "float",
+        "default": 0.7,
+        "minimum": 0.3,
+        "maximum": 1.1,
+        "meaning": "Lug length as a share of the cell diagonal."
+      },
+      {
+        "name": "lug_width",
+        "type": "float",
+        "default": 0.22,
+        "minimum": 0.05,
+        "maximum": 0.35,
+        "meaning": "Lug width as a share of the cell."
+      },
+      {
+        "name": "wear",
+        "type": "float",
+        "default": 0.5,
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "meaning": "Polish of the lug tops (and paint worn through on painted plate)."
+      },
+      {
+        "name": "dirt",
+        "type": "float",
+        "default": 0.15,
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "meaning": "Dirt in the valleys."
+      },
+      {
+        "name": "paint",
+        "type": "float",
+        "default": 0.0,
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "meaning": "Paint coverage (0 bare metal, 1 fully painted plate)."
+      },
+      {
+        "name": "hue_shift",
+        "type": "float",
+        "default": 0.0,
+        "minimum": -0.5,
+        "maximum": 0.5,
+        "meaning": "Hue rotation of the albedo in turns."
+      },
+      {
+        "name": "saturation",
+        "type": "float",
+        "default": 1.0,
+        "minimum": 0.0,
+        "maximum": 2.0,
+        "meaning": "Albedo saturation multiplier."
+      },
+      {
+        "name": "brightness",
+        "type": "float",
+        "default": 1.0,
+        "minimum": 0.5,
+        "maximum": 1.0,
+        "meaning": "Albedo brightness multiplier."
+      }
+    ],
+    "presets": [
+      {
+        "name": "default",
+        "description": "Aluminium tread plate, lightly worn.",
+        "values": {}
+      },
+      {
+        "name": "steel_dirty",
+        "description": "Dark steel tread plate with dirt in the valleys.",
+        "values": {
+          "dirt": 0.8,
+          "wear": 0.7,
+          "lugs_across": 8
+        }
+      },
+      {
+        "name": "painted_yellow",
+        "description": "Yellow painted tread plate worn to metal on the lug tops.",
+        "values": {
+          "paint": 1.0,
+          "wear": 0.6,
+          "dirt": 0.4
+        }
+      },
+      {
+        "name": "fine_pattern",
+        "description": "Fine-pitched bright plate with short lugs.",
+        "values": {
+          "lugs_across": 12,
+          "lug_length": 0.6,
+          "lug_width": 0.2,
+          "wear": 0.2,
+          "dirt": 0.1
+        }
+      }
+    ],
+    "tileable": true,
+    "default_size": 256,
+    "cost_seconds_1024": 20.5,
+    "peak_memory_mb_1024": 640,
+    "godot_material": "material.tres",
+    "godot_texture_folder": "res://baltor/textures/diamond_plate/",
+    "blender_builder": "blender_material.build_material(folder)"
+  },
+  "limits": "Lugs are identical capsules on a regular grid; real plates differ in lug shape by standard and maker. Wear follows lug height and noise, not walking paths. The lug relief is large for a normal map alone, so parallax or displacement helps at close range. Occlusion is a blurred-height estimate, not ray traced.",
+  "related": [
+    "perforated_metal",
+    "painted_metal_scratched",
+    "riveted_plates"
+  ],
+  "technique_references": [
+    "Capsule distance fields on a checkerboard of +45 and -45 degree cells",
+    "Dome profile from the capsule distance",
+    "Height-driven wear and dirt masks",
+    "glTF metallic-roughness split between paint and bare metal"
+  ],
+  "native_checks": [
+    "command_line_generates_declared_maps",
+    "maps_decode",
+    "maps_have_declared_size_and_channels",
+    "maps_tile_without_a_seam",
+    "normal_vectors_unit_length_facing_out",
+    "maps_carry_detail",
+    "godot_imports_the_maps",
+    "godot_material_template_loads_every_map",
+    "godot_compatibility_render",
+    "capture_shows_the_textured_surface",
+    "blender_builds_the_material"
+  ]
+}

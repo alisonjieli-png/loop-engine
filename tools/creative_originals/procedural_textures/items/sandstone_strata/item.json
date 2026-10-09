@@ -1,0 +1,238 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "sandstone_strata",
+  "title": "Layered sandstone",
+  "purpose": "Generate tileable PBR maps of layered sandstone: wavy strata of uneven thickness, cross-bedding, differential erosion and optional honeycomb weathering. Use for cliffs, canyon walls, building stone and desert rock.",
+  "form": "function",
+  "asset_role": null,
+  "dimension": "3d",
+  "engine": {
+    "name": "python",
+    "minimum_version": "3.10"
+  },
+  "tags": [
+    "texture",
+    "pbr",
+    "tileable",
+    "sandstone",
+    "stone",
+    "strata",
+    "rock",
+    "procedural"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "role": "other"
+    },
+    {
+      "path": "sandstone_strata.py",
+      "role": "executable_tool"
+    },
+    {
+      "path": "material.tres",
+      "role": "skill_asset"
+    },
+    {
+      "path": "blender_material.py",
+      "role": "executable_tool"
+    }
+  ],
+  "contract": {
+    "entry_point": "generate",
+    "module": "sandstone_strata.py",
+    "signature": "generate(width=256, height=256, seed=0, preset=\"default\", directx_normal=False, **parameters) -> {map name: {\"channels\", \"colour_space\", \"pixels\"}}",
+    "command_line": "python sandstone_strata.py --size 1024 --seed 7 --preset NAME --out DIR [--width W --height H] [--set NAME=VALUE] [--directx-normal] [--orm]",
+    "maps": [
+      {
+        "name": "albedo",
+        "channels": 3,
+        "colour_space": "srgb",
+        "convention": "gltf_base_color",
+        "range": [
+          0.03,
+          0.88
+        ]
+      },
+      {
+        "name": "normal",
+        "channels": 3,
+        "colour_space": "linear",
+        "convention": "opengl_y_up"
+      },
+      {
+        "name": "roughness",
+        "channels": 1,
+        "colour_space": "linear",
+        "convention": "gltf_roughness",
+        "range": [
+          0.6,
+          1.0
+        ]
+      },
+      {
+        "name": "height",
+        "channels": 1,
+        "colour_space": "linear",
+        "convention": "white_is_high"
+      },
+      {
+        "name": "ao",
+        "channels": 1,
+        "colour_space": "linear",
+        "convention": "white_is_unoccluded"
+      }
+    ],
+    "parameters": [
+      {
+        "name": "strata",
+        "type": "int",
+        "default": 9,
+        "minimum": 2,
+        "maximum": 30,
+        "meaning": "Strata across the tile height."
+      },
+      {
+        "name": "thickness_variation",
+        "type": "float",
+        "default": 0.6,
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "meaning": "How unequal the strata are in thickness."
+      },
+      {
+        "name": "waviness",
+        "type": "float",
+        "default": 0.4,
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "meaning": "How much the strata boundaries wave."
+      },
+      {
+        "name": "cross_bedding",
+        "type": "float",
+        "default": 0.5,
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "meaning": "Visibility of the inclined laminae inside the strata."
+      },
+      {
+        "name": "erosion",
+        "type": "float",
+        "default": 0.5,
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "meaning": "How far soft strata are worn back behind hard ones."
+      },
+      {
+        "name": "honeycomb",
+        "type": "float",
+        "default": 0.0,
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "meaning": "Honeycomb weathering pits (tafoni)."
+      },
+      {
+        "name": "hue_shift",
+        "type": "float",
+        "default": 0.0,
+        "minimum": -0.5,
+        "maximum": 0.5,
+        "meaning": "Hue rotation of the albedo in turns."
+      },
+      {
+        "name": "saturation",
+        "type": "float",
+        "default": 1.0,
+        "minimum": 0.0,
+        "maximum": 2.0,
+        "meaning": "Albedo saturation multiplier."
+      },
+      {
+        "name": "brightness",
+        "type": "float",
+        "default": 1.0,
+        "minimum": 0.5,
+        "maximum": 1.5,
+        "meaning": "Albedo brightness multiplier."
+      }
+    ],
+    "presets": [
+      {
+        "name": "default",
+        "description": "Desert red and cream banded sandstone.",
+        "values": {}
+      },
+      {
+        "name": "buff",
+        "description": "Pale buff building sandstone with faint bedding.",
+        "values": {
+          "strata": 6,
+          "cross_bedding": 0.3,
+          "erosion": 0.2,
+          "thickness_variation": 0.3
+        }
+      },
+      {
+        "name": "tafoni_coast",
+        "description": "Coastal sandstone with honeycomb weathering.",
+        "values": {
+          "honeycomb": 0.85,
+          "erosion": 0.4,
+          "strata": 7
+        }
+      },
+      {
+        "name": "swirled",
+        "description": "Strongly cross-bedded orange and white dune sandstone.",
+        "values": {
+          "strata": 5,
+          "cross_bedding": 1.0,
+          "waviness": 0.9,
+          "erosion": 0.3
+        }
+      },
+      {
+        "name": "grey_flagstone",
+        "description": "Grey-green layered sandstone with thin beds.",
+        "values": {
+          "strata": 16,
+          "thickness_variation": 0.8,
+          "erosion": 0.7,
+          "waviness": 0.2
+        }
+      }
+    ],
+    "tileable": true,
+    "default_size": 256,
+    "cost_seconds_1024": 18.1,
+    "peak_memory_mb_1024": 609,
+    "godot_material": "material.tres",
+    "godot_texture_folder": "res://baltor/textures/sandstone_strata/",
+    "blender_builder": "blender_material.build_material(folder)"
+  },
+  "limits": "Strata run across the tile height, so a wall must be oriented with its bedding horizontal in UV space. Cross-bedding is a periodic lamina pattern, not a sediment simulation. Honeycomb pits are Voronoi cells. Occlusion is a blurred-height estimate.",
+  "related": [
+    "slate_cleft"
+  ],
+  "technique_references": [
+    "Banded strata from uneven boundaries and low-frequency boundary waves",
+    "Periodic inclined laminae with integer wave numbers",
+    "Differential erosion from per-stratum hardness",
+    "Worley borders for honeycomb weathering",
+    "Height to tangent-space normal by central differences"
+  ],
+  "native_checks": [
+    "command_line_generates_declared_maps",
+    "maps_decode",
+    "maps_have_declared_size_and_channels",
+    "maps_tile_without_a_seam",
+    "normal_vectors_unit_length_facing_out",
+    "maps_carry_detail",
+    "godot_imports_the_maps",
+    "godot_material_template_loads_every_map",
+    "godot_compatibility_render",
+    "capture_shows_the_textured_surface",
+    "blender_builds_the_material"
+  ]
+}

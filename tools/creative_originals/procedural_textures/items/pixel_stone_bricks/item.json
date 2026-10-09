@@ -1,0 +1,241 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "pixel_stone_bricks",
+  "title": "Pixel-art stone brick wall with bevels and moss",
+  "purpose": "Generate a tileable pixel-art brick or stone-block wall at a chosen art resolution: staggered courses, one-pixel mortar, light and shadow bevels on every brick, grain, cracks and moss, with per-pixel normal, height, roughness and occlusion maps. Use for castle, dungeon and town walls in 2D games.",
+  "form": "function",
+  "asset_role": null,
+  "dimension": "2d",
+  "engine": {
+    "name": "python",
+    "minimum_version": "3.10"
+  },
+  "tags": [
+    "texture",
+    "pixel art",
+    "tileable",
+    "brick",
+    "stone",
+    "wall",
+    "2d",
+    "game tile",
+    "procedural"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "role": "other"
+    },
+    {
+      "path": "pixel_stone_bricks.py",
+      "role": "executable_tool"
+    },
+    {
+      "path": "material.tres",
+      "role": "skill_asset"
+    },
+    {
+      "path": "blender_material.py",
+      "role": "executable_tool"
+    }
+  ],
+  "contract": {
+    "entry_point": "generate",
+    "module": "pixel_stone_bricks.py",
+    "signature": "generate(width=256, height=256, seed=0, preset=\"default\", directx_normal=False, **parameters) -> {map name: {\"channels\", \"colour_space\", \"pixels\"}}",
+    "command_line": "python pixel_stone_bricks.py --size 1024 --seed 7 --preset NAME --out DIR [--width W --height H] [--set NAME=VALUE] [--directx-normal] [--orm]",
+    "maps": [
+      {
+        "name": "albedo",
+        "channels": 3,
+        "colour_space": "srgb",
+        "convention": "gltf_base_color",
+        "range": [
+          0.02,
+          0.95
+        ]
+      },
+      {
+        "name": "normal",
+        "channels": 3,
+        "colour_space": "linear",
+        "convention": "opengl_y_up"
+      },
+      {
+        "name": "roughness",
+        "channels": 1,
+        "colour_space": "linear",
+        "convention": "gltf_roughness",
+        "range": [
+          0.3,
+          1.0
+        ]
+      },
+      {
+        "name": "height",
+        "channels": 1,
+        "colour_space": "linear",
+        "convention": "white_is_high"
+      },
+      {
+        "name": "ao",
+        "channels": 1,
+        "colour_space": "linear",
+        "convention": "white_is_unoccluded"
+      }
+    ],
+    "parameters": [
+      {
+        "name": "art_pixels",
+        "type": "int",
+        "default": 32,
+        "minimum": 16,
+        "maximum": 64,
+        "meaning": "Art pixels along each side of the tile; the maps enlarge them with nearest-neighbour sampling."
+      },
+      {
+        "name": "courses",
+        "type": "int",
+        "default": 4,
+        "minimum": 2,
+        "maximum": 8,
+        "meaning": "Brick courses across the tile height."
+      },
+      {
+        "name": "bricks_per_course",
+        "type": "int",
+        "default": 2,
+        "minimum": 1,
+        "maximum": 6,
+        "meaning": "Bricks in each course across the tile width."
+      },
+      {
+        "name": "irregularity",
+        "type": "float",
+        "default": 0.4,
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "meaning": "Random variation of brick lengths and course offsets (0 is a regular running bond)."
+      },
+      {
+        "name": "cracks",
+        "type": "float",
+        "default": 0.25,
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "meaning": "Share of bricks with a crack."
+      },
+      {
+        "name": "moss",
+        "type": "float",
+        "default": 0.15,
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "meaning": "Moss growing from the joints."
+      },
+      {
+        "name": "relief",
+        "type": "float",
+        "default": 1.0,
+        "minimum": 0.2,
+        "maximum": 2.0,
+        "meaning": "Strength of the per-pixel normal map."
+      },
+      {
+        "name": "hue_shift",
+        "type": "float",
+        "default": 0.0,
+        "minimum": -0.5,
+        "maximum": 0.5,
+        "meaning": "Hue rotation of the albedo in turns."
+      },
+      {
+        "name": "saturation",
+        "type": "float",
+        "default": 1.0,
+        "minimum": 0.0,
+        "maximum": 2.0,
+        "meaning": "Albedo saturation multiplier."
+      },
+      {
+        "name": "brightness",
+        "type": "float",
+        "default": 1.0,
+        "minimum": 0.5,
+        "maximum": 1.5,
+        "meaning": "Albedo brightness multiplier."
+      }
+    ],
+    "presets": [
+      {
+        "name": "default",
+        "description": "Grey castle stone in staggered courses with a little moss.",
+        "values": {}
+      },
+      {
+        "name": "sandstone",
+        "description": "Warm sandstone blocks, three courses, crisp and clean.",
+        "values": {
+          "courses": 3,
+          "bricks_per_course": 2,
+          "irregularity": 0.6,
+          "cracks": 0.1,
+          "moss": 0.0
+        }
+      },
+      {
+        "name": "mossy_ruin",
+        "description": "Old green-grey ruin stones, cracked and overgrown.",
+        "values": {
+          "cracks": 0.7,
+          "moss": 0.75,
+          "irregularity": 0.8
+        }
+      },
+      {
+        "name": "red_brick",
+        "description": "Small red bricks in a regular running bond with pale mortar.",
+        "values": {
+          "courses": 8,
+          "bricks_per_course": 4,
+          "irregularity": 0.0,
+          "cracks": 0.1,
+          "moss": 0.0
+        }
+      }
+    ],
+    "tileable": true,
+    "default_size": 256,
+    "cost_seconds_1024": 8.9,
+    "peak_memory_mb_1024": 88,
+    "godot_material": "material.tres",
+    "godot_texture_folder": "res://baltor/textures/pixel_stone_bricks/",
+    "blender_builder": "blender_material.build_material(folder)"
+  },
+  "limits": "Stylized pixel art with a fixed light from the top left baked into the bevel colours; roughness and height are values per drawn class, and the normal map treats each art pixel as a flat facet. Bricks are rectangles cut at whole art pixels; there are no corner pieces, arches or openings. Courses are limited to a quarter of the art size so every brick keeps a face pixel. Output sizes that are not a whole multiple of art_pixels give art pixels of unequal widths. Occlusion is a blurred-height estimate posterized to eighths.",
+  "related": [
+    "brick_courses",
+    "pixel_dungeon_floor",
+    "pixel_cobblestone_path"
+  ],
+  "technique_references": [
+    "Course and joint layout at whole art pixels with wrap-around",
+    "Bevel shading with highlight and shadow rows for a top-left light",
+    "Posterized fractal noise with ordered dithering for stone grain",
+    "Random-walk cracks",
+    "Per-art-pixel normals by central differences"
+  ],
+  "native_checks": [
+    "command_line_generates_declared_maps",
+    "maps_decode",
+    "maps_have_declared_size_and_channels",
+    "maps_tile_without_a_seam",
+    "normal_vectors_unit_length_facing_out",
+    "maps_carry_detail",
+    "godot_imports_the_maps",
+    "godot_material_template_loads_every_map",
+    "godot_compatibility_render",
+    "capture_shows_the_textured_surface",
+    "blender_builds_the_material"
+  ]
+}

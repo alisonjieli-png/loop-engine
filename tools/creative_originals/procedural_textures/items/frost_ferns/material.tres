@@ -1,0 +1,25 @@
+[gd_resource type="StandardMaterial3D" format=3]
+
+[ext_resource type="Texture2D" path="res://baltor/textures/frost_ferns/frost_ferns_albedo.png" id="1_albedo"]
+[ext_resource type="Texture2D" path="res://baltor/textures/frost_ferns/frost_ferns_normal.png" id="2_normal"]
+[ext_resource type="Texture2D" path="res://baltor/textures/frost_ferns/frost_ferns_roughness.png" id="3_roughness"]
+[ext_resource type="Texture2D" path="res://baltor/textures/frost_ferns/frost_ferns_height.png" id="4_height"]
+[ext_resource type="Texture2D" path="res://baltor/textures/frost_ferns/frost_ferns_ao.png" id="5_ao"]
+
+[resource]
+resource_name = "frost_ferns"
+transparency = 1
+albedo_texture = ExtResource("1_albedo")
+roughness = 1.0
+roughness_texture = ExtResource("3_roughness")
+roughness_texture_channel = 0
+normal_enabled = true
+normal_scale = 0.8
+normal_texture = ExtResource("2_normal")
+ao_enabled = true
+ao_texture = ExtResource("5_ao")
+ao_texture_channel = 0
+heightmap_enabled = false
+heightmap_scale = 1
+heightmap_texture = ExtResource("4_height")
+uv1_scale = Vector3(1, 1, 1)

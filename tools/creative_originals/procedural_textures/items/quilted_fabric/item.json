@@ -1,0 +1,282 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "quilted_fabric",
+  "title": "Quilted and deep-buttoned fabric",
+  "purpose": "Generate tileable PBR maps of quilted fabric: diamond, square or channel quilting with puffed panels, stitched seams, crinkles and a fine weave, or deep-buttoned tufting. Use for bedspreads, puffer jackets, moving blankets, padded walls, headboards and Chesterfield sofas.",
+  "form": "function",
+  "asset_role": null,
+  "dimension": "3d",
+  "engine": {
+    "name": "python",
+    "minimum_version": "3.10"
+  },
+  "tags": [
+    "texture",
+    "pbr",
+    "tileable",
+    "quilting",
+    "quilted",
+    "fabric",
+    "tufted",
+    "upholstery",
+    "padding",
+    "procedural"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "role": "other"
+    },
+    {
+      "path": "quilted_fabric.py",
+      "role": "executable_tool"
+    },
+    {
+      "path": "material.tres",
+      "role": "skill_asset"
+    },
+    {
+      "path": "blender_material.py",
+      "role": "executable_tool"
+    }
+  ],
+  "contract": {
+    "entry_point": "generate",
+    "module": "quilted_fabric.py",
+    "signature": "generate(width=256, height=256, seed=0, preset=\"default\", directx_normal=False, **parameters) -> {map name: {\"channels\", \"colour_space\", \"pixels\"}}",
+    "command_line": "python quilted_fabric.py --size 1024 --seed 7 --preset NAME --out DIR [--width W --height H] [--set NAME=VALUE] [--directx-normal] [--orm]",
+    "maps": [
+      {
+        "name": "albedo",
+        "channels": 3,
+        "colour_space": "srgb",
+        "convention": "gltf_base_color",
+        "range": [
+          0.02,
+          0.92
+        ]
+      },
+      {
+        "name": "normal",
+        "channels": 3,
+        "colour_space": "linear",
+        "convention": "opengl_y_up"
+      },
+      {
+        "name": "roughness",
+        "channels": 1,
+        "colour_space": "linear",
+        "convention": "gltf_roughness",
+        "range": [
+          0.15,
+          1.0
+        ]
+      },
+      {
+        "name": "height",
+        "channels": 1,
+        "colour_space": "linear",
+        "convention": "white_is_high"
+      },
+      {
+        "name": "ao",
+        "channels": 1,
+        "colour_space": "linear",
+        "convention": "white_is_unoccluded"
+      }
+    ],
+    "parameters": [
+      {
+        "name": "pattern",
+        "type": "int",
+        "default": 0,
+        "minimum": 0,
+        "maximum": 2,
+        "meaning": "0 diamond quilting (two diagonal seam families), 1 square grid, 2 horizontal channels."
+      },
+      {
+        "name": "cells",
+        "type": "int",
+        "default": 5,
+        "minimum": 1,
+        "maximum": 16,
+        "meaning": "Quilted panels across the tile width (diamonds, squares, or for channels the channel count down the tile)."
+      },
+      {
+        "name": "aspect",
+        "type": "float",
+        "default": 1.4,
+        "minimum": 0.5,
+        "maximum": 2.5,
+        "meaning": "Panels down the tile per panel across; above 1 the diamonds are taller than wide."
+      },
+      {
+        "name": "puff",
+        "type": "float",
+        "default": 0.6,
+        "minimum": 0.1,
+        "maximum": 1.0,
+        "meaning": "How full the panels are between the seams."
+      },
+      {
+        "name": "stitches",
+        "type": "int",
+        "default": 9,
+        "minimum": 0,
+        "maximum": 30,
+        "meaning": "Stitches along one panel edge; 0 hides the seams' stitching (tufting folds)."
+      },
+      {
+        "name": "buttons",
+        "type": "float",
+        "default": 0.0,
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "meaning": "Size of the buttons pulled deep into the seam crossings, as in deep-buttoned upholstery."
+      },
+      {
+        "name": "wrinkles",
+        "type": "float",
+        "default": 0.3,
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "meaning": "Crinkles of the fabric gathered near the seams."
+      },
+      {
+        "name": "sheen",
+        "type": "float",
+        "default": 0.0,
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "meaning": "Gloss of taut panel tops: 0 matte cotton, 1 shiny nylon or satin."
+      },
+      {
+        "name": "weave",
+        "type": "float",
+        "default": 0.5,
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "meaning": "Fine woven texture of the cover fabric."
+      },
+      {
+        "name": "hue_shift",
+        "type": "float",
+        "default": 0.0,
+        "minimum": -0.5,
+        "maximum": 0.5,
+        "meaning": "Hue rotation of the albedo in turns."
+      },
+      {
+        "name": "saturation",
+        "type": "float",
+        "default": 1.0,
+        "minimum": 0.0,
+        "maximum": 2.0,
+        "meaning": "Albedo saturation multiplier."
+      },
+      {
+        "name": "brightness",
+        "type": "float",
+        "default": 1.0,
+        "minimum": 0.5,
+        "maximum": 1.5,
+        "meaning": "Albedo brightness multiplier."
+      }
+    ],
+    "presets": [
+      {
+        "name": "default",
+        "description": "Cream cotton bedspread in diamond quilting with visible stitches.",
+        "values": {}
+      },
+      {
+        "name": "puffer_channel",
+        "description": "Black nylon puffer-jacket channels, glossy and crinkled.",
+        "values": {
+          "pattern": 2,
+          "cells": 6,
+          "puff": 0.9,
+          "stitches": 0,
+          "wrinkles": 0.8,
+          "sheen": 0.85,
+          "weave": 0.1
+        }
+      },
+      {
+        "name": "square_satin",
+        "description": "Blush satin in a square grid with fine stitching.",
+        "values": {
+          "pattern": 1,
+          "cells": 6,
+          "aspect": 1.0,
+          "puff": 0.5,
+          "stitches": 14,
+          "wrinkles": 0.4,
+          "sheen": 0.6,
+          "weave": 0.2
+        }
+      },
+      {
+        "name": "chesterfield",
+        "description": "Deep-buttoned oxblood leather tufting: full diamonds, buttons, no stitches.",
+        "values": {
+          "cells": 4,
+          "aspect": 1.3,
+          "puff": 1.0,
+          "stitches": 0,
+          "buttons": 0.8,
+          "wrinkles": 0.5,
+          "sheen": 0.45,
+          "weave": 0.0
+        }
+      },
+      {
+        "name": "moving_blanket",
+        "description": "Navy workwear quilting: small diamonds with contrast stitching.",
+        "values": {
+          "cells": 9,
+          "aspect": 1.0,
+          "puff": 0.35,
+          "stitches": 7,
+          "wrinkles": 0.2,
+          "weave": 0.9
+        }
+      }
+    ],
+    "tileable": true,
+    "default_size": 256,
+    "cost_seconds_1024": 21.8,
+    "peak_memory_mb_1024": 560,
+    "godot_material": "material.tres",
+    "godot_texture_folder": "res://baltor/textures/quilted_fabric/",
+    "blender_builder": "blender_material.build_material(folder)"
+  },
+  "limits": "Panels are pillow profiles between straight seam lines, not cloth simulation: there is no drape, gathering or sagging, and tufting folds follow the seams instead of radiating from each button. Diamonds keep whole panel counts across and down the tile, so the aspect is quantized. Stitches are dashes in the seam groove; thread twist is not modelled. The weave is a fine cosine grid that fades out when it would be finer than a few pixels. Occlusion is a blurred-height estimate, not ray traced.",
+  "related": [
+    "knit_stockinette",
+    "leather_grain",
+    "woven_cloth"
+  ],
+  "technique_references": [
+    "Seam lines as integer phase families n_u u + n_v v = k on the torus",
+    "Pillow height as a product of rounded profiles of the distance to each seam family",
+    "Stitch dashes from the phase of the crossing seam family",
+    "Buttons as domes in recesses at seam crossings",
+    "Ridged noise crinkles weighted by closeness to the seams",
+    "Height to tangent-space normal by central differences",
+    "Cavity occlusion from blurred height"
+  ],
+  "native_checks": [
+    "command_line_generates_declared_maps",
+    "maps_decode",
+    "maps_have_declared_size_and_channels",
+    "maps_tile_without_a_seam",
+    "normal_vectors_unit_length_facing_out",
+    "maps_carry_detail",
+    "godot_imports_the_maps",
+    "godot_material_template_loads_every_map",
+    "godot_compatibility_render",
+    "capture_shows_the_textured_surface",
+    "blender_builds_the_material"
+  ]
+}

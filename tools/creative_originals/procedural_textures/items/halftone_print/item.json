@@ -1,0 +1,235 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "halftone_print",
+  "title": "Halftone print screens: CMYK, comic dots, newsprint, duotone",
+  "purpose": "Generate tileable maps of printed halftone: a procedural design separated into inks and screened as round dots on rotated whole-number lattices at classic angles, with misregistration, dot gain and fibrous aged paper. Use for comic and pop-art surfaces, posters, newspapers, packaging and print-themed backgrounds.",
+  "form": "function",
+  "asset_role": null,
+  "dimension": "3d",
+  "engine": {
+    "name": "python",
+    "minimum_version": "3.10"
+  },
+  "tags": [
+    "texture",
+    "pbr",
+    "tileable",
+    "halftone",
+    "print",
+    "comic",
+    "cmyk",
+    "paper",
+    "pattern",
+    "procedural"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "role": "other"
+    },
+    {
+      "path": "halftone_print.py",
+      "role": "executable_tool"
+    },
+    {
+      "path": "material.tres",
+      "role": "skill_asset"
+    },
+    {
+      "path": "blender_material.py",
+      "role": "executable_tool"
+    }
+  ],
+  "contract": {
+    "entry_point": "generate",
+    "module": "halftone_print.py",
+    "signature": "generate(width=256, height=256, seed=0, preset=\"default\", directx_normal=False, **parameters) -> {map name: {\"channels\", \"colour_space\", \"pixels\"}}",
+    "command_line": "python halftone_print.py --size 1024 --seed 7 --preset NAME --out DIR [--width W --height H] [--set NAME=VALUE] [--directx-normal] [--orm]",
+    "maps": [
+      {
+        "name": "albedo",
+        "channels": 3,
+        "colour_space": "srgb",
+        "convention": "gltf_base_color",
+        "range": [
+          0.03,
+          0.95
+        ]
+      },
+      {
+        "name": "normal",
+        "channels": 3,
+        "colour_space": "linear",
+        "convention": "opengl_y_up"
+      },
+      {
+        "name": "roughness",
+        "channels": 1,
+        "colour_space": "linear",
+        "convention": "gltf_roughness",
+        "range": [
+          0.3,
+          1.0
+        ]
+      },
+      {
+        "name": "height",
+        "channels": 1,
+        "colour_space": "linear",
+        "convention": "white_is_high"
+      },
+      {
+        "name": "ao",
+        "channels": 1,
+        "colour_space": "linear",
+        "convention": "white_is_unoccluded"
+      }
+    ],
+    "parameters": [
+      {
+        "name": "lines",
+        "type": "int",
+        "default": 40,
+        "minimum": 8,
+        "maximum": 128,
+        "meaning": "Screen lines (dot rows) across the tile."
+      },
+      {
+        "name": "design_scale",
+        "type": "int",
+        "default": 2,
+        "minimum": 1,
+        "maximum": 6,
+        "meaning": "Features of the printed design across the tile."
+      },
+      {
+        "name": "misregister",
+        "type": "float",
+        "default": 0.3,
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "meaning": "Offset between the ink screens, as on a loose press."
+      },
+      {
+        "name": "dot_gain",
+        "type": "float",
+        "default": 0.15,
+        "minimum": 0.0,
+        "maximum": 0.5,
+        "meaning": "Dots printing larger than their coverage, as ink spreads in the paper."
+      },
+      {
+        "name": "yellowing",
+        "type": "float",
+        "default": 0.15,
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "meaning": "Age yellowing of the paper in patches."
+      },
+      {
+        "name": "fibres",
+        "type": "float",
+        "default": 0.4,
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "meaning": "Visible paper fibres in colour and relief."
+      },
+      {
+        "name": "hue_shift",
+        "type": "float",
+        "default": 0.0,
+        "minimum": -0.5,
+        "maximum": 0.5,
+        "meaning": "Hue rotation of the albedo in turns."
+      },
+      {
+        "name": "saturation",
+        "type": "float",
+        "default": 1.0,
+        "minimum": 0.0,
+        "maximum": 2.0,
+        "meaning": "Albedo saturation multiplier."
+      },
+      {
+        "name": "brightness",
+        "type": "float",
+        "default": 1.0,
+        "minimum": 0.5,
+        "maximum": 1.5,
+        "meaning": "Albedo brightness multiplier."
+      }
+    ],
+    "presets": [
+      {
+        "name": "default",
+        "description": "Four-colour magazine print of a vivid poster at classic screen angles.",
+        "values": {}
+      },
+      {
+        "name": "comic_dots",
+        "description": "Comic print: flat dot tints in large dots with solid black outlines on newsprint.",
+        "values": {
+          "lines": 22,
+          "misregister": 0.5,
+          "yellowing": 0.45,
+          "dot_gain": 0.25
+        }
+      },
+      {
+        "name": "newsprint_mono",
+        "description": "Black-only newspaper photograph at 45 degrees on grey, aged paper.",
+        "values": {
+          "lines": 48,
+          "misregister": 0.0,
+          "yellowing": 0.6,
+          "fibres": 0.7
+        }
+      },
+      {
+        "name": "riso_duotone",
+        "description": "Two fluorescent inks, pink and teal, coarse dots and loose registration.",
+        "values": {
+          "lines": 28,
+          "misregister": 1.0,
+          "dot_gain": 0.3,
+          "yellowing": 0.05
+        }
+      }
+    ],
+    "tileable": true,
+    "default_size": 256,
+    "cost_seconds_1024": 42.1,
+    "peak_memory_mb_1024": 807,
+    "godot_material": "material.tres",
+    "godot_texture_folder": "res://baltor/textures/halftone_print/",
+    "blender_builder": "blender_material.build_material(folder)"
+  },
+  "limits": "Amplitude-modulated round dots only: no stochastic, line or elliptical screens. Screen angles are rounded to whole-number lattice vectors so the screen repeats, which moves them by up to a few degrees from the nominal angle at low line counts. The separation is a simple grey-component replacement without colour management or ink limits, inks multiply as ideal transparent filters, and dot gain is a curve rather than ink spreading. The printed design is procedural noise, not artwork. Fine screens alias below about four pixels per dot row.",
+  "related": [
+    "truchet_tiles",
+    "damask_wallpaper",
+    "crt_phosphor_mask"
+  ],
+  "technique_references": [
+    "Amplitude-modulated halftoning with a round-dot spot function",
+    "Screen lattices from whole-number vectors for exact tiling",
+    "Classic screen angles: cyan 15, magenta 75, yellow 0, black 45 degrees",
+    "CMY separation with grey component replacement",
+    "Subtractive ink mixing by multiplication",
+    "Isoline distance for comic outlines",
+    "Anisotropic fractional Brownian motion for paper fibres"
+  ],
+  "native_checks": [
+    "command_line_generates_declared_maps",
+    "maps_decode",
+    "maps_have_declared_size_and_channels",
+    "maps_tile_without_a_seam",
+    "normal_vectors_unit_length_facing_out",
+    "maps_carry_detail",
+    "godot_imports_the_maps",
+    "godot_material_template_loads_every_map",
+    "godot_compatibility_render",
+    "capture_shows_the_textured_surface",
+    "blender_builds_the_material"
+  ]
+}

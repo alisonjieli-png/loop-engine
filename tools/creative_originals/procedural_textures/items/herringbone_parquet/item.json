@@ -1,0 +1,283 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "herringbone_parquet",
+  "title": "Herringbone and chevron parquet floor",
+  "purpose": "Generate tileable PBR maps of wood parquet in herringbone, double or triple herringbone and chevron, with exact periodic layouts, grain along each plank, bevelled joints, lacquer or oil finish and wear. Use for floors of rooms, halls and furniture panels.",
+  "form": "function",
+  "asset_role": null,
+  "dimension": "3d",
+  "engine": {
+    "name": "python",
+    "minimum_version": "3.10"
+  },
+  "tags": [
+    "texture",
+    "pbr",
+    "tileable",
+    "wood",
+    "parquet",
+    "herringbone",
+    "chevron",
+    "floor",
+    "procedural"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "role": "other"
+    },
+    {
+      "path": "herringbone_parquet.py",
+      "role": "executable_tool"
+    },
+    {
+      "path": "material.tres",
+      "role": "skill_asset"
+    },
+    {
+      "path": "blender_material.py",
+      "role": "executable_tool"
+    }
+  ],
+  "contract": {
+    "entry_point": "generate",
+    "module": "herringbone_parquet.py",
+    "signature": "generate(width=256, height=256, seed=0, preset=\"default\", directx_normal=False, **parameters) -> {map name: {\"channels\", \"colour_space\", \"pixels\"}}",
+    "command_line": "python herringbone_parquet.py --size 1024 --seed 7 --preset NAME --out DIR [--width W --height H] [--set NAME=VALUE] [--directx-normal] [--orm]",
+    "maps": [
+      {
+        "name": "albedo",
+        "channels": 3,
+        "colour_space": "srgb",
+        "convention": "gltf_base_color",
+        "range": [
+          0.02,
+          0.9
+        ]
+      },
+      {
+        "name": "normal",
+        "channels": 3,
+        "colour_space": "linear",
+        "convention": "opengl_y_up"
+      },
+      {
+        "name": "roughness",
+        "channels": 1,
+        "colour_space": "linear",
+        "convention": "gltf_roughness",
+        "range": [
+          0.12,
+          1.0
+        ]
+      },
+      {
+        "name": "height",
+        "channels": 1,
+        "colour_space": "linear",
+        "convention": "white_is_high"
+      },
+      {
+        "name": "ao",
+        "channels": 1,
+        "colour_space": "linear",
+        "convention": "white_is_unoccluded"
+      }
+    ],
+    "parameters": [
+      {
+        "name": "pattern",
+        "type": "int",
+        "default": 0,
+        "minimum": 0,
+        "maximum": 1,
+        "meaning": "0 herringbone (square block ends against the next block's side), 1 chevron (ends cut at 45 degrees so the blocks meet in a straight centre line)."
+      },
+      {
+        "name": "ratio",
+        "type": "int",
+        "default": 5,
+        "minimum": 2,
+        "maximum": 8,
+        "meaning": "Block length in block widths; chevron uses the nearest even number."
+      },
+      {
+        "name": "planks",
+        "type": "int",
+        "default": 1,
+        "minimum": 1,
+        "maximum": 3,
+        "meaning": "Planks laid side by side in each block: 1 single, 2 double, 3 triple herringbone or chevron."
+      },
+      {
+        "name": "repeats",
+        "type": "int",
+        "default": 2,
+        "minimum": 1,
+        "maximum": 4,
+        "meaning": "Times the pattern repeats across the tile; more repeats make smaller blocks."
+      },
+      {
+        "name": "joint_width",
+        "type": "float",
+        "default": 0.025,
+        "minimum": 0.0,
+        "maximum": 0.1,
+        "meaning": "Gap between planks in plank widths."
+      },
+      {
+        "name": "bevel",
+        "type": "float",
+        "default": 0.04,
+        "minimum": 0.0,
+        "maximum": 0.2,
+        "meaning": "Width of the bevelled plank edge (a V groove between planks) in plank widths."
+      },
+      {
+        "name": "grain_contrast",
+        "type": "float",
+        "default": 0.5,
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "meaning": "Strength of the ring lines and pore streaks."
+      },
+      {
+        "name": "figure",
+        "type": "float",
+        "default": 0.4,
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "meaning": "Waviness of the grain lines along each plank."
+      },
+      {
+        "name": "colour_variation",
+        "type": "float",
+        "default": 0.5,
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "meaning": "Spread of tone between planks."
+      },
+      {
+        "name": "gloss",
+        "type": "float",
+        "default": 0.6,
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "meaning": "Finish: 0 matte oil, 1 glossy lacquer."
+      },
+      {
+        "name": "wear",
+        "type": "float",
+        "default": 0.15,
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "meaning": "Dull, lighter patches where the finish has worn."
+      },
+      {
+        "name": "hue_shift",
+        "type": "float",
+        "default": 0.0,
+        "minimum": -0.5,
+        "maximum": 0.5,
+        "meaning": "Hue rotation of the albedo in turns."
+      },
+      {
+        "name": "saturation",
+        "type": "float",
+        "default": 1.0,
+        "minimum": 0.0,
+        "maximum": 2.0,
+        "meaning": "Albedo saturation multiplier."
+      },
+      {
+        "name": "brightness",
+        "type": "float",
+        "default": 1.0,
+        "minimum": 0.5,
+        "maximum": 1.5,
+        "meaning": "Albedo brightness multiplier."
+      }
+    ],
+    "presets": [
+      {
+        "name": "default",
+        "description": "Natural oak blocks in classic herringbone with a satin lacquer.",
+        "values": {}
+      },
+      {
+        "name": "double_walnut",
+        "description": "Dark walnut in double herringbone: pairs of narrow planks per block.",
+        "values": {
+          "ratio": 3,
+          "planks": 2,
+          "grain_contrast": 0.6,
+          "figure": 0.6,
+          "gloss": 0.75,
+          "colour_variation": 0.6
+        }
+      },
+      {
+        "name": "chevron_ash",
+        "description": "Pale ash chevron with long boards meeting in a straight centre line.",
+        "values": {
+          "pattern": 1,
+          "ratio": 6,
+          "joint_width": 0.03,
+          "bevel": 0.06,
+          "grain_contrast": 0.4,
+          "figure": 0.25,
+          "colour_variation": 0.35,
+          "gloss": 0.45
+        }
+      },
+      {
+        "name": "smoked_rustic",
+        "description": "Smoked, oiled oak herringbone with wide bevels, strong grain and wear.",
+        "values": {
+          "ratio": 4,
+          "joint_width": 0.04,
+          "bevel": 0.12,
+          "grain_contrast": 0.8,
+          "figure": 0.7,
+          "colour_variation": 0.9,
+          "gloss": 0.1,
+          "wear": 0.5
+        }
+      }
+    ],
+    "tileable": true,
+    "default_size": 256,
+    "cost_seconds_1024": 42.9,
+    "peak_memory_mb_1024": 518,
+    "godot_material": "material.tres",
+    "godot_texture_folder": "res://baltor/textures/herringbone_parquet/",
+    "blender_builder": "blender_material.build_material(folder)"
+  },
+  "limits": "The zigzag always runs along the tile height at 45 degrees; other angles need a rotated UV. Grain is a geometric ring model (wavy lines bent into arches, finer rings and pore streaks), not wood anatomy: there are no knots, ray fleck or end grain. Blocks are flat with a slight tilt; there is no cupping, gapping by season or borders. At small output sizes the joints are thinner than a pixel and fade into the albedo. Occlusion is a blurred-height estimate, not ray traced.",
+  "related": [
+    "wood_planks",
+    "wood_end_grain_blocks",
+    "basketweave_pavers"
+  ],
+  "technique_references": [
+    "Herringbone partition by (x - floor(y)) mod 2r in an axis-aligned frame",
+    "45 degree frame rotation chosen so both lattice periods land on the square tile",
+    "Chevron columns of parallelograms with alternating slope",
+    "Per-plank hashing for tone, grain frequency, runout and arch",
+    "Smooth one-dimensional value noise for grain waviness and pores",
+    "Height to tangent-space normal by central differences"
+  ],
+  "native_checks": [
+    "command_line_generates_declared_maps",
+    "maps_decode",
+    "maps_have_declared_size_and_channels",
+    "maps_tile_without_a_seam",
+    "normal_vectors_unit_length_facing_out",
+    "maps_carry_detail",
+    "godot_imports_the_maps",
+    "godot_material_template_loads_every_map",
+    "godot_compatibility_render",
+    "capture_shows_the_textured_surface",
+    "blender_builds_the_material"
+  ]
+}

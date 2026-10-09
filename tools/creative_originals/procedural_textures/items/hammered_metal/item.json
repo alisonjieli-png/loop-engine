@@ -1,0 +1,243 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "hammered_metal",
+  "title": "Hand-hammered metal",
+  "purpose": "Generate tileable PBR maps of hand-hammered metal: overlapping dimples from Voronoi hammer blows meeting in polished ridges, optional fine planishing marks and patina in the dimples, in copper, pewter, brass or silver. Use for cookware, sinks, lamps, jewellery and decorative panels.",
+  "form": "function",
+  "asset_role": null,
+  "dimension": "3d",
+  "engine": {
+    "name": "python",
+    "minimum_version": "3.10"
+  },
+  "tags": [
+    "texture",
+    "pbr",
+    "tileable",
+    "metal",
+    "hammered",
+    "copper",
+    "dimples",
+    "handmade",
+    "procedural"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "role": "other"
+    },
+    {
+      "path": "hammered_metal.py",
+      "role": "executable_tool"
+    },
+    {
+      "path": "material.tres",
+      "role": "skill_asset"
+    },
+    {
+      "path": "blender_material.py",
+      "role": "executable_tool"
+    }
+  ],
+  "contract": {
+    "entry_point": "generate",
+    "module": "hammered_metal.py",
+    "signature": "generate(width=256, height=256, seed=0, preset=\"default\", directx_normal=False, **parameters) -> {map name: {\"channels\", \"colour_space\", \"pixels\"}}",
+    "command_line": "python hammered_metal.py --size 1024 --seed 7 --preset NAME --out DIR [--width W --height H] [--set NAME=VALUE] [--directx-normal] [--orm]",
+    "maps": [
+      {
+        "name": "albedo",
+        "channels": 3,
+        "colour_space": "srgb",
+        "convention": "gltf_base_color",
+        "range": [
+          0.03,
+          0.98
+        ]
+      },
+      {
+        "name": "normal",
+        "channels": 3,
+        "colour_space": "linear",
+        "convention": "opengl_y_up"
+      },
+      {
+        "name": "roughness",
+        "channels": 1,
+        "colour_space": "linear",
+        "convention": "gltf_roughness",
+        "range": [
+          0.05,
+          0.9
+        ]
+      },
+      {
+        "name": "metallic",
+        "channels": 1,
+        "colour_space": "linear",
+        "convention": "gltf_metallic"
+      },
+      {
+        "name": "height",
+        "channels": 1,
+        "colour_space": "linear",
+        "convention": "white_is_high"
+      },
+      {
+        "name": "ao",
+        "channels": 1,
+        "colour_space": "linear",
+        "convention": "white_is_unoccluded"
+      }
+    ],
+    "parameters": [
+      {
+        "name": "dimples_across",
+        "type": "int",
+        "default": 9,
+        "minimum": 3,
+        "maximum": 30,
+        "meaning": "Hammer blows across the tile."
+      },
+      {
+        "name": "dimple_depth",
+        "type": "float",
+        "default": 0.6,
+        "minimum": 0.1,
+        "maximum": 1.0,
+        "meaning": "Depth of the dimples."
+      },
+      {
+        "name": "irregularity",
+        "type": "float",
+        "default": 0.85,
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "meaning": "How far blows stray from a regular grid."
+      },
+      {
+        "name": "planishing",
+        "type": "float",
+        "default": 0.3,
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "meaning": "Second layer of smaller, shallower blows."
+      },
+      {
+        "name": "patina",
+        "type": "float",
+        "default": 0.0,
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "meaning": "Dark oxide settled in the dimples."
+      },
+      {
+        "name": "polish",
+        "type": "float",
+        "default": 0.7,
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "meaning": "Polish of the ridges and the metal overall."
+      },
+      {
+        "name": "hue_shift",
+        "type": "float",
+        "default": 0.0,
+        "minimum": -0.5,
+        "maximum": 0.5,
+        "meaning": "Hue rotation of the albedo in turns."
+      },
+      {
+        "name": "saturation",
+        "type": "float",
+        "default": 1.0,
+        "minimum": 0.0,
+        "maximum": 2.0,
+        "meaning": "Albedo saturation multiplier."
+      },
+      {
+        "name": "brightness",
+        "type": "float",
+        "default": 1.0,
+        "minimum": 0.5,
+        "maximum": 1.0,
+        "meaning": "Albedo brightness multiplier."
+      }
+    ],
+    "presets": [
+      {
+        "name": "default",
+        "description": "Polished hammered copper.",
+        "values": {}
+      },
+      {
+        "name": "aged_copper",
+        "description": "Hammered copper darkened with patina in the dimples.",
+        "values": {
+          "patina": 0.6,
+          "polish": 0.4
+        }
+      },
+      {
+        "name": "pewter",
+        "description": "Soft grey hammered pewter with small, regular blows.",
+        "values": {
+          "dimples_across": 14,
+          "irregularity": 0.5,
+          "polish": 0.45,
+          "dimple_depth": 0.45
+        }
+      },
+      {
+        "name": "brass_planished",
+        "description": "Brass with fine planishing marks over larger dimples.",
+        "values": {
+          "planishing": 0.9,
+          "dimples_across": 7,
+          "polish": 0.8
+        }
+      },
+      {
+        "name": "silver",
+        "description": "Bright hammered silver with deep, large dimples.",
+        "values": {
+          "dimples_across": 6,
+          "dimple_depth": 0.9,
+          "polish": 0.9
+        }
+      }
+    ],
+    "tileable": true,
+    "default_size": 256,
+    "cost_seconds_1024": 32.9,
+    "peak_memory_mb_1024": 776,
+    "godot_material": "material.tres",
+    "godot_texture_folder": "res://baltor/textures/hammered_metal/",
+    "blender_builder": "blender_material.build_material(folder)"
+  },
+  "limits": "Every blow is a spherical cap on a Voronoi cell, an idealization of real blows, which vary in angle, force and overlap. Patina is a colour and roughness layer without its own relief. Occlusion is a blurred-height estimate, not ray traced.",
+  "related": [
+    "brushed_metal",
+    "galvanized_spangle",
+    "metal_corrosion"
+  ],
+  "technique_references": [
+    "Jittered Worley cells as hammer blows",
+    "Spherical cap profile from the distance to the cell nucleus",
+    "Cell borders as polished ridges",
+    "A second, finer set of cells for planishing"
+  ],
+  "native_checks": [
+    "command_line_generates_declared_maps",
+    "maps_decode",
+    "maps_have_declared_size_and_channels",
+    "maps_tile_without_a_seam",
+    "normal_vectors_unit_length_facing_out",
+    "maps_carry_detail",
+    "godot_imports_the_maps",
+    "godot_material_template_loads_every_map",
+    "godot_compatibility_render",
+    "capture_shows_the_textured_surface",
+    "blender_builds_the_material"
+  ]
+}

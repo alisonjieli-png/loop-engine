@@ -1,0 +1,240 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "pixel_grass_tile",
+  "title": "Pixel-art grass tile with tufts and flowers",
+  "purpose": "Generate a tileable pixel-art grass tile at a chosen art resolution (16 to 64 pixels), enlarged with crisp nearest-neighbour pixels: dithered lawn patches, blade tufts, flowers and pebbles, with per-pixel normal, height, roughness and occlusion maps. Use for top-down and side-view 2D games.",
+  "form": "function",
+  "asset_role": null,
+  "dimension": "2d",
+  "engine": {
+    "name": "python",
+    "minimum_version": "3.10"
+  },
+  "tags": [
+    "texture",
+    "pixel art",
+    "tileable",
+    "grass",
+    "2d",
+    "game tile",
+    "lawn",
+    "procedural"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "role": "other"
+    },
+    {
+      "path": "pixel_grass_tile.py",
+      "role": "executable_tool"
+    },
+    {
+      "path": "material.tres",
+      "role": "skill_asset"
+    },
+    {
+      "path": "blender_material.py",
+      "role": "executable_tool"
+    }
+  ],
+  "contract": {
+    "entry_point": "generate",
+    "module": "pixel_grass_tile.py",
+    "signature": "generate(width=256, height=256, seed=0, preset=\"default\", directx_normal=False, **parameters) -> {map name: {\"channels\", \"colour_space\", \"pixels\"}}",
+    "command_line": "python pixel_grass_tile.py --size 1024 --seed 7 --preset NAME --out DIR [--width W --height H] [--set NAME=VALUE] [--directx-normal] [--orm]",
+    "maps": [
+      {
+        "name": "albedo",
+        "channels": 3,
+        "colour_space": "srgb",
+        "convention": "gltf_base_color",
+        "range": [
+          0.02,
+          0.95
+        ]
+      },
+      {
+        "name": "normal",
+        "channels": 3,
+        "colour_space": "linear",
+        "convention": "opengl_y_up"
+      },
+      {
+        "name": "roughness",
+        "channels": 1,
+        "colour_space": "linear",
+        "convention": "gltf_roughness",
+        "range": [
+          0.3,
+          1.0
+        ]
+      },
+      {
+        "name": "height",
+        "channels": 1,
+        "colour_space": "linear",
+        "convention": "white_is_high"
+      },
+      {
+        "name": "ao",
+        "channels": 1,
+        "colour_space": "linear",
+        "convention": "white_is_unoccluded"
+      }
+    ],
+    "parameters": [
+      {
+        "name": "art_pixels",
+        "type": "int",
+        "default": 32,
+        "minimum": 16,
+        "maximum": 64,
+        "meaning": "Art pixels along each side of the tile; the maps enlarge them with nearest-neighbour sampling."
+      },
+      {
+        "name": "tufts",
+        "type": "float",
+        "default": 0.5,
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "meaning": "Density of grass blade tufts."
+      },
+      {
+        "name": "blade_length",
+        "type": "int",
+        "default": 3,
+        "minimum": 2,
+        "maximum": 5,
+        "meaning": "Typical blade length in art pixels."
+      },
+      {
+        "name": "flowers",
+        "type": "float",
+        "default": 0.15,
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "meaning": "Density of flowers."
+      },
+      {
+        "name": "pebbles",
+        "type": "float",
+        "default": 0.1,
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "meaning": "Density of pebbles."
+      },
+      {
+        "name": "patchiness",
+        "type": "float",
+        "default": 0.6,
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "meaning": "Contrast of the large light and dark patches of the lawn."
+      },
+      {
+        "name": "relief",
+        "type": "float",
+        "default": 1.0,
+        "minimum": 0.2,
+        "maximum": 2.0,
+        "meaning": "Strength of the per-pixel normal map."
+      },
+      {
+        "name": "hue_shift",
+        "type": "float",
+        "default": 0.0,
+        "minimum": -0.5,
+        "maximum": 0.5,
+        "meaning": "Hue rotation of the albedo in turns."
+      },
+      {
+        "name": "saturation",
+        "type": "float",
+        "default": 1.0,
+        "minimum": 0.0,
+        "maximum": 2.0,
+        "meaning": "Albedo saturation multiplier."
+      },
+      {
+        "name": "brightness",
+        "type": "float",
+        "default": 1.0,
+        "minimum": 0.5,
+        "maximum": 1.5,
+        "meaning": "Albedo brightness multiplier."
+      }
+    ],
+    "presets": [
+      {
+        "name": "default",
+        "description": "Lush green lawn with a few white and yellow flowers.",
+        "values": {}
+      },
+      {
+        "name": "dry_meadow",
+        "description": "Late-summer straw and olive grass, sparse tufts, a few pebbles.",
+        "values": {
+          "tufts": 0.35,
+          "flowers": 0.05,
+          "pebbles": 0.25,
+          "patchiness": 0.8
+        }
+      },
+      {
+        "name": "flower_meadow",
+        "description": "Dense meadow full of red, violet and white flowers.",
+        "values": {
+          "tufts": 0.7,
+          "flowers": 0.7,
+          "blade_length": 4,
+          "pebbles": 0.0
+        }
+      },
+      {
+        "name": "frosted",
+        "description": "Blue-grey frosted grass on a winter morning, short stiff blades.",
+        "values": {
+          "tufts": 0.6,
+          "blade_length": 2,
+          "flowers": 0.0,
+          "pebbles": 0.15,
+          "patchiness": 0.4
+        }
+      }
+    ],
+    "tileable": true,
+    "default_size": 256,
+    "cost_seconds_1024": 7.1,
+    "peak_memory_mb_1024": 87,
+    "godot_material": "material.tres",
+    "godot_texture_folder": "res://baltor/textures/pixel_grass_tile/",
+    "blender_builder": "blender_material.build_material(folder)"
+  },
+  "limits": "Stylized pixel art, not a physically based material: roughness and height are values per drawn class chosen for 2D lighting, and the normal map treats each art pixel as a flat facet. Tufts, flowers and pebbles are small fixed sprites, so a 16-pixel grid shows single-pixel flowers and fewer details. Output sizes that are not a whole multiple of art_pixels give art pixels of unequal widths. Occlusion is a blurred-height estimate posterized to eighths.",
+  "related": [
+    "grass_lawn",
+    "pixel_cobblestone_path",
+    "pixel_leaf_canopy"
+  ],
+  "technique_references": [
+    "Ordered dithering with a 4 x 4 Bayer matrix",
+    "Posterized fractal noise for lawn patch tones",
+    "Back-to-front sprite painting with wrap-around",
+    "Nearest-neighbour enlargement of an art grid",
+    "Per-art-pixel normals by central differences"
+  ],
+  "native_checks": [
+    "command_line_generates_declared_maps",
+    "maps_decode",
+    "maps_have_declared_size_and_channels",
+    "maps_tile_without_a_seam",
+    "normal_vectors_unit_length_facing_out",
+    "maps_carry_detail",
+    "godot_imports_the_maps",
+    "godot_material_template_loads_every_map",
+    "godot_compatibility_render",
+    "capture_shows_the_textured_surface",
+    "blender_builds_the_material"
+  ]
+}

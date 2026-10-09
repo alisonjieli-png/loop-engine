@@ -1,0 +1,240 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "sand_ripples",
+  "title": "Sand ripples and dunes",
+  "purpose": "Generate tileable PBR maps of sand with wind or water ripples: asymmetric crests that bend, fork and merge, dark minerals in the troughs, optional dune swells and wet sand. Use for beaches, deserts and riverbeds.",
+  "form": "function",
+  "asset_role": null,
+  "dimension": "3d",
+  "engine": {
+    "name": "python",
+    "minimum_version": "3.10"
+  },
+  "tags": [
+    "texture",
+    "pbr",
+    "tileable",
+    "sand",
+    "ripples",
+    "dunes",
+    "beach",
+    "procedural"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "role": "other"
+    },
+    {
+      "path": "sand_ripples.py",
+      "role": "executable_tool"
+    },
+    {
+      "path": "material.tres",
+      "role": "skill_asset"
+    },
+    {
+      "path": "blender_material.py",
+      "role": "executable_tool"
+    }
+  ],
+  "contract": {
+    "entry_point": "generate",
+    "module": "sand_ripples.py",
+    "signature": "generate(width=256, height=256, seed=0, preset=\"default\", directx_normal=False, **parameters) -> {map name: {\"channels\", \"colour_space\", \"pixels\"}}",
+    "command_line": "python sand_ripples.py --size 1024 --seed 7 --preset NAME --out DIR [--width W --height H] [--set NAME=VALUE] [--directx-normal] [--orm]",
+    "maps": [
+      {
+        "name": "albedo",
+        "channels": 3,
+        "colour_space": "srgb",
+        "convention": "gltf_base_color",
+        "range": [
+          0.05,
+          0.9
+        ]
+      },
+      {
+        "name": "normal",
+        "channels": 3,
+        "colour_space": "linear",
+        "convention": "opengl_y_up"
+      },
+      {
+        "name": "roughness",
+        "channels": 1,
+        "colour_space": "linear",
+        "convention": "gltf_roughness",
+        "range": [
+          0.2,
+          1.0
+        ]
+      },
+      {
+        "name": "height",
+        "channels": 1,
+        "colour_space": "linear",
+        "convention": "white_is_high"
+      },
+      {
+        "name": "ao",
+        "channels": 1,
+        "colour_space": "linear",
+        "convention": "white_is_unoccluded"
+      }
+    ],
+    "parameters": [
+      {
+        "name": "ripples",
+        "type": "int",
+        "default": 12,
+        "minimum": 2,
+        "maximum": 48,
+        "meaning": "Ripple crests across the tile along the ripple direction."
+      },
+      {
+        "name": "direction",
+        "type": "int",
+        "default": 0,
+        "minimum": 0,
+        "maximum": 3,
+        "meaning": "Crest direction: 0 vertical crests, 1 horizontal crests, 2 and 3 the two diagonals."
+      },
+      {
+        "name": "meander",
+        "type": "float",
+        "default": 0.5,
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "meaning": "How much crests bend, fork and merge."
+      },
+      {
+        "name": "asymmetry",
+        "type": "float",
+        "default": 0.7,
+        "minimum": 0.0,
+        "maximum": 0.95,
+        "meaning": "Share of each ripple taken by the gentle slope (0.5 symmetric, higher is wind-built)."
+      },
+      {
+        "name": "dune_swell",
+        "type": "float",
+        "default": 0.0,
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "meaning": "Large low dunes under the ripples."
+      },
+      {
+        "name": "trough_minerals",
+        "type": "float",
+        "default": 0.4,
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "meaning": "Dark heavy minerals collected in the troughs."
+      },
+      {
+        "name": "wetness",
+        "type": "float",
+        "default": 0.0,
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "meaning": "Wet sand: darker and smoother."
+      },
+      {
+        "name": "hue_shift",
+        "type": "float",
+        "default": 0.0,
+        "minimum": -0.5,
+        "maximum": 0.5,
+        "meaning": "Hue rotation of the albedo in turns."
+      },
+      {
+        "name": "saturation",
+        "type": "float",
+        "default": 1.0,
+        "minimum": 0.0,
+        "maximum": 2.0,
+        "meaning": "Albedo saturation multiplier."
+      },
+      {
+        "name": "brightness",
+        "type": "float",
+        "default": 1.0,
+        "minimum": 0.5,
+        "maximum": 1.5,
+        "meaning": "Albedo brightness multiplier."
+      }
+    ],
+    "presets": [
+      {
+        "name": "default",
+        "description": "Dry beach sand with wind ripples.",
+        "values": {}
+      },
+      {
+        "name": "tidal_wet",
+        "description": "Wet tidal flat with symmetric ripples and dark troughs.",
+        "values": {
+          "wetness": 0.8,
+          "asymmetry": 0.5,
+          "ripples": 9,
+          "trough_minerals": 0.8,
+          "meander": 0.7
+        }
+      },
+      {
+        "name": "desert_dunes",
+        "description": "Orange desert sand with dune swells and fine ripples.",
+        "values": {
+          "dune_swell": 0.9,
+          "ripples": 24,
+          "direction": 2,
+          "meander": 0.4,
+          "trough_minerals": 0.2
+        }
+      },
+      {
+        "name": "white_gypsum",
+        "description": "White gypsum sand with long straight ripples.",
+        "values": {
+          "meander": 0.2,
+          "ripples": 16,
+          "direction": 1,
+          "trough_minerals": 0.1
+        }
+      }
+    ],
+    "tileable": true,
+    "default_size": 256,
+    "cost_seconds_1024": 18.9,
+    "peak_memory_mb_1024": 640,
+    "godot_material": "material.tres",
+    "godot_texture_folder": "res://baltor/textures/sand_ripples/",
+    "blender_builder": "blender_material.build_material(folder)"
+  },
+  "limits": "Ripple direction is limited to four whole-tile directions so the texture repeats. Ripples are a phase field, not a sediment simulation, and do not respond to obstacles. Dune swells are low-frequency height only. Occlusion is a blurred-height estimate.",
+  "related": [
+    "cracked_earth",
+    "snow_fresh"
+  ],
+  "technique_references": [
+    "Periodic phase along an integer direction",
+    "Asymmetric stoss and lee ripple profile",
+    "Phase warping with tileable fractional Brownian motion",
+    "Trough darkening from the ripple profile",
+    "Height to tangent-space normal by central differences"
+  ],
+  "native_checks": [
+    "command_line_generates_declared_maps",
+    "maps_decode",
+    "maps_have_declared_size_and_channels",
+    "maps_tile_without_a_seam",
+    "normal_vectors_unit_length_facing_out",
+    "maps_carry_detail",
+    "godot_imports_the_maps",
+    "godot_material_template_loads_every_map",
+    "godot_compatibility_render",
+    "capture_shows_the_textured_surface",
+    "blender_builds_the_material"
+  ]
+}

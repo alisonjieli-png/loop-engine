@@ -1,0 +1,222 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "chain_mail",
+  "title": "Chain mail in the European 4-in-1 weave",
+  "purpose": "Generate tileable PBR maps of chain mail in the European 4-in-1 weave with alpha gaps: tilted rings in staggered rows, each passing over two neighbours and under two, in bright steel, blackened steel, brass or rusty iron. Use for armour, curtains, fantasy props and costumes.",
+  "form": "function",
+  "asset_role": null,
+  "dimension": "3d",
+  "engine": {
+    "name": "python",
+    "minimum_version": "3.10"
+  },
+  "tags": [
+    "texture",
+    "pbr",
+    "tileable",
+    "metal",
+    "chain mail",
+    "armour",
+    "rings",
+    "alpha",
+    "procedural"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "role": "other"
+    },
+    {
+      "path": "chain_mail.py",
+      "role": "executable_tool"
+    },
+    {
+      "path": "material.tres",
+      "role": "skill_asset"
+    },
+    {
+      "path": "blender_material.py",
+      "role": "executable_tool"
+    }
+  ],
+  "contract": {
+    "entry_point": "generate",
+    "module": "chain_mail.py",
+    "signature": "generate(width=256, height=256, seed=0, preset=\"default\", directx_normal=False, **parameters) -> {map name: {\"channels\", \"colour_space\", \"pixels\"}}",
+    "command_line": "python chain_mail.py --size 1024 --seed 7 --preset NAME --out DIR [--width W --height H] [--set NAME=VALUE] [--directx-normal] [--orm]",
+    "maps": [
+      {
+        "name": "albedo",
+        "channels": 4,
+        "colour_space": "srgb",
+        "convention": "gltf_base_color",
+        "range": [
+          0.03,
+          0.95
+        ]
+      },
+      {
+        "name": "normal",
+        "channels": 3,
+        "colour_space": "linear",
+        "convention": "opengl_y_up"
+      },
+      {
+        "name": "roughness",
+        "channels": 1,
+        "colour_space": "linear",
+        "convention": "gltf_roughness",
+        "range": [
+          0.1,
+          1.0
+        ]
+      },
+      {
+        "name": "metallic",
+        "channels": 1,
+        "colour_space": "linear",
+        "convention": "gltf_metallic"
+      },
+      {
+        "name": "height",
+        "channels": 1,
+        "colour_space": "linear",
+        "convention": "white_is_high"
+      },
+      {
+        "name": "ao",
+        "channels": 1,
+        "colour_space": "linear",
+        "convention": "white_is_unoccluded"
+      }
+    ],
+    "parameters": [
+      {
+        "name": "rings_across",
+        "type": "int",
+        "default": 8,
+        "minimum": 3,
+        "maximum": 32,
+        "meaning": "Rings across the tile in each row."
+      },
+      {
+        "name": "wire",
+        "type": "float",
+        "default": 0.17,
+        "minimum": 0.08,
+        "maximum": 0.3,
+        "meaning": "Wire thickness as a share of the ring spacing."
+      },
+      {
+        "name": "ring_size",
+        "type": "float",
+        "default": 0.62,
+        "minimum": 0.5,
+        "maximum": 0.8,
+        "meaning": "Ring outer radius as a share of the ring spacing."
+      },
+      {
+        "name": "tilt",
+        "type": "float",
+        "default": 0.5,
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "meaning": "How steeply rows tilt (stronger interlocking)."
+      },
+      {
+        "name": "tarnish",
+        "type": "float",
+        "default": 0.2,
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "meaning": "Darkening and dulling of the rings."
+      },
+      {
+        "name": "hue_shift",
+        "type": "float",
+        "default": 0.0,
+        "minimum": -0.5,
+        "maximum": 0.5,
+        "meaning": "Hue rotation of the albedo in turns."
+      },
+      {
+        "name": "saturation",
+        "type": "float",
+        "default": 1.0,
+        "minimum": 0.0,
+        "maximum": 2.0,
+        "meaning": "Albedo saturation multiplier."
+      },
+      {
+        "name": "brightness",
+        "type": "float",
+        "default": 1.0,
+        "minimum": 0.5,
+        "maximum": 1.0,
+        "meaning": "Albedo brightness multiplier."
+      }
+    ],
+    "presets": [
+      {
+        "name": "default",
+        "description": "Bright steel mail.",
+        "values": {}
+      },
+      {
+        "name": "blackened",
+        "description": "Blackened steel mail, matte.",
+        "values": {
+          "tarnish": 0.7
+        }
+      },
+      {
+        "name": "brass",
+        "description": "Brass mail with heavier wire.",
+        "values": {
+          "wire": 0.22,
+          "rings_across": 7
+        }
+      },
+      {
+        "name": "rusty",
+        "description": "Rusty iron mail with fine rings.",
+        "values": {
+          "tarnish": 0.9,
+          "rings_across": 12,
+          "wire": 0.2
+        }
+      }
+    ],
+    "tileable": true,
+    "default_size": 256,
+    "cost_seconds_1024": 17.7,
+    "peak_memory_mb_1024": 592,
+    "godot_material": "material.tres",
+    "godot_texture_folder": "res://baltor/textures/chain_mail/",
+    "blender_builder": "blender_material.build_material(folder)"
+  },
+  "limits": "Rings are flat annuli with a round wire profile, tilted in alternating rows; the over and under is resolved per pixel by height, not by true 3D geometry, so deep overlaps and silhouettes are approximate. The gaps need alpha scissor. Contact shadows are darkened by hand rather than traced. Occlusion is a blurred-height estimate, not ray traced.",
+  "related": [
+    "chain_link_fence",
+    "perforated_metal"
+  ],
+  "technique_references": [
+    "Staggered ring lattice with alternating tilt",
+    "Annulus with a round wire cross-section",
+    "Z-buffered painting of overlapping rings",
+    "Alpha from ring coverage"
+  ],
+  "native_checks": [
+    "command_line_generates_declared_maps",
+    "maps_decode",
+    "maps_have_declared_size_and_channels",
+    "maps_tile_without_a_seam",
+    "normal_vectors_unit_length_facing_out",
+    "maps_carry_detail",
+    "godot_imports_the_maps",
+    "godot_material_template_loads_every_map",
+    "godot_compatibility_render",
+    "capture_shows_the_textured_surface",
+    "blender_builds_the_material"
+  ]
+}

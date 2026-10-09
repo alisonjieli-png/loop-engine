@@ -1,0 +1,280 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "roof_shingles",
+  "title": "Staggered roof shingles: slate, asphalt or cedar",
+  "purpose": "Generate tileable PBR maps of roof shingles in staggered overlapping rows: natural slate, asphalt with mineral granules or split cedar shakes, with square, round fish-scale or pointed butts, keyways, cast shadows under each butt, and weathering. Use for house roofs, towers, sheds and shingled walls.",
+  "form": "function",
+  "asset_role": null,
+  "dimension": "3d",
+  "engine": {
+    "name": "python",
+    "minimum_version": "3.10"
+  },
+  "tags": [
+    "texture",
+    "pbr",
+    "tileable",
+    "roof",
+    "shingles",
+    "slate",
+    "asphalt",
+    "cedar",
+    "procedural"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "role": "other"
+    },
+    {
+      "path": "roof_shingles.py",
+      "role": "executable_tool"
+    },
+    {
+      "path": "material.tres",
+      "role": "skill_asset"
+    },
+    {
+      "path": "blender_material.py",
+      "role": "executable_tool"
+    }
+  ],
+  "contract": {
+    "entry_point": "generate",
+    "module": "roof_shingles.py",
+    "signature": "generate(width=256, height=256, seed=0, preset=\"default\", directx_normal=False, **parameters) -> {map name: {\"channels\", \"colour_space\", \"pixels\"}}",
+    "command_line": "python roof_shingles.py --size 1024 --seed 7 --preset NAME --out DIR [--width W --height H] [--set NAME=VALUE] [--directx-normal] [--orm]",
+    "maps": [
+      {
+        "name": "albedo",
+        "channels": 3,
+        "colour_space": "srgb",
+        "convention": "gltf_base_color",
+        "range": [
+          0.02,
+          0.9
+        ]
+      },
+      {
+        "name": "normal",
+        "channels": 3,
+        "colour_space": "linear",
+        "convention": "opengl_y_up"
+      },
+      {
+        "name": "roughness",
+        "channels": 1,
+        "colour_space": "linear",
+        "convention": "gltf_roughness",
+        "range": [
+          0.35,
+          1.0
+        ]
+      },
+      {
+        "name": "height",
+        "channels": 1,
+        "colour_space": "linear",
+        "convention": "white_is_high"
+      },
+      {
+        "name": "ao",
+        "channels": 1,
+        "colour_space": "linear",
+        "convention": "white_is_unoccluded"
+      }
+    ],
+    "parameters": [
+      {
+        "name": "material",
+        "type": "int",
+        "default": 0,
+        "minimum": 0,
+        "maximum": 2,
+        "meaning": "0 natural slate (cleft layers), 1 asphalt (mineral granules), 2 cedar shakes (split wood grain)."
+      },
+      {
+        "name": "butt",
+        "type": "int",
+        "default": 0,
+        "minimum": 0,
+        "maximum": 2,
+        "meaning": "Shape of the exposed lower edge: 0 square, 1 round (fish scale), 2 pointed."
+      },
+      {
+        "name": "rows",
+        "type": "int",
+        "default": 8,
+        "minimum": 3,
+        "maximum": 20,
+        "meaning": "Rows of shingles down the tile height."
+      },
+      {
+        "name": "per_row",
+        "type": "int",
+        "default": 5,
+        "minimum": 2,
+        "maximum": 14,
+        "meaning": "Shingles across the tile width in each row."
+      },
+      {
+        "name": "width_variation",
+        "type": "float",
+        "default": 0.0,
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "meaning": "Random shingle widths and row offsets, as split shakes have; 0 keeps equal widths offset by half."
+      },
+      {
+        "name": "keyway",
+        "type": "float",
+        "default": 0.03,
+        "minimum": 0.0,
+        "maximum": 0.12,
+        "meaning": "Gap between neighbouring shingles in a row, as a share of the mean shingle width."
+      },
+      {
+        "name": "thickness",
+        "type": "float",
+        "default": 0.5,
+        "minimum": 0.1,
+        "maximum": 1.0,
+        "meaning": "Height of the step at each butt."
+      },
+      {
+        "name": "weathering",
+        "type": "float",
+        "default": 0.25,
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "meaning": "Fading, streaks, lichen and moss."
+      },
+      {
+        "name": "colour_variation",
+        "type": "float",
+        "default": 0.4,
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "meaning": "Spread of colour between shingles."
+      },
+      {
+        "name": "hue_shift",
+        "type": "float",
+        "default": 0.0,
+        "minimum": -0.5,
+        "maximum": 0.5,
+        "meaning": "Hue rotation of the albedo in turns."
+      },
+      {
+        "name": "saturation",
+        "type": "float",
+        "default": 1.0,
+        "minimum": 0.0,
+        "maximum": 2.0,
+        "meaning": "Albedo saturation multiplier."
+      },
+      {
+        "name": "brightness",
+        "type": "float",
+        "default": 1.0,
+        "minimum": 0.5,
+        "maximum": 1.5,
+        "meaning": "Albedo brightness multiplier."
+      }
+    ],
+    "presets": [
+      {
+        "name": "default",
+        "description": "Blue-grey natural slate with square butts in staggered rows.",
+        "values": {}
+      },
+      {
+        "name": "asphalt_charcoal",
+        "description": "Charcoal and brown asphalt tabs with granules and wide keyways.",
+        "values": {
+          "material": 1,
+          "rows": 9,
+          "per_row": 4,
+          "keyway": 0.06,
+          "thickness": 0.35,
+          "weathering": 0.15,
+          "colour_variation": 0.25
+        }
+      },
+      {
+        "name": "cedar_shakes",
+        "description": "Weathered cedar shakes of random widths with split grain and moss.",
+        "values": {
+          "material": 2,
+          "rows": 6,
+          "per_row": 7,
+          "width_variation": 0.8,
+          "keyway": 0.05,
+          "thickness": 0.8,
+          "weathering": 0.6,
+          "colour_variation": 0.7
+        }
+      },
+      {
+        "name": "fishscale_slate",
+        "description": "Victorian fish-scale slate with round butts in two tones.",
+        "values": {
+          "butt": 1,
+          "rows": 9,
+          "per_row": 6,
+          "keyway": 0.02,
+          "colour_variation": 0.8,
+          "weathering": 0.1
+        }
+      },
+      {
+        "name": "pointed_green",
+        "description": "Green-grey slate with pointed butts, a decorative diamond course look.",
+        "values": {
+          "butt": 2,
+          "rows": 10,
+          "per_row": 6,
+          "keyway": 0.015,
+          "thickness": 0.4,
+          "colour_variation": 0.5,
+          "weathering": 0.3
+        }
+      }
+    ],
+    "tileable": true,
+    "default_size": 256,
+    "cost_seconds_1024": 24.1,
+    "peak_memory_mb_1024": 599,
+    "godot_material": "material.tres",
+    "godot_texture_folder": "res://baltor/textures/roof_shingles/",
+    "blender_builder": "blender_material.build_material(folder)"
+  },
+  "limits": "The slope always runs down the tile height. Shingles are flat pieces whose thickness shows only as a step in height and a darker band; there are no nail heads, ridges, valleys, flashing or architectural laminated shingles. Shadows under the butts are tinted into the albedo, so they read as baked under strong side light. Granules, cleft layers, grain, lichen and moss are noise approximations. Occlusion is a blurred-height estimate, not ray traced.",
+  "related": [
+    "roof_tiles_clay",
+    "slate_cleft",
+    "wood_planks",
+    "moss_cushion"
+  ],
+  "technique_references": [
+    "Overlap order of rows laid from the eaves upward",
+    "First covering row from the butt line below, with shaped butts and keyways",
+    "Round and pointed butt profiles as lifts of the butt line",
+    "Rows of equal or log-normal random widths with alternating or random offsets",
+    "Fractional Brownian motion stretched across or along the slope for cleft and grain",
+    "Height to tangent-space normal by central differences"
+  ],
+  "native_checks": [
+    "command_line_generates_declared_maps",
+    "maps_decode",
+    "maps_have_declared_size_and_channels",
+    "maps_tile_without_a_seam",
+    "normal_vectors_unit_length_facing_out",
+    "maps_carry_detail",
+    "godot_imports_the_maps",
+    "godot_material_template_loads_every_map",
+    "godot_compatibility_render",
+    "capture_shows_the_textured_surface",
+    "blender_builds_the_material"
+  ]
+}

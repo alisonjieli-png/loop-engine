@@ -1,0 +1,275 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "woven_cloth",
+  "title": "Woven cloth from a weave draft",
+  "purpose": "Generate tileable PBR maps of woven fabric from a weave draft: plain, 2/2 and 3/1 twill, 4/1 satin, basket or herringbone, with round threads, twist, fuzz, slubs and gaps. Use for clothing, upholstery, sacks, canvas and banners.",
+  "form": "function",
+  "asset_role": null,
+  "dimension": "3d",
+  "engine": {
+    "name": "python",
+    "minimum_version": "3.10"
+  },
+  "tags": [
+    "texture",
+    "pbr",
+    "tileable",
+    "fabric",
+    "cloth",
+    "weave",
+    "twill",
+    "procedural"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "role": "other"
+    },
+    {
+      "path": "woven_cloth.py",
+      "role": "executable_tool"
+    },
+    {
+      "path": "material.tres",
+      "role": "skill_asset"
+    },
+    {
+      "path": "blender_material.py",
+      "role": "executable_tool"
+    }
+  ],
+  "contract": {
+    "entry_point": "generate",
+    "module": "woven_cloth.py",
+    "signature": "generate(width=256, height=256, seed=0, preset=\"default\", directx_normal=False, **parameters) -> {map name: {\"channels\", \"colour_space\", \"pixels\"}}",
+    "command_line": "python woven_cloth.py --size 1024 --seed 7 --preset NAME --out DIR [--width W --height H] [--set NAME=VALUE] [--directx-normal] [--orm]",
+    "maps": [
+      {
+        "name": "albedo",
+        "channels": 3,
+        "colour_space": "srgb",
+        "convention": "gltf_base_color",
+        "range": [
+          0.02,
+          0.92
+        ]
+      },
+      {
+        "name": "normal",
+        "channels": 3,
+        "colour_space": "linear",
+        "convention": "opengl_y_up"
+      },
+      {
+        "name": "roughness",
+        "channels": 1,
+        "colour_space": "linear",
+        "convention": "gltf_roughness",
+        "range": [
+          0.25,
+          1.0
+        ]
+      },
+      {
+        "name": "height",
+        "channels": 1,
+        "colour_space": "linear",
+        "convention": "white_is_high"
+      },
+      {
+        "name": "ao",
+        "channels": 1,
+        "colour_space": "linear",
+        "convention": "white_is_unoccluded"
+      }
+    ],
+    "parameters": [
+      {
+        "name": "weave",
+        "type": "int",
+        "default": 0,
+        "minimum": 0,
+        "maximum": 5,
+        "meaning": "Draft: 0 plain, 1 2/2 twill, 2 3/1 twill, 3 4/1 satin, 4 2/2 basket, 5 herringbone twill."
+      },
+      {
+        "name": "threads",
+        "type": "int",
+        "default": 24,
+        "minimum": 4,
+        "maximum": 96,
+        "meaning": "Warp and weft threads across the tile (rounded up to a multiple of the draft size)."
+      },
+      {
+        "name": "thread_width",
+        "type": "float",
+        "default": 0.88,
+        "minimum": 0.5,
+        "maximum": 1.0,
+        "meaning": "Thread width as a share of the thread spacing; lower values open gaps between threads."
+      },
+      {
+        "name": "twist",
+        "type": "float",
+        "default": 0.5,
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "meaning": "Depth of the diagonal twist striations along each thread."
+      },
+      {
+        "name": "fuzz",
+        "type": "float",
+        "default": 0.4,
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "meaning": "Loose fibre noise on the thread surface."
+      },
+      {
+        "name": "slubs",
+        "type": "float",
+        "default": 0.3,
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "meaning": "Irregular thick and thin stretches and colour changes along the threads."
+      },
+      {
+        "name": "sheen",
+        "type": "float",
+        "default": 0.0,
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "meaning": "Lowers roughness on long floats, as in satin."
+      },
+      {
+        "name": "hue_shift",
+        "type": "float",
+        "default": 0.0,
+        "minimum": -0.5,
+        "maximum": 0.5,
+        "meaning": "Hue rotation of the albedo in turns."
+      },
+      {
+        "name": "saturation",
+        "type": "float",
+        "default": 1.0,
+        "minimum": 0.0,
+        "maximum": 2.0,
+        "meaning": "Albedo saturation multiplier."
+      },
+      {
+        "name": "brightness",
+        "type": "float",
+        "default": 1.0,
+        "minimum": 0.5,
+        "maximum": 1.5,
+        "meaning": "Albedo brightness multiplier."
+      }
+    ],
+    "presets": [
+      {
+        "name": "default",
+        "description": "Natural linen in plain weave with slubs.",
+        "values": {
+          "slubs": 0.5
+        }
+      },
+      {
+        "name": "denim",
+        "description": "Indigo warp and white weft in 3/1 twill.",
+        "values": {
+          "weave": 2,
+          "threads": 32,
+          "thread_width": 0.95,
+          "twist": 0.7,
+          "fuzz": 0.3,
+          "slubs": 0.4
+        }
+      },
+      {
+        "name": "wool_twill",
+        "description": "Charcoal and grey wool in 2/2 twill with soft fuzz.",
+        "values": {
+          "weave": 1,
+          "threads": 28,
+          "fuzz": 0.8,
+          "twist": 0.3
+        }
+      },
+      {
+        "name": "satin",
+        "description": "Burgundy 4/1 satin with long glossy floats.",
+        "values": {
+          "weave": 3,
+          "threads": 25,
+          "thread_width": 0.98,
+          "twist": 0.15,
+          "fuzz": 0.1,
+          "slubs": 0.0,
+          "sheen": 0.85
+        }
+      },
+      {
+        "name": "burlap",
+        "description": "Coarse open jute in plain weave with gaps and hairy fibres.",
+        "values": {
+          "threads": 12,
+          "thread_width": 0.7,
+          "twist": 0.8,
+          "fuzz": 1.0,
+          "slubs": 0.8
+        }
+      },
+      {
+        "name": "basket",
+        "description": "Off-white cotton in 2/2 basket weave.",
+        "values": {
+          "weave": 4,
+          "threads": 24,
+          "twist": 0.4,
+          "fuzz": 0.3
+        }
+      },
+      {
+        "name": "herringbone",
+        "description": "Brown and cream wool herringbone twill.",
+        "values": {
+          "weave": 5,
+          "threads": 32,
+          "fuzz": 0.6
+        }
+      }
+    ],
+    "tileable": true,
+    "default_size": 256,
+    "cost_seconds_1024": 23.9,
+    "peak_memory_mb_1024": 599,
+    "godot_material": "material.tres",
+    "godot_texture_folder": "res://baltor/textures/woven_cloth/",
+    "blender_builder": "blender_material.build_material(folder)"
+  },
+  "limits": "Threads are idealized round strands on a regular grid with no fabric drape, stretch or pile. Thread counts are rounded up to a multiple of the draft size. Sheen is approximated by lower roughness on floats; anisotropic highlights need an engine-side fabric shader. Occlusion is a blurred-height estimate.",
+  "related": [
+    "tartan_sett",
+    "knit_stockinette"
+  ],
+  "technique_references": [
+    "Weave drafts (binary interlacing matrices) for plain, twill, satin, basket and herringbone weaves",
+    "Round thread cross-sections with dips at interlacing points",
+    "Per-thread hashing for colour and slub variation",
+    "Value noise for thick and thin stretches",
+    "Height to tangent-space normal by central differences"
+  ],
+  "native_checks": [
+    "command_line_generates_declared_maps",
+    "maps_decode",
+    "maps_have_declared_size_and_channels",
+    "maps_tile_without_a_seam",
+    "normal_vectors_unit_length_facing_out",
+    "maps_carry_detail",
+    "godot_imports_the_maps",
+    "godot_material_template_loads_every_map",
+    "godot_compatibility_render",
+    "capture_shows_the_textured_surface",
+    "blender_builds_the_material"
+  ]
+}

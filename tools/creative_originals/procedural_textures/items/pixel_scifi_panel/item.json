@@ -1,0 +1,262 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "pixel_scifi_panel",
+  "title": "Pixel-art sci-fi hull panels with glowing lights",
+  "purpose": "Generate a tileable pixel-art sci-fi plating module at a chosen art resolution: panels split into plates with seams and bevels, each with rivets, vent slits, a grille, a light strip, indicator lamps or hazard stripes, with metallic, emissive, normal, height, roughness and occlusion maps. Use for 2D space stations.",
+  "form": "function",
+  "asset_role": null,
+  "dimension": "2d",
+  "engine": {
+    "name": "python",
+    "minimum_version": "3.10"
+  },
+  "tags": [
+    "texture",
+    "pixel art",
+    "tileable",
+    "sci-fi",
+    "panels",
+    "metal",
+    "emissive",
+    "2d",
+    "game tile",
+    "procedural"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "role": "other"
+    },
+    {
+      "path": "pixel_scifi_panel.py",
+      "role": "executable_tool"
+    },
+    {
+      "path": "material.tres",
+      "role": "skill_asset"
+    },
+    {
+      "path": "blender_material.py",
+      "role": "executable_tool"
+    }
+  ],
+  "contract": {
+    "entry_point": "generate",
+    "module": "pixel_scifi_panel.py",
+    "signature": "generate(width=256, height=256, seed=0, preset=\"default\", directx_normal=False, **parameters) -> {map name: {\"channels\", \"colour_space\", \"pixels\"}}",
+    "command_line": "python pixel_scifi_panel.py --size 1024 --seed 7 --preset NAME --out DIR [--width W --height H] [--set NAME=VALUE] [--directx-normal] [--orm]",
+    "maps": [
+      {
+        "name": "albedo",
+        "channels": 3,
+        "colour_space": "srgb",
+        "convention": "gltf_base_color",
+        "range": [
+          0.02,
+          0.98
+        ]
+      },
+      {
+        "name": "normal",
+        "channels": 3,
+        "colour_space": "linear",
+        "convention": "opengl_y_up"
+      },
+      {
+        "name": "roughness",
+        "channels": 1,
+        "colour_space": "linear",
+        "convention": "gltf_roughness",
+        "range": [
+          0.1,
+          1.0
+        ]
+      },
+      {
+        "name": "metallic",
+        "channels": 1,
+        "colour_space": "linear",
+        "convention": "gltf_metallic"
+      },
+      {
+        "name": "height",
+        "channels": 1,
+        "colour_space": "linear",
+        "convention": "white_is_high"
+      },
+      {
+        "name": "ao",
+        "channels": 1,
+        "colour_space": "linear",
+        "convention": "white_is_unoccluded"
+      },
+      {
+        "name": "emissive",
+        "channels": 3,
+        "colour_space": "srgb",
+        "convention": "gltf_emissive"
+      }
+    ],
+    "parameters": [
+      {
+        "name": "art_pixels",
+        "type": "int",
+        "default": 32,
+        "minimum": 16,
+        "maximum": 64,
+        "meaning": "Art pixels along each side of the tile; the maps enlarge them with nearest-neighbour sampling."
+      },
+      {
+        "name": "panels",
+        "type": "int",
+        "default": 2,
+        "minimum": 1,
+        "maximum": 4,
+        "meaning": "Main panel cells across the tile before subdivision."
+      },
+      {
+        "name": "subdivision",
+        "type": "float",
+        "default": 0.6,
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "meaning": "Chance that a panel is split into smaller plates."
+      },
+      {
+        "name": "lights",
+        "type": "float",
+        "default": 0.35,
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "meaning": "Share of plates carrying a light strip or indicator lights."
+      },
+      {
+        "name": "vents",
+        "type": "float",
+        "default": 0.3,
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "meaning": "Share of plates carrying vent slits or a grille."
+      },
+      {
+        "name": "hazard",
+        "type": "float",
+        "default": 0.0,
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "meaning": "Share of plates painted with diagonal hazard stripes."
+      },
+      {
+        "name": "rivets",
+        "type": "int",
+        "default": 1,
+        "minimum": 0,
+        "maximum": 1,
+        "meaning": "1 puts rivets in the corners of plain plates."
+      },
+      {
+        "name": "relief",
+        "type": "float",
+        "default": 1.0,
+        "minimum": 0.2,
+        "maximum": 2.0,
+        "meaning": "Strength of the per-pixel normal map."
+      },
+      {
+        "name": "hue_shift",
+        "type": "float",
+        "default": 0.0,
+        "minimum": -0.5,
+        "maximum": 0.5,
+        "meaning": "Hue rotation of the albedo and the lights in turns."
+      },
+      {
+        "name": "saturation",
+        "type": "float",
+        "default": 1.0,
+        "minimum": 0.0,
+        "maximum": 2.0,
+        "meaning": "Albedo saturation multiplier."
+      },
+      {
+        "name": "brightness",
+        "type": "float",
+        "default": 1.0,
+        "minimum": 0.5,
+        "maximum": 1.5,
+        "meaning": "Albedo brightness multiplier."
+      }
+    ],
+    "presets": [
+      {
+        "name": "default",
+        "description": "Grey space-station plating with cyan light strips.",
+        "values": {}
+      },
+      {
+        "name": "clean_lab",
+        "description": "White laboratory panels with blue lights and few vents.",
+        "values": {
+          "vents": 0.15,
+          "lights": 0.45,
+          "subdivision": 0.4
+        }
+      },
+      {
+        "name": "rusty_industrial",
+        "description": "Dark brown industrial plating with amber lights and hazard stripes.",
+        "values": {
+          "hazard": 0.3,
+          "vents": 0.45,
+          "lights": 0.2,
+          "panels": 3
+        }
+      },
+      {
+        "name": "alien_hull",
+        "description": "Violet-black alien hull with green glowing seams of light.",
+        "values": {
+          "lights": 0.6,
+          "vents": 0.2,
+          "rivets": 0,
+          "subdivision": 0.8
+        }
+      }
+    ],
+    "tileable": true,
+    "default_size": 256,
+    "cost_seconds_1024": 13.4,
+    "peak_memory_mb_1024": 122,
+    "godot_material": "material.tres",
+    "godot_texture_folder": "res://baltor/textures/pixel_scifi_panel/",
+    "blender_builder": "blender_material.build_material(folder)"
+  },
+  "limits": "Stylized pixel art with the light from the top left baked into the plate bevels. The module repeats on a regular panel grid aligned with the tile edges, which suits modular plating but shows the grid on large areas. Plates are rectangles split at most twice; details are fixed small patterns, and lights do not animate. Metal and glass take fixed roughness values per class. The normal map treats each art pixel as a flat facet. Output sizes that are not a whole multiple of art_pixels give art pixels of unequal widths. Occlusion is a blurred-height estimate posterized to eighths.",
+  "related": [
+    "scifi_hex_panels",
+    "scifi_greeble_panels",
+    "riveted_plates",
+    "pixel_crystal_cave"
+  ],
+  "technique_references": [
+    "Recursive rectangle splitting of a panel grid",
+    "Seam ownership on the top and left edge of each plate",
+    "Bevel shading with highlight and shadow rows",
+    "Per-plate detail selection from hashed random draws",
+    "glTF emissive and metallic maps",
+    "Per-art-pixel normals by central differences"
+  ],
+  "native_checks": [
+    "command_line_generates_declared_maps",
+    "maps_decode",
+    "maps_have_declared_size_and_channels",
+    "maps_tile_without_a_seam",
+    "normal_vectors_unit_length_facing_out",
+    "maps_carry_detail",
+    "godot_imports_the_maps",
+    "godot_material_template_loads_every_map",
+    "godot_compatibility_render",
+    "capture_shows_the_textured_surface",
+    "blender_builds_the_material"
+  ]
+}

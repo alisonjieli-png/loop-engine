@@ -1,0 +1,282 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "penny_round_mosaic",
+  "title": "Penny round mosaic in hexagonal or square packing",
+  "purpose": "Generate tileable PBR maps of penny round mosaic: small domed round tiles in hexagonal close packing or on a square grid, with grout between, hand-set offsets, glaze rings and a colour rule (weighted blend, scattered accents or drifting clusters). Use for bathroom floors, shower walls and backsplashes.",
+  "form": "function",
+  "asset_role": null,
+  "dimension": "3d",
+  "engine": {
+    "name": "python",
+    "minimum_version": "3.10"
+  },
+  "tags": [
+    "texture",
+    "pbr",
+    "tileable",
+    "tiles",
+    "mosaic",
+    "penny round",
+    "ceramic",
+    "grout",
+    "procedural"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "role": "other"
+    },
+    {
+      "path": "penny_round_mosaic.py",
+      "role": "executable_tool"
+    },
+    {
+      "path": "material.tres",
+      "role": "skill_asset"
+    },
+    {
+      "path": "blender_material.py",
+      "role": "executable_tool"
+    }
+  ],
+  "contract": {
+    "entry_point": "generate",
+    "module": "penny_round_mosaic.py",
+    "signature": "generate(width=256, height=256, seed=0, preset=\"default\", directx_normal=False, **parameters) -> {map name: {\"channels\", \"colour_space\", \"pixels\"}}",
+    "command_line": "python penny_round_mosaic.py --size 1024 --seed 7 --preset NAME --out DIR [--width W --height H] [--set NAME=VALUE] [--directx-normal] [--orm]",
+    "maps": [
+      {
+        "name": "albedo",
+        "channels": 3,
+        "colour_space": "srgb",
+        "convention": "gltf_base_color",
+        "range": [
+          0.02,
+          0.92
+        ]
+      },
+      {
+        "name": "normal",
+        "channels": 3,
+        "colour_space": "linear",
+        "convention": "opengl_y_up"
+      },
+      {
+        "name": "roughness",
+        "channels": 1,
+        "colour_space": "linear",
+        "convention": "gltf_roughness",
+        "range": [
+          0.04,
+          1.0
+        ]
+      },
+      {
+        "name": "height",
+        "channels": 1,
+        "colour_space": "linear",
+        "convention": "white_is_high"
+      },
+      {
+        "name": "ao",
+        "channels": 1,
+        "colour_space": "linear",
+        "convention": "white_is_unoccluded"
+      }
+    ],
+    "parameters": [
+      {
+        "name": "columns",
+        "type": "int",
+        "default": 12,
+        "minimum": 4,
+        "maximum": 40,
+        "meaning": "Rounds across the tile width."
+      },
+      {
+        "name": "packing",
+        "type": "int",
+        "default": 0,
+        "minimum": 0,
+        "maximum": 1,
+        "meaning": "0 hexagonal close packing (rows offset by half a round), 1 square grid."
+      },
+      {
+        "name": "pattern",
+        "type": "int",
+        "default": 0,
+        "minimum": 0,
+        "maximum": 2,
+        "meaning": "Colour rule: 0 weighted random blend of the palette, 1 a base colour with scattered accents, 2 clusters that drift between the palette colours."
+      },
+      {
+        "name": "gap",
+        "type": "float",
+        "default": 0.12,
+        "minimum": 0.03,
+        "maximum": 0.4,
+        "meaning": "Grout between neighbouring rounds as a share of the round spacing."
+      },
+      {
+        "name": "dome",
+        "type": "float",
+        "default": 0.6,
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "meaning": "How much each round's face bulges toward its centre."
+      },
+      {
+        "name": "handmade",
+        "type": "float",
+        "default": 0.35,
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "meaning": "Random offsets and size changes of the rounds, as on hand-set sheets."
+      },
+      {
+        "name": "grout_depth",
+        "type": "float",
+        "default": 0.5,
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "meaning": "How far the grout sits below the rounds."
+      },
+      {
+        "name": "accent_share",
+        "type": "float",
+        "default": 0.15,
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "meaning": "Share of accent rounds (pattern 1) or of the second colour in the random blend (pattern 0)."
+      },
+      {
+        "name": "glaze",
+        "type": "float",
+        "default": 0.85,
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "meaning": "0 unglazed matte porcelain, 1 glossy glaze."
+      },
+      {
+        "name": "colour_variation",
+        "type": "float",
+        "default": 0.35,
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "meaning": "Spread of tone between rounds of one colour."
+      },
+      {
+        "name": "dirt",
+        "type": "float",
+        "default": 0.15,
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "meaning": "Darkening of the grout and the round edges."
+      },
+      {
+        "name": "hue_shift",
+        "type": "float",
+        "default": 0.0,
+        "minimum": -0.5,
+        "maximum": 0.5,
+        "meaning": "Hue rotation of the albedo in turns."
+      },
+      {
+        "name": "saturation",
+        "type": "float",
+        "default": 1.0,
+        "minimum": 0.0,
+        "maximum": 2.0,
+        "meaning": "Albedo saturation multiplier."
+      },
+      {
+        "name": "brightness",
+        "type": "float",
+        "default": 1.0,
+        "minimum": 0.5,
+        "maximum": 1.5,
+        "meaning": "Albedo brightness multiplier."
+      }
+    ],
+    "presets": [
+      {
+        "name": "default",
+        "description": "White glossy penny rounds in hexagonal packing with mid grey grout.",
+        "values": {}
+      },
+      {
+        "name": "salt_pepper",
+        "description": "Matte white rounds with scattered black ones and white grout.",
+        "values": {
+          "columns": 16,
+          "pattern": 1,
+          "accent_share": 0.18,
+          "glaze": 0.2,
+          "dome": 0.3,
+          "colour_variation": 0.2
+        }
+      },
+      {
+        "name": "sage_blend",
+        "description": "Glossy green rounds drifting between sage and moss, uneven hand-set rows.",
+        "values": {
+          "columns": 14,
+          "pattern": 2,
+          "handmade": 0.7,
+          "dome": 0.8,
+          "gap": 0.14,
+          "colour_variation": 0.5
+        }
+      },
+      {
+        "name": "porcelain_grid",
+        "description": "Unglazed speckled terracotta rounds on a square grid with dark grout.",
+        "values": {
+          "columns": 10,
+          "packing": 1,
+          "pattern": 0,
+          "accent_share": 0.3,
+          "gap": 0.18,
+          "glaze": 0.0,
+          "dome": 0.25,
+          "handmade": 0.2,
+          "colour_variation": 0.6,
+          "dirt": 0.35
+        }
+      }
+    ],
+    "tileable": true,
+    "default_size": 256,
+    "cost_seconds_1024": 18.4,
+    "peak_memory_mb_1024": 551,
+    "godot_material": "material.tres",
+    "godot_texture_folder": "res://baltor/textures/penny_round_mosaic/",
+    "blender_builder": "blender_material.build_material(folder)"
+  },
+  "limits": "Rounds are discs with a bullnose edge and a domed face; mesh-backed sheet seams, cut rounds at walls and glaze crazing are not modelled. In hexagonal packing the even row count squashes the lattice by about 1 percent for most column counts, more for very few columns. The colour rules are random or noise-driven, not designed motifs. Occlusion is a blurred-height estimate, not ray traced.",
+  "related": [
+    "hexagon_tiles",
+    "mosaic_tesserae",
+    "terrazzo"
+  ],
+  "technique_references": [
+    "Hexagonal close packing in odd-row offset coordinates",
+    "Nearest of four candidate centres with per-round jitter",
+    "Disc distance field with a quarter-circle bullnose profile",
+    "Value-noise clusters sampled at round centres for colour drift",
+    "Height to tangent-space normal by central differences"
+  ],
+  "native_checks": [
+    "command_line_generates_declared_maps",
+    "maps_decode",
+    "maps_have_declared_size_and_channels",
+    "maps_tile_without_a_seam",
+    "normal_vectors_unit_length_facing_out",
+    "maps_carry_detail",
+    "godot_imports_the_maps",
+    "godot_material_template_loads_every_map",
+    "godot_compatibility_render",
+    "capture_shows_the_textured_surface",
+    "blender_builds_the_material"
+  ]
+}

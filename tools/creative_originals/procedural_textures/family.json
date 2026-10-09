@@ -1,0 +1,15 @@
+{
+  "record_type": "creative_original_family/v1",
+  "family": "procedural_textures",
+  "title": "Original tileable PBR texture generators",
+  "description": "Each item is a standard-library Python generator for one material or 2D tile: generate(width, height, seed, preset, **parameters) returns tileable maps in the glTF metallic-roughness model (sRGB albedo, OpenGL normal map, linear roughness, height and ambient occlusion, plus metallic, emissive or an alpha channel where the material needs them), and a command line writes them as PNG files. The items cover stone, masonry, tiles, wood, metals, textiles, organic surfaces, patterns, sky and effects, and palette-limited pixel art drawn at a small art resolution and enlarged without smoothing. Items share texkit.py (periodic value, gradient and cellular noise, fractal sums, domain warping, torus distances, shape distances, Poisson disc points, painting with wrap-around, colour ramps, height to normal, approximate occlusion) and pngio.py. Each item also ships a Godot 4 StandardMaterial3D template and a Blender Principled BSDF builder for the generated maps. The item contract lists the maps, parameters with bounds, presets and the measured cost at 1024 x 1024. The native verifier generates the default preset at 256 x 256, checks seams and normal vectors, imports the maps into Godot, renders the item's material template on a sphere and a tiled plane and then as a close-up of the plane with metered exposure (Compatibility renderer), and builds the Blender material from the same maps.",
+  "engine": {"name": "python", "minimum_version": "3.10", "notes": "Maps are rendered in Godot 4.7.2 (Compatibility renderer, Mesa llvmpipe under Xvfb) and the Blender builder runs in Blender 5.2.1 background mode"},
+  "shared_files": [
+    {"path": "texkit.py", "role": "executable_tool"},
+    {"path": "pngio.py", "role": "executable_tool"},
+    {"path": "test_package.py", "role": "executable_tool"}
+  ],
+  "native_verifier": "native.py",
+  "generator_version": "1.0.0",
+  "default_dimension": "3d"
+}

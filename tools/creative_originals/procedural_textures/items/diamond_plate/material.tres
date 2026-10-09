@@ -1,0 +1,28 @@
+[gd_resource type="StandardMaterial3D" format=3]
+
+[ext_resource type="Texture2D" path="res://baltor/textures/diamond_plate/diamond_plate_albedo.png" id="1_albedo"]
+[ext_resource type="Texture2D" path="res://baltor/textures/diamond_plate/diamond_plate_normal.png" id="2_normal"]
+[ext_resource type="Texture2D" path="res://baltor/textures/diamond_plate/diamond_plate_roughness.png" id="3_roughness"]
+[ext_resource type="Texture2D" path="res://baltor/textures/diamond_plate/diamond_plate_metallic.png" id="4_metallic"]
+[ext_resource type="Texture2D" path="res://baltor/textures/diamond_plate/diamond_plate_height.png" id="5_height"]
+[ext_resource type="Texture2D" path="res://baltor/textures/diamond_plate/diamond_plate_ao.png" id="6_ao"]
+
+[resource]
+resource_name = "diamond_plate"
+albedo_texture = ExtResource("1_albedo")
+metallic = 1.0
+metallic_texture = ExtResource("4_metallic")
+metallic_texture_channel = 0
+roughness = 1.0
+roughness_texture = ExtResource("3_roughness")
+roughness_texture_channel = 0
+normal_enabled = true
+normal_scale = 1
+normal_texture = ExtResource("2_normal")
+ao_enabled = true
+ao_texture = ExtResource("6_ao")
+ao_texture_channel = 0
+heightmap_enabled = true
+heightmap_scale = 1
+heightmap_texture = ExtResource("5_height")
+uv1_scale = Vector3(1, 1, 1)

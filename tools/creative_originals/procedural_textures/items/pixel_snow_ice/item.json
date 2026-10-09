@@ -1,0 +1,252 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "pixel_snow_ice",
+  "title": "Pixel-art snow drifts and glossy ice patches",
+  "purpose": "Generate a tileable pixel-art snow and ice tile at a chosen art resolution: lumpy drift mounds with lit caps and blue shadows, sparkles, glossy ice patches with diagonal highlight streaks, rims and cracks, and dirt for trodden snow, with per-pixel normal, height, roughness and occlusion maps. Use for 2D winter levels.",
+  "form": "function",
+  "asset_role": null,
+  "dimension": "2d",
+  "engine": {
+    "name": "python",
+    "minimum_version": "3.10"
+  },
+  "tags": [
+    "texture",
+    "pixel art",
+    "tileable",
+    "snow",
+    "ice",
+    "winter",
+    "2d",
+    "game tile",
+    "procedural"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "role": "other"
+    },
+    {
+      "path": "pixel_snow_ice.py",
+      "role": "executable_tool"
+    },
+    {
+      "path": "material.tres",
+      "role": "skill_asset"
+    },
+    {
+      "path": "blender_material.py",
+      "role": "executable_tool"
+    }
+  ],
+  "contract": {
+    "entry_point": "generate",
+    "module": "pixel_snow_ice.py",
+    "signature": "generate(width=256, height=256, seed=0, preset=\"default\", directx_normal=False, **parameters) -> {map name: {\"channels\", \"colour_space\", \"pixels\"}}",
+    "command_line": "python pixel_snow_ice.py --size 1024 --seed 7 --preset NAME --out DIR [--width W --height H] [--set NAME=VALUE] [--directx-normal] [--orm]",
+    "maps": [
+      {
+        "name": "albedo",
+        "channels": 3,
+        "colour_space": "srgb",
+        "convention": "gltf_base_color",
+        "range": [
+          0.02,
+          0.95
+        ]
+      },
+      {
+        "name": "normal",
+        "channels": 3,
+        "colour_space": "linear",
+        "convention": "opengl_y_up"
+      },
+      {
+        "name": "roughness",
+        "channels": 1,
+        "colour_space": "linear",
+        "convention": "gltf_roughness",
+        "range": [
+          0.05,
+          1.0
+        ]
+      },
+      {
+        "name": "height",
+        "channels": 1,
+        "colour_space": "linear",
+        "convention": "white_is_high"
+      },
+      {
+        "name": "ao",
+        "channels": 1,
+        "colour_space": "linear",
+        "convention": "white_is_unoccluded"
+      }
+    ],
+    "parameters": [
+      {
+        "name": "art_pixels",
+        "type": "int",
+        "default": 32,
+        "minimum": 16,
+        "maximum": 64,
+        "meaning": "Art pixels along each side of the tile; the maps enlarge them with nearest-neighbour sampling."
+      },
+      {
+        "name": "mounds",
+        "type": "int",
+        "default": 5,
+        "minimum": 2,
+        "maximum": 8,
+        "meaning": "Snow drift mounds across the tile."
+      },
+      {
+        "name": "ice",
+        "type": "float",
+        "default": 0.3,
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "meaning": "Share of the tile covered by ice patches."
+      },
+      {
+        "name": "streak_spacing",
+        "type": "int",
+        "default": 5,
+        "minimum": 3,
+        "maximum": 9,
+        "meaning": "Distance between the diagonal highlight streaks on ice, in art pixels."
+      },
+      {
+        "name": "cracks",
+        "type": "float",
+        "default": 0.3,
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "meaning": "Number of cracks in the ice."
+      },
+      {
+        "name": "sparkles",
+        "type": "float",
+        "default": 0.4,
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "meaning": "Density of sparkles on the snow."
+      },
+      {
+        "name": "dirt",
+        "type": "float",
+        "default": 0.0,
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "meaning": "Density of dirt specks on trodden snow."
+      },
+      {
+        "name": "relief",
+        "type": "float",
+        "default": 1.0,
+        "minimum": 0.2,
+        "maximum": 2.0,
+        "meaning": "Strength of the per-pixel normal map."
+      },
+      {
+        "name": "hue_shift",
+        "type": "float",
+        "default": 0.0,
+        "minimum": -0.5,
+        "maximum": 0.5,
+        "meaning": "Hue rotation of the albedo in turns."
+      },
+      {
+        "name": "saturation",
+        "type": "float",
+        "default": 1.0,
+        "minimum": 0.0,
+        "maximum": 2.0,
+        "meaning": "Albedo saturation multiplier."
+      },
+      {
+        "name": "brightness",
+        "type": "float",
+        "default": 1.0,
+        "minimum": 0.5,
+        "maximum": 1.5,
+        "meaning": "Albedo brightness multiplier."
+      }
+    ],
+    "presets": [
+      {
+        "name": "default",
+        "description": "Fresh lumpy snow with sparkles and a few ice patches.",
+        "values": {}
+      },
+      {
+        "name": "frozen_pond",
+        "description": "Mostly glossy pond ice with cracks and small snow drifts.",
+        "values": {
+          "ice": 0.8,
+          "cracks": 0.7,
+          "sparkles": 0.2,
+          "mounds": 5
+        }
+      },
+      {
+        "name": "packed_snow",
+        "description": "Grey trodden snow with dirt specks, few sparkles and no ice.",
+        "values": {
+          "ice": 0.0,
+          "sparkles": 0.1,
+          "dirt": 0.6,
+          "mounds": 6
+        }
+      },
+      {
+        "name": "glacier",
+        "description": "Deep blue glacier ice crossed by cracks, with white snow patches.",
+        "values": {
+          "ice": 0.65,
+          "cracks": 1.0,
+          "streak_spacing": 7,
+          "mounds": 3,
+          "sparkles": 0.3
+        }
+      }
+    ],
+    "tileable": true,
+    "default_size": 256,
+    "cost_seconds_1024": 9.0,
+    "peak_memory_mb_1024": 88,
+    "godot_material": "material.tres",
+    "godot_texture_folder": "res://baltor/textures/pixel_snow_ice/",
+    "blender_builder": "blender_material.build_material(folder)"
+  },
+  "limits": "Stylized pixel art with the light from the top left baked into the mound shading and the ice rims; drifts are Voronoi mounds and ice patches thresholded noise, not a snow or freezing model. Streaks are fixed diagonal highlights, not reflections of the scene. Roughness and height are values per drawn class, and the normal map treats each art pixel as a flat facet. Output sizes that are not a whole multiple of art_pixels give art pixels of unequal widths. Occlusion is a blurred-height estimate posterized to eighths.",
+  "related": [
+    "snow_fresh",
+    "lake_ice_cracked",
+    "pixel_water_surface",
+    "pixel_sand_dunes"
+  ],
+  "technique_references": [
+    "Worley cells as drift mounds shaded by the offset from their seed",
+    "Ordered dithering with a 4 x 4 Bayer matrix",
+    "Thresholded fractal noise for ice patches",
+    "Periodic diagonal streaks broken by hashed segments",
+    "Random-walk cracks",
+    "Poisson-disc sampling for sparkles",
+    "Per-art-pixel normals by central differences"
+  ],
+  "native_checks": [
+    "command_line_generates_declared_maps",
+    "maps_decode",
+    "maps_have_declared_size_and_channels",
+    "maps_tile_without_a_seam",
+    "normal_vectors_unit_length_facing_out",
+    "maps_carry_detail",
+    "godot_imports_the_maps",
+    "godot_material_template_loads_every_map",
+    "godot_compatibility_render",
+    "capture_shows_the_textured_surface",
+    "blender_builds_the_material"
+  ]
+}

@@ -1,0 +1,27 @@
+[gd_resource type="StandardMaterial3D" format=3]
+
+[ext_resource type="Texture2D" path="res://baltor/textures/roof_shingles/roof_shingles_albedo.png" id="1_albedo"]
+[ext_resource type="Texture2D" path="res://baltor/textures/roof_shingles/roof_shingles_normal.png" id="2_normal"]
+[ext_resource type="Texture2D" path="res://baltor/textures/roof_shingles/roof_shingles_roughness.png" id="3_roughness"]
+[ext_resource type="Texture2D" path="res://baltor/textures/roof_shingles/roof_shingles_height.png" id="4_height"]
+[ext_resource type="Texture2D" path="res://baltor/textures/roof_shingles/roof_shingles_ao.png" id="5_ao"]
+
+[resource]
+resource_name = "roof_shingles"
+albedo_texture = ExtResource("1_albedo")
+roughness = 1.0
+roughness_texture = ExtResource("3_roughness")
+roughness_texture_channel = 0
+normal_enabled = true
+normal_scale = 1
+normal_texture = ExtResource("2_normal")
+ao_enabled = true
+ao_texture = ExtResource("5_ao")
+ao_texture_channel = 0
+heightmap_enabled = true
+heightmap_scale = 2
+heightmap_deep_parallax = true
+heightmap_min_layers = 8
+heightmap_max_layers = 32
+heightmap_texture = ExtResource("4_height")
+uv1_scale = Vector3(1, 1, 1)

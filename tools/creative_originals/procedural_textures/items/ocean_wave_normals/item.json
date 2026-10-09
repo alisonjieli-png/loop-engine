@@ -1,0 +1,268 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "ocean_wave_normals",
+  "title": "Ocean wave normals from a directional wave spectrum",
+  "purpose": "Generate tileable maps of a water surface: a sum of directional sine waves with whole-number wave vectors drawn from a wind-sea spectrum, Gerstner-style crest sharpening and whitecap foam where crests compress. The normal map is the main output for water shaders; calm swell to storm presets.",
+  "form": "function",
+  "asset_role": null,
+  "dimension": "3d",
+  "engine": {
+    "name": "python",
+    "minimum_version": "3.10"
+  },
+  "tags": [
+    "texture",
+    "pbr",
+    "tileable",
+    "water",
+    "ocean",
+    "waves",
+    "normal map",
+    "foam",
+    "procedural"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "role": "other"
+    },
+    {
+      "path": "ocean_wave_normals.py",
+      "role": "executable_tool"
+    },
+    {
+      "path": "material.tres",
+      "role": "skill_asset"
+    },
+    {
+      "path": "blender_material.py",
+      "role": "executable_tool"
+    }
+  ],
+  "contract": {
+    "entry_point": "generate",
+    "module": "ocean_wave_normals.py",
+    "signature": "generate(width=256, height=256, seed=0, preset=\"default\", directx_normal=False, **parameters) -> {map name: {\"channels\", \"colour_space\", \"pixels\"}}",
+    "command_line": "python ocean_wave_normals.py --size 1024 --seed 7 --preset NAME --out DIR [--width W --height H] [--set NAME=VALUE] [--directx-normal] [--orm]",
+    "maps": [
+      {
+        "name": "albedo",
+        "channels": 3,
+        "colour_space": "srgb",
+        "convention": "gltf_base_color",
+        "range": [
+          0.01,
+          0.95
+        ]
+      },
+      {
+        "name": "normal",
+        "channels": 3,
+        "colour_space": "linear",
+        "convention": "opengl_y_up"
+      },
+      {
+        "name": "roughness",
+        "channels": 1,
+        "colour_space": "linear",
+        "convention": "gltf_roughness",
+        "range": [
+          0.02,
+          0.9
+        ]
+      },
+      {
+        "name": "height",
+        "channels": 1,
+        "colour_space": "linear",
+        "convention": "white_is_high"
+      },
+      {
+        "name": "ao",
+        "channels": 1,
+        "colour_space": "linear",
+        "convention": "white_is_unoccluded"
+      }
+    ],
+    "parameters": [
+      {
+        "name": "peak_waves",
+        "type": "int",
+        "default": 4,
+        "minimum": 1,
+        "maximum": 16,
+        "meaning": "Cycles of the dominant wavelength across the tile."
+      },
+      {
+        "name": "components",
+        "type": "int",
+        "default": 48,
+        "minimum": 8,
+        "maximum": 96,
+        "meaning": "Number of sine waves summed."
+      },
+      {
+        "name": "wind_angle",
+        "type": "float",
+        "default": 0.1,
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "meaning": "Direction the waves travel, in turns from the +U axis."
+      },
+      {
+        "name": "spread",
+        "type": "float",
+        "default": 0.45,
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "meaning": "Directional spreading: 0 long parallel crests, 1 waves from every direction."
+      },
+      {
+        "name": "detail",
+        "type": "float",
+        "default": 0.5,
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "meaning": "Weight of short waves and ripples against the peak band."
+      },
+      {
+        "name": "choppiness",
+        "type": "float",
+        "default": 0.4,
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "meaning": "Sideways crest sharpening, 0 smooth sines to 1 nearly breaking."
+      },
+      {
+        "name": "foam",
+        "type": "float",
+        "default": 0.2,
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "meaning": "Whitecap foam on the most compressed crests."
+      },
+      {
+        "name": "relief",
+        "type": "float",
+        "default": 1.0,
+        "minimum": 0.2,
+        "maximum": 2.5,
+        "meaning": "Strength of the normal map relief."
+      },
+      {
+        "name": "hue_shift",
+        "type": "float",
+        "default": 0.0,
+        "minimum": -0.5,
+        "maximum": 0.5,
+        "meaning": "Hue rotation of the albedo in turns."
+      },
+      {
+        "name": "saturation",
+        "type": "float",
+        "default": 1.0,
+        "minimum": 0.0,
+        "maximum": 2.0,
+        "meaning": "Albedo saturation multiplier."
+      },
+      {
+        "name": "brightness",
+        "type": "float",
+        "default": 1.0,
+        "minimum": 0.5,
+        "maximum": 1.5,
+        "meaning": "Albedo brightness multiplier."
+      }
+    ],
+    "presets": [
+      {
+        "name": "default",
+        "description": "Open sea: a moderate wind sea with sharpened crests and a little foam.",
+        "values": {}
+      },
+      {
+        "name": "calm_swell",
+        "description": "Long parallel swell with smooth crests and no foam.",
+        "values": {
+          "peak_waves": 2,
+          "spread": 0.1,
+          "detail": 0.2,
+          "choppiness": 0.1,
+          "foam": 0.0,
+          "components": 32
+        }
+      },
+      {
+        "name": "choppy_wind",
+        "description": "Short, steep wind chop from many directions with whitecaps.",
+        "values": {
+          "peak_waves": 6,
+          "spread": 0.7,
+          "detail": 0.7,
+          "choppiness": 0.75,
+          "foam": 0.5,
+          "components": 72
+        }
+      },
+      {
+        "name": "stormy",
+        "description": "Heavy grey-green storm sea, near-breaking crests streaked with foam.",
+        "values": {
+          "peak_waves": 3,
+          "spread": 0.5,
+          "detail": 0.6,
+          "choppiness": 0.95,
+          "foam": 0.95,
+          "relief": 1.6,
+          "components": 64
+        }
+      },
+      {
+        "name": "lake_ripples",
+        "description": "Small isotropic ripples on a brown-green lake.",
+        "values": {
+          "peak_waves": 10,
+          "spread": 1.0,
+          "detail": 0.8,
+          "choppiness": 0.0,
+          "foam": 0.0,
+          "relief": 0.6,
+          "components": 64
+        }
+      }
+    ],
+    "tileable": true,
+    "default_size": 256,
+    "cost_seconds_1024": 25.4,
+    "peak_memory_mb_1024": 653,
+    "godot_material": "material.tres",
+    "godot_texture_folder": "res://baltor/textures/ocean_wave_normals/",
+    "blender_builder": "blender_material.build_material(folder)"
+  },
+  "limits": "One still frame of a stylized spectrum, not an ocean simulation: there is no dispersion relation, time animation or FFT, and the spectrum shape is a log-normal band with cosine spreading rather than a measured model such as JONSWAP. Choppiness resamples the height once at the displaced position, an approximation of Gerstner waves that holds while crests do not fold. Every wave repeats across the tile, so long views show the repeat; blend two scales of the tile in the shader to hide it. Foam is placed from crest compression and noise, not from breaking physics, and the occlusion map is a mild stand-in.",
+  "related": [
+    "water_caustics",
+    "lake_ice_cracked"
+  ],
+  "technique_references": [
+    "Sum of sine waves with integer wave vectors for exact tiling",
+    "Directional spectrum: log-normal band times cosine-power spreading",
+    "Gumbel top-k weighted sampling of wave components",
+    "Separable evaluation by the sine addition formula",
+    "Gerstner horizontal displacement and its Jacobian for crest sharpening and foam",
+    "Height to tangent-space normal by central differences"
+  ],
+  "native_checks": [
+    "command_line_generates_declared_maps",
+    "maps_decode",
+    "maps_have_declared_size_and_channels",
+    "maps_tile_without_a_seam",
+    "normal_vectors_unit_length_facing_out",
+    "maps_carry_detail",
+    "godot_imports_the_maps",
+    "godot_material_template_loads_every_map",
+    "godot_compatibility_render",
+    "capture_shows_the_textured_surface",
+    "blender_builds_the_material"
+  ]
+}

@@ -1,0 +1,248 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "camouflage_patterns",
+  "title": "Camouflage prints on twill: woodland, digital, tiger, desert, splinter",
+  "purpose": "Generate tileable maps of printed camouflage cloth in five pattern families (woodland blobs and branches, digital pixels, tiger stripes, desert with rock spots, splinter shards with rain dashes) on a twill-like weave. Use for uniforms, gear, vehicle covers, tents and military props.",
+  "form": "function",
+  "asset_role": null,
+  "dimension": "3d",
+  "engine": {
+    "name": "python",
+    "minimum_version": "3.10"
+  },
+  "tags": [
+    "texture",
+    "pbr",
+    "tileable",
+    "camouflage",
+    "fabric",
+    "military",
+    "pattern",
+    "twill",
+    "procedural"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "role": "other"
+    },
+    {
+      "path": "camouflage_patterns.py",
+      "role": "executable_tool"
+    },
+    {
+      "path": "material.tres",
+      "role": "skill_asset"
+    },
+    {
+      "path": "blender_material.py",
+      "role": "executable_tool"
+    }
+  ],
+  "contract": {
+    "entry_point": "generate",
+    "module": "camouflage_patterns.py",
+    "signature": "generate(width=256, height=256, seed=0, preset=\"default\", directx_normal=False, **parameters) -> {map name: {\"channels\", \"colour_space\", \"pixels\"}}",
+    "command_line": "python camouflage_patterns.py --size 1024 --seed 7 --preset NAME --out DIR [--width W --height H] [--set NAME=VALUE] [--directx-normal] [--orm]",
+    "maps": [
+      {
+        "name": "albedo",
+        "channels": 3,
+        "colour_space": "srgb",
+        "convention": "gltf_base_color",
+        "range": [
+          0.03,
+          0.85
+        ]
+      },
+      {
+        "name": "normal",
+        "channels": 3,
+        "colour_space": "linear",
+        "convention": "opengl_y_up"
+      },
+      {
+        "name": "roughness",
+        "channels": 1,
+        "colour_space": "linear",
+        "convention": "gltf_roughness",
+        "range": [
+          0.5,
+          1.0
+        ]
+      },
+      {
+        "name": "height",
+        "channels": 1,
+        "colour_space": "linear",
+        "convention": "white_is_high"
+      },
+      {
+        "name": "ao",
+        "channels": 1,
+        "colour_space": "linear",
+        "convention": "white_is_unoccluded"
+      }
+    ],
+    "parameters": [
+      {
+        "name": "pattern",
+        "type": "int",
+        "default": 0,
+        "minimum": 0,
+        "maximum": 4,
+        "meaning": "0 woodland blobs and branches, 1 digital pixels, 2 tiger stripes, 3 desert with spots, 4 splinter with rain dashes."
+      },
+      {
+        "name": "blobs",
+        "type": "int",
+        "default": 4,
+        "minimum": 2,
+        "maximum": 12,
+        "meaning": "Pattern features across the tile; larger values give smaller shapes."
+      },
+      {
+        "name": "pixels_across",
+        "type": "int",
+        "default": 64,
+        "minimum": 16,
+        "maximum": 160,
+        "meaning": "Square cells across the tile for the digital pattern."
+      },
+      {
+        "name": "ragged",
+        "type": "float",
+        "default": 0.5,
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "meaning": "Raggedness of the shape edges (domain warping)."
+      },
+      {
+        "name": "threads",
+        "type": "int",
+        "default": 96,
+        "minimum": 24,
+        "maximum": 240,
+        "meaning": "Twill threads across the tile."
+      },
+      {
+        "name": "weave",
+        "type": "float",
+        "default": 0.6,
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "meaning": "Strength of the twill texture in colour and relief."
+      },
+      {
+        "name": "fading",
+        "type": "float",
+        "default": 0.15,
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "meaning": "Washed-out wear that pales the print in patches."
+      },
+      {
+        "name": "hue_shift",
+        "type": "float",
+        "default": 0.0,
+        "minimum": -0.5,
+        "maximum": 0.5,
+        "meaning": "Hue rotation of the albedo in turns."
+      },
+      {
+        "name": "saturation",
+        "type": "float",
+        "default": 1.0,
+        "minimum": 0.0,
+        "maximum": 2.0,
+        "meaning": "Albedo saturation multiplier."
+      },
+      {
+        "name": "brightness",
+        "type": "float",
+        "default": 1.0,
+        "minimum": 0.5,
+        "maximum": 1.5,
+        "meaning": "Albedo brightness multiplier."
+      }
+    ],
+    "presets": [
+      {
+        "name": "default",
+        "description": "Woodland: khaki ground with brown and green blobs and black branches.",
+        "values": {}
+      },
+      {
+        "name": "digital_pixels",
+        "description": "Digital woodland: the same layering stepped into small square pixels.",
+        "values": {
+          "pattern": 1,
+          "blobs": 5,
+          "pixels_across": 72
+        }
+      },
+      {
+        "name": "tiger_stripe",
+        "description": "Tiger stripe: long ragged horizontal stripes over a pale green ground.",
+        "values": {
+          "pattern": 2,
+          "blobs": 3,
+          "ragged": 0.7
+        }
+      },
+      {
+        "name": "desert_spots",
+        "description": "Three-colour desert with soft blobs and small dark and white rock spots.",
+        "values": {
+          "pattern": 3,
+          "blobs": 3,
+          "ragged": 0.35
+        }
+      },
+      {
+        "name": "splinter_rain",
+        "description": "Splinter: straight-edged shards in three colours under short rain dashes.",
+        "values": {
+          "pattern": 4,
+          "blobs": 6,
+          "ragged": 0.2,
+          "threads": 120
+        }
+      }
+    ],
+    "tileable": true,
+    "default_size": 256,
+    "cost_seconds_1024": 19.5,
+    "peak_memory_mb_1024": 656,
+    "godot_material": "material.tres",
+    "godot_texture_folder": "res://baltor/textures/camouflage_patterns/",
+    "blender_builder": "blender_material.build_material(folder)"
+  },
+  "limits": "The five families are invented in the general style of their kind and do not reproduce any issued or trademarked pattern. Layer shapes come from noise fields cut at quantiles, so they are statistically, not exactly, like printed screens. The weave is a pair of diagonal sine ridges at a whole number of threads across the tile, not a modelled twill; it aliases below about three pixels per thread. Fading is a noise mask, not a wear simulation. Occlusion is a blurred-height estimate.",
+  "related": [
+    "woven_cloth",
+    "tartan_sett"
+  ],
+  "technique_references": [
+    "Layered thresholding of fields at quantiles for fixed coverage",
+    "Domain-warped fractional Brownian motion for blobs",
+    "Ridged noise for thin branch shapes",
+    "Per-cell sampling with edge dithering for pixelated patterns",
+    "Anisotropic noise lattice for stripes",
+    "Worley cells for spots and straight-edged shards",
+    "Diagonal sine ridges for a twill-like weave"
+  ],
+  "native_checks": [
+    "command_line_generates_declared_maps",
+    "maps_decode",
+    "maps_have_declared_size_and_channels",
+    "maps_tile_without_a_seam",
+    "normal_vectors_unit_length_facing_out",
+    "maps_carry_detail",
+    "godot_imports_the_maps",
+    "godot_material_template_loads_every_map",
+    "godot_compatibility_render",
+    "capture_shows_the_textured_surface",
+    "blender_builds_the_material"
+  ]
+}

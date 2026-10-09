@@ -1,0 +1,237 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "corrugated_sheet",
+  "title": "Corrugated sheet metal",
+  "purpose": "Generate tileable PBR maps of corrugated sheet metal with a sine or box rib profile, galvanized or painted, with screw rows, rust streaks running down from screws and patches, and dirt in the valleys. Use for sheds, barns, fences, shacks and industrial cladding.",
+  "form": "function",
+  "asset_role": null,
+  "dimension": "3d",
+  "engine": {
+    "name": "python",
+    "minimum_version": "3.10"
+  },
+  "tags": [
+    "texture",
+    "pbr",
+    "tileable",
+    "metal",
+    "corrugated",
+    "sheet metal",
+    "rust",
+    "roofing",
+    "procedural"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "role": "other"
+    },
+    {
+      "path": "corrugated_sheet.py",
+      "role": "executable_tool"
+    },
+    {
+      "path": "material.tres",
+      "role": "skill_asset"
+    },
+    {
+      "path": "blender_material.py",
+      "role": "executable_tool"
+    }
+  ],
+  "contract": {
+    "entry_point": "generate",
+    "module": "corrugated_sheet.py",
+    "signature": "generate(width=256, height=256, seed=0, preset=\"default\", directx_normal=False, **parameters) -> {map name: {\"channels\", \"colour_space\", \"pixels\"}}",
+    "command_line": "python corrugated_sheet.py --size 1024 --seed 7 --preset NAME --out DIR [--width W --height H] [--set NAME=VALUE] [--directx-normal] [--orm]",
+    "maps": [
+      {
+        "name": "albedo",
+        "channels": 3,
+        "colour_space": "srgb",
+        "convention": "gltf_base_color",
+        "range": [
+          0.02,
+          0.95
+        ]
+      },
+      {
+        "name": "normal",
+        "channels": 3,
+        "colour_space": "linear",
+        "convention": "opengl_y_up"
+      },
+      {
+        "name": "roughness",
+        "channels": 1,
+        "colour_space": "linear",
+        "convention": "gltf_roughness",
+        "range": [
+          0.15,
+          1.0
+        ]
+      },
+      {
+        "name": "metallic",
+        "channels": 1,
+        "colour_space": "linear",
+        "convention": "gltf_metallic"
+      },
+      {
+        "name": "height",
+        "channels": 1,
+        "colour_space": "linear",
+        "convention": "white_is_high"
+      },
+      {
+        "name": "ao",
+        "channels": 1,
+        "colour_space": "linear",
+        "convention": "white_is_unoccluded"
+      }
+    ],
+    "parameters": [
+      {
+        "name": "ribs",
+        "type": "int",
+        "default": 6,
+        "minimum": 2,
+        "maximum": 24,
+        "meaning": "Corrugations across the tile."
+      },
+      {
+        "name": "profile",
+        "type": "int",
+        "default": 0,
+        "minimum": 0,
+        "maximum": 1,
+        "meaning": "Rib shape: 0 sine wave, 1 trapezoidal box rib."
+      },
+      {
+        "name": "screw_rows",
+        "type": "int",
+        "default": 1,
+        "minimum": 0,
+        "maximum": 4,
+        "meaning": "Rows of screws across the tile (0 for none)."
+      },
+      {
+        "name": "paint",
+        "type": "float",
+        "default": 0.0,
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "meaning": "Paint coverage (0 bare galvanized metal, 1 painted)."
+      },
+      {
+        "name": "rust",
+        "type": "float",
+        "default": 0.2,
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "meaning": "Rust patches and the streaks below them."
+      },
+      {
+        "name": "dirt",
+        "type": "float",
+        "default": 0.3,
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "meaning": "Dirt in the valleys."
+      },
+      {
+        "name": "hue_shift",
+        "type": "float",
+        "default": 0.0,
+        "minimum": -0.5,
+        "maximum": 0.5,
+        "meaning": "Hue rotation of the albedo in turns."
+      },
+      {
+        "name": "saturation",
+        "type": "float",
+        "default": 1.0,
+        "minimum": 0.0,
+        "maximum": 2.0,
+        "meaning": "Albedo saturation multiplier."
+      },
+      {
+        "name": "brightness",
+        "type": "float",
+        "default": 1.0,
+        "minimum": 0.5,
+        "maximum": 1.0,
+        "meaning": "Albedo brightness multiplier."
+      }
+    ],
+    "presets": [
+      {
+        "name": "default",
+        "description": "Galvanized sine-wave sheet with light dirt.",
+        "values": {}
+      },
+      {
+        "name": "barn_red",
+        "description": "Red painted sheet with faded paint and rust runs.",
+        "values": {
+          "paint": 1.0,
+          "rust": 0.45,
+          "ribs": 7
+        }
+      },
+      {
+        "name": "rusty_shack",
+        "description": "Old sheet with heavy rust streaks.",
+        "values": {
+          "rust": 0.9,
+          "dirt": 0.6,
+          "ribs": 5
+        }
+      },
+      {
+        "name": "box_profile_blue",
+        "description": "Blue painted box-profile cladding, clean.",
+        "values": {
+          "profile": 1,
+          "paint": 1.0,
+          "rust": 0.0,
+          "dirt": 0.1,
+          "ribs": 4,
+          "screw_rows": 2
+        }
+      }
+    ],
+    "tileable": true,
+    "default_size": 256,
+    "cost_seconds_1024": 22.2,
+    "peak_memory_mb_1024": 735,
+    "godot_material": "material.tres",
+    "godot_texture_folder": "res://baltor/textures/corrugated_sheet/",
+    "blender_builder": "blender_material.build_material(folder)"
+  },
+  "limits": "Corrugations run down the tile (vertical ribs); rotate the UVs for horizontal cladding. The profile is a height map, so the wavy silhouette at a sheet's edge needs geometry. Streaks always run toward the bottom of the tile. Occlusion is a blurred-height estimate, not ray traced.",
+  "related": [
+    "metal_corrosion",
+    "riveted_plates",
+    "galvanized_spangle"
+  ],
+  "technique_references": [
+    "Sine and trapezoidal rib profiles with a whole number of ribs",
+    "Downward exponential trail per column, swept twice for wrap-around",
+    "Screw heads with washers stamped on rib crests",
+    "glTF metallic-roughness split between paint and bare metal"
+  ],
+  "native_checks": [
+    "command_line_generates_declared_maps",
+    "maps_decode",
+    "maps_have_declared_size_and_channels",
+    "maps_tile_without_a_seam",
+    "normal_vectors_unit_length_facing_out",
+    "maps_carry_detail",
+    "godot_imports_the_maps",
+    "godot_material_template_loads_every_map",
+    "godot_compatibility_render",
+    "capture_shows_the_textured_surface",
+    "blender_builds_the_material"
+  ]
+}

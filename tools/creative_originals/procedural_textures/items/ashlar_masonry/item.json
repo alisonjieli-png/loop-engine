@@ -1,0 +1,283 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "ashlar_masonry",
+  "title": "Ashlar masonry in coursed or broken bond",
+  "purpose": "Generate tileable PBR maps of dressed stone ashlar: coursed rows of varying height or broken ashlar with blocks one or two rows high, thin joints, and faces rubbed smooth, rock-faced inside a drafted margin or bush-hammered, in limestone, granite or sandstone. Use for walls, plinths, facades and castles.",
+  "form": "function",
+  "asset_role": null,
+  "dimension": "3d",
+  "engine": {
+    "name": "python",
+    "minimum_version": "3.10"
+  },
+  "tags": [
+    "texture",
+    "pbr",
+    "tileable",
+    "stone",
+    "ashlar",
+    "masonry",
+    "wall",
+    "limestone",
+    "procedural"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "role": "other"
+    },
+    {
+      "path": "ashlar_masonry.py",
+      "role": "executable_tool"
+    },
+    {
+      "path": "material.tres",
+      "role": "skill_asset"
+    },
+    {
+      "path": "blender_material.py",
+      "role": "executable_tool"
+    }
+  ],
+  "contract": {
+    "entry_point": "generate",
+    "module": "ashlar_masonry.py",
+    "signature": "generate(width=256, height=256, seed=0, preset=\"default\", directx_normal=False, **parameters) -> {map name: {\"channels\", \"colour_space\", \"pixels\"}}",
+    "command_line": "python ashlar_masonry.py --size 1024 --seed 7 --preset NAME --out DIR [--width W --height H] [--set NAME=VALUE] [--directx-normal] [--orm]",
+    "maps": [
+      {
+        "name": "albedo",
+        "channels": 3,
+        "colour_space": "srgb",
+        "convention": "gltf_base_color",
+        "range": [
+          0.03,
+          0.9
+        ]
+      },
+      {
+        "name": "normal",
+        "channels": 3,
+        "colour_space": "linear",
+        "convention": "opengl_y_up"
+      },
+      {
+        "name": "roughness",
+        "channels": 1,
+        "colour_space": "linear",
+        "convention": "gltf_roughness",
+        "range": [
+          0.35,
+          1.0
+        ]
+      },
+      {
+        "name": "height",
+        "channels": 1,
+        "colour_space": "linear",
+        "convention": "white_is_high"
+      },
+      {
+        "name": "ao",
+        "channels": 1,
+        "colour_space": "linear",
+        "convention": "white_is_unoccluded"
+      }
+    ],
+    "parameters": [
+      {
+        "name": "layout",
+        "type": "int",
+        "default": 0,
+        "minimum": 0,
+        "maximum": 1,
+        "meaning": "0 coursed ashlar (every block one course high, courses of varying height), 1 broken ashlar (blocks one to three equal rows high, joints broken in both directions)."
+      },
+      {
+        "name": "courses",
+        "type": "int",
+        "default": 5,
+        "minimum": 2,
+        "maximum": 14,
+        "meaning": "Rows of blocks across the tile height."
+      },
+      {
+        "name": "block_length",
+        "type": "float",
+        "default": 0.3,
+        "minimum": 0.12,
+        "maximum": 0.7,
+        "meaning": "Mean block length in tile widths; each block varies by about 40 percent."
+      },
+      {
+        "name": "joint_width",
+        "type": "float",
+        "default": 0.006,
+        "minimum": 0.002,
+        "maximum": 0.025,
+        "meaning": "Mortar joint width in texture units."
+      },
+      {
+        "name": "joint_depth",
+        "type": "float",
+        "default": 0.4,
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "meaning": "How far the mortar sits behind the faces."
+      },
+      {
+        "name": "face_style",
+        "type": "int",
+        "default": 0,
+        "minimum": 0,
+        "maximum": 2,
+        "meaning": "0 rubbed smooth with faint tool lines, 1 drafted margin around a rock-faced centre, 2 bush-hammered stippling."
+      },
+      {
+        "name": "margin",
+        "type": "float",
+        "default": 0.018,
+        "minimum": 0.004,
+        "maximum": 0.05,
+        "meaning": "Width of the drafted margin around rock-faced centres, in texture units."
+      },
+      {
+        "name": "relief",
+        "type": "float",
+        "default": 0.6,
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "meaning": "How far rock-faced centres stand proud and how rough they are."
+      },
+      {
+        "name": "tooling",
+        "type": "float",
+        "default": 0.4,
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "meaning": "Depth of chisel lines on margins and smooth faces."
+      },
+      {
+        "name": "weathering",
+        "type": "float",
+        "default": 0.3,
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "meaning": "Eroded arrises, soot and streaks."
+      },
+      {
+        "name": "colour_variation",
+        "type": "float",
+        "default": 0.5,
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "meaning": "Spread of colour between blocks."
+      },
+      {
+        "name": "hue_shift",
+        "type": "float",
+        "default": 0.0,
+        "minimum": -0.5,
+        "maximum": 0.5,
+        "meaning": "Hue rotation of the albedo in turns."
+      },
+      {
+        "name": "saturation",
+        "type": "float",
+        "default": 1.0,
+        "minimum": 0.0,
+        "maximum": 2.0,
+        "meaning": "Albedo saturation multiplier."
+      },
+      {
+        "name": "brightness",
+        "type": "float",
+        "default": 1.0,
+        "minimum": 0.5,
+        "maximum": 1.5,
+        "meaning": "Albedo brightness multiplier."
+      }
+    ],
+    "presets": [
+      {
+        "name": "default",
+        "description": "Cream limestone in coursed ashlar, rubbed faces and thin joints.",
+        "values": {}
+      },
+      {
+        "name": "rockfaced_granite",
+        "description": "Grey granite in broken ashlar with drafted margins and rock-faced centres.",
+        "values": {
+          "layout": 1,
+          "courses": 6,
+          "block_length": 0.24,
+          "face_style": 1,
+          "joint_width": 0.008,
+          "relief": 0.8,
+          "weathering": 0.2,
+          "colour_variation": 0.4
+        }
+      },
+      {
+        "name": "sandstone_tooled",
+        "description": "Warm sandstone courses with chiselled faces and bedding streaks.",
+        "values": {
+          "courses": 6,
+          "block_length": 0.36,
+          "tooling": 0.85,
+          "weathering": 0.45,
+          "colour_variation": 0.7
+        }
+      },
+      {
+        "name": "bush_hammered",
+        "description": "Pale limestone broken ashlar with stippled bush-hammered faces.",
+        "values": {
+          "layout": 1,
+          "courses": 7,
+          "block_length": 0.2,
+          "face_style": 2,
+          "joint_width": 0.005,
+          "weathering": 0.15,
+          "colour_variation": 0.35
+        }
+      }
+    ],
+    "tileable": true,
+    "default_size": 256,
+    "cost_seconds_1024": 21.0,
+    "peak_memory_mb_1024": 639,
+    "godot_material": "material.tres",
+    "godot_texture_folder": "res://baltor/textures/ashlar_masonry/",
+    "blender_builder": "blender_material.build_material(folder)"
+  },
+  "limits": "Blocks are rectangles on a 32-column grid, so block ends fall on multiples of 1/32 of the tile width; broken ashlar mixes one- and two-row blocks only. Tool lines, rock faces, stippling and weathering are noise and wave approximations, not carved geometry. Mineral speckle is a per-pixel pick, so it shimmers at small sizes. Occlusion is a blurred-height estimate, not ray traced.",
+  "related": [
+    "brick_courses",
+    "dry_stone_wall",
+    "sandstone_strata",
+    "granite_speckled",
+    "versailles_pavers"
+  ],
+  "technique_references": [
+    "Greedy block packing on a toroidal grid with random lengths that sum to the tile width",
+    "Row pairs split into tall blocks or independently jointed stacks for broken ashlar",
+    "Rectangle side distances for joints and arrises",
+    "Drafted margin and rock-faced centre from distance to the block edge",
+    "Fractional Brownian motion of tileable gradient noise",
+    "Height to tangent-space normal by central differences"
+  ],
+  "native_checks": [
+    "command_line_generates_declared_maps",
+    "maps_decode",
+    "maps_have_declared_size_and_channels",
+    "maps_tile_without_a_seam",
+    "normal_vectors_unit_length_facing_out",
+    "maps_carry_detail",
+    "godot_imports_the_maps",
+    "godot_material_template_loads_every_map",
+    "godot_compatibility_render",
+    "capture_shows_the_textured_surface",
+    "blender_builds_the_material"
+  ]
+}

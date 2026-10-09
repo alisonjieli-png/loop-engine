@@ -1,0 +1,251 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "scifi_hex_panels",
+  "title": "Science fiction hexagonal hull panels",
+  "purpose": "Generate tileable PBR maps of science fiction hull plating built from hexagonal panels: bevelled rims, inset plates, vents, bolts, panel lights and optionally glowing seams in the emissive map. Use for spaceships, armour, bases and game environments.",
+  "form": "function",
+  "asset_role": null,
+  "dimension": "3d",
+  "engine": {
+    "name": "python",
+    "minimum_version": "3.10"
+  },
+  "tags": [
+    "texture",
+    "pbr",
+    "tileable",
+    "sci-fi",
+    "hexagon",
+    "panels",
+    "hull",
+    "emissive",
+    "procedural"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "role": "other"
+    },
+    {
+      "path": "scifi_hex_panels.py",
+      "role": "executable_tool"
+    },
+    {
+      "path": "material.tres",
+      "role": "skill_asset"
+    },
+    {
+      "path": "blender_material.py",
+      "role": "executable_tool"
+    }
+  ],
+  "contract": {
+    "entry_point": "generate",
+    "module": "scifi_hex_panels.py",
+    "signature": "generate(width=256, height=256, seed=0, preset=\"default\", directx_normal=False, **parameters) -> {map name: {\"channels\", \"colour_space\", \"pixels\"}}",
+    "command_line": "python scifi_hex_panels.py --size 1024 --seed 7 --preset NAME --out DIR [--width W --height H] [--set NAME=VALUE] [--directx-normal] [--orm]",
+    "maps": [
+      {
+        "name": "albedo",
+        "channels": 3,
+        "colour_space": "srgb",
+        "convention": "gltf_base_color",
+        "range": [
+          0.02,
+          0.92
+        ]
+      },
+      {
+        "name": "normal",
+        "channels": 3,
+        "colour_space": "linear",
+        "convention": "opengl_y_up"
+      },
+      {
+        "name": "roughness",
+        "channels": 1,
+        "colour_space": "linear",
+        "convention": "gltf_roughness",
+        "range": [
+          0.1,
+          1.0
+        ]
+      },
+      {
+        "name": "metallic",
+        "channels": 1,
+        "colour_space": "linear",
+        "convention": "gltf_metallic"
+      },
+      {
+        "name": "height",
+        "channels": 1,
+        "colour_space": "linear",
+        "convention": "white_is_high"
+      },
+      {
+        "name": "ao",
+        "channels": 1,
+        "colour_space": "linear",
+        "convention": "white_is_unoccluded"
+      },
+      {
+        "name": "emissive",
+        "channels": 3,
+        "colour_space": "srgb",
+        "convention": "gltf_emissive"
+      }
+    ],
+    "parameters": [
+      {
+        "name": "hexes_across",
+        "type": "int",
+        "default": 7,
+        "minimum": 3,
+        "maximum": 26,
+        "meaning": "Hexagons across the tile (7, 12, 14, 19 or 26 keep them closest to regular)."
+      },
+      {
+        "name": "seam_width",
+        "type": "float",
+        "default": 0.05,
+        "minimum": 0.01,
+        "maximum": 0.2,
+        "meaning": "Gap between panels, in hexagon widths."
+      },
+      {
+        "name": "bevel",
+        "type": "float",
+        "default": 0.08,
+        "minimum": 0.01,
+        "maximum": 0.25,
+        "meaning": "Width of the bevelled rim, in hexagon widths."
+      },
+      {
+        "name": "light_share",
+        "type": "float",
+        "default": 0.15,
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "meaning": "Share of panels with a glowing inset."
+      },
+      {
+        "name": "vent_share",
+        "type": "float",
+        "default": 0.2,
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "meaning": "Share of panels with vent slots."
+      },
+      {
+        "name": "seam_glow",
+        "type": "float",
+        "default": 0.0,
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "meaning": "Glow inside the seams."
+      },
+      {
+        "name": "wear",
+        "type": "float",
+        "default": 0.25,
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "meaning": "Scuffed paint on the rims, showing metal."
+      },
+      {
+        "name": "hue_shift",
+        "type": "float",
+        "default": 0.0,
+        "minimum": -0.5,
+        "maximum": 0.5,
+        "meaning": "Hue rotation of the albedo and glow in turns."
+      },
+      {
+        "name": "saturation",
+        "type": "float",
+        "default": 1.0,
+        "minimum": 0.0,
+        "maximum": 2.0,
+        "meaning": "Albedo saturation multiplier."
+      },
+      {
+        "name": "brightness",
+        "type": "float",
+        "default": 1.0,
+        "minimum": 0.5,
+        "maximum": 1.5,
+        "meaning": "Albedo brightness multiplier."
+      }
+    ],
+    "presets": [
+      {
+        "name": "default",
+        "description": "Light grey hull with cyan panel lights.",
+        "values": {}
+      },
+      {
+        "name": "dark_reactor",
+        "description": "Dark panels with orange glowing seams.",
+        "values": {
+          "seam_glow": 0.9,
+          "light_share": 0.05,
+          "vent_share": 0.35
+        }
+      },
+      {
+        "name": "white_lab",
+        "description": "Clean white panels with fine seams and few details.",
+        "values": {
+          "seam_width": 0.025,
+          "light_share": 0.08,
+          "vent_share": 0.1,
+          "wear": 0.0,
+          "hexes_across": 12
+        }
+      },
+      {
+        "name": "military_olive",
+        "description": "Olive drab armour hexes, bolted and scuffed.",
+        "values": {
+          "light_share": 0.0,
+          "vent_share": 0.15,
+          "wear": 0.7,
+          "bevel": 0.12
+        }
+      }
+    ],
+    "tileable": true,
+    "default_size": 256,
+    "cost_seconds_1024": 29.6,
+    "peak_memory_mb_1024": 843,
+    "godot_material": "material.tres",
+    "godot_texture_folder": "res://baltor/textures/scifi_hex_panels/",
+    "blender_builder": "blender_material.build_material(folder)"
+  },
+  "limits": "The hexagonal lattice is squashed slightly to repeat on a square tile: about 1 percent for 7, 12, 14, 19 or 26 hexagons across, up to 15 percent for 3, 4 or 6. Panel types are chosen at random, with no hierarchy of large and small panels. Lights and glowing seams are emissive colour, not light sources. Occlusion is a blurred-height estimate, not ray traced.",
+  "related": [
+    "scifi_greeble_panels",
+    "hexagon_tiles",
+    "riveted_plates"
+  ],
+  "technique_references": [
+    "Hexagonal Worley lattice with an even row count for periodicity",
+    "Cell-border distance for bevels and inset plates",
+    "Per-cell hashing for panel types",
+    "Emissive map for lights and seams"
+  ],
+  "native_checks": [
+    "command_line_generates_declared_maps",
+    "maps_decode",
+    "maps_have_declared_size_and_channels",
+    "maps_tile_without_a_seam",
+    "normal_vectors_unit_length_facing_out",
+    "maps_carry_detail",
+    "godot_imports_the_maps",
+    "godot_material_template_loads_every_map",
+    "godot_compatibility_render",
+    "capture_shows_the_textured_surface",
+    "blender_builds_the_material"
+  ]
+}

@@ -1,0 +1,253 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "cork_board",
+  "title": "Cork board, tiles and natural cork",
+  "purpose": "Generate tileable PBR maps of cork: agglomerated granules with finer fragments, crevices, pores and pin holes, sealed cork floor tiles, dark expanded cork insulation, or natural cork with dark lenticels. Use for notice boards, floors, wall panels, coasters, stoppers and insulation.",
+  "form": "function",
+  "asset_role": null,
+  "dimension": "3d",
+  "engine": {
+    "name": "python",
+    "minimum_version": "3.10"
+  },
+  "tags": [
+    "texture",
+    "pbr",
+    "tileable",
+    "cork",
+    "corkboard",
+    "granules",
+    "floor",
+    "notice board",
+    "procedural"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "role": "other"
+    },
+    {
+      "path": "cork_board.py",
+      "role": "executable_tool"
+    },
+    {
+      "path": "material.tres",
+      "role": "skill_asset"
+    },
+    {
+      "path": "blender_material.py",
+      "role": "executable_tool"
+    }
+  ],
+  "contract": {
+    "entry_point": "generate",
+    "module": "cork_board.py",
+    "signature": "generate(width=256, height=256, seed=0, preset=\"default\", directx_normal=False, **parameters) -> {map name: {\"channels\", \"colour_space\", \"pixels\"}}",
+    "command_line": "python cork_board.py --size 1024 --seed 7 --preset NAME --out DIR [--width W --height H] [--set NAME=VALUE] [--directx-normal] [--orm]",
+    "maps": [
+      {
+        "name": "albedo",
+        "channels": 3,
+        "colour_space": "srgb",
+        "convention": "gltf_base_color",
+        "range": [
+          0.02,
+          0.9
+        ]
+      },
+      {
+        "name": "normal",
+        "channels": 3,
+        "colour_space": "linear",
+        "convention": "opengl_y_up"
+      },
+      {
+        "name": "roughness",
+        "channels": 1,
+        "colour_space": "linear",
+        "convention": "gltf_roughness",
+        "range": [
+          0.25,
+          1.0
+        ]
+      },
+      {
+        "name": "height",
+        "channels": 1,
+        "colour_space": "linear",
+        "convention": "white_is_high"
+      },
+      {
+        "name": "ao",
+        "channels": 1,
+        "colour_space": "linear",
+        "convention": "white_is_unoccluded"
+      }
+    ],
+    "parameters": [
+      {
+        "name": "pattern",
+        "type": "int",
+        "default": 0,
+        "minimum": 0,
+        "maximum": 1,
+        "meaning": "0 agglomerated granules (boards, tiles), 1 natural cork with lenticels (stoppers, bark slabs)."
+      },
+      {
+        "name": "granules",
+        "type": "int",
+        "default": 30,
+        "minimum": 8,
+        "maximum": 72,
+        "meaning": "Granules across the tile width (agglomerated cork)."
+      },
+      {
+        "name": "fragments",
+        "type": "float",
+        "default": 0.5,
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "meaning": "Visibility of the finer fragments inside the granules."
+      },
+      {
+        "name": "gaps",
+        "type": "float",
+        "default": 0.35,
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "meaning": "Depth and darkness of the crevices between granules."
+      },
+      {
+        "name": "pores",
+        "type": "float",
+        "default": 0.45,
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "meaning": "Density of fine pores (and of lenticels in natural cork)."
+      },
+      {
+        "name": "pin_holes",
+        "type": "int",
+        "default": 12,
+        "minimum": 0,
+        "maximum": 60,
+        "meaning": "Pin holes punched into the tile."
+      },
+      {
+        "name": "tone_variation",
+        "type": "float",
+        "default": 0.6,
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "meaning": "Spread of colour between granules."
+      },
+      {
+        "name": "sealed",
+        "type": "float",
+        "default": 0.0,
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "meaning": "Varnish: fills pores, deepens the colour and adds gloss."
+      },
+      {
+        "name": "hue_shift",
+        "type": "float",
+        "default": 0.0,
+        "minimum": -0.5,
+        "maximum": 0.5,
+        "meaning": "Hue rotation of the albedo in turns."
+      },
+      {
+        "name": "saturation",
+        "type": "float",
+        "default": 1.0,
+        "minimum": 0.0,
+        "maximum": 2.0,
+        "meaning": "Albedo saturation multiplier."
+      },
+      {
+        "name": "brightness",
+        "type": "float",
+        "default": 1.0,
+        "minimum": 0.5,
+        "maximum": 1.5,
+        "meaning": "Albedo brightness multiplier."
+      }
+    ],
+    "presets": [
+      {
+        "name": "default",
+        "description": "Notice-board cork: mixed granules with pin holes.",
+        "values": {}
+      },
+      {
+        "name": "floor_tile",
+        "description": "Fine sealed cork floor tile with a satin varnish.",
+        "values": {
+          "granules": 40,
+          "fragments": 0.4,
+          "gaps": 0.25,
+          "pin_holes": 0,
+          "sealed": 0.6,
+          "tone_variation": 0.5
+        }
+      },
+      {
+        "name": "expanded_dark",
+        "description": "Heat-expanded black cork insulation: coarse dark granules, deep gaps.",
+        "values": {
+          "granules": 18,
+          "gaps": 0.85,
+          "pin_holes": 0,
+          "tone_variation": 0.35,
+          "pores": 0.3
+        }
+      },
+      {
+        "name": "natural_stopper",
+        "description": "Natural cork as in a wine stopper: golden mass with dark lenticels.",
+        "values": {
+          "pattern": 1,
+          "pores": 0.55,
+          "pin_holes": 0,
+          "tone_variation": 0.3
+        }
+      }
+    ],
+    "tileable": true,
+    "default_size": 256,
+    "cost_seconds_1024": 28.2,
+    "peak_memory_mb_1024": 1074,
+    "godot_material": "material.tres",
+    "godot_texture_folder": "res://baltor/textures/cork_board/",
+    "blender_builder": "blender_material.build_material(folder)"
+  },
+  "limits": "Granules are two warped cellular layers with per-cell tones, an approximation of pressed cork, and the lenticels of natural cork are thresholded stretched noise. Pin holes are round dark pits with a raised rim; no pins, paper or staples are drawn. The sealed finish is a colour and roughness change without a clear-coat layer. Details finer than two pixels are dropped at small sizes. Occlusion is a blurred-height estimate, not ray traced. Colours are artistic.",
+  "related": [
+    "leather_grain",
+    "terrazzo",
+    "honeycomb_comb"
+  ],
+  "technique_references": [
+    "Two Worley layers on the torus for granules and fragments",
+    "Domain warping of cell borders",
+    "Per-cell tone hashing",
+    "Stretched value noise thresholded into lenticels",
+    "Elliptical stamps for pin holes with rims",
+    "Height to tangent-space normal by central differences",
+    "Cavity occlusion from blurred height"
+  ],
+  "native_checks": [
+    "command_line_generates_declared_maps",
+    "maps_decode",
+    "maps_have_declared_size_and_channels",
+    "maps_tile_without_a_seam",
+    "normal_vectors_unit_length_facing_out",
+    "maps_carry_detail",
+    "godot_imports_the_maps",
+    "godot_material_template_loads_every_map",
+    "godot_compatibility_render",
+    "capture_shows_the_textured_surface",
+    "blender_builds_the_material"
+  ]
+}

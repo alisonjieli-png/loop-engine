@@ -1,0 +1,299 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "hexagon_tiles",
+  "title": "Hexagonal ceramic tiles with lattice colour patterns",
+  "purpose": "Generate tileable PBR maps of hexagonal ceramic tiles on a periodic hex lattice, with grout, rounded and pillowed glaze, chipped edges and a colour rule (random accents, scattered flowers, alternating rows or clustered blends). Use for bathroom and kitchen walls, floors and terracotta paving.",
+  "form": "function",
+  "asset_role": null,
+  "dimension": "3d",
+  "engine": {
+    "name": "python",
+    "minimum_version": "3.10"
+  },
+  "tags": [
+    "texture",
+    "pbr",
+    "tileable",
+    "tiles",
+    "hexagon",
+    "ceramic",
+    "mosaic",
+    "grout",
+    "procedural"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "role": "other"
+    },
+    {
+      "path": "hexagon_tiles.py",
+      "role": "executable_tool"
+    },
+    {
+      "path": "material.tres",
+      "role": "skill_asset"
+    },
+    {
+      "path": "blender_material.py",
+      "role": "executable_tool"
+    }
+  ],
+  "contract": {
+    "entry_point": "generate",
+    "module": "hexagon_tiles.py",
+    "signature": "generate(width=256, height=256, seed=0, preset=\"default\", directx_normal=False, **parameters) -> {map name: {\"channels\", \"colour_space\", \"pixels\"}}",
+    "command_line": "python hexagon_tiles.py --size 1024 --seed 7 --preset NAME --out DIR [--width W --height H] [--set NAME=VALUE] [--directx-normal] [--orm]",
+    "maps": [
+      {
+        "name": "albedo",
+        "channels": 3,
+        "colour_space": "srgb",
+        "convention": "gltf_base_color",
+        "range": [
+          0.03,
+          0.92
+        ]
+      },
+      {
+        "name": "normal",
+        "channels": 3,
+        "colour_space": "linear",
+        "convention": "opengl_y_up"
+      },
+      {
+        "name": "roughness",
+        "channels": 1,
+        "colour_space": "linear",
+        "convention": "gltf_roughness",
+        "range": [
+          0.04,
+          1.0
+        ]
+      },
+      {
+        "name": "height",
+        "channels": 1,
+        "colour_space": "linear",
+        "convention": "white_is_high"
+      },
+      {
+        "name": "ao",
+        "channels": 1,
+        "colour_space": "linear",
+        "convention": "white_is_unoccluded"
+      }
+    ],
+    "parameters": [
+      {
+        "name": "columns",
+        "type": "int",
+        "default": 7,
+        "minimum": 3,
+        "maximum": 26,
+        "meaning": "Hexagons across the tile width; the row count is the even number closest to a regular lattice."
+      },
+      {
+        "name": "pattern",
+        "type": "int",
+        "default": 0,
+        "minimum": 0,
+        "maximum": 3,
+        "meaning": "Colour rule on the lattice: 0 random mix with accents, 1 scattered flowers (an accent centre with six petals), 2 alternating rows, 3 clustered blend that drifts between the palette colours."
+      },
+      {
+        "name": "grout_width",
+        "type": "float",
+        "default": 0.05,
+        "minimum": 0.01,
+        "maximum": 0.2,
+        "meaning": "Joint width in hexagon widths (across the flats)."
+      },
+      {
+        "name": "grout_depth",
+        "type": "float",
+        "default": 0.5,
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "meaning": "How far the grout sits below the tile faces: 0 flush, 1 deep."
+      },
+      {
+        "name": "bevel",
+        "type": "float",
+        "default": 0.06,
+        "minimum": 0.01,
+        "maximum": 0.25,
+        "meaning": "Width of the rounded tile edge in hexagon widths."
+      },
+      {
+        "name": "pillow",
+        "type": "float",
+        "default": 0.4,
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "meaning": "Dome of the glaze toward the tile centre, as handmade and cushion-edged tiles have."
+      },
+      {
+        "name": "glaze_waviness",
+        "type": "float",
+        "default": 0.4,
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "meaning": "Low ripples in the glaze surface that break up reflections."
+      },
+      {
+        "name": "chipping",
+        "type": "float",
+        "default": 0.15,
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "meaning": "Chipped tile edges that expose the clay body, 0 none to 1 heavily damaged."
+      },
+      {
+        "name": "accent_share",
+        "type": "float",
+        "default": 0.12,
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "meaning": "Share of accent tiles in the random mix, or how densely flowers are scattered."
+      },
+      {
+        "name": "colour_variation",
+        "type": "float",
+        "default": 0.4,
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "meaning": "Spread of tone between tiles of one colour."
+      },
+      {
+        "name": "dirt",
+        "type": "float",
+        "default": 0.2,
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "meaning": "Grime in the grout and along the tile edges."
+      },
+      {
+        "name": "hue_shift",
+        "type": "float",
+        "default": 0.0,
+        "minimum": -0.5,
+        "maximum": 0.5,
+        "meaning": "Hue rotation of the albedo in turns."
+      },
+      {
+        "name": "saturation",
+        "type": "float",
+        "default": 1.0,
+        "minimum": 0.0,
+        "maximum": 2.0,
+        "meaning": "Albedo saturation multiplier."
+      },
+      {
+        "name": "brightness",
+        "type": "float",
+        "default": 1.0,
+        "minimum": 0.5,
+        "maximum": 1.5,
+        "meaning": "Albedo brightness multiplier."
+      }
+    ],
+    "presets": [
+      {
+        "name": "default",
+        "description": "White glossy hexagon wall tiles with a few pale grey accents and light grout.",
+        "values": {}
+      },
+      {
+        "name": "black_white_flowers",
+        "description": "Small white hexagons with scattered flowers: six black petals around a grey centre.",
+        "values": {
+          "columns": 14,
+          "pattern": 1,
+          "grout_width": 0.07,
+          "bevel": 0.08,
+          "pillow": 0.25,
+          "accent_share": 0.5,
+          "chipping": 0.05,
+          "colour_variation": 0.2
+        }
+      },
+      {
+        "name": "terracotta_pavers",
+        "description": "Large matte terracotta hexagon pavers with wide sandy joints and worn, chipped edges.",
+        "values": {
+          "columns": 5,
+          "grout_width": 0.08,
+          "grout_depth": 0.35,
+          "bevel": 0.04,
+          "pillow": 0.15,
+          "glaze_waviness": 0.8,
+          "chipping": 0.55,
+          "accent_share": 0.0,
+          "colour_variation": 0.8,
+          "dirt": 0.45
+        }
+      },
+      {
+        "name": "mint_rows",
+        "description": "Glossy mint and white hexagons in alternating rows.",
+        "values": {
+          "columns": 9,
+          "pattern": 2,
+          "grout_width": 0.045,
+          "pillow": 0.55,
+          "colour_variation": 0.3
+        }
+      },
+      {
+        "name": "ocean_blend",
+        "description": "Small blue and teal hexagons drifting between shades in clusters.",
+        "values": {
+          "columns": 18,
+          "pattern": 3,
+          "grout_width": 0.06,
+          "bevel": 0.09,
+          "pillow": 0.6,
+          "glaze_waviness": 0.6,
+          "chipping": 0.05,
+          "colour_variation": 0.5
+        }
+      }
+    ],
+    "tileable": true,
+    "default_size": 256,
+    "cost_seconds_1024": 26.4,
+    "peak_memory_mb_1024": 598,
+    "godot_material": "material.tres",
+    "godot_texture_folder": "res://baltor/textures/hexagon_tiles/",
+    "blender_builder": "blender_material.build_material(folder)"
+  },
+  "limits": "A square tile holds an even number of hexagon rows, so hexagons are squashed or stretched by up to 4 percent for 5 columns and about 1 percent for 7, 12, 14 or 19 columns (15 percent for 3, 4 or 6). Glaze is opaque colour with a low roughness; there is no crazing, transparency or depth in the glaze. Flowers are dropped greedily in a seeded order, so their spacing is irregular. Occlusion is a blurred-height estimate, not ray traced.",
+  "related": [
+    "penny_round_mosaic",
+    "zellige_star_tiles",
+    "octagon_dot_tiles",
+    "honeycomb_comb"
+  ],
+  "technique_references": [
+    "Pointy-top hexagonal lattice in odd-row offset coordinates",
+    "Nearest hexagon centre from the two closest rows",
+    "Distance to the Voronoi cell border of a lattice from its bisectors",
+    "Axial hex coordinates for neighbours and flower placement",
+    "Fractional Brownian motion of tileable value and gradient noise",
+    "Height to tangent-space normal by central differences"
+  ],
+  "native_checks": [
+    "command_line_generates_declared_maps",
+    "maps_decode",
+    "maps_have_declared_size_and_channels",
+    "maps_tile_without_a_seam",
+    "normal_vectors_unit_length_facing_out",
+    "maps_carry_detail",
+    "godot_imports_the_maps",
+    "godot_material_template_loads_every_map",
+    "godot_compatibility_render",
+    "capture_shows_the_textured_surface",
+    "blender_builds_the_material"
+  ]
+}

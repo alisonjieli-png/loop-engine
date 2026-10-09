@@ -1,0 +1,295 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "roof_tiles_clay",
+  "title": "Clay roof tiles, barrel or pantile",
+  "purpose": "Generate tileable PBR maps of a clay tile roof in overlapping courses: barrel tiles (concave pans with half-round covers) or S-shaped pantiles, with stepped noses and dark cavities, per-tile colour, glazed or unglazed finish, lichen, moss and dirt streaks. Use for Mediterranean, mission, rural and East Asian roofs.",
+  "form": "function",
+  "asset_role": null,
+  "dimension": "3d",
+  "engine": {
+    "name": "python",
+    "minimum_version": "3.10"
+  },
+  "tags": [
+    "texture",
+    "pbr",
+    "tileable",
+    "roof",
+    "roof tiles",
+    "terracotta",
+    "clay",
+    "barrel tile",
+    "procedural"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "role": "other"
+    },
+    {
+      "path": "roof_tiles_clay.py",
+      "role": "executable_tool"
+    },
+    {
+      "path": "material.tres",
+      "role": "skill_asset"
+    },
+    {
+      "path": "blender_material.py",
+      "role": "executable_tool"
+    }
+  ],
+  "contract": {
+    "entry_point": "generate",
+    "module": "roof_tiles_clay.py",
+    "signature": "generate(width=256, height=256, seed=0, preset=\"default\", directx_normal=False, **parameters) -> {map name: {\"channels\", \"colour_space\", \"pixels\"}}",
+    "command_line": "python roof_tiles_clay.py --size 1024 --seed 7 --preset NAME --out DIR [--width W --height H] [--set NAME=VALUE] [--directx-normal] [--orm]",
+    "maps": [
+      {
+        "name": "albedo",
+        "channels": 3,
+        "colour_space": "srgb",
+        "convention": "gltf_base_color",
+        "range": [
+          0.02,
+          0.9
+        ]
+      },
+      {
+        "name": "normal",
+        "channels": 3,
+        "colour_space": "linear",
+        "convention": "opengl_y_up"
+      },
+      {
+        "name": "roughness",
+        "channels": 1,
+        "colour_space": "linear",
+        "convention": "gltf_roughness",
+        "range": [
+          0.08,
+          1.0
+        ]
+      },
+      {
+        "name": "height",
+        "channels": 1,
+        "colour_space": "linear",
+        "convention": "white_is_high"
+      },
+      {
+        "name": "ao",
+        "channels": 1,
+        "colour_space": "linear",
+        "convention": "white_is_unoccluded"
+      }
+    ],
+    "parameters": [
+      {
+        "name": "profile",
+        "type": "int",
+        "default": 0,
+        "minimum": 0,
+        "maximum": 1,
+        "meaning": "0 barrel tiles (concave pans with separate half-round covers over their joints), 1 pantiles (one S-shaped piece: a pan rising into a roll that laps the next pan)."
+      },
+      {
+        "name": "columns",
+        "type": "int",
+        "default": 5,
+        "minimum": 2,
+        "maximum": 14,
+        "meaning": "Profile repeats across the tile width (pan and cover pairs, or pantiles)."
+      },
+      {
+        "name": "courses",
+        "type": "int",
+        "default": 5,
+        "minimum": 2,
+        "maximum": 14,
+        "meaning": "Overlapping courses down the tile height."
+      },
+      {
+        "name": "cover_width",
+        "type": "float",
+        "default": 0.42,
+        "minimum": 0.25,
+        "maximum": 0.55,
+        "meaning": "Share of each repeat taken by the convex cover or roll."
+      },
+      {
+        "name": "curvature",
+        "type": "float",
+        "default": 0.7,
+        "minimum": 0.1,
+        "maximum": 1.0,
+        "meaning": "Depth of the curves across the slope."
+      },
+      {
+        "name": "course_step",
+        "type": "float",
+        "default": 0.5,
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "meaning": "Height of the step at each tile nose."
+      },
+      {
+        "name": "misalignment",
+        "type": "float",
+        "default": 0.3,
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "meaning": "Random offsets and tilts of individual tiles."
+      },
+      {
+        "name": "lichen",
+        "type": "float",
+        "default": 0.25,
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "meaning": "Orange and pale lichen spots."
+      },
+      {
+        "name": "moss",
+        "type": "float",
+        "default": 0.1,
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "meaning": "Moss in the pans under the noses."
+      },
+      {
+        "name": "dirt",
+        "type": "float",
+        "default": 0.3,
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "meaning": "Dark streaks washed down the pans."
+      },
+      {
+        "name": "glaze",
+        "type": "float",
+        "default": 0.0,
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "meaning": "0 unglazed clay, 1 glossy glazed tiles."
+      },
+      {
+        "name": "colour_variation",
+        "type": "float",
+        "default": 0.6,
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "meaning": "Spread of colour between tiles."
+      },
+      {
+        "name": "hue_shift",
+        "type": "float",
+        "default": 0.0,
+        "minimum": -0.5,
+        "maximum": 0.5,
+        "meaning": "Hue rotation of the albedo in turns."
+      },
+      {
+        "name": "saturation",
+        "type": "float",
+        "default": 1.0,
+        "minimum": 0.0,
+        "maximum": 2.0,
+        "meaning": "Albedo saturation multiplier."
+      },
+      {
+        "name": "brightness",
+        "type": "float",
+        "default": 1.0,
+        "minimum": 0.5,
+        "maximum": 1.5,
+        "meaning": "Albedo brightness multiplier."
+      }
+    ],
+    "presets": [
+      {
+        "name": "default",
+        "description": "Terracotta barrel tiles with half-round covers and a little lichen.",
+        "values": {}
+      },
+      {
+        "name": "red_pantiles",
+        "description": "Even red pantiles in tight courses, recently laid.",
+        "values": {
+          "profile": 1,
+          "columns": 6,
+          "courses": 7,
+          "cover_width": 0.32,
+          "curvature": 0.55,
+          "misalignment": 0.1,
+          "lichen": 0.05,
+          "moss": 0.0,
+          "dirt": 0.1,
+          "colour_variation": 0.3
+        }
+      },
+      {
+        "name": "aged_mediterranean",
+        "description": "Faded, mottled barrel tiles with heavy lichen, moss and streaks.",
+        "values": {
+          "courses": 6,
+          "misalignment": 0.7,
+          "lichen": 0.8,
+          "moss": 0.5,
+          "dirt": 0.7,
+          "colour_variation": 0.9
+        }
+      },
+      {
+        "name": "glazed_jade",
+        "description": "Glossy green glazed barrel tiles with narrow covers in many courses.",
+        "values": {
+          "columns": 7,
+          "courses": 8,
+          "cover_width": 0.34,
+          "curvature": 0.8,
+          "misalignment": 0.15,
+          "lichen": 0.0,
+          "moss": 0.05,
+          "dirt": 0.25,
+          "glaze": 0.9,
+          "colour_variation": 0.35
+        }
+      }
+    ],
+    "tileable": true,
+    "default_size": 256,
+    "cost_seconds_1024": 29.3,
+    "peak_memory_mb_1024": 687,
+    "godot_material": "material.tres",
+    "godot_texture_folder": "res://baltor/textures/roof_tiles_clay/",
+    "blender_builder": "blender_material.build_material(folder)"
+  },
+  "limits": "The slope always runs down the tile height. Tiles are straight-sided curved profiles with no taper, ridge, hip, eaves or verge pieces, and the curvature lives in the height and normal maps only, so silhouettes stay flat without displacement. Crowns are tinted lighter and channels darker in the albedo as weathering, which reads as baked shading under strong grazing light. Lichen, moss and streaks are noise approximations. Occlusion is a blurred-height estimate, not ray traced.",
+  "related": [
+    "roof_shingles",
+    "brick_courses",
+    "moss_cushion"
+  ],
+  "technique_references": [
+    "Periodic cross-slope profile of concave pans and half-round covers",
+    "S-shaped pantile profile from a pan arc and a roll",
+    "Sawtooth course ramp for overlapping tile noses",
+    "Per-tile hashing for colour, course offset and tilt",
+    "Worley-cell spots for lichen colonies",
+    "Height to tangent-space normal by central differences"
+  ],
+  "native_checks": [
+    "command_line_generates_declared_maps",
+    "maps_decode",
+    "maps_have_declared_size_and_channels",
+    "maps_tile_without_a_seam",
+    "normal_vectors_unit_length_facing_out",
+    "maps_carry_detail",
+    "godot_imports_the_maps",
+    "godot_material_template_loads_every_map",
+    "godot_compatibility_render",
+    "capture_shows_the_textured_surface",
+    "blender_builds_the_material"
+  ]
+}

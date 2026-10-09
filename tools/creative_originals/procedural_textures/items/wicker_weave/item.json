@@ -1,0 +1,253 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "wicker_weave",
+  "title": "Open wicker weave of reeds over stakes",
+  "purpose": "Generate tileable PBR maps of wicker: round weavers passing over and under round stakes in randing, double randing or over-two weaves, with open gaps in the albedo alpha, fibre streaks, rattan nodes and worn paint. Use for baskets, wicker chairs, hampers, screens and garden furniture.",
+  "form": "function",
+  "asset_role": null,
+  "dimension": "3d",
+  "engine": {
+    "name": "python",
+    "minimum_version": "3.10"
+  },
+  "tags": [
+    "texture",
+    "pbr",
+    "tileable",
+    "wicker",
+    "rattan",
+    "basket",
+    "weave",
+    "willow",
+    "alpha",
+    "procedural"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "role": "other"
+    },
+    {
+      "path": "wicker_weave.py",
+      "role": "executable_tool"
+    },
+    {
+      "path": "material.tres",
+      "role": "skill_asset"
+    },
+    {
+      "path": "blender_material.py",
+      "role": "executable_tool"
+    }
+  ],
+  "contract": {
+    "entry_point": "generate",
+    "module": "wicker_weave.py",
+    "signature": "generate(width=256, height=256, seed=0, preset=\"default\", directx_normal=False, **parameters) -> {map name: {\"channels\", \"colour_space\", \"pixels\"}}",
+    "command_line": "python wicker_weave.py --size 1024 --seed 7 --preset NAME --out DIR [--width W --height H] [--set NAME=VALUE] [--directx-normal] [--orm]",
+    "maps": [
+      {
+        "name": "albedo",
+        "channels": 4,
+        "colour_space": "srgb",
+        "convention": "gltf_base_color",
+        "range": [
+          0.02,
+          0.92
+        ]
+      },
+      {
+        "name": "normal",
+        "channels": 3,
+        "colour_space": "linear",
+        "convention": "opengl_y_up"
+      },
+      {
+        "name": "roughness",
+        "channels": 1,
+        "colour_space": "linear",
+        "convention": "gltf_roughness",
+        "range": [
+          0.3,
+          1.0
+        ]
+      },
+      {
+        "name": "height",
+        "channels": 1,
+        "colour_space": "linear",
+        "convention": "white_is_high"
+      },
+      {
+        "name": "ao",
+        "channels": 1,
+        "colour_space": "linear",
+        "convention": "white_is_unoccluded"
+      }
+    ],
+    "parameters": [
+      {
+        "name": "pattern",
+        "type": "int",
+        "default": 0,
+        "minimum": 0,
+        "maximum": 2,
+        "meaning": "0 randing (over one stake, under one), 1 double randing (weavers in pairs), 2 over two and under two, stepping one stake per row."
+      },
+      {
+        "name": "stakes",
+        "type": "int",
+        "default": 10,
+        "minimum": 4,
+        "maximum": 32,
+        "meaning": "Upright stakes across the tile; rounded up to keep the pattern repeating."
+      },
+      {
+        "name": "weavers",
+        "type": "int",
+        "default": 22,
+        "minimum": 6,
+        "maximum": 64,
+        "meaning": "Weavers down the tile; rounded up to keep the pattern repeating."
+      },
+      {
+        "name": "stake_width",
+        "type": "float",
+        "default": 0.5,
+        "minimum": 0.25,
+        "maximum": 0.9,
+        "meaning": "Stake diameter as a share of the stake spacing."
+      },
+      {
+        "name": "weaver_width",
+        "type": "float",
+        "default": 0.88,
+        "minimum": 0.5,
+        "maximum": 1.0,
+        "meaning": "Weaver diameter as a share of the weaver spacing; below 1 light shows between weavers."
+      },
+      {
+        "name": "bulge",
+        "type": "float",
+        "default": 0.8,
+        "minimum": 0.2,
+        "maximum": 1.0,
+        "meaning": "How far the weavers bend over and under the stakes."
+      },
+      {
+        "name": "fibres",
+        "type": "float",
+        "default": 0.5,
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "meaning": "Fibre streaks, tone differences and nodes along the reeds."
+      },
+      {
+        "name": "paint_wear",
+        "type": "float",
+        "default": 0.0,
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "meaning": "On painted presets, how much of the paint has worn through to the reed on high points."
+      },
+      {
+        "name": "hue_shift",
+        "type": "float",
+        "default": 0.0,
+        "minimum": -0.5,
+        "maximum": 0.5,
+        "meaning": "Hue rotation of the albedo in turns."
+      },
+      {
+        "name": "saturation",
+        "type": "float",
+        "default": 1.0,
+        "minimum": 0.0,
+        "maximum": 2.0,
+        "meaning": "Albedo saturation multiplier."
+      },
+      {
+        "name": "brightness",
+        "type": "float",
+        "default": 1.0,
+        "minimum": 0.5,
+        "maximum": 1.5,
+        "meaning": "Albedo brightness multiplier."
+      }
+    ],
+    "presets": [
+      {
+        "name": "default",
+        "description": "Natural honey rattan in plain randing.",
+        "values": {}
+      },
+      {
+        "name": "white_painted",
+        "description": "White-painted wicker with the paint worn through on the high points.",
+        "values": {
+          "paint_wear": 0.45,
+          "stakes": 12,
+          "weavers": 26,
+          "fibres": 0.3
+        }
+      },
+      {
+        "name": "dark_stained",
+        "description": "Espresso-stained wicker in double randing.",
+        "values": {
+          "pattern": 1,
+          "stakes": 8,
+          "weavers": 28,
+          "stake_width": 0.6,
+          "bulge": 0.7
+        }
+      },
+      {
+        "name": "willow_twill",
+        "description": "Grey-brown willow, over two and under two, with wide gaps.",
+        "values": {
+          "pattern": 2,
+          "stakes": 16,
+          "weavers": 20,
+          "stake_width": 0.45,
+          "weaver_width": 0.7,
+          "fibres": 0.7
+        }
+      }
+    ],
+    "tileable": true,
+    "default_size": 256,
+    "cost_seconds_1024": 21.2,
+    "peak_memory_mb_1024": 594,
+    "godot_material": "material.tres",
+    "godot_texture_folder": "res://baltor/textures/wicker_weave/",
+    "blender_builder": "blender_material.build_material(folder)"
+  },
+  "limits": "Reeds are ideal round rods with a cosine bend around the stakes; they do not flatten where they cross, and stakes stay straight. Borders, rims, chair-caning hexagons and twined (pairing) weaves are out of scope. The gaps are an alpha cut-out at 0.5, so the material needs alpha scissor (set in the Godot template and the Blender builder); behind the gaps the albedo is a dark reed colour. Occlusion is a blurred-height estimate that ignores the open gaps. Colours are artistic.",
+  "related": [
+    "woven_cloth",
+    "bamboo_poles",
+    "straw_thatch"
+  ],
+  "technique_references": [
+    "Stake and weaver rods with whole counts on the torus",
+    "Over and under depths from a weave pattern, eased between stakes with a cosine",
+    "Visible surface as the higher of two rod cross-sections",
+    "Alpha coverage from the distance to the rod edge",
+    "Value-noise fibre streaks along each rod",
+    "Height to tangent-space normal by central differences"
+  ],
+  "native_checks": [
+    "command_line_generates_declared_maps",
+    "maps_decode",
+    "maps_have_declared_size_and_channels",
+    "maps_tile_without_a_seam",
+    "normal_vectors_unit_length_facing_out",
+    "maps_carry_detail",
+    "godot_imports_the_maps",
+    "godot_material_template_loads_every_map",
+    "godot_compatibility_render",
+    "capture_shows_the_textured_surface",
+    "blender_builds_the_material"
+  ]
+}

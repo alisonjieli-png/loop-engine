@@ -1,0 +1,250 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "pixel_roof_tiles",
+  "title": "Pixel-art roof tiles in overlapping courses",
+  "purpose": "Generate a tileable pixel-art roof at a chosen art resolution: courses laid from the eaves up with square, round fish-scale or pointed tile ends, cast shadows on the course below, lit and shaded edges, tints, wood grain and moss, with per-pixel normal, height, roughness and occlusion maps. Use for 2D houses.",
+  "form": "function",
+  "asset_role": null,
+  "dimension": "2d",
+  "engine": {
+    "name": "python",
+    "minimum_version": "3.10"
+  },
+  "tags": [
+    "texture",
+    "pixel art",
+    "tileable",
+    "roof",
+    "tiles",
+    "shingles",
+    "slate",
+    "2d",
+    "game tile",
+    "procedural"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "role": "other"
+    },
+    {
+      "path": "pixel_roof_tiles.py",
+      "role": "executable_tool"
+    },
+    {
+      "path": "material.tres",
+      "role": "skill_asset"
+    },
+    {
+      "path": "blender_material.py",
+      "role": "executable_tool"
+    }
+  ],
+  "contract": {
+    "entry_point": "generate",
+    "module": "pixel_roof_tiles.py",
+    "signature": "generate(width=256, height=256, seed=0, preset=\"default\", directx_normal=False, **parameters) -> {map name: {\"channels\", \"colour_space\", \"pixels\"}}",
+    "command_line": "python pixel_roof_tiles.py --size 1024 --seed 7 --preset NAME --out DIR [--width W --height H] [--set NAME=VALUE] [--directx-normal] [--orm]",
+    "maps": [
+      {
+        "name": "albedo",
+        "channels": 3,
+        "colour_space": "srgb",
+        "convention": "gltf_base_color",
+        "range": [
+          0.02,
+          0.95
+        ]
+      },
+      {
+        "name": "normal",
+        "channels": 3,
+        "colour_space": "linear",
+        "convention": "opengl_y_up"
+      },
+      {
+        "name": "roughness",
+        "channels": 1,
+        "colour_space": "linear",
+        "convention": "gltf_roughness",
+        "range": [
+          0.2,
+          1.0
+        ]
+      },
+      {
+        "name": "height",
+        "channels": 1,
+        "colour_space": "linear",
+        "convention": "white_is_high"
+      },
+      {
+        "name": "ao",
+        "channels": 1,
+        "colour_space": "linear",
+        "convention": "white_is_unoccluded"
+      }
+    ],
+    "parameters": [
+      {
+        "name": "art_pixels",
+        "type": "int",
+        "default": 32,
+        "minimum": 16,
+        "maximum": 64,
+        "meaning": "Art pixels along each side of the tile; the maps enlarge them with nearest-neighbour sampling."
+      },
+      {
+        "name": "course_pairs",
+        "type": "int",
+        "default": 2,
+        "minimum": 1,
+        "maximum": 4,
+        "meaning": "Pairs of tile courses down the tile (the course count is twice this, so the offset repeats)."
+      },
+      {
+        "name": "tiles_per_course",
+        "type": "int",
+        "default": 4,
+        "minimum": 2,
+        "maximum": 8,
+        "meaning": "Roof tiles across the tile width in each course."
+      },
+      {
+        "name": "end_shape",
+        "type": "int",
+        "default": 1,
+        "minimum": 0,
+        "maximum": 2,
+        "meaning": "Tile end: 0 square, 1 round (fish scale), 2 pointed."
+      },
+      {
+        "name": "overlap",
+        "type": "float",
+        "default": 0.45,
+        "minimum": 0.2,
+        "maximum": 0.7,
+        "meaning": "How far each tile reaches over the course below, as a share of the course height."
+      },
+      {
+        "name": "grain",
+        "type": "int",
+        "default": 0,
+        "minimum": 0,
+        "maximum": 1,
+        "meaning": "1 draws wood grain lines and gives the tiles random widths (shingles and shakes)."
+      },
+      {
+        "name": "moss",
+        "type": "float",
+        "default": 0.0,
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "meaning": "Moss growing in the shadowed overlaps."
+      },
+      {
+        "name": "relief",
+        "type": "float",
+        "default": 1.0,
+        "minimum": 0.2,
+        "maximum": 2.0,
+        "meaning": "Strength of the per-pixel normal map."
+      },
+      {
+        "name": "hue_shift",
+        "type": "float",
+        "default": 0.0,
+        "minimum": -0.5,
+        "maximum": 0.5,
+        "meaning": "Hue rotation of the albedo in turns."
+      },
+      {
+        "name": "saturation",
+        "type": "float",
+        "default": 1.0,
+        "minimum": 0.0,
+        "maximum": 2.0,
+        "meaning": "Albedo saturation multiplier."
+      },
+      {
+        "name": "brightness",
+        "type": "float",
+        "default": 1.0,
+        "minimum": 0.5,
+        "maximum": 1.5,
+        "meaning": "Albedo brightness multiplier."
+      }
+    ],
+    "presets": [
+      {
+        "name": "default",
+        "description": "Terracotta fish-scale roof tiles with round ends.",
+        "values": {}
+      },
+      {
+        "name": "blue_slate",
+        "description": "Blue-grey slate in square-ended courses.",
+        "values": {
+          "end_shape": 0,
+          "tiles_per_course": 4,
+          "course_pairs": 3,
+          "overlap": 0.3
+        }
+      },
+      {
+        "name": "verdigris_scales",
+        "description": "Green copper scales with pointed ends.",
+        "values": {
+          "end_shape": 2,
+          "tiles_per_course": 5,
+          "overlap": 0.5
+        }
+      },
+      {
+        "name": "wooden_shingles",
+        "description": "Brown wooden shingles of random widths with grain and moss.",
+        "values": {
+          "end_shape": 0,
+          "grain": 1,
+          "moss": 0.35,
+          "tiles_per_course": 5,
+          "overlap": 0.3
+        }
+      }
+    ],
+    "tileable": true,
+    "default_size": 256,
+    "cost_seconds_1024": 8.6,
+    "peak_memory_mb_1024": 87,
+    "godot_material": "material.tres",
+    "godot_texture_folder": "res://baltor/textures/pixel_roof_tiles/",
+    "blender_builder": "blender_material.build_material(folder)"
+  },
+  "limits": "Stylized pixel art with the light from the top left baked into the tile edges and shadows; it shows a flat roof plane, with no ridges, valleys, hips or eaves. Every other course shifts by half a tile, so the course count is even. Tile ends are three fixed shapes, and wooden shingles vary only in width. Roughness and height are values per drawn class, and the normal map treats each art pixel as a flat facet. Output sizes that are not a whole multiple of art_pixels give art pixels of unequal widths. Occlusion is a blurred-height estimate posterized to eighths.",
+  "related": [
+    "roof_tiles_clay",
+    "roof_shingles",
+    "pixel_stone_bricks",
+    "pixel_wood_planks"
+  ],
+  "technique_references": [
+    "Course painting from the eaves upward with a cyclic overlap on a torus",
+    "Tile ends cut as square, elliptical or pointed shapes",
+    "Cast shadow one pixel below each tile end",
+    "Half-tile course offset",
+    "Per-art-pixel normals by central differences"
+  ],
+  "native_checks": [
+    "command_line_generates_declared_maps",
+    "maps_decode",
+    "maps_have_declared_size_and_channels",
+    "maps_tile_without_a_seam",
+    "normal_vectors_unit_length_facing_out",
+    "maps_carry_detail",
+    "godot_imports_the_maps",
+    "godot_material_template_loads_every_map",
+    "godot_compatibility_render",
+    "capture_shows_the_textured_surface",
+    "blender_builds_the_material"
+  ]
+}

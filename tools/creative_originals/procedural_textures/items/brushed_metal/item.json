@@ -1,0 +1,251 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "brushed_metal",
+  "title": "Brushed metal in five alloys",
+  "purpose": "Generate tileable PBR maps of brushed metal: fine directional micro-grooves at two scales, a few deeper scratches and faint smudges, on stainless steel, aluminium, brass, copper or titanium. Use for appliances, panels, trims, watches and props.",
+  "form": "function",
+  "asset_role": null,
+  "dimension": "3d",
+  "engine": {
+    "name": "python",
+    "minimum_version": "3.10"
+  },
+  "tags": [
+    "texture",
+    "pbr",
+    "tileable",
+    "metal",
+    "brushed",
+    "stainless steel",
+    "aluminium",
+    "procedural"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "role": "other"
+    },
+    {
+      "path": "brushed_metal.py",
+      "role": "executable_tool"
+    },
+    {
+      "path": "material.tres",
+      "role": "skill_asset"
+    },
+    {
+      "path": "blender_material.py",
+      "role": "executable_tool"
+    }
+  ],
+  "contract": {
+    "entry_point": "generate",
+    "module": "brushed_metal.py",
+    "signature": "generate(width=256, height=256, seed=0, preset=\"default\", directx_normal=False, **parameters) -> {map name: {\"channels\", \"colour_space\", \"pixels\"}}",
+    "command_line": "python brushed_metal.py --size 1024 --seed 7 --preset NAME --out DIR [--width W --height H] [--set NAME=VALUE] [--directx-normal] [--orm]",
+    "maps": [
+      {
+        "name": "albedo",
+        "channels": 3,
+        "colour_space": "srgb",
+        "convention": "gltf_base_color",
+        "range": [
+          0.3,
+          0.98
+        ]
+      },
+      {
+        "name": "normal",
+        "channels": 3,
+        "colour_space": "linear",
+        "convention": "opengl_y_up"
+      },
+      {
+        "name": "roughness",
+        "channels": 1,
+        "colour_space": "linear",
+        "convention": "gltf_roughness",
+        "range": [
+          0.05,
+          0.9
+        ]
+      },
+      {
+        "name": "metallic",
+        "channels": 1,
+        "colour_space": "linear",
+        "convention": "gltf_metallic"
+      },
+      {
+        "name": "height",
+        "channels": 1,
+        "colour_space": "linear",
+        "convention": "white_is_high"
+      },
+      {
+        "name": "ao",
+        "channels": 1,
+        "colour_space": "linear",
+        "convention": "white_is_unoccluded"
+      }
+    ],
+    "parameters": [
+      {
+        "name": "streak_density",
+        "type": "int",
+        "default": 220,
+        "minimum": 40,
+        "maximum": 600,
+        "meaning": "Streak cells across the tile height (higher gives finer lines)."
+      },
+      {
+        "name": "streak_depth",
+        "type": "float",
+        "default": 0.5,
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "meaning": "Depth of the brushing grooves."
+      },
+      {
+        "name": "waviness",
+        "type": "float",
+        "default": 0.3,
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "meaning": "How much the streaks wave."
+      },
+      {
+        "name": "scratches",
+        "type": "int",
+        "default": 12,
+        "minimum": 0,
+        "maximum": 120,
+        "meaning": "Deeper scratches along the brushing direction."
+      },
+      {
+        "name": "roughness_base",
+        "type": "float",
+        "default": 0.32,
+        "minimum": 0.05,
+        "maximum": 0.8,
+        "meaning": "Average roughness."
+      },
+      {
+        "name": "smudges",
+        "type": "float",
+        "default": 0.3,
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "meaning": "Faint blotches of different roughness, like fingerprints and wiping marks."
+      },
+      {
+        "name": "banding",
+        "type": "float",
+        "default": 0.6,
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "meaning": "Broad bands along the brushing direction from uneven abrasive passes."
+      },
+      {
+        "name": "hue_shift",
+        "type": "float",
+        "default": 0.0,
+        "minimum": -0.5,
+        "maximum": 0.5,
+        "meaning": "Hue rotation of the albedo in turns."
+      },
+      {
+        "name": "saturation",
+        "type": "float",
+        "default": 1.0,
+        "minimum": 0.0,
+        "maximum": 2.0,
+        "meaning": "Albedo saturation multiplier."
+      },
+      {
+        "name": "brightness",
+        "type": "float",
+        "default": 1.0,
+        "minimum": 0.5,
+        "maximum": 1.0,
+        "meaning": "Albedo brightness multiplier (metals keep at most their reflectance)."
+      }
+    ],
+    "presets": [
+      {
+        "name": "default",
+        "description": "Brushed stainless steel.",
+        "values": {}
+      },
+      {
+        "name": "aluminium",
+        "description": "Bright brushed aluminium, slightly finer.",
+        "values": {
+          "streak_density": 300,
+          "roughness_base": 0.28
+        }
+      },
+      {
+        "name": "brass",
+        "description": "Brushed brass with soft smudges.",
+        "values": {
+          "smudges": 0.6,
+          "roughness_base": 0.3
+        }
+      },
+      {
+        "name": "copper",
+        "description": "Brushed copper with coarse grooves.",
+        "values": {
+          "streak_density": 140,
+          "streak_depth": 0.8,
+          "roughness_base": 0.35
+        }
+      },
+      {
+        "name": "titanium_satin",
+        "description": "Satin titanium, fine and smooth, few scratches.",
+        "values": {
+          "streak_density": 420,
+          "streak_depth": 0.3,
+          "roughness_base": 0.22,
+          "scratches": 4,
+          "waviness": 0.1
+        }
+      }
+    ],
+    "tileable": true,
+    "default_size": 256,
+    "cost_seconds_1024": 14.9,
+    "peak_memory_mb_1024": 656,
+    "godot_material": "material.tres",
+    "godot_texture_folder": "res://baltor/textures/brushed_metal/",
+    "blender_builder": "blender_material.build_material(folder)"
+  },
+  "limits": "Brushing runs across the tile width only; rotate the UVs for other directions. The grooves live in the normal and roughness maps, which carry no anisotropy direction, so the stretched highlight of real brushed metal needs an anisotropic shader on top. Metal colours are approximate reflectances. Occlusion is a blurred-height estimate, not ray traced.",
+  "related": [
+    "hammered_metal",
+    "damascus_steel",
+    "painted_metal_scratched"
+  ],
+  "technique_references": [
+    "Noise stretched along one axis for directional micro-grooves",
+    "Two groove scales with a slow wave so lines are not ruled",
+    "Broad bands along the brushing direction for uneven abrasive passes",
+    "Sparse long scratches along the brushing direction",
+    "Uniform metallic in the glTF metallic-roughness model"
+  ],
+  "native_checks": [
+    "command_line_generates_declared_maps",
+    "maps_decode",
+    "maps_have_declared_size_and_channels",
+    "maps_tile_without_a_seam",
+    "normal_vectors_unit_length_facing_out",
+    "maps_carry_detail",
+    "godot_imports_the_maps",
+    "godot_material_template_loads_every_map",
+    "godot_compatibility_render",
+    "capture_shows_the_textured_surface",
+    "blender_builds_the_material"
+  ]
+}

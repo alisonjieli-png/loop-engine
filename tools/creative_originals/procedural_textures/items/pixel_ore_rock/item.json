@@ -1,0 +1,237 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "pixel_ore_rock",
+  "title": "Pixel-art rock with ore nuggets and gems",
+  "purpose": "Generate a tileable pixel-art rock tile at a chosen art resolution: bevelled stone chunks with one-pixel crevices, evenly spread clusters of gold, iron or copper nuggets or gems with highlights, and cracks, with metallic, normal, height, roughness and occlusion maps. Use for mining walls and cave blocks in 2D games.",
+  "form": "function",
+  "asset_role": null,
+  "dimension": "2d",
+  "engine": {
+    "name": "python",
+    "minimum_version": "3.10"
+  },
+  "tags": [
+    "texture",
+    "pixel art",
+    "tileable",
+    "rock",
+    "ore",
+    "gems",
+    "mining",
+    "2d",
+    "game tile",
+    "procedural"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "role": "other"
+    },
+    {
+      "path": "pixel_ore_rock.py",
+      "role": "executable_tool"
+    },
+    {
+      "path": "material.tres",
+      "role": "skill_asset"
+    },
+    {
+      "path": "blender_material.py",
+      "role": "executable_tool"
+    }
+  ],
+  "contract": {
+    "entry_point": "generate",
+    "module": "pixel_ore_rock.py",
+    "signature": "generate(width=256, height=256, seed=0, preset=\"default\", directx_normal=False, **parameters) -> {map name: {\"channels\", \"colour_space\", \"pixels\"}}",
+    "command_line": "python pixel_ore_rock.py --size 1024 --seed 7 --preset NAME --out DIR [--width W --height H] [--set NAME=VALUE] [--directx-normal] [--orm]",
+    "maps": [
+      {
+        "name": "albedo",
+        "channels": 3,
+        "colour_space": "srgb",
+        "convention": "gltf_base_color",
+        "range": [
+          0.02,
+          0.98
+        ]
+      },
+      {
+        "name": "normal",
+        "channels": 3,
+        "colour_space": "linear",
+        "convention": "opengl_y_up"
+      },
+      {
+        "name": "roughness",
+        "channels": 1,
+        "colour_space": "linear",
+        "convention": "gltf_roughness",
+        "range": [
+          0.1,
+          1.0
+        ]
+      },
+      {
+        "name": "metallic",
+        "channels": 1,
+        "colour_space": "linear",
+        "convention": "gltf_metallic"
+      },
+      {
+        "name": "height",
+        "channels": 1,
+        "colour_space": "linear",
+        "convention": "white_is_high"
+      },
+      {
+        "name": "ao",
+        "channels": 1,
+        "colour_space": "linear",
+        "convention": "white_is_unoccluded"
+      }
+    ],
+    "parameters": [
+      {
+        "name": "art_pixels",
+        "type": "int",
+        "default": 32,
+        "minimum": 16,
+        "maximum": 64,
+        "meaning": "Art pixels along each side of the tile; the maps enlarge them with nearest-neighbour sampling."
+      },
+      {
+        "name": "chunks",
+        "type": "int",
+        "default": 5,
+        "minimum": 2,
+        "maximum": 10,
+        "meaning": "Stone chunks across the tile."
+      },
+      {
+        "name": "ore",
+        "type": "float",
+        "default": 0.5,
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "meaning": "Share of the evenly spread cluster positions that hold ore."
+      },
+      {
+        "name": "nuggets",
+        "type": "int",
+        "default": 3,
+        "minimum": 1,
+        "maximum": 5,
+        "meaning": "Nuggets or gems in each ore cluster."
+      },
+      {
+        "name": "cracks",
+        "type": "float",
+        "default": 0.3,
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "meaning": "Share of chunks with a crack."
+      },
+      {
+        "name": "relief",
+        "type": "float",
+        "default": 1.0,
+        "minimum": 0.2,
+        "maximum": 2.0,
+        "meaning": "Strength of the per-pixel normal map."
+      },
+      {
+        "name": "hue_shift",
+        "type": "float",
+        "default": 0.0,
+        "minimum": -0.5,
+        "maximum": 0.5,
+        "meaning": "Hue rotation of the albedo in turns."
+      },
+      {
+        "name": "saturation",
+        "type": "float",
+        "default": 1.0,
+        "minimum": 0.0,
+        "maximum": 2.0,
+        "meaning": "Albedo saturation multiplier."
+      },
+      {
+        "name": "brightness",
+        "type": "float",
+        "default": 1.0,
+        "minimum": 0.5,
+        "maximum": 1.5,
+        "meaning": "Albedo brightness multiplier."
+      }
+    ],
+    "presets": [
+      {
+        "name": "default",
+        "description": "Grey stone with gold nuggets.",
+        "values": {}
+      },
+      {
+        "name": "iron_ore",
+        "description": "Brown-grey stone with many rusty iron flecks.",
+        "values": {
+          "ore": 0.8,
+          "nuggets": 4,
+          "chunks": 6
+        }
+      },
+      {
+        "name": "diamond_gems",
+        "description": "Dark deep-cave stone with a few bright cyan gems.",
+        "values": {
+          "ore": 0.35,
+          "nuggets": 2,
+          "cracks": 0.5
+        }
+      },
+      {
+        "name": "copper_patina",
+        "description": "Warm stone with copper nuggets spotted with green patina.",
+        "values": {
+          "ore": 0.6,
+          "nuggets": 3,
+          "chunks": 4
+        }
+      }
+    ],
+    "tileable": true,
+    "default_size": 256,
+    "cost_seconds_1024": 9.1,
+    "peak_memory_mb_1024": 96,
+    "godot_material": "material.tres",
+    "godot_texture_folder": "res://baltor/textures/pixel_ore_rock/",
+    "blender_builder": "blender_material.build_material(folder)"
+  },
+  "limits": "Stylized pixel art with the light from the top left baked into the chunk edges and nugget sprites; it is not a geological model, and ore colours are artistic. Chunks are Voronoi cells and nuggets are four or five-pixel sprites, so a 16-pixel grid shows two-by-two nuggets only. Gems are smooth dielectrics and metal ores fully metallic, with nothing in between. The normal map treats each art pixel as a flat facet. Output sizes that are not a whole multiple of art_pixels give art pixels of unequal widths. Occlusion is a blurred-height estimate posterized to eighths.",
+  "related": [
+    "pixel_crystal_cave",
+    "pixel_stone_bricks",
+    "granite_speckled"
+  ],
+  "technique_references": [
+    "Worley cells as stone chunks with one-pixel crevices",
+    "Neighbour tests for lit and shadowed chunk edges",
+    "Poisson-disc sampling on a torus for ore clusters",
+    "Small sprite stamping with highlight and shadow pixels",
+    "Random-walk cracks",
+    "Per-art-pixel normals by central differences"
+  ],
+  "native_checks": [
+    "command_line_generates_declared_maps",
+    "maps_decode",
+    "maps_have_declared_size_and_channels",
+    "maps_tile_without_a_seam",
+    "normal_vectors_unit_length_facing_out",
+    "maps_carry_detail",
+    "godot_imports_the_maps",
+    "godot_material_template_loads_every_map",
+    "godot_compatibility_render",
+    "capture_shows_the_textured_surface",
+    "blender_builds_the_material"
+  ]
+}

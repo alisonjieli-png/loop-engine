@@ -1,0 +1,215 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "carbon_fibre",
+  "title": "Carbon fibre weave and forged carbon",
+  "purpose": "Generate tileable PBR maps of carbon fibre composite: 2x2 twill or plain weave tows with fibre lines and direction-dependent sheen, forged carbon from chopped-fibre patches, or an aramid hybrid weave, under gloss or matte finish. Use for car parts, helmets, bicycles, cases and props.",
+  "form": "function",
+  "asset_role": null,
+  "dimension": "3d",
+  "engine": {
+    "name": "python",
+    "minimum_version": "3.10"
+  },
+  "tags": [
+    "texture",
+    "pbr",
+    "tileable",
+    "carbon fibre",
+    "composite",
+    "twill",
+    "forged carbon",
+    "procedural"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "role": "other"
+    },
+    {
+      "path": "carbon_fibre.py",
+      "role": "executable_tool"
+    },
+    {
+      "path": "material.tres",
+      "role": "skill_asset"
+    },
+    {
+      "path": "blender_material.py",
+      "role": "executable_tool"
+    }
+  ],
+  "contract": {
+    "entry_point": "generate",
+    "module": "carbon_fibre.py",
+    "signature": "generate(width=256, height=256, seed=0, preset=\"default\", directx_normal=False, **parameters) -> {map name: {\"channels\", \"colour_space\", \"pixels\"}}",
+    "command_line": "python carbon_fibre.py --size 1024 --seed 7 --preset NAME --out DIR [--width W --height H] [--set NAME=VALUE] [--directx-normal] [--orm]",
+    "maps": [
+      {
+        "name": "albedo",
+        "channels": 3,
+        "colour_space": "srgb",
+        "convention": "gltf_base_color",
+        "range": [
+          0.01,
+          0.8
+        ]
+      },
+      {
+        "name": "normal",
+        "channels": 3,
+        "colour_space": "linear",
+        "convention": "opengl_y_up"
+      },
+      {
+        "name": "roughness",
+        "channels": 1,
+        "colour_space": "linear",
+        "convention": "gltf_roughness",
+        "range": [
+          0.05,
+          0.8
+        ]
+      },
+      {
+        "name": "height",
+        "channels": 1,
+        "colour_space": "linear",
+        "convention": "white_is_high"
+      },
+      {
+        "name": "ao",
+        "channels": 1,
+        "colour_space": "linear",
+        "convention": "white_is_unoccluded"
+      }
+    ],
+    "parameters": [
+      {
+        "name": "style",
+        "type": "int",
+        "default": 0,
+        "minimum": 0,
+        "maximum": 2,
+        "meaning": "Construction: 0 2x2 twill, 1 plain weave, 2 forged (chopped fibre)."
+      },
+      {
+        "name": "tows_across",
+        "type": "int",
+        "default": 16,
+        "minimum": 4,
+        "maximum": 64,
+        "meaning": "Tows across the tile (rounded up to a multiple of the weave repeat); forged patches scale with it."
+      },
+      {
+        "name": "sheen",
+        "type": "float",
+        "default": 0.6,
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "meaning": "Brightness difference between tow directions."
+      },
+      {
+        "name": "clear_coat",
+        "type": "float",
+        "default": 0.85,
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "meaning": "Gloss of the clear coat (0 dry matte weave, 1 deep gloss)."
+      },
+      {
+        "name": "hue_shift",
+        "type": "float",
+        "default": 0.0,
+        "minimum": -0.5,
+        "maximum": 0.5,
+        "meaning": "Hue rotation of the albedo in turns."
+      },
+      {
+        "name": "saturation",
+        "type": "float",
+        "default": 1.0,
+        "minimum": 0.0,
+        "maximum": 2.0,
+        "meaning": "Albedo saturation multiplier."
+      },
+      {
+        "name": "brightness",
+        "type": "float",
+        "default": 1.0,
+        "minimum": 0.5,
+        "maximum": 1.5,
+        "meaning": "Albedo brightness multiplier."
+      }
+    ],
+    "presets": [
+      {
+        "name": "default",
+        "description": "Black 2x2 twill carbon under gloss clear coat.",
+        "values": {}
+      },
+      {
+        "name": "plain_weave",
+        "description": "Plain-weave carbon with wide tows.",
+        "values": {
+          "style": 1,
+          "tows_across": 12
+        }
+      },
+      {
+        "name": "forged",
+        "description": "Forged carbon with marbled chopped-fibre patches.",
+        "values": {
+          "style": 2,
+          "tows_across": 10,
+          "sheen": 0.8
+        }
+      },
+      {
+        "name": "kevlar_hybrid",
+        "description": "Yellow aramid and black carbon tows in twill.",
+        "values": {
+          "tows_across": 12,
+          "sheen": 0.5
+        }
+      },
+      {
+        "name": "matte_dry",
+        "description": "Uncoated dry twill with a matte finish.",
+        "values": {
+          "clear_coat": 0.1
+        }
+      }
+    ],
+    "tileable": true,
+    "default_size": 256,
+    "cost_seconds_1024": 11.2,
+    "peak_memory_mb_1024": 469,
+    "godot_material": "material.tres",
+    "godot_texture_folder": "res://baltor/textures/carbon_fibre/",
+    "blender_builder": "blender_material.build_material(folder)"
+  },
+  "limits": "The sheen of each tow direction is baked into albedo and roughness; real weave shifts with the view and light angle, which needs an anisotropic shader. Forged carbon patches are Voronoi cells, a simplification of pressed chopped fibre. A clear coat is approximated by low roughness; add a clear coat layer in your engine for its second reflection. Occlusion is a blurred-height estimate, not ray traced.",
+  "related": [
+    "woven_cloth",
+    "scifi_greeble_panels"
+  ],
+  "technique_references": [
+    "Weave drafts for 2x2 twill and plain weave on a tow grid",
+    "Tow cross-section and fibre lines in tow-relative coordinates",
+    "Direction-dependent tone for anisotropic sheen",
+    "Worley patches with a per-patch fibre direction for forged carbon"
+  ],
+  "native_checks": [
+    "command_line_generates_declared_maps",
+    "maps_decode",
+    "maps_have_declared_size_and_channels",
+    "maps_tile_without_a_seam",
+    "normal_vectors_unit_length_facing_out",
+    "maps_carry_detail",
+    "godot_imports_the_maps",
+    "godot_material_template_loads_every_map",
+    "godot_compatibility_render",
+    "capture_shows_the_textured_surface",
+    "blender_builds_the_material"
+  ]
+}

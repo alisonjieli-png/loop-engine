@@ -1,0 +1,267 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "fur_strands",
+  "title": "Fur pelt from strands along a flow field",
+  "purpose": "Generate tileable PBR maps of animal fur: thousands of tapered strands combed along a smooth flow field, gathered into locks, with banded hairs and coat patterns (solid, tabby stripes, spots or rosettes). Use for creature and animal skins, fur trims, rugs, plush toys and stylized characters.",
+  "form": "function",
+  "asset_role": null,
+  "dimension": "3d",
+  "engine": {
+    "name": "python",
+    "minimum_version": "3.10"
+  },
+  "tags": [
+    "texture",
+    "pbr",
+    "tileable",
+    "fur",
+    "hair",
+    "pelt",
+    "animal",
+    "creature",
+    "procedural"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "role": "other"
+    },
+    {
+      "path": "fur_strands.py",
+      "role": "executable_tool"
+    },
+    {
+      "path": "material.tres",
+      "role": "skill_asset"
+    },
+    {
+      "path": "blender_material.py",
+      "role": "executable_tool"
+    }
+  ],
+  "contract": {
+    "entry_point": "generate",
+    "module": "fur_strands.py",
+    "signature": "generate(width=256, height=256, seed=0, preset=\"default\", directx_normal=False, **parameters) -> {map name: {\"channels\", \"colour_space\", \"pixels\"}}",
+    "command_line": "python fur_strands.py --size 1024 --seed 7 --preset NAME --out DIR [--width W --height H] [--set NAME=VALUE] [--directx-normal] [--orm]",
+    "maps": [
+      {
+        "name": "albedo",
+        "channels": 3,
+        "colour_space": "srgb",
+        "convention": "gltf_base_color",
+        "range": [
+          0.02,
+          0.9
+        ]
+      },
+      {
+        "name": "normal",
+        "channels": 3,
+        "colour_space": "linear",
+        "convention": "opengl_y_up"
+      },
+      {
+        "name": "roughness",
+        "channels": 1,
+        "colour_space": "linear",
+        "convention": "gltf_roughness",
+        "range": [
+          0.3,
+          1.0
+        ]
+      },
+      {
+        "name": "height",
+        "channels": 1,
+        "colour_space": "linear",
+        "convention": "white_is_high"
+      },
+      {
+        "name": "ao",
+        "channels": 1,
+        "colour_space": "linear",
+        "convention": "white_is_unoccluded"
+      }
+    ],
+    "parameters": [
+      {
+        "name": "length",
+        "type": "float",
+        "default": 0.05,
+        "minimum": 0.015,
+        "maximum": 0.12,
+        "meaning": "Strand length in texture units."
+      },
+      {
+        "name": "thickness",
+        "type": "float",
+        "default": 0.0022,
+        "minimum": 0.001,
+        "maximum": 0.006,
+        "meaning": "Strand radius at the root in texture units (drawn at least about a pixel wide)."
+      },
+      {
+        "name": "coverage",
+        "type": "float",
+        "default": 3.0,
+        "minimum": 1.5,
+        "maximum": 5.0,
+        "meaning": "How many strands cover each point on average; low values show the undercoat."
+      },
+      {
+        "name": "swirl",
+        "type": "float",
+        "default": 0.35,
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "meaning": "How far the flow turns away from the main lie direction."
+      },
+      {
+        "name": "clumping",
+        "type": "float",
+        "default": 0.4,
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "meaning": "How strongly strand tips gather into locks."
+      },
+      {
+        "name": "pattern",
+        "type": "int",
+        "default": 1,
+        "minimum": 0,
+        "maximum": 3,
+        "meaning": "Coat pattern: 0 solid, 1 tabby stripes, 2 spots, 3 rosettes (dark rings)."
+      },
+      {
+        "name": "banding",
+        "type": "float",
+        "default": 0.5,
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "meaning": "Colour change along each strand: darker root and a light band near the tip."
+      },
+      {
+        "name": "gloss",
+        "type": "float",
+        "default": 0.3,
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "meaning": "Sheen of the strands."
+      },
+      {
+        "name": "hue_shift",
+        "type": "float",
+        "default": 0.0,
+        "minimum": -0.5,
+        "maximum": 0.5,
+        "meaning": "Hue rotation of the albedo in turns."
+      },
+      {
+        "name": "saturation",
+        "type": "float",
+        "default": 1.0,
+        "minimum": 0.0,
+        "maximum": 2.0,
+        "meaning": "Albedo saturation multiplier."
+      },
+      {
+        "name": "brightness",
+        "type": "float",
+        "default": 1.0,
+        "minimum": 0.5,
+        "maximum": 1.5,
+        "meaning": "Albedo brightness multiplier."
+      }
+    ],
+    "presets": [
+      {
+        "name": "default",
+        "description": "Brown tabby cat fur with dark stripes and banded hairs.",
+        "values": {}
+      },
+      {
+        "name": "leopard_rosettes",
+        "description": "Short golden pelt with dark rosettes.",
+        "values": {
+          "pattern": 3,
+          "length": 0.035,
+          "swirl": 0.2,
+          "clumping": 0.2,
+          "banding": 0.25
+        }
+      },
+      {
+        "name": "black_glossy",
+        "description": "Short glossy black fur lying flat.",
+        "values": {
+          "pattern": 0,
+          "length": 0.03,
+          "swirl": 0.15,
+          "clumping": 0.1,
+          "gloss": 0.85,
+          "banding": 0.1
+        }
+      },
+      {
+        "name": "white_fluffy",
+        "description": "Long white fluffy fur parted into soft locks.",
+        "values": {
+          "pattern": 0,
+          "length": 0.1,
+          "thickness": 0.0028,
+          "swirl": 0.6,
+          "clumping": 0.8,
+          "banding": 0.2,
+          "coverage": 3.5
+        }
+      },
+      {
+        "name": "dalmatian_spots",
+        "description": "Short white coat with round black spots.",
+        "values": {
+          "pattern": 2,
+          "length": 0.028,
+          "swirl": 0.25,
+          "clumping": 0.15,
+          "banding": 0.05
+        }
+      }
+    ],
+    "tileable": true,
+    "default_size": 256,
+    "cost_seconds_1024": 32.3,
+    "peak_memory_mb_1024": 512,
+    "godot_material": "material.tres",
+    "godot_texture_folder": "res://baltor/textures/fur_strands/",
+    "blender_builder": "blender_material.build_material(folder)"
+  },
+  "limits": "Fur is painted as flat strands in a height field, so it reads as fur lying flat seen from above; it is not hair geometry, cards or shells, and it has no silhouette fuzz, anisotropic hair shading or translucency. Strands are three straight segments each, so long fur looks combed rather than tangled. Coat patterns are stylized periodic fields (stripes, spots, rings), not species markings. Strands are drawn at least about a pixel wide, so the strand count drops at small sizes. Occlusion is a blurred-height estimate.",
+  "related": [
+    "carpet_pile",
+    "grass_lawn",
+    "skin_pores"
+  ],
+  "technique_references": [
+    "Periodic noise flow field around a main lie direction",
+    "Strand tracing in three steps along the flow",
+    "Clump attraction of strand tips on a jittered clump grid",
+    "Z-buffered tapered capsule painting with wrap-around",
+    "Coat pattern sampled at each strand root",
+    "Agouti banding as a colour band along the strand",
+    "Height to tangent-space normal by central differences"
+  ],
+  "native_checks": [
+    "command_line_generates_declared_maps",
+    "maps_decode",
+    "maps_have_declared_size_and_channels",
+    "maps_tile_without_a_seam",
+    "normal_vectors_unit_length_facing_out",
+    "maps_carry_detail",
+    "godot_imports_the_maps",
+    "godot_material_template_loads_every_map",
+    "godot_compatibility_render",
+    "capture_shows_the_textured_surface",
+    "blender_builds_the_material"
+  ]
+}

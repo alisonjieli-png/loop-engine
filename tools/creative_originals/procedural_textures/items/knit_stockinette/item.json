@@ -1,0 +1,279 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "knit_stockinette",
+  "title": "Knitted fabric in five stitch patterns",
+  "purpose": "Generate tileable PBR maps of knitted fabric: stockinette Vs, purl bumps, garter ridges, k2p2 rib or seed stitch, with twisted plies, fuzz and optional stripes or a stranded two-colour motif. Use for jumpers, scarves, hats, blankets and cosy props.",
+  "form": "function",
+  "asset_role": null,
+  "dimension": "3d",
+  "engine": {
+    "name": "python",
+    "minimum_version": "3.10"
+  },
+  "tags": [
+    "texture",
+    "pbr",
+    "tileable",
+    "knit",
+    "knitting",
+    "fabric",
+    "wool",
+    "yarn",
+    "rib",
+    "procedural"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "role": "other"
+    },
+    {
+      "path": "knit_stockinette.py",
+      "role": "executable_tool"
+    },
+    {
+      "path": "material.tres",
+      "role": "skill_asset"
+    },
+    {
+      "path": "blender_material.py",
+      "role": "executable_tool"
+    }
+  ],
+  "contract": {
+    "entry_point": "generate",
+    "module": "knit_stockinette.py",
+    "signature": "generate(width=256, height=256, seed=0, preset=\"default\", directx_normal=False, **parameters) -> {map name: {\"channels\", \"colour_space\", \"pixels\"}}",
+    "command_line": "python knit_stockinette.py --size 1024 --seed 7 --preset NAME --out DIR [--width W --height H] [--set NAME=VALUE] [--directx-normal] [--orm]",
+    "maps": [
+      {
+        "name": "albedo",
+        "channels": 3,
+        "colour_space": "srgb",
+        "convention": "gltf_base_color",
+        "range": [
+          0.02,
+          0.92
+        ]
+      },
+      {
+        "name": "normal",
+        "channels": 3,
+        "colour_space": "linear",
+        "convention": "opengl_y_up"
+      },
+      {
+        "name": "roughness",
+        "channels": 1,
+        "colour_space": "linear",
+        "convention": "gltf_roughness",
+        "range": [
+          0.55,
+          1.0
+        ]
+      },
+      {
+        "name": "height",
+        "channels": 1,
+        "colour_space": "linear",
+        "convention": "white_is_high"
+      },
+      {
+        "name": "ao",
+        "channels": 1,
+        "colour_space": "linear",
+        "convention": "white_is_unoccluded"
+      }
+    ],
+    "parameters": [
+      {
+        "name": "pattern",
+        "type": "int",
+        "default": 0,
+        "minimum": 0,
+        "maximum": 4,
+        "meaning": "0 stockinette (all knit), 1 reverse stockinette (all purl), 2 garter (knit and purl rows alternate), 3 k2p2 rib (two knit columns, two purl columns), 4 seed stitch (knit and purl alternate in both directions)."
+      },
+      {
+        "name": "stitches",
+        "type": "int",
+        "default": 16,
+        "minimum": 4,
+        "maximum": 48,
+        "meaning": "Stitch columns across the tile width; rounded up to a multiple of 4 for rib and of 8 for a motif."
+      },
+      {
+        "name": "row_ratio",
+        "type": "float",
+        "default": 1.4,
+        "minimum": 1.0,
+        "maximum": 1.8,
+        "meaning": "Rows per stitch width (the gauge); the row count is rounded to keep the pattern repeating."
+      },
+      {
+        "name": "yarn_width",
+        "type": "float",
+        "default": 1.0,
+        "minimum": 0.7,
+        "maximum": 1.25,
+        "meaning": "Yarn thickness relative to the stitch: low values open gaps between the legs."
+      },
+      {
+        "name": "twist",
+        "type": "float",
+        "default": 0.5,
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "meaning": "Depth of the diagonal grooves between twisted plies."
+      },
+      {
+        "name": "plies",
+        "type": "float",
+        "default": 3.5,
+        "minimum": 1.5,
+        "maximum": 6.0,
+        "meaning": "Ply twists along one stitch leg."
+      },
+      {
+        "name": "fuzz",
+        "type": "float",
+        "default": 0.4,
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "meaning": "Fibre halo: fine noise in height and colour, and rougher yarn."
+      },
+      {
+        "name": "irregularity",
+        "type": "float",
+        "default": 0.4,
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "meaning": "Hand-knit unevenness: per-stitch offset, size and tone."
+      },
+      {
+        "name": "colourwork",
+        "type": "int",
+        "default": 0,
+        "minimum": 0,
+        "maximum": 2,
+        "meaning": "0 one colour, 1 contrast stripes two rows in six, 2 a stranded two-colour motif repeating every eight stitches and rows."
+      },
+      {
+        "name": "hue_shift",
+        "type": "float",
+        "default": 0.0,
+        "minimum": -0.5,
+        "maximum": 0.5,
+        "meaning": "Hue rotation of the albedo in turns."
+      },
+      {
+        "name": "saturation",
+        "type": "float",
+        "default": 1.0,
+        "minimum": 0.0,
+        "maximum": 2.0,
+        "meaning": "Albedo saturation multiplier."
+      },
+      {
+        "name": "brightness",
+        "type": "float",
+        "default": 1.0,
+        "minimum": 0.5,
+        "maximum": 1.5,
+        "meaning": "Albedo brightness multiplier."
+      }
+    ],
+    "presets": [
+      {
+        "name": "default",
+        "description": "Cream wool in stockinette, a fine jumper knit.",
+        "values": {}
+      },
+      {
+        "name": "chunky_red",
+        "description": "Thick red yarn in stockinette with strongly twisted plies.",
+        "values": {
+          "stitches": 8,
+          "row_ratio": 1.3,
+          "twist": 0.8,
+          "plies": 4.5,
+          "fuzz": 0.3
+        }
+      },
+      {
+        "name": "navy_rib",
+        "description": "Navy k2p2 ribbing as on cuffs and hems, the purl columns sunk between the knit.",
+        "values": {
+          "pattern": 3,
+          "stitches": 20,
+          "irregularity": 0.25
+        }
+      },
+      {
+        "name": "heather_garter",
+        "description": "Grey heather yarn in garter stitch: ridges of purl bumps.",
+        "values": {
+          "pattern": 2,
+          "stitches": 14,
+          "row_ratio": 1.6,
+          "fuzz": 0.6
+        }
+      },
+      {
+        "name": "fair_isle",
+        "description": "Stranded colourwork: a navy motif on cream stockinette.",
+        "values": {
+          "stitches": 24,
+          "colourwork": 2,
+          "fuzz": 0.3,
+          "irregularity": 0.2
+        }
+      },
+      {
+        "name": "moss_seed",
+        "description": "Moss green seed stitch with a pebbly surface and contrast stripes.",
+        "values": {
+          "pattern": 4,
+          "stitches": 18,
+          "colourwork": 1,
+          "row_ratio": 1.2
+        }
+      }
+    ],
+    "tileable": true,
+    "default_size": 256,
+    "cost_seconds_1024": 19.0,
+    "peak_memory_mb_1024": 518,
+    "godot_material": "material.tres",
+    "godot_texture_folder": "res://baltor/textures/knit_stockinette/",
+    "blender_builder": "blender_material.build_material(folder)"
+  },
+  "limits": "Stitches are stylized yarn domes on a regular grid: knit legs are superellipses and a purl stitch is a cosine-shaped yarn path, not a simulated loop structure. Cables, increases, decreases and lace holes are out of scope, and the stranded motif is a symmetric 8 x 8 chart chosen by the seed. The fabric is flat, with no drape or stretch. Ply grooves fade out where they would be finer than a few pixels. Occlusion is a blurred-height estimate, not ray traced. Colours are artistic, not measured yarn.",
+  "related": [
+    "woven_cloth",
+    "quilted_fabric",
+    "corduroy_wales"
+  ],
+  "technique_references": [
+    "Stitch grid in texture space with whole stitch and row counts",
+    "Knit stitch legs as tilted superellipse domes, z-ordered against neighbouring rows",
+    "Purl yarn path as a cosine wave with half-stitch row offsets",
+    "Ply twist as grooves along the leg axis",
+    "Mirror-symmetric two-colour chart for stranded colourwork",
+    "Height to tangent-space normal by central differences",
+    "Cavity occlusion from blurred height"
+  ],
+  "native_checks": [
+    "command_line_generates_declared_maps",
+    "maps_decode",
+    "maps_have_declared_size_and_channels",
+    "maps_tile_without_a_seam",
+    "normal_vectors_unit_length_facing_out",
+    "maps_carry_detail",
+    "godot_imports_the_maps",
+    "godot_material_template_loads_every_map",
+    "godot_compatibility_render",
+    "capture_shows_the_textured_surface",
+    "blender_builds_the_material"
+  ]
+}

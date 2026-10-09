@@ -1,0 +1,248 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "concrete_cast",
+  "title": "Cast concrete with formwork marks",
+  "purpose": "Generate tileable PBR maps of cast concrete: cement mottling, bug holes, smooth, board-formed or panel formwork marks with tie holes, water stains, exposed aggregate and polished floors. Use for walls, floors and brutalist architecture.",
+  "form": "function",
+  "asset_role": null,
+  "dimension": "3d",
+  "engine": {
+    "name": "python",
+    "minimum_version": "3.10"
+  },
+  "tags": [
+    "texture",
+    "pbr",
+    "tileable",
+    "concrete",
+    "cement",
+    "formwork",
+    "wall",
+    "procedural"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "role": "other"
+    },
+    {
+      "path": "concrete_cast.py",
+      "role": "executable_tool"
+    },
+    {
+      "path": "material.tres",
+      "role": "skill_asset"
+    },
+    {
+      "path": "blender_material.py",
+      "role": "executable_tool"
+    }
+  ],
+  "contract": {
+    "entry_point": "generate",
+    "module": "concrete_cast.py",
+    "signature": "generate(width=256, height=256, seed=0, preset=\"default\", directx_normal=False, **parameters) -> {map name: {\"channels\", \"colour_space\", \"pixels\"}}",
+    "command_line": "python concrete_cast.py --size 1024 --seed 7 --preset NAME --out DIR [--width W --height H] [--set NAME=VALUE] [--directx-normal] [--orm]",
+    "maps": [
+      {
+        "name": "albedo",
+        "channels": 3,
+        "colour_space": "srgb",
+        "convention": "gltf_base_color",
+        "range": [
+          0.04,
+          0.85
+        ]
+      },
+      {
+        "name": "normal",
+        "channels": 3,
+        "colour_space": "linear",
+        "convention": "opengl_y_up"
+      },
+      {
+        "name": "roughness",
+        "channels": 1,
+        "colour_space": "linear",
+        "convention": "gltf_roughness",
+        "range": [
+          0.15,
+          1.0
+        ]
+      },
+      {
+        "name": "height",
+        "channels": 1,
+        "colour_space": "linear",
+        "convention": "white_is_high"
+      },
+      {
+        "name": "ao",
+        "channels": 1,
+        "colour_space": "linear",
+        "convention": "white_is_unoccluded"
+      }
+    ],
+    "parameters": [
+      {
+        "name": "formwork",
+        "type": "int",
+        "default": 0,
+        "minimum": 0,
+        "maximum": 2,
+        "meaning": "Formwork imprint: 0 smooth, 1 horizontal boards, 2 plywood panels with tie holes."
+      },
+      {
+        "name": "panels",
+        "type": "int",
+        "default": 2,
+        "minimum": 1,
+        "maximum": 12,
+        "meaning": "Boards (formwork 1) or panel rows and columns (formwork 2) across the tile."
+      },
+      {
+        "name": "bug_holes",
+        "type": "float",
+        "default": 0.4,
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "meaning": "Density of small air-void pits."
+      },
+      {
+        "name": "mottling",
+        "type": "float",
+        "default": 0.5,
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "meaning": "Strength of the cloudy tone variation."
+      },
+      {
+        "name": "stains",
+        "type": "float",
+        "default": 0.3,
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "meaning": "Water stains running down from joints."
+      },
+      {
+        "name": "aggregate",
+        "type": "float",
+        "default": 0.0,
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "meaning": "Exposed aggregate: pebbles showing through the cement."
+      },
+      {
+        "name": "polish",
+        "type": "float",
+        "default": 0.0,
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "meaning": "Ground and polished finish (0 as cast, 1 polished floor)."
+      },
+      {
+        "name": "hue_shift",
+        "type": "float",
+        "default": 0.0,
+        "minimum": -0.5,
+        "maximum": 0.5,
+        "meaning": "Hue rotation of the albedo in turns."
+      },
+      {
+        "name": "saturation",
+        "type": "float",
+        "default": 1.0,
+        "minimum": 0.0,
+        "maximum": 2.0,
+        "meaning": "Albedo saturation multiplier."
+      },
+      {
+        "name": "brightness",
+        "type": "float",
+        "default": 1.0,
+        "minimum": 0.5,
+        "maximum": 1.5,
+        "meaning": "Albedo brightness multiplier."
+      }
+    ],
+    "presets": [
+      {
+        "name": "default",
+        "description": "Smooth cast concrete with soft mottling and scattered bug holes.",
+        "values": {}
+      },
+      {
+        "name": "board_formed",
+        "description": "Board-formed concrete showing wood grain and board joints.",
+        "values": {
+          "formwork": 1,
+          "panels": 6,
+          "stains": 0.4,
+          "bug_holes": 0.25
+        }
+      },
+      {
+        "name": "tie_hole_panels",
+        "description": "Architectural panels with seams and tie holes.",
+        "values": {
+          "formwork": 2,
+          "panels": 2,
+          "mottling": 0.35,
+          "stains": 0.2
+        }
+      },
+      {
+        "name": "weathered",
+        "description": "Old dark concrete with heavy stains and exposed grit.",
+        "values": {
+          "stains": 0.9,
+          "mottling": 0.9,
+          "bug_holes": 0.6,
+          "aggregate": 0.3
+        }
+      },
+      {
+        "name": "polished_floor",
+        "description": "Ground and polished floor with exposed aggregate.",
+        "values": {
+          "polish": 0.9,
+          "aggregate": 0.8,
+          "bug_holes": 0.1,
+          "stains": 0.0
+        }
+      }
+    ],
+    "tileable": true,
+    "default_size": 256,
+    "cost_seconds_1024": 17.3,
+    "peak_memory_mb_1024": 692,
+    "godot_material": "material.tres",
+    "godot_texture_folder": "res://baltor/textures/concrete_cast/",
+    "blender_builder": "blender_material.build_material(folder)"
+  },
+  "limits": "Formwork marks are idealized: boards are horizontal and panels square, with four tie holes per panel. Stains always run toward the bottom of the tile. Aggregate stones are Voronoi cells. Occlusion is a blurred-height estimate.",
+  "related": [
+    "asphalt_cracked",
+    "plaster_stucco"
+  ],
+  "technique_references": [
+    "Fractional Brownian motion for cement mottling",
+    "Round stamps for bug holes",
+    "Board grain imprint from stretched noise and per-board offsets",
+    "Downward exponential trail per column, swept twice for wrap-around",
+    "Worley cells for exposed aggregate"
+  ],
+  "native_checks": [
+    "command_line_generates_declared_maps",
+    "maps_decode",
+    "maps_have_declared_size_and_channels",
+    "maps_tile_without_a_seam",
+    "normal_vectors_unit_length_facing_out",
+    "maps_carry_detail",
+    "godot_imports_the_maps",
+    "godot_material_template_loads_every_map",
+    "godot_compatibility_render",
+    "capture_shows_the_textured_surface",
+    "blender_builds_the_material"
+  ]
+}

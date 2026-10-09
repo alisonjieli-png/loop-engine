@@ -1,0 +1,251 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "truchet_tiles",
+  "title": "Truchet tiles: arcs, mazes and split triangles",
+  "purpose": "Generate tileable maps of Truchet tilings: quarter-circle arcs with a consistent two-colour fill, random diagonal mazes or half-square triangles, as raised glaze, printed lines, metal inlay or cement tiles. Use for decorative floors, wall tiles, inlaid furniture, wallpaper and game backgrounds.",
+  "form": "function",
+  "asset_role": null,
+  "dimension": "3d",
+  "engine": {
+    "name": "python",
+    "minimum_version": "3.10"
+  },
+  "tags": [
+    "texture",
+    "pbr",
+    "tileable",
+    "truchet",
+    "pattern",
+    "tiles",
+    "maze",
+    "inlay",
+    "geometric",
+    "procedural"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "role": "other"
+    },
+    {
+      "path": "truchet_tiles.py",
+      "role": "executable_tool"
+    },
+    {
+      "path": "material.tres",
+      "role": "skill_asset"
+    },
+    {
+      "path": "blender_material.py",
+      "role": "executable_tool"
+    }
+  ],
+  "contract": {
+    "entry_point": "generate",
+    "module": "truchet_tiles.py",
+    "signature": "generate(width=256, height=256, seed=0, preset=\"default\", directx_normal=False, **parameters) -> {map name: {\"channels\", \"colour_space\", \"pixels\"}}",
+    "command_line": "python truchet_tiles.py --size 1024 --seed 7 --preset NAME --out DIR [--width W --height H] [--set NAME=VALUE] [--directx-normal] [--orm]",
+    "maps": [
+      {
+        "name": "albedo",
+        "channels": 3,
+        "colour_space": "srgb",
+        "convention": "gltf_base_color",
+        "range": [
+          0.03,
+          0.95
+        ]
+      },
+      {
+        "name": "normal",
+        "channels": 3,
+        "colour_space": "linear",
+        "convention": "opengl_y_up"
+      },
+      {
+        "name": "roughness",
+        "channels": 1,
+        "colour_space": "linear",
+        "convention": "gltf_roughness",
+        "range": [
+          0.1,
+          1.0
+        ]
+      },
+      {
+        "name": "metallic",
+        "channels": 1,
+        "colour_space": "linear",
+        "convention": "gltf_metallic"
+      },
+      {
+        "name": "height",
+        "channels": 1,
+        "colour_space": "linear",
+        "convention": "white_is_high"
+      },
+      {
+        "name": "ao",
+        "channels": 1,
+        "colour_space": "linear",
+        "convention": "white_is_unoccluded"
+      }
+    ],
+    "parameters": [
+      {
+        "name": "style",
+        "type": "int",
+        "default": 0,
+        "minimum": 0,
+        "maximum": 2,
+        "meaning": "0 quarter-circle arcs, 1 diagonal maze, 2 split triangles."
+      },
+      {
+        "name": "cells",
+        "type": "int",
+        "default": 8,
+        "minimum": 2,
+        "maximum": 32,
+        "meaning": "Tiles across the tile."
+      },
+      {
+        "name": "line_width",
+        "type": "float",
+        "default": 0.16,
+        "minimum": 0.02,
+        "maximum": 0.45,
+        "meaning": "Width of the arcs or lines as a share of a cell."
+      },
+      {
+        "name": "order",
+        "type": "float",
+        "default": 0.0,
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "meaning": "Share of cells whose turn follows the checkerboard parity instead of chance."
+      },
+      {
+        "name": "fill",
+        "type": "float",
+        "default": 0.8,
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "meaning": "Contrast of the two-colour region fill (arcs and triangles)."
+      },
+      {
+        "name": "relief",
+        "type": "float",
+        "default": 0.6,
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "meaning": "How far the lines stand above the ground (sunk below it for inlay and grout presets)."
+      },
+      {
+        "name": "metal_lines",
+        "type": "float",
+        "default": 0.0,
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "meaning": "Metallic value of the lines, 1 for metal inlay."
+      },
+      {
+        "name": "hue_shift",
+        "type": "float",
+        "default": 0.0,
+        "minimum": -0.5,
+        "maximum": 0.5,
+        "meaning": "Hue rotation of the albedo in turns."
+      },
+      {
+        "name": "saturation",
+        "type": "float",
+        "default": 1.0,
+        "minimum": 0.0,
+        "maximum": 2.0,
+        "meaning": "Albedo saturation multiplier."
+      },
+      {
+        "name": "brightness",
+        "type": "float",
+        "default": 1.0,
+        "minimum": 0.5,
+        "maximum": 1.5,
+        "meaning": "Albedo brightness multiplier."
+      }
+    ],
+    "presets": [
+      {
+        "name": "default",
+        "description": "Glazed ceramic: cobalt arcs raised over white and pale blue regions.",
+        "values": {}
+      },
+      {
+        "name": "maze_print",
+        "description": "Random diagonal maze printed in black on off-white paper.",
+        "values": {
+          "style": 1,
+          "cells": 16,
+          "line_width": 0.12,
+          "relief": 0.05,
+          "fill": 0.0
+        }
+      },
+      {
+        "name": "brass_inlay",
+        "description": "Brass arcs inlaid flush in dark walnut with alternating stained regions.",
+        "values": {
+          "cells": 6,
+          "line_width": 0.09,
+          "metal_lines": 1.0,
+          "relief": 0.15,
+          "fill": 0.5
+        }
+      },
+      {
+        "name": "triangle_floor",
+        "description": "Cement floor of terracotta and cream half-square triangles.",
+        "values": {
+          "style": 2,
+          "cells": 8,
+          "line_width": 0.04,
+          "relief": 0.5,
+          "fill": 1.0
+        }
+      }
+    ],
+    "tileable": true,
+    "default_size": 256,
+    "cost_seconds_1024": 25.1,
+    "peak_memory_mb_1024": 520,
+    "godot_material": "material.tres",
+    "godot_texture_folder": "res://baltor/textures/truchet_tiles/",
+    "blender_builder": "blender_material.build_material(folder)"
+  },
+  "limits": "Three classic tile sets on a square grid; there are no multi-scale or winged tiles, and the diagonal maze has no region fill because its regions are not two-coloured by corner parity. Line relief is a rounded profile from the exact distance, with no bevel lighting or glaze pooling. The wood and cement grounds are light noise, not full wood or stone generators. Occlusion is a blurred-height estimate.",
+  "related": [
+    "encaustic_cement_tiles",
+    "hexagon_tiles",
+    "halftone_print"
+  ],
+  "technique_references": [
+    "Truchet tilings with hashed or parity orientations",
+    "Smith's quarter-circle tiles with corner-parity two-colouring",
+    "Random diagonal maze from two-way diagonal tiles",
+    "Half-square triangle tiles in four turns",
+    "Exact distance to arcs and lines with a rounded height profile",
+    "Height to tangent-space normal by central differences"
+  ],
+  "native_checks": [
+    "command_line_generates_declared_maps",
+    "maps_decode",
+    "maps_have_declared_size_and_channels",
+    "maps_tile_without_a_seam",
+    "normal_vectors_unit_length_facing_out",
+    "maps_carry_detail",
+    "godot_imports_the_maps",
+    "godot_material_template_loads_every_map",
+    "godot_compatibility_render",
+    "capture_shows_the_textured_surface",
+    "blender_builds_the_material"
+  ]
+}

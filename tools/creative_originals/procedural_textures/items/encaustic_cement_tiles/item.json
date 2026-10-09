@@ -1,0 +1,251 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "encaustic_cement_tiles",
+  "title": "Encaustic cement tiles with symmetric inlay motifs",
+  "purpose": "Generate tileable PBR maps of encaustic cement tiles: inlaid colour motifs with the eightfold symmetry of the square (stars, florals, nested geometry, rosettes in frames) whose edge shapes join across tiles, on matte cement with pores and wear. Use for kitchens, bathrooms and cafe floors.",
+  "form": "function",
+  "asset_role": null,
+  "dimension": "3d",
+  "engine": {
+    "name": "python",
+    "minimum_version": "3.10"
+  },
+  "tags": [
+    "texture",
+    "pbr",
+    "tileable",
+    "tiles",
+    "encaustic",
+    "cement tile",
+    "pattern",
+    "floor",
+    "procedural"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "role": "other"
+    },
+    {
+      "path": "encaustic_cement_tiles.py",
+      "role": "executable_tool"
+    },
+    {
+      "path": "material.tres",
+      "role": "skill_asset"
+    },
+    {
+      "path": "blender_material.py",
+      "role": "executable_tool"
+    }
+  ],
+  "contract": {
+    "entry_point": "generate",
+    "module": "encaustic_cement_tiles.py",
+    "signature": "generate(width=256, height=256, seed=0, preset=\"default\", directx_normal=False, **parameters) -> {map name: {\"channels\", \"colour_space\", \"pixels\"}}",
+    "command_line": "python encaustic_cement_tiles.py --size 1024 --seed 7 --preset NAME --out DIR [--width W --height H] [--set NAME=VALUE] [--directx-normal] [--orm]",
+    "maps": [
+      {
+        "name": "albedo",
+        "channels": 3,
+        "colour_space": "srgb",
+        "convention": "gltf_base_color",
+        "range": [
+          0.02,
+          0.92
+        ]
+      },
+      {
+        "name": "normal",
+        "channels": 3,
+        "colour_space": "linear",
+        "convention": "opengl_y_up"
+      },
+      {
+        "name": "roughness",
+        "channels": 1,
+        "colour_space": "linear",
+        "convention": "gltf_roughness",
+        "range": [
+          0.4,
+          1.0
+        ]
+      },
+      {
+        "name": "height",
+        "channels": 1,
+        "colour_space": "linear",
+        "convention": "white_is_high"
+      },
+      {
+        "name": "ao",
+        "channels": 1,
+        "colour_space": "linear",
+        "convention": "white_is_unoccluded"
+      }
+    ],
+    "parameters": [
+      {
+        "name": "tiles_across",
+        "type": "int",
+        "default": 2,
+        "minimum": 1,
+        "maximum": 8,
+        "meaning": "Tiles across the tile width (and height)."
+      },
+      {
+        "name": "family",
+        "type": "int",
+        "default": 0,
+        "minimum": 0,
+        "maximum": 3,
+        "meaning": "Motif family: 0 eight-point star with corner circles, 1 floral with axis and diagonal petals, 2 geometric nested squares and diamonds, 3 rosette inside a border frame."
+      },
+      {
+        "name": "motif_variant",
+        "type": "int",
+        "default": 0,
+        "minimum": 0,
+        "maximum": 99,
+        "meaning": "Which design of the family: sizes and proportions of its shapes."
+      },
+      {
+        "name": "joint_width",
+        "type": "float",
+        "default": 0.006,
+        "minimum": 0.0,
+        "maximum": 0.03,
+        "meaning": "Joint between tiles in tile widths."
+      },
+      {
+        "name": "edge_softness",
+        "type": "float",
+        "default": 1.5,
+        "minimum": 0.5,
+        "maximum": 4.0,
+        "meaning": "Width in pixels over which inlay colours blend at their boundaries."
+      },
+      {
+        "name": "wear",
+        "type": "float",
+        "default": 0.3,
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "meaning": "Faded, scuffed patches and slightly chipped tile edges."
+      },
+      {
+        "name": "pores",
+        "type": "float",
+        "default": 0.4,
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "meaning": "Small pores and air holes in the cement face."
+      },
+      {
+        "name": "colour_variation",
+        "type": "float",
+        "default": 0.3,
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "meaning": "Spread of tone between tiles."
+      },
+      {
+        "name": "hue_shift",
+        "type": "float",
+        "default": 0.0,
+        "minimum": -0.5,
+        "maximum": 0.5,
+        "meaning": "Hue rotation of the albedo in turns."
+      },
+      {
+        "name": "saturation",
+        "type": "float",
+        "default": 1.0,
+        "minimum": 0.0,
+        "maximum": 2.0,
+        "meaning": "Albedo saturation multiplier."
+      },
+      {
+        "name": "brightness",
+        "type": "float",
+        "default": 1.0,
+        "minimum": 0.5,
+        "maximum": 1.5,
+        "meaning": "Albedo brightness multiplier."
+      }
+    ],
+    "presets": [
+      {
+        "name": "default",
+        "description": "Eight-point stars in black and terracotta on cream with ochre corner circles.",
+        "values": {}
+      },
+      {
+        "name": "blue_floral",
+        "description": "White tiles with cobalt and sky blue petals around a small centre.",
+        "values": {
+          "family": 1,
+          "motif_variant": 7,
+          "wear": 0.2
+        }
+      },
+      {
+        "name": "geometric_mono",
+        "description": "Black, white and grey nested squares and diamonds, four tiles per side.",
+        "values": {
+          "family": 2,
+          "tiles_across": 4,
+          "motif_variant": 3,
+          "wear": 0.15,
+          "pores": 0.3
+        }
+      },
+      {
+        "name": "rosette_border",
+        "description": "Faded green, rose and sand rosettes framed by a border band, well worn.",
+        "values": {
+          "family": 3,
+          "motif_variant": 11,
+          "wear": 0.65,
+          "pores": 0.6,
+          "colour_variation": 0.5
+        }
+      }
+    ],
+    "tileable": true,
+    "default_size": 256,
+    "cost_seconds_1024": 25.6,
+    "peak_memory_mb_1024": 641,
+    "godot_material": "material.tres",
+    "godot_texture_folder": "res://baltor/textures/encaustic_cement_tiles/",
+    "blender_builder": "blender_material.build_material(folder)"
+  },
+  "limits": "Motifs come from four families of simple shapes (stars, discs, rings, petals, squares, diamonds, frames) varied by motif_variant; free-form floral drawing and real catalogue patterns are out of scope. Every tile carries the same motif, so layouts that rotate or alternate tiles are not produced. Inlay colours are flat with softened boundaries; wear and pores are noise approximations. Occlusion is a blurred-height estimate, not ray traced.",
+  "related": [
+    "zellige_star_tiles",
+    "octagon_dot_tiles",
+    "hexagon_tiles",
+    "terrazzo"
+  ],
+  "technique_references": [
+    "Folding a point into one octant of the square for D4 symmetry",
+    "Painter's-order signed-distance layers: polar star, discs, rings, ellipse petals, Chebyshev squares, Manhattan diamonds",
+    "Mirror-symmetric edges so corner and edge shapes join across tiles",
+    "Smoothstep coverage for softened inlay boundaries",
+    "Fractional Brownian motion for faded wear",
+    "Height to tangent-space normal by central differences"
+  ],
+  "native_checks": [
+    "command_line_generates_declared_maps",
+    "maps_decode",
+    "maps_have_declared_size_and_channels",
+    "maps_tile_without_a_seam",
+    "normal_vectors_unit_length_facing_out",
+    "maps_carry_detail",
+    "godot_imports_the_maps",
+    "godot_material_template_loads_every_map",
+    "godot_compatibility_render",
+    "capture_shows_the_textured_surface",
+    "blender_builds_the_material"
+  ]
+}

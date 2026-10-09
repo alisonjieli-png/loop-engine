@@ -1,0 +1,248 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "snake_scales",
+  "title": "Keeled snake scales with body patterns",
+  "purpose": "Generate tileable PBR maps of snake skin: overlapping keeled scales on a rhombic lattice with python blotches, coral bands, dorsal diamonds or a plain speckled skin, coloured scale by scale. Use for snakes, lizards, dragons, reptile-leather goods and creature props.",
+  "form": "function",
+  "asset_role": null,
+  "dimension": "3d",
+  "engine": {
+    "name": "python",
+    "minimum_version": "3.10"
+  },
+  "tags": [
+    "texture",
+    "pbr",
+    "tileable",
+    "snake",
+    "reptile",
+    "scales",
+    "skin",
+    "creature",
+    "procedural"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "role": "other"
+    },
+    {
+      "path": "snake_scales.py",
+      "role": "executable_tool"
+    },
+    {
+      "path": "material.tres",
+      "role": "skill_asset"
+    },
+    {
+      "path": "blender_material.py",
+      "role": "executable_tool"
+    }
+  ],
+  "contract": {
+    "entry_point": "generate",
+    "module": "snake_scales.py",
+    "signature": "generate(width=256, height=256, seed=0, preset=\"default\", directx_normal=False, **parameters) -> {map name: {\"channels\", \"colour_space\", \"pixels\"}}",
+    "command_line": "python snake_scales.py --size 1024 --seed 7 --preset NAME --out DIR [--width W --height H] [--set NAME=VALUE] [--directx-normal] [--orm]",
+    "maps": [
+      {
+        "name": "albedo",
+        "channels": 3,
+        "colour_space": "srgb",
+        "convention": "gltf_base_color",
+        "range": [
+          0.02,
+          0.9
+        ]
+      },
+      {
+        "name": "normal",
+        "channels": 3,
+        "colour_space": "linear",
+        "convention": "opengl_y_up"
+      },
+      {
+        "name": "roughness",
+        "channels": 1,
+        "colour_space": "linear",
+        "convention": "gltf_roughness",
+        "range": [
+          0.15,
+          1.0
+        ]
+      },
+      {
+        "name": "height",
+        "channels": 1,
+        "colour_space": "linear",
+        "convention": "white_is_high"
+      },
+      {
+        "name": "ao",
+        "channels": 1,
+        "colour_space": "linear",
+        "convention": "white_is_unoccluded"
+      }
+    ],
+    "parameters": [
+      {
+        "name": "scales",
+        "type": "int",
+        "default": 14,
+        "minimum": 6,
+        "maximum": 32,
+        "meaning": "Scale columns across the tile; rows follow from the scale length."
+      },
+      {
+        "name": "elongation",
+        "type": "float",
+        "default": 1.35,
+        "minimum": 0.9,
+        "maximum": 2.2,
+        "meaning": "Scale length divided by width."
+      },
+      {
+        "name": "overlap",
+        "type": "float",
+        "default": 0.6,
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "meaning": "How much scales overlap; low values show the skin between them."
+      },
+      {
+        "name": "keel",
+        "type": "float",
+        "default": 0.6,
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "meaning": "Height of the ridge along each scale (0 for smooth scales)."
+      },
+      {
+        "name": "pattern",
+        "type": "int",
+        "default": 0,
+        "minimum": 0,
+        "maximum": 3,
+        "meaning": "0 blotches with dark outlines, 1 cross bands, 2 dorsal diamonds, 3 plain with a fine speckle."
+      },
+      {
+        "name": "pattern_repeat",
+        "type": "int",
+        "default": 2,
+        "minimum": 1,
+        "maximum": 6,
+        "meaning": "How many times the body pattern repeats across the tile."
+      },
+      {
+        "name": "gloss",
+        "type": "float",
+        "default": 0.5,
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "meaning": "Shine of the scales: 0 dry and matte, 1 freshly shed and glossy."
+      },
+      {
+        "name": "hue_shift",
+        "type": "float",
+        "default": 0.0,
+        "minimum": -0.5,
+        "maximum": 0.5,
+        "meaning": "Hue rotation of the albedo in turns."
+      },
+      {
+        "name": "saturation",
+        "type": "float",
+        "default": 1.0,
+        "minimum": 0.0,
+        "maximum": 2.0,
+        "meaning": "Albedo saturation multiplier."
+      },
+      {
+        "name": "brightness",
+        "type": "float",
+        "default": 1.0,
+        "minimum": 0.5,
+        "maximum": 1.5,
+        "meaning": "Albedo brightness multiplier."
+      }
+    ],
+    "presets": [
+      {
+        "name": "default",
+        "description": "Olive and tan python skin with dark-edged blotches.",
+        "values": {
+          "scales": 16
+        }
+      },
+      {
+        "name": "coral_banded",
+        "description": "Banded red, black and yellow scales, smooth and glossy.",
+        "values": {
+          "pattern": 1,
+          "keel": 0.15,
+          "gloss": 0.8,
+          "scales": 16,
+          "pattern_repeat": 3
+        }
+      },
+      {
+        "name": "diamondback",
+        "description": "Dusty brown skin with dark dorsal diamonds and strong keels.",
+        "values": {
+          "pattern": 2,
+          "keel": 0.95,
+          "gloss": 0.25,
+          "elongation": 1.6,
+          "scales": 20
+        }
+      },
+      {
+        "name": "green_tree",
+        "description": "Bright green smooth scales with a fine speckle.",
+        "values": {
+          "pattern": 3,
+          "keel": 0.0,
+          "gloss": 0.9,
+          "scales": 20,
+          "elongation": 1.1,
+          "overlap": 0.4
+        }
+      }
+    ],
+    "tileable": true,
+    "default_size": 256,
+    "cost_seconds_1024": 17.9,
+    "peak_memory_mb_1024": 518,
+    "godot_material": "material.tres",
+    "godot_texture_folder": "res://baltor/textures/snake_scales/",
+    "blender_builder": "blender_material.build_material(folder)"
+  },
+  "limits": "Scales are rounded-diamond height fields of one size in regular offset rows; belly scutes, head plates and the change of scale size around the body are out of scope. The body axis runs along V with the head toward the top. Patterns are stylized fields sampled at scale centres, not the markings of real species, and there is no iridescence or shedding skin. Occlusion is a blurred-height estimate, not ray traced. Colours are artistic.",
+  "related": [
+    "fish_scales",
+    "leather_grain",
+    "sequin_fabric"
+  ],
+  "technique_references": [
+    "Rhombic lattice of offset rows with whole counts on the torus",
+    "Superellipse scale outline with exponent near 1 for pointed tips",
+    "Local overlap order: the row above covers the row below",
+    "Keel ridge along the scale axis",
+    "Pattern fields sampled once per scale centre",
+    "Height to tangent-space normal by central differences",
+    "Cavity occlusion from blurred height"
+  ],
+  "native_checks": [
+    "command_line_generates_declared_maps",
+    "maps_decode",
+    "maps_have_declared_size_and_channels",
+    "maps_tile_without_a_seam",
+    "normal_vectors_unit_length_facing_out",
+    "maps_carry_detail",
+    "godot_imports_the_maps",
+    "godot_material_template_loads_every_map",
+    "godot_compatibility_render",
+    "capture_shows_the_textured_surface",
+    "blender_builds_the_material"
+  ]
+}

@@ -1,0 +1,262 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "bamboo_poles",
+  "title": "Bamboo poles and split slats",
+  "purpose": "Generate tileable PBR maps of bamboo: culms side by side with nodes at uneven heights, node ridges, sheath scars and waxy bands, fibre streaks and spotted mottles, or split slats as in a blind or mat. Use for fences, screens, furniture, wall cladding, rafts and tropical scenes.",
+  "form": "function",
+  "asset_role": null,
+  "dimension": "3d",
+  "engine": {
+    "name": "python",
+    "minimum_version": "3.10"
+  },
+  "tags": [
+    "texture",
+    "pbr",
+    "tileable",
+    "bamboo",
+    "poles",
+    "fence",
+    "screen",
+    "slats",
+    "nature",
+    "procedural"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "role": "other"
+    },
+    {
+      "path": "bamboo_poles.py",
+      "role": "executable_tool"
+    },
+    {
+      "path": "material.tres",
+      "role": "skill_asset"
+    },
+    {
+      "path": "blender_material.py",
+      "role": "executable_tool"
+    }
+  ],
+  "contract": {
+    "entry_point": "generate",
+    "module": "bamboo_poles.py",
+    "signature": "generate(width=256, height=256, seed=0, preset=\"default\", directx_normal=False, **parameters) -> {map name: {\"channels\", \"colour_space\", \"pixels\"}}",
+    "command_line": "python bamboo_poles.py --size 1024 --seed 7 --preset NAME --out DIR [--width W --height H] [--set NAME=VALUE] [--directx-normal] [--orm]",
+    "maps": [
+      {
+        "name": "albedo",
+        "channels": 3,
+        "colour_space": "srgb",
+        "convention": "gltf_base_color",
+        "range": [
+          0.02,
+          0.9
+        ]
+      },
+      {
+        "name": "normal",
+        "channels": 3,
+        "colour_space": "linear",
+        "convention": "opengl_y_up"
+      },
+      {
+        "name": "roughness",
+        "channels": 1,
+        "colour_space": "linear",
+        "convention": "gltf_roughness",
+        "range": [
+          0.2,
+          1.0
+        ]
+      },
+      {
+        "name": "height",
+        "channels": 1,
+        "colour_space": "linear",
+        "convention": "white_is_high"
+      },
+      {
+        "name": "ao",
+        "channels": 1,
+        "colour_space": "linear",
+        "convention": "white_is_unoccluded"
+      }
+    ],
+    "parameters": [
+      {
+        "name": "style",
+        "type": "int",
+        "default": 0,
+        "minimum": 0,
+        "maximum": 1,
+        "meaning": "0 round culms side by side, 1 split slats (flatter, narrower strips)."
+      },
+      {
+        "name": "poles",
+        "type": "int",
+        "default": 6,
+        "minimum": 2,
+        "maximum": 40,
+        "meaning": "Poles or slats across the tile."
+      },
+      {
+        "name": "width_variation",
+        "type": "float",
+        "default": 0.3,
+        "minimum": 0.0,
+        "maximum": 0.6,
+        "meaning": "Spread of pole widths."
+      },
+      {
+        "name": "nodes",
+        "type": "int",
+        "default": 2,
+        "minimum": 1,
+        "maximum": 6,
+        "meaning": "Nodes per pole down the tile."
+      },
+      {
+        "name": "node_ridge",
+        "type": "float",
+        "default": 0.6,
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "meaning": "How strongly each node swells into a ridge."
+      },
+      {
+        "name": "streaks",
+        "type": "float",
+        "default": 0.5,
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "meaning": "Fibre streaks and tone along the culms."
+      },
+      {
+        "name": "spots",
+        "type": "float",
+        "default": 0.0,
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "meaning": "Dark mottled spots, as on spotted (tortoiseshell) bamboo."
+      },
+      {
+        "name": "gap",
+        "type": "float",
+        "default": 0.05,
+        "minimum": 0.0,
+        "maximum": 0.3,
+        "meaning": "Dark gap between neighbouring poles, as a share of the pole width."
+      },
+      {
+        "name": "hue_shift",
+        "type": "float",
+        "default": 0.0,
+        "minimum": -0.5,
+        "maximum": 0.5,
+        "meaning": "Hue rotation of the albedo in turns."
+      },
+      {
+        "name": "saturation",
+        "type": "float",
+        "default": 1.0,
+        "minimum": 0.0,
+        "maximum": 2.0,
+        "meaning": "Albedo saturation multiplier."
+      },
+      {
+        "name": "brightness",
+        "type": "float",
+        "default": 1.0,
+        "minimum": 0.5,
+        "maximum": 1.5,
+        "meaning": "Albedo brightness multiplier."
+      }
+    ],
+    "presets": [
+      {
+        "name": "default",
+        "description": "Dried golden bamboo poles, as in a fence or screen.",
+        "values": {}
+      },
+      {
+        "name": "green_fresh",
+        "description": "Living green culms with pale waxy node bands.",
+        "values": {
+          "poles": 5,
+          "nodes": 2,
+          "node_ridge": 0.75,
+          "streaks": 0.35,
+          "gap": 0.12
+        }
+      },
+      {
+        "name": "black_bamboo",
+        "description": "Black bamboo: dark purple-black culms with lighter nodes.",
+        "values": {
+          "poles": 7,
+          "nodes": 3,
+          "streaks": 0.3,
+          "width_variation": 0.2
+        }
+      },
+      {
+        "name": "split_mat",
+        "description": "Split bamboo slats in a mat or blind, nodes staggered.",
+        "values": {
+          "style": 1,
+          "poles": 24,
+          "nodes": 3,
+          "width_variation": 0.15,
+          "gap": 0.08,
+          "node_ridge": 0.45
+        }
+      },
+      {
+        "name": "spotted_brown",
+        "description": "Spotted tortoiseshell bamboo with dark mottles.",
+        "values": {
+          "poles": 6,
+          "spots": 0.7,
+          "nodes": 2
+        }
+      }
+    ],
+    "tileable": true,
+    "default_size": 256,
+    "cost_seconds_1024": 13.5,
+    "peak_memory_mb_1024": 556,
+    "godot_material": "material.tres",
+    "godot_texture_folder": "res://baltor/textures/bamboo_poles/",
+    "blender_builder": "blender_material.build_material(folder)"
+  },
+  "limits": "Culms are straight cylinders in a height field running down the tile, all lying in one plane; there is no taper, bend, branch, leaf, cut end or lashing. Node positions are jittered per pole, and pole widths vary but always fill the tile width exactly. The cylindrical shading is partly in the albedo as well as in the normal map. Occlusion is a blurred-height estimate, not ray traced. Colours are artistic.",
+  "related": [
+    "wicker_weave",
+    "wood_planks",
+    "straw_thatch"
+  ],
+  "technique_references": [
+    "Pole widths normalized to fill the tile width",
+    "Cylinder and flattened superellipse cross-sections",
+    "Wrapped distance to jittered node heights per pole",
+    "Gaussian node ridge, sheath scar and wax band profiles",
+    "Stretched value noise for fibre streaks",
+    "Height to tangent-space normal by central differences"
+  ],
+  "native_checks": [
+    "command_line_generates_declared_maps",
+    "maps_decode",
+    "maps_have_declared_size_and_channels",
+    "maps_tile_without_a_seam",
+    "normal_vectors_unit_length_facing_out",
+    "maps_carry_detail",
+    "godot_imports_the_maps",
+    "godot_material_template_loads_every_map",
+    "godot_compatibility_render",
+    "capture_shows_the_textured_surface",
+    "blender_builds_the_material"
+  ]
+}

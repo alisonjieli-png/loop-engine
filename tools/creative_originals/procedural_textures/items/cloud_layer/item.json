@@ -1,0 +1,253 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "cloud_layer",
+  "title": "Cloud layer: cumulus, stratus, cirrus and mackerel sky",
+  "purpose": "Generate tileable maps of a cloud layer with alpha: billowing cumulus, an overcast stratus sheet, cirrus streaks, a mackerel sky of puffs in rows or a dark storm, each a distinct density field lit from a sun direction. Use for sky planes and domes, flight and strategy game skies, and backdrops.",
+  "form": "function",
+  "asset_role": null,
+  "dimension": "3d",
+  "engine": {
+    "name": "python",
+    "minimum_version": "3.10"
+  },
+  "tags": [
+    "texture",
+    "tileable",
+    "clouds",
+    "sky",
+    "weather",
+    "alpha",
+    "cumulus",
+    "cirrus",
+    "procedural"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "role": "other"
+    },
+    {
+      "path": "cloud_layer.py",
+      "role": "executable_tool"
+    },
+    {
+      "path": "material.tres",
+      "role": "skill_asset"
+    },
+    {
+      "path": "blender_material.py",
+      "role": "executable_tool"
+    }
+  ],
+  "contract": {
+    "entry_point": "generate",
+    "module": "cloud_layer.py",
+    "signature": "generate(width=256, height=256, seed=0, preset=\"default\", directx_normal=False, **parameters) -> {map name: {\"channels\", \"colour_space\", \"pixels\"}}",
+    "command_line": "python cloud_layer.py --size 1024 --seed 7 --preset NAME --out DIR [--width W --height H] [--set NAME=VALUE] [--directx-normal] [--orm]",
+    "maps": [
+      {
+        "name": "albedo",
+        "channels": 4,
+        "colour_space": "srgb",
+        "convention": "gltf_base_color",
+        "range": [
+          0.15,
+          1.0
+        ]
+      },
+      {
+        "name": "normal",
+        "channels": 3,
+        "colour_space": "linear",
+        "convention": "opengl_y_up"
+      },
+      {
+        "name": "roughness",
+        "channels": 1,
+        "colour_space": "linear",
+        "convention": "gltf_roughness",
+        "range": [
+          0.6,
+          1.0
+        ]
+      },
+      {
+        "name": "height",
+        "channels": 1,
+        "colour_space": "linear",
+        "convention": "white_is_high"
+      },
+      {
+        "name": "ao",
+        "channels": 1,
+        "colour_space": "linear",
+        "convention": "white_is_unoccluded"
+      }
+    ],
+    "parameters": [
+      {
+        "name": "kind",
+        "type": "int",
+        "default": 0,
+        "minimum": 0,
+        "maximum": 3,
+        "meaning": "0 cumulus, 1 stratus, 2 cirrus, 3 mackerel (altocumulus in rows)."
+      },
+      {
+        "name": "coverage",
+        "type": "float",
+        "default": 0.45,
+        "minimum": 0.05,
+        "maximum": 1.0,
+        "meaning": "Share of the sky covered by cloud."
+      },
+      {
+        "name": "cells",
+        "type": "int",
+        "default": 3,
+        "minimum": 1,
+        "maximum": 10,
+        "meaning": "Cloud features across the tile."
+      },
+      {
+        "name": "billow",
+        "type": "float",
+        "default": 0.6,
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "meaning": "Cauliflower erosion of the cloud edges (cumulus and mackerel)."
+      },
+      {
+        "name": "softness",
+        "type": "float",
+        "default": 0.4,
+        "minimum": 0.05,
+        "maximum": 1.0,
+        "meaning": "Width of the soft edge between cloud and clear sky."
+      },
+      {
+        "name": "sun_angle",
+        "type": "float",
+        "default": 0.375,
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "meaning": "Direction the sunlight comes from across the layer, in turns from +U."
+      },
+      {
+        "name": "shading",
+        "type": "float",
+        "default": 0.6,
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "meaning": "Self-shadowing: how dark the far sides and thick cores become."
+      },
+      {
+        "name": "hue_shift",
+        "type": "float",
+        "default": 0.0,
+        "minimum": -0.5,
+        "maximum": 0.5,
+        "meaning": "Hue rotation of the albedo in turns."
+      },
+      {
+        "name": "saturation",
+        "type": "float",
+        "default": 1.0,
+        "minimum": 0.0,
+        "maximum": 2.0,
+        "meaning": "Albedo saturation multiplier."
+      },
+      {
+        "name": "brightness",
+        "type": "float",
+        "default": 1.0,
+        "minimum": 0.5,
+        "maximum": 1.5,
+        "meaning": "Albedo brightness multiplier."
+      }
+    ],
+    "presets": [
+      {
+        "name": "default",
+        "description": "Fair-weather cumulus: separate white heaps with grey shaded sides.",
+        "values": {}
+      },
+      {
+        "name": "overcast_stratus",
+        "description": "Overcast stratus: a nearly closed grey sheet with soft thin patches.",
+        "values": {
+          "kind": 1,
+          "coverage": 0.9,
+          "cells": 2,
+          "softness": 0.8,
+          "shading": 0.35
+        }
+      },
+      {
+        "name": "cirrus_wisps",
+        "description": "High cirrus: thin bright streaks and hooks across a clear sky.",
+        "values": {
+          "kind": 2,
+          "coverage": 0.35,
+          "cells": 2,
+          "softness": 0.6,
+          "shading": 0.15
+        }
+      },
+      {
+        "name": "mackerel_sky",
+        "description": "Mackerel sky: rows of small rounded altocumulus puffs.",
+        "values": {
+          "kind": 3,
+          "coverage": 0.55,
+          "cells": 8,
+          "billow": 0.4,
+          "softness": 0.3
+        }
+      },
+      {
+        "name": "storm_nimbus",
+        "description": "Storm: dense dark towering cloud with bright rims, little clear sky.",
+        "values": {
+          "coverage": 0.85,
+          "cells": 2,
+          "billow": 0.8,
+          "shading": 1.0
+        }
+      }
+    ],
+    "tileable": true,
+    "default_size": 256,
+    "cost_seconds_1024": 17.0,
+    "peak_memory_mb_1024": 452,
+    "godot_material": "material.tres",
+    "godot_texture_folder": "res://baltor/textures/cloud_layer/",
+    "blender_builder": "blender_material.build_material(folder)"
+  },
+  "limits": "A flat layer, not volumetric: lighting is a slope term toward the sun with a short sample of cloud in that direction and a darkening of thick cores, so it is an approximation of scattering that suits a sky seen from below or at a distance. The texture tiles, so a wide sky shows the repeat unless two scales are blended. Clouds do not move or change; the albedo alpha suits blending over a sky colour or gradient, and engines sort alpha-blended layers with other transparent surfaces. Height and normals describe density, not real cloud geometry.",
+  "related": [
+    "starfield_nebula",
+    "ocean_wave_normals"
+  ],
+  "technique_references": [
+    "Fractal noise cut at a coverage quantile",
+    "Inverted Worley erosion for billowing edges",
+    "Anisotropic and ridged noise warped into cirrus streaks",
+    "Cellular puffs modulated by a wave for altocumulus rows",
+    "Slope lighting toward a sun direction with a short optical-depth sample",
+    "Height to tangent-space normal by central differences"
+  ],
+  "native_checks": [
+    "command_line_generates_declared_maps",
+    "maps_decode",
+    "maps_have_declared_size_and_channels",
+    "maps_tile_without_a_seam",
+    "normal_vectors_unit_length_facing_out",
+    "maps_carry_detail",
+    "godot_imports_the_maps",
+    "godot_material_template_loads_every_map",
+    "godot_compatibility_render",
+    "capture_shows_the_textured_surface",
+    "blender_builds_the_material"
+  ]
+}

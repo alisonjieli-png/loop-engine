@@ -1,0 +1,248 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "sequin_fabric",
+  "title": "Sequin and paillette fabric",
+  "purpose": "Generate tileable PBR maps of sequinned fabric: overlapping metallic discs in offset rows, each with its own tilt, a dished face and a centre hole, over the backing mesh, including holographic foil. Use for evening dresses, stage costumes, party props, bags and glam set dressing.",
+  "form": "function",
+  "asset_role": null,
+  "dimension": "3d",
+  "engine": {
+    "name": "python",
+    "minimum_version": "3.10"
+  },
+  "tags": [
+    "texture",
+    "pbr",
+    "tileable",
+    "sequins",
+    "paillettes",
+    "fabric",
+    "metallic",
+    "glitter",
+    "costume",
+    "procedural"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "role": "other"
+    },
+    {
+      "path": "sequin_fabric.py",
+      "role": "executable_tool"
+    },
+    {
+      "path": "material.tres",
+      "role": "skill_asset"
+    },
+    {
+      "path": "blender_material.py",
+      "role": "executable_tool"
+    }
+  ],
+  "contract": {
+    "entry_point": "generate",
+    "module": "sequin_fabric.py",
+    "signature": "generate(width=256, height=256, seed=0, preset=\"default\", directx_normal=False, **parameters) -> {map name: {\"channels\", \"colour_space\", \"pixels\"}}",
+    "command_line": "python sequin_fabric.py --size 1024 --seed 7 --preset NAME --out DIR [--width W --height H] [--set NAME=VALUE] [--directx-normal] [--orm]",
+    "maps": [
+      {
+        "name": "albedo",
+        "channels": 3,
+        "colour_space": "srgb",
+        "convention": "gltf_base_color",
+        "range": [
+          0.02,
+          0.95
+        ]
+      },
+      {
+        "name": "normal",
+        "channels": 3,
+        "colour_space": "linear",
+        "convention": "opengl_y_up"
+      },
+      {
+        "name": "roughness",
+        "channels": 1,
+        "colour_space": "linear",
+        "convention": "gltf_roughness",
+        "range": [
+          0.08,
+          1.0
+        ]
+      },
+      {
+        "name": "metallic",
+        "channels": 1,
+        "colour_space": "linear",
+        "convention": "gltf_metallic"
+      },
+      {
+        "name": "height",
+        "channels": 1,
+        "colour_space": "linear",
+        "convention": "white_is_high"
+      },
+      {
+        "name": "ao",
+        "channels": 1,
+        "colour_space": "linear",
+        "convention": "white_is_unoccluded"
+      }
+    ],
+    "parameters": [
+      {
+        "name": "rows",
+        "type": "int",
+        "default": 18,
+        "minimum": 6,
+        "maximum": 40,
+        "meaning": "Rows of sequins down the tile; as many sequins run across each row."
+      },
+      {
+        "name": "size",
+        "type": "float",
+        "default": 1.35,
+        "minimum": 1.0,
+        "maximum": 1.8,
+        "meaning": "Sequin diameter as a multiple of the row spacing: the overlap between neighbours."
+      },
+      {
+        "name": "tilt",
+        "type": "float",
+        "default": 0.45,
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "meaning": "Random tilt of each sequin, which makes them sparkle differently."
+      },
+      {
+        "name": "hole",
+        "type": "float",
+        "default": 0.16,
+        "minimum": 0.0,
+        "maximum": 0.35,
+        "meaning": "Radius of the centre hole as a share of the sequin radius (0 for no hole)."
+      },
+      {
+        "name": "cup",
+        "type": "float",
+        "default": 0.4,
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "meaning": "How dished (cupped) each sequin is."
+      },
+      {
+        "name": "rainbow",
+        "type": "float",
+        "default": 0.0,
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "meaning": "Holographic foil: colour turning with each sequin's tilt direction and across its face."
+      },
+      {
+        "name": "hue_shift",
+        "type": "float",
+        "default": 0.0,
+        "minimum": -0.5,
+        "maximum": 0.5,
+        "meaning": "Hue rotation of the albedo in turns."
+      },
+      {
+        "name": "saturation",
+        "type": "float",
+        "default": 1.0,
+        "minimum": 0.0,
+        "maximum": 2.0,
+        "meaning": "Albedo saturation multiplier."
+      },
+      {
+        "name": "brightness",
+        "type": "float",
+        "default": 1.0,
+        "minimum": 0.5,
+        "maximum": 1.5,
+        "meaning": "Albedo brightness multiplier."
+      }
+    ],
+    "presets": [
+      {
+        "name": "default",
+        "description": "Gold sequins packed like scales on black mesh.",
+        "values": {}
+      },
+      {
+        "name": "silver_party",
+        "description": "Silver sequins with strong random tilts for a lot of sparkle.",
+        "values": {
+          "tilt": 0.75,
+          "cup": 0.3
+        }
+      },
+      {
+        "name": "holographic",
+        "description": "Holographic foil sequins whose colour changes with the tilt.",
+        "values": {
+          "rainbow": 1.0,
+          "tilt": 0.6,
+          "rows": 20
+        }
+      },
+      {
+        "name": "black_gunmetal",
+        "description": "Small gunmetal sequins lying flat in tight rows.",
+        "values": {
+          "rows": 28,
+          "tilt": 0.2,
+          "size": 1.25,
+          "cup": 0.2
+        }
+      },
+      {
+        "name": "paillettes_rose",
+        "description": "Large rose-gold paillettes with small holes and a wide overlap.",
+        "values": {
+          "rows": 8,
+          "size": 1.6,
+          "hole": 0.08,
+          "tilt": 0.35,
+          "cup": 0.6
+        }
+      }
+    ],
+    "tileable": true,
+    "default_size": 256,
+    "cost_seconds_1024": 20.6,
+    "peak_memory_mb_1024": 514,
+    "godot_material": "material.tres",
+    "godot_texture_folder": "res://baltor/textures/sequin_fabric/",
+    "blender_builder": "blender_material.build_material(folder)"
+  },
+  "limits": "Sequins are flat discs with a sloped and dished height, one layer per row in a fixed overlap order; there is no stitching thread across the face, no loose or flipped sequins and no reversible two-tone sequins. Sparkle comes from per-sequin normal tilt in the normal map, so it depends on the renderer's lights and reflections. Holographic colour is a hue wheel driven by tilt direction, a stylized stand-in for diffraction, and does not change with view angle. Occlusion is a blurred-height estimate, not ray traced.",
+  "related": [
+    "fish_scales",
+    "snake_scales",
+    "chain_mail"
+  ],
+  "technique_references": [
+    "Offset-row disc packing with whole counts on the torus",
+    "Nearest-nine search with a local overlap order (row above covers row below)",
+    "Per-disc random tilt planes for normal-map sparkle",
+    "Dished disc height and bevelled rim",
+    "Hue wheel driven by tilt direction for holographic foil",
+    "Height to tangent-space normal by central differences"
+  ],
+  "native_checks": [
+    "command_line_generates_declared_maps",
+    "maps_decode",
+    "maps_have_declared_size_and_channels",
+    "maps_tile_without_a_seam",
+    "normal_vectors_unit_length_facing_out",
+    "maps_carry_detail",
+    "godot_imports_the_maps",
+    "godot_material_template_loads_every_map",
+    "godot_compatibility_render",
+    "capture_shows_the_textured_surface",
+    "blender_builds_the_material"
+  ]
+}

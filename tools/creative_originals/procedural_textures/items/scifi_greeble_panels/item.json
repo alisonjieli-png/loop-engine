@@ -1,0 +1,242 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "scifi_greeble_panels",
+  "title": "Science fiction greeble panels",
+  "purpose": "Generate tileable PBR maps of science fiction greeble panelling: recursive rectangle subdivision into panels at different levels, with grille slots, corner bolts, recessed ports and light strips in the emissive map. Use for spaceship interiors, corridors, machinery and mech parts.",
+  "form": "function",
+  "asset_role": null,
+  "dimension": "3d",
+  "engine": {
+    "name": "python",
+    "minimum_version": "3.10"
+  },
+  "tags": [
+    "texture",
+    "pbr",
+    "tileable",
+    "sci-fi",
+    "greeble",
+    "panels",
+    "machinery",
+    "emissive",
+    "procedural"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "role": "other"
+    },
+    {
+      "path": "scifi_greeble_panels.py",
+      "role": "executable_tool"
+    },
+    {
+      "path": "material.tres",
+      "role": "skill_asset"
+    },
+    {
+      "path": "blender_material.py",
+      "role": "executable_tool"
+    }
+  ],
+  "contract": {
+    "entry_point": "generate",
+    "module": "scifi_greeble_panels.py",
+    "signature": "generate(width=256, height=256, seed=0, preset=\"default\", directx_normal=False, **parameters) -> {map name: {\"channels\", \"colour_space\", \"pixels\"}}",
+    "command_line": "python scifi_greeble_panels.py --size 1024 --seed 7 --preset NAME --out DIR [--width W --height H] [--set NAME=VALUE] [--directx-normal] [--orm]",
+    "maps": [
+      {
+        "name": "albedo",
+        "channels": 3,
+        "colour_space": "srgb",
+        "convention": "gltf_base_color",
+        "range": [
+          0.02,
+          0.92
+        ]
+      },
+      {
+        "name": "normal",
+        "channels": 3,
+        "colour_space": "linear",
+        "convention": "opengl_y_up"
+      },
+      {
+        "name": "roughness",
+        "channels": 1,
+        "colour_space": "linear",
+        "convention": "gltf_roughness",
+        "range": [
+          0.12,
+          1.0
+        ]
+      },
+      {
+        "name": "metallic",
+        "channels": 1,
+        "colour_space": "linear",
+        "convention": "gltf_metallic"
+      },
+      {
+        "name": "height",
+        "channels": 1,
+        "colour_space": "linear",
+        "convention": "white_is_high"
+      },
+      {
+        "name": "ao",
+        "channels": 1,
+        "colour_space": "linear",
+        "convention": "white_is_unoccluded"
+      },
+      {
+        "name": "emissive",
+        "channels": 3,
+        "colour_space": "srgb",
+        "convention": "gltf_emissive"
+      }
+    ],
+    "parameters": [
+      {
+        "name": "depth",
+        "type": "int",
+        "default": 5,
+        "minimum": 2,
+        "maximum": 8,
+        "meaning": "Subdivision depth: more levels give more, smaller panels."
+      },
+      {
+        "name": "split_chance",
+        "type": "float",
+        "default": 0.8,
+        "minimum": 0.3,
+        "maximum": 1.0,
+        "meaning": "Chance that a panel above the minimum size splits again."
+      },
+      {
+        "name": "seam",
+        "type": "float",
+        "default": 0.004,
+        "minimum": 0.001,
+        "maximum": 0.012,
+        "meaning": "Seam half-width in texture units."
+      },
+      {
+        "name": "level_variation",
+        "type": "float",
+        "default": 0.6,
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "meaning": "Height difference between panels."
+      },
+      {
+        "name": "lights",
+        "type": "float",
+        "default": 0.15,
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "meaning": "Share of panels with a light strip."
+      },
+      {
+        "name": "grilles",
+        "type": "float",
+        "default": 0.2,
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "meaning": "Share of panels with grille slots."
+      },
+      {
+        "name": "hue_shift",
+        "type": "float",
+        "default": 0.0,
+        "minimum": -0.5,
+        "maximum": 0.5,
+        "meaning": "Hue rotation of the albedo and lights in turns."
+      },
+      {
+        "name": "saturation",
+        "type": "float",
+        "default": 1.0,
+        "minimum": 0.0,
+        "maximum": 2.0,
+        "meaning": "Albedo saturation multiplier."
+      },
+      {
+        "name": "brightness",
+        "type": "float",
+        "default": 1.0,
+        "minimum": 0.5,
+        "maximum": 1.5,
+        "meaning": "Albedo brightness multiplier."
+      }
+    ],
+    "presets": [
+      {
+        "name": "default",
+        "description": "Grey panelling with cyan light strips.",
+        "values": {}
+      },
+      {
+        "name": "dense_machinery",
+        "description": "Deep, dense subdivision with many grilles.",
+        "values": {
+          "depth": 7,
+          "grilles": 0.35,
+          "lights": 0.1,
+          "level_variation": 0.9
+        }
+      },
+      {
+        "name": "corridor_white",
+        "description": "Clean white corridor panels with warm light strips.",
+        "values": {
+          "depth": 4,
+          "lights": 0.25,
+          "grilles": 0.1,
+          "level_variation": 0.3
+        }
+      },
+      {
+        "name": "hazard_dark",
+        "description": "Dark panels with red lights and heavy seams.",
+        "values": {
+          "seam": 0.007,
+          "lights": 0.2,
+          "grilles": 0.25
+        }
+      }
+    ],
+    "tileable": true,
+    "default_size": 256,
+    "cost_seconds_1024": 24.5,
+    "peak_memory_mb_1024": 692,
+    "godot_material": "material.tres",
+    "godot_texture_folder": "res://baltor/textures/scifi_greeble_panels/",
+    "blender_builder": "blender_material.build_material(folder)"
+  },
+  "limits": "Panel cuts snap to a 32 by 32 grid, so every panel is an axis-aligned rectangle with no diagonal or rounded panels. One tile holds one subdivision, so a large wall repeats visibly; vary the seed between surfaces. Light strips are emissive colour, not light sources. Occlusion is a blurred-height estimate, not ray traced.",
+  "related": [
+    "scifi_hex_panels",
+    "riveted_plates",
+    "circuit_board"
+  ],
+  "technique_references": [
+    "Recursive binary subdivision snapped to a grid",
+    "Constant-time panel lookup through a grid at the snap resolution",
+    "Per-panel hashing for detail types",
+    "Emissive map for light strips"
+  ],
+  "native_checks": [
+    "command_line_generates_declared_maps",
+    "maps_decode",
+    "maps_have_declared_size_and_channels",
+    "maps_tile_without_a_seam",
+    "normal_vectors_unit_length_facing_out",
+    "maps_carry_detail",
+    "godot_imports_the_maps",
+    "godot_material_template_loads_every_map",
+    "godot_compatibility_render",
+    "capture_shows_the_textured_surface",
+    "blender_builds_the_material"
+  ]
+}

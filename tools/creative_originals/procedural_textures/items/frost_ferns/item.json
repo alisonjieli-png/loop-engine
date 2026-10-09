@@ -1,0 +1,248 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "frost_ferns",
+  "title": "Frost ferns growing on window glass",
+  "purpose": "Generate tileable maps of frost on glass: fern-like ice dendrites that branch at about 60 degrees from well-spaced seeds, with rime haze, in an albedo whose alpha is nearly opaque frost over nearly clear glass. Use as an overlay on windows, windscreens, freezer doors and icy props.",
+  "form": "function",
+  "asset_role": null,
+  "dimension": "3d",
+  "engine": {
+    "name": "python",
+    "minimum_version": "3.10"
+  },
+  "tags": [
+    "texture",
+    "pbr",
+    "tileable",
+    "frost",
+    "ice",
+    "glass",
+    "winter",
+    "alpha",
+    "overlay",
+    "procedural"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "role": "other"
+    },
+    {
+      "path": "frost_ferns.py",
+      "role": "executable_tool"
+    },
+    {
+      "path": "material.tres",
+      "role": "skill_asset"
+    },
+    {
+      "path": "blender_material.py",
+      "role": "executable_tool"
+    }
+  ],
+  "contract": {
+    "entry_point": "generate",
+    "module": "frost_ferns.py",
+    "signature": "generate(width=256, height=256, seed=0, preset=\"default\", directx_normal=False, **parameters) -> {map name: {\"channels\", \"colour_space\", \"pixels\"}}",
+    "command_line": "python frost_ferns.py --size 1024 --seed 7 --preset NAME --out DIR [--width W --height H] [--set NAME=VALUE] [--directx-normal] [--orm]",
+    "maps": [
+      {
+        "name": "albedo",
+        "channels": 4,
+        "colour_space": "srgb",
+        "convention": "gltf_base_color",
+        "range": [
+          0.3,
+          1.0
+        ]
+      },
+      {
+        "name": "normal",
+        "channels": 3,
+        "colour_space": "linear",
+        "convention": "opengl_y_up"
+      },
+      {
+        "name": "roughness",
+        "channels": 1,
+        "colour_space": "linear",
+        "convention": "gltf_roughness",
+        "range": [
+          0.04,
+          0.95
+        ]
+      },
+      {
+        "name": "height",
+        "channels": 1,
+        "colour_space": "linear",
+        "convention": "white_is_high"
+      },
+      {
+        "name": "ao",
+        "channels": 1,
+        "colour_space": "linear",
+        "convention": "white_is_unoccluded"
+      }
+    ],
+    "parameters": [
+      {
+        "name": "crystals",
+        "type": "int",
+        "default": 9,
+        "minimum": 2,
+        "maximum": 30,
+        "meaning": "Crystal seeds in the tile (about; seeds keep a minimum spacing)."
+      },
+      {
+        "name": "size",
+        "type": "float",
+        "default": 0.4,
+        "minimum": 0.08,
+        "maximum": 0.5,
+        "meaning": "Length of a main stem in texture units."
+      },
+      {
+        "name": "branching",
+        "type": "float",
+        "default": 0.85,
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "meaning": "Chance of side branches at each step of a stem or branch."
+      },
+      {
+        "name": "levels",
+        "type": "int",
+        "default": 3,
+        "minimum": 1,
+        "maximum": 3,
+        "meaning": "Branching depth: 1 bare needles, 2 branches, 3 branches with sub-branches."
+      },
+      {
+        "name": "curl",
+        "type": "float",
+        "default": 0.4,
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "meaning": "How much stems wander: 0 straight needles, 1 curling plumes."
+      },
+      {
+        "name": "thickness",
+        "type": "float",
+        "default": 1.0,
+        "minimum": 0.5,
+        "maximum": 2.0,
+        "meaning": "Width of the crystal lines."
+      },
+      {
+        "name": "haze",
+        "type": "float",
+        "default": 0.25,
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "meaning": "Fine rime haze between the crystals."
+      },
+      {
+        "name": "hue_shift",
+        "type": "float",
+        "default": 0.0,
+        "minimum": -0.5,
+        "maximum": 0.5,
+        "meaning": "Hue rotation of the albedo in turns."
+      },
+      {
+        "name": "saturation",
+        "type": "float",
+        "default": 1.0,
+        "minimum": 0.0,
+        "maximum": 2.0,
+        "meaning": "Albedo saturation multiplier."
+      },
+      {
+        "name": "brightness",
+        "type": "float",
+        "default": 1.0,
+        "minimum": 0.5,
+        "maximum": 1.5,
+        "meaning": "Albedo brightness multiplier."
+      }
+    ],
+    "presets": [
+      {
+        "name": "default",
+        "description": "Fern frost: feathered plumes spreading across a window.",
+        "values": {}
+      },
+      {
+        "name": "needle_frost",
+        "description": "Dense straight needles with short spurs crossing at random.",
+        "values": {
+          "crystals": 30,
+          "size": 0.26,
+          "levels": 2,
+          "branching": 0.35,
+          "curl": 0.04,
+          "haze": 0.12,
+          "thickness": 0.8
+        }
+      },
+      {
+        "name": "feathered",
+        "description": "Large dense plumes with sub-branches packed edge to edge.",
+        "values": {
+          "crystals": 8,
+          "size": 0.5,
+          "branching": 1.0,
+          "curl": 0.6,
+          "thickness": 1.3,
+          "haze": 0.35
+        }
+      },
+      {
+        "name": "hoar_haze",
+        "description": "Heavy rime haze with small sparse crystals, almost fogged over.",
+        "values": {
+          "crystals": 16,
+          "size": 0.14,
+          "branching": 0.5,
+          "levels": 2,
+          "haze": 0.95
+        }
+      }
+    ],
+    "tileable": true,
+    "default_size": 256,
+    "cost_seconds_1024": 21.1,
+    "peak_memory_mb_1024": 682,
+    "godot_material": "material.tres",
+    "godot_texture_folder": "res://baltor/textures/frost_ferns/",
+    "blender_builder": "blender_material.build_material(folder)"
+  },
+  "limits": "Growth is a stylized branching walk, not a diffusion-limited crystal growth simulation, so plumes are self-similar sketches of real fern frost. Crystals grow from scattered seeds rather than from the edges and scratches where frost usually starts. Branches finer than a pixel at the output size are skipped, so small outputs show the main plumes only. The alpha suits blending over a window; it does not model refraction or light scattering in the ice, and engines sort alpha-blended surfaces with other transparent ones.",
+  "related": [
+    "lake_ice_cracked",
+    "rain_on_glass",
+    "snow_fresh"
+  ],
+  "technique_references": [
+    "Bridson Poisson-disc seeds on the torus",
+    "Recursive dendrite growth with opposite side branches at hexagonal 60 degree angles",
+    "Capsule painting with wrap-around into a coverage field",
+    "Box-blurred glow for feathery plumes",
+    "Fractional Brownian motion rime haze",
+    "Height to tangent-space normal by central differences"
+  ],
+  "native_checks": [
+    "command_line_generates_declared_maps",
+    "maps_decode",
+    "maps_have_declared_size_and_channels",
+    "maps_tile_without_a_seam",
+    "normal_vectors_unit_length_facing_out",
+    "maps_carry_detail",
+    "godot_imports_the_maps",
+    "godot_material_template_loads_every_map",
+    "godot_compatibility_render",
+    "capture_shows_the_textured_surface",
+    "blender_builds_the_material"
+  ]
+}

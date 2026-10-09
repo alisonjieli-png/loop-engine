@@ -1,0 +1,261 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "fish_scales",
+  "title": "Overlapping fish scales with growth rings",
+  "purpose": "Generate tileable PBR maps of fish skin: round overlapping scales showing their rear crescents, with growth rings, radial grooves, pigmented edges, a silver colour sheen and koi patches or trout spots. Use for fish, mermaid tails, sea creatures, fantasy armour and aquarium props.",
+  "form": "function",
+  "asset_role": null,
+  "dimension": "3d",
+  "engine": {
+    "name": "python",
+    "minimum_version": "3.10"
+  },
+  "tags": [
+    "texture",
+    "pbr",
+    "tileable",
+    "fish",
+    "scales",
+    "koi",
+    "carp",
+    "skin",
+    "creature",
+    "procedural"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "role": "other"
+    },
+    {
+      "path": "fish_scales.py",
+      "role": "executable_tool"
+    },
+    {
+      "path": "material.tres",
+      "role": "skill_asset"
+    },
+    {
+      "path": "blender_material.py",
+      "role": "executable_tool"
+    }
+  ],
+  "contract": {
+    "entry_point": "generate",
+    "module": "fish_scales.py",
+    "signature": "generate(width=256, height=256, seed=0, preset=\"default\", directx_normal=False, **parameters) -> {map name: {\"channels\", \"colour_space\", \"pixels\"}}",
+    "command_line": "python fish_scales.py --size 1024 --seed 7 --preset NAME --out DIR [--width W --height H] [--set NAME=VALUE] [--directx-normal] [--orm]",
+    "maps": [
+      {
+        "name": "albedo",
+        "channels": 3,
+        "colour_space": "srgb",
+        "convention": "gltf_base_color",
+        "range": [
+          0.02,
+          0.95
+        ]
+      },
+      {
+        "name": "normal",
+        "channels": 3,
+        "colour_space": "linear",
+        "convention": "opengl_y_up"
+      },
+      {
+        "name": "roughness",
+        "channels": 1,
+        "colour_space": "linear",
+        "convention": "gltf_roughness",
+        "range": [
+          0.12,
+          1.0
+        ]
+      },
+      {
+        "name": "metallic",
+        "channels": 1,
+        "colour_space": "linear",
+        "convention": "gltf_metallic"
+      },
+      {
+        "name": "height",
+        "channels": 1,
+        "colour_space": "linear",
+        "convention": "white_is_high"
+      },
+      {
+        "name": "ao",
+        "channels": 1,
+        "colour_space": "linear",
+        "convention": "white_is_unoccluded"
+      }
+    ],
+    "parameters": [
+      {
+        "name": "columns",
+        "type": "int",
+        "default": 12,
+        "minimum": 4,
+        "maximum": 32,
+        "meaning": "Scales across the tile; the row count follows from the exposure."
+      },
+      {
+        "name": "exposure",
+        "type": "float",
+        "default": 0.42,
+        "minimum": 0.25,
+        "maximum": 0.7,
+        "meaning": "Row spacing as a share of the scale diameter: how much of each scale shows."
+      },
+      {
+        "name": "circuli",
+        "type": "float",
+        "default": 0.5,
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "meaning": "Depth of the growth rings around each scale's centre."
+      },
+      {
+        "name": "radii",
+        "type": "float",
+        "default": 0.3,
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "meaning": "Depth of the grooves radiating from the growth centre."
+      },
+      {
+        "name": "edge_pigment",
+        "type": "float",
+        "default": 0.35,
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "meaning": "Dark pigment along the free edge of each scale (a net pattern)."
+      },
+      {
+        "name": "iridescence",
+        "type": "float",
+        "default": 0.35,
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "meaning": "Colour sheen turning across each scale."
+      },
+      {
+        "name": "pattern",
+        "type": "int",
+        "default": 0,
+        "minimum": 0,
+        "maximum": 2,
+        "meaning": "0 even colour, 1 large patches of a second colour (koi), 2 dark spots (trout)."
+      },
+      {
+        "name": "gloss",
+        "type": "float",
+        "default": 0.7,
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "meaning": "Wet gloss of the skin."
+      },
+      {
+        "name": "hue_shift",
+        "type": "float",
+        "default": 0.0,
+        "minimum": -0.5,
+        "maximum": 0.5,
+        "meaning": "Hue rotation of the albedo in turns."
+      },
+      {
+        "name": "saturation",
+        "type": "float",
+        "default": 1.0,
+        "minimum": 0.0,
+        "maximum": 2.0,
+        "meaning": "Albedo saturation multiplier."
+      },
+      {
+        "name": "brightness",
+        "type": "float",
+        "default": 1.0,
+        "minimum": 0.5,
+        "maximum": 1.5,
+        "meaning": "Albedo brightness multiplier."
+      }
+    ],
+    "presets": [
+      {
+        "name": "default",
+        "description": "Silver baitfish scales with a blue-green and pink sheen.",
+        "values": {}
+      },
+      {
+        "name": "koi_kohaku",
+        "description": "White koi scales with large red patches and a faint net.",
+        "values": {
+          "pattern": 1,
+          "iridescence": 0.15,
+          "edge_pigment": 0.25,
+          "columns": 10,
+          "exposure": 0.5
+        }
+      },
+      {
+        "name": "carp_bronze",
+        "description": "Large bronze carp scales with dark pigmented edges.",
+        "values": {
+          "columns": 7,
+          "edge_pigment": 0.8,
+          "iridescence": 0.2,
+          "circuli": 0.7,
+          "radii": 0.5,
+          "exposure": 0.5
+        }
+      },
+      {
+        "name": "trout_spotted",
+        "description": "Small olive trout scales with dark spots and a pink sheen.",
+        "values": {
+          "columns": 22,
+          "pattern": 2,
+          "iridescence": 0.45,
+          "edge_pigment": 0.15,
+          "circuli": 0.3
+        }
+      }
+    ],
+    "tileable": true,
+    "default_size": 256,
+    "cost_seconds_1024": 20.9,
+    "peak_memory_mb_1024": 561,
+    "godot_material": "material.tres",
+    "godot_texture_folder": "res://baltor/textures/fish_scales/",
+    "blender_builder": "blender_material.build_material(folder)"
+  },
+  "limits": "Scales are round discs of one size in regular offset rows; the lateral line, fins, the change of scale size along the body and ctenoid spines are out of scope. The head is toward the top of the tile. The sheen is a hue turning across each scale, a stylized stand-in for thin-film reflection that does not change with view angle. Patches and spots are noise fields sampled once per scale. Growth rings fade out where they would be finer than a couple of pixels. Occlusion is a blurred-height estimate.",
+  "related": [
+    "snake_scales",
+    "sequin_fabric",
+    "metal_corrosion"
+  ],
+  "technique_references": [
+    "Offset-row disc packing with whole counts on the torus",
+    "Local overlap order: each row covers the front of the row below",
+    "Circuli as cosine rings around an off-centre growth focus",
+    "Radial grooves from the angle around the focus",
+    "Edge pigment band on the free rim",
+    "Hue wheel tint across the scale for iridescence",
+    "Height to tangent-space normal by central differences"
+  ],
+  "native_checks": [
+    "command_line_generates_declared_maps",
+    "maps_decode",
+    "maps_have_declared_size_and_channels",
+    "maps_tile_without_a_seam",
+    "normal_vectors_unit_length_facing_out",
+    "maps_carry_detail",
+    "godot_imports_the_maps",
+    "godot_material_template_loads_every_map",
+    "godot_compatibility_render",
+    "capture_shows_the_textured_surface",
+    "blender_builds_the_material"
+  ]
+}

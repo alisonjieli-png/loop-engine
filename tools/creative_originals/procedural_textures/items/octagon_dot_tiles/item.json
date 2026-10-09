@@ -1,0 +1,265 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "octagon_dot_tiles",
+  "title": "Octagon and dot floor tiles",
+  "purpose": "Generate tileable PBR maps of the octagon and dot pattern: octagons on a square grid with small square dots at their corners, grout, bevels, glazed, terracotta or marble finishes with veins that break at the joints, and wear. Use for bathroom, kitchen and hallway floors and Victorian or classic interiors.",
+  "form": "function",
+  "asset_role": null,
+  "dimension": "3d",
+  "engine": {
+    "name": "python",
+    "minimum_version": "3.10"
+  },
+  "tags": [
+    "texture",
+    "pbr",
+    "tileable",
+    "tiles",
+    "octagon",
+    "floor",
+    "marble",
+    "ceramic",
+    "procedural"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "role": "other"
+    },
+    {
+      "path": "octagon_dot_tiles.py",
+      "role": "executable_tool"
+    },
+    {
+      "path": "material.tres",
+      "role": "skill_asset"
+    },
+    {
+      "path": "blender_material.py",
+      "role": "executable_tool"
+    }
+  ],
+  "contract": {
+    "entry_point": "generate",
+    "module": "octagon_dot_tiles.py",
+    "signature": "generate(width=256, height=256, seed=0, preset=\"default\", directx_normal=False, **parameters) -> {map name: {\"channels\", \"colour_space\", \"pixels\"}}",
+    "command_line": "python octagon_dot_tiles.py --size 1024 --seed 7 --preset NAME --out DIR [--width W --height H] [--set NAME=VALUE] [--directx-normal] [--orm]",
+    "maps": [
+      {
+        "name": "albedo",
+        "channels": 3,
+        "colour_space": "srgb",
+        "convention": "gltf_base_color",
+        "range": [
+          0.02,
+          0.92
+        ]
+      },
+      {
+        "name": "normal",
+        "channels": 3,
+        "colour_space": "linear",
+        "convention": "opengl_y_up"
+      },
+      {
+        "name": "roughness",
+        "channels": 1,
+        "colour_space": "linear",
+        "convention": "gltf_roughness",
+        "range": [
+          0.05,
+          1.0
+        ]
+      },
+      {
+        "name": "height",
+        "channels": 1,
+        "colour_space": "linear",
+        "convention": "white_is_high"
+      },
+      {
+        "name": "ao",
+        "channels": 1,
+        "colour_space": "linear",
+        "convention": "white_is_unoccluded"
+      }
+    ],
+    "parameters": [
+      {
+        "name": "tiles_across",
+        "type": "int",
+        "default": 4,
+        "minimum": 1,
+        "maximum": 14,
+        "meaning": "Octagons across the tile width (and height)."
+      },
+      {
+        "name": "dot_size",
+        "type": "float",
+        "default": 0.2,
+        "minimum": 0.1,
+        "maximum": 0.38,
+        "meaning": "Half-diagonal of each corner dot in octagon widths; larger dots cut deeper corners."
+      },
+      {
+        "name": "grout_width",
+        "type": "float",
+        "default": 0.02,
+        "minimum": 0.004,
+        "maximum": 0.08,
+        "meaning": "Joint width in octagon widths."
+      },
+      {
+        "name": "grout_depth",
+        "type": "float",
+        "default": 0.45,
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "meaning": "How far the grout sits below the tile faces."
+      },
+      {
+        "name": "bevel",
+        "type": "float",
+        "default": 0.03,
+        "minimum": 0.005,
+        "maximum": 0.12,
+        "meaning": "Width of the rounded tile edge in octagon widths."
+      },
+      {
+        "name": "gloss",
+        "type": "float",
+        "default": 0.7,
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "meaning": "0 matte or honed, 1 glossy glaze."
+      },
+      {
+        "name": "veining",
+        "type": "float",
+        "default": 0.0,
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "meaning": "Marble veins through the octagons (light) and dots (pale veins on dark stone)."
+      },
+      {
+        "name": "wear",
+        "type": "float",
+        "default": 0.15,
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "meaning": "Scuffed, duller and lighter traffic patches and slightly worn edges."
+      },
+      {
+        "name": "colour_variation",
+        "type": "float",
+        "default": 0.35,
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "meaning": "Spread of tone between pieces."
+      },
+      {
+        "name": "hue_shift",
+        "type": "float",
+        "default": 0.0,
+        "minimum": -0.5,
+        "maximum": 0.5,
+        "meaning": "Hue rotation of the albedo in turns."
+      },
+      {
+        "name": "saturation",
+        "type": "float",
+        "default": 1.0,
+        "minimum": 0.0,
+        "maximum": 2.0,
+        "meaning": "Albedo saturation multiplier."
+      },
+      {
+        "name": "brightness",
+        "type": "float",
+        "default": 1.0,
+        "minimum": 0.5,
+        "maximum": 1.5,
+        "meaning": "Albedo brightness multiplier."
+      }
+    ],
+    "presets": [
+      {
+        "name": "default",
+        "description": "White glazed octagons with black dots and grey grout.",
+        "values": {}
+      },
+      {
+        "name": "terracotta_tozzetti",
+        "description": "Unglazed terracotta octagons with small dark green glazed dots.",
+        "values": {
+          "tiles_across": 3,
+          "dot_size": 0.16,
+          "grout_width": 0.03,
+          "gloss": 0.1,
+          "wear": 0.4,
+          "colour_variation": 0.75
+        }
+      },
+      {
+        "name": "marble_classic",
+        "description": "Honed white marble octagons with black marble dots, thin joints, veins.",
+        "values": {
+          "dot_size": 0.24,
+          "grout_width": 0.012,
+          "grout_depth": 0.3,
+          "bevel": 0.015,
+          "gloss": 0.45,
+          "veining": 0.8,
+          "colour_variation": 0.25
+        }
+      },
+      {
+        "name": "small_mosaic",
+        "description": "Small matte white octagon mosaic with blue dots.",
+        "values": {
+          "tiles_across": 10,
+          "dot_size": 0.22,
+          "grout_width": 0.05,
+          "bevel": 0.05,
+          "gloss": 0.25,
+          "colour_variation": 0.25
+        }
+      }
+    ],
+    "tileable": true,
+    "default_size": 256,
+    "cost_seconds_1024": 23.8,
+    "peak_memory_mb_1024": 559,
+    "godot_material": "material.tres",
+    "godot_texture_folder": "res://baltor/textures/octagon_dot_tiles/",
+    "blender_builder": "blender_material.build_material(folder)"
+  },
+  "limits": "Octagons are regular cuts of a square cell, so octagons and dots always align with the tile axes; borders, cut pieces and diagonal layouts are out of scope. Marble veins are isolines of warped noise, an approximation of real stone, read at a random offset per piece. Lippage between pieces is a small random height offset. Occlusion is a blurred-height estimate, not ray traced.",
+  "related": [
+    "hexagon_tiles",
+    "marble_veined",
+    "zellige_star_tiles",
+    "encaustic_cement_tiles"
+  ],
+  "technique_references": [
+    "Octagon as the intersection of a square and a 45 degree square",
+    "Corner dots as the complement of four cut corners",
+    "Signed distance from side and diagonal half-planes",
+    "Isoline distance of warped fractional Brownian motion for marble veins",
+    "Per-piece hashing for colour, lippage and vein offset",
+    "Height to tangent-space normal by central differences"
+  ],
+  "native_checks": [
+    "command_line_generates_declared_maps",
+    "maps_decode",
+    "maps_have_declared_size_and_channels",
+    "maps_tile_without_a_seam",
+    "normal_vectors_unit_length_facing_out",
+    "maps_carry_detail",
+    "godot_imports_the_maps",
+    "godot_material_template_loads_every_map",
+    "godot_compatibility_render",
+    "capture_shows_the_textured_surface",
+    "blender_builds_the_material"
+  ]
+}

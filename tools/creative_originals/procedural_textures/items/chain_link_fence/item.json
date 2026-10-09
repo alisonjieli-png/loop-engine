@@ -1,0 +1,225 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "chain_link_fence",
+  "title": "Chain-link fence mesh",
+  "purpose": "Generate tileable PBR maps of chain-link fence with alpha openings: two families of diagonal wires alternating over and under at every crossing, round wire profiles, galvanized, green vinyl-coated, black or rusty. Use for fences, cages, construction sites and backgrounds.",
+  "form": "function",
+  "asset_role": null,
+  "dimension": "3d",
+  "engine": {
+    "name": "python",
+    "minimum_version": "3.10"
+  },
+  "tags": [
+    "texture",
+    "pbr",
+    "tileable",
+    "metal",
+    "chain link",
+    "fence",
+    "wire mesh",
+    "alpha",
+    "procedural"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "role": "other"
+    },
+    {
+      "path": "chain_link_fence.py",
+      "role": "executable_tool"
+    },
+    {
+      "path": "material.tres",
+      "role": "skill_asset"
+    },
+    {
+      "path": "blender_material.py",
+      "role": "executable_tool"
+    }
+  ],
+  "contract": {
+    "entry_point": "generate",
+    "module": "chain_link_fence.py",
+    "signature": "generate(width=256, height=256, seed=0, preset=\"default\", directx_normal=False, **parameters) -> {map name: {\"channels\", \"colour_space\", \"pixels\"}}",
+    "command_line": "python chain_link_fence.py --size 1024 --seed 7 --preset NAME --out DIR [--width W --height H] [--set NAME=VALUE] [--directx-normal] [--orm]",
+    "maps": [
+      {
+        "name": "albedo",
+        "channels": 4,
+        "colour_space": "srgb",
+        "convention": "gltf_base_color",
+        "range": [
+          0.03,
+          0.95
+        ]
+      },
+      {
+        "name": "normal",
+        "channels": 3,
+        "colour_space": "linear",
+        "convention": "opengl_y_up"
+      },
+      {
+        "name": "roughness",
+        "channels": 1,
+        "colour_space": "linear",
+        "convention": "gltf_roughness",
+        "range": [
+          0.15,
+          1.0
+        ]
+      },
+      {
+        "name": "metallic",
+        "channels": 1,
+        "colour_space": "linear",
+        "convention": "gltf_metallic"
+      },
+      {
+        "name": "height",
+        "channels": 1,
+        "colour_space": "linear",
+        "convention": "white_is_high"
+      },
+      {
+        "name": "ao",
+        "channels": 1,
+        "colour_space": "linear",
+        "convention": "white_is_unoccluded"
+      }
+    ],
+    "parameters": [
+      {
+        "name": "meshes_across",
+        "type": "int",
+        "default": 6,
+        "minimum": 2,
+        "maximum": 24,
+        "meaning": "Diamond openings across the tile."
+      },
+      {
+        "name": "wire",
+        "type": "float",
+        "default": 0.06,
+        "minimum": 0.02,
+        "maximum": 0.2,
+        "meaning": "Wire diameter as a share of the mesh spacing."
+      },
+      {
+        "name": "knuckle",
+        "type": "float",
+        "default": 0.6,
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "meaning": "How far wires rise and dip at the crossings."
+      },
+      {
+        "name": "coating",
+        "type": "float",
+        "default": 0.0,
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "meaning": "Vinyl coating (0 bare galvanized metal, 1 coated)."
+      },
+      {
+        "name": "rust",
+        "type": "float",
+        "default": 0.0,
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "meaning": "Rust along the wires."
+      },
+      {
+        "name": "hue_shift",
+        "type": "float",
+        "default": 0.0,
+        "minimum": -0.5,
+        "maximum": 0.5,
+        "meaning": "Hue rotation of the albedo in turns."
+      },
+      {
+        "name": "saturation",
+        "type": "float",
+        "default": 1.0,
+        "minimum": 0.0,
+        "maximum": 2.0,
+        "meaning": "Albedo saturation multiplier."
+      },
+      {
+        "name": "brightness",
+        "type": "float",
+        "default": 1.0,
+        "minimum": 0.5,
+        "maximum": 1.0,
+        "meaning": "Albedo brightness multiplier."
+      }
+    ],
+    "presets": [
+      {
+        "name": "default",
+        "description": "Galvanized steel chain link.",
+        "values": {}
+      },
+      {
+        "name": "green_vinyl",
+        "description": "Green vinyl-coated chain link with thicker wire.",
+        "values": {
+          "coating": 1.0,
+          "wire": 0.09
+        }
+      },
+      {
+        "name": "rusty",
+        "description": "Old rusty chain link, fine mesh.",
+        "values": {
+          "rust": 0.85,
+          "meshes_across": 9
+        }
+      },
+      {
+        "name": "black_heavy",
+        "description": "Black coated heavy-gauge mesh with large openings.",
+        "values": {
+          "coating": 1.0,
+          "wire": 0.12,
+          "meshes_across": 4,
+          "knuckle": 0.8
+        }
+      }
+    ],
+    "tileable": true,
+    "default_size": 256,
+    "cost_seconds_1024": 21.4,
+    "peak_memory_mb_1024": 576,
+    "godot_material": "material.tres",
+    "godot_texture_folder": "res://baltor/textures/chain_link_fence/",
+    "blender_builder": "blender_material.build_material(folder)"
+  },
+  "limits": "Wires are straight diagonals with knuckles suggested by height at the crossings, not the helical twist of real woven wire. The openings need alpha scissor, and at a distance mipmapped alpha thins the mesh. Occlusion is a blurred-height estimate, not ray traced.",
+  "related": [
+    "chain_mail",
+    "perforated_metal",
+    "wicker_weave"
+  ],
+  "technique_references": [
+    "Distances to two families of diagonal lines with whole-number counts",
+    "Round wire profile from the line distance",
+    "Over and under at crossings by a checkerboard rule",
+    "Alpha anti-aliased over one pixel"
+  ],
+  "native_checks": [
+    "command_line_generates_declared_maps",
+    "maps_decode",
+    "maps_have_declared_size_and_channels",
+    "maps_tile_without_a_seam",
+    "normal_vectors_unit_length_facing_out",
+    "maps_carry_detail",
+    "godot_imports_the_maps",
+    "godot_material_template_loads_every_map",
+    "godot_compatibility_render",
+    "capture_shows_the_textured_surface",
+    "blender_builds_the_material"
+  ]
+}

@@ -1,0 +1,216 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "galvanized_spangle",
+  "title": "Galvanized steel spangle",
+  "purpose": "Generate tileable PBR maps of hot-dip galvanized steel: zinc crystals (spangles) that each take their own brightness and roughness, feathered dendrites inside every crystal, and optional dull white zinc corrosion. Use for ducts, railings, buckets, roofing and industrial props.",
+  "form": "function",
+  "asset_role": null,
+  "dimension": "3d",
+  "engine": {
+    "name": "python",
+    "minimum_version": "3.10"
+  },
+  "tags": [
+    "texture",
+    "pbr",
+    "tileable",
+    "metal",
+    "galvanized",
+    "zinc",
+    "spangle",
+    "procedural"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "role": "other"
+    },
+    {
+      "path": "galvanized_spangle.py",
+      "role": "executable_tool"
+    },
+    {
+      "path": "material.tres",
+      "role": "skill_asset"
+    },
+    {
+      "path": "blender_material.py",
+      "role": "executable_tool"
+    }
+  ],
+  "contract": {
+    "entry_point": "generate",
+    "module": "galvanized_spangle.py",
+    "signature": "generate(width=256, height=256, seed=0, preset=\"default\", directx_normal=False, **parameters) -> {map name: {\"channels\", \"colour_space\", \"pixels\"}}",
+    "command_line": "python galvanized_spangle.py --size 1024 --seed 7 --preset NAME --out DIR [--width W --height H] [--set NAME=VALUE] [--directx-normal] [--orm]",
+    "maps": [
+      {
+        "name": "albedo",
+        "channels": 3,
+        "colour_space": "srgb",
+        "convention": "gltf_base_color",
+        "range": [
+          0.3,
+          0.95
+        ]
+      },
+      {
+        "name": "normal",
+        "channels": 3,
+        "colour_space": "linear",
+        "convention": "opengl_y_up"
+      },
+      {
+        "name": "roughness",
+        "channels": 1,
+        "colour_space": "linear",
+        "convention": "gltf_roughness",
+        "range": [
+          0.1,
+          1.0
+        ]
+      },
+      {
+        "name": "metallic",
+        "channels": 1,
+        "colour_space": "linear",
+        "convention": "gltf_metallic"
+      },
+      {
+        "name": "height",
+        "channels": 1,
+        "colour_space": "linear",
+        "convention": "white_is_high"
+      },
+      {
+        "name": "ao",
+        "channels": 1,
+        "colour_space": "linear",
+        "convention": "white_is_unoccluded"
+      }
+    ],
+    "parameters": [
+      {
+        "name": "crystals_across",
+        "type": "int",
+        "default": 5,
+        "minimum": 2,
+        "maximum": 24,
+        "meaning": "Spangle crystals across the tile."
+      },
+      {
+        "name": "contrast",
+        "type": "float",
+        "default": 0.5,
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "meaning": "Brightness difference between crystals."
+      },
+      {
+        "name": "dendrites",
+        "type": "float",
+        "default": 0.5,
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "meaning": "Visibility of the feathered dendrite pattern inside crystals."
+      },
+      {
+        "name": "white_rust",
+        "type": "float",
+        "default": 0.0,
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "meaning": "Dull white zinc corrosion."
+      },
+      {
+        "name": "hue_shift",
+        "type": "float",
+        "default": 0.0,
+        "minimum": -0.5,
+        "maximum": 0.5,
+        "meaning": "Hue rotation of the albedo in turns."
+      },
+      {
+        "name": "saturation",
+        "type": "float",
+        "default": 1.0,
+        "minimum": 0.0,
+        "maximum": 2.0,
+        "meaning": "Albedo saturation multiplier."
+      },
+      {
+        "name": "brightness",
+        "type": "float",
+        "default": 1.0,
+        "minimum": 0.5,
+        "maximum": 1.0,
+        "meaning": "Albedo brightness multiplier."
+      }
+    ],
+    "presets": [
+      {
+        "name": "default",
+        "description": "Fresh galvanized sheet with large bright spangles.",
+        "values": {}
+      },
+      {
+        "name": "minimized",
+        "description": "Minimized spangle: small, low-contrast crystals.",
+        "values": {
+          "crystals_across": 16,
+          "contrast": 0.25,
+          "dendrites": 0.2
+        }
+      },
+      {
+        "name": "weathered",
+        "description": "Old galvanized steel, dull with white rust.",
+        "values": {
+          "white_rust": 0.7,
+          "contrast": 0.35
+        }
+      },
+      {
+        "name": "bold_spangle",
+        "description": "Very large, high-contrast crystals with strong feathering.",
+        "values": {
+          "crystals_across": 3,
+          "contrast": 0.9,
+          "dendrites": 0.9
+        }
+      }
+    ],
+    "tileable": true,
+    "default_size": 256,
+    "cost_seconds_1024": 28.9,
+    "peak_memory_mb_1024": 689,
+    "godot_material": "material.tres",
+    "godot_texture_folder": "res://baltor/textures/galvanized_spangle/",
+    "blender_builder": "blender_material.build_material(folder)"
+  },
+  "limits": "Each crystal's brightness is baked into albedo and roughness; real spangle changes with the angle of light and view, which fixed maps cannot reproduce. Dendrites are a stylized stripe-and-herringbone pattern. White rust is a flat dielectric overlay. Occlusion is a blurred-height estimate, not ray traced.",
+  "related": [
+    "corrugated_sheet",
+    "hammered_metal",
+    "brushed_metal"
+  ],
+  "technique_references": [
+    "Jittered Worley cells as zinc crystals",
+    "Per-cell orientation and reflectance from a hash",
+    "Dendrite stripes in nucleus-relative coordinates wrapped on the torus",
+    "Thresholded noise for white rust"
+  ],
+  "native_checks": [
+    "command_line_generates_declared_maps",
+    "maps_decode",
+    "maps_have_declared_size_and_channels",
+    "maps_tile_without_a_seam",
+    "normal_vectors_unit_length_facing_out",
+    "maps_carry_detail",
+    "godot_imports_the_maps",
+    "godot_material_template_loads_every_map",
+    "godot_compatibility_render",
+    "capture_shows_the_textured_surface",
+    "blender_builds_the_material"
+  ]
+}

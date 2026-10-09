@@ -1,0 +1,246 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "wood_end_grain_blocks",
+  "title": "End-grain wood blocks",
+  "purpose": "Generate tileable PBR maps of end-grain wood blocks, as in a butcher block or end-grain parquet: rings around each block's pith, medullary rays, radial checks and glue lines. Use for cutting boards, workbenches and block floors.",
+  "form": "function",
+  "asset_role": null,
+  "dimension": "3d",
+  "engine": {
+    "name": "python",
+    "minimum_version": "3.10"
+  },
+  "tags": [
+    "texture",
+    "pbr",
+    "tileable",
+    "wood",
+    "end grain",
+    "butcher block",
+    "rings",
+    "procedural"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "role": "other"
+    },
+    {
+      "path": "wood_end_grain_blocks.py",
+      "role": "executable_tool"
+    },
+    {
+      "path": "material.tres",
+      "role": "skill_asset"
+    },
+    {
+      "path": "blender_material.py",
+      "role": "executable_tool"
+    }
+  ],
+  "contract": {
+    "entry_point": "generate",
+    "module": "wood_end_grain_blocks.py",
+    "signature": "generate(width=256, height=256, seed=0, preset=\"default\", directx_normal=False, **parameters) -> {map name: {\"channels\", \"colour_space\", \"pixels\"}}",
+    "command_line": "python wood_end_grain_blocks.py --size 1024 --seed 7 --preset NAME --out DIR [--width W --height H] [--set NAME=VALUE] [--directx-normal] [--orm]",
+    "maps": [
+      {
+        "name": "albedo",
+        "channels": 3,
+        "colour_space": "srgb",
+        "convention": "gltf_base_color",
+        "range": [
+          0.02,
+          0.88
+        ]
+      },
+      {
+        "name": "normal",
+        "channels": 3,
+        "colour_space": "linear",
+        "convention": "opengl_y_up"
+      },
+      {
+        "name": "roughness",
+        "channels": 1,
+        "colour_space": "linear",
+        "convention": "gltf_roughness",
+        "range": [
+          0.2,
+          1.0
+        ]
+      },
+      {
+        "name": "height",
+        "channels": 1,
+        "colour_space": "linear",
+        "convention": "white_is_high"
+      },
+      {
+        "name": "ao",
+        "channels": 1,
+        "colour_space": "linear",
+        "convention": "white_is_unoccluded"
+      }
+    ],
+    "parameters": [
+      {
+        "name": "blocks_across",
+        "type": "int",
+        "default": 4,
+        "minimum": 1,
+        "maximum": 12,
+        "meaning": "Blocks across the tile (rows down the tile match, so blocks stay square)."
+      },
+      {
+        "name": "stagger",
+        "type": "float",
+        "default": 0.0,
+        "minimum": 0.0,
+        "maximum": 0.5,
+        "meaning": "Offset of every other row in block widths (alternation repeats cleanly with an even block count)."
+      },
+      {
+        "name": "ring_density",
+        "type": "float",
+        "default": 45.0,
+        "minimum": 10.0,
+        "maximum": 120.0,
+        "meaning": "Growth rings per texture unit of radius."
+      },
+      {
+        "name": "ring_contrast",
+        "type": "float",
+        "default": 0.6,
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "meaning": "Darkness of the late-wood rings."
+      },
+      {
+        "name": "rays",
+        "type": "float",
+        "default": 0.4,
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "meaning": "Visibility of the radial medullary rays."
+      },
+      {
+        "name": "checks",
+        "type": "float",
+        "default": 0.3,
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "meaning": "Radial drying cracks from the pith."
+      },
+      {
+        "name": "glue_line",
+        "type": "float",
+        "default": 0.003,
+        "minimum": 0.0005,
+        "maximum": 0.012,
+        "meaning": "Width of the glue joints in texture units."
+      },
+      {
+        "name": "block_variation",
+        "type": "float",
+        "default": 0.6,
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "meaning": "Spread of tone between blocks."
+      },
+      {
+        "name": "hue_shift",
+        "type": "float",
+        "default": 0.0,
+        "minimum": -0.5,
+        "maximum": 0.5,
+        "meaning": "Hue rotation of the albedo in turns."
+      },
+      {
+        "name": "saturation",
+        "type": "float",
+        "default": 1.0,
+        "minimum": 0.0,
+        "maximum": 2.0,
+        "meaning": "Albedo saturation multiplier."
+      },
+      {
+        "name": "brightness",
+        "type": "float",
+        "default": 1.0,
+        "minimum": 0.5,
+        "maximum": 1.5,
+        "meaning": "Albedo brightness multiplier."
+      }
+    ],
+    "presets": [
+      {
+        "name": "default",
+        "description": "Oiled maple end grain in a straight grid.",
+        "values": {}
+      },
+      {
+        "name": "walnut_staggered",
+        "description": "Dark walnut blocks with staggered rows and subtle rings.",
+        "values": {
+          "stagger": 0.5,
+          "ring_contrast": 0.4,
+          "ring_density": 55.0,
+          "checks": 0.15
+        }
+      },
+      {
+        "name": "mixed_hardwood",
+        "description": "Maple, cherry and walnut blocks mixed, oiled.",
+        "values": {
+          "blocks_across": 6,
+          "block_variation": 1.0,
+          "stagger": 0.25
+        }
+      },
+      {
+        "name": "rough_pine",
+        "description": "Weathered pine log ends with wide rings and deep checks.",
+        "values": {
+          "blocks_across": 2,
+          "ring_density": 22.0,
+          "ring_contrast": 0.8,
+          "checks": 0.9,
+          "rays": 0.15,
+          "glue_line": 0.008
+        }
+      }
+    ],
+    "tileable": true,
+    "default_size": 256,
+    "cost_seconds_1024": 26.0,
+    "peak_memory_mb_1024": 559,
+    "godot_material": "material.tres",
+    "godot_texture_folder": "res://baltor/textures/wood_end_grain_blocks/",
+    "blender_builder": "blender_material.build_material(folder)"
+  },
+  "limits": "Rings are circles around one pith per block with noise, a simplification of real growth. Blocks are square and aligned to the tile. Checks are straight radial cracks. Occlusion is a blurred-height estimate.",
+  "related": [
+    "wood_planks"
+  ],
+  "technique_references": [
+    "Concentric growth rings around a per-block pith point",
+    "Radial medullary rays from the angle around the pith",
+    "Per-block hashing for species, tone and pith",
+    "Square block grid with an alternate-row offset",
+    "Height to tangent-space normal by central differences"
+  ],
+  "native_checks": [
+    "command_line_generates_declared_maps",
+    "maps_decode",
+    "maps_have_declared_size_and_channels",
+    "maps_tile_without_a_seam",
+    "normal_vectors_unit_length_facing_out",
+    "maps_carry_detail",
+    "godot_imports_the_maps",
+    "godot_material_template_loads_every_map",
+    "godot_compatibility_render",
+    "capture_shows_the_textured_surface",
+    "blender_builds_the_material"
+  ]
+}

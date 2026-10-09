@@ -1,0 +1,239 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "water_caustics",
+  "title": "Water caustics traced onto a pool floor",
+  "purpose": "Generate tileable maps of caustic light focused by a wavy water surface onto a floor: rays refracted through a periodic surface are splatted onto pool tiles, rippled sand, rock or a grey card, and the emissive map holds the light. Use for pools, shallow seas, aquariums and as a projected light cookie.",
+  "form": "function",
+  "asset_role": null,
+  "dimension": "3d",
+  "engine": {
+    "name": "python",
+    "minimum_version": "3.10"
+  },
+  "tags": [
+    "texture",
+    "pbr",
+    "tileable",
+    "water",
+    "caustics",
+    "emissive",
+    "pool",
+    "underwater",
+    "procedural"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "role": "other"
+    },
+    {
+      "path": "water_caustics.py",
+      "role": "executable_tool"
+    },
+    {
+      "path": "material.tres",
+      "role": "skill_asset"
+    },
+    {
+      "path": "blender_material.py",
+      "role": "executable_tool"
+    }
+  ],
+  "contract": {
+    "entry_point": "generate",
+    "module": "water_caustics.py",
+    "signature": "generate(width=256, height=256, seed=0, preset=\"default\", directx_normal=False, **parameters) -> {map name: {\"channels\", \"colour_space\", \"pixels\"}}",
+    "command_line": "python water_caustics.py --size 1024 --seed 7 --preset NAME --out DIR [--width W --height H] [--set NAME=VALUE] [--directx-normal] [--orm]",
+    "maps": [
+      {
+        "name": "albedo",
+        "channels": 3,
+        "colour_space": "srgb",
+        "convention": "gltf_base_color",
+        "range": [
+          0.03,
+          0.92
+        ]
+      },
+      {
+        "name": "normal",
+        "channels": 3,
+        "colour_space": "linear",
+        "convention": "opengl_y_up"
+      },
+      {
+        "name": "roughness",
+        "channels": 1,
+        "colour_space": "linear",
+        "convention": "gltf_roughness",
+        "range": [
+          0.1,
+          1.0
+        ]
+      },
+      {
+        "name": "height",
+        "channels": 1,
+        "colour_space": "linear",
+        "convention": "white_is_high"
+      },
+      {
+        "name": "ao",
+        "channels": 1,
+        "colour_space": "linear",
+        "convention": "white_is_unoccluded"
+      },
+      {
+        "name": "emissive",
+        "channels": 3,
+        "colour_space": "srgb",
+        "convention": "gltf_emissive"
+      }
+    ],
+    "parameters": [
+      {
+        "name": "wave_cells",
+        "type": "int",
+        "default": 3,
+        "minimum": 1,
+        "maximum": 8,
+        "meaning": "Main wave features across the tile; more cells give a finer caustic web."
+      },
+      {
+        "name": "focus",
+        "type": "float",
+        "default": 0.55,
+        "minimum": 0.05,
+        "maximum": 1.0,
+        "meaning": "Water depth times refraction strength: low gives soft blotches, high sharp folded lines."
+      },
+      {
+        "name": "ripples",
+        "type": "float",
+        "default": 0.3,
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "meaning": "Fine ripples on the surface that break the web into smaller cells."
+      },
+      {
+        "name": "light",
+        "type": "float",
+        "default": 0.8,
+        "minimum": 0.1,
+        "maximum": 1.0,
+        "meaning": "Brightness of the focused light in the emissive map."
+      },
+      {
+        "name": "floor",
+        "type": "int",
+        "default": 0,
+        "minimum": 0,
+        "maximum": 3,
+        "meaning": "Floor under the water: 0 pool tiles, 1 rippled sand, 2 rough rock, 3 plain grey card."
+      },
+      {
+        "name": "tiles_across",
+        "type": "int",
+        "default": 8,
+        "minimum": 2,
+        "maximum": 24,
+        "meaning": "Pool tiles across the tile (floor 0)."
+      },
+      {
+        "name": "hue_shift",
+        "type": "float",
+        "default": 0.0,
+        "minimum": -0.5,
+        "maximum": 0.5,
+        "meaning": "Hue rotation of the albedo and the light in turns."
+      },
+      {
+        "name": "saturation",
+        "type": "float",
+        "default": 1.0,
+        "minimum": 0.0,
+        "maximum": 2.0,
+        "meaning": "Albedo saturation multiplier."
+      },
+      {
+        "name": "brightness",
+        "type": "float",
+        "default": 1.0,
+        "minimum": 0.5,
+        "maximum": 1.5,
+        "meaning": "Albedo brightness multiplier."
+      }
+    ],
+    "presets": [
+      {
+        "name": "default",
+        "description": "Swimming pool: sharp bright web over pale blue glazed tiles.",
+        "values": {}
+      },
+      {
+        "name": "sandy_shallows",
+        "description": "Tropical shallows: turquoise light over rippled sand, finer web.",
+        "values": {
+          "floor": 1,
+          "wave_cells": 4,
+          "focus": 0.7,
+          "ripples": 0.45
+        }
+      },
+      {
+        "name": "deep_reef",
+        "description": "Deeper water: soft, dim blue caustics over dark rock.",
+        "values": {
+          "floor": 2,
+          "wave_cells": 2,
+          "focus": 0.3,
+          "light": 0.5,
+          "ripples": 0.15
+        }
+      },
+      {
+        "name": "light_cookie",
+        "description": "High-contrast caustic light on a plain grey card, for projecting as light.",
+        "values": {
+          "floor": 3,
+          "focus": 0.85,
+          "light": 1.0,
+          "ripples": 0.25
+        }
+      }
+    ],
+    "tileable": true,
+    "default_size": 256,
+    "cost_seconds_1024": 25.2,
+    "peak_memory_mb_1024": 771,
+    "godot_material": "material.tres",
+    "godot_texture_folder": "res://baltor/textures/water_caustics/",
+    "blender_builder": "blender_material.build_material(folder)"
+  },
+  "limits": "One still frame, not an animation. Refraction uses the paraxial approximation (ray offset proportional to the surface slope), light falls straight down and there is no dispersion, absorption or depth-dependent blur, so it is an approximation of real caustics rather than a light transport simulation. Brightness comes from four rays per output pixel and a light smoothing filter, so the finest lines are about a pixel wide at any size. The floor types are simple; the emissive map holds colour only, so the engine sets the emission strength.",
+  "related": [
+    "ocean_wave_normals",
+    "sand_ripples"
+  ],
+  "technique_references": [
+    "Paraxial refraction of vertical light through a height field",
+    "Photon splatting: ray density by bilinear deposition with wrap-around",
+    "Fractional Brownian motion on two incommensurate lattices for the water surface",
+    "Separable 1-2-1 smoothing filter",
+    "Height to tangent-space normal by central differences",
+    "Cavity occlusion from blurred height"
+  ],
+  "native_checks": [
+    "command_line_generates_declared_maps",
+    "maps_decode",
+    "maps_have_declared_size_and_channels",
+    "maps_tile_without_a_seam",
+    "normal_vectors_unit_length_facing_out",
+    "maps_carry_detail",
+    "godot_imports_the_maps",
+    "godot_material_template_loads_every_map",
+    "godot_compatibility_render",
+    "capture_shows_the_textured_surface",
+    "blender_builds_the_material"
+  ]
+}

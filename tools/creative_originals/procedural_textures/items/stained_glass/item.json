@@ -1,0 +1,245 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "stained_glass",
+  "title": "Leaded stained glass in three layouts",
+  "purpose": "Generate tileable maps of leaded stained glass: irregular cathedral pieces, diamond quarries or circles in squares, each pane a hashed glass colour with streaks and seed bubbles in raised lead came, with an emissive map of the light through it. Use for church, Victorian and fantasy windows and lamps.",
+  "form": "function",
+  "asset_role": null,
+  "dimension": "3d",
+  "engine": {
+    "name": "python",
+    "minimum_version": "3.10"
+  },
+  "tags": [
+    "texture",
+    "pbr",
+    "tileable",
+    "stained glass",
+    "window",
+    "lead came",
+    "emissive",
+    "church",
+    "procedural"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "role": "other"
+    },
+    {
+      "path": "stained_glass.py",
+      "role": "executable_tool"
+    },
+    {
+      "path": "material.tres",
+      "role": "skill_asset"
+    },
+    {
+      "path": "blender_material.py",
+      "role": "executable_tool"
+    }
+  ],
+  "contract": {
+    "entry_point": "generate",
+    "module": "stained_glass.py",
+    "signature": "generate(width=256, height=256, seed=0, preset=\"default\", directx_normal=False, **parameters) -> {map name: {\"channels\", \"colour_space\", \"pixels\"}}",
+    "command_line": "python stained_glass.py --size 1024 --seed 7 --preset NAME --out DIR [--width W --height H] [--set NAME=VALUE] [--directx-normal] [--orm]",
+    "maps": [
+      {
+        "name": "albedo",
+        "channels": 3,
+        "colour_space": "srgb",
+        "convention": "gltf_base_color",
+        "range": [
+          0.02,
+          0.9
+        ]
+      },
+      {
+        "name": "normal",
+        "channels": 3,
+        "colour_space": "linear",
+        "convention": "opengl_y_up"
+      },
+      {
+        "name": "roughness",
+        "channels": 1,
+        "colour_space": "linear",
+        "convention": "gltf_roughness",
+        "range": [
+          0.05,
+          0.9
+        ]
+      },
+      {
+        "name": "metallic",
+        "channels": 1,
+        "colour_space": "linear",
+        "convention": "gltf_metallic"
+      },
+      {
+        "name": "height",
+        "channels": 1,
+        "colour_space": "linear",
+        "convention": "white_is_high"
+      },
+      {
+        "name": "ao",
+        "channels": 1,
+        "colour_space": "linear",
+        "convention": "white_is_unoccluded"
+      },
+      {
+        "name": "emissive",
+        "channels": 3,
+        "colour_space": "srgb",
+        "convention": "gltf_emissive"
+      }
+    ],
+    "parameters": [
+      {
+        "name": "layout",
+        "type": "int",
+        "default": 0,
+        "minimum": 0,
+        "maximum": 2,
+        "meaning": "0 irregular cathedral pieces, 1 diamond quarries, 2 circles in squares."
+      },
+      {
+        "name": "pieces",
+        "type": "int",
+        "default": 6,
+        "minimum": 2,
+        "maximum": 16,
+        "meaning": "Panes across the tile."
+      },
+      {
+        "name": "lead_width",
+        "type": "float",
+        "default": 0.06,
+        "minimum": 0.015,
+        "maximum": 0.15,
+        "meaning": "Width of the lead came as a share of a pane."
+      },
+      {
+        "name": "streaks",
+        "type": "float",
+        "default": 0.5,
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "meaning": "Streaks and density variation in the glass."
+      },
+      {
+        "name": "seeds",
+        "type": "float",
+        "default": 0.4,
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "meaning": "Tiny seed bubbles trapped in the glass."
+      },
+      {
+        "name": "glow",
+        "type": "float",
+        "default": 0.85,
+        "minimum": 0.1,
+        "maximum": 1.0,
+        "meaning": "Brightness of the light through the glass in the emissive map."
+      },
+      {
+        "name": "hue_shift",
+        "type": "float",
+        "default": 0.0,
+        "minimum": -0.5,
+        "maximum": 0.5,
+        "meaning": "Hue rotation of the albedo and the light in turns."
+      },
+      {
+        "name": "saturation",
+        "type": "float",
+        "default": 1.0,
+        "minimum": 0.0,
+        "maximum": 2.0,
+        "meaning": "Albedo saturation multiplier."
+      },
+      {
+        "name": "brightness",
+        "type": "float",
+        "default": 1.0,
+        "minimum": 0.5,
+        "maximum": 1.5,
+        "meaning": "Albedo brightness multiplier."
+      }
+    ],
+    "presets": [
+      {
+        "name": "default",
+        "description": "Cathedral glass: irregular jewel-coloured pieces in dark lead.",
+        "values": {}
+      },
+      {
+        "name": "diamond_quarries",
+        "description": "Leaded diamond panes of pale tinted glass with a few coloured ones.",
+        "values": {
+          "layout": 1,
+          "pieces": 6,
+          "lead_width": 0.05,
+          "streaks": 0.25,
+          "seeds": 0.7
+        }
+      },
+      {
+        "name": "victorian_circles",
+        "description": "Ruby circles in amber squares with cobalt accents, Victorian style.",
+        "values": {
+          "layout": 2,
+          "pieces": 4,
+          "lead_width": 0.05
+        }
+      },
+      {
+        "name": "amber_opalescent",
+        "description": "Large streaky opalescent amber and green pieces with thin copper foil.",
+        "values": {
+          "pieces": 4,
+          "lead_width": 0.03,
+          "streaks": 0.95,
+          "seeds": 0.1
+        }
+      }
+    ],
+    "tileable": true,
+    "default_size": 256,
+    "cost_seconds_1024": 31.1,
+    "peak_memory_mb_1024": 806,
+    "godot_material": "material.tres",
+    "godot_texture_folder": "res://baltor/textures/stained_glass/",
+    "blender_builder": "blender_material.build_material(folder)"
+  },
+  "limits": "A flat panel without refraction, transmission depth or painted figures and grisaille. Glass colour, streaks and bubbles are stylized; streak directions come from a small set of whole-number vectors so they repeat across the tile edge. Solder blobs are drawn only where quarry leads cross. Backlighting is an emissive map of glass colour, not a light transport model, and the engine sets its strength. Occlusion is a blurred-height estimate.",
+  "related": [
+    "truchet_tiles",
+    "frost_ferns"
+  ],
+  "technique_references": [
+    "Worley cells for irregular cathedral panes",
+    "Diamond lattice from n(u + v) and n(u - v)",
+    "Circles inscribed in a square grid",
+    "Hashed weighted palette choice per pane",
+    "Exact border distance with a rounded came profile",
+    "Directional sine streaks on whole-number vectors with noise",
+    "Height to tangent-space normal by central differences"
+  ],
+  "native_checks": [
+    "command_line_generates_declared_maps",
+    "maps_decode",
+    "maps_have_declared_size_and_channels",
+    "maps_tile_without_a_seam",
+    "normal_vectors_unit_length_facing_out",
+    "maps_carry_detail",
+    "godot_imports_the_maps",
+    "godot_material_template_loads_every_map",
+    "godot_compatibility_render",
+    "capture_shows_the_textured_surface",
+    "blender_builds_the_material"
+  ]
+}

@@ -1,0 +1,244 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "straw_thatch",
+  "title": "Thatched roof of straw or water reed",
+  "purpose": "Generate tileable PBR maps of a thatched roof: overlapping courses of long straw laid down the slope or combed water reed showing its cut butts, with ragged course edges, weathering to grey and moss in the shelter of the courses. Use for cottage roofs, huts, barns and fantasy villages.",
+  "form": "function",
+  "asset_role": null,
+  "dimension": "3d",
+  "engine": {
+    "name": "python",
+    "minimum_version": "3.10"
+  },
+  "tags": [
+    "texture",
+    "pbr",
+    "tileable",
+    "thatch",
+    "straw",
+    "reed",
+    "roof",
+    "rustic",
+    "procedural"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "role": "other"
+    },
+    {
+      "path": "straw_thatch.py",
+      "role": "executable_tool"
+    },
+    {
+      "path": "material.tres",
+      "role": "skill_asset"
+    },
+    {
+      "path": "blender_material.py",
+      "role": "executable_tool"
+    }
+  ],
+  "contract": {
+    "entry_point": "generate",
+    "module": "straw_thatch.py",
+    "signature": "generate(width=256, height=256, seed=0, preset=\"default\", directx_normal=False, **parameters) -> {map name: {\"channels\", \"colour_space\", \"pixels\"}}",
+    "command_line": "python straw_thatch.py --size 1024 --seed 7 --preset NAME --out DIR [--width W --height H] [--set NAME=VALUE] [--directx-normal] [--orm]",
+    "maps": [
+      {
+        "name": "albedo",
+        "channels": 3,
+        "colour_space": "srgb",
+        "convention": "gltf_base_color",
+        "range": [
+          0.02,
+          0.9
+        ]
+      },
+      {
+        "name": "normal",
+        "channels": 3,
+        "colour_space": "linear",
+        "convention": "opengl_y_up"
+      },
+      {
+        "name": "roughness",
+        "channels": 1,
+        "colour_space": "linear",
+        "convention": "gltf_roughness",
+        "range": [
+          0.45,
+          1.0
+        ]
+      },
+      {
+        "name": "height",
+        "channels": 1,
+        "colour_space": "linear",
+        "convention": "white_is_high"
+      },
+      {
+        "name": "ao",
+        "channels": 1,
+        "colour_space": "linear",
+        "convention": "white_is_unoccluded"
+      }
+    ],
+    "parameters": [
+      {
+        "name": "style",
+        "type": "int",
+        "default": 0,
+        "minimum": 0,
+        "maximum": 1,
+        "meaning": "0 long straw laid along the slope, 1 combed water reed showing the cut butts."
+      },
+      {
+        "name": "courses",
+        "type": "int",
+        "default": 4,
+        "minimum": 2,
+        "maximum": 10,
+        "meaning": "Courses down the tile; each overlaps the one below."
+      },
+      {
+        "name": "density",
+        "type": "float",
+        "default": 1.0,
+        "minimum": 0.5,
+        "maximum": 2.0,
+        "meaning": "Strands per course; 1 covers each course about three times over, so little shadow shows."
+      },
+      {
+        "name": "strand_width",
+        "type": "float",
+        "default": 0.0032,
+        "minimum": 0.0015,
+        "maximum": 0.007,
+        "meaning": "Straw or reed thickness in texture units."
+      },
+      {
+        "name": "raggedness",
+        "type": "float",
+        "default": 0.5,
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "meaning": "How uneven the lower edge of each course is."
+      },
+      {
+        "name": "weathering",
+        "type": "float",
+        "default": 0.2,
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "meaning": "Greying of the straw with age."
+      },
+      {
+        "name": "moss",
+        "type": "float",
+        "default": 0.0,
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "meaning": "Moss in the shelter below each course edge."
+      },
+      {
+        "name": "hue_shift",
+        "type": "float",
+        "default": 0.0,
+        "minimum": -0.5,
+        "maximum": 0.5,
+        "meaning": "Hue rotation of the albedo in turns."
+      },
+      {
+        "name": "saturation",
+        "type": "float",
+        "default": 1.0,
+        "minimum": 0.0,
+        "maximum": 2.0,
+        "meaning": "Albedo saturation multiplier."
+      },
+      {
+        "name": "brightness",
+        "type": "float",
+        "default": 1.0,
+        "minimum": 0.5,
+        "maximum": 1.5,
+        "meaning": "Albedo brightness multiplier."
+      }
+    ],
+    "presets": [
+      {
+        "name": "default",
+        "description": "Golden long-straw thatch with ragged course edges.",
+        "values": {}
+      },
+      {
+        "name": "water_reed",
+        "description": "Combed water reed: dense cut butts, crisp courses.",
+        "values": {
+          "style": 1,
+          "courses": 5,
+          "raggedness": 0.25,
+          "strand_width": 0.0034
+        }
+      },
+      {
+        "name": "weathered_grey",
+        "description": "Old grey thatch with moss under the course edges.",
+        "values": {
+          "weathering": 0.9,
+          "moss": 0.6,
+          "raggedness": 0.8,
+          "courses": 3
+        }
+      },
+      {
+        "name": "fresh_wheat",
+        "description": "New pale wheat straw, fine and even.",
+        "values": {
+          "strand_width": 0.0022,
+          "density": 1.4,
+          "raggedness": 0.3,
+          "weathering": 0.0,
+          "courses": 5
+        }
+      }
+    ],
+    "tileable": true,
+    "default_size": 256,
+    "cost_seconds_1024": 42.9,
+    "peak_memory_mb_1024": 518,
+    "godot_material": "material.tres",
+    "godot_texture_folder": "res://baltor/textures/straw_thatch/",
+    "blender_builder": "blender_material.build_material(folder)"
+  },
+  "limits": "Courses are straight horizontal bands of painted strokes; ridges, eaves, gables and decorative ridge patterns are out of scope. The slope runs down the tile (ridge at the top), so map V along the roof slope. Strands are straight capsules with a z-buffer, not bent fibres, and the moss is a tint with a slight lift, not modelled growth. Strand counts are fixed per course, so very thin strands at small sizes are drawn at least about a pixel wide. Occlusion is a blurred-height estimate.",
+  "related": [
+    "roof_shingles",
+    "roof_tiles_clay",
+    "wicker_weave",
+    "bamboo_poles"
+  ],
+  "technique_references": [
+    "Course bands with whole counts down the tile",
+    "Z-buffered capsule painting of strands with wrap-around",
+    "Height rising from the hidden top of a course to its exposed edge",
+    "Ragged course edges from random strand lengths",
+    "Noise-driven weathering and sheltered moss masks",
+    "Height to tangent-space normal by central differences",
+    "Cavity occlusion from blurred height"
+  ],
+  "native_checks": [
+    "command_line_generates_declared_maps",
+    "maps_decode",
+    "maps_have_declared_size_and_channels",
+    "maps_tile_without_a_seam",
+    "normal_vectors_unit_length_facing_out",
+    "maps_carry_detail",
+    "godot_imports_the_maps",
+    "godot_material_template_loads_every_map",
+    "godot_compatibility_render",
+    "capture_shows_the_textured_surface",
+    "blender_builds_the_material"
+  ]
+}

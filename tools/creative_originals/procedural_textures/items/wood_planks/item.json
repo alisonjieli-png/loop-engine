@@ -1,0 +1,271 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "wood_planks",
+  "title": "Wood floor planks",
+  "purpose": "Generate tileable PBR maps of wood floor or deck boards with staggered joints, growth-ring grain that forms cathedral arches, knots and per-board tone. Use for floors, decks, walls and furniture panels.",
+  "form": "function",
+  "asset_role": null,
+  "dimension": "3d",
+  "engine": {
+    "name": "python",
+    "minimum_version": "3.10"
+  },
+  "tags": [
+    "texture",
+    "pbr",
+    "tileable",
+    "wood",
+    "planks",
+    "floor",
+    "grain",
+    "procedural"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "role": "other"
+    },
+    {
+      "path": "wood_planks.py",
+      "role": "executable_tool"
+    },
+    {
+      "path": "material.tres",
+      "role": "skill_asset"
+    },
+    {
+      "path": "blender_material.py",
+      "role": "executable_tool"
+    }
+  ],
+  "contract": {
+    "entry_point": "generate",
+    "module": "wood_planks.py",
+    "signature": "generate(width=256, height=256, seed=0, preset=\"default\", directx_normal=False, **parameters) -> {map name: {\"channels\", \"colour_space\", \"pixels\"}}",
+    "command_line": "python wood_planks.py --size 1024 --seed 7 --preset NAME --out DIR [--width W --height H] [--set NAME=VALUE] [--directx-normal] [--orm]",
+    "maps": [
+      {
+        "name": "albedo",
+        "channels": 3,
+        "colour_space": "srgb",
+        "convention": "gltf_base_color",
+        "range": [
+          0.02,
+          0.9
+        ]
+      },
+      {
+        "name": "normal",
+        "channels": 3,
+        "colour_space": "linear",
+        "convention": "opengl_y_up"
+      },
+      {
+        "name": "roughness",
+        "channels": 1,
+        "colour_space": "linear",
+        "convention": "gltf_roughness",
+        "range": [
+          0.12,
+          1.0
+        ]
+      },
+      {
+        "name": "height",
+        "channels": 1,
+        "colour_space": "linear",
+        "convention": "white_is_high"
+      },
+      {
+        "name": "ao",
+        "channels": 1,
+        "colour_space": "linear",
+        "convention": "white_is_unoccluded"
+      }
+    ],
+    "parameters": [
+      {
+        "name": "board_rows",
+        "type": "int",
+        "default": 5,
+        "minimum": 2,
+        "maximum": 16,
+        "meaning": "Rows of boards across the tile height."
+      },
+      {
+        "name": "boards_per_row",
+        "type": "int",
+        "default": 2,
+        "minimum": 1,
+        "maximum": 6,
+        "meaning": "Boards end to end in each row across the tile width."
+      },
+      {
+        "name": "gap",
+        "type": "float",
+        "default": 0.004,
+        "minimum": 0.0005,
+        "maximum": 0.02,
+        "meaning": "Width of the joints between boards in texture units."
+      },
+      {
+        "name": "ring_density",
+        "type": "float",
+        "default": 30.0,
+        "minimum": 5.0,
+        "maximum": 80.0,
+        "meaning": "Growth rings per texture unit of distance from the pith."
+      },
+      {
+        "name": "ring_contrast",
+        "type": "float",
+        "default": 0.5,
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "meaning": "Darkness of the late-wood bands."
+      },
+      {
+        "name": "knots",
+        "type": "float",
+        "default": 0.2,
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "meaning": "Chance of a knot on each board."
+      },
+      {
+        "name": "board_variation",
+        "type": "float",
+        "default": 0.5,
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "meaning": "Spread of tone between boards."
+      },
+      {
+        "name": "gloss",
+        "type": "float",
+        "default": 0.5,
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "meaning": "Finish from raw or weathered (0) to lacquered (1)."
+      },
+      {
+        "name": "weathering",
+        "type": "float",
+        "default": 0.0,
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "meaning": "Raised grain, greying and end checks from exposure."
+      },
+      {
+        "name": "hue_shift",
+        "type": "float",
+        "default": 0.0,
+        "minimum": -0.5,
+        "maximum": 0.5,
+        "meaning": "Hue rotation of the albedo in turns."
+      },
+      {
+        "name": "saturation",
+        "type": "float",
+        "default": 1.0,
+        "minimum": 0.0,
+        "maximum": 2.0,
+        "meaning": "Albedo saturation multiplier."
+      },
+      {
+        "name": "brightness",
+        "type": "float",
+        "default": 1.0,
+        "minimum": 0.5,
+        "maximum": 1.5,
+        "meaning": "Albedo brightness multiplier."
+      }
+    ],
+    "presets": [
+      {
+        "name": "default",
+        "description": "Oiled oak boards with fine cathedral grain.",
+        "values": {}
+      },
+      {
+        "name": "walnut",
+        "description": "Dark lacquered walnut, wide boards, subtle rings.",
+        "values": {
+          "board_rows": 4,
+          "ring_density": 22.0,
+          "ring_contrast": 0.35,
+          "gloss": 0.85,
+          "knots": 0.05
+        }
+      },
+      {
+        "name": "knotty_pine",
+        "description": "Yellow pine with strong rings and frequent knots.",
+        "values": {
+          "ring_density": 18.0,
+          "ring_contrast": 0.75,
+          "knots": 0.75,
+          "gloss": 0.35,
+          "board_rows": 5,
+          "boards_per_row": 1
+        }
+      },
+      {
+        "name": "weathered_grey",
+        "description": "Sun-bleached grey deck boards with raised grain and checks.",
+        "values": {
+          "weathering": 0.9,
+          "gloss": 0.0,
+          "gap": 0.009,
+          "ring_contrast": 0.7,
+          "board_rows": 6,
+          "boards_per_row": 2
+        }
+      },
+      {
+        "name": "white_oak_strip",
+        "description": "Narrow pale strips of lacquered white oak.",
+        "values": {
+          "board_rows": 10,
+          "boards_per_row": 3,
+          "ring_density": 40.0,
+          "gloss": 0.75,
+          "ring_contrast": 0.3,
+          "gap": 0.0025
+        }
+      }
+    ],
+    "tileable": true,
+    "default_size": 256,
+    "cost_seconds_1024": 25.9,
+    "peak_memory_mb_1024": 600,
+    "godot_material": "material.tres",
+    "godot_texture_folder": "res://baltor/textures/wood_planks/",
+    "blender_builder": "blender_material.build_material(folder)"
+  },
+  "limits": "Grain comes from a geometric ring model with noise, not from wood anatomy; there is no ray fleck, figure or end grain. Boards run along the tile width only. Knots are simple ring distortions with a dark core. Occlusion is a blurred-height estimate.",
+  "related": [
+    "herringbone_parquet",
+    "wood_end_grain_blocks"
+  ],
+  "technique_references": [
+    "Growth rings as distance from an inclined virtual pith axis",
+    "Per-board hashing for tone, pith and incline",
+    "Staggered butt joints from a random offset per row",
+    "Fractional Brownian motion stretched along the board for pores",
+    "Height to tangent-space normal by central differences"
+  ],
+  "native_checks": [
+    "command_line_generates_declared_maps",
+    "maps_decode",
+    "maps_have_declared_size_and_channels",
+    "maps_tile_without_a_seam",
+    "normal_vectors_unit_length_facing_out",
+    "maps_carry_detail",
+    "godot_imports_the_maps",
+    "godot_material_template_loads_every_map",
+    "godot_compatibility_render",
+    "capture_shows_the_textured_surface",
+    "blender_builds_the_material"
+  ]
+}

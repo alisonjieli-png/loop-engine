@@ -1,0 +1,261 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "pixel_sand_dunes",
+  "title": "Pixel-art sand with dithered dunes and ripples",
+  "purpose": "Generate a tileable pixel-art sand tile at a chosen art resolution: broad dune shading turned into stepped Bayer-dithered bands, wavy wind ripple lines with light crests and shadowed troughs, shells and pebbles, with per-pixel normal, height, roughness and occlusion maps. Use for beaches and deserts in 2D games.",
+  "form": "function",
+  "asset_role": null,
+  "dimension": "2d",
+  "engine": {
+    "name": "python",
+    "minimum_version": "3.10"
+  },
+  "tags": [
+    "texture",
+    "pixel art",
+    "tileable",
+    "sand",
+    "desert",
+    "beach",
+    "dithering",
+    "2d",
+    "game tile",
+    "procedural"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "role": "other"
+    },
+    {
+      "path": "pixel_sand_dunes.py",
+      "role": "executable_tool"
+    },
+    {
+      "path": "material.tres",
+      "role": "skill_asset"
+    },
+    {
+      "path": "blender_material.py",
+      "role": "executable_tool"
+    }
+  ],
+  "contract": {
+    "entry_point": "generate",
+    "module": "pixel_sand_dunes.py",
+    "signature": "generate(width=256, height=256, seed=0, preset=\"default\", directx_normal=False, **parameters) -> {map name: {\"channels\", \"colour_space\", \"pixels\"}}",
+    "command_line": "python pixel_sand_dunes.py --size 1024 --seed 7 --preset NAME --out DIR [--width W --height H] [--set NAME=VALUE] [--directx-normal] [--orm]",
+    "maps": [
+      {
+        "name": "albedo",
+        "channels": 3,
+        "colour_space": "srgb",
+        "convention": "gltf_base_color",
+        "range": [
+          0.02,
+          0.98
+        ]
+      },
+      {
+        "name": "normal",
+        "channels": 3,
+        "colour_space": "linear",
+        "convention": "opengl_y_up"
+      },
+      {
+        "name": "roughness",
+        "channels": 1,
+        "colour_space": "linear",
+        "convention": "gltf_roughness",
+        "range": [
+          0.3,
+          1.0
+        ]
+      },
+      {
+        "name": "height",
+        "channels": 1,
+        "colour_space": "linear",
+        "convention": "white_is_high"
+      },
+      {
+        "name": "ao",
+        "channels": 1,
+        "colour_space": "linear",
+        "convention": "white_is_unoccluded"
+      }
+    ],
+    "parameters": [
+      {
+        "name": "art_pixels",
+        "type": "int",
+        "default": 32,
+        "minimum": 16,
+        "maximum": 64,
+        "meaning": "Art pixels along each side of the tile; the maps enlarge them with nearest-neighbour sampling."
+      },
+      {
+        "name": "dunes",
+        "type": "int",
+        "default": 1,
+        "minimum": 1,
+        "maximum": 3,
+        "meaning": "Dune waves down the tile."
+      },
+      {
+        "name": "dune_shading",
+        "type": "float",
+        "default": 0.45,
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "meaning": "Contrast of the dithered dune shading."
+      },
+      {
+        "name": "ripple_spacing",
+        "type": "int",
+        "default": 5,
+        "minimum": 3,
+        "maximum": 8,
+        "meaning": "Distance between wind ripple lines in art pixels."
+      },
+      {
+        "name": "ripple_slant",
+        "type": "int",
+        "default": 1,
+        "minimum": -2,
+        "maximum": 2,
+        "meaning": "Slant of the ripple lines: whole steps of rise across the tile."
+      },
+      {
+        "name": "ripples",
+        "type": "float",
+        "default": 0.6,
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "meaning": "Share of the sand covered by ripple patches."
+      },
+      {
+        "name": "shells",
+        "type": "float",
+        "default": 0.3,
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "meaning": "Density of shells."
+      },
+      {
+        "name": "pebbles",
+        "type": "float",
+        "default": 0.2,
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "meaning": "Density of pebbles."
+      },
+      {
+        "name": "relief",
+        "type": "float",
+        "default": 1.0,
+        "minimum": 0.2,
+        "maximum": 2.0,
+        "meaning": "Strength of the per-pixel normal map."
+      },
+      {
+        "name": "hue_shift",
+        "type": "float",
+        "default": 0.0,
+        "minimum": -0.5,
+        "maximum": 0.5,
+        "meaning": "Hue rotation of the albedo in turns."
+      },
+      {
+        "name": "saturation",
+        "type": "float",
+        "default": 1.0,
+        "minimum": 0.0,
+        "maximum": 2.0,
+        "meaning": "Albedo saturation multiplier."
+      },
+      {
+        "name": "brightness",
+        "type": "float",
+        "default": 1.0,
+        "minimum": 0.5,
+        "maximum": 1.5,
+        "meaning": "Albedo brightness multiplier."
+      }
+    ],
+    "presets": [
+      {
+        "name": "default",
+        "description": "Warm beach sand with ripples, shells and a few pebbles.",
+        "values": {}
+      },
+      {
+        "name": "desert_dunes",
+        "description": "Orange desert dunes with strong shading and long ripples, no shells.",
+        "values": {
+          "dunes": 2,
+          "dune_shading": 0.9,
+          "ripples": 0.85,
+          "ripple_spacing": 4,
+          "shells": 0.0,
+          "pebbles": 0.05
+        }
+      },
+      {
+        "name": "white_coral",
+        "description": "Bright white coral sand scattered with shells and coral bits.",
+        "values": {
+          "dune_shading": 0.3,
+          "ripples": 0.3,
+          "shells": 0.8,
+          "pebbles": 0.1,
+          "ripple_slant": -1
+        }
+      },
+      {
+        "name": "black_sand",
+        "description": "Black volcanic sand with grey pebbles and pale glints.",
+        "values": {
+          "dune_shading": 0.5,
+          "shells": 0.1,
+          "pebbles": 0.6,
+          "ripple_spacing": 6
+        }
+      }
+    ],
+    "tileable": true,
+    "default_size": 256,
+    "cost_seconds_1024": 8.9,
+    "peak_memory_mb_1024": 88,
+    "godot_material": "material.tres",
+    "godot_texture_folder": "res://baltor/textures/pixel_sand_dunes/",
+    "blender_builder": "blender_material.build_material(folder)"
+  },
+  "limits": "Stylized pixel art with the light from the top left baked into the shading; dunes and ripples are periodic waves bent by noise, not a wind or sediment model. Ripple frequencies are whole numbers across and down the tile so the pattern repeats exactly, which limits slants to whole steps. Shells and pebbles are tiny fixed sprites. The normal map treats each art pixel as a flat facet. Output sizes that are not a whole multiple of art_pixels give art pixels of unequal widths. Occlusion is a blurred-height estimate posterized to eighths.",
+  "related": [
+    "sand_ripples",
+    "pixel_water_surface",
+    "pixel_snow_ice"
+  ],
+  "technique_references": [
+    "Ordered dithering with a 4 x 4 Bayer matrix",
+    "Periodic waves with whole-number frequencies",
+    "Phase bending by low-frequency fractal noise",
+    "Crest and trough lines from the fractional phase",
+    "Small sprite stamping with wrap-around",
+    "Per-art-pixel normals by central differences"
+  ],
+  "native_checks": [
+    "command_line_generates_declared_maps",
+    "maps_decode",
+    "maps_have_declared_size_and_channels",
+    "maps_tile_without_a_seam",
+    "normal_vectors_unit_length_facing_out",
+    "maps_carry_detail",
+    "godot_imports_the_maps",
+    "godot_material_template_loads_every_map",
+    "godot_compatibility_render",
+    "capture_shows_the_textured_surface",
+    "blender_builds_the_material"
+  ]
+}
