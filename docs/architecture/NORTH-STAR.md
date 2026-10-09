@@ -4,6 +4,14 @@ Kind: current product direction. Updated October 8, 2026 under the owner's reque
 
 ## Current direction
 
+The owner's later October 8 direction sets two million distinct served harness
+component files as the next milestone toward the ten-million target. Prioritize
+qualification and additive publication of retained useful candidates alongside
+new generation. Reviewing the owner's other-company SMB sources remains private
+research: inventory, chunk reading, answered questions, reusable candidates and
+served files have separate counts. Preserve source-specific reuse rights and
+recover the existing API-registry work before rebuilding equivalent tools.
+
 On October 8 the owner requested a twelve-hour campaign toward one million
 additional harness component files, within the ten-million served-file target.
 Expand small task-specific instructions, prompts, personas, exact strings,

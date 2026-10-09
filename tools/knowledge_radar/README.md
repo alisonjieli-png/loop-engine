@@ -27,6 +27,45 @@ Automated commercial Reddit access requires a platform-access review before
 activation. A public reply does not grant permission to redistribute its
 code, assets or prose. See [the source and engine record](../../docs/research/CREATIVE-COMPONENTS-AND-ENGINE-CONTROL-2026-09-29.md).
 
+## Provider separation and source intake
+
+Keep a functional capability separate from its provider. Web search, news
+search, forum discovery and repository discovery can use different engines
+behind `research_query_executor`, preserving its `research_query/v1` input and
+`research_query_evidence/v2` result. Provider-specific request shapes and
+parsers live beside the owning adapter, not in the planner or a product tier.
+Each engine needs its own conformance checks before selection.
+
+The existing boundaries own the rest:
+
+| Concern | Owner |
+|---|---|
+| Functional contracts and selectable engines | `src/loop_engine/data/engine_slots.yaml` |
+| Query dimensions and ordering | `tools/query_multiplier/` |
+| Bounded source reads and normalized leads | `tools/knowledge_radar/` and its source commands |
+| Credential references | `tools/operator_credentials.json`; values stay in Secret Service |
+| Private source and work records | CommunityStore and RecordOperationService |
+| Candidate files | `tools/supply_lines/`, with output outside the repository |
+| Qualification and publication | `tools/component_qualification/` and catalogue release tools |
+
+A provider example is an intake lead, not a working adapter or an enabled
+schedule. Record access probes, product quotas, unknown outcomes and source
+rights separately. Two credentials do not create two independent quota
+allowances. A marketplace-wide limit must not replace a smaller product limit.
+
+Article fetching, extraction and model summarization have different outputs,
+effects and costs. Numeric market data and commerce details need their own
+typed edges before execution; do not force them into a search-result shape.
+A GET that returns a WebSocket credential is credential handling, not feed
+data. Voting, posting, provider purchases, cookie forwarding and media
+publication remain separate effects, never consequences of source discovery.
+
+Other-company files and conversation chunks stay in the private audit area.
+An intake manifest, a question bank, a saved answer, a candidate and a served
+file are different records. None is counted as the next simply because it
+exists on disk. Preserve their source relationships when moving one qualified
+capability into the existing library.
+
 ## Private Kaggle metadata reads
 
 [`tools/read_kaggle.py`](../read_kaggle.py) reads competition metadata,

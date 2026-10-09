@@ -44,6 +44,17 @@ KEY_ATTRIBUTES = {"application": "loop-engine", "service": "baltor-pilot.fly.dev
 
 
 class CredentialTests(unittest.TestCase):
+    def test_secondary_research_references_do_not_alias_primary_credentials(self):
+        references = tool.references()["api_keys"]
+        for primary, secondary in (("anthropic-model-primary", "anthropic-model-secondary"),
+                                   ("rapidapi-reddit34-primary", "rapidapi-owner-secondary")):
+            first, second = references[primary], references[secondary]
+            self.assertNotEqual(tuple(first[name] for name in ("service", "account", "purpose")),
+                                tuple(second[name] for name in ("service", "account", "purpose")))
+            self.assertEqual(first["environment"], second["environment"])
+            self.assertNotIn("value", second)
+            self.assertNotIn("token", second)
+
     def test_reddit_inventory_alias_reuses_the_native_reader_keyring_identity(self):
         from knowledge_radar.rapidapi_reddit import REFERENCE
         spec = tool.references()["api_keys"]["rapidapi-reddit34-primary"]
