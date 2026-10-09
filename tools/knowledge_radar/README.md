@@ -240,6 +240,14 @@ No scheduled question or public feed is enabled by installing this adapter.
 Offline fixture checks are in `tools/test_huggingface_benchmarks.py`; those
 checks do not establish a successful live read.
 
+The October 9 bounded live probe returned 67 rows. The REST API uses `modelId`
+and `pullRequest`; the documentation's Python objects expose `model_id` and
+`pull_request`. The initial parser held the ten inspected rows, and that
+failed interpretation remains in the private probe record. The corrected
+parser is checked by replaying the retained bounded public fact projection;
+it accepts the REST names and preserves a reported `lower_is_better` flag.
+Neither request ran a benchmark or qualified redistribution of its results.
+
 ## Private Trendshift reads
 
 [`tools/read_trendshift.py`](../read_trendshift.py) reads one source selection

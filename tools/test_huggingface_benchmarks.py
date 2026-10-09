@@ -13,8 +13,8 @@ from tools.test_knowledge_radar import CONTRACTS, FakeNetwork, context_for
 
 DATASET = "example/benchmark"
 ENDPOINT = "huggingface.co/api/datasets/" + DATASET + "/leaderboard"
-ENTRY = {"model_id": "example/model", "rank": 1, "value": 72.5, "verified": True,
-         "filename": ".eval_results/benchmark.yaml", "pull_request": 4}
+ENTRY = {"modelId": "example/model", "rank": 1, "value": 72.5, "verified": True,
+         "filename": ".eval_results/benchmark.yaml", "pullRequest": 4}
 
 
 class HuggingFaceBenchmarkTests(unittest.TestCase):
@@ -64,8 +64,8 @@ class HuggingFaceBenchmarkTests(unittest.TestCase):
 
     def test_bad_scores_and_identity_paths_cannot_enter_observations(self):
         for change in ({"value": True}, {"value": "72.5"}, {"value": 10 ** 1000}, {"rank": True},
-                       {"model_id": "../model"}, {"filename": ".eval_results/../../credential.yaml"},
-                       {"filename": "config.json"}, {"pull_request": False}):
+                       {"modelId": "../model"}, {"filename": ".eval_results/../../credential.yaml"},
+                       {"filename": "config.json"}, {"pullRequest": False}):
             with self.subTest(change=change):
                 result, _ = self.read([{**ENTRY, **change}])
                 self.assertEqual(result.status, engines.PARTIAL)
@@ -88,12 +88,21 @@ class HuggingFaceBenchmarkTests(unittest.TestCase):
         self.assertEqual(result.guard_texts, ())
 
     def test_repeated_rows_and_output_bound_are_partial_without_pagination(self):
-        for data, limit in (([ENTRY, ENTRY], 10), ([ENTRY, {**ENTRY, "model_id": "example/second"}], 1)):
+        for data, limit in (([ENTRY, ENTRY], 10), ([ENTRY, {**ENTRY, "modelId": "example/second"}], 1)):
             result, network = self.read(data, limit=limit)
             self.assertEqual(result.status, engines.PARTIAL)
             self.assertFalse(result.complete)
             self.assertEqual(len(result.observations), 1)
             self.assertEqual(len(network.requests), 1)
+
+    def test_rest_names_and_reported_direction_are_preserved(self):
+        result, _ = self.read([{**ENTRY, "lower_is_better": False}])
+        self.assertIs(result.observations[0].facts["lower_is_better"], False)
+        self.assertEqual(result.observations[0].facts["evaluation_pull_request"], 4)
+        wrong = {**ENTRY, "model_id": ENTRY["modelId"]}
+        del wrong["modelId"]
+        result, _ = self.read([wrong])
+        self.assertEqual(result.observations, (), "SDK field names are not the observed REST wire shape")
 
     def test_provider_refusals_never_renew_results_or_retry(self):
         for status in (401, 403, 404, 429, 500):

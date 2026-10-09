@@ -9,9 +9,10 @@ from __future__ import annotations
 
 import math
 import re
-from urllib.parse import quote
+from urllib.parse import quote, urlunsplit
 
 from loop_engine.core.library_ingestion.request_log import RequestCeilingReached
+from loop_engine.core.library_ingestion.https_transport import HTTPS_SCHEME
 from loop_engine.core.record_operations_records import parse_json
 
 from .engines import (FAILED, OK, PARTIAL, EngineAnswer, RadarEngineError, ReadContext,
@@ -19,7 +20,6 @@ from .engines import (FAILED, OK, PARTIAL, EngineAnswer, RadarEngineError, ReadC
 from .engines_network import _status_answer
 
 HOST = "huggingface.co"
-DOCUMENTATION = "https://huggingface.co/docs/hub/leaderboard-data-guide"
 IDENTIFIER = re.compile(r"[A-Za-z0-9][A-Za-z0-9._-]{0,95}/[A-Za-z0-9][A-Za-z0-9._-]{0,95}\Z")
 RESULT_FILE = re.compile(r"\.eval_results/[A-Za-z0-9][A-Za-z0-9._/-]{0,180}\.ya?ml\Z")
 
@@ -42,7 +42,8 @@ def finite_score(value):
 
 class HuggingFaceBenchmarkLeaderboard:
     engine_id, engine_version = "huggingface_benchmark_leaderboard", "1.0.0"
-    material_facts = ("benchmark_dataset", "model_id", "reported_score", "reported_rank", "source_verified")
+    material_facts = ("benchmark_dataset", "model_id", "reported_score", "reported_rank", "source_verified",
+                      "lower_is_better", "evaluation_filename", "evaluation_pull_request")
 
     def read(self, context: ReadContext) -> EngineAnswer:
         dataset = parameter(context, "dataset", kind=str)
@@ -54,7 +55,7 @@ class HuggingFaceBenchmarkLeaderboard:
         if set(context.binding.parameters) - {"dataset", "limit"}:
             raise RadarEngineError("radar_parameter_invalid", "leaderboard parameters are dataset and limit")
         path = "/api/datasets/" + dataset + "/leaderboard"
-        address = "https://" + HOST + path
+        address = urlunsplit((HTTPS_SCHEME, HOST, path, "", ""))
         try:
             response = context.network.get(self.engine_id, HOST, path)
         except (RadarEngineError, RequestCeilingReached, OSError) as error:
@@ -72,35 +73,37 @@ class HuggingFaceBenchmarkLeaderboard:
         # The transport bounds response bytes. This output bound is explicit,
         # and no unseen cursor/page is assumed to have been read.
         for item in data[:limit]:
-            if not isinstance(item, dict) or not identifier(item.get("model_id")):
+            if not isinstance(item, dict) or not identifier(item.get("modelId")):
                 excluded.append(("redacted leaderboard row", "model identity missing or invalid"))
                 continue
             score, rank = item.get("value"), item.get("rank")
             if (not finite_score(score)
                     or type(rank) is not int or rank < 1):
-                excluded.append((item["model_id"], "finite numeric score and positive integer rank required"))
+                excluded.append((item["modelId"], "finite numeric score and positive integer rank required"))
                 continue
-            filename, pull = item.get("filename"), item.get("pull_request")
+            filename, pull = item.get("filename"), item.get("pullRequest")
             if filename is not None and not result_filename(filename):
-                excluded.append((item["model_id"], "evaluation result filename is invalid"))
+                excluded.append((item["modelId"], "evaluation result filename is invalid"))
                 continue
             if pull is not None and (type(pull) is not int or pull < 1):
-                excluded.append((item["model_id"], "evaluation pull request is invalid"))
+                excluded.append((item["modelId"], "evaluation pull request is invalid"))
                 continue
-            identity = (item["model_id"], filename, pull)
+            identity = (item["modelId"], filename, pull)
             if identity in seen:
-                excluded.append((item["model_id"], "repeated result identity in the same response"))
+                excluded.append((item["modelId"], "repeated result identity in the same response"))
                 continue
             seen.add(identity)
             verified = item.get("verified") if type(item.get("verified")) is bool else None
-            key = "hf-benchmark:" + dataset + ":" + item["model_id"] + ":" + str(filename or "") + ":" + str(pull or "")
-            rows.append(observation(context, self, key=key, origin="hf:" + item["model_id"],
-                title=item["model_id"] + " on " + dataset,
-                url="https://" + HOST + "/datasets/" + quote(dataset, safe="/"),
+            direction = item.get("lower_is_better") if type(item.get("lower_is_better")) is bool else None
+            key = "hf-benchmark:" + dataset + ":" + item["modelId"] + ":" + str(filename or "") + ":" + str(pull or "")
+            rows.append(observation(context, self, key=key, origin="hf:" + item["modelId"],
+                title=item["modelId"] + " on " + dataset,
+                url=urlunsplit((HTTPS_SCHEME, HOST, "/datasets/" + quote(dataset, safe="/"), "", "")),
                 source_address=address, licence=None,
                 licence_basis="result and benchmark reuse rights have not been qualified",
-                facts={"benchmark_dataset": dataset, "model_id": item["model_id"],
+                facts={"benchmark_dataset": dataset, "model_id": item["modelId"],
                        "reported_score": score, "reported_rank": rank, "source_verified": verified,
+                       "lower_is_better": direction,
                        "evaluation_filename": filename, "evaluation_pull_request": pull,
                        "local_execution_verified": False,
                        "comparison_limit": "benchmark revision, harness, metric definition and measurement date are unreported"}))
