@@ -207,7 +207,17 @@ async def flows(run, origin, client, served, raw):
         run.check(f"starter_{index}_search_finds_items", bool(results), query=query, results=len(results))
         shape("search_library", found)
         if name == "search_library":
-            screens.append({"tool": name, "tool_input": {"query": query, "limit": SCREEN_RESULTS}, "structured_content": found})
+            screen = {"tool": name, "tool_input": {"query": query, "limit": SCREEN_RESULTS}, "structured_content": found}
+            if results:
+                # The view's "Show files" action asks for get_package over the bridge; its real answer is given to the
+                # screenshot host so the action is checked with live data.
+                error, follow = await present(client, served, "get_package", {
+                    "identity": results[0]["identity"], "expected_digest": results[0]["expected_digest"]}, origin,
+                    listed_files=results[0]["files"])
+                if not error:
+                    shape("get_package", follow)
+                    screen["follow_up"] = follow
+            screens.append(screen)
             continue
         top = results[0]
         error, package = await present(client, served, "get_package",

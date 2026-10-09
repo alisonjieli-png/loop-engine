@@ -43,11 +43,12 @@ try {
       const errors = [];
       page.on("pageerror", error => errors.push(String(error)));
       await page.setContent(hostPage(item.prompt, theme));
-      const sent = await page.evaluate(async ({html, prompt, mark, toolInput, toolResult, theme}) => {
+      const sent = await page.evaluate(async ({html, prompt, mark, toolInput, toolResult, theme, followUp}) => {
         document.getElementById("you").textContent = prompt;
         document.getElementById("mark").src = mark;
         const frame = document.getElementById("view");
         const log = [];
+        window.__calls = [];
         let resolveDone;
         const done = new Promise(resolve => { resolveDone = resolve; });
         window.addEventListener("message", event => {
@@ -63,6 +64,11 @@ try {
             frame.contentWindow.postMessage({jsonrpc: "2.0", method: "ui/notifications/tool-input", params: {arguments: toolInput}}, "*");
             frame.contentWindow.postMessage({jsonrpc: "2.0", method: "ui/notifications/tool-result",
               params: {content: [{type: "text", text: JSON.stringify(toolResult)}], structuredContent: toolResult, isError: false}}, "*");
+          } else if (message.method === "tools/call") {
+            window.__calls.push(message.params);
+            frame.contentWindow.postMessage(followUp ? {jsonrpc: "2.0", id: message.id, result: {content: [{type: "text",
+              text: JSON.stringify(followUp)}], structuredContent: followUp, isError: false}}
+              : {jsonrpc: "2.0", id: message.id, error: {code: -32601, message: "No follow-up answer in this case"}}, "*");
           } else if (message.method === "ui/notifications/size-changed" && message.params && message.params.height > 40) {
             frame.style.height = Math.ceil(message.params.height) + "px";
             resolveDone(message.params);
@@ -72,13 +78,18 @@ try {
         const size = await Promise.race([done, new Promise(resolve => setTimeout(() => resolve(null), 8000))]);
         return {log, size};
       }, {html: input.view_html, prompt: item.prompt, mark: input.mark_data_url || "", toolInput: item.tool_input,
-          toolResult: item.structured_content, theme});
+          toolResult: item.structured_content, theme, followUp: item.follow_up || null});
       await page.waitForTimeout(400);
       const measured = await page.evaluate(() => ({height: Math.ceil(document.querySelector(".wrap").getBoundingClientRect().bottom),
         frameHeight: document.getElementById("view").getBoundingClientRect().height}));
       const viewOverflow = await page.frames()[1]?.evaluate(() => document.documentElement.scrollWidth > innerWidth + 1).catch(() => null);
       const row = {case: index + 1, label, width, theme, prompt: item.prompt, tool: item.tool, messages: sent.log,
                    reported_size: sent.size, page_height: measured.height, view_scrolls_sideways: viewOverflow, errors};
+      if (label === "desktop" && item.follow_up) {
+        /* The view's own action: "Show files" on the first card asks the host for get_package over the bridge, and the
+           view must show that package. Done after the screenshot below is taken, on a copy of the page state. */
+        row.follow_up_pending = true;
+      }
       if (label === "desktop") {
         const height = Math.min(MAX_HEIGHT, Math.max(MIN_HEIGHT, measured.height));
         await page.setViewportSize({width: WIDTH, height});
@@ -90,6 +101,17 @@ try {
           row.screenshot.path = path;
         }
       }
+      if (row.follow_up_pending) {
+        delete row.follow_up_pending;
+        const view = page.frameLocator("#view");
+        await view.getByRole("button", {name: /^Show the files of /}).first().click();
+        const shown = await view.getByText("Files and SHA-256 digests").waitFor({timeout: 8000}).then(() => true, () => false);
+        const calls = await page.evaluate(() => window.__calls);
+        const first = (item.structured_content.results || [])[0] || {};
+        row.follow_up = {calls: calls.length, package_shown: shown,
+          asked_for_the_first_result: calls.length === 1 && calls[0].name === "get_package"
+            && calls[0].arguments?.identity === first.identity && calls[0].arguments?.expected_digest === first.expected_digest};
+      }
       results.push(row);
       await context.close();
     }
@@ -98,7 +120,8 @@ try {
   await browser.close();
 }
 const failures = results.filter(row => row.errors.length || !row.messages.includes("ui/initialize")
-  || !row.messages.includes("ui/notifications/size-changed") || row.view_scrolls_sideways === true);
+  || !row.messages.includes("ui/notifications/size-changed") || row.view_scrolls_sideways === true
+  || (row.follow_up && !(row.follow_up.package_shown && row.follow_up.asked_for_the_first_result)));
 const report = {record_type: "chatgpt_app_screens/v1", view_source: input.view_source, cases: results,
                 all_passed: failures.length === 0};
 writeFileSync(1, JSON.stringify(report) + "\n");
