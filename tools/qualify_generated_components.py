@@ -60,17 +60,15 @@ def _check_ids(mode):
     return modes[mode]
 
 
-def _known_digests(bundle: "Path | None") -> dict:
-    """Served package digests of a release bundle, so a copy of a served component is refused."""
+def _known_digests(bundle: "Path | None", accepted_licenses=()) -> dict:
+    """Known digests from a complete, validated flat or segmented release bundle."""
     if bundle is None:
         return {}
-    known = {}
-    with open(Path(bundle) / "items.jsonl", encoding="utf-8") as stream:
-        for line in stream:
-            reference = json.loads(line).get("reference") or {}
-            if reference.get("digest"):
-                known[reference["digest"]] = reference.get("identity", "served")
-    return known
+    from tools.reconcile_catalogue_bundle import load_bundle
+    from loop_engine.core.service_runtime.http_entrypoint import HostLicensePolicy
+    licenses = tuple(accepted_licenses) or HostLicensePolicy().accepted_licenses
+    verified = load_bundle(Path(bundle), licenses)
+    return {entry.item.digest: entry.identity for entry in verified.items}
 
 
 def command_self_test(options) -> dict:
@@ -98,7 +96,7 @@ def command_qualify(options) -> dict:
     def progress(done, total, seconds):
         print(json.dumps({"progress": done, "of": total, "seconds": round(seconds, 1)}), flush=True)
 
-    known = _known_digests(options.known_bundle)
+    known = _known_digests(options.known_bundle, getattr(options, "known_bundle_license", ()))
     from tools.component_qualification.components import from_folder
     context = checks.QualificationContext.load(ROOT)
     for known_folder in getattr(options, "known_constraint_groups", ()) or ():
@@ -180,6 +178,9 @@ def main(argv=None) -> int:
                                       "component's own code in a sandbox, which costs a sandbox per component.")
             command.add_argument("--known-bundle", type=Path,
                                  help="A release bundle whose served digests count as existing components.")
+            command.add_argument("--known-bundle-license", action="append", default=[],
+                                 help="Exact licence accepted while reading the comparison bundle; repeat as needed. "
+                                      "Uses the normal host defaults when omitted; does not change admission policy.")
             command.add_argument("--known-constraint-groups", type=Path, action="append", default=[],
                                  help="Prior exact case-group candidate folders; replay and reject overlapping case jobs across runs.")
             command.add_argument("--reuse", action="append", default=[],

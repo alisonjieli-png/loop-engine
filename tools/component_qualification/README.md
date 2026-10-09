@@ -384,6 +384,13 @@ scope.
 
 ## Commands
 
+`--known-bundle` reads a complete flat or segmented catalogue through the
+existing versioned bundle reader. Missing carried segments, changed item bytes
+or a mismatched header refuse the comparison; a partial comparison is not
+reported as global coverage. Repeat `--known-bundle-license` for the exact
+licences of that comparison source when the host defaults do not cover it.
+These arguments authorize no publication and do not widen admission policy.
+
 ```bash
 PYTHONPATH=src:tools python tools/qualify_generated_components.py self-test \
   --output SELF-TEST.json --work-root WORK
