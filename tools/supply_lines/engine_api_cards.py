@@ -32,11 +32,11 @@ import json
 import re
 import shutil
 from concurrent.futures import ThreadPoolExecutor
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace
 from pathlib import Path
 
 from creative_originals.assemble import Entry, run_package_tests
-from engine_api_cards import bbcode, cards, godot_native, godot_renames
+from engine_api_cards import bbcode, cards, godot_native, godot_renames, jsdoc_reference, node_native
 from engine_api_cards.godot_reference import ClassKind, ReferenceError, inheritance, read_reference
 
 from .creative_originals import derived_effects
@@ -320,6 +320,150 @@ def read_godot(reader, engine, workspace: Path, *, tag: str = GODOT_TAG, bind_re
                          licence_path=LICENCE_PATH, limits=GODOT_LIMITS, state_scope=GODOT_STATE_SCOPE)
 
 
+#: The three.js release the adapter is pinned to: the tag, the npm package built from it and its entry.
+THREEJS, THREEJS_TITLE = "threejs", "three.js"
+THREEJS_REPOSITORY, THREEJS_TAG = "mrdoob/three.js", "r186"
+THREEJS_PACKAGE, THREEJS_VERSION = "three", "0.186.1"
+THREEJS_STATE_SCOPE = "threejs_r186"
+THREEJS_LICENCE_PATH, THREEJS_ENTRY, THREEJS_MODULE = "LICENSE", "src/Three.js", "build/three.module.js"
+REGISTRY_HOST, THREEJS_DOCS_HOST = "registry.npmjs.org", "threejs.org"
+THREEJS_HOSTS = (RAW_HOST, REGISTRY_HOST)
+#: An npm package's files sit under this folder of its tarball; integrity is SHA-512, base64, after this prefix; a
+#: member path may not climb out of the folder it is unpacked into.
+PACKAGE_FOLDER, INTEGRITY_PREFIX, PARENT_SEGMENT = "package", "sha512-", ".."
+MAXIMUM_PACKAGE_BYTES = 64 * 1024 * 1024
+THREEJS_LIMITS = ("The surface is what the JSDoc of the library's own source declares for the classes its main "
+                  "entry exports, each confirmed by importing the published module in Node: a member its JSDoc "
+                  "marks private, or does not document, is not listed, and the types are the JSDoc's own claims, "
+                  "which a running module cannot confirm. The text is that JSDoc; references to other classes are "
+                  "names, not links. Nothing here was loaded by a harness.")
+
+
+def _package_files(path: Path, folder: Path) -> dict:
+    """Unpack an npm tarball's regular files under folder (nothing outside it, no link) and describe it."""
+    import base64
+    import tarfile
+    digest = hashlib.sha512()
+    with open(path, "rb") as stream:
+        for block in iter(lambda: stream.read(1 << 20), b""):
+            digest.update(block)
+    if folder.exists():
+        shutil.rmtree(folder)
+    folder.mkdir(parents=True)
+    count = 0
+    with tarfile.open(path, "r:gz") as archive:
+        for member in archive.getmembers():
+            parts = Path(member.name).parts
+            if not member.isfile() or not parts or parts[0] != PACKAGE_FOLDER or PARENT_SEGMENT in parts \
+                    or Path(member.name).is_absolute():
+                continue
+            target = folder.joinpath(*parts[1:])
+            target.parent.mkdir(parents=True, exist_ok=True)
+            target.write_bytes(archive.extractfile(member).read())
+            count += 1
+    return {"integrity": INTEGRITY_PREFIX + base64.b64encode(digest.digest()).decode("ascii"), "files": count}
+
+
+def read_threejs(reader, workspace: Path, *, only=()) -> EngineSources:
+    """Read the pinned three.js release: the npm package built from the tag (its integrity checked), the classes its
+    main entry exports with their JSDoc, and the licence; raises LineStopped."""
+    record = reader.get(https_address(REGISTRY_HOST, f"{THREEJS_PACKAGE}/{THREEJS_VERSION}"))
+    if record.status != 200:
+        raise LineStopped("source_unreadable", f"{THREEJS_PACKAGE}@{THREEJS_VERSION}: the registry did not answer")
+    document = json.loads(record.body)
+    distribution = document.get("dist") or {}
+    head = reader.github(f"repos/{THREEJS_REPOSITORY}/commits/{THREEJS_TAG}")
+    if head.status != 200:
+        raise LineStopped("source_unreadable", f"the tag {THREEJS_TAG} has no readable commit")
+    commit = json.loads(head.body)["sha"]
+    if document.get("gitHead") != commit:
+        raise LineStopped("engine_binary_unverified", f"{THREEJS_PACKAGE}@{THREEJS_VERSION} was built from "
+                                                      f"{document.get('gitHead')}, not the tag's {commit[:12]}")
+    folder = Path(workspace) / PACKAGE_FOLDER
+    tarball = distribution.get("tarball", "")
+    digested = reader.digest(tarball, published={"integrity": distribution.get("integrity")},
+                             maximum_bytes=MAXIMUM_PACKAGE_BYTES,
+                             inspect=lambda path: _package_files(path, folder),
+                             use_cache=(folder / THREEJS_MODULE).is_file())
+    if not digested.ok or (digested.inspected or {}).get("integrity") != distribution.get("integrity"):
+        raise LineStopped("engine_binary_unverified", f"{tarball}: the download does not match its integrity")
+
+    def published_bytes(path):
+        target = folder / path
+        return target.read_bytes() if target.is_file() else None
+
+    def published(path):
+        data = published_bytes(path)
+        return None if data is None else data.decode("utf-8")
+
+    exports = jsdoc_reference.module_exports(THREEJS_ENTRY, published)
+    references, reference_paths, refusals = {}, {}, []
+    for name, (path, original) in sorted(exports.items()):
+        if only and name not in only:
+            continue
+        text = published(path)
+        declared = {row[0]: row for row in jsdoc_reference.read_classes(text or "")}
+        if original not in declared:
+            continue  # a function or a value, not a class
+        _name, parent, reference = declared[original]
+        references[name] = reference if name == original else replace(reference, name=name)
+        reference_paths[name] = path
+    wanted = [THREEJS_LICENCE_PATH] + sorted(set(reference_paths.values()))
+    pinned, missing = pinned_files(reader, THREEJS_REPOSITORY, commit, wanted)
+    if THREEJS_LICENCE_PATH in missing:
+        raise LineStopped("source_unreadable", THREEJS_LICENCE_PATH)
+    decision, licence_basis = tag_licence(reader, THREEJS_REPOSITORY, commit, pinned[THREEJS_LICENCE_PATH])
+    if not decision.allowed:
+        raise LineStopped(decision.reason, f"{THREEJS_REPOSITORY} at {commit[:12]}: {decision.evidence()}")
+    package_licence = json.loads(published("package.json") or "{}").get("license")
+    if package_licence != decision.spdx or published_bytes(THREEJS_LICENCE_PATH) != pinned[THREEJS_LICENCE_PATH]["bytes"]:
+        raise LineStopped("licence_signals_disagree", f"the package names {package_licence}; its LICENSE must be "
+                                                      "the tag's")
+    for name, path in sorted(reference_paths.items()):
+        if path in missing or published_bytes(path) != pinned[path]["bytes"]:
+            refusals.append(refusal(ENGINE_API_CARDS, "published_source_differs", name, path))
+            del references[name]
+    module_bytes = (folder / THREEJS_MODULE).read_bytes()
+    code = cards.card_module().code
+    release = cards.EngineRelease(
+        name=THREEJS, title=THREEJS_TITLE, release=THREEJS_TAG, version=THREEJS_VERSION,
+        api_version=THREEJS_TAG, repository=THREEJS_REPOSITORY, commit=commit,
+        binary_name=Path(tarball).name, binary_sha256=digested.sha256, binary_version=THREEJS_VERSION,
+        docs_address=https_address(THREEJS_DOCS_HOST, "docs/"), syntax=cards.card_module().JAVASCRIPT_SYNTAX,
+        surface_source=(f"read from the JSDoc of `{THREEJS_PACKAGE}@{THREEJS_VERSION}` (`{Path(tarball).name}`, "
+                        f"SHA-256 `{digested.sha256}`) for the classes its main entry exports, each confirmed by "
+                        f"importing its `{THREEJS_MODULE}` in Node"),
+        surface_phrase="the surface the library's own JSDoc declares and its published module confirms",
+        text_format="JSDoc", licence=decision.spdx)
+    licence = dict(pinned[THREEJS_LICENCE_PATH], evidence=decision.evidence(), basis=licence_basis)
+    metadata = {"url": https_address(REGISTRY_HOST, f"{THREEJS_PACKAGE}/{THREEJS_VERSION}"), "bytes": record.body,
+                "sha256": record.sha256, "retrieved_at": record.retrieved_at}
+    summary = {"exports": len(exports), "classes": len(references), "module_sha256": hashlib.sha256(
+        module_bytes).hexdigest(), "package": f"{THREEJS_PACKAGE}@{THREEJS_VERSION}"}
+    asset = {"url": tarball, "sha256": digested.sha256, "size_bytes": digested.size_bytes,
+             "retrieved_at": digested.retrieved_at, "member": THREEJS_MODULE}
+    dump = {name: (THREEJS_MODULE, module_bytes) for name in references}
+    return EngineSources(release, dump, references, dict(references), reference_paths, pinned, licence, None, {},
+                         None, asset, refusals, summary, text_for=lambda name: jsdoc_reference.JsDocText(code),
+                         licence_path=THREEJS_LICENCE_PATH, text_basis=LICENCE_AT_THE_TAG, limits=THREEJS_LIMITS,
+                         state_scope=THREEJS_STATE_SCOPE, metadata=metadata)
+
+
+def node_evidence(engine, module_file: Path, prepared: dict, workspace: Path, folder: "Path | None" = None) -> dict:
+    """{class: evidence bytes} from one Node run over every prepared card of a JavaScript library."""
+    answers = node_native.verify(engine, module_file, [card.api for card in prepared.values()],
+                                 Path(workspace) / "verify")
+    records = {}
+    for name, card in prepared.items():
+        data = godot_native.evidence_bytes(node_native.evidence(engine, card.api, answers.get(name), card.digest))
+        records[name] = data
+        if folder is not None:
+            target = Path(folder) / card.api["engine"]["name"] / f"{name}.json"
+            target.parent.mkdir(parents=True, exist_ok=True)
+            target.write_bytes(data)
+    return records
+
+
 @dataclass(frozen=True)
 class PreparedCard:
     """One class's card files before the native check, the surface they hold and the digest the check binds."""
@@ -534,5 +678,6 @@ def generate(sources: EngineSources, *, verifier, code_revision: str, licence_te
 
 
 __all__ = ["GENERATOR_VERSION", "NATIVE_FORMAT", "GODOT_TAG", "GODOT_STATE_SCOPE", "HOSTS", "EngineSources",
-           "PreparedCard", "LineStopped", "read_godot", "prepare", "native_evidence", "package", "generate",
+           "PreparedCard", "LineStopped", "read_godot", "read_threejs", "prepare", "native_evidence", "node_evidence",
+           "package", "generate", "THREEJS_HOSTS", "THREEJS_STATE_SCOPE",
            "copyright_stanzas", "governing_licence", "release_numbers"]

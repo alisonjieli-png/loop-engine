@@ -150,7 +150,8 @@ REFUSAL_REASONS = {
     # a build that is not the release's, a class the reference cannot describe, native evidence that does not hold
     # for the card's bytes, a failing package test, and the shared packaging refusals.
     ENGINE_API_CARDS: ("source_unreadable", "licence_not_on_allowlist", "licence_signals_disagree", "licence_unknown",
-                       "engine_binary_unverified", "reference_unreadable", "duplicate_class", "documentation_missing",
+                       "engine_binary_unverified", "published_source_differs", "reference_unreadable",
+                       "duplicate_class", "documentation_missing",
                        "documentation_structure_differs", "no_api_surface", "native_evidence_missing",
                        "native_evidence_stale", "native_evidence_invalid", "native_check_failed",
                        "generated_test_failed", "blocked_by_static_check", "package_above_review_bound",
@@ -274,7 +275,7 @@ STATE_SCOPES = ("", "apis_guru_directory", "google_discovery", "api_components",
                 "polyhaven", "ambientcg", "godot_demo_projects",
                 # The engine API card line keeps one state per engine and API version, so a complete run of one
                 # release never withdraws the cards of another.
-                "godot_4_7")
+                "godot_4_7", "threejs_r186")
 
 
 def state_record_id(line: str, scope: str = "") -> str:

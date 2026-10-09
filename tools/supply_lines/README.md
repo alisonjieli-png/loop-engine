@@ -223,7 +223,8 @@ Supply lines (each writes library_supply_candidate/v1 records)
 │       behavior is the native record's observation, which the sandbox does not repeat
 └── engine_api_cards: one version-pinned API contract card per class of a pinned engine release (engine_api_cards.py)
     ├── kind contract_schema, form schema; one card format (tools/engine_api_cards), one adapter per engine
-    │   (Godot 4.7.2-stable first), the job key component.json job.engine, job.version and job.class
+    │   (Godot 4.7.2-stable; three.js r186 from the npm package built from the tag, its JSDoc checked by Node
+    │   importing the module), the job key component.json job.engine, job.version and job.class
     ├── surface: the official build's --doctool dump (1,076 classes); the build proven the member of the release
     │   asset whose SHA-256 GitHub publishes, its version naming the tag's commit
     ├── text: the class reference XML at the tag, each file proven by blob identity, MIT by LICENSE.txt and the

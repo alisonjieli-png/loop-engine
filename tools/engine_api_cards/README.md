@@ -59,12 +59,14 @@ type, and none grants authority.
 engine_api_surface/v1 (api.json) and engine_api_card/v1 (component.json): the fixed edge
 ├── godot adapter: Godot 4.7.2-stable (godot_reference.py, godot_renames.py, godot_native.py,
 │   godot_verify.gd, and the fact reading in ../supply_lines/engine_api_cards.py), syntax "godot"
+├── threejs adapter: three.js r186, the npm package three@0.186.1 (jsdoc_reference.py, node_native.py,
+│   javascript_verify.mjs, and the fact reading in the same line module), syntax "javascript"
 └── a further adapter writes the same two records, with its own reader, text interface, syntax (when its
     declarations read differently) and native check; the card writer, checker and packaging stay as they are
 ```
 
 An adapter gives the card writer its text through one interface (`markdown`, `title`, `address`: the
-BBCode converter's `Context` for Godot), and says in its `EngineRelease` where the
+BBCode converter's `Context` for Godot, `JsDocText` for three.js), and says in its `EngineRelease` where the
 surface was read, the format and licence of the text, and which classes exist only in an editor.
 
 A card is the same files whatever the engine: `README.md` (and `members-2.md`,
@@ -174,13 +176,42 @@ class's surface at the tag, its own or an ancestor's; the others are counted in
 the run summary. `instance()` to `instantiate()` and `yield` to `await` are
 custom rules of the converter, not map entries, so no card lists them.
 
+## The three.js adapter
+
+```text
+three.js r186
+├── facts: the npm registry's record of three@0.186.1 (its tarball, SHA-512 integrity and gitHead); the
+│   tag's commit, which must be that gitHead (the tag r186 moved to the 0.186.1 release, 9b4a2ac); the
+│   tarball, streamed once, its integrity checked, unpacked with nothing outside its folder
+├── surface: the classes the main entry exports (src/Three.js, followed through export lists, barrels and
+│   imports to the file and name each class is declared with), read from their JSDoc (jsdoc_reference.py):
+│   the constructor, methods, accessors, constructor-assigned properties and prototype flags that have a JSDoc
+│   block and are not private; the code, not a JSDoc @static, decides what is static
+├── text: those source files at the tag's commit, proven by blob identity and equal byte for byte to the
+│   published package's; MIT by LICENSE, the package's own license field and GitHub's licence interface
+└── native check: Node imports build/three.module.js once for every card (javascript_verify.mjs): the
+    class is exported, its parent is the expected export, every method is callable and every property
+    present (static on the class, else on the prototype or a new instance; a class that cannot be made
+    without arguments is answered from its prototype and the class's own source text as the running module
+    holds it, "this.name = ...")
+```
+
+Signatures are written in TypeScript notation (`static async load(url: string, onLoad?: function): Promise<T>`,
+`readonly isVector3: boolean = true`); the types are the JSDoc's claims, which a running module cannot confirm.
+A JSDoc `@static` that the code contradicts (KeyframeTrack's interpolant factories in r186) is left to the
+code, and the Node check would refuse the card otherwise. A type written across lines (BatchedMesh's record
+types) is one declaration on one line, and a description that opens a code fence and never closes it
+(PositionalAudio) has it closed at its end: the dry run of October 9, 2026 found both, because the package's
+own test refused the two cards whose headings they broke.
+
 ## Commands
 
 ```bash
-PYTHONPATH=src:tools python tools/build_library_supply.py engine-api-cards [--engine godot] \
+PYTHONPATH=src:tools python tools/build_library_supply.py engine-api-cards [--engine godot|threejs] \
   --run-folder RUN --authorize-network-reads [--authorize-store-writes --store-root STORE] \
   [--materialize] [--class Node --class Vector3] [--godot PATH] [--workers 8]
-PYTHONPATH=src:tools python -m unittest tools.test_engine_api_cards tools.test_engine_api_cards_line
+PYTHONPATH=src:tools python -m unittest tools.test_engine_api_cards tools.test_engine_api_cards_line \
+  tools.test_engine_api_cards_threejs
 ```
 
 The run folder keeps every fetched fact (cached by address), the dump, the
@@ -211,4 +242,8 @@ refusals.
   the native check does not ask the running engine about them.
 - The renames are the map's GDScript renames that hold on the surface; the C#
   tables and the converter's custom rules are not read.
+- three.js: only the classes of the main entry (`three`) are carded; the
+  addons, the WebGPU and TSL entries, and the module's functions and constants
+  are not. A member without a JSDoc block is not listed, and the JSDoc types
+  are not checked by the running module.
 - Nothing here was loaded by a harness.

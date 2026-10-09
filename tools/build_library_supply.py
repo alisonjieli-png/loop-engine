@@ -29,8 +29,8 @@ build_library_supply.py
 ├── creative-originals  one package per item of Baltor's own creative families (tools/creative_originals:
 │                    Godot, Blender, textures, 2D, 2.5D, 3D and 4D tools), with its native evidence
 ├── engine-api-cards  one version-pinned API contract card per class of a pinned engine release (Godot
-│                    4.7.2-stable): the engine's own surface and reference text, the renames map, and one
-│                    native check of every card by the same engine (tools/engine_api_cards)
+│                    4.7.2-stable, three.js r186): the engine's own surface and reference text, the renames
+│                    map, and one native check of every card by the same engine (tools/engine_api_cards)
 └── report         the supply by family and form, and the projected composition
 ```
 
@@ -490,8 +490,24 @@ def _godot_cards(args, run_folder: Path, workspace: Path, only: tuple) -> tuple:
             lambda sources: lambda prepared: line.native_evidence(engine, prepared, workspace, run_folder / "evidence"))
 
 
+def _threejs_cards(args, run_folder: Path, workspace: Path, only: tuple) -> tuple:
+    """(reader, read, verifier) of the three.js adapter: the npm package's JSDoc, checked by Node importing it."""
+    import hashlib
+    from engine_api_cards import node_native
+    from supply_lines import engine_api_cards as line
+    reader = FactReader(run_folder, line.THREEJS_HOSTS, maximum_requests=args.maximum_requests,
+                        pause_seconds=args.pause_seconds, maximum_bytes=64 * 1024 * 1024)
+
+    def verifier(sources):
+        module = workspace / line.PACKAGE_FOLDER / line.THREEJS_MODULE
+        node = node_native.locate(line.THREEJS_MODULE, hashlib.sha256(module.read_bytes()).hexdigest())
+        return lambda prepared: line.node_evidence(node, module, prepared, workspace, run_folder / "evidence")
+
+    return reader, lambda: line.read_threejs(reader, workspace, only=only), verifier
+
+
 #: The engine adapters of the engine-api-cards command.
-CARD_ADAPTERS = {"godot": _godot_cards}
+CARD_ADAPTERS = {"godot": _godot_cards, "threejs": _threejs_cards}
 
 
 def engine_api_cards(args) -> dict:
@@ -756,8 +772,9 @@ def parser() -> argparse.ArgumentParser:
     originals.add_argument("--item", action="append", help="only these item identities")
     cards_command = commands.add_parser("engine-api-cards")
     common(cards_command)
-    cards_command.add_argument("--engine", choices=("godot",), default="godot",
-                               help="the engine adapter (godot: the pinned 4.7.2-stable build and tag)")
+    cards_command.add_argument("--engine", choices=("godot", "threejs"), default="godot",
+                               help="the engine adapter (godot: the pinned 4.7.2-stable build and tag; threejs: the "
+                                    "r186 tag and the three@0.186.1 package built from it)")
     cards_command.add_argument("--godot", help="the Godot build (default: the pinned build tools/creative_originals/"
                                                "engines.py finds); it must be the release's own")
     cards_command.add_argument("--class", dest="engine_class", action="append",
