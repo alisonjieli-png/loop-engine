@@ -92,6 +92,13 @@ and recomputed byte accounting. The last event has the same checks as every
 other event; an unchanged retained hash cannot authorize changing its counts
 or dropping its groups. Version-1 event journals are refused, not migrated.
 
+Each retained parent record has a separate 4 MiB read/write bound, because it
+can hold hundreds of diagnostic rows. Served schemas and individual case files
+keep their existing smaller bounds. Retained bytes still count toward the
+whole-run byte ceiling; the restart reader checks the file size before reading
+and repeats strict JSON and structure validation. A changed generator binding
+requires a fresh run, not a rewrite of an earlier campaign's journal.
+
 Before writing, the runner checks the whole output tree for aliases and
 special files, including staging and packages not named by the journal.
 Complete package writes from an interrupted next event can be reconciled

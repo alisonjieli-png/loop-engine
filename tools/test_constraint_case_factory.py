@@ -249,6 +249,46 @@ class PackageAndRunTests(unittest.TestCase):
         self.assertEqual(self.invoke()["new_case_jobs"], 0)
         self.assertEqual(before, {str(path): path.read_bytes() for path in self.folder.rglob("*") if path.is_file()})
 
+    def test_retained_diagnostics_can_exceed_a_single_case_file_bound(self):
+        accounting = deepcopy(self.accounting)
+        accounting[construction.DIAGNOSTICS_FIELD] = [
+            {"job_id": runtime.sha(str(index).encode()), "keyword": "type", "schema_path": ["properties", "field"],
+             "reason": "unavailable baseline member " * 24} for index in range(600)]
+        self.assertGreater(len(runtime.encode(accounting)), runtime.MAX_BYTES)
+        with patch.object(construction, "construct", return_value=(self.cases, self.baselines, accounting)):
+            result = self.invoke()
+        self.assertTrue(result["complete"])
+        self.assertEqual(self.invoke()["new_case_jobs"], 0)
+        retained_path = next((self.args.run_folder / "retained").iterdir())
+        retained = json.loads(retained_path.read_bytes())
+        self.assertEqual(retained["accounting"][construction.DIAGNOSTICS_FIELD], accounting[construction.DIAGNOSTICS_FIELD])
+        event = runner.events(self.args.run_folder / "events.jsonl")[0]
+        self.assertGreaterEqual(event["retained_and_candidate_bytes"], retained_path.stat().st_size)
+
+    def test_retained_bound_refuses_before_reading_and_does_not_widen_case_limits(self):
+        path = self.root / "too-large-retained.json"
+        path.write_bytes(b" " * (runner.MAXIMUM_RETAINED_BYTES + 1))
+        with patch.object(Path, "read_bytes", side_effect=AssertionError("must refuse before reading")):
+            with self.assertRaisesRegex(ValueError, "constraint_retained_byte_bound"):
+                runner.read_retained(path)
+        with self.assertRaisesRegex(ValueError, "case_json_byte_bound"):
+            runtime.decode(b" " * (runtime.MAX_BYTES + 1))
+
+    def test_retained_budget_and_content_checks_survive_larger_control_bound(self):
+        path = self.root / "retained.json"
+        for raw in (b'{"duplicate":1,"duplicate":2}', b'{"bad":NaN}'):
+            path.write_bytes(raw)
+            with self.assertRaises(ValueError):
+                runner.read_retained(path)
+        accounting = deepcopy(self.accounting)
+        accounting[construction.DIAGNOSTICS_FIELD] = ["finding " * 70000]
+        self.args.maximum_candidate_bytes = runtime.MAX_BYTES
+        with patch.object(construction, "construct", return_value=(self.cases, self.baselines, accounting)):
+            result = self.invoke()
+        self.assertEqual(result["next_cursor"], 0)
+        self.assertEqual(result["ceiling"], "case_count_or_byte_ceiling")
+        self.assertFalse((self.args.run_folder / "packages").exists())
+
     def test_partial_event_and_changed_input_refuse_resume(self):
         self.invoke()
         log = self.args.run_folder / "events.jsonl"

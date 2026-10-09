@@ -1,5 +1,17 @@
 schema: hardcoding_allowlist/v1
 entries:
+- finding_id: hardcoding.3cc2a1b42f3ad43fc09ba75b
+  owner: tools.operator_credentials.json:api_keys.anthropic-model-secondary.environment
+  classification: SECRET_OR_CREDENTIAL_REFERENCE
+  rationale: "The existing operator credential manifest owns this environment-variable name, not a credential value. The separately stored secondary key retains its own keyring identity; credential tests check that it does not alias the primary. This reference grants no inference or spending authority."
+  created_on: '2026-10-08'
+  expires_on: '2027-01-08'
+- finding_id: hardcoding.6e9478f79bbe6b637320f201
+  owner: tools.operator_credentials.json:api_keys.rapidapi-owner-secondary.environment
+  classification: SECRET_OR_CREDENTIAL_REFERENCE
+  rationale: "The existing operator credential manifest owns this environment-variable name, not a credential value. The secondary research credential is stored under separate keyring attributes; tests preserve the primary binding. Provider destinations, product quotas and effect authority stay with their owning adapters."
+  created_on: '2026-10-08'
+  expires_on: '2027-01-08'
 - finding_id: hardcoding.b6a96f7b5c2c2304f032b741
   owner: "tools.knowledge_radar.assets.plan_mcp_service_setup.contracts.input.schema.json:$schema"
   classification: STRATEGY_OR_PROVIDER_BINDING

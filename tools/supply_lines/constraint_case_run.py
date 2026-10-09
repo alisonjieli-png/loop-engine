@@ -23,6 +23,17 @@ RETAINED_TYPE = "api_constraint_case_retained/v1"
 EVENT_FIELDS = {"record_type", "sequence", "previous_sha256", "parent_record_id", "record_path", "record_sha256",
                 "case_jobs", "groups", "retained_and_candidate_bytes", "case_accounting"}
 RETAINED_FIELDS = {"record_type", "parent", "accounting", "case_jobs", "groups"}
+# One parent can retain hundreds of diagnostic rows. This private control
+# record has its own bound; served schemas and individual cases keep theirs.
+MAXIMUM_RETAINED_BYTES = 4 * 1024 * 1024
+
+
+def read_retained(path):
+    path = atomic._safe_path(path)
+    if not path.is_file() or path.stat().st_size > MAXIMUM_RETAINED_BYTES:
+        raise ValueError("constraint_retained_byte_bound")
+    raw = path.read_bytes()
+    return raw, runtime.decode(raw, maximum=MAXIMUM_RETAINED_BYTES)
 
 
 def inputs(folders, maximum):
@@ -91,10 +102,9 @@ def verify(folder, rows, parents, revision):
         raise ValueError("constraint_cursor_exceeds_parent_plan")
     seen, recorded = set(), set()
     for index, row in enumerate(rows):
-        raw = atomic._safe_path(folder / row["record_path"]).read_bytes()
+        raw, retained = read_retained(folder / row["record_path"])
         if runtime.sha(raw) != row["record_sha256"]:
             raise ValueError("constraint_retained_record_changed")
-        retained = runtime.decode(raw)
         runtime._shape(retained, RETAINED_FIELDS, "constraint_retained_fields")
         snapshot, parent, _baselines = parents[index]
         if retained["record_type"] != RETAINED_TYPE or retained["parent"] != snapshot:
@@ -208,7 +218,9 @@ def run(args, *, revision, licence_text, generator_digest):
                 "case_jobs": [case["job_id"] for case in unique],
                 "groups": [_group_reference(payload, runtime.encode(payload)) for payload, _ in built]}
             raw = runtime.encode(retained)
-            runtime.decode(raw)  # Refuse an unreadable retained record before any candidate/cursor write.
+            # Refuse an unreadable retained record before any candidate/cursor
+            # write, using the same bounded reader policy as restart.
+            runtime.decode(raw, maximum=MAXIMUM_RETAINED_BYTES)
             byte_count = len(raw) + sum(sum(file["size_bytes"] for file in payload["package"]["files"])
                                        + len(runtime.encode(payload)) for payload, _bodies in built)
             if len(seen) + len(unique) > args.maximum_cases or used_bytes + byte_count > args.maximum_candidate_bytes:
