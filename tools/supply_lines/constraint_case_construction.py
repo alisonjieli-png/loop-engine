@@ -1,8 +1,8 @@
 """One bounded, isolated invalid edit per declared schema constraint job.
 
-Reuses already validated parent baselines. The existing synthesize helper was
-examined; this first family adds no alternate fixture generator or dependency.
-Absent optional values and unsupported branch constructors remain findings.
+Reuses all distinct valid parent baselines in deterministic digest order. It
+adds no alternate fixture generator or dependency. A job is emitted at most
+once, even if several baselines can expose its isolated failure.
 """
 from __future__ import annotations
 
@@ -99,57 +99,72 @@ def construct(schema_bytes, baseline_values):
     runtime.validate_schema(schema)
     Draft202012Validator.check_schema(schema)
     validator = Draft202012Validator(schema)
-    baseline = MISSING
+    valid, invalid = {}, 0
     for value in baseline_values:
         runtime._bounded(value)
-        if len(runtime.encode(value)) <= runtime.MAX_CASE_BYTES and validator.is_valid(value) and not schema_check.errors(value, schema):
-            baseline = value
-            break
-    if baseline is MISSING:
+        body = runtime.encode(value)
+        if len(body) <= runtime.MAX_CASE_BYTES and validator.is_valid(value) and not schema_check.errors(value, schema):
+            valid[runtime.sha(body)] = (value, body)
+        else:
+            invalid += 1
+    if not valid:
         raise ValueError("constraint_parent_has_no_valid_baseline")
-    baseline_bytes = runtime.encode(baseline)
-    baseline_ref = {"path": "baselines/" + runtime.sha(baseline_bytes) + ".json", "sha256": runtime.sha(baseline_bytes)}
     schema_ref = {"path": "contract.schema.json", "sha256": runtime.sha(schema_bytes)}
-    payloads = {schema_ref["path"]: schema_bytes, baseline_ref["path"]: baseline_bytes}
     semantic = runtime.semantic_digest(schema)
-    cases, seen, findings, keywords, accepted, attempts = [], set(), Counter(), Counter(), Counter(), 0
-    diagnostics = []
-    for job in walk(schema, baseline):
-        if "unsupported" in job:
-            findings["unsupported:" + job["unsupported"]] += 1
-            continue
-        keyword = job["keyword"]
-        identity = runtime.fingerprint([semantic, job["schema_path"], job["bound"]])
-        if identity in seen:
-            findings["duplicate_constraint_job"] += 1
-            continue
-        seen.add(identity)
-        keywords[keyword] += 1
-        options = edits(job)
-        reason = "missing_baseline_member_or_constructor_bound" if not options else "no_isolated_agreed_target_failure"
-        path, message = shipped_expected(job, schema)
-        expected = {"validator": keyword, "schema_path": job["schema_path"], "instance_path": job["data_path"],
-                    "shipped_path": path, "shipped_message": message}
-        for operation in options:
-            attempts += 1
-            case = {"record_type": runtime.CASE_TYPE, "job_id": identity, "parent_semantic_sha256": semantic,
-                    "schema": schema_ref, "baseline": baseline_ref, "edit": operation,
-                    "expected": expected, "constraint_value": job["bound"]}
-            try:
-                if len(runtime.encode(case)) > runtime.MAX_CASE_BYTES:
-                    raise ValueError("case_record_byte_bound")
-                runtime.replay(case, payloads, independent=True)
-            except (ValueError, TypeError, LookupError, OverflowError, RecursionError):
+    cases, findings, keywords, accepted, attempts = [], Counter(), Counter(), Counter(), 0
+    diagnostics, jobs, unsupported, used_baselines = [], {}, set(), {}
+    for baseline_digest in sorted(valid):
+        baseline, body = valid[baseline_digest]
+        baseline_ref = {"path": "baselines/" + baseline_digest + ".json", "sha256": baseline_digest}
+        within_baseline = set()
+        for job in walk(schema, baseline):
+            if "unsupported" in job:
+                identity = runtime.fingerprint(job)
+                if identity not in unsupported:
+                    findings["unsupported:" + job["unsupported"]] += 1
+                    unsupported.add(identity)
                 continue
-            cases.append(case)
-            accepted[keyword] += 1
-            reason = ""
-            break
+            identity = runtime.fingerprint([semantic, job["schema_path"], job["bound"]])
+            if identity in within_baseline:
+                continue
+            within_baseline.add(identity)
+            jobs.setdefault(identity, []).append((job, baseline_ref, body))
+    for identity, alternatives in jobs.items():
+        keyword = alternatives[0][0]["keyword"]
+        keywords[keyword] += 1
+        reason = "missing_baseline_member_or_constructor_bound"
+        for job, baseline_ref, body in alternatives:
+            options = edits(job)
+            if options:
+                reason = "no_isolated_agreed_target_failure"
+            path, message = shipped_expected(job, schema)
+            expected = {"validator": keyword, "schema_path": job["schema_path"], "instance_path": job["data_path"],
+                        "shipped_path": path, "shipped_message": message}
+            for operation in options:
+                attempts += 1
+                case = {"record_type": runtime.CASE_TYPE, "job_id": identity, "parent_semantic_sha256": semantic,
+                        "schema": schema_ref, "baseline": baseline_ref, "edit": operation,
+                        "expected": expected, "constraint_value": job["bound"]}
+                try:
+                    if len(runtime.encode(case)) > runtime.MAX_CASE_BYTES:
+                        raise ValueError("case_record_byte_bound")
+                    runtime.replay(case, {schema_ref["path"]: schema_bytes, baseline_ref["path"]: body}, independent=True)
+                except (ValueError, TypeError, LookupError, OverflowError, RecursionError):
+                    continue
+                cases.append(case)
+                used_baselines[baseline_ref["path"]] = body
+                accepted[keyword] += 1
+                reason = ""
+                break
+            if not reason:
+                break
         if reason:
             findings[reason] += 1
             diagnostics.append({"job_id": identity, "keyword": keyword, "schema_path": job["schema_path"], "reason": reason})
-    return cases, {baseline_ref["path"]: baseline_bytes}, {
-        "supported_jobs": len(seen), "jobs_by_keyword": dict(keywords), "accepted_cases": len(cases),
+    return cases, used_baselines, {
+        "supported_jobs": len(jobs), "jobs_by_keyword": dict(keywords), "accepted_cases": len(cases),
+        "valid_baselines_considered": len(valid), "invalid_baselines_ignored": invalid,
+        "distinct_baselines_used": len(used_baselines),
         "accepted_by_keyword": dict(accepted), "probe_attempts": attempts, "findings": dict(findings),
         DIAGNOSTICS_FIELD: diagnostics, "independent_oracle": "jsonschema.Draft202012Validator",
         "independent_oracle_version": ORACLE_VERSION,

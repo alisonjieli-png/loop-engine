@@ -13,10 +13,12 @@ The generator requires exactly one matching error from
 path must all agree. The shipped checker must report that same target and
 constraint. A rejection for a different reason is not a passing case.
 
-The initial constructors reuse the parent's validated baselines. The existing
-OpenAPI fixture synthesizer was inspected; missing optional values and
-unsupported conditional cases stay findings in this version. Trying several
-values can find one case, but does not create several case jobs. A job is the
+Generator 1.1.0 checks every distinct valid baseline supplied by the parent,
+in digest order. A later example can expose an optional field missing from an
+earlier example. Invalid examples cannot supply a case. The existing OpenAPI
+fixture synthesizer was inspected; optional fields absent from every valid
+example and unsupported conditional cases stay findings. Trying several
+values or baselines can find one case, but does not create several case jobs. A job is the
 parent schema's assertion identity, the exact constraint path and its value
 (the missing property for a `required` constraint).
 
@@ -28,6 +30,7 @@ One parent contract's case group
 ├── baselines/<digest>.json
 ├── cases/<job-digest>.json, one minimal edit per constraint job
 ├── shared schema_check.py and constraint_case_runtime.py
+├── shared SKILL.md for selecting and replaying the bound cases
 ├── constraint-group.json, exact parent and member bindings
 └── shared instructions, tests and required licence/attribution files
 ```
@@ -35,8 +38,14 @@ One parent contract's case group
 The generator groups cases within their parent contract and caps each group
 at 64 files, including support files. This is a grouping policy, not a claim
 that the platform has a universal 64-file limit. Larger parent families split
-in property/constraint order. Identical schema, baseline, runner, guide and
+in property/constraint order. Each group includes only the valid baseline
+files its cases reference. Reordering or repeating the parent's examples
+does not create new case jobs or change the selected case bytes. Identical schema, baseline, runner, guide and
 licence bytes retain the same digest; the report counts those bytes once.
+
+The shared skill explains when the cases apply and how to run the bundled
+checks. It grants no API access and makes no current endpoint or live execution
+claim. Its bytes are identical across groups and count as one distinct file.
 
 Run `python constraint_case_runtime.py .` inside a downloaded group to replay
 its cases with the shipped checker. If `jsonschema` is already installed,

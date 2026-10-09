@@ -12,10 +12,38 @@ from .openapi_operations import run_tests
 from .packaging import PackageFile, SupplyPackage, build
 from .records import GENERATED, JSON_SCHEMAS, LICENCE_TEXT, UPSTREAM_VERBATIM, upstream_key
 
-GENERATOR_VERSION = "1.0.0"
+GENERATOR_VERSION = "1.1.0"
 PRODUCER_FAMILY = "openai"
 RUNNER_BYTES = Path(runtime.__file__).read_bytes()
 VALIDATOR_BYTES = Path(schema_check.__file__).read_bytes()
+SKILL_BYTES = b'''---
+name: replay-isolated-constraint-cases
+description: Replay a bundled API contract's positive baselines and isolated invalid-input cases. Use to test a validator, investigate one schema failure, or select a regression fixture; not to invoke the API or prove live provider compatibility.
+license: MIT
+---
+
+# Replay isolated constraint cases
+
+Read `constraint-group.json` to identify the exact schema, baselines and case
+members. A case changes one value or removes one required field. Its expected
+error names the validator, schema path and data path. Rejecting a different
+field is not a passing result.
+
+Run `python constraint_case_runtime.py .` in the package folder. Add
+`--independent` only when jsonschema is already available. The command checks
+resource digests before replay and reports whether the independent oracle ran.
+It makes no network request and installs nothing.
+
+Run `python -m unittest test_constraint_cases` for the package checks, including
+a deliberately wrong expected target. Report passing cases, exact failures and
+whether the independent oracle ran. Keep a missing dependency or changed digest
+as a failure to reproduce; do not replace it with a claimed pass.
+
+Use a selected case as a regression fixture only with its bound schema and
+baseline. Keep source revision and licence information when transferring it.
+These synthetic cases test schema behavior. They do not establish API access,
+successful remote execution, account permissions or a current endpoint version.
+'''
 README_BYTES = b'''# Isolated API constraint cases
 
 Use these cases to check one constraint failure at a time. Each case names an
@@ -93,6 +121,7 @@ def generate(parent, cases, baselines, *, revision, generated_on, staging, maxim
     licence_paths = set(payload["licence"]["texts"]) | set(payload["licence"].get("notices", []))
     parent_files = {row["path"]: row for row in payload["files"]}
     common = [PackageFile("contract.schema.json", schema_bytes, "other"),
+              PackageFile("SKILL.md", SKILL_BYTES, "skill_definition"),
               PackageFile("schema_check.py", VALIDATOR_BYTES, "executable_tool"),
               PackageFile("constraint_case_runtime.py", RUNNER_BYTES, "executable_tool"),
               PackageFile("test_constraint_cases.py", TEST_BYTES, "executable_tool"),
@@ -103,17 +132,28 @@ def generate(parent, cases, baselines, *, revision, generated_on, staging, maxim
                                   notice=path in payload["licence"].get("notices", [])))
     cases = sorted(cases, key=lambda row: (json.dumps(row["expected"]["instance_path"]),
                                           json.dumps(row["expected"]["schema_path"]), row["job_id"]))
-    # Reserve the group manifest, one baseline and ATTRIBUTION.md. The first
-    # constructor deliberately shares exactly one baseline per parent.
-    if len(baselines) != 1:
-        raise ValueError("constraint_baseline_population_unsupported")
-    capacity = maximum_files - len(common) - len(baselines) - 2
-    if capacity < 1:
-        raise ValueError("constraint_group_no_case_capacity")
+    # Each group includes only the baselines its cases actually reference.
+    # Reserve the manifest and ATTRIBUTION.md before accepting another case.
+    groups, selected, required_baselines = [], [], set()
+    for case in cases:
+        baseline = case["baseline"]
+        path = baseline["path"]
+        if path not in baselines or runtime.sha(baselines[path]) != baseline["sha256"]:
+            raise ValueError("constraint_case_baseline_missing_or_changed")
+        needed = required_baselines | {path}
+        if selected and len(common) + len(selected) + 1 + len(needed) + 2 > maximum_files:
+            groups.append((selected, required_baselines))
+            selected, required_baselines, needed = [], set(), {path}
+        if len(common) + len(selected) + 1 + len(needed) + 2 > maximum_files:
+            raise ValueError("constraint_group_no_case_capacity")
+        selected.append(case)
+        required_baselines = needed
+    if selected:
+        groups.append((selected, required_baselines))
     outputs = []
-    for offset in range(0, len(cases), capacity):
-        selected = cases[offset:offset + capacity]
-        files = [*common, *(PackageFile(path, body, "other") for path, body in sorted(baselines.items()))]
+    for selected, required_baselines in groups:
+        group_baselines = {path: baselines[path] for path in sorted(required_baselines)}
+        files = [*common, *(PackageFile(path, body, "other") for path, body in group_baselines.items())]
         entries = []
         for case in selected:
             path = "cases/" + case["job_id"] + ".json"
@@ -124,7 +164,7 @@ def generate(parent, cases, baselines, *, revision, generated_on, staging, maxim
             "parent": {"record_id": parent.identity, "package_digest": parent.package.package_digest,
                        "schema_sha256": runtime.sha(schema_bytes), "semantic_sha256": semantic},
             "schema": {"path": "contract.schema.json", "sha256": runtime.sha(schema_bytes)},
-            "baselines": [{"path": path, "sha256": runtime.sha(body)} for path, body in sorted(baselines.items())],
+            "baselines": [{"path": path, "sha256": runtime.sha(body)} for path, body in group_baselines.items()],
             "cases": entries, "case_job_set_sha256": runtime.fingerprint(sorted(row["job_id"] for row in selected)),
             "producer_family": PRODUCER_FAMILY}
         files.append(PackageFile(runtime.GROUP_FILE, runtime.encode(group), "other"))
@@ -154,7 +194,7 @@ def generate(parent, cases, baselines, *, revision, generated_on, staging, maxim
             effects=[("reads_fs", "reads_digest_bound_schema_baseline_and_case_files")], credentials=[],
             tests={"files": ["test_constraint_cases.py"], "command": "python -m unittest test_constraint_cases",
                    "result": "passed", "tests_run": count, "network": False,
-                   "independent_case_checks": len(selected), "positive_baselines": len(baselines)},
+                   "independent_case_checks": len(selected), "positive_baselines": len(group_baselines)},
             repository={**dict(payload.get("repository") or {}), "parent_contract": parent.identity,
                         "producer_family": PRODUCER_FAMILY}, generated_on=generated_on,
             comparison_text="\n".join(row["job_id"] for row in sorted(entries, key=lambda row: row["job_id"]))))

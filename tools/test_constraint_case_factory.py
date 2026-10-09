@@ -27,14 +27,17 @@ SCHEMA = {"type": "object", "properties": {"count": {"type": "integer", "minimum
 BASELINE = {"count": 2, "name": "ok", "mode": "a", "tags": ["x"]}
 
 
-def parent_run(root):
+def parent_run(root, schema=SCHEMA, baseline=BASELINE, baselines=None):
     spec = fixture_spec()
     spec["document"]["paths"] = {"/fixture": {"post": {"operationId": "fixture", "requestBody": {"content": {
-        "application/json": {"schema": SCHEMA, "example": BASELINE}}}, "responses": {}}}}
+        "application/json": {"schema": schema, "example": baseline}}}, "responses": {}}}}
     atom = next(atoms.atoms(spec["document"]))
     schema = atoms.normalize_schema(atom["schema"], spec["document"])
     with tempfile.TemporaryDirectory() as staging:
-        payload, bodies = atoms.package(atom, schema, atoms.cases(atom, schema), spec, revision=REVISION,
+        examples = atoms.cases(atom, schema)
+        if baselines is not None:
+            examples["valid"] = baselines
+        payload, bodies = atoms.package(atom, schema, examples, spec, revision=REVISION,
                                         generated_on="2026-10-08", licence_text=LICENSE, staging=Path(staging))
     folder = root / "parent"
     folder.mkdir()
@@ -109,6 +112,32 @@ class ConstructionTests(unittest.TestCase):
         self.assertEqual(again, self.cases)
         self.assertEqual(bodies, self.baselines)
 
+    def test_later_valid_baseline_exposes_optional_member_constraint(self):
+        schema = {"type": "object", "properties": {"optional": {"type": "integer", "minimum": 1}}}
+        cases, baselines, report = construction.construct(runtime.encode(schema), [{}, {"optional": 2}])
+        case = next(row for row in cases if row["expected"]["validator"] == "minimum")
+        payloads = {"contract.schema.json": runtime.encode(schema), **baselines}
+        self.assertEqual(runtime.resource(payloads, case["baseline"]), {"optional": 2})
+        self.assertTrue(runtime.replay(case, payloads, independent=True)["isolated_violation"])
+        self.assertEqual(report["valid_baselines_considered"], 2)
+        self.assertEqual(len({row["job_id"] for row in cases}), len(cases))
+
+    def test_valid_baseline_order_and_duplicates_do_not_change_output(self):
+        schema = runtime.encode({"type": "object", "properties": {
+            "x": {"type": "integer", "minimum": 1}, "y": {"type": "string", "minLength": 1}}})
+        values = [{}, {"x": 2}, {"y": "good"}, {"x": 3, "y": "yes"}]
+        first, bodies, _ = construction.construct(schema, values)
+        second, repeated, _ = construction.construct(schema, list(reversed(values)) + values)
+        self.assertEqual(first, second)
+        self.assertEqual(bodies, repeated)
+
+    def test_invalid_baseline_cannot_supply_an_optional_case(self):
+        schema = runtime.encode({"type": "object", "properties": {
+            "x": {"type": "integer", "minimum": 1}}})
+        cases, _, report = construction.construct(schema, [{}, {"x": 0}])
+        self.assertFalse(any(row["expected"]["validator"] == "minimum" for row in cases))
+        self.assertEqual(report["invalid_baselines_ignored"], 1)
+
 
 class PackageAndRunTests(unittest.TestCase):
     def setUp(self):
@@ -152,6 +181,33 @@ class PackageAndRunTests(unittest.TestCase):
         self.assertEqual(dict(self.parent.payloads), before)
         self.assertEqual(len({component.payloads["README.md"] for component in groups}), 1)
         self.assertEqual(len({component.payloads["constraint_case_runtime.py"] for component in groups}), 1)
+        self.assertEqual(len({component.payloads["SKILL.md"] for component in groups}), 1)
+        self.assertIn(b"name: replay-isolated-constraint-cases", groups[0].payloads["SKILL.md"])
+
+    def test_multi_baseline_groups_include_only_their_required_closure(self):
+        schema = {"type": "object", "properties": {
+            f"optional{i}": {"type": "integer", "minimum": 1} for i in range(8)}}
+        values = [{}, *({f"optional{i}": 2} for i in range(8))]
+        other = self.root / "multi"
+        other.mkdir()
+        _, parent = parent_run(other, schema=schema, baseline={}, baselines=values)
+        cases, baselines, _ = construction.construct(parent.payloads["contract.schema.json"], values)
+        stage = self.root / "multi-stage"
+        stage.mkdir()
+        built = packages.generate(parent, cases, baselines, revision=REVISION,
+            generated_on="2026-10-08", staging=stage, maximum_files=14)
+        self.assertGreater(len(built), 1)
+        found = []
+        for payload, blobs in built:
+            data = {entry["path"]: blobs[entry["digest"]] for entry in payload["package"]["files"]}
+            self.assertLessEqual(len(data), 14)
+            group = runtime.read_group(data, independent=True, replay_cases=True)
+            references = {runtime.resource(data, {"path": item["path"], "sha256": item["sha256"]})["baseline"]["path"]
+                          for item in group["cases"]}
+            self.assertEqual(references, {item["path"] for item in group["baselines"]})
+            found.extend(item["job_id"] for item in group["cases"])
+        self.assertEqual(len(found), len(set(found)))
+        self.assertEqual(set(found), {row["job_id"] for row in cases})
 
     def test_duplicate_cases_and_orphan_case_files_are_refused(self):
         with self.assertRaises(ValueError):
