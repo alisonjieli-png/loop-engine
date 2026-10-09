@@ -278,7 +278,7 @@ main:has(> [data-view="home"]:not([hidden])){max-width:none;padding:0}
 /* On a phone the folder keeps its paths and drops the notes beside them, so the tree needs less sideways room. */
 @media(max-width:600px){.step-demo-note-inline{display:none}}
 .step-demo-harness-head p:first-child{margin:0;color:var(--night-ink);font-size:.8125rem;font-weight:600}
-.step-demo-harness .status-tag{font-size:.6875rem}
+.step-demo-harness .status-tag{font-size:var(--text-label)}
 .step-demo .step-demo-tree{margin:0;padding:0;max-height:none;border:0;border-radius:0;background:none;color:var(--code-ink);font-family:var(--font-mono);font-size:.78125rem;line-height:1.65;white-space:pre;overflow-x:auto;overflow-wrap:normal;word-break:normal}
 .step-demo-note-inline{color:var(--night-muted)}
 

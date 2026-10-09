@@ -98,7 +98,7 @@
   const setMenu = open => { menuButton.setAttribute("aria-expanded", String(open)); menuButton.closest(".header").classList.toggle("menu-open", open); };
   menuButton.addEventListener("click", () => setMenu(menuButton.getAttribute("aria-expanded") !== "true"));
   // Opening a page closes the phone menu, which the page script would otherwise leave open over the new page.
-  const route = () => { const name = routeNames[location.pathname] || (location.pathname.startsWith("/docs/") ? "docs" : "home"); show(name); setMenu(false); document.title = serviceName + " | " + {home:"For engineers, designers and AI agents", "use-cases":"Use cases", overnight:"Solve complex problems overnight", efficiency:"More efficient operation", learning:"Learning and optimization, built in", workspace:"Intelligence workspace", login:"Sign in", signup:"Account status", pricing:"Pricing", account:"Your account", admin:"Access administration", docs:"Documentation", about:"How it works", setup:"Get set up", waitlist:"Get started", examples:"Examples and case studies", security:"Access and data boundaries", privacy:"Privacy notice", terms:"Terms of service", start:"Get started", confirm:"Choose your password",
+  const route = () => { const name = routeNames[location.pathname] || (location.pathname.startsWith("/docs/") ? "docs" : "home"); show(name); setMenu(false); document.title = serviceName + " | " + {home:"For engineers, designers and AI agents", "use-cases":"Use cases", overnight:"Local overnight queue and morning reports", efficiency:"More efficient operation", learning:"Learning and optimization, built in", workspace:"Intelligence workspace", login:"Sign in", signup:"Account status", pricing:"Pricing", account:"Your account", admin:"Access administration", docs:"Documentation", about:"How it works", setup:"Get set up", waitlist:"Get started", examples:"Examples and case studies", security:"Access and data boundaries", privacy:"Privacy notice", terms:"Terms of service", start:"Get started", confirm:"Choose your password",
     "for-designers":"Creative work you can change again", "for-coding-agents":"Stop starting from nothing", "for-engineering-teams":"Expertise for the whole team", "for-comparing-tools":"What it is and what it costs",
     "oauth-consent":"Authorize a connection", "for-protocol-and-client":"Protocol, client and setup", demo:"One task, step by step", "demo-kaggle":"A Kaggle competition, start to finish", "case-studies-data-cleanup":"Data cleanup with and without Baltor",
     "case-studies-pi-and-gemma-4":"Pi and Gemma 4 on Ollama Cloud", "case-studies-sign-up-protection":"How sign-up is protected", "creative-arena":"Ashen Wilds: a playable, editable 3D scene", status:"Service status"}[name]; if (name === "docs") window.BaltorDocumentation?.show(location.pathname); if(name==='oauth-consent')oauthConsent?.show(); };
@@ -647,7 +647,7 @@ const applyPaymentState = name => {
     for (const panel of document.querySelectorAll("[data-funnel-panel]")) panel.hidden = panel.dataset.funnelPanel !== state;
     $("funnel-signin").hidden = signedIn || (!registrationOpen && !waitingList);
     $("funnel-account-title").textContent = creating ? "Create your account" : "Sign in";
-    $("funnel-account-note").textContent = creating ? "Your email address, nothing else" : "Use an existing account";
+    $("funnel-account-note").textContent = creating ? "Just your email address" : "Use an existing account";
     $("funnel-invite-title").textContent = "Sign in to your account";
     $("funnel-invite-note").textContent = "Sign in with the account you already have.";
     $("funnel-invite").href = "/login";
@@ -1171,6 +1171,42 @@ const applyPaymentState = name => {
     $("client-source").href = selected.source_url; $("client-source").textContent = "Open the " + selected.name + " guide";
     $("copy-configuration").disabled = false; $("copy-configuration").textContent = "Copy configuration without secrets"; message("setup-message", "");
   }
+  /* The three ways an agent reaches Baltor, on Get set up: the protocol address, a search request to the direct interface on the same
+     host, and the two commands that connect Claude Code through OAuth. Each is written from the address the service declares, the
+     same one the recipes use, and never holds a credential: the request names the token variable, never its value. */
+  /* Entries for MCP apps that have no tab of their own: Cursor, VS Code and Gemini CLI. Each is written from the address the service
+     declares, like a recipe, and holds a reference to the token, never a value. Cursor reads ${env:NAME} in headers, VS Code asks for
+     the value once and keeps it in its own secret storage, and Gemini CLI reads ${NAME}. Read from cursor.com/docs/mcp, the VS Code
+     MCP configuration reference and the Gemini CLI MCP server guide on October 9, 2026. */
+  const appStepEffects = "reads_fs, writes_fs, spawns_process, network";
+  const appConfigurations = {
+    cursor:endpoint => ({mcpServers:{baltor:{url:endpoint, headers:{Authorization:"Bearer ${env:BALTOR_SERVICE_TOKEN}", "Baltor-Step-Effects":appStepEffects}}}}),
+    vscode:endpoint => ({inputs:[{type:"promptString", id:"baltor-token", description:"Baltor client token", password:true}],
+      servers:{baltor:{type:"http", url:endpoint, headers:{Authorization:"Bearer ${input:baltor-token}", "Baltor-Step-Effects":appStepEffects}}}}),
+    "gemini-cli":endpoint => ({mcpServers:{baltor:{httpUrl:endpoint, headers:{Authorization:"Bearer ${BALTOR_SERVICE_TOKEN}", "Baltor-Step-Effects":appStepEffects}}}})
+  };
+  function renderConnectionWays() {
+    const unavailable = "Connection address unavailable";
+    for (const node of document.querySelectorAll("[data-connection-endpoint]")) node.textContent = connectionEndpoint || unavailable;
+    const api = $("setup-api-example"), oauth = $("setup-oauth-example"), address = $("setup-api-address");
+    if (address) address.textContent = "POST " + (connectionEndpoint ? new URL("/api/v1/retrieval", connectionEndpoint).href : "/api/v1/retrieval");
+    if (api) api.textContent = connectionEndpoint ? ["curl -sS -X POST " + new URL("/api/v1/retrieval", connectionEndpoint).href + " \\",
+      '  -H "Authorization: Bearer $BALTOR_SERVICE_TOKEN" \\', '  -H "Content-Type: application/json" \\',
+      "  -d '{\"record_type\":\"service_retrieval_request/v2\",\"query\":\"split address lines\",\"mode\":\"lexical\",\"top_n\":3}'"].join("\n") : unavailable;
+    if (oauth) oauth.textContent = connectionEndpoint ? "claude mcp add --transport http baltor " + connectionEndpoint + "\nclaude mcp login baltor" : unavailable;
+    for (const shown of document.querySelectorAll("[data-app-configuration]")) {
+      const write = appConfigurations[shown.dataset.appConfiguration];
+      shown.textContent = connectionEndpoint && write ? JSON.stringify(write(connectionEndpoint), null, 2) : unavailable;
+    }
+    for (const button of document.querySelectorAll("[data-copy-app]")) button.disabled = !connectionEndpoint;
+  }
+  document.addEventListener("click", async event => {
+    const button = event.target.closest?.("[data-copy-app]");
+    if (!button || !connectionEndpoint) return;
+    const shown = document.querySelector('[data-app-configuration="' + button.dataset.copyApp + '"]');
+    try { await navigator.clipboard.writeText(shown.textContent); message("setup-app-message", "Copied. The entry holds no key."); }
+    catch (_) { message("setup-app-message", "Clipboard unavailable. Select and copy the entry text.", true); }
+  });
   function renderHomeRecipe() {
     const entry = document.querySelector("[data-home-recipe]"), recipe = recipes?.recipes.find(item => item.id === entry?.dataset.homeRecipe);
     if (entry && recipe) entry.textContent = connectionEndpoint ? configurationText(recipe) : "Connection settings are unavailable until the service reports a valid address.";
@@ -1258,7 +1294,7 @@ const applyPaymentState = name => {
     $("protocol-url").value = connectionEndpoint || "";
     $("setup-endpoint").textContent = connectionEndpoint || "Connection address unavailable";
     $("copy-endpoint").disabled = !connectionEndpoint;
-    renderRecipe(); renderHomeRecipe();
+    renderRecipe(); renderHomeRecipe(); renderConnectionWays();
     applyLibraryCount(value);
     clientAccess.connectionChanged();
     waitlistOffer(value);
@@ -1304,5 +1340,5 @@ const applyPaymentState = name => {
         if (confirmation) message("confirm-message", "Sign-in settings are unavailable, so this link cannot be finished now. Your link was not used; open it again later.", true);
       });
     }
-  }).catch(() => { waitlistOffer(null); $("service-status").textContent = "Service unavailable. Check the host configuration."; $("protocol-note").textContent = "Could not confirm the installed protocol. Do not assume client compatibility."; });
+  }).catch(() => { waitlistOffer(null); renderConnectionWays(); $("service-status").textContent = "Baltor is not responding right now. See the status page."; $("protocol-note").textContent = "Could not confirm the installed protocol. Do not assume client compatibility."; });
 })();

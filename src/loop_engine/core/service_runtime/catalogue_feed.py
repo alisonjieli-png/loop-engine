@@ -143,23 +143,23 @@ def render(record, path, origin):
 
 def live_specimen_body():
     """Static shell for one anonymous catalogue read; failures never render a made-up zero."""
-    return ('<section class="md-band" id="live-catalogue"><p class="eyebrow">Working feed · live catalogue metadata</p>'
-            '<h2>Read an actual feed item.</h2><p class="md-reading">This notice comes from the catalogue Baltor serves now. '
-            'It reports a publication state, not current model news or benchmark results.</p>'
+    return ('<section class="md-band" id="live-catalogue"><p class="eyebrow">Library updates feed · live</p>'
+            '<h2>Read an actual feed item.</h2><p class="md-reading">This notice comes from the library Baltor serves now. '
+            'It reports what the library holds, not current model news or benchmark results.</p>'
             '<article class="feed-specimen" id="catalogue-specimen" data-state="loading" aria-labelledby="catalogue-specimen-heading">'
             '<h3 id="catalogue-specimen-heading">Baltor component updates</h3>'
-            '<p id="catalogue-specimen-status" role="status" aria-live="polite">Reading the public catalogue notice…</p>'
+            '<p id="catalogue-specimen-status" role="status" aria-live="polite">Reading the library updates feed…</p>'
             '<div id="catalogue-specimen-content" hidden>'
             '<p id="catalogue-specimen-summary"></p><dl class="md-dl">'
-            '<div><dt>Served packages</dt><dd id="catalogue-specimen-packages"></dd></div>'
-            '<div><dt>Distinct served files</dt><dd id="catalogue-specimen-files"></dd></div>'
-            '<div><dt>Catalogue state changed</dt><dd id="catalogue-specimen-changed"></dd></div>'
+            '<div><dt>Harness components</dt><dd id="catalogue-specimen-packages"></dd></div>'
+            '<div><dt>Distinct files</dt><dd id="catalogue-specimen-files"></dd></div>'
+            '<div><dt>Library changed</dt><dd id="catalogue-specimen-changed"></dd></div>'
             '<div><dt>This browser read it at</dt><dd id="catalogue-specimen-read"></dd></div>'
             '<div><dt>Exact notice identity</dt><dd id="catalogue-specimen-notice"></dd></div></dl>'
             '<p id="catalogue-specimen-limit" class="md-reading"></p>'
             '<div class="md-actions"><a class="button secondary" id="catalogue-snapshot-json">Download this item as JSON</a>'
             '<a class="button secondary" id="catalogue-snapshot-markdown">Download this item as Markdown</a></div>'
-            '<p class="md-reading">Both downloads use the same notice displayed here, even if the catalogue changes afterwards.</p>'
+            '<p class="md-reading">Both downloads use the same notice displayed here, even if the library changes afterwards.</p>'
             '</div><button class="button secondary" type="button" id="catalogue-specimen-refresh" disabled>Read the latest notice</button>'
             '<noscript><p>JavaScript is needed for the inline notice. The public feed links below work without it.</p></noscript>'
             '</article><p class="md-reading">For an agent that polls for changes, use these stable feed addresses:</p>'
@@ -167,7 +167,8 @@ def live_specimen_body():
             '<a class="button secondary" href="/feeds/catalogue.rss">RSS</a>'
             '<a class="button secondary" href="/feeds/catalogue.md">Markdown</a></div>'
             '<p class="md-reading">This is one current-state notice in three formats, not a complete change history. '
-            'A failed refresh is not an empty catalogue. Markdown is not a claim of OKF compatibility.</p></section>')
+            'A failed refresh does not mean the library is empty. Markdown here is plain text for agents, not a claim of '
+            'Open Knowledge Format compatibility.</p></section>')
 
 
 def decision_specimen_body():
@@ -218,38 +219,79 @@ def decision_specimen_body():
             'comparison scripts, deployment files and checks used to carry it out.</p></article></section>')
 
 
+def setup_section():
+    """How a person gives each agent only the feeds it needs. The examples and the excerpt come from the packaged directory."""
+    from . import web_pages
+    from .feed_source_collections import COLLECTION_PREFIX, directory, render as render_collection
+    from .model_directory_pages import canonical
+    data = directory()
+    by_id = {item.id: item for item in data.collections}
+    sources = {item.id: item for item in data.sources}
+    _require(all(identity in by_id for identity in ("coding-benchmarks", "coding-agent-releases", "research-papers",
+                                                     "retrieval-benchmarks", "creative-engines")), "feed_specimen_source_missing")
+    site = web_pages.packaged_site_map()
+    example = by_id["coding-benchmarks"]
+    link = canonical(site, COLLECTION_PREFIX + example.id + ".md")
+    origin = canonical(site, "")
+
+    def named(*identities):
+        return " and ".join(f'<a href="#collection-{identity}">{escape(by_id[identity].title)}</a>' for identity in identities)
+    # The excerpt is the collection's own section of the served Markdown, cut from the bytes the feed address answers.
+    served = render_collection(COLLECTION_PREFIX + example.id + ".md", origin)[0].decode("utf-8")
+    excerpt = served[served.index("## " + example.title):served.index("\n\n[Browse Baltor Feeds]")].strip()
+    return ('<section class="md-band" id="feed-setup" aria-labelledby="feed-setup-title"><p class="eyebrow">Set up</p>'
+            '<h2 id="feed-setup-title">Give each agent only the feeds it needs</h2>'
+            '<p class="md-reading">Public feeds need no account and no key. Five steps, and your agent reads sources it can check '
+            'before it decides.</p><ol class="feed-steps">'
+            f'<li><strong>Choose what each agent decides.</strong> Pick one to three collections for each agent\'s job. Give a coding '
+            f'agent {named("coding-benchmarks", "coding-agent-releases")}; give a research agent '
+            f'{named("research-papers", "retrieval-benchmarks")}; give a creative agent {named("creative-engines")}.</li>'
+            '<li><strong>Copy the link in the format it reads.</strong> Markdown suits instruction files and chat agents. '
+            'JSON Feed suits scripts and tools, with the decision question and comparison fields in its <code>_baltor</code> '
+            'extension. The library updates feed is also served as RSS for a feed reader.</li>'
+            '<li><strong>Add the link to the agent\'s instructions.</strong> For example, one line in <code>AGENTS.md</code> or '
+            f'<code>CLAUDE.md</code>:<pre class="md-code md-code-wrap" tabindex="0">Before choosing a coding model, read {escape(link)} '
+            'and follow its decision checklist.</pre></li>'
+            '<li><strong>Decide how often it reads.</strong> Your harness owns scheduling and source access. Baltor does not push. Collections '
+            'change with Baltor releases and the library updates feed changes with the library, so once a day or before each '
+            'decision is enough. Send the last <code>ETag</code> in <code>If-None-Match</code> and an unchanged feed answers '
+            '304 Not Modified.</li>'
+            '<li><strong>Check which version it read.</strong> Each file names the date its sources were checked and a digest of '
+            'the directory, so you can tell exactly what an agent used.</li></ol>'
+            f'<details class="feed-excerpt"><summary>What a collection looks like</summary><p class="md-reading">The '
+            f'collection\'s section of <a href="{COLLECTION_PREFIX}{example.id}.md">{COLLECTION_PREFIX}{example.id}.md</a>, '
+            f'as served:</p><pre class="md-code md-code-wrap" tabindex="0">{escape(excerpt)}</pre></details>'
+            '<p class="md-reading">Saved feed settings for each agent, each with a token of its own, are not available yet. '
+            'Today the links you give an agent are its settings.</p>'
+            '<h3>Questions</h3><div class="feed-questions">'
+            '<details><summary>Is it free?</summary><p>Yes, through December 31, 2026 (Eastern). The standard price is $4.99 a '
+            'month, and nothing is charged automatically.</p></details>'
+            '<details><summary>Do I need an account?</summary><p>No. Public feeds are open to anyone and need no key.</p></details>'
+            '<details><summary>How fresh is it?</summary><p>Sources are checked on the date each file shows. Updates follow '
+            'website releases; no daily refresh is promised.</p></details>'
+            '<details><summary>Does a feed run anything?</summary><p>No. A feed never installs or runs its contents, and '
+            'reading a source does not grant permission to copy it.</p></details></div></section>')
+
+
 def page_body():
     from .feed_source_collections import page_section
     return ('<section class="md-band md-intro"><p class="eyebrow">Agent Feeds</p>'
-            '<h1 id="feeds-title">Updates your agents can use.</h1>'
+            '<h1 id="feeds-title">Sources your agents can check.</h1>'
             '<p class="md-reading feed-offer-price"><strong>$4.99 a month.</strong> Free through December 31, 2026 (Eastern). '
             'No automatic charge; a paid subscription requires your explicit opt-in.</p>'
-            '<p class="md-reading">Agent Feeds helps your agents decide what to do and why. Harness Files helps them carry it out. '
-            'Overnight / AFK Work adds local task queues, checkpoints and morning reports with your own worker and model access. '
-            'Use model releases, GitHub projects, benchmarks and services to compare options for a real decision. '
-            'Start with a source collection for your agent and the live catalogue feed below. '
-            'Choose Agent Feeds + Harness Files when you also need reusable code, tools and working files.</p>'
-            '<div class="md-actions"><a class="button secondary" href="/pricing">Compare the three offerings</a>'
-            '<a class="button secondary" href="#live-catalogue">Read a live feed item</a>'
-            '<a class="button secondary" href="#source-collections">Choose a source collection</a>'
-            '<a class="button secondary" href="/library">Explore Harness Files</a></div></section>'
-            + live_specimen_body() + decision_specimen_body() + page_section()
-            + '<section class="md-band"><h2>Give different agents different sources</h2>'
-            '<p class="md-reading">Use a collection\'s JSON Feed or Markdown link in the agent that needs it. '
-            'Give a coding agent Choose a coding model and Plan platform and tool upgrades; '
-            'give a research agent Turn papers into practical tests and Review RAG and retrieval quality. '
-            'Your harness controls when it reads those links and which external sources it may visit.</p>'
-            '<p class="md-reading">The collections include a decision question, a research task, comparison fields and '
-            'a suggested trigger for reviewing the decision again. '
-            'Your harness owns scheduling and source access.</p></section>'
-            '<section class="md-band"><h2>Harness Files</h2><p class="md-reading">'
-            'Agent Feeds supplies public source collections and the live catalogue feed. '
-            'Agent Feeds + Harness Files also gives you the reusable library through the existing paid plan. '
-            'The full-library plan is $29 a month.</p><p class="md-reading">Harness Files are reusable components: '
-            'reusable functions, code, tools, configurations, reference data and assets. Existing plan access and '
-            'the account-required Public Good collection are unchanged.</p>'
+            '<p class="md-reading">Pick the decision in front of your agent, such as choosing a coding model, and give it one link. '
+            'Your agent reads the sources, what to compare and when to look again. Agent Feeds helps your agents decide; '
+            'Harness Files helps them build, and Overnight / AFK Work keeps a local queue moving while you are away.</p>'
+            '<div class="md-actions"><a class="button primary" href="#source-collections">Choose a collection</a>'
+            '<a class="button secondary" href="#feed-setup">Set up feeds for each agent</a>'
+            '<a class="button secondary" href="/pricing">Compare the three offerings</a></div></section>'
+            + page_section() + setup_section() + live_specimen_body() + decision_specimen_body()
+            + '<section class="md-band"><h2>Harness Files</h2><p class="md-reading">'
+            'Agent Feeds supplies public source collections and the library updates feed. '
+            'Agent Feeds + Harness Files also gives you the whole library: skills, tools, code, hooks and settings your harness '
+            'downloads at an exact version. The full-library plan is $29 a month.</p>'
             '<p class="md-reading">A feed notice never installs or runs its contents. Downloaded files still require their normal '
-            'authorization, source and licence checks.</p><div class="md-actions">'
+            'authorization, source and licence checks. The Public Good collection is free with an account.</p><div class="md-actions">'
             '<a class="button secondary" href="/library">Explore Harness Files</a>'
             '<a class="button secondary" href="/public-good">Public Good</a></div></section>'
             '<section class="md-band"><h2>Overnight / AFK Work · Preview</h2>'

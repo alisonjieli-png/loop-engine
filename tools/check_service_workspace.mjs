@@ -1708,10 +1708,11 @@ try {
      in the one panel that leads the guide. */
   const accessWords={note:"for the whole library",tag:"Full library",closing:"Search the whole library from the harness you already use."};
   const expectedAccess={waiting:{state:"waiting",href:accessPaths.closed,label:accessLabels.closed,...accessWords},open:{state:"open",href:accessPaths.open,label:accessLabels.open,...accessWords}};
-  /* The thirteen actions that carry the state: the header, the hero, the plan on the homepage, the closing band, the pricing view,
-     How it works, the first example, access and data, the documentation, the footer, and the one on each use-case page, which
-     carries no id and is named here by its view. */
-  const accessActionIds=["[efficiency]","[learning]","[overnight]","about-access","closing-primary","docs-access","examples-access","footer-access","header-primary","hero-primary","home-pricing-primary","pricing-primary","security-access"];
+  /* The fourteen actions that carry the state: the header, the hero, the Harness Files card and the plan on the homepage, the
+     closing band, the pricing view, How it works, the first example, access and data, the documentation, the footer, and the one
+     on each use-case page, which carries no id and is named here by its view. The Harness Files card joined on October 9, 2026,
+     when its action moved from /pricing to the Get started funnel. */
+  const accessActionIds=["[efficiency]","[learning]","[overnight]","about-access","closing-primary","docs-access","examples-access","footer-access","header-primary","hero-primary","home-pricing-primary","offering-files-primary","pricing-primary","security-access"];
   const accessActions=target=>target.evaluate(()=>({note:document.getElementById("hero-access-note")?.textContent||"",tag:document.getElementById("home-plan-access")?.textContent||"",closing:document.getElementById("closing-note")?.textContent||"",
     actions:[...document.querySelectorAll("[data-access-state]")].map(item=>({id:item.id||"["+(item.closest("[data-view]")?.dataset.view||"")+"]",state:item.dataset.accessState,href:item.getAttribute("href"),label:item.querySelector("[data-access-label]")?.textContent||""})).sort((left,right)=>left.id<right.id?-1:1)}));
   const sameAccess=(found,want)=>JSON.stringify(found.actions.map(action=>action.id))===JSON.stringify(accessActionIds)&&found.actions.every(action=>action.state===want.state&&action.href===want.href&&action.label===want.label)
@@ -3027,18 +3028,18 @@ try {
       &&JSON.stringify(pricing.notes)===JSON.stringify([source])&&pricing.answer.includes(expected[2])&&pricing.founding.length===0&&!pricing.card,{funnel,steps,pricing});
   };
   /* Finding 8 of the persona journeys of September 24, 2026: nothing said who vets library items, or how. Security now has a "How
-     review works" section, and the pricing line "New vetted additions" links to it. Every number and rule it states is read from the
+     review works" section, and the pricing line "New files at no extra cost" links to it (named "New vetted additions" until October 9, 2026). Every number and rule it states is read from the
      review records: the panel policy for new items and the review record of the served catalogue's first release, including that
      one of its reviewers came from the model family of the items' author. */
   const numberWords=["no","one","two","three","four","five","six","seven","eight","nine","ten"];
   const reviewClaims=()=>{const totals=catalogueReviews.totals,lenses=catalogueReviews.reviewers.map(item=>item.lens);
     const sameFamily=catalogueReviews.reviewers.some(item=>/\bclaude\b/i.test(item.label));
-    return ["Every admitted package has an approval record tied to its exact bytes.",
+    return ["Every admitted item has an approval record tied to its exact bytes.",
       ...(catalogueReviews.reviewers.every(item=>item.produced_any_item_under_review===false)?["No reviewer judges an item it wrote"]:[]),
       ...(reviewPanelPolicy.any_rejection_withholds_approval===true?["one written rejection keeps an item out, with the reason recorded."]:[]),
       "Full per-item review needs approval from at least "+numberWords[reviewPanelPolicy.minimum_approvals]+" reviewers of at least "+numberWords[reviewPanelPolicy.minimum_distinct_families]+" model families",
       "Generated batches use per-item automated checks and independent sampled review.",
-      "Not every package in an accepted batch receives a model review.",
+      "Not every item in an accepted batch receives a model review.",
       "Approval does not imply installation or execution",
       ...(reviewPanelPolicy.exclude_producer_family===true?["none of them from the family of the model that wrote the item."]:[]),
       ...(reviewPanelPolicy.prechecks.licence?["a licence that is not accepted or that disagrees with the licence the item declares"]:[]),
@@ -3061,7 +3062,7 @@ try {
     await target.waitForTimeout(300);
     const landed=await target.evaluate(()=>{const node=document.getElementById("how-review-works"),box=node?.getBoundingClientRect();
       return {path:location.pathname,hash:location.hash,views:[...document.querySelectorAll("[data-view]")].filter(item=>!item.hidden).map(item=>item.dataset.view),top:box?Math.round(box.top):-1,viewport:innerHeight};});
-    note("pricing_links_new_vetted_additions_to_how_review_works",link.href==="/security#how-review-works"&&link.text==="pass review"&&landed.path==="/security"&&landed.hash==="#how-review-works"
+    note("pricing_links_new_vetted_additions_to_how_review_works",link.href==="/security#how-review-works"&&link.text==="How review works"&&landed.path==="/security"&&landed.hash==="#how-review-works"
       &&JSON.stringify(landed.views)===JSON.stringify(["security"])&&landed.top>=0&&landed.top<landed.viewport,{link,landed});
   };
   /* Finding 6 of the persona journeys of September 24, 2026: the Pi tab named the extension this website serves, /assets/pi/baltor.ts,
@@ -3249,7 +3250,7 @@ try {
     {name:"claim_three_model_families_for_review",scenario:"review_explained",path:"/security",find:"at least two model families",replacement:"at least three model families",
      expected:["how_review_works_states_only_what_the_review_records_hold"]},
     {name:"claim_each_sampled_batch_item_received_a_model_review",scenario:"review_explained",path:"/security",
-     find:"Not every package in an accepted batch receives a model review.",replacement:"Every package in an accepted batch receives a model review.",
+     find:"Not every item in an accepted batch receives a model review.",replacement:"Every item in an accepted batch receives a model review.",
      expected:["how_review_works_states_only_what_the_review_records_hold"]},
     {name:"claim_approval_proves_execution",scenario:"review_explained",path:"/security",
      find:"Approval does not imply installation or execution",replacement:"Approval proves installation and execution",
@@ -3257,7 +3258,7 @@ try {
     {name:"hide_that_a_first_release_reviewer_shared_the_authors_model_family",scenario:"review_explained",path:"/security",
      find:" One of those reviewers came from the same model family as the model that wrote the items.",replacement:"",expected:["how_review_works_states_only_what_the_review_records_hold"]},
     {name:"leave_new_vetted_additions_unexplained",scenario:"review_explained",path:"/pricing",
-     find:'<a href="/security#how-review-works" data-page="security" id="pricing-review-link">pass review</a>',replacement:"pass review",expected:["pricing_links_new_vetted_additions_to_how_review_works"]},
+     find:'<a href="/security#how-review-works" data-page="security" id="pricing-review-link">How review works</a>',replacement:"How review works",expected:["pricing_links_new_vetted_additions_to_how_review_works"]},
     {name:"print_the_pi_extension_path_as_plain_text",scenario:"pi_extension",path:"/assets/service.js",find:"const target = $(\"client-configuration-note\"), found = note.match(servedFile);",
      replacement:"const target = $(\"client-configuration-note\"), found = null;",expected:["the_pi_extension_path_is_a_link_with_a_copy_action"]},
     {name:"copy_only_the_path_of_the_pi_extension",scenario:"pi_extension",path:"/assets/service.js",find:"$(\"client-file-address\").textContent = location.origin + found[0];",

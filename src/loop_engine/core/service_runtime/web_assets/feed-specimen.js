@@ -110,7 +110,7 @@ export function mountSpecimen(document, fetcher = globalThis.fetch) {
   const read = async () => {
     if (reading) return;
     reading = true; refresh.disabled = true; clear(); panel.dataset.state = "loading";
-    status.textContent = "Reading the public catalogue notice…";
+    status.textContent = "Reading the library updates feed…";
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), READ_TIMEOUT_MS);
     try {
@@ -138,10 +138,10 @@ export function mountSpecimen(document, fetcher = globalThis.fetch) {
       put("catalogue-specimen-limit", record.limitation);
       panel.dataset.noticeId = record.notice_id; panel.dataset.state = "ready";
       accepted = {revision:record.catalogue_state_revision, signature};
-      content.hidden = false; status.textContent = "Current catalogue notice read successfully.";
+      content.hidden = false; status.textContent = "Library updates feed read.";
     } catch (_) {
       clear(); panel.dataset.state = "unavailable";
-      status.textContent = "Current catalogue notice unavailable. This is not an empty catalogue. Try again or open a feed link below.";
+      status.textContent = "The library updates feed did not load. That does not mean the library is empty. Try again or open a feed link below.";
     } finally { clearTimeout(timeout); controller.abort(); reading = false; refresh.disabled = false; }
   };
   refresh.addEventListener("click", read);

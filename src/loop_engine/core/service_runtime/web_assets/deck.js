@@ -1,7 +1,7 @@
 /* The deck at /deck: one slide at a time, moved by the arrow keys, Page Up and Page Down, Home and End, a swipe, the
    controls or a link to a slide's address such as /deck#live. O opens the overview of every slide and F presents in
    full screen. Without this script the page shows every slide one after another, so nothing depends on it.
-   It writes nothing inside a slide: the position and the overview sit outside the slides. */
+   It writes nothing inside a slide except the live library counts below: the position and the overview sit outside the slides. */
 (() => {
   "use strict";
   const $ = id => document.getElementById(id);
@@ -163,4 +163,21 @@
   if (!menuButton) return;
   const setMenu = open => { menuButton.setAttribute("aria-expanded", String(open)); menuButton.closest(".header")?.classList.toggle("menu-open", open); };
   menuButton.addEventListener("click", () => setMenu(menuButton.getAttribute("aria-expanded") !== "true"));
+})();
+
+/* The library counts on the live and plan slides. The page is served with the counts of the latest release record, each fact
+   naming that record; once the service reports a complete file population, the same elements show the live counts. Nothing
+   else inside a slide changes, and a failed or partial answer leaves the recorded counts in place. */
+(() => {
+  const files = document.querySelectorAll('[data-deck-live="files"]'), items = document.querySelectorAll('[data-deck-live="items"]');
+  if (!files.length && !items.length) return;
+  fetch("/api/v1/capabilities", {credentials: "omit", cache: "no-store"}).then(response => response.ok ? response.json() : null).then(body => {
+    const library = body?.result?.library, population = library?.file_population, served = library?.served_items;
+    const complete = population?.record_type === "catalogue_file_population/v1" && population.complete === true
+      && Number.isSafeInteger(served) && served > 0 && population.packages === served
+      && Number.isSafeInteger(population.distinct_files) && population.distinct_files > 0;
+    if (!complete) return;
+    files.forEach(node => { node.textContent = population.distinct_files.toLocaleString("en-US"); });
+    items.forEach(node => { node.textContent = served.toLocaleString("en-US"); });
+  }).catch(() => {});
 })();

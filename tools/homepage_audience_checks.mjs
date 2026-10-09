@@ -62,7 +62,7 @@ export function overnightToolsProblems(preview){
 }
 
 export function offeringProblems(cards){
-  const expected=[['agent-feeds','Agent Feeds','/feeds'],['agent-feeds-harness-files','Harness Files','/pricing'],
+  const expected=[['agent-feeds','Agent Feeds','/feeds'],['agent-feeds-harness-files','Harness Files','/get-started'],
     ['overnight-afk-work','Overnight / AFK Work','/overnight']];
   const problems=[];
   if(cards.length!==expected.length)return ['three distinct offerings are required'];

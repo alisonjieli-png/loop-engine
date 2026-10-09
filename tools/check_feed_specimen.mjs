@@ -114,7 +114,7 @@ with TemporaryDirectory(prefix="feed-specimen-browser-") as folder:
       mode="unavailable";await page.locator("#catalogue-specimen-refresh").click();await settled();
       const failed=await facts();
       check("failed_refresh_is_not_zero_or_stale_data",failed.state==="unavailable"&&!failed.shown
-        &&failed.packages===""&&failed.files===""&&/not an empty catalogue/.test(failed.status));
+        &&failed.packages===""&&failed.files===""&&/does not mean the library is empty/.test(failed.status));
       mode="synthetic";synthetic=structuredClone(feed);const zero=synthetic.items[0]._baltor;
       zero.catalogue_state_revision+=2;zero.notice_id=zero.release_id+":"+zero.catalogue_state_revision;zero.packages=0;zero.distinct_files=0;
       synthetic.items[0].id=zero.notice_id;

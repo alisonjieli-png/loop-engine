@@ -165,11 +165,13 @@ export async function runDeckChecks({root,browser,base,localOnly,check,mutants,o
   const firstDesktop=await readFirstScreen({}),firstPhone=await readFirstScreen({width:390,height:844});
   check("deck_first_screen_shows_the_heading_and_an_action",firstDesktop.h1&&firstDesktop.action&&firstPhone.h1&&firstPhone.action,{desktop:firstDesktop,phone:firstPhone});
 
-  /* Fast loading: one fresh visit, counted by what the browser actually fetched. */
+  /* Fast loading: one fresh visit, counted by what the browser actually fetched. Since October 9, 2026 the deck also reads the
+     live library counts from /api/v1/capabilities, one request of about 6 KB, so the byte ceiling rose from 420,000 to 440,000;
+     the request ceiling of 12 is unchanged. */
   const visit=await open();await visit.page.waitForLoadState("networkidle");
   const fetched=[];for(const response of visit.state.responses){const url=new URL(response.url());fetched.push({path:url.pathname,status:response.status(),bytes:(await response.body().catch(()=>Buffer.alloc(0))).length,origin:url.origin});}
   const bytes=fetched.reduce((sum,item)=>sum+item.bytes,0),own=fetched.filter(item=>/^\/(deck|assets\/deck\.(css|js))$/.test(item.path)).reduce((sum,item)=>sum+item.bytes,0);
-  check("deck_loads_fast",fetched.length<=12&&bytes<=420000&&own<=90000&&fetched.every(item=>item.status===200&&item.origin===new URL(base).origin),{requests:fetched.length,bytes,deck_files_bytes:own,files:fetched.map(item=>item.path+" "+item.bytes)});
+  check("deck_loads_fast",fetched.length<=12&&bytes<=440000&&own<=90000&&fetched.every(item=>item.status===200&&item.origin===new URL(base).origin),{requests:fetched.length,bytes,deck_files_bytes:own,files:fetched.map(item=>item.path+" "+item.bytes)});
   await visit.close();await phone.close();
 
   /* Removed-guard controls: changed bytes served in memory, each of which must fail the check it names. */

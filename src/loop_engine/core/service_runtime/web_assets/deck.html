@@ -51,8 +51,8 @@
               <div class="deck-cover-copy">
                 <p class="deck-eyebrow">Harness and agent optimized operation</p>
                 <h1 id="cover-title">The right setup for every step your agent takes.</h1>
-                <p class="deck-lead">Baltor supplies reusable code, tools and reference material for your chosen AI harness. Search the library, inspect the selected package and download its files. Keep your own model access.</p>
-                <p class="deck-cover-note">Setup guides cover <strong>Claude Code</strong>, <strong>Codex</strong>, <strong>OpenCode</strong>, <strong>Pi</strong> and the <strong>Baltor Harness</strong>. Connection and installation steps differ by harness.</p>
+                <p class="deck-lead">Baltor gives the AI harness you already use source-backed research and ready files for each step. Search the library, check a file's source and licence, and download the exact version. Keep your own model access.</p>
+                <p class="deck-cover-note">Setup guides cover <strong>Claude Code</strong>, <strong>Codex</strong>, <strong>OpenCode</strong>, <strong>Pi</strong> and the <strong>Baltor Harness</strong>. Cursor, VS Code and other MCP apps connect to the same address.</p>
               </div>
               <figure class="deck-cover-folder" aria-label="An example working folder for one step">
                 <figcaption>An example working folder for one step</figcaption>
@@ -91,19 +91,19 @@
               <div class="deck-head">
                 <p class="deck-eyebrow">What Baltor is</p>
                 <h2 id="what-title">Reusable files for technical and creative work</h2>
-                <p class="deck-lead">Choose material for the task: reusable implementations, reference data, prompts, workflows and checks. Complete packages keep their supporting files.</p>
+                <p class="deck-lead">Choose files for the task: reusable implementations, reference data, prompts, workflows and checks. Each item keeps its supporting files.</p>
               </div>
               <ul class="deck-kinds" aria-label="What the library holds">
                 <li><h3>Instruction files</h3><p><code>AGENTS.md</code>, <code>CLAUDE.md</code> and other context files</p></li>
                 <li><h3>Skills</h3><p><code>SKILL.md</code> with its scripts, references and assets</p></li>
-                <li><h3>Tools and reusable code</h3><p>Tested scripts and packages a step can run</p></li>
+                <li><h3>Tools and reusable code</h3><p>Tested scripts and code a step can run</p></li>
                 <li><h3>Data and workflows</h3><p>Schemas, reference tables and native workflow files</p></li>
                 <li><h3>Prompts and task briefs</h3><p>Reusable instructions, examples and expected results</p></li>
                 <li><h3>Protocol servers and plugins</h3><p>The tools a step may call</p></li>
               </ul>
               <div class="deck-principles">
                 <div><h3>Your models, your keys</h3><p>Use your own model provider or local endpoint. Library access and model costs are separate.</p></div>
-                <div><h3>Reviewed before it is served</h3><p>Every item starts as a candidate. Independent screening and deterministic checks precede publication. Execution evidence varies by package.</p></div>
+                <div><h3>Checked before it is served</h3><p>Every item starts as a candidate. Independent screening and deterministic checks precede publication. Execution evidence varies by item.</p></div>
                 <div><h3>A fresh harness for each step</h3><p>The Baltor Harness already runs a task on your model in small steps. Starting a fresh standard harness for each step is not open yet.</p></div>
               </div>
               <p class="deck-source deck-slide-source">Source: <a href="https://github.com/alisonjieli-png/loop-engine/blob/main/README.md#what-baltor-gives-your-harness">README.md</a>, what Baltor gives your harness, one harness for each step, and what is not open yet; the harness file definition in <a href="https://github.com/alisonjieli-png/loop-engine/blob/main/AGENTS.md#intelligence-rules">AGENTS.md</a>.</p>
@@ -120,7 +120,7 @@
                 <ol class="deck-steps">
                   <li><h3>Search</h3><p>The harness asks the library for what a step needs. The answer is a short list of references: name, purpose, source, licence, exact version and digest. No file bodies.</p></li>
                   <li><h3>Choose</h3><p>The step picks one reference. An item that needs file, network or process access is offered only to a step that declares that access.</p></li>
-                  <li><h3>Download and check</h3><p>Access is checked again at download. The file must be exactly the version the reviewers approved, and the download is recorded in your usage.</p></li>
+                  <li><h3>Download and check</h3><p>Access is checked again at download. The file must be exactly the version the step chose, and the download is recorded in your usage.</p></li>
                   <li><h3>Place</h3><p>The file goes where the harness reads it: a skill folder, <code>AGENTS.md</code> or a protocol server entry.</p></li>
                 </ol>
                 <p class="deck-source deck-slide-source">Source: <a href="https://github.com/alisonjieli-png/loop-engine/blob/main/README.md#what-baltor-gives-your-harness">README.md</a>, <a href="https://github.com/alisonjieli-png/loop-engine/blob/main/docs/guides/service-searching-and-retrieving.md">searching and retrieving</a> and <a href="https://github.com/alisonjieli-png/loop-engine/blob/main/docs/guides/service-usage-and-what-you-pay-for.md">usage and what you pay for</a>.</p>
@@ -137,7 +137,7 @@
                   <text class="deck-svg-muted" x="96" y="55" text-anchor="middle">at one step</text>
                   <rect class="deck-svg-box is-library" x="216" y="8" width="176" height="60" rx="12"/>
                   <text class="deck-svg-strong" x="304" y="34" text-anchor="middle">Baltor library</text>
-                  <text class="deck-svg-muted" x="304" y="55" text-anchor="middle">reviewed items</text>
+                  <text class="deck-svg-muted" x="304" y="55" text-anchor="middle">harness components</text>
                   <line class="deck-svg-life" x1="96" y1="68" x2="96" y2="452"/>
                   <line class="deck-svg-life" x1="304" y1="68" x2="304" y2="372"/>
                   <text class="deck-svg-label" x="200" y="104" text-anchor="middle">search the library</text>
@@ -156,7 +156,7 @@
                   <text class="deck-svg-small" x="200" y="416" text-anchor="middle">recorded in your usage</text>
                   <rect class="deck-svg-check" x="8" y="436" width="236" height="36" rx="10"/>
                   <path class="deck-svg-tick" d="M22 454l5 5 10-11"/>
-                  <text class="deck-svg-check-text" x="46" y="459">exact reviewed version</text>
+                  <text class="deck-svg-check-text" x="46" y="459">exact chosen version</text>
                   <rect class="deck-svg-folder" x="8" y="484" width="384" height="68" rx="10"/>
                   <text class="deck-svg-folder-text" x="24" y="510">placed where the harness reads it:</text>
                   <text class="deck-svg-folder-path" x="18" y="536">.agents/skills/split-address-lines/SKILL.md</text>
@@ -170,22 +170,22 @@
               <div class="deck-head">
                 <p class="deck-eyebrow">Available today</p>
                 <h2 id="live-title">A working library and an editable creative demo</h2>
-                <p class="deck-lead">The library delivers material. Your chosen harness does the work. The demo shows a separate creative project you can explore.</p>
+                <p class="deck-lead">The library delivers files. Your chosen harness does the work. The demo shows a separate creative project you can explore.</p>
               </div>
               <div class="deck-tiles">
-                <article class="deck-tile" data-fact data-evidence="artifacts/architecture-audit-2026-09-19/pilot-release-55.json">
-                  <p class="deck-stat">30,746 packages</p>
-                  <p>96,064 distinct files in the September 30 catalogue snapshot. Package counts and file counts measure different things.</p>
-                  <p class="deck-source">Source: <a href="https://github.com/alisonjieli-png/loop-engine/blob/main/artifacts/architecture-audit-2026-09-19/pilot-release-55.json">the dated catalogue record</a></p>
+                <article class="deck-tile" data-fact data-evidence="artifacts/architecture-audit-2026-09-19/pilot-release-83.json">
+                  <p class="deck-stat"><span data-deck-live="files">1,353,029</span> files</p>
+                  <p>Distinct files in the library, from <span data-deck-live="items">218,151</span> harness components. Identical files count once.</p>
+                  <p class="deck-source">Source: the live count the service reports when this page opens; before that, <a href="https://github.com/alisonjieli-png/loop-engine/blob/main/artifacts/architecture-audit-2026-09-19/pilot-release-83.json">the release 83 record</a></p>
                 </article>
                 <article class="deck-tile" data-fact data-evidence="docs/components/service-runtime/README.md">
                   <p class="deck-stat">Search and complete downloads</p>
-                  <p>Inspect the source, licence, version and required permissions. Download the selected package with its supporting files.</p>
+                  <p>Inspect the source, licence, version and required permissions. Download the selected item with its supporting files.</p>
                   <p class="deck-source">Source: <a href="https://github.com/alisonjieli-png/loop-engine/blob/main/docs/components/service-runtime/README.md">the service component guide</a></p>
                 </article>
                 <article class="deck-tile" data-fact data-evidence="src/loop_engine/core/service_runtime/web_assets/client-recipes.json">
                   <p class="deck-stat">Your existing harness</p>
-                  <p>Connection guides for Claude Code, Codex, OpenCode, Pi and the Baltor Harness. Automatic placement and manual setup have different support.</p>
+                  <p>Connection guides for Claude Code, Codex, OpenCode, Pi and the Baltor Harness; Cursor, VS Code and other MCP apps use the same address. Automatic placement and manual setup have different support.</p>
                   <p class="deck-source">Source: <a href="https://github.com/alisonjieli-png/loop-engine/blob/main/src/loop_engine/core/service_runtime/web_assets/client-recipes.json">the connection guide records</a></p>
                 </article>
                 <article class="deck-tile" data-fact data-evidence="artifacts/architecture-audit-2026-09-19/pilot-release-55.json">
@@ -240,20 +240,20 @@
               <div class="deck-head">
                 <p class="deck-eyebrow">The library plan</p>
                 <h2 id="plan-title">The served library and its growth targets</h2>
-                <p class="deck-lead">Recorded supply and future targets are separate. Files count only when an approved, active package delivers them; repeated files count once.</p>
+                <p class="deck-lead">Recorded supply and future targets are separate. Files count only when an active item in the library delivers them; repeated files count once.</p>
               </div>
               <ol class="deck-ladder">
-                <li class="is-live" data-fact data-evidence="artifacts/architecture-audit-2026-09-19/pilot-release-55.json">
+                <li class="is-live" data-fact data-evidence="artifacts/architecture-audit-2026-09-19/pilot-release-83.json">
                   <span class="deck-tag is-live">Observed</span>
-                  <p class="deck-ladder-count">96,064</p>
-                  <p>distinct files in the September 30 served catalogue</p>
-                  <p class="deck-source">Source: <a href="https://github.com/alisonjieli-png/loop-engine/blob/main/artifacts/architecture-audit-2026-09-19/pilot-release-55.json">the dated catalogue measurement</a></p>
+                  <p class="deck-ladder-count" data-deck-live="files">1,353,029</p>
+                  <p>distinct files in the library today</p>
+                  <p class="deck-source">Source: the live count, or else <a href="https://github.com/alisonjieli-png/loop-engine/blob/main/artifacts/architecture-audit-2026-09-19/pilot-release-83.json">the release 83 measurement</a></p>
                 </li>
-                <li class="is-live" data-fact data-evidence="artifacts/architecture-audit-2026-09-19/pilot-release-55.json">
+                <li class="is-live" data-fact data-evidence="artifacts/architecture-audit-2026-09-19/pilot-release-83.json">
                   <span class="deck-tag is-live">Observed</span>
-                  <p class="deck-ladder-count">30,746</p>
-                  <p>packages in the same catalogue, each with a distinct reusable job</p>
-                  <p class="deck-source">Source: <a href="https://github.com/alisonjieli-png/loop-engine/blob/main/artifacts/architecture-audit-2026-09-19/pilot-release-55.json">the dated catalogue measurement</a></p>
+                  <p class="deck-ladder-count" data-deck-live="items">218,151</p>
+                  <p>harness components in the same library, each with a distinct reusable job</p>
+                  <p class="deck-source">Source: the live count, or else <a href="https://github.com/alisonjieli-png/loop-engine/blob/main/artifacts/architecture-audit-2026-09-19/pilot-release-83.json">the release 83 measurement</a></p>
                 </li>
                 <li class="is-plan" data-fact data-evidence="docs/roadmap/roadmap.yaml">
                   <span class="deck-tag is-plan">Plan</span>
@@ -264,7 +264,7 @@
                 <li class="is-aim" data-fact data-evidence="docs/architecture/NORTH-STAR.md">
                   <span class="deck-tag is-aim">Aim</span>
                   <p class="deck-ladder-count">One million</p>
-                  <p>useful packages, the longer-term supply target</p>
+                  <p>useful harness components, the longer-term supply target</p>
                   <p class="deck-source">Source: <a href="https://github.com/alisonjieli-png/loop-engine/blob/main/docs/architecture/NORTH-STAR.md">the current north star</a></p>
                 </li>
               </ol>
@@ -285,12 +285,16 @@
                 <div class="deck-head">
                   <p class="deck-eyebrow">Business model</p>
                   <h2 id="business-title">Library access, with your own model provider</h2>
-                  <p class="deck-lead">Agent Feeds + Harness Files pays for access to the hosted library. You supply your model access and choose where the work runs. Managed execution remains a future option.</p>
+                  <p class="deck-lead">Agent Feeds gives agents source-backed research. Agent Feeds + Harness Files pays for access to the hosted library, and the local overnight tools come with it. You supply your model access and choose where the work runs.</p>
                 </div>
                 <ul class="deck-points">
                   <li data-fact data-evidence="artifacts/release-24-2026-09-24/README.md src/loop_engine/core/service_runtime/account_policy.py">
                     <p><strong>The first 10 accounts</strong> from Baltor's sign-up hold Agent Feeds + Harness Files free each month.</p>
                     <p class="deck-source">Source: <a href="https://github.com/alisonjieli-png/loop-engine/blob/main/artifacts/release-24-2026-09-24/README.md">the release 24 record</a> and <a href="https://github.com/alisonjieli-png/loop-engine/blob/main/src/loop_engine/core/service_runtime/account_policy.py">account_policy.py</a></p>
+                  </li>
+                  <li data-fact data-evidence="docs/architecture/OWNER-DECISIONS.md">
+                    <p><strong>Agent Feeds</strong> is $4.99 a month, free through December 31, 2026 (Eastern), with no automatic charge. A paid feed subscription needs the customer's opt-in.</p>
+                    <p class="deck-source">Source: <a href="https://github.com/alisonjieli-png/loop-engine/blob/main/docs/architecture/OWNER-DECISIONS.md#latest-checklist-and-hosted-tool-direction">the Agent Feeds pricing decision</a></p>
                   </li>
                   <li data-fact data-evidence="AGENTS.md">
                     <p><strong>Live payments</strong> through Stripe checkout and the customer portal since September 21, 2026.</p>
@@ -389,7 +393,7 @@
       <div class="footer-brand"><a class="brand" href="/" data-page="home" aria-label="{{SERVICE_NAME}} home"><img class="brand-mark" src="/assets/baltor-mark.svg" width="32" height="32" alt=""><span class="brand-name">{{SERVICE_NAME}}</span></a><p>Harness and agent optimized operation.</p><p class="footer-status"><span class="status-dot" aria-hidden="true"></span><span id="service-status">Checking service availability</span></p></div>
       <nav class="footer-links" id="footer-product" aria-label="Product"><details class="footer-group" open><summary class="footer-heading">Product<svg class="footer-chevron" width="16" height="16" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M6 9l6 6 6-6"/></svg></summary><div class="footer-group-links"><a id="footer-access" href="/get-started" data-page="get-started" data-access-state="waiting"><span data-access-label>Get started</span></a><a href="/setup" data-page="setup" data-nav="get-set-up">Get set up</a><a href="/how-it-works" data-page="about">How it works</a><a href="/pricing" data-page="pricing">Pricing</a><a href="/demo" data-page="demo">Demonstration</a><a href="/examples" data-page="examples">Examples</a><a href="/status" data-page="status">Status</a></div></details></nav>
       <nav class="footer-links" id="footer-library" aria-label="Library"><details class="footer-group" open><summary class="footer-heading">Library<svg class="footer-chevron" width="16" height="16" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M6 9l6 6 6-6"/></svg></summary><div class="footer-group-links"><a href="/library">Browse the library</a><a href="/feeds">Feeds</a><a href="/public-good">Public Good</a><a href="/top-mcps">Top MCPs</a><a href="/directory">MCP directory</a><a href="/models">Models</a><a href="/endpoints">Endpoints</a><a href="/can-i-run">Can I run it?</a></div></details></nav>
-      <nav class="footer-links" id="footer-use-cases" aria-label="Use cases"><details class="footer-group" open><summary class="footer-heading">Use cases<svg class="footer-chevron" width="16" height="16" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M6 9l6 6 6-6"/></svg></summary><div class="footer-group-links"><a href="/use-cases" data-page="use-cases">Use cases</a><a href="/overnight" data-page="overnight">Solve problems overnight</a><a href="/efficiency" data-page="efficiency">Efficient operation</a><a href="/learning" data-page="learning">Learning built in</a><a href="/examples#case-studies" data-page="case-studies">Case studies</a><a href="/for/coding-agents" data-page="for-coding-agents">For coding agents</a><a href="/for/designers">For designers</a><a href="/for/engineering-teams" data-page="for-engineering-teams">For engineering teams</a><a href="/for/comparing-tools" data-page="for-comparing-tools">For comparing tools</a><a href="/for/protocol-and-client" data-page="for-protocol-and-client">For protocol and client work</a></div></details></nav>
+      <nav class="footer-links" id="footer-use-cases" aria-label="Use cases"><details class="footer-group" open><summary class="footer-heading">Use cases<svg class="footer-chevron" width="16" height="16" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M6 9l6 6 6-6"/></svg></summary><div class="footer-group-links"><a href="/use-cases" data-page="use-cases">Use cases</a><a href="/overnight" data-page="overnight">Overnight / AFK Work</a><a href="/efficiency" data-page="efficiency">Efficient operation</a><a href="/learning" data-page="learning">Learning built in</a><a href="/examples#case-studies" data-page="case-studies">Case studies</a><a href="/for/coding-agents" data-page="for-coding-agents">For coding agents</a><a href="/for/designers">For designers</a><a href="/for/engineering-teams" data-page="for-engineering-teams">For engineering teams</a><a href="/for/comparing-tools" data-page="for-comparing-tools">For comparing tools</a><a href="/for/protocol-and-client" data-page="for-protocol-and-client">For protocol and client work</a></div></details></nav>
       <nav class="footer-links" id="footer-documentation" aria-label="Documentation"><details class="footer-group" open><summary class="footer-heading">Documentation<svg class="footer-chevron" width="16" height="16" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M6 9l6 6 6-6"/></svg></summary><div class="footer-group-links"><a href="/docs" data-page="docs">Docs</a><a href="/docs/getting-set-up" data-page="setup">Getting set up</a><a href="/docs/searching-and-retrieving" data-page="docs-page">Searching and retrieving</a><a href="/docs/serving-and-connections" data-page="docs-page">Serving and connections</a><a href="/docs/troubleshooting" data-page="docs-page">Troubleshooting</a><a href="/docs/your-account" data-page="docs-page">Your account</a><a href="/docs/usage-and-what-you-pay-for" data-page="docs-page">Usage and what you pay for</a></div></details></nav>
       <nav class="footer-links" id="footer-company" aria-label="Company"><details class="footer-group" open><summary class="footer-heading">Company<svg class="footer-chevron" width="16" height="16" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M6 9l6 6 6-6"/></svg></summary><div class="footer-group-links"><a href="/docs/what-baltor-is" data-page="docs-page">What Baltor is</a><a href="/deck">Deck</a><a href="/security" data-page="security">Access and data</a><a href="/login" data-page="login">Sign in</a><a href="/privacy" data-page="privacy">Privacy notice</a><a href="/terms" data-page="terms">Terms of service</a><a href="/assets/third-party-notices.txt">Open-source notices</a><span>Contact: by post, at the address below</span></div></details></nav>
     </div>

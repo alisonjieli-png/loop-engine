@@ -179,7 +179,7 @@ class FilePopulationTests(unittest.TestCase):
     def test_public_library_renders_the_measured_distinct_files_and_packages(self):
         from loop_engine.core.service_runtime.library_page import library_body
         html = library_body(replace(self.view, body_reader=lambda _item: "Allowed fixture sample"))
-        self.assertIn('<span class="lib-total">3</span> <span class="lib-title-words">distinct component files', html)
+        self.assertIn('<span class="lib-total">3</span> <span class="lib-title-words">files, ready for your harness', html)
         self.assertIn("3 distinct files. Identical shared files are counted once.", html)
         self.assertIn("Technical grouping by kind", html)
         self.assertIn('<th scope="col" class="lib-num">Packages</th>', html)

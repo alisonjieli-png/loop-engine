@@ -1,7 +1,7 @@
 {
   "record_type": "service_web_site_map/v3",
-  "decided_on": "2026-10-06",
-  "decided_by": "engineering, preserving earlier design, hostnames and audience paths, and adding the owner's Feeds direction as a clearly limited catalogue-metadata preview",
+  "decided_on": "2026-10-09",
+  "decided_by": "engineering, preserving earlier design, hostnames and audience paths, and adding the owner's Feeds direction as a clearly limited catalogue-metadata preview; on October 9, 2026 engineering relabeled the footer link to /overnight from \"Solve problems overnight\" to the offering name \"Overnight / AFK Work\" and rewrote the use cases description to match the page, with no page or link removed",
   "display_name": "Baltor",
   "canonical_hostname": "baltor.ai",
   "groups": [
@@ -16,7 +16,7 @@
       "address": "/feeds",
       "view": "feeds",
       "title": "Feeds",
-      "description": "Source collections for benchmarks, models, MCP services, papers and founder tools, plus a live catalogue feed. Download JSON Feed or Markdown for your agents.",
+      "description": "Source collections your agents check before they decide: models, benchmarks, MCP servers, papers and releases, as JSON Feed or Markdown links for each agent.",
       "group": "Product",
       "linked_from": ["header", "footer"],
       "unlinked_reason": "",
@@ -112,7 +112,7 @@
       "address": "/",
       "view": "home",
       "title": "For engineers, designers and AI agents",
-      "description": "One searchable library of reusable code, tools and reference material, with clear paths for engineers, designers and AI agents.",
+      "description": "Source-backed research and a library of ready code, tools and files for the harness you already use, for engineers, designers and AI agents.",
       "group": "Product",
       "linked_from": [
         "header",
@@ -142,7 +142,7 @@
       "address": "/setup",
       "view": "setup",
       "title": "Get set up",
-      "description": "Connect Claude Code, Codex, OpenCode, Pi or the Baltor Harness to the library, then search and download your first item.",
+      "description": "Connect Claude Code, Codex, Cursor, OpenCode, VS Code or Pi over MCP, call the REST API, or give an agent a feed link. Then download your first file.",
       "group": "Product",
       "linked_from": [
         "header",
@@ -267,7 +267,7 @@
       "address": "/use-cases",
       "view": "use-cases",
       "title": "Use cases",
-      "description": "Three ways teams use Baltor: solve complex problems overnight, operate more efficiently, and learn from every run.",
+      "description": "Use cases for engineers, designers and AI agents: check and clean data, build 3D scenes you can revise, and research before writing code.",
       "group": "Use cases",
       "linked_from": [
         "header",
@@ -350,7 +350,7 @@
       "address": "/for/engineering-teams",
       "view": "for-engineering-teams",
       "title": "Expertise for the whole team",
-      "description": "For a team lead who wants the same reviewed expertise available to every person and every agent on the team.",
+      "description": "For a team lead who wants the same skills, tools and files available to every person and every agent on the team.",
       "group": "Use cases",
       "linked_from": [
         "footer"
@@ -1197,7 +1197,7 @@
           },
           {
             "role": "link",
-            "label": "Solve problems overnight",
+            "label": "Overnight / AFK Work",
             "href": "/overnight"
           },
           {

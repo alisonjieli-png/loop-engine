@@ -303,7 +303,7 @@ def library_body(view, rows=None) -> str:
     files = population.get("distinct_files")
     measured = (population.get("record_type") == "catalogue_file_population/v1" and population.get("complete") is True
                 and population.get("packages") == len(rows) and type(files) is int and files >= 0)
-    total, unit = (f"{files:,}", "distinct component files") if measured else ("Reusable files", "for your harness")
+    total, unit = (f"{files:,}", "files") if measured else ("Reusable files", "for your harness")
     population_note = (f"{files:,} distinct files. Identical shared files are counted once."
                        if measured else "The distinct file total is not measured for this catalogue.")
     chosen, body = sample(view, rows)
@@ -317,9 +317,8 @@ def library_body(view, rows=None) -> str:
              + (', ready for your harness' if measured else '') + '</span></h1><div class="lib-hero-copy">'
              f'<p class="lede">Files your coding agent can use, across {len(kinds)} ' + ("kind" if len(kinds) == 1 else "kinds")
              + (f" ({escape(kind_names)}" + (", and more" if len(kinds) > 6 else "") + ")" if kinds else "")
-             + ". Each download names its source, its "
-             "licence and its review. Create an account to search the whole library as a table and download the "
-             "exact version your agent chose.</p>"
+             + ". Each download names its source, licence and exact version. Create an account to search the whole "
+             "library as a table and download the version your agent chose.</p>"
              f'<p class="description" data-library-population>{population_note}</p>'
              f'<div class="md-actions"><a class="button primary" href="{SIGN_UP_ADDRESS}">Get started</a>'
              f'<a class="lib-text-link" href="{APP_LIBRARY_ADDRESS}">Sign in and browse</a></div></div></div>'

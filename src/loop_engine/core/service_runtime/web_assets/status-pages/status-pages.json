@@ -992,7 +992,7 @@
      {
       "address": "/feeds",
       "title": "Feeds",
-      "description": "Source collections for benchmarks, models, MCP services, papers and founder tools, plus a live catalogue feed. Download JSON Feed or Markdown for your agents."
+      "description": "Source collections your agents check before they decide: models, benchmarks, MCP servers, papers and releases, as JSON Feed or Markdown links for each agent."
      },
      {
       "address": "/public-good",
@@ -1007,7 +1007,7 @@
      {
       "address": "/",
       "title": "For engineers, designers and AI agents",
-      "description": "One searchable library of reusable code, tools and reference material, with clear paths for engineers, designers and AI agents."
+      "description": "Source-backed research and a library of ready code, tools and files for the harness you already use, for engineers, designers and AI agents."
      },
      {
       "address": "/get-started",
@@ -1017,7 +1017,7 @@
      {
       "address": "/setup",
       "title": "Get set up",
-      "description": "Connect Claude Code, Codex, OpenCode, Pi or the Baltor Harness to the library, then search and download your first item."
+      "description": "Connect Claude Code, Codex, Cursor, OpenCode, VS Code or Pi over MCP, call the REST API, or give an agent a feed link. Then download your first file."
      },
      {
       "address": "/how-it-works",
@@ -1067,7 +1067,7 @@
      {
       "address": "/use-cases",
       "title": "Use cases",
-      "description": "Three ways teams use Baltor: solve complex problems overnight, operate more efficiently, and learn from every run."
+      "description": "Use cases for engineers, designers and AI agents: check and clean data, build 3D scenes you can revise, and research before writing code."
      },
      {
       "address": "/overnight",
@@ -1097,7 +1097,7 @@
      {
       "address": "/for/engineering-teams",
       "title": "Expertise for the whole team",
-      "description": "For a team lead who wants the same reviewed expertise available to every person and every agent on the team."
+      "description": "For a team lead who wants the same skills, tools and files available to every person and every agent on the team."
      },
      {
       "address": "/for/comparing-tools",

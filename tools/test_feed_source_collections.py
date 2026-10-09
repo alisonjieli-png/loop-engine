@@ -140,7 +140,7 @@ class FeedSourceCollectionsTests(unittest.TestCase):
 
     def test_public_page_shows_collections_limits_and_matching_downloads_with_escaped_text(self):
         body = catalogue_feed.page_body()
-        self.assertIn("Updates your agents can use.", body)
+        self.assertIn("Sources your agents can check.", body)
         self.assertIn("not live digests", body)
         self.assertIn("Your harness owns scheduling and source access.", body)
         self.assertNotIn("personalized daily digests", body)

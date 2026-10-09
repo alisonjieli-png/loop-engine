@@ -288,3 +288,32 @@ main:has(> [data-view=learning]:not([hidden])),main:has(> [data-view=security]:n
 .content-toc a:hover{border-color:var(--accent);color:var(--ink)}
 .content-row .notice,.content-row .check-list{margin:0}
 .content-band .case-links,.showcase-band .case-links{margin-top:.25rem}
+/* Get set up: the three ways an agent reaches Baltor and the entries for MCP apps without a tab. These rules live here, in the
+   stylesheet of the one-page app, so the shared service.css that every standalone page loads stays the same size. */
+[data-view=setup] .setup-ways{padding:0 max(var(--band-gutter),calc((100% - 64rem) / 2)) var(--space-4)}
+[data-view=setup] .setup-ways-head{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:var(--space-1) var(--space-3);margin-bottom:var(--space-2)}
+[data-view=setup] .setup-ways-head h2{margin:0;font-size:1.3125rem;font-weight:600;letter-spacing:-.015em}
+[data-view=setup] .setup-ways-head p{margin:0;color:var(--muted)}
+[data-view=setup] .setup-way-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--space-2);list-style:none;margin:0;padding:0}
+[data-view=setup] .setup-way{display:flex;flex-direction:column;gap:var(--space-1);min-width:0;padding:var(--space-3);background:var(--paper);border:1px solid var(--border);border-radius:var(--radius-card)}
+[data-view=setup] .setup-way>*{margin:0}
+[data-view=setup] .setup-way-label{color:var(--accent);font-family:var(--font-mono);font-size:var(--text-label);letter-spacing:.04em;text-transform:uppercase}
+[data-view=setup] .setup-way h3{font-size:1.0625rem;font-weight:600}
+[data-view=setup] .setup-way p:not(.setup-way-label){color:var(--muted);font-size:var(--text-small);line-height:1.55}
+[data-view=setup] .setup-way .text-link{margin-top:auto;padding-top:var(--space-1)}
+[data-view=setup] .setup-way-address code{display:block;padding:.5rem .75rem;background:var(--band);border:1px solid var(--border);border-radius:var(--radius-field);color:var(--ink);font-family:var(--font-mono);font-size:.8125rem;overflow-wrap:anywhere}
+[data-view=setup] .setup-way-code{margin:0;padding:.75rem 1rem;max-height:none;background:var(--code-bg);border:0;border-radius:var(--radius-field);color:var(--code-ink);font-family:var(--font-mono);font-size:var(--text-label);line-height:1.6;white-space:pre-wrap;overflow-wrap:anywhere}
+[data-view=setup] .setup-way-more>summary{display:list-item;min-height:44px;padding:.625rem 0;box-sizing:border-box;cursor:pointer;font-size:var(--text-small);font-weight:600;color:var(--ink)}
+[data-view=setup] .setup-way-more[open]>summary{margin-bottom:var(--space-1)}
+[data-view=setup] .setup-more-apps{margin:var(--space-4) 0 var(--space-3);padding-top:var(--space-3);border-top:1px solid var(--border)}
+[data-view=setup] .setup-more-apps>h3{margin:0 0 var(--space-1);font-size:1.0625rem;font-weight:600}
+[data-view=setup] .setup-app{margin:var(--space-1) 0 0;border:1px solid var(--border);border-radius:var(--radius-card);background:var(--paper)}
+[data-view=setup] .setup-app>summary{display:list-item;min-height:44px;padding:.625rem 1rem;box-sizing:border-box;cursor:pointer;font-weight:600}
+[data-view=setup] .setup-app>summary span{margin-left:var(--space-2);color:var(--muted);font-weight:400;font-size:var(--text-small)}
+[data-view=setup] .setup-app>summary code{background:var(--band)}
+[data-view=setup] .setup-app[open]>summary{border-bottom:1px solid var(--border)}
+[data-view=setup] .setup-app>:not(summary){margin-left:1rem;margin-right:1rem}
+[data-view=setup] .setup-app>.caption{margin-bottom:1rem}
+[data-view=setup] .setup-app .recipe-actions{display:flex;flex-wrap:wrap;align-items:center;gap:var(--space-1) var(--space-3)}
+@media(max-width:860px){[data-view=setup] .setup-way-grid{grid-template-columns:minmax(0,1fr)}}
+@media(max-width:600px){[data-view=setup] .setup-ways{padding:0 16px 24px}[data-view=setup] .setup-way{padding:1.25rem}}

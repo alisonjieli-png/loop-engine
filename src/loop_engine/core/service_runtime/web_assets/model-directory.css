@@ -116,3 +116,12 @@ code{font-family:var(--font-mono);font-size:.875em}
   .md-row{grid-template-columns:minmax(0,1fr)}.md-dl>div{grid-template-columns:minmax(0,1fr);gap:.25rem}}
 @media(max-width:600px){.md-band{padding:40px 1rem}.md-filters,.md-fit-form{grid-template-columns:minmax(0,1fr)}.md-wide{grid-column:auto}
   .md-fit-form{padding:1rem}.md-facts{grid-template-columns:repeat(2,minmax(0,1fr))}.md-contents{gap:0 1rem}}
+.feed-steps{max-width:48rem;margin:1.25rem 0 0;padding-left:1.5rem;display:grid;gap:.875rem;line-height:1.6;color:var(--muted)}
+.feed-steps strong{color:var(--ink)}
+.feed-steps a{display:inline;min-height:0}
+.feed-steps .md-code{margin-top:.5rem}
+.feed-excerpt,.feed-questions details{max-width:48rem;margin-top:1rem;border:1px solid var(--border);border-radius:var(--radius-card);background:var(--paper)}
+.feed-excerpt>summary,.feed-questions summary{display:list-item;min-height:44px;padding:.625rem 1rem;box-sizing:border-box;cursor:pointer;font-weight:600}
+.feed-excerpt>:not(summary),.feed-questions details>p{margin:0 1rem 1rem}
+.feed-questions{display:grid;gap:0}
+.feed-questions details{margin-top:.5rem}

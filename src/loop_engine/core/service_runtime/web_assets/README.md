@@ -66,7 +66,7 @@ test tokens, and on one that offers account creation where the service takes
 none.
 
 Security explains how review works, at `/security#how-review-works`, and the
-pricing line "New vetted additions" links there. The section states the rule
+pricing line "New files at no extra cost" links there with "How review works". The section states the rule
 for new items, from `tools/candidate_review/resources/panel.json`, and what
 the review record of the first release, `reviews.json` of the starter
 catalogue, holds: its date, its three reviewers' lenses, its counts and that
@@ -88,6 +88,20 @@ the Pi recipe names its extension, `/assets/pi/baltor.ts`. The guide turns
 that path into a link that opens the served file in a new tab, keeps the
 note's exact words, and adds "Copy the file address", which copies the file's
 full address. A note without such a path shows no file action.
+
+Since release 85 (October 9, 2026) the guide opens with the three ways an
+agent reaches Baltor: the protocol address, the REST API on the same host with
+a client token, and public feed links that need no key. The address, the
+example search request and the two Claude Code commands for an OAuth
+connection are written from the address the service declares, the same one the
+recipes use; nothing on the page holds a token. Below the recipe tabs, entries
+for Cursor, VS Code and Gemini CLI are written the same way from
+`service.js`. They name the token by reference only: `${env:...}` for Cursor,
+a prompted input that VS Code keeps in its own secret storage, and `${...}` for
+Gemini CLI, as each vendor documented on October 9, 2026. They are not part of
+the reviewed recipe record, so the install tool does not place files for those
+apps; promoting them to recipes needs a layout profile and a documented check
+command for each.
 
 The guide's connection check runs the protocol handshake with the page's
 token, and it takes a client token, not an email sign-in. A visitor who is not

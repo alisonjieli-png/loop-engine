@@ -138,7 +138,7 @@ class LibraryPageTests(unittest.TestCase):
                       "distinct_files": 9}
         with mock.patch.object(CatalogueView, "file_population", return_value=population):
             html = library_page.library_body(self.view)
-        self.assertIn('<span class="lib-total">9</span> <span class="lib-title-words">distinct component files', html)
+        self.assertIn('<span class="lib-total">9</span> <span class="lib-title-words">files, ready for your harness', html)
         self.assertIn("9 distinct files. Identical shared files are counted once.", html)
         self.assertIn("Files your coding agent can use, across 3 kinds", html)
         self.assertNotIn("5 packages a coding agent", html)

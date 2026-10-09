@@ -66,7 +66,7 @@ with TemporaryDirectory(prefix="feed-sources-browser-") as folder:
     check("curated_scope_and_checked_date_are_visible_"+viewport.width,
       state.checked===expected.source_docs_checked_on&&/not live digests/.test(state.limits)&&/no daily refresh/.test(state.limits));
     check("page_has_one_customer_heading_and_no_sideways_scroll_"+viewport.width,
-      state.h1===1&&state.title==="Updates your agents can use."&&state.overflow<=1);
+      state.h1===1&&state.title==="Sources your agents can check."&&state.overflow<=1);
     check("page_keeps_canonical_identity_"+viewport.width,state.canonical==="https://baltor.ai/feeds");
     const card=page.locator("#collection-hardware-fit");
     await card.locator("summary").click();
