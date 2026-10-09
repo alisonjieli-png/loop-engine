@@ -221,30 +221,128 @@ Supply lines (each writes library_supply_candidate/v1 records)
 │   │   refuses the item by name
 │   └── qualification runs the package's own Python tests and mutation in the sandbox; the engine-side
 │       behavior is the native record's observation, which the sandbox does not repeat
-└── engine_api_cards: one version-pinned API contract card per class of a pinned engine release (engine_api_cards.py)
-    ├── kind contract_schema, form schema; one card format (tools/engine_api_cards), one adapter per engine
-    │   (Godot 4.7.2-stable; three.js r186 from the npm package built from the tag, its JSDoc checked by Node
-    │   importing the module; Babylon.js 9.30.0 from @babylonjs/core's declaration files, checked the same way,
-    │   Apache-2.0 with its NOTICE.md as UPSTREAM-NOTICE), the job key component.json job.engine, job.version
-    │   and job.class
-    ├── surface: the official build's --doctool dump (1,076 classes); the build proven the member of the release
-    │   asset whose SHA-256 GitHub publishes, its version naming the tag's commit
-    ├── text: the class reference XML at the tag, each file proven by blob identity, MIT by LICENSE.txt and the
-    │   last matching COPYRIGHT.txt stanza (Expat); its structure must equal the dump's; BBCode to Markdown as
-    │   the engine's make_rst.py reads it; the CC BY 3.0 documentation site is never read
-    ├── renames: the engine's own Godot 3 to 4 map, only where it attributes a rename to the class and the new
-    │   name is on the class's surface
-    ├── files: README.md (members-N.md past 240,000 bytes), api.json, component.json, the shared api_card.py and
-    │   test_api_card.py (the documents agree with api.json; known-wrong controls), verification/native.json,
-    │   LICENSE, UPSTREAM-LICENSE (the engine's LICENSE.txt) and ATTRIBUTION.md
-    └── native evidence: one run of the same build checks every card (ClassDB, Variant types, the global
-        scopes); a missing, stale, invalid or failed record refuses the class by name
+├── engine_api_cards: one version-pinned API contract card per class of a pinned engine release (engine_api_cards.py)
+│   ├── kind contract_schema, form schema; one card format (tools/engine_api_cards), one adapter per engine
+│   │   (Godot 4.7.2-stable; three.js r186 from the npm package built from the tag, its JSDoc checked by Node
+│   │   importing the module; Babylon.js 9.30.0 from @babylonjs/core's declaration files, checked the same way,
+│   │   Apache-2.0 with its NOTICE.md as UPSTREAM-NOTICE), the job key component.json job.engine, job.version
+│   │   and job.class
+│   ├── surface: the official build's --doctool dump (1,076 classes); the build proven the member of the release
+│   │   asset whose SHA-256 GitHub publishes, its version naming the tag's commit
+│   ├── text: the class reference XML at the tag, each file proven by blob identity, MIT by LICENSE.txt and the
+│   │   last matching COPYRIGHT.txt stanza (Expat); its structure must equal the dump's; BBCode to Markdown as
+│   │   the engine's make_rst.py reads it; the CC BY 3.0 documentation site is never read
+│   ├── renames: the engine's own Godot 3 to 4 map, only where it attributes a rename to the class and the new
+│   │   name is on the class's surface
+│   ├── files: README.md (members-N.md past 240,000 bytes), api.json, component.json, the shared api_card.py and
+│   │   test_api_card.py (the documents agree with api.json; known-wrong controls), verification/native.json,
+│   │   LICENSE, UPSTREAM-LICENSE (the engine's LICENSE.txt) and ATTRIBUTION.md
+│   └── native evidence: one run of the same build checks every card (ClassDB, Variant types, the global
+│       scopes); a missing, stale, invalid or failed record refuses the class by name
+└── kaggle_public_good: one dataset contract per downloaded Kaggle dataset whose own files grant an allowlisted licence
+    ├── source: a local download (one folder per dataset and its backup-manifest.json, which names the account);
+    │   kaggle_profile.py reads every file once, streamed, for its SHA-256 and, for tables, a schema profile
+    │   (columns, the narrowest type every value takes, empty and absent counts, ranges, and the values of
+    │   columns with at most 24 distinct ones); profiles are cached while a folder's files are unchanged
+    ├── licence from the dataset's own files only (kaggle_public_good_sources.json): a licence file matched by a
+    │   licence template or naming one licence by an exact phrase, the Croissant, citation or Kaggle metadata
+    │   licence field, and documentation and table headers only when it has neither; disagreeing signals, mixed
+    │   terms, permission or terms-of-use requests and silence each hold the dataset by name; a declared decision
+    │   settles mixed terms while its licence file keeps its digest and the paths it names stay absent; the Kaggle
+    │   record is not read (the metadata intake has no dataset operation)
+    ├── SDG goals, targets and indicators by a rule that is data (kaggle_sdg_rules.json, kaggle_sdg.py): whole-word
+    │   phrases and in-word stems over the name, file names, column names, listed values and documentation, each
+    │   rule with its reason, targets checked against the planner's SDG vocabulary; a proposal with its matched
+    │   evidence, reviewed by hand for the first 30 datasets of the download
+    ├── kind code_module, form data_table; the job key is component.json job.source and job.identity (the owner and
+    │   slug), so the same dataset downloaded again is the same job
+    └── the package: component.json, schema.json (one $defs row schema per table, shards and train/validation/test
+        splits of one family as one table), <dataset>.py (TABLES written into the shared standard-library reader
+        kaggle_files/kaggle_dataset_loader.py), test_dataset_contract.py (shared) with synthetic fixtures and
+        known-wrong controls, data/ copies of tables within the review bounds, README.md (the dataset card),
+        LICENSE, UPSTREAM-LICENSE (the licence's legal code), SOURCE-LICENSE (the dataset's own licence file)
 ```
 
 Beside the lines, `verbatim_code_sources.json` and
 `verbatim_code_sources_2.json` declare MIT code repositories for the licensed
 import itself (`--sources`): those modules are byte-for-byte copies in
 `library.import`, which the imported review profile reads today.
+
+## Kaggle public-good datasets (kaggle_public_good)
+
+The owner, October 9, 2026: "Kaggle 4 Good hackathon has so much that could be
+digested and used to generate SDG files, components, skills, and feeds", and
+"get more atomic about skills, files, very specific use cases". The program is
+[The Gemma 4 Good Hackathon](https://www.kaggle.com/competitions/gemma-4-good-hackathon)
+(Kaggle identifier 134561, a Featured hackathon with 1,605 teams that closed on
+May 18, 2026); its data is labelled "Subject to Competition Rules", which no
+allowlisted licence covers, so nothing of the competition itself is packaged.
+The owner's own entry, DueCare, published its datasets under CC BY 4.0, and
+those are what this line packages. The research record is
+[KAGGLE-4-GOOD-AND-PUBLIC-GOOD-DATASETS-2026-10-09.md](../../docs/research/KAGGLE-4-GOOD-AND-PUBLIC-GOOD-DATASETS-2026-10-09.md).
+
+The first run read the October 6, 2026 download of the owner's account (243
+dataset folders, 14,896 files, 88.6 GB) without any network read. The profile pass took
+35 minutes with six processes; later runs reuse the cached profiles.
+
+| Outcome | Datasets |
+|---|---|
+| packaged (CC BY 4.0, the four DueCare datasets) | 4 |
+| held: `licence_unknown` (no licence file, field or statement in the dataset's own files) | 234 |
+| held: `licence_not_on_allowlist` (ODbL, CC BY-SA 4.0) | 2 |
+| held: `licence_permission_required` (a terms-of-use header, a request to ask the authors) | 2 |
+| held: `no_table` (MIT source code with a fixture document) | 1 |
+
+Most held datasets are copies of city, state and federal open data that the
+account re-published on Kaggle; the publisher's own licence governs them, and
+the Kaggle copy carries no evidence of it. They reach the library through the
+line that owns their publisher once it reads that publisher's licence per
+dataset: a byte copy of a GitHub file through `data_tables`, an official series
+through `publisher_tables`, a city portal table through a collection that reads
+the portal's own licence field. The inventory, the held reasons and the SDG
+proposals of every dataset stay in the run folder, which is private: they name
+every dataset of the account.
+
+SDG proposals over all 243 datasets (a dataset may propose several goals):
+1: 13, 2: 3, 3: 15, 4: 0, 5: 14, 6: 3, 7: 19, 8: 33, 9: 6, 10: 15, 11: 55,
+12: 2, 13: 37, 14: 1, 15: 2, 16: 44, 17: 2; 68 datasets propose no goal. The
+four packages propose goals 5, 8 and 16 (targets 5.2, 8.7 and 16.2) from the
+trafficking rule. The hand review of the first 30 datasets disagreed with two
+proposals of the first rule version (one-word greenhouse gas columns); the
+rules were changed, not the review, and the run reports 30 of 30 in agreement.
+Reading every other proposal led to four more rule changes, each recorded in
+the rule file with its reason.
+
+The atomic analysis functions built for these datasets are items of
+Baltor's `public_good_analysis` family (`tools/creative_originals`), which the
+`creative_originals` line packages; a dataset package names the items whose
+contract lists it.
+
+```bash
+PYTHONPATH=src:tools python tools/build_library_supply.py kaggle-public-good \
+  --run-folder /home/username/.le-creative-3d/out/kaggle-sdg/RUN \
+  --source-root /home/username/baltor-private/kaggle-backup-20261006 \
+  --profile-cache /home/username/.le-creative-3d/out/kaggle-sdg/profile-cache \
+  --sdg-review /home/username/.le-creative-3d/out/kaggle-sdg/kaggle-sdg-review.json \
+  [--dataset SLUG] [--workers 4] [--store-root STORE --authorize-store-writes] [--materialize]
+```
+
+Limits:
+
+- A dataset's licence is read from its own files. The Kaggle record and the
+  platform's licence label are not read, and a re-published copy of someone
+  else's data proves nothing about that data's licence, so a copy whose files
+  are silent is held even when its publisher licenses it openly.
+- Large tables are typed from their first 64 MiB of records; the record count
+  and the digest cover every byte. Spreadsheets, geospatial layers, models and
+  images are inventoried with their digests and not profiled.
+- Tables above the review bounds are described, not copied: a package holds
+  the schema, the reader and synthetic fixtures, and the reader checks the
+  user's own download.
+- SDG proposals are keyword rules over names, columns, listed values and
+  documentation. Dataset-specific signals the rules do not name are missed
+  (an all-capital emissions column without a stem), and a rule can match a
+  dataset outside its topic; the review measures the rate on 30 datasets only.
 
 ## What the creative sources' terms permit
 
@@ -328,6 +426,11 @@ what it no longer supplies.
 | godotengine/godot-demo-projects | Adopted as the source of editable projects (MIT). Per-asset notices decide each project; one archive of the commit replaces thousands of single-file reads. |
 | three.js loaders (HDRLoader, EXRLoader, GLTFLoader, MTLLoader and OBJLoader, TextureLoader) | Adopted in the README snippets, which `node --check` parses; HDRLoader is RGBELoader before r180. |
 | Godot's `--doctool`, its class reference XML and `make_rst.py` | Adopted for the engine API card line: the build's own surface, the repository's MIT text compared with it by structure, and the generator's meaning of each BBCode tag, written as Markdown ([engine API cards](../engine_api_cards/README.md)). |
+| The occupation kits' `column_profile` item (tools/creative_originals) | Not the profiling engine of the Kaggle line: it takes CSV text inside a JSON document of at most 5 MB, and the download holds files up to 22 GB. Its narrowest-type rule and its separate missing markers are adopted in kaggle_profile.py. |
+| The publisher line's SDG rule (wdi_sdg_goals.json) and sdg_supply_source_map/v1 | Adopted: goals by a rule that is data with a reason per rule, a proposal and never a grant, and the run's map in the same record shape. Adapted: a Kaggle dataset has no series code or topic, so the rules match phrases over its name, files, columns, values and documentation. |
+| The licensed import's licence matcher (`match_licence`) and the API line's declared licence names | Adopted for full licence texts. A dataset's short statement ("CC BY 4.0") is no template, so exact phrases name it, and a phrase of another licence anywhere among the dataset's licence signals holds it. |
+| Croissant (MLCommons) and CITATION.cff licence fields | Adopted as licence signals beside the licence file; they must agree with it. |
+| `data_tables.py` loader and tests | Adapted: one shared reader per line instead of one per table, typed by TABLES and checked by a shared contract test with known-wrong controls, because a dataset holds several tables and its rows are not copied. |
 
 ## Commands
 
@@ -401,6 +504,7 @@ keeps it a candidate.
 
 ```bash
 PYTHONPATH=src:tools python -m unittest tools.test_supply_lines
+PYTHONPATH=src:tools:. python -m unittest tools.test_kaggle_public_good_line
 ```
 
 ## Generator 1.3.0 of function_extracts

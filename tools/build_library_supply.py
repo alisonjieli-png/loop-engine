@@ -31,6 +31,8 @@ build_library_supply.py
 ├── engine-api-cards  one version-pinned API contract card per class of a pinned engine release (Godot
 │                    4.7.2-stable, three.js r186): the engine's own surface and reference text, the renames
 │                    map, and one native check of every card by the same engine (tools/engine_api_cards)
+├── kaggle-public-good  one dataset contract (schema, typed reader, tests, SDG proposal) per downloaded Kaggle
+│                    dataset whose own files grant an allowlisted licence; every other dataset inventoried and held
 └── report         the supply by family and form, and the projected composition
 ```
 
@@ -67,7 +69,7 @@ GENERATOR_PATHS = ("tools/supply_lines", "tools/build_library_supply.py", "tools
                    "tools/component_qualification", "tools/creative_originals", "tools/engine_api_cards",
                    "src/loop_engine/core/library_ingestion", "src/loop_engine/core/service_runtime/catalogue_attributes.py",
                    "src/loop_engine/core/service_runtime/catalogue_packages.py", "src/loop_engine/data/library_composition.json",
-                   "LICENSE")
+                   "tools/query_multiplier/data/sdg-vocabulary-v1.json", "LICENSE")
 
 
 def code_revision(storing: bool) -> str:
@@ -550,6 +552,35 @@ def engine_api_cards(args) -> dict:
     unread = any(row["reason"] in line.UNREAD_REASONS for row in refusals)
     return finish(args, records.ENGINE_API_CARDS, built, refusals, {"summary": summary, **payload_counts(built)},
                   reader, facts, complete=not args.engine_class and not unread, scope=sources.state_scope)
+def kaggle_public_good(args) -> dict:
+    """Profile every dataset folder of a local Kaggle download, decide each licence from the dataset's own files,
+    propose SDG goals by rule, and write one package per licensable dataset; the inventory, the held datasets and
+    the SDG proposals go to the run folder (private: they name every dataset of the download)."""
+    from supply_lines import kaggle_public_good as line
+    from supply_lines import kaggle_sdg
+    run_folder = _outside(args.run_folder)
+    run_folder.mkdir(parents=True, exist_ok=True)
+    revision = code_revision(args.authorize_store_writes)
+    cache = Path(args.profile_cache).resolve() if args.profile_cache else run_folder / "profile-cache"
+    built, refusals, facts, summary, inventory = line.generate(
+        Path(args.source_root), code_revision=revision, licence_text=LICENCE_FILE.read_bytes(),
+        generated_on=now_utc()[:10], staging=run_folder / "staging", only=tuple(args.dataset or ()),
+        workers=args.workers, profile_cache=cache)
+    (run_folder / "inventory.json").write_text(json.dumps({"record_type": line.INVENTORY_RECORD, "summary": summary,
+                                                           "datasets": inventory}, indent=1, sort_keys=True,
+                                                          ensure_ascii=False) + "\n", encoding="utf-8")
+    sdg = line.sdg_map(built, inventory, now_utc()[:10])
+    (run_folder / "sdg-goals.json").write_text(json.dumps(sdg, indent=1, sort_keys=True) + "\n", encoding="utf-8")
+    extra = {"summary": summary, "sdg_goals_per_package": sdg["sources_per_goal"]}
+    if args.sdg_review:
+        review = json.loads(Path(args.sdg_review).read_text(encoding="utf-8"))
+        proposals = {row["slug"]: row["sdg"] for row in inventory if row.get("sdg")}
+        agreement = kaggle_sdg.agreement(proposals, review)
+        (run_folder / "sdg-review-agreement.json").write_text(json.dumps(agreement, indent=1, sort_keys=True) + "\n",
+                                                              encoding="utf-8")
+        extra["sdg_review"] = {"reviewed": agreement["reviewed"], "agreed": agreement["agreed"]}
+    return finish(args, records.KAGGLE_PUBLIC_GOOD, built, refusals, extra, None, facts,
+                  complete=not args.dataset)
 
 
 def creative_assets(args) -> dict:
@@ -798,6 +829,16 @@ def parser() -> argparse.ArgumentParser:
     cards_command.add_argument("--class", dest="engine_class", action="append",
                                help="only these classes (a run limited to some classes withdraws nothing)")
     cards_command.add_argument("--workers", type=int, default=8, help="package tests run at once")
+    kaggle = commands.add_parser("kaggle-public-good")
+    common(kaggle, reads_network=False)
+    kaggle.add_argument("--source-root", required=True,
+                        help="a local Kaggle download: one folder per dataset and its backup-manifest.json")
+    kaggle.add_argument("--dataset", action="append", help="only these dataset folders (slugs)")
+    kaggle.add_argument("--workers", type=int, default=4, help="dataset folders profiled at once")
+    kaggle.add_argument("--profile-cache", help="a folder of profiles reused while a dataset's files are unchanged "
+                                                "(default: the run folder's profile-cache)")
+    kaggle.add_argument("--sdg-review", help="a hand review of proposals (datasets: slug -> goals, targets); the run "
+                                             "reports how many proposals equal it")
     creative = commands.add_parser("creative-assets")
     common(creative)
     creative.add_argument("--source", action="append", choices=("polyhaven", "ambientcg", "godot_demo_projects"),
@@ -911,6 +952,7 @@ def main(argv=None) -> int:
      "manim-scenes": manim_scenes, "api-tool-servers": api_tool_servers,
      "creative-assets": creative_assets, "creative-originals": creative_originals,
      "engine-api-cards": engine_api_cards,
+     "kaggle-public-good": kaggle_public_good,
      "report": report}[args.command](args)
     return 0
 

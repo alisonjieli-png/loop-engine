@@ -1,0 +1,54 @@
+{
+ "record_type": "library_supply_kaggle_public_good_sources/v1",
+ "written_on": "2026-10-09",
+ "meaning": "What the kaggle_public_good line reads and how it decides a licence. The source is a local download of Kaggle datasets (one folder per dataset and the download's backup-manifest.json, which names the account). A dataset's licence is decided only from its own files: a licence file whose full text matches a licence template or whose statement names exactly one licence by a phrase below, the licence field of its Croissant record, citation file or Kaggle metadata file, and its documentation and table headers only when it has none of those. Signals that name different licences, a statement of mixed terms, a request to ask for permission or to accept terms of use, and no signal at all each hold the dataset by name; a declared decision below settles mixed terms only while its licence file keeps the recorded bytes and the paths it names stay absent. The Kaggle record of a dataset is not read: the metadata intake (tools/knowledge_radar/kaggle_request.py) has no dataset operation, and most datasets of the October 6, 2026 download were deleted from Kaggle that day.",
+ "kaggle": {"host": "www.kaggle.com", "dataset_path": "datasets/{owner}/{slug}", "file_parameter": "select"},
+ "backup_manifest": "backup-manifest.json",
+ "accepted_licences_from": "the qualification policy's accepted_licences (tools/component_qualification/resources/qualification-policy.json)",
+ "licence_file_prefixes": ["license", "licence", "copying", "notice"],
+ "metadata_licence_fields": [
+  {"file": "croissant.json", "format": "json", "field": "license"},
+  {"file": "mlcroissant.json", "format": "json", "field": "license"},
+  {"file": "dataset-metadata.json", "format": "json", "field": "licenses"},
+  {"file": "CITATION.cff", "format": "cff", "field": "license"}
+ ],
+ "documentation_suffixes": [".md", ".txt"],
+ "licence_phrases": {
+  "CC-BY-4.0": ["creative commons attribution 4.0", "attribution 4.0 international", "cc by 4.0", "cc-by 4.0", "cc-by-4.0", "creativecommons.org/licenses/by/4.0"],
+  "CC-BY-SA-4.0": ["creative commons attribution-sharealike 4.0", "attribution-sharealike 4.0", "cc by-sa 4.0", "cc-by-sa 4.0", "cc-by-sa-4.0", "creativecommons.org/licenses/by-sa/4.0"],
+  "CC-BY-NC-4.0": ["creative commons attribution-noncommercial 4.0", "attribution-noncommercial 4.0", "cc by-nc 4.0", "cc-by-nc-4.0", "creativecommons.org/licenses/by-nc/4.0"],
+  "CC-BY-NC-SA-4.0": ["attribution-noncommercial-sharealike 4.0", "cc by-nc-sa 4.0", "cc-by-nc-sa-4.0", "creativecommons.org/licenses/by-nc-sa/4.0"],
+  "CC-BY-ND-4.0": ["attribution-noderivatives 4.0", "cc by-nd 4.0", "cc-by-nd-4.0", "creativecommons.org/licenses/by-nd/4.0"],
+  "CC-BY-3.0": ["creative commons attribution 3.0", "cc by 3.0", "cc-by-3.0", "creativecommons.org/licenses/by/3.0"],
+  "CC0-1.0": ["cc0 1.0", "cc0-1.0", "cc0", "creativecommons.org/publicdomain/zero/1.0"],
+  "PDDL-1.0": ["public domain dedication and license", "odc-pddl", "pddl"],
+  "ODbL-1.0": ["open database license", "odbl"],
+  "ODC-By-1.0": ["open data commons attribution license", "odc-by"],
+  "OGL-UK-3.0": ["open government licence"],
+  "Apache-2.0": ["apache license, version 2.0", "apache license version 2.0", "apache license 2.0", "apache-2.0", "apache 2.0", "apache.org/licenses/license-2.0"],
+  "MIT": ["mit license", "licensed under the mit", "spdx-license-identifier: mit"],
+  "BSD-3-Clause": ["bsd-3-clause", "bsd 3-clause"],
+  "BSD-2-Clause": ["bsd-2-clause", "bsd 2-clause"],
+  "GPL-3.0-or-later": ["gnu general public license"],
+  "LicenseRef-Gemma-Terms-of-Use": ["gemma terms of use"]
+ },
+ "permission_phrases": ["please contact", "contact for permission", "for usage and publication", "terms of use", "terms-use", "you agree to the terms", "all rights reserved", "subject to competition rules"],
+ "mixed_markers": ["mixed terms", "mixed:"],
+ "legal_codes": {
+  "CC-BY-4.0": {"host": "creativecommons.org", "path": "licenses/by/4.0/legalcode.txt", "copy": "licence_texts/CC-BY-4.0.txt",
+                "sha256": "9ba9550ad48438d0836ddab3da480b3b69ffa0aac7b7878b5a0039e7ab429411", "size_bytes": 18657,
+                "retrieved_at": "2026-10-05T15:31:33Z",
+                "reason": "The same pinned legal code the publisher_tables line carries for CC BY 4.0 series, read from the licence steward on October 5, 2026; Creative Commons dedicates the text of its licences to the public domain."}
+ },
+ "declared": {
+  "duecare-gemma4-adapter-learning-study": {
+   "licence": "CC-BY-4.0",
+   "decided_on": "2026-10-09",
+   "evidence_file": "LICENSE",
+   "evidence_sha256": "4a4b2a3b226dc633089c225d4c998a702b9c1bb428f6f474a641a6ff50c7a8e0",
+   "requires_absent": ["runs"],
+   "reason": "The dataset's LICENSE states mixed terms: its section 1 puts the LoRA adapter weights under runs/*/adapter/ under Apache-2.0 together with Google's Gemma Prohibited Use Policy, and its section 2 puts every other file (documentation, measurements, evaluation records, tooling) under CC BY 4.0. The download holds no runs/ folder, so every file it holds falls under section 2. The decision lapses when a runs/ path appears or the LICENSE bytes change."
+  }
+ },
+ "held_note": "A dataset held here can still reach the library through the line that owns its real publisher: a byte copy of a GitHub file through data_tables (its repository licence decided at a pinned commit), an official statistical series through publisher_tables, and a city portal table once a collection reads that portal's own licence field per dataset."
+}
