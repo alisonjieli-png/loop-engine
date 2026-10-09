@@ -549,6 +549,10 @@ class SmokeTests(unittest.TestCase):
             with self.subTest(cleanup_status=cleanup_status):
                 result, calls = self.run_probe(cleanup_status=cleanup_status)
                 self.assertEqual(result["state"], smoke.PASSED if cleanup_status == 0 else smoke.FAILED)
+                if cleanup_status:
+                    self.assertEqual(result["unreconciled_container_id"], "8" * 64)
+                else:
+                    self.assertNotIn("unreconciled_container_id", result)
                 self.assertTrue(all(call[0] == "podman" for call in calls))
                 started = next(call for call in calls if call[1:2] == ["run"])
                 self.assertEqual(started[started.index("--memory") + 1], "256m")

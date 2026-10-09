@@ -69,7 +69,7 @@ def _created_id(path: Path) -> str:
     return identity
 
 
-def _run_owned(contract, module, *, engine, platform, run, sleep, checks):
+def _run_owned(contract, module, *, engine, platform, run, sleep, checks, record):
     with tempfile.TemporaryDirectory(prefix="baltor-container-smoke-") as folder:
         cidfile = Path(folder) / "container.id"
         service = bool(contract["inputs"]["ports"])
@@ -92,14 +92,19 @@ def _run_owned(contract, module, *, engine, platform, run, sleep, checks):
                 checks.append(_check(RUN_CHECK, completed.returncode == 0,
                                      f"exit status {completed.returncode}"))
         finally:
+            identity = None
             try:
                 identity = _created_id(cidfile)
                 removed = run([engine, "container", "rm", "--force", "--volumes", identity],
                               capture_output=True, text=True, timeout=STOP_SECONDS + 60)
                 checks.append(_check(CLEANUP_CHECK, removed.returncode == 0,
                                      f"exit status {removed.returncode}"))
+                if removed.returncode != 0:
+                    record["unreconciled_container_id"] = identity
             except (subprocess.TimeoutExpired, OSError, ValueError) as error:
                 checks.append(_check(CLEANUP_CHECK, False, type(error).__name__))
+                if identity is not None:
+                    record["unreconciled_container_id"] = identity
 
 
 def smoke(contract: dict, card_digest: str, module, *, engine: str = "docker", platform: str = DEFAULT_PLATFORM,
@@ -136,7 +141,8 @@ def smoke(contract: dict, card_digest: str, module, *, engine: str = "docker", p
         if not checks[-1]["passed"]:
             record["state"] = FAILED
             return record
-        _run_owned(contract, module, engine=engine, platform=platform, run=run, sleep=sleep, checks=checks)
+        _run_owned(contract, module, engine=engine, platform=platform, run=run, sleep=sleep, checks=checks,
+                   record=record)
         record["image_id"] = identity or None
     except (subprocess.TimeoutExpired, OSError, ValueError) as error:
         checks.append(_check(RUN_CHECK, False, type(error).__name__))
