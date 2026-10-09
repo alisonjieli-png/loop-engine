@@ -1,0 +1,52 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "rounded_box_geometry",
+  "title": "Rounded box geometry with face groups",
+  "purpose": "Build a three.js box whose edges and corners are rounded to one radius, with smooth bevel normals, per-face UVs and BoxGeometry's six material groups, from a typed-array generator that also runs in Node. Use it for devices, furniture, buttons, UI panels and soft props.",
+  "form": "library_module",
+  "asset_role": null,
+  "dimension": "3d",
+  "engine": {"name": "webgl2_browser", "minimum_version": "2.0", "notes": "roundedBoxData needs no three.js; createRoundedBoxGeometry takes three.js as THREE (any release with BufferGeometry groups); only 0.186.1 was run."},
+  "tags": ["three.js", "geometry", "rounded box", "bevel", "primitive", "buffergeometry", "typed arrays", "props"],
+  "files": [
+    {"path": "README.md", "role": "other"},
+    {"path": "rounded_box_geometry.mjs", "role": "skill_asset"},
+    {"path": "test_rounded_box_geometry.mjs", "role": "executable_tool"},
+    {"path": "demo/scene.mjs", "role": "skill_asset"}
+  ],
+  "contract": {
+    "module": "rounded_box_geometry.mjs",
+    "category": "geometry",
+    "language": "ECMAScript 2020 module",
+    "three": {"injected": true, "argument": "THREE", "tested_version": "0.186.1", "needed_by": ["createRoundedBoxGeometry"]},
+    "exports": [
+      {"name": "roundedBoxData", "kind": "function", "signature": "roundedBoxData(options = {}) -> {positions, normals, uvs, indices, groups}", "summary": "The box as typed arrays: Float32Array positions, normals and uvs, Uint16Array or Uint32Array indices (counter-clockwise from outside) and six groups in BoxGeometry face order."},
+      {"name": "createRoundedBoxGeometry", "kind": "function", "signature": "createRoundedBoxGeometry(THREE, options = {}) -> THREE.BufferGeometry", "summary": "The same data in a BufferGeometry with an index, six groups and computed bounds."},
+      {"name": "roundedBoxVolume", "kind": "function", "signature": "roundedBoxVolume(width, height, depth, radius) -> number", "summary": "Exact volume of the smooth rounded box."},
+      {"name": "ROUNDED_BOX_DEFAULTS", "kind": "constant", "summary": "Frozen default options."}
+    ],
+    "options": [
+      {"name": "width", "type": "number", "default": 1, "unit": "scene units", "meaning": "Size along X."},
+      {"name": "height", "type": "number", "default": 1, "unit": "scene units", "meaning": "Size along Y."},
+      {"name": "depth", "type": "number", "default": 1, "unit": "scene units", "meaning": "Size along Z."},
+      {"name": "radius", "type": "number", "default": 0.1, "range": "0 to half the smallest size", "meaning": "Rounding radius; 0 gives a sharp box, half the size a sphere along that axis."},
+      {"name": "bevelSegments", "type": "integer", "default": 4, "range": [1, 256], "meaning": "Divisions of each half bevel (an eighth of a turn), spaced by equal angles."},
+      {"name": "flatSegments", "type": "integer", "default": 1, "range": [1, 256], "meaning": "Divisions across each flat face strip."}
+    ],
+    "outputs": {"vertices_per_face": "(2 * bevelSegments + flatSegments + 1) squared for a cube with a flat middle", "index_type": "Uint16Array up to 65535 vertices, else Uint32Array", "groups": "materialIndex 0..5 for +x, -x, +y, -y, +z, -z"},
+    "examples": [
+      {"call": "roundedBoxVolume", "args": [2, 1, 1.4, 0.25], "expect": 2.584863515412937, "tolerance": 1e-12},
+      {"call": "roundedBoxVolume", "args": [1, 1, 1, 0.5], "expect": 0.5235987755982988, "tolerance": 1e-12},
+      {"call": "roundedBoxData", "args": [{}], "select": "indices.length", "expect": 2916},
+      {"call": "roundedBoxData", "args": [{}], "select": "positions.length", "expect": 1800},
+      {"call": "roundedBoxData", "args": [{"radius": 0, "flatSegments": 2}], "select": "groups.length", "expect": 6},
+      {"call": "roundedBoxData", "args": [{"radius": 0.6}], "throws": "RangeError"}
+    ],
+    "demo": {"file": "demo/scene.mjs", "export": "demo", "addons": []},
+    "tests": ["test_rounded_box_geometry.mjs"]
+  },
+  "limits": "One radius for every edge: no per-edge radii, chamfers or bevel profiles. Each face is its own grid, so vertices are repeated along the twelve face seams (positions and normals match there; UVs do not, as in BoxGeometry). The bevel samples are equally spaced in angle along edges and only approximately so at corners, so corner quads are uneven. The mesh volume is slightly under the smooth volume roundedBoxVolume gives. Only 0.186.1 was run, in headless Chrome on SwiftShader WebGL 2.",
+  "related": ["superellipsoid_geometry", "crease_normals_welding", "box_projection_uvs"],
+  "technique_references": ["Minkowski sum of a box and a ball: nearest inner-box point plus radius times the unit offset", "Angle-uniform bevel sampling with t = -(h - r) - r tan(phi)", "Closed-form volume of a rounded box (box, slabs, quarter cylinders, ball)"],
+  "native_checks": ["module_contract_static", "node_tests_pass", "node_tests_catch_mutants", "three_runtime_pinned", "browser_page_clean", "three_shaders_compiled", "demo_checks_passed", "render_not_uniform", "render_differs_from_baseline"]
+}

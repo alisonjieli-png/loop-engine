@@ -1,0 +1,15 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>threejs_modules verification page</title>
+<script type="importmap">IMPORT_MAP_JSON</script>
+</head>
+<body>
+<script>
+window.__baltorVerification = import(HARNESS_URL_JSON)
+  .then((harness) => harness.run(CONFIG_JSON))
+  .catch((error) => ({fatal: String((error && error.stack) || error).slice(0, 4000)}));
+</script>
+</body>
+</html>

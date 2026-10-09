@@ -1,0 +1,13 @@
+{
+  "record_type": "creative_original_family/v1",
+  "family": "threejs_modules",
+  "title": "Original three.js and WebGL modules",
+  "description": "Original standalone ES modules for three.js and WebGL 2, one capability per item: ShaderMaterial builders, post-processing passes written as GLSL with a uniform contract, geometry generators that return typed arrays, instancing and scatter, camera rigs, picking, glTF readers, writers and validators, kinematics, procedural textures and lighting helpers. A module imports nothing: three.js is passed in as the first argument (the namespace of import * as THREE from 'three') or the module works on plain numbers and typed arrays, so it runs in a browser, a worker or Node. Each package carries the module, the item's node:test file with known answers and a known-wrong control, demo/scene.mjs (the scene the verifier renders, also a usage example), the README with every export, uniform and limit, test_contract.mjs (exports, contract examples and GLSL declarations against component.json), inspect_module.py (a standard-library inspector that reads the package as text: digests, review bounds, exports, no imports or network, storage, evaluation or global APIs, declared uniforms, every export tested and documented) and test_package.py (the inspector on this package and on known-wrong copies). The native verifier runs the node tests, replaces each module's exports with throwing ones and requires the tests to fail, then opens the demo in headless Google Chrome with WebGL 2 on SwiftShader, imports the pinned three.js 0.186.1 build, refuses any exception, console error, shader compile or link error, WebGL error or failed demo check, and requires a frame that is not uniform and, where the demo declares a baseline, differs from it.",
+  "engine": {"name": "webgl2_browser", "minimum_version": "2.0", "notes": "three.js 0.186.1 injected; rendered in headless Google Chrome 148 on SwiftShader WebGL 2 (ANGLE over Vulkan); tests run in Node 22. Hardware GPUs, Firefox, Safari, mobile browsers and WebGPU not run."},
+  "shared_files": [{"path": "inspect_module.py", "role": "executable_tool"},
+                   {"path": "test_contract.mjs", "role": "executable_tool"},
+                   {"path": "test_package.py", "role": "executable_tool"}],
+  "native_verifier": "native.py",
+  "generator_version": "1.0.0",
+  "default_dimension": "3d"
+}
