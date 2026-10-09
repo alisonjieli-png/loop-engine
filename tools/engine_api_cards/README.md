@@ -215,9 +215,10 @@ Babylon.js 9.30.0
 │   with nothing outside its folder
 ├── surface: the classes the package's root index exports (index.js, followed through the declaration files
 │   to the file and name each class is declared with), read from their declarations
-│   (typescript_declarations.py): constructors, methods (one item per overload), properties and accessors,
-│   with static, readonly and abstract as declared; private, protected, @internal, @hidden and @ignore
-│   members, underscored names and index signatures are not the public surface
+│   (typescript_declarations.py): constructors, methods (one item per overload), properties and accessors
+│   (the two accessors of a property in either order), with static, readonly and abstract as declared, and
+│   with or without a TSDoc block; private, protected, @internal, @hidden and @ignore members, underscored
+│   names and index signatures are not the public surface
 ├── observation: before any card is written, Node imports index.js once and reports which listed properties
 │   the module does not hold; the cards mark those `declare`
 ├── text: the declarations' TSDoc, as the published package ships them. Apache-2.0 by license.md (the
@@ -244,12 +245,19 @@ its 620 `declare` marks were wrong, because Babylon.js 9 compiles standard
 decorators to accessor storage, assigns statics through a class alias
 (`_a.OCCLUSION_TYPE_NONE`) and lets a parent's constructor assign what a
 subclass redeclares. A member marked `abstract` has no body for any module to
-hold and is not asked. The dry run of October 9, 2026 marked 171 of 8,576
+hold and is not asked. The dry run of October 9, 2026 marked 180 of 9,512
 properties and confirmed 1,370 of 1,374 classes. The four it refuses
 (`NodeMaterialDefines`, `OpenPBRMaterialDefines`, `PBRMaterialDefines`,
 `StandardMaterialDefines`) extend a mixin's result: their declarations name a
 `*_base` constant as the parent, which the module never exports, so
 `parent_matches` fails.
+
+The declaration is the surface and TSDoc only its text, so a public member
+without a block is listed with no text. A first version required a block, as
+the three.js reader must (its source has no types without one): that left out
+1,788 public members of 451 exported classes (205 constructors, 647 methods,
+936 properties), among them every property whose declaration writes the
+setter before the getter with the text on the setter (`AbstractMesh.skeleton`).
 
 Babylon.js numbers Apache-2.0's clause 4 items "1." to "4." where the canonical
 text letters them "(a)" to "(d)". The licence normalizer read the canonical

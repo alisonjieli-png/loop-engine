@@ -8,9 +8,12 @@ one declaration file of a published package (Maths/math.vector.pure.d.ts)
 │   ├── constructor(x?: number, ...);                 a constructor (one item per overload)
 │   ├── [static] [abstract] name<T>(a: A, b?: B): R;  a method (one item per overload)
 │   ├── [static] [readonly] name?: Type;              a property
-│   ├── get name(): Type;  set name(value: Type);     an accessor property, read-only without a setter
+│   ├── get name(): Type;  set name(value: Type);     an accessor property, its two accessors in either order;
+│   │                                                  read-only without a setter
+│   ├── a public member without a TSDoc block is listed all the same, with no text
 │   └── private, protected, an index signature, a name that starts with an underscore, and a member whose
-│       block says @internal, @hidden or @ignore are not the public surface and are left out
+│       block says @internal, @hidden or @ignore (with the undocumented declarations of its name after it) are
+│       not the public surface and are left out
 └── }   (a line holding only "}" closes the class)
 ```
 
@@ -40,6 +43,7 @@ HIDDEN_MODIFIERS = (PRIVATE, PROTECTED)
 QUALIFIER_ORDER = (DECLARE, STATIC, READONLY, ABSTRACT)
 STATED_QUALIFIERS = (STATIC, READONLY, ABSTRACT)
 GETTER, SETTER, CONSTRUCTOR = "get", "set", "constructor"
+ACCESSORS = (GETTER, SETTER)
 MEMBER_INDENT, CLASS_END = "    ", "}"
 INTERNAL_PREFIX = "_"
 OPENERS, CLOSERS = "({[", ")}]"
@@ -144,7 +148,8 @@ class _Class:
         self.name, self.parent, self.block = name, parent, block
         self.sections = {section: [] for section in SECTIONS}
         self.documents = {section: [] for section in SECTIONS}
-        self.accessors = {}
+        self.accessors = {}  # (name, static): the index of the property its accessors declare
+        self.hidden = set()  # names a block marked internal
 
     def add(self, section: str, item: dict, documentation: dict) -> None:
         self.sections[section].append(item)
@@ -152,41 +157,33 @@ class _Class:
 
 
 def _member(owner: _Class, declaration: str, block: "DocBlock | None") -> None:
-    """Read one member declaration (without its final ";") into the class's surface, or leave it out."""
+    """Read one member declaration (without its final ";") into the class's surface, or leave it out. A public
+    member is listed whether or not a TSDoc block documents it: the declaration is the surface, the block only its
+    text. A member a block marks internal hides the undocumented declarations of the same name after it (the other
+    accessor of its pair, its other overloads)."""
     words, rest = _modifiers(" ".join(declaration.split()))
     if any(word in HIDDEN_MODIFIERS for word in words) or rest.startswith("["):
-        return
-    if block is not None and any(block.has(tag) for tag in SKIP_TAGS):
         return
     match = _NAME.match(rest)
     if not match:
         return
     accessor, name, optional = match.groups()
+    if block is not None and any(block.has(tag) for tag in SKIP_TAGS):
+        owner.hidden.add(name)
+        return
+    if name.startswith(INTERNAL_PREFIX) or (block is None and name in owner.hidden):
+        return
+    block = block or DocBlock("")
     after = rest[match.end():].lstrip()
-    if name.startswith(INTERNAL_PREFIX):
-        return
-    if accessor == SETTER:
-        if name in owner.accessors:
-            row = owner.sections[MEMBERS][owner.accessors[name]]
-            kept = [word for word in row.get("qualifiers", []) if word != READONLY]
-            if kept:
-                row["qualifiers"] = kept
-            else:
-                row.pop("qualifiers", None)
-        return
-    if block is None:
+    if accessor in ACCESSORS:
+        _accessor(owner, accessor, name, after, words, block)
         return
     if after.startswith(ANGLE_OPEN):
         after = after[_matching(after.replace(ANGLE_OPEN, "(").replace(ANGLE_CLOSE, ")"), 0) + 1:].lstrip()
-    if accessor == GETTER or not after.startswith("("):
-        kind = after.partition(":")[2].strip() if accessor != GETTER else after[_matching(after, 0) + 1:].partition(
-            ":")[2].strip()
-        qualifiers = _stated(words) + ([READONLY] if accessor == GETTER else [])
-        item = {"name": name, "type": kind or DEFAULT_TYPE}
-        if _qualifiers(qualifiers):
-            item["qualifiers"] = _qualifiers(qualifiers)
-        if accessor == GETTER:
-            owner.accessors[name] = len(owner.sections[MEMBERS])
+    if not after.startswith("("):
+        item = {"name": name, "type": after.partition(":")[2].strip() or DEFAULT_TYPE}
+        if _qualifiers(_stated(words)):
+            item["qualifiers"] = _qualifiers(_stated(words))
         owner.add(MEMBERS, item, _documentation(block, []))
         return
     close = _matching(after, 0)
@@ -199,6 +196,39 @@ def _member(owner: _Class, declaration: str, block: "DocBlock | None") -> None:
     if _qualifiers(_stated(words)):
         item["qualifiers"] = _qualifiers(_stated(words))
     owner.add(METHODS, item, _documentation(block, rows))
+
+
+def _accessor(owner: _Class, accessor: str, name: str, after: str, words: list, block: DocBlock) -> None:
+    """One accessor of a property, in either order: the first declares the property (read-only when it is a getter
+    alone), a later setter makes it writable, a later getter gives it the type it reads as, and the later one lends
+    its text when the first had none."""
+    close = _matching(after, 0)
+    if accessor == GETTER:
+        kind = after[close + 1:].partition(":")[2].strip()
+    else:
+        written = parameters(after[1:close])
+        kind = written[0]["type"] if written else ""
+    key = (name, STATIC in words)
+    if key in owner.accessors:
+        index = owner.accessors[key]
+        row = owner.sections[MEMBERS][index]
+        if accessor == SETTER:
+            kept = [word for word in row.get("qualifiers", []) if word != READONLY]
+            if kept:
+                row["qualifiers"] = kept
+            else:
+                row.pop("qualifiers", None)
+        elif kind:
+            row["type"] = kind
+        if not owner.documents[MEMBERS][index].get("description") and block.description:
+            owner.documents[MEMBERS][index] = _documentation(block, [])
+        return
+    qualifiers = _stated(words) + ([READONLY] if accessor == GETTER else [])
+    item = {"name": name, "type": kind or DEFAULT_TYPE}
+    if _qualifiers(qualifiers):
+        item["qualifiers"] = _qualifiers(qualifiers)
+    owner.accessors[key] = len(owner.sections[MEMBERS])
+    owner.add(MEMBERS, item, _documentation(block, []))
 
 
 def _parent(header: str) -> "str | None":

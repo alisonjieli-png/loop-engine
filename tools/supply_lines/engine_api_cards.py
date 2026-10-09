@@ -476,7 +476,8 @@ BABYLONJS_LIMITS = ("The surface is what the package's own declaration files giv
                     "or a new instance, and not named in the source of the class or a class it extends; it exists "
                     "once a caller assigns it. Members other modules add to a class by module augmentation, and the "
                     "package's functions, constants and enumerations, are not listed. The text is the "
-                    "declarations' TSDoc. Nothing here was loaded by a harness.")
+                    "declarations' TSDoc; a public member without a block is listed with no text. Nothing here was "
+                    "loaded by a harness.")
 #: The folder under the workspace where Node is asked which properties a module holds, before the cards exist.
 OBSERVE_FOLDER = "observe"
 

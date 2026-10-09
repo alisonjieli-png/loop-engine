@@ -99,6 +99,10 @@ export declare abstract class Vec extends Base {
         a: number;
         b?: string;
     }, ...rest: Map<string, number>[]): void;
+    /** Gets or sets the size; the declaration writes the setter first. */
+    set size(value: number);
+    get size(): number;
+    reset(): void;
 }
 /** Inputs of a camera. */
 export declare class Inputs<T extends Vec> {
@@ -122,6 +126,9 @@ export class Vec extends Base {
     clone() { return this; }
     static FromArray(array, offset) { return new Vec(); }
     setOptions(options, ...rest) { }
+    set size(value) { this._size = value; }
+    get size() { return this._size; }
+    reset() { }
 }
 Vec.Shared = 1;
 export class Inputs {
@@ -154,13 +161,19 @@ class DeclarationReaderTests(unittest.TestCase):
         self.assertEqual([(row["name"], row.get("qualifiers", []), row["returns"]) for row in sections["methods"]], [
             ("add", [], {"type": "this"}), ("scale", [], {"type": "Vec"}), ("scale", [], {"type": "Vec"}),
             ("clone", [], {"type": "T"}), ("FromArray", ["static"], {"type": "Vec"}),
-            ("draw", ["abstract"], {"type": "void"}), ("setOptions", [], {"type": "void"})])
+            ("draw", ["abstract"], {"type": "void"}), ("setOptions", [], {"type": "void"}),
+            ("reset", [], {"type": "void"})])
         self.assertEqual(sections["methods"][6]["params"], [{"name": "options", "type": "{ a: number; b?: string; }"},
                                                             {"name": "...rest", "type": "Map<string, number>[]"}])
         self.assertEqual([(row["name"], row["type"], row.get("qualifiers", [])) for row in sections["members"]], [
             ("onDone", "(task: Vec) => void", []), ("count", "number", []),
-            ("Shared", "number", ["static"]), ("x", "number", []), ("length", "number", ["readonly"])])
+            ("Shared", "number", ["static"]), ("x", "number", []), ("length", "number", ["readonly"]),
+            ("size", "number", [])])
         documentation = reference.documentation
+        # Known answers: the setter-first property is writable with its text; the undocumented method is listed.
+        self.assertEqual(documentation["items"]["members"][5]["description"],
+                         "Gets or sets the size; the declaration writes the setter first.")
+        self.assertEqual(documentation["items"]["methods"][7], {"description": ""})
         self.assertEqual(documentation["brief"], "A vector of the fixture.")
         self.assertIn("- `other`: defines the other vector", documentation["items"]["methods"][0]["description"])
         self.assertIn("Returns: this vector", documentation["items"]["methods"][0]["description"])
@@ -174,6 +187,19 @@ class DeclarationReaderTests(unittest.TestCase):
         _name, _parent, reference = read_declarations(
             "/** A. */\nexport declare class A {\n    /** x. */\n    declare x: number;\n}\n")[0]
         self.assertEqual(reference.sections["members"], [{"name": "x", "type": "number"}])
+
+    def test_accessors_in_either_order_an_internal_pair_and_a_static_twin(self):
+        _name, _parent, reference = read_declarations(
+            "/** A. */\nexport declare class A {\n"
+            "    get first(): number;\n    /** Lent by the setter. */\n    set first(value: number);\n"
+            "    /** @internal */\n    get hidden(): number;\n    set hidden(value: number);\n"
+            "    /** The instance one. */\n    get twin(): string;\n"
+            "    /** The static one. */\n    static set twin(value: number);\n    static get twin(): number;\n}\n")[0]
+        self.assertEqual(reference.sections["members"], [
+            {"name": "first", "type": "number"}, {"name": "twin", "type": "string", "qualifiers": ["readonly"]},
+            {"name": "twin", "type": "number", "qualifiers": ["static"]}])
+        self.assertEqual([row["description"] for row in reference.documentation["items"]["members"]],
+                         ["Lent by the setter.", "The instance one.", "The static one."])
 
     def test_the_observation_marks_declare_and_leaves_an_ambiguous_name_alone(self):
         references = {name: reference for name, (_parent, reference) in self.classes.items()}
@@ -199,7 +225,7 @@ class DeclarationReaderTests(unittest.TestCase):
                          {"name": "Vec", "methods": [{"name": row["name"], "static": row["name"] == "FromArray"}
                                                      for row in sections["methods"] if row["name"] != "draw"],
                           "members": [{"name": name, "static": name == "Shared"}
-                                      for name in ("onDone", "count", "Shared", "x", "length")]})
+                                      for name in ("onDone", "count", "Shared", "x", "length", "size")]})
 
 
 def tarball(files) -> bytes:
@@ -330,14 +356,14 @@ class ReaderAndLineTests(unittest.TestCase):
         evidence = json.loads(files["Vec"]["verification/native.json"])
         self.assertEqual(evidence["state"], "passed")
         details = {check["name"]: check["detail"] for check in evidence["checks"]}
-        self.assertEqual(details["methods_callable"], {"checked": 6, "abstract": 1, "missing": []})
-        self.assertEqual(details["properties_present"], {"checked": 5, "abstract": 0, "missing": [], "declared": 1,
+        self.assertEqual(details["methods_callable"], {"checked": 7, "abstract": 1, "missing": []})
+        self.assertEqual(details["properties_present"], {"checked": 6, "abstract": 0, "missing": [], "declared": 1,
                                                          "held_although_declared": []})
         readme = files["Vec"]["README.md"].decode()
         for expected in ("# Vec (Babylon.js 9.30)", "### `declare onDone: (task: Vec) => void`",
                          "### `abstract draw(): void`", "### `static FromArray(array: ArrayLike<number>, offset?: "
                          "number): Vec`", "Copyright 2023 The Babylon.js team. Apache-2.0, see `UPSTREAM-LICENSE` "
-                         "and `UPSTREAM-NOTICE`."):
+                         "and `UPSTREAM-NOTICE`.", "### `reset(): void`\n\n" + cards.NO_DESCRIPTION):
             self.assertIn(expected, readme)
         self.assertEqual(files["Vec"]["UPSTREAM-NOTICE"], NOTICE)
         population = [self.component(row) for row in built]
