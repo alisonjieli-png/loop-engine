@@ -277,6 +277,10 @@
     "three_d_model",
     "schema"
    ],
+   "asset_role": {
+    "json_file": "component.json",
+    "field": "asset_role"
+   },
    "shape": "code",
    "required_files": [
     "LICENSE",

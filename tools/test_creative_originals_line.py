@@ -15,6 +15,7 @@ import tempfile
 import unittest
 from contextlib import redirect_stdout
 from pathlib import Path
+from types import SimpleNamespace
 
 ROOT = Path(__file__).resolve().parents[1]
 for path in (ROOT / "src", ROOT / "tools", ROOT):
@@ -89,6 +90,25 @@ class CreativeOriginalsLineTests(unittest.TestCase):
                 continue
             result = check.run(component, context)
             self.assertEqual(result.status, checks.PASSED, (check.check_id, result.findings))
+
+    def test_a_template_states_its_asset_role_where_admission_reads_it(self):
+        item = self.family / "items" / "square_item" / "item.json"
+        value = json.loads(item.read_text())
+        value.update({"form": "template", "asset_role": "editable_source"})
+        item.write_text(json.dumps(value))
+        with redirect_stdout(io.StringIO()):
+            verify.main(["--family", "demo_family", "--root", str(self.families), "--output", str(self.evidence)])
+        built, _refused, _facts, _summary = self.generate()
+        component = self.component(built[0])
+        policy = checks.QualificationContext.load(ROOT).policy
+        self.assertEqual(checks.declared_asset_role(component, policy), "editable_source")
+        self.assertEqual(checks.asset_role_findings(component, policy), [])
+        # Known wrong: a template whose card states no role is refused by name before admission writes it.
+        card = json.loads(component.text("component.json"))
+        card["asset_role"] = None
+        silent = SimpleNamespace(line=component.line, form=component.form,
+                                 text=lambda path: json.dumps(card) if path == "component.json" else component.text(path))
+        self.assertEqual([code for code, _detail in checks.asset_role_findings(silent, policy)], ["asset_role_undeclared"])
 
     @unittest.skipUnless(HAS_SANDBOX, "bubblewrap and the system interpreter are needed for the sandbox checks")
     def test_sandbox_and_mutation_pass_and_a_permissive_test_is_caught(self):
