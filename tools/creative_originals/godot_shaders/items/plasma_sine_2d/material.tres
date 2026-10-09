@@ -1,0 +1,14 @@
+[gd_resource type="ShaderMaterial" load_steps=2 format=3]
+
+[ext_resource type="Shader" path="res://baltor/godot_shaders/plasma_sine_2d/plasma_sine_2d.gdshader" id="1_shader"]
+
+[resource]
+shader = ExtResource("1_shader")
+shader_parameter/scale = 8.0
+shader_parameter/speed = 1.0
+shader_parameter/palette_offset = Color(0.5, 0.5, 0.5, 1)
+shader_parameter/palette_amplitude = Color(0.5, 0.5, 0.5, 1)
+shader_parameter/palette_frequency = Color(1, 1, 1, 1)
+shader_parameter/palette_phase = Color(0, 0.33, 0.67, 1)
+shader_parameter/cycle_speed = 0.15
+shader_parameter/color_steps = 0

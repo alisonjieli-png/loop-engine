@@ -1,0 +1,18 @@
+[gd_resource type="ShaderMaterial" load_steps=2 format=3]
+
+[ext_resource type="Shader" path="res://baltor/godot_shaders/post_depth_fog/post_depth_fog.gdshader" id="1_shader"]
+
+[resource]
+shader = ExtResource("1_shader")
+shader_parameter/near_color = Color(0.62, 0.68, 0.75, 1)
+shader_parameter/far_color = Color(0.78, 0.82, 0.88, 1)
+shader_parameter/sun_color = Color(1, 0.85, 0.6, 1)
+shader_parameter/distance_density = 0.05
+shader_parameter/height_density = 0.6
+shader_parameter/height_falloff = 1.2
+shader_parameter/fog_base_height = -0.5
+shader_parameter/color_distance = 25.0
+shader_parameter/sun_azimuth_degrees = 20.0
+shader_parameter/sun_elevation_degrees = 15.0
+shader_parameter/sun_glow = 0.35
+shader_parameter/max_opacity = 0.85

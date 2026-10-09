@@ -1,0 +1,116 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "sprite_ground_shadow",
+  "title": "Projected ground shadow for 2D sprites",
+  "purpose": "Turn a copy of a sprite into its cast shadow on the ground: the vertex stage flattens and skews it from the sprite's base toward a light direction, and the fragment stage fills it with a shadow colour that fades with distance from the feet.",
+  "form": "library_module",
+  "asset_role": null,
+  "dimension": "2d",
+  "engine": {
+    "name": "godot",
+    "minimum_version": "4.3"
+  },
+  "tags": [
+    "godot shader",
+    "canvas item",
+    "shadow",
+    "projected shadow",
+    "2d lighting",
+    "vertex animation",
+    "sprite"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "role": "other"
+    },
+    {
+      "path": "sprite_ground_shadow.gdshader",
+      "role": "skill_asset"
+    },
+    {
+      "path": "material.tres",
+      "role": "skill_asset"
+    },
+    {
+      "path": "demo.tscn",
+      "role": "skill_asset"
+    }
+  ],
+  "contract": {
+    "shader_type": "canvas_item",
+    "render_modes": [],
+    "uniforms": [
+      {
+        "name": "shadow_color",
+        "type": "vec4",
+        "hint": "source_color",
+        "default": [
+          0.05,
+          0.05,
+          0.1,
+          0.5
+        ]
+      },
+      {
+        "name": "flatten",
+        "type": "float",
+        "hint": "hint_range(0.05, 1.5)",
+        "default": 0.45
+      },
+      {
+        "name": "skew",
+        "type": "float",
+        "hint": "hint_range(-3.0, 3.0)",
+        "default": 1.1
+      },
+      {
+        "name": "base_v",
+        "type": "float",
+        "hint": "hint_range(0.0, 1.0)",
+        "default": 1.0
+      },
+      {
+        "name": "fade",
+        "type": "float",
+        "hint": "hint_range(0.0, 1.0)",
+        "default": 0.6
+      },
+      {
+        "name": "sway",
+        "type": "float",
+        "hint": "hint_range(0.0, 1.0)",
+        "default": 0.0
+      }
+    ],
+    "placement": "res://baltor/godot_shaders/sprite_ground_shadow/",
+    "usage": "canvas_material",
+    "renderers": {
+      "compatibility": "compiled_and_rendered",
+      "forward_plus": "not_verified",
+      "mobile": "not_verified"
+    },
+    "inputs": [
+      "A second sprite node with the same texture, placed at the character's position and drawn first."
+    ],
+    "outputs": "A sprite standing on the ground with a flattened dark shadow stretching to its lower right."
+  },
+  "limits": "Use a second node with the same texture and this material, drawn before the character (as in the demo). The shadow is a projection of the sprite outline, not lit by Godot's 2D lights, and does not bend over terrain.",
+  "related": [
+    "sprite_drop_shadow",
+    "sprite_squash_stretch"
+  ],
+  "technique_references": [
+    "Planar shadow projection by vertex shear and flattening",
+    "Base line recovered from vertex position and UV"
+  ],
+  "native_checks": [
+    "contract_static",
+    "engine_run",
+    "engine_log_clean",
+    "shader_in_scene",
+    "capture_written",
+    "render_not_uniform",
+    "shader_changes_pixels"
+  ]
+}

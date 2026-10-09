@@ -1,0 +1,11 @@
+[gd_resource type="ShaderMaterial" load_steps=2 format=3]
+
+[ext_resource type="Shader" path="res://baltor/godot_shaders/post_halftone_dots/post_halftone_dots.gdshader" id="1_shader"]
+
+[resource]
+shader = ExtResource("1_shader")
+shader_parameter/dot_spacing = 7.0
+shader_parameter/dot_softness = 0.8
+shader_parameter/paper_color = Color(0.97, 0.95, 0.9, 1)
+shader_parameter/ink_strength = 1.0
+shader_parameter/monochrome = false

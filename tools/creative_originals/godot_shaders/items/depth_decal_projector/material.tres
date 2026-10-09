@@ -1,0 +1,13 @@
+[gd_resource type="ShaderMaterial" load_steps=2 format=3]
+
+[ext_resource type="Shader" path="res://baltor/godot_shaders/depth_decal_projector/depth_decal_projector.gdshader" id="1_shader"]
+
+[resource]
+shader = ExtResource("1_shader")
+shader_parameter/decal_color = Color(0.95, 0.75, 0.1, 1)
+shader_parameter/accent_color = Color(0.08, 0.08, 0.08, 1)
+shader_parameter/opacity = 0.9
+shader_parameter/angle_fade = 0.4
+shader_parameter/edge_fade = 0.05
+shader_parameter/stripe_count = 10
+shader_parameter/ring_width = 0.12

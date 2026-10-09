@@ -1,0 +1,41 @@
+[gd_scene load_steps=6 format=3]
+
+[ext_resource type="ShaderMaterial" path="res://baltor/godot_shaders/gerstner_wave_water/material.tres" id="1_material"]
+
+[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_1"]
+sky_top_color = Color(0.25, 0.45, 0.75, 1)
+sky_horizon_color = Color(0.75, 0.82, 0.9, 1)
+ground_bottom_color = Color(0.12, 0.11, 0.1, 1)
+ground_horizon_color = Color(0.75, 0.82, 0.9, 1)
+
+[sub_resource type="Sky" id="Sky_2"]
+sky_material = SubResource("ProceduralSkyMaterial_1")
+
+[sub_resource type="Environment" id="Environment_3"]
+background_mode = 2
+sky = SubResource("Sky_2")
+ambient_light_source = 3
+reflected_light_source = 2
+ambient_light_energy = 1.0
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_4"]
+size = Vector2(12, 12)
+subdivide_width = 120
+subdivide_depth = 120
+
+[node name="Root" type="Node3D"]
+
+[node name="Environment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_3")
+
+[node name="Subject" type="MeshInstance3D" parent="."]
+mesh = SubResource("PlaneMesh_4")
+material_override = ExtResource("1_material")
+
+[node name="Sun" type="DirectionalLight3D" parent="."]
+transform = Transform3D(-0.94868, 0.10946, -0.29668, 0, 0.93819, 0.34613, 0.31623, 0.32837, -0.89004, -0.3, 0.35, -0.9)
+light_color = Color(1, 0.97, 0.92, 1)
+light_energy = 1.4
+
+[node name="Camera" type="Camera3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0.95266, 0.30404, 0, -0.30404, 0.95266, 0, 1.5, 3.2)

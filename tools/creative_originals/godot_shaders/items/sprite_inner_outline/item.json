@@ -1,0 +1,110 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "sprite_inner_outline",
+  "title": "Inner outline along a sprite's edge",
+  "purpose": "Draw a border of a chosen width inside the opaque shape of a sprite, following its silhouette, with optional pulsing and an option to hide the interior so only the inner line remains.",
+  "form": "library_module",
+  "asset_role": null,
+  "dimension": "2d",
+  "engine": {
+    "name": "godot",
+    "minimum_version": "4.3"
+  },
+  "tags": [
+    "godot shader",
+    "canvas item",
+    "outline",
+    "inner outline",
+    "sprite",
+    "2d",
+    "highlight"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "role": "other"
+    },
+    {
+      "path": "sprite_inner_outline.gdshader",
+      "role": "skill_asset"
+    },
+    {
+      "path": "material.tres",
+      "role": "skill_asset"
+    },
+    {
+      "path": "demo.tscn",
+      "role": "skill_asset"
+    }
+  ],
+  "contract": {
+    "shader_type": "canvas_item",
+    "render_modes": [],
+    "uniforms": [
+      {
+        "name": "line_color",
+        "type": "vec4",
+        "hint": "source_color",
+        "default": [
+          1.0,
+          0.95,
+          0.4,
+          1.0
+        ]
+      },
+      {
+        "name": "width",
+        "type": "int",
+        "hint": "hint_range(1, 8)",
+        "default": 2
+      },
+      {
+        "name": "alpha_cutoff",
+        "type": "float",
+        "hint": "hint_range(0.01, 1.0)",
+        "default": 0.5
+      },
+      {
+        "name": "keep_interior",
+        "type": "bool",
+        "hint": null,
+        "default": true
+      },
+      {
+        "name": "pulse_speed",
+        "type": "float",
+        "hint": "hint_range(0.0, 12.0)",
+        "default": 0.0
+      }
+    ],
+    "placement": "res://baltor/godot_shaders/sprite_inner_outline/",
+    "usage": "canvas_material",
+    "renderers": {
+      "compatibility": "compiled_and_rendered",
+      "forward_plus": "not_verified",
+      "mobile": "not_verified"
+    },
+    "inputs": [
+      "A Sprite2D (or other textured CanvasItem) with transparent space around its shape, assigned to the node as usual."
+    ],
+    "outputs": "The sprite's blobs with a yellow border running just inside their edges."
+  },
+  "limits": "Cost grows with the square of `width`. With texture filtering and scaling, edges are as soft as the sampled alpha. Atlas regions need padding or neighbouring sprites count as opaque.",
+  "related": [
+    "sprite_pixel_outline",
+    "sprite_marching_ants"
+  ],
+  "technique_references": [
+    "Neighbourhood alpha erosion test",
+    "Disc-shaped search kernel"
+  ],
+  "native_checks": [
+    "contract_static",
+    "engine_run",
+    "engine_log_clean",
+    "shader_in_scene",
+    "capture_written",
+    "render_not_uniform",
+    "shader_changes_pixels"
+  ]
+}

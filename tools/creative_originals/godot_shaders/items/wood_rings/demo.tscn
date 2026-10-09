@@ -1,0 +1,42 @@
+[gd_scene load_steps=5 format=3]
+
+[ext_resource type="ShaderMaterial" path="res://baltor/godot_shaders/wood_rings/material.tres" id="1_material"]
+
+[sub_resource type="Environment" id="Environment_1"]
+background_mode = 1
+background_color = Color(0.15, 0.13, 0.12, 1)
+ambient_light_source = 2
+ambient_light_color = Color(0.35, 0.37, 0.42, 1)
+ambient_light_energy = 1.0
+
+[sub_resource type="BoxMesh" id="BoxMesh_2"]
+size = Vector3(1.4, 0.18, 0.45)
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_3"]
+radial_segments = 48
+top_radius = 0.32
+bottom_radius = 0.32
+height = 0.9
+
+[node name="Root" type="Node3D"]
+
+[node name="Environment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_1")
+
+[node name="Subject0" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.96593, 0, 0.25882, 0, 1, 0, -0.25882, 0, 0.96593, 0, -0.2, 0.1)
+mesh = SubResource("BoxMesh_2")
+material_override = ExtResource("1_material")
+
+[node name="Subject1" type="MeshInstance3D" parent="."]
+transform = Transform3D(0, -1, 0, 1, 0, 0, 0, 0, 1, 0.25, 0.25, -0.6)
+mesh = SubResource("CylinderMesh_3")
+material_override = ExtResource("1_material")
+
+[node name="Sun" type="DirectionalLight3D" parent="."]
+transform = Transform3D(0.6247, -0.60964, 0.48795, 0, 0.62488, 0.78072, -0.78087, -0.48771, 0.39036, 0.5, 0.8, 0.4)
+light_color = Color(1, 0.97, 0.92, 1)
+light_energy = 1.0
+
+[node name="Camera" type="Camera3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0.92308, 0.38462, 0, -0.38462, 0.92308, 0, 0.7, 1.6)

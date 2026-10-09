@@ -1,0 +1,12 @@
+[gd_resource type="ShaderMaterial" load_steps=2 format=3]
+
+[ext_resource type="Shader" path="res://baltor/godot_shaders/sprite_hit_flash/sprite_hit_flash.gdshader" id="1_shader"]
+
+[resource]
+shader = ExtResource("1_shader")
+shader_parameter/flash_color = Color(1, 0.25, 0.2, 1)
+shader_parameter/flash_amount = 0.75
+shader_parameter/mode = 0
+shader_parameter/auto_blink = false
+shader_parameter/blink_rate = 12.0
+shader_parameter/blink_duty = 0.5

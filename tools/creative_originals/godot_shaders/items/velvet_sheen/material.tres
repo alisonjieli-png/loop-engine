@@ -1,0 +1,13 @@
+[gd_resource type="ShaderMaterial" load_steps=2 format=3]
+
+[ext_resource type="Shader" path="res://baltor/godot_shaders/velvet_sheen/velvet_sheen.gdshader" id="1_shader"]
+
+[resource]
+shader = ExtResource("1_shader")
+shader_parameter/core_color = Color(0.35, 0.03, 0.12, 1)
+shader_parameter/sheen_color = Color(1, 0.55, 0.7, 1)
+shader_parameter/sheen_power = 2.2
+shader_parameter/sheen_strength = 1.2
+shader_parameter/back_scatter = 0.5
+shader_parameter/diffuse_softness = 0.5
+shader_parameter/fiber_noise = 0.15

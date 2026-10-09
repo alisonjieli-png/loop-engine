@@ -1,0 +1,15 @@
+[gd_resource type="ShaderMaterial" load_steps=2 format=3]
+
+[ext_resource type="Shader" path="res://baltor/godot_shaders/tunnel_polar_2d/tunnel_polar_2d.gdshader" id="1_shader"]
+
+[resource]
+shader = ExtResource("1_shader")
+shader_parameter/color_a = Color(0.95, 0.4, 0.2, 1)
+shader_parameter/color_b = Color(0.15, 0.1, 0.35, 1)
+shader_parameter/speed = 1.2
+shader_parameter/twist = 0.3
+shader_parameter/segments = 12
+shader_parameter/depth_rings = 6.0
+shader_parameter/fog = 1.4
+shader_parameter/center_x = 0.0
+shader_parameter/center_y = 0.0

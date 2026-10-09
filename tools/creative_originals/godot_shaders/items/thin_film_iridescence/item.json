@@ -1,0 +1,131 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "thin_film_iridescence",
+  "title": "Thin-film interference iridescence",
+  "purpose": "Iridescent colours of soap bubbles and oil films from a two-beam thin-film interference estimate per colour channel, with film thickness swirled by noise so the colours drift.",
+  "form": "library_module",
+  "asset_role": null,
+  "dimension": "3d",
+  "engine": {
+    "name": "godot",
+    "minimum_version": "4.3"
+  },
+  "tags": [
+    "godot shader",
+    "spatial",
+    "iridescence",
+    "thin film",
+    "soap bubble",
+    "interference",
+    "oil slick"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "role": "other"
+    },
+    {
+      "path": "thin_film_iridescence.gdshader",
+      "role": "skill_asset"
+    },
+    {
+      "path": "material.tres",
+      "role": "skill_asset"
+    },
+    {
+      "path": "demo.tscn",
+      "role": "skill_asset"
+    }
+  ],
+  "contract": {
+    "shader_type": "spatial",
+    "render_modes": [
+      "cull_back",
+      "depth_draw_always"
+    ],
+    "uniforms": [
+      {
+        "name": "film_index",
+        "type": "float",
+        "hint": "hint_range(1.0, 2.5)",
+        "default": 1.33
+      },
+      {
+        "name": "thickness_min_nm",
+        "type": "float",
+        "hint": "hint_range(0.0, 1500.0)",
+        "default": 250.0
+      },
+      {
+        "name": "thickness_max_nm",
+        "type": "float",
+        "hint": "hint_range(0.0, 1500.0)",
+        "default": 750.0
+      },
+      {
+        "name": "swirl_scale",
+        "type": "float",
+        "hint": "hint_range(0.1, 10.0)",
+        "default": 2.0
+      },
+      {
+        "name": "swirl_speed",
+        "type": "float",
+        "hint": "hint_range(0.0, 2.0)",
+        "default": 0.15
+      },
+      {
+        "name": "opacity",
+        "type": "float",
+        "hint": "hint_range(0.0, 1.0)",
+        "default": 0.35
+      },
+      {
+        "name": "roughness",
+        "type": "float",
+        "hint": "hint_range(0.0, 1.0)",
+        "default": 0.05
+      },
+      {
+        "name": "base_color",
+        "type": "vec4",
+        "hint": "source_color",
+        "default": [
+          0.02,
+          0.02,
+          0.03,
+          1.0
+        ]
+      }
+    ],
+    "placement": "res://baltor/godot_shaders/thin_film_iridescence/",
+    "usage": "surface_material",
+    "renderers": {
+      "compatibility": "compiled_and_rendered",
+      "forward_plus": "not_verified",
+      "mobile": "not_verified"
+    },
+    "inputs": [],
+    "outputs": "A clear bubble whose reflections shimmer in bands of magenta, green and gold that drift."
+  },
+  "limits": "Two-beam approximation at three wavelengths, not a spectral integration: colours are plausible, not exact. Multiple reflections inside the film are ignored. Transparency uses Godot's alpha blending and is not sorted per pixel.",
+  "related": [
+    "holographic_foil",
+    "pearl_sheen",
+    "car_paint_flakes"
+  ],
+  "technique_references": [
+    "Thin-film interference from the optical path difference 2 n d cos(theta)",
+    "Per-channel wavelength evaluation",
+    "Value noise with quintic interpolation and fractional Brownian motion in 3D"
+  ],
+  "native_checks": [
+    "contract_static",
+    "engine_run",
+    "engine_log_clean",
+    "shader_in_scene",
+    "capture_written",
+    "render_not_uniform",
+    "shader_changes_pixels"
+  ]
+}

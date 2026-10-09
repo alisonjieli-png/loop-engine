@@ -1,0 +1,127 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "curved_world_bend",
+  "title": "Curved world bend by camera distance",
+  "purpose": "Bend everything that uses the material downward with the square of its horizontal distance from the camera, so the world curves away like a small planet or a rolling log, with a checker pattern to show the bend.",
+  "form": "library_module",
+  "asset_role": null,
+  "dimension": "3d",
+  "engine": {
+    "name": "godot",
+    "minimum_version": "4.3"
+  },
+  "tags": [
+    "godot shader",
+    "spatial",
+    "curved world",
+    "vertex shader",
+    "stylized",
+    "runner",
+    "world bending"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "role": "other"
+    },
+    {
+      "path": "curved_world_bend.gdshader",
+      "role": "skill_asset"
+    },
+    {
+      "path": "material.tres",
+      "role": "skill_asset"
+    },
+    {
+      "path": "demo.tscn",
+      "role": "skill_asset"
+    }
+  ],
+  "contract": {
+    "shader_type": "spatial",
+    "render_modes": [],
+    "uniforms": [
+      {
+        "name": "curvature",
+        "type": "float",
+        "hint": "hint_range(0.0, 0.2)",
+        "default": 0.02
+      },
+      {
+        "name": "sideways_curvature",
+        "type": "float",
+        "hint": "hint_range(-0.2, 0.2)",
+        "default": 0.0
+      },
+      {
+        "name": "flat_radius",
+        "type": "float",
+        "hint": "hint_range(0.0, 20.0)",
+        "default": 2.0
+      },
+      {
+        "name": "color_a",
+        "type": "vec4",
+        "hint": "source_color",
+        "default": [
+          0.85,
+          0.82,
+          0.75,
+          1.0
+        ]
+      },
+      {
+        "name": "color_b",
+        "type": "vec4",
+        "hint": "source_color",
+        "default": [
+          0.35,
+          0.55,
+          0.75,
+          1.0
+        ]
+      },
+      {
+        "name": "checker_size",
+        "type": "float",
+        "hint": "hint_range(0.1, 10.0)",
+        "default": 1.0
+      },
+      {
+        "name": "roughness",
+        "type": "float",
+        "hint": "hint_range(0.0, 1.0)",
+        "default": 0.8
+      }
+    ],
+    "placement": "res://baltor/godot_shaders/curved_world_bend/",
+    "usage": "surface_material",
+    "renderers": {
+      "compatibility": "compiled_and_rendered",
+      "forward_plus": "not_verified",
+      "mobile": "not_verified"
+    },
+    "inputs": [
+      "Meshes with enough vertices along the bend (the demo road has 200 rows); other scene materials need the same vertex code to match."
+    ],
+    "outputs": "A checkered road and blocks that curve down and to the side toward the horizon."
+  },
+  "limits": "Visual only: physics, raycasts and culling use the unbent positions, so objects near the frustum edge can pop. Normals are not updated for the bend. Large flat polygons do not bend; subdivide them.",
+  "related": [
+    "ps1_vertex_snap",
+    "twist_deform"
+  ],
+  "technique_references": [
+    "World-space quadratic vertex bend by camera distance",
+    "World checker pattern"
+  ],
+  "native_checks": [
+    "contract_static",
+    "engine_run",
+    "engine_log_clean",
+    "shader_in_scene",
+    "capture_written",
+    "render_not_uniform",
+    "shader_changes_pixels"
+  ]
+}

@@ -1,0 +1,141 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "rain_glass_droplets",
+  "title": "Rain on a window with running drops",
+  "purpose": "Window pane covered in rain: static droplets of random size scattered in cells, drops that run down with trails, each drop refracting a sharp upside-down view while the glass between them shows a blurred, misted scene.",
+  "form": "library_module",
+  "asset_role": null,
+  "dimension": "3d",
+  "engine": {
+    "name": "godot",
+    "minimum_version": "4.3"
+  },
+  "tags": [
+    "godot shader",
+    "spatial",
+    "rain",
+    "glass",
+    "droplets",
+    "refraction",
+    "window"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "role": "other"
+    },
+    {
+      "path": "rain_glass_droplets.gdshader",
+      "role": "skill_asset"
+    },
+    {
+      "path": "material.tres",
+      "role": "skill_asset"
+    },
+    {
+      "path": "demo.tscn",
+      "role": "skill_asset"
+    }
+  ],
+  "contract": {
+    "shader_type": "spatial",
+    "render_modes": [
+      "unshaded",
+      "cull_disabled",
+      "depth_draw_never",
+      "shadows_disabled"
+    ],
+    "uniforms": [
+      {
+        "name": "screen_texture",
+        "type": "sampler2D",
+        "hint": "hint_screen_texture, filter_linear_mipmap",
+        "default": null
+      },
+      {
+        "name": "drop_density",
+        "type": "float",
+        "hint": "hint_range(2.0, 40.0)",
+        "default": 12.0
+      },
+      {
+        "name": "drop_size",
+        "type": "float",
+        "hint": "hint_range(0.05, 0.5)",
+        "default": 0.28
+      },
+      {
+        "name": "runner_columns",
+        "type": "float",
+        "hint": "hint_range(1.0, 30.0)",
+        "default": 7.0
+      },
+      {
+        "name": "runner_speed",
+        "type": "float",
+        "hint": "hint_range(0.0, 2.0)",
+        "default": 0.35
+      },
+      {
+        "name": "refraction",
+        "type": "float",
+        "hint": "hint_range(0.0, 0.2)",
+        "default": 0.06
+      },
+      {
+        "name": "mist_blur",
+        "type": "float",
+        "hint": "hint_range(0.0, 6.0)",
+        "default": 3.0
+      },
+      {
+        "name": "mist_tint",
+        "type": "vec4",
+        "hint": "source_color",
+        "default": [
+          0.82,
+          0.87,
+          0.92,
+          1.0
+        ]
+      },
+      {
+        "name": "mist_amount",
+        "type": "float",
+        "hint": "hint_range(0.0, 1.0)",
+        "default": 0.25
+      }
+    ],
+    "placement": "res://baltor/godot_shaders/rain_glass_droplets/",
+    "usage": "surface_material",
+    "renderers": {
+      "compatibility": "compiled_and_rendered",
+      "forward_plus": "not_verified",
+      "mobile": "not_verified"
+    },
+    "inputs": [
+      "A quad (the pane) in front of the scene, with UV v pointing down the glass."
+    ],
+    "outputs": "A misty pane with clear beads of water showing sharp, bent bits of the scene, and drops sliding down."
+  },
+  "limits": "Screen-space refraction cannot show what is off screen and does not invert the view like a real lens. Drops do not merge or interact; runners can pass through static drops. The mist blur depends on the screen texture's mipmaps.",
+  "related": [
+    "glass_refraction",
+    "wet_puddles"
+  ],
+  "technique_references": [
+    "Hashed cellular droplet placement",
+    "Screen texture refraction with mip-level blur",
+    "Column-based running drops with trails",
+    "MurmurHash3 32-bit finalizer over prime-combined lattice coordinates as a hash"
+  ],
+  "native_checks": [
+    "contract_static",
+    "engine_run",
+    "engine_log_clean",
+    "shader_in_scene",
+    "capture_written",
+    "render_not_uniform",
+    "shader_changes_pixels"
+  ]
+}

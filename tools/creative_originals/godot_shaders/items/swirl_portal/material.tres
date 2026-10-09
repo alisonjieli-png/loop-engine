@@ -1,0 +1,17 @@
+[gd_resource type="ShaderMaterial" load_steps=2 format=3]
+
+[ext_resource type="Shader" path="res://baltor/godot_shaders/swirl_portal/swirl_portal.gdshader" id="1_shader"]
+
+[resource]
+shader = ExtResource("1_shader")
+shader_parameter/outer_color = Color(0.45, 0.15, 0.95, 1)
+shader_parameter/inner_color = Color(0.2, 0.9, 1, 1)
+shader_parameter/core_color = Color(0.02, 0, 0.05, 1)
+shader_parameter/rim_color = Color(1, 0.85, 1, 1)
+shader_parameter/arms = 4
+shader_parameter/twist = 6.0
+shader_parameter/spin_speed = 2.0
+shader_parameter/core_radius = 0.12
+shader_parameter/rim_width = 0.04
+shader_parameter/sparkle_amount = 0.5
+shader_parameter/glow = 1.4

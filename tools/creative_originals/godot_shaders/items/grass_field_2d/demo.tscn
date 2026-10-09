@@ -1,0 +1,19 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="ShaderMaterial" path="res://baltor/godot_shaders/grass_field_2d/material.tres" id="1_material"]
+
+[node name="Root" type="Node2D"]
+
+[node name="Background" type="ColorRect" parent="."]
+offset_left = 0.0
+offset_top = 0.0
+offset_right = 256.0
+offset_bottom = 256.0
+color = Color(0.62, 0.8, 0.95, 1)
+
+[node name="Effect" type="ColorRect" parent="."]
+material = ExtResource("1_material")
+offset_left = 0.0
+offset_top = 96.0
+offset_right = 256.0
+offset_bottom = 256.0

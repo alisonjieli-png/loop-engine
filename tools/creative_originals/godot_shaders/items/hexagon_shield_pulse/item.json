@@ -1,0 +1,148 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "hexagon_shield_pulse",
+  "title": "Hexagon shield with travelling pulses",
+  "purpose": "Energy shield made of hexagonal cells: glowing cell borders, cells that light up as a pulse wave climbs the object, random flickering cells and a Fresnel rim, drawn additively.",
+  "form": "library_module",
+  "asset_role": null,
+  "dimension": "3d",
+  "engine": {
+    "name": "godot",
+    "minimum_version": "4.3"
+  },
+  "tags": [
+    "godot shader",
+    "spatial",
+    "hexagon",
+    "shield",
+    "sci-fi",
+    "grid",
+    "additive"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "role": "other"
+    },
+    {
+      "path": "hexagon_shield_pulse.gdshader",
+      "role": "skill_asset"
+    },
+    {
+      "path": "material.tres",
+      "role": "skill_asset"
+    },
+    {
+      "path": "demo.tscn",
+      "role": "skill_asset"
+    }
+  ],
+  "contract": {
+    "shader_type": "spatial",
+    "render_modes": [
+      "unshaded",
+      "blend_add",
+      "cull_disabled",
+      "depth_draw_never",
+      "shadows_disabled"
+    ],
+    "uniforms": [
+      {
+        "name": "edge_color",
+        "type": "vec4",
+        "hint": "source_color",
+        "default": [
+          0.3,
+          0.8,
+          1.0,
+          1.0
+        ]
+      },
+      {
+        "name": "fill_color",
+        "type": "vec4",
+        "hint": "source_color",
+        "default": [
+          0.1,
+          0.35,
+          0.8,
+          1.0
+        ]
+      },
+      {
+        "name": "hex_scale",
+        "type": "float",
+        "hint": "hint_range(2.0, 60.0)",
+        "default": 14.0
+      },
+      {
+        "name": "edge_width",
+        "type": "float",
+        "hint": "hint_range(0.0, 0.3)",
+        "default": 0.06
+      },
+      {
+        "name": "pulse_speed",
+        "type": "float",
+        "hint": "hint_range(-4.0, 4.0)",
+        "default": 0.6
+      },
+      {
+        "name": "pulse_spacing",
+        "type": "float",
+        "hint": "hint_range(0.1, 4.0)",
+        "default": 1.2
+      },
+      {
+        "name": "flicker_rate",
+        "type": "float",
+        "hint": "hint_range(0.0, 20.0)",
+        "default": 3.0
+      },
+      {
+        "name": "flicker_share",
+        "type": "float",
+        "hint": "hint_range(0.0, 1.0)",
+        "default": 0.1
+      },
+      {
+        "name": "rim_strength",
+        "type": "float",
+        "hint": "hint_range(0.0, 2.0)",
+        "default": 0.8
+      }
+    ],
+    "placement": "res://baltor/godot_shaders/hexagon_shield_pulse/",
+    "usage": "surface_material",
+    "renderers": {
+      "compatibility": "compiled_and_rendered",
+      "forward_plus": "not_verified",
+      "mobile": "not_verified"
+    },
+    "inputs": [
+      "A mesh with UVs; on a sphere the cells shrink toward the poles."
+    ],
+    "outputs": "A glowing hexagon-tiled bubble with bands of cells lighting up as pulses climb it."
+  },
+  "limits": "Cells follow the mesh UVs, so they distort where UVs are stretched (sphere poles, seams). Additive blending cannot darken.",
+  "related": [
+    "force_field_intersection",
+    "shield_hit_ripple",
+    "hex_grid_overlay"
+  ],
+  "technique_references": [
+    "Hexagonal lattice from two offset rectangular grids",
+    "Hexagon distance border mask",
+    "Height-based pulse wave with hashed cell flicker",
+    "MurmurHash3 32-bit finalizer over prime-combined lattice coordinates as a hash"
+  ],
+  "native_checks": [
+    "contract_static",
+    "engine_run",
+    "engine_log_clean",
+    "shader_in_scene",
+    "capture_written",
+    "render_not_uniform",
+    "shader_changes_pixels"
+  ]
+}

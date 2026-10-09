@@ -1,0 +1,159 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "sprite_color_key_swap",
+  "title": "Palette swap by colour keys",
+  "purpose": "Recolour sprites at run time: up to three source colours are matched within a tolerance and replaced by target colours, optionally keeping the original shading, for team colours, skins and enemy variants.",
+  "form": "library_module",
+  "asset_role": null,
+  "dimension": "2d",
+  "engine": {
+    "name": "godot",
+    "minimum_version": "4.3"
+  },
+  "tags": [
+    "godot shader",
+    "canvas item",
+    "palette swap",
+    "recolor",
+    "sprite",
+    "team colors",
+    "2d"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "role": "other"
+    },
+    {
+      "path": "sprite_color_key_swap.gdshader",
+      "role": "skill_asset"
+    },
+    {
+      "path": "material.tres",
+      "role": "skill_asset"
+    },
+    {
+      "path": "demo.tscn",
+      "role": "skill_asset"
+    }
+  ],
+  "contract": {
+    "shader_type": "canvas_item",
+    "render_modes": [],
+    "uniforms": [
+      {
+        "name": "key_1",
+        "type": "vec4",
+        "hint": "source_color",
+        "default": [
+          0.95,
+          0.6,
+          0.25,
+          1.0
+        ]
+      },
+      {
+        "name": "target_1",
+        "type": "vec4",
+        "hint": "source_color",
+        "default": [
+          0.25,
+          0.8,
+          0.75,
+          1.0
+        ]
+      },
+      {
+        "name": "key_2",
+        "type": "vec4",
+        "hint": "source_color",
+        "default": [
+          0.85,
+          0.35,
+          0.3,
+          1.0
+        ]
+      },
+      {
+        "name": "target_2",
+        "type": "vec4",
+        "hint": "source_color",
+        "default": [
+          0.2,
+          0.45,
+          0.9,
+          1.0
+        ]
+      },
+      {
+        "name": "key_3",
+        "type": "vec4",
+        "hint": "source_color",
+        "default": [
+          0.55,
+          0.2,
+          0.35,
+          1.0
+        ]
+      },
+      {
+        "name": "target_3",
+        "type": "vec4",
+        "hint": "source_color",
+        "default": [
+          0.15,
+          0.15,
+          0.45,
+          1.0
+        ]
+      },
+      {
+        "name": "tolerance",
+        "type": "float",
+        "hint": "hint_range(0.0, 1.0)",
+        "default": 0.16
+      },
+      {
+        "name": "softness",
+        "type": "float",
+        "hint": "hint_range(0.0, 0.5)",
+        "default": 0.1
+      },
+      {
+        "name": "keep_shading",
+        "type": "bool",
+        "hint": null,
+        "default": true
+      }
+    ],
+    "placement": "res://baltor/godot_shaders/sprite_color_key_swap/",
+    "usage": "canvas_material",
+    "renderers": {
+      "compatibility": "compiled_and_rendered",
+      "forward_plus": "not_verified",
+      "mobile": "not_verified"
+    },
+    "inputs": [
+      "A Sprite2D (or other textured CanvasItem) with transparent space around its shape, assigned to the node as usual."
+    ],
+    "outputs": "The orange, red and purple sprite recoloured to teal, blue and navy."
+  },
+  "limits": "Matching is by RGB distance, so similar colours elsewhere in the sprite can be caught; author sprites with distinct key colours. Three pairs per material.",
+  "related": [
+    "sprite_hsv_adjust",
+    "post_pixelate_palette"
+  ],
+  "technique_references": [
+    "Colour keying by RGB distance with soft tolerance",
+    "Shading preservation by luminance ratio"
+  ],
+  "native_checks": [
+    "contract_static",
+    "engine_run",
+    "engine_log_clean",
+    "shader_in_scene",
+    "capture_written",
+    "render_not_uniform",
+    "shader_changes_pixels"
+  ]
+}

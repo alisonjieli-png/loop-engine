@@ -1,0 +1,127 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "sprite_marching_ants",
+  "title": "Marching ants selection outline",
+  "purpose": "Mark a selected sprite with the classic animated dashed outline: alternating dark and light dashes move along the edge of the sprite's alpha shape, drawn inside or outside the edge.",
+  "form": "library_module",
+  "asset_role": null,
+  "dimension": "2d",
+  "engine": {
+    "name": "godot",
+    "minimum_version": "4.3"
+  },
+  "tags": [
+    "godot shader",
+    "canvas item",
+    "selection",
+    "marching ants",
+    "outline",
+    "editor",
+    "2d"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "role": "other"
+    },
+    {
+      "path": "sprite_marching_ants.gdshader",
+      "role": "skill_asset"
+    },
+    {
+      "path": "material.tres",
+      "role": "skill_asset"
+    },
+    {
+      "path": "demo.tscn",
+      "role": "skill_asset"
+    }
+  ],
+  "contract": {
+    "shader_type": "canvas_item",
+    "render_modes": [],
+    "uniforms": [
+      {
+        "name": "dash_dark",
+        "type": "vec4",
+        "hint": "source_color",
+        "default": [
+          0.05,
+          0.05,
+          0.05,
+          1.0
+        ]
+      },
+      {
+        "name": "dash_light",
+        "type": "vec4",
+        "hint": "source_color",
+        "default": [
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      {
+        "name": "dash_pixels",
+        "type": "float",
+        "hint": "hint_range(2.0, 32.0)",
+        "default": 6.0
+      },
+      {
+        "name": "speed",
+        "type": "float",
+        "hint": "hint_range(-40.0, 40.0)",
+        "default": 12.0
+      },
+      {
+        "name": "width",
+        "type": "int",
+        "hint": "hint_range(1, 4)",
+        "default": 1
+      },
+      {
+        "name": "outside",
+        "type": "bool",
+        "hint": null,
+        "default": true
+      },
+      {
+        "name": "alpha_cutoff",
+        "type": "float",
+        "hint": "hint_range(0.01, 1.0)",
+        "default": 0.5
+      }
+    ],
+    "placement": "res://baltor/godot_shaders/sprite_marching_ants/",
+    "usage": "canvas_material",
+    "renderers": {
+      "compatibility": "compiled_and_rendered",
+      "forward_plus": "not_verified",
+      "mobile": "not_verified"
+    },
+    "inputs": [
+      "A Sprite2D (or other textured CanvasItem) with transparent space around its shape, assigned to the node as usual."
+    ],
+    "outputs": "The sprite outlined by small alternating black and white dashes."
+  },
+  "limits": "Dashes follow a screen-space diagonal pattern, not the arc length of the outline, so their spacing varies with edge direction. Effects outside the shape are drawn inside the texture rectangle, so the texture needs a margin.",
+  "related": [
+    "sprite_pixel_outline",
+    "sprite_inner_outline"
+  ],
+  "technique_references": [
+    "Edge detection by neighbourhood alpha comparison",
+    "Animated screen-space dash pattern"
+  ],
+  "native_checks": [
+    "contract_static",
+    "engine_run",
+    "engine_log_clean",
+    "shader_in_scene",
+    "capture_written",
+    "render_not_uniform",
+    "shader_changes_pixels"
+  ]
+}

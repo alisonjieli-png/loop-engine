@@ -1,0 +1,159 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "shield_hit_ripple",
+  "title": "Shield impact ripple from a hit point",
+  "purpose": "Show an impact on a spherical shield: a flash at the hit direction and a ring that travels over the sphere along great circles and fades, looping on a timer or driven by a script.",
+  "form": "library_module",
+  "asset_role": null,
+  "dimension": "3d",
+  "engine": {
+    "name": "godot",
+    "minimum_version": "4.3"
+  },
+  "tags": [
+    "godot shader",
+    "spatial",
+    "shield",
+    "impact",
+    "ripple",
+    "sci-fi",
+    "additive"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "role": "other"
+    },
+    {
+      "path": "shield_hit_ripple.gdshader",
+      "role": "skill_asset"
+    },
+    {
+      "path": "material.tres",
+      "role": "skill_asset"
+    },
+    {
+      "path": "demo.tscn",
+      "role": "skill_asset"
+    }
+  ],
+  "contract": {
+    "shader_type": "spatial",
+    "render_modes": [
+      "unshaded",
+      "blend_add",
+      "cull_disabled",
+      "depth_draw_never",
+      "shadows_disabled"
+    ],
+    "uniforms": [
+      {
+        "name": "shield_color",
+        "type": "vec4",
+        "hint": "source_color",
+        "default": [
+          0.25,
+          0.6,
+          1.0,
+          1.0
+        ]
+      },
+      {
+        "name": "impact_color",
+        "type": "vec4",
+        "hint": "source_color",
+        "default": [
+          1.0,
+          0.85,
+          0.5,
+          1.0
+        ]
+      },
+      {
+        "name": "hit_azimuth_degrees",
+        "type": "float",
+        "hint": "hint_range(-180.0, 180.0)",
+        "default": 25.0
+      },
+      {
+        "name": "hit_elevation_degrees",
+        "type": "float",
+        "hint": "hint_range(-90.0, 90.0)",
+        "default": 15.0
+      },
+      {
+        "name": "impact_progress",
+        "type": "float",
+        "hint": "hint_range(0.0, 1.0)",
+        "default": 0.35
+      },
+      {
+        "name": "loop_impacts",
+        "type": "bool",
+        "hint": null,
+        "default": true
+      },
+      {
+        "name": "loop_period",
+        "type": "float",
+        "hint": "hint_range(0.2, 5.0)",
+        "default": 1.5
+      },
+      {
+        "name": "ring_width",
+        "type": "float",
+        "hint": "hint_range(0.01, 0.5)",
+        "default": 0.12
+      },
+      {
+        "name": "ring_reach_degrees",
+        "type": "float",
+        "hint": "hint_range(10.0, 180.0)",
+        "default": 110.0
+      },
+      {
+        "name": "base_strength",
+        "type": "float",
+        "hint": "hint_range(0.0, 1.0)",
+        "default": 0.08
+      },
+      {
+        "name": "rim_strength",
+        "type": "float",
+        "hint": "hint_range(0.0, 2.0)",
+        "default": 0.6
+      }
+    ],
+    "placement": "res://baltor/godot_shaders/shield_hit_ripple/",
+    "usage": "surface_material",
+    "renderers": {
+      "compatibility": "compiled_and_rendered",
+      "forward_plus": "not_verified",
+      "mobile": "not_verified"
+    },
+    "inputs": [
+      "A sphere centred on its origin. To aim at a world hit point, convert it to the object's local direction in a script and set the two angles."
+    ],
+    "outputs": "A faint blue bubble with a bright ring spreading out from the impact point."
+  },
+  "limits": "One impact at a time; several simultaneous hits need several materials or an array uniform. Directions are taken from vertex positions, so the mesh must be roughly spherical around its origin. Additive, so it cannot darken.",
+  "related": [
+    "force_field_intersection",
+    "hexagon_shield_pulse",
+    "screen_shockwave_2d"
+  ],
+  "technique_references": [
+    "Great-circle distance from the angle between unit vectors",
+    "Expanding ring with energy fade",
+    "Facing ratio rim"
+  ],
+  "native_checks": [
+    "contract_static",
+    "engine_run",
+    "engine_log_clean",
+    "shader_in_scene",
+    "capture_written",
+    "render_not_uniform",
+    "shader_changes_pixels"
+  ]
+}

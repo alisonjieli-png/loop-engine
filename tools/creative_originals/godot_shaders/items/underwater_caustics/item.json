@@ -1,0 +1,139 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "underwater_caustics",
+  "title": "Underwater caustics projected from above",
+  "purpose": "Animated caustic light network on any surface that faces up: two drifting Voronoi layers combine into bright web lines that brighten the albedo, with depth falloff and a blue-green tint.",
+  "form": "library_module",
+  "asset_role": null,
+  "dimension": "3d",
+  "engine": {
+    "name": "godot",
+    "minimum_version": "4.3"
+  },
+  "tags": [
+    "godot shader",
+    "spatial",
+    "caustics",
+    "underwater",
+    "voronoi",
+    "light pattern",
+    "water"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "role": "other"
+    },
+    {
+      "path": "underwater_caustics.gdshader",
+      "role": "skill_asset"
+    },
+    {
+      "path": "material.tres",
+      "role": "skill_asset"
+    },
+    {
+      "path": "demo.tscn",
+      "role": "skill_asset"
+    }
+  ],
+  "contract": {
+    "shader_type": "spatial",
+    "render_modes": [],
+    "uniforms": [
+      {
+        "name": "albedo",
+        "type": "vec4",
+        "hint": "source_color",
+        "default": [
+          0.75,
+          0.7,
+          0.55,
+          1.0
+        ]
+      },
+      {
+        "name": "caustic_color",
+        "type": "vec4",
+        "hint": "source_color",
+        "default": [
+          0.65,
+          1.0,
+          0.95,
+          1.0
+        ]
+      },
+      {
+        "name": "caustic_scale",
+        "type": "float",
+        "hint": "hint_range(0.2, 10.0)",
+        "default": 1.6
+      },
+      {
+        "name": "caustic_strength",
+        "type": "float",
+        "hint": "hint_range(0.0, 4.0)",
+        "default": 1.4
+      },
+      {
+        "name": "sharpness",
+        "type": "float",
+        "hint": "hint_range(1.0, 12.0)",
+        "default": 5.0
+      },
+      {
+        "name": "drift_speed",
+        "type": "float",
+        "hint": "hint_range(0.0, 2.0)",
+        "default": 0.25
+      },
+      {
+        "name": "water_surface_height",
+        "type": "float",
+        "hint": "hint_range(-20.0, 20.0)",
+        "default": 2.0
+      },
+      {
+        "name": "depth_falloff",
+        "type": "float",
+        "hint": "hint_range(0.0, 2.0)",
+        "default": 0.25
+      },
+      {
+        "name": "roughness",
+        "type": "float",
+        "hint": "hint_range(0.0, 1.0)",
+        "default": 0.9
+      }
+    ],
+    "placement": "res://baltor/godot_shaders/underwater_caustics/",
+    "usage": "surface_material",
+    "renderers": {
+      "compatibility": "compiled_and_rendered",
+      "forward_plus": "not_verified",
+      "mobile": "not_verified"
+    },
+    "inputs": [],
+    "outputs": "Sand-coloured floor and objects covered by a shifting web of bright cyan light lines on their tops."
+  },
+  "limits": "A pattern, not light transport: it ignores the real water surface and shadows from objects above. Projected straight down in world space, so vertical walls get none. Emission makes caustics visible even in shade.",
+  "related": [
+    "gerstner_wave_water",
+    "sky_underwater_ambient"
+  ],
+  "technique_references": [
+    "Voronoi border web as caustic approximation",
+    "Two drifting layers combined with min and product",
+    "Normal-facing and depth attenuation",
+    "MurmurHash3 32-bit finalizer over prime-combined lattice coordinates as a hash"
+  ],
+  "native_checks": [
+    "contract_static",
+    "engine_run",
+    "engine_log_clean",
+    "shader_in_scene",
+    "capture_written",
+    "render_not_uniform",
+    "shader_changes_pixels"
+  ]
+}

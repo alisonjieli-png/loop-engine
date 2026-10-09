@@ -1,0 +1,14 @@
+[gd_resource type="ShaderMaterial" load_steps=2 format=3]
+
+[ext_resource type="Shader" path="res://baltor/godot_shaders/post_color_grading/post_color_grading.gdshader" id="1_shader"]
+
+[resource]
+shader = ExtResource("1_shader")
+shader_parameter/lift = Color(0.04, 0.02, 0.08, 1)
+shader_parameter/gamma = Color(0.5, 0.5, 0.52, 1)
+shader_parameter/gain = Color(1, 0.96, 0.88, 1)
+shader_parameter/contrast = 1.1
+shader_parameter/saturation = 1.1
+shader_parameter/vibrance = 0.2
+shader_parameter/temperature = 0.15
+shader_parameter/tint = 0.0

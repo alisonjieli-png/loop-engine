@@ -1,0 +1,17 @@
+[gd_resource type="ShaderMaterial" load_steps=2 format=3]
+
+[ext_resource type="Shader" path="res://baltor/godot_shaders/wet_puddles/wet_puddles.gdshader" id="1_shader"]
+
+[resource]
+shader = ExtResource("1_shader")
+shader_parameter/stone_color = Color(0.5, 0.46, 0.42, 1)
+shader_parameter/grout_color = Color(0.22, 0.2, 0.18, 1)
+shader_parameter/stone_scale = 7.0
+shader_parameter/grout_width = 0.08
+shader_parameter/wetness = 0.6
+shader_parameter/puddle_amount = 0.45
+shader_parameter/puddle_scale = 0.8
+shader_parameter/puddle_tint = Color(0.16, 0.17, 0.19, 1)
+shader_parameter/ripple_strength = 0.5
+shader_parameter/ripple_density = 6.0
+shader_parameter/ripple_speed = 1.2

@@ -1,0 +1,13 @@
+[gd_resource type="ShaderMaterial" load_steps=2 format=3]
+
+[ext_resource type="Shader" path="res://baltor/godot_shaders/heat_haze_distortion/heat_haze_distortion.gdshader" id="1_shader"]
+
+[resource]
+shader = ExtResource("1_shader")
+shader_parameter/strength = 0.018
+shader_parameter/noise_scale = 9.0
+shader_parameter/rise_speed = 1.4
+shader_parameter/edge_softness = 0.25
+shader_parameter/top_fade = 0.6
+shader_parameter/distance_falloff = 0.15
+shader_parameter/tint_amount = 0.04

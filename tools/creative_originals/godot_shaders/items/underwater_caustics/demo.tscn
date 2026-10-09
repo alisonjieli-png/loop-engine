@@ -1,0 +1,50 @@
+[gd_scene load_steps=6 format=3]
+
+[ext_resource type="ShaderMaterial" path="res://baltor/godot_shaders/underwater_caustics/material.tres" id="1_material"]
+
+[sub_resource type="Environment" id="Environment_1"]
+background_mode = 1
+background_color = Color(0.05, 0.25, 0.32, 1)
+ambient_light_source = 2
+ambient_light_color = Color(0.2, 0.4, 0.45, 1)
+ambient_light_energy = 1.0
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_2"]
+size = Vector2(10, 10)
+
+[sub_resource type="SphereMesh" id="SphereMesh_3"]
+radial_segments = 64
+rings = 32
+radius = 0.45
+height = 0.9
+
+[sub_resource type="BoxMesh" id="BoxMesh_4"]
+size = Vector3(0.6, 0.6, 0.6)
+
+[node name="Root" type="Node3D"]
+
+[node name="Environment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_1")
+
+[node name="Subject0" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.5, 0)
+mesh = SubResource("PlaneMesh_2")
+material_override = ExtResource("1_material")
+
+[node name="Subject1" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.5, -0.2, -0.4)
+mesh = SubResource("SphereMesh_3")
+material_override = ExtResource("1_material")
+
+[node name="Subject2" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.86603, 0, 0.5, 0, 1, 0, -0.5, 0, 0.86603, 0.6, -0.2, -0.8)
+mesh = SubResource("BoxMesh_4")
+material_override = ExtResource("1_material")
+
+[node name="Sun" type="DirectionalLight3D" parent="."]
+transform = Transform3D(0.83205, -0.51492, 0.20628, 0, 0.37188, 0.92828, -0.5547, -0.77237, 0.30943, 0.2, 0.9, 0.3)
+light_color = Color(1, 0.97, 0.92, 1)
+light_energy = 0.6
+
+[node name="Camera" type="Camera3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0.88047, 0.4741, 0, -0.4741, 0.88047, 0, 1, 2)

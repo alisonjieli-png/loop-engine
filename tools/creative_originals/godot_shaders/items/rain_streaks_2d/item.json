@@ -1,0 +1,125 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "rain_streaks_2d",
+  "title": "Layered rain streaks overlay",
+  "purpose": "Overlay falling rain on any 2D scene: three layers of slanted streaks at different speeds, lengths and opacities for depth, drawn as a transparent rectangle over the content.",
+  "form": "library_module",
+  "asset_role": null,
+  "dimension": "2d",
+  "engine": {
+    "name": "godot",
+    "minimum_version": "4.3"
+  },
+  "tags": [
+    "godot shader",
+    "canvas item",
+    "rain",
+    "weather",
+    "overlay",
+    "2d",
+    "procedural"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "role": "other"
+    },
+    {
+      "path": "rain_streaks_2d.gdshader",
+      "role": "skill_asset"
+    },
+    {
+      "path": "material.tres",
+      "role": "skill_asset"
+    },
+    {
+      "path": "demo.tscn",
+      "role": "skill_asset"
+    }
+  ],
+  "contract": {
+    "shader_type": "canvas_item",
+    "render_modes": [],
+    "uniforms": [
+      {
+        "name": "rain_color",
+        "type": "vec4",
+        "hint": "source_color",
+        "default": [
+          0.75,
+          0.82,
+          0.95,
+          0.55
+        ]
+      },
+      {
+        "name": "density",
+        "type": "float",
+        "hint": "hint_range(0.0, 1.0)",
+        "default": 0.5
+      },
+      {
+        "name": "speed",
+        "type": "float",
+        "hint": "hint_range(0.0, 5.0)",
+        "default": 1.6
+      },
+      {
+        "name": "slant",
+        "type": "float",
+        "hint": "hint_range(-1.0, 1.0)",
+        "default": 0.25
+      },
+      {
+        "name": "streak_length",
+        "type": "float",
+        "hint": "hint_range(0.02, 0.5)",
+        "default": 0.12
+      },
+      {
+        "name": "columns",
+        "type": "float",
+        "hint": "hint_range(10.0, 300.0)",
+        "default": 90.0
+      },
+      {
+        "name": "aspect",
+        "type": "float",
+        "hint": "hint_range(0.2, 5.0)",
+        "default": 1.0
+      }
+    ],
+    "placement": "res://baltor/godot_shaders/rain_streaks_2d/",
+    "usage": "canvas_material",
+    "renderers": {
+      "compatibility": "compiled_and_rendered",
+      "forward_plus": "not_verified",
+      "mobile": "not_verified"
+    },
+    "inputs": [
+      "A ColorRect above the scene covering the area that should show rain."
+    ],
+    "outputs": "A city scene behind fine slanted streaks of rain in three depths."
+  },
+  "limits": "Streaks pass in front of everything in the rectangle; there are no splashes (see `particles_rain_splash`). Set `aspect` to the rectangle's width over height.",
+  "related": [
+    "snow_flakes_2d",
+    "particles_rain_splash",
+    "rain_glass_droplets"
+  ],
+  "technique_references": [
+    "Column-based hashed streaks",
+    "Sheared coordinates for slanted rain",
+    "Layered parallax",
+    "MurmurHash3 32-bit finalizer over prime-combined lattice coordinates as a hash"
+  ],
+  "native_checks": [
+    "contract_static",
+    "engine_run",
+    "engine_log_clean",
+    "shader_in_scene",
+    "capture_written",
+    "render_not_uniform",
+    "shader_changes_pixels"
+  ]
+}

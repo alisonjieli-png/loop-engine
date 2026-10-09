@@ -1,0 +1,119 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "post_chromatic_aberration",
+  "title": "Radial chromatic aberration",
+  "purpose": "Split the red, green and blue channels radially so colour fringes grow toward the screen edges like a cheap lens, with several samples per channel to smear the fringe instead of doubling it.",
+  "form": "library_module",
+  "asset_role": null,
+  "dimension": "3d",
+  "engine": {
+    "name": "godot",
+    "minimum_version": "4.3"
+  },
+  "tags": [
+    "godot shader",
+    "spatial",
+    "post-process",
+    "chromatic aberration",
+    "lens",
+    "fringe",
+    "camera",
+    "full-screen"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "role": "other"
+    },
+    {
+      "path": "post_chromatic_aberration.gdshader",
+      "role": "skill_asset"
+    },
+    {
+      "path": "material.tres",
+      "role": "skill_asset"
+    },
+    {
+      "path": "demo.tscn",
+      "role": "skill_asset"
+    }
+  ],
+  "contract": {
+    "shader_type": "spatial",
+    "render_modes": [
+      "unshaded",
+      "cull_disabled",
+      "depth_test_disabled",
+      "depth_draw_never",
+      "skip_vertex_transform",
+      "fog_disabled"
+    ],
+    "uniforms": [
+      {
+        "name": "screen_texture",
+        "type": "sampler2D",
+        "hint": "hint_screen_texture, filter_linear_mipmap",
+        "default": null
+      },
+      {
+        "name": "strength",
+        "type": "float",
+        "hint": "hint_range(0.0, 0.05)",
+        "default": 0.012
+      },
+      {
+        "name": "falloff_power",
+        "type": "float",
+        "hint": "hint_range(0.5, 4.0)",
+        "default": 2.0
+      },
+      {
+        "name": "samples",
+        "type": "int",
+        "hint": "hint_range(1, 16)",
+        "default": 6
+      },
+      {
+        "name": "center_x",
+        "type": "float",
+        "hint": "hint_range(0.0, 1.0)",
+        "default": 0.5
+      },
+      {
+        "name": "center_y",
+        "type": "float",
+        "hint": "hint_range(0.0, 1.0)",
+        "default": 0.5
+      }
+    ],
+    "placement": "res://baltor/godot_shaders/post_chromatic_aberration/",
+    "usage": "post_process_quad",
+    "renderers": {
+      "compatibility": "compiled_and_rendered",
+      "forward_plus": "not_verified",
+      "mobile": "not_verified"
+    },
+    "inputs": [
+      "A MeshInstance3D with a 2 x 2 QuadMesh, `material.tres` as its material override and a large extra cull margin, as in `demo.tscn`."
+    ],
+    "outputs": "The scene with red and blue fringes along edges that widen toward the corners."
+  },
+  "limits": "Three channels only, so the fringe is red and blue rather than a full spectrum. Edges of the screen clamp the samples. The pass reads Godot's screen texture after opaque geometry, so transparent objects drawn after it are not processed and its order among other transparent passes is not controlled.",
+  "related": [
+    "post_lens_distortion",
+    "glitch_screen_2d"
+  ],
+  "technique_references": [
+    "Radial per-channel UV offset",
+    "Multi-sample averaging along the offset"
+  ],
+  "native_checks": [
+    "contract_static",
+    "engine_run",
+    "engine_log_clean",
+    "shader_in_scene",
+    "capture_written",
+    "render_not_uniform",
+    "shader_changes_pixels"
+  ]
+}

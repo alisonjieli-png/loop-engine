@@ -1,0 +1,12 @@
+[gd_resource type="ShaderMaterial" load_steps=2 format=3]
+
+[ext_resource type="Shader" path="res://baltor/godot_shaders/post_radial_zoom_blur/post_radial_zoom_blur.gdshader" id="1_shader"]
+
+[resource]
+shader = ExtResource("1_shader")
+shader_parameter/center_x = 0.5
+shader_parameter/center_y = 0.5
+shader_parameter/strength = 0.12
+shader_parameter/samples = 20
+shader_parameter/clear_radius = 0.15
+shader_parameter/streak_boost = 0.15

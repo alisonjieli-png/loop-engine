@@ -1,0 +1,74 @@
+[gd_scene load_steps=5 format=3]
+
+[ext_resource type="ShaderMaterial" path="res://baltor/godot_shaders/curved_world_bend/material.tres" id="1_material"]
+
+[sub_resource type="Environment" id="Environment_1"]
+background_mode = 1
+background_color = Color(0.55, 0.75, 0.95, 1)
+ambient_light_source = 2
+ambient_light_color = Color(0.5, 0.52, 0.55, 1)
+ambient_light_energy = 1.0
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_2"]
+size = Vector2(6, 50)
+subdivide_width = 8
+subdivide_depth = 200
+
+[sub_resource type="BoxMesh" id="BoxMesh_3"]
+size = Vector3(0.8, 0.8, 0.8)
+subdivide_height = 4
+subdivide_width = 4
+subdivide_depth = 4
+
+[node name="Root" type="Node3D"]
+
+[node name="Environment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_1")
+
+[node name="Road" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.5, -20)
+mesh = SubResource("PlaneMesh_2")
+material_override = ExtResource("1_material")
+
+[node name="Block0" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.6, -0.1, -2)
+mesh = SubResource("BoxMesh_3")
+material_override = ExtResource("1_material")
+
+[node name="Block1" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.6, -0.1, -6)
+mesh = SubResource("BoxMesh_3")
+material_override = ExtResource("1_material")
+
+[node name="Block2" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.6, -0.1, -10)
+mesh = SubResource("BoxMesh_3")
+material_override = ExtResource("1_material")
+
+[node name="Block3" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.6, -0.1, -14)
+mesh = SubResource("BoxMesh_3")
+material_override = ExtResource("1_material")
+
+[node name="Block4" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.6, -0.1, -18)
+mesh = SubResource("BoxMesh_3")
+material_override = ExtResource("1_material")
+
+[node name="Block5" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.6, -0.1, -24)
+mesh = SubResource("BoxMesh_3")
+material_override = ExtResource("1_material")
+
+[node name="Block6" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.6, -0.1, -30)
+mesh = SubResource("BoxMesh_3")
+material_override = ExtResource("1_material")
+
+[node name="Sun" type="DirectionalLight3D" parent="."]
+transform = Transform3D(0.78087, -0.48771, 0.39036, 0, 0.62488, 0.78072, -0.6247, -0.60964, 0.48795, 0.4, 0.8, 0.5)
+light_color = Color(1, 0.97, 0.92, 1)
+light_energy = 1.0
+
+[node name="Camera" type="Camera3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0.99388, 0.11043, 0, -0.11043, 0.99388, 0, 1.2, 3)

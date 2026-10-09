@@ -1,0 +1,15 @@
+[gd_resource type="ShaderMaterial" load_steps=2 format=3]
+
+[ext_resource type="Shader" path="res://baltor/godot_shaders/hexagon_shield_pulse/hexagon_shield_pulse.gdshader" id="1_shader"]
+
+[resource]
+shader = ExtResource("1_shader")
+shader_parameter/edge_color = Color(0.3, 0.8, 1, 1)
+shader_parameter/fill_color = Color(0.1, 0.35, 0.8, 1)
+shader_parameter/hex_scale = 14.0
+shader_parameter/edge_width = 0.06
+shader_parameter/pulse_speed = 0.6
+shader_parameter/pulse_spacing = 1.2
+shader_parameter/flicker_rate = 3.0
+shader_parameter/flicker_share = 0.1
+shader_parameter/rim_strength = 0.8

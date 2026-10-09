@@ -1,0 +1,156 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "interior_mapping_rooms",
+  "title": "Interior mapping of fake rooms behind windows",
+  "purpose": "Fill a flat building facade with rooms that have depth: each window cell ray-casts into a virtual box room and shades its back wall, side walls, floor and ceiling procedurally, with per-room colours and lights.",
+  "form": "library_module",
+  "asset_role": null,
+  "dimension": "3d",
+  "engine": {
+    "name": "godot",
+    "minimum_version": "4.3"
+  },
+  "tags": [
+    "godot shader",
+    "spatial",
+    "interior mapping",
+    "facade",
+    "windows",
+    "city",
+    "ray casting"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "role": "other"
+    },
+    {
+      "path": "interior_mapping_rooms.gdshader",
+      "role": "skill_asset"
+    },
+    {
+      "path": "material.tres",
+      "role": "skill_asset"
+    },
+    {
+      "path": "demo.tscn",
+      "role": "skill_asset"
+    }
+  ],
+  "contract": {
+    "shader_type": "spatial",
+    "render_modes": [],
+    "uniforms": [
+      {
+        "name": "rooms_across",
+        "type": "float",
+        "hint": "hint_range(1.0, 20.0)",
+        "default": 4.0
+      },
+      {
+        "name": "rooms_down",
+        "type": "float",
+        "hint": "hint_range(1.0, 20.0)",
+        "default": 4.0
+      },
+      {
+        "name": "room_depth",
+        "type": "float",
+        "hint": "hint_range(0.1, 3.0)",
+        "default": 1.0
+      },
+      {
+        "name": "wall_color",
+        "type": "vec4",
+        "hint": "source_color",
+        "default": [
+          0.78,
+          0.72,
+          0.62,
+          1.0
+        ]
+      },
+      {
+        "name": "floor_color",
+        "type": "vec4",
+        "hint": "source_color",
+        "default": [
+          0.42,
+          0.3,
+          0.2,
+          1.0
+        ]
+      },
+      {
+        "name": "ceiling_color",
+        "type": "vec4",
+        "hint": "source_color",
+        "default": [
+          0.92,
+          0.92,
+          0.9,
+          1.0
+        ]
+      },
+      {
+        "name": "frame_color",
+        "type": "vec4",
+        "hint": "source_color",
+        "default": [
+          0.16,
+          0.17,
+          0.2,
+          1.0
+        ]
+      },
+      {
+        "name": "frame_width",
+        "type": "float",
+        "hint": "hint_range(0.0, 0.3)",
+        "default": 0.08
+      },
+      {
+        "name": "lights_on",
+        "type": "float",
+        "hint": "hint_range(0.0, 1.0)",
+        "default": 0.6
+      },
+      {
+        "name": "glass_reflection",
+        "type": "float",
+        "hint": "hint_range(0.0, 1.0)",
+        "default": 0.2
+      }
+    ],
+    "placement": "res://baltor/godot_shaders/interior_mapping_rooms/",
+    "usage": "surface_material",
+    "renderers": {
+      "compatibility": "compiled_and_rendered",
+      "forward_plus": "not_verified",
+      "mobile": "not_verified"
+    },
+    "inputs": [
+      "A flat facade mesh (quad or box side) with UVs and tangents; one UV unit spans the window grid."
+    ],
+    "outputs": "A wall of windows, each showing a small room with walls, floor and ceiling that shift with the view."
+  },
+  "limits": "Rooms are boxes without furniture; all rooms share one layout. The facade must be flat and its UVs unstretched, or rooms skew. Glass reflection is a fixed colour, not the environment.",
+  "related": [
+    "parallax_occlusion_bricks",
+    "brick_wall_procedural"
+  ],
+  "technique_references": [
+    "Interior mapping by ray-box intersection in tangent space (van Dongen 2008)",
+    "Per-cell hashed variation",
+    "MurmurHash3 32-bit finalizer over prime-combined lattice coordinates as a hash"
+  ],
+  "native_checks": [
+    "contract_static",
+    "engine_run",
+    "engine_log_clean",
+    "shader_in_scene",
+    "capture_written",
+    "render_not_uniform",
+    "shader_changes_pixels"
+  ]
+}

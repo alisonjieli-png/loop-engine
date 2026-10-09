@@ -1,0 +1,16 @@
+[gd_resource type="ShaderMaterial" load_steps=2 format=3]
+
+[ext_resource type="Shader" path="res://baltor/godot_shaders/pearl_sheen/pearl_sheen.gdshader" id="1_shader"]
+
+[resource]
+shader = ExtResource("1_shader")
+shader_parameter/body_color = Color(0.93, 0.9, 0.86, 1)
+shader_parameter/tint_a = Color(1, 0.78, 0.86, 1)
+shader_parameter/tint_b = Color(0.78, 1, 0.88, 1)
+shader_parameter/tint_c = Color(1, 0.92, 0.7, 1)
+shader_parameter/orient_strength = 0.55
+shader_parameter/orient_bands = 1.6
+shader_parameter/satin_roughness = 0.32
+shader_parameter/inner_glow = 0.12
+shader_parameter/rim_color = Color(0.75, 0.85, 1, 1)
+shader_parameter/rim_strength = 0.25

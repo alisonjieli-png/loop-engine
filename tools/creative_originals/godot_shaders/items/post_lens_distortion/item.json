@@ -1,0 +1,119 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "post_lens_distortion",
+  "title": "Radial lens distortion with auto fit",
+  "purpose": "Bend the image like a real lens with the Brown-Conrady radial model: barrel or pincushion distortion from two coefficients, an automatic zoom that hides empty corners, and an optional dark rim.",
+  "form": "library_module",
+  "asset_role": null,
+  "dimension": "3d",
+  "engine": {
+    "name": "godot",
+    "minimum_version": "4.3"
+  },
+  "tags": [
+    "godot shader",
+    "spatial",
+    "post-process",
+    "lens distortion",
+    "barrel",
+    "pincushion",
+    "camera",
+    "full-screen"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "role": "other"
+    },
+    {
+      "path": "post_lens_distortion.gdshader",
+      "role": "skill_asset"
+    },
+    {
+      "path": "material.tres",
+      "role": "skill_asset"
+    },
+    {
+      "path": "demo.tscn",
+      "role": "skill_asset"
+    }
+  ],
+  "contract": {
+    "shader_type": "spatial",
+    "render_modes": [
+      "unshaded",
+      "cull_disabled",
+      "depth_test_disabled",
+      "depth_draw_never",
+      "skip_vertex_transform",
+      "fog_disabled"
+    ],
+    "uniforms": [
+      {
+        "name": "screen_texture",
+        "type": "sampler2D",
+        "hint": "hint_screen_texture, filter_linear_mipmap",
+        "default": null
+      },
+      {
+        "name": "k1",
+        "type": "float",
+        "hint": "hint_range(-1.0, 1.0)",
+        "default": 0.22
+      },
+      {
+        "name": "k2",
+        "type": "float",
+        "hint": "hint_range(-1.0, 1.0)",
+        "default": 0.06
+      },
+      {
+        "name": "auto_fit",
+        "type": "bool",
+        "hint": null,
+        "default": true
+      },
+      {
+        "name": "zoom",
+        "type": "float",
+        "hint": "hint_range(0.5, 2.0)",
+        "default": 1.0
+      },
+      {
+        "name": "edge_darkening",
+        "type": "float",
+        "hint": "hint_range(0.0, 1.0)",
+        "default": 0.3
+      }
+    ],
+    "placement": "res://baltor/godot_shaders/post_lens_distortion/",
+    "usage": "post_process_quad",
+    "renderers": {
+      "compatibility": "compiled_and_rendered",
+      "forward_plus": "not_verified",
+      "mobile": "not_verified"
+    },
+    "inputs": [
+      "A MeshInstance3D with a 2 x 2 QuadMesh, `material.tres` as its material override and a large extra cull margin, as in `demo.tscn`."
+    ],
+    "outputs": "The scene bulging outward with bent straight lines and slightly darker corners."
+  },
+  "limits": "Sampling the already rendered frame loses resolution at the centre when zoomed. Tangential (decentring) distortion is not modelled. The pass reads Godot's screen texture after opaque geometry, so transparent objects drawn after it are not processed and its order among other transparent passes is not controlled.",
+  "related": [
+    "post_chromatic_aberration",
+    "post_crt_monitor"
+  ],
+  "technique_references": [
+    "Brown-Conrady radial distortion polynomial",
+    "Automatic fit scale from the corner radius"
+  ],
+  "native_checks": [
+    "contract_static",
+    "engine_run",
+    "engine_log_clean",
+    "shader_in_scene",
+    "capture_written",
+    "render_not_uniform",
+    "shader_changes_pixels"
+  ]
+}

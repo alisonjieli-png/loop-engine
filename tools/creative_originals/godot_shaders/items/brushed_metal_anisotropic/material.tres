@@ -1,0 +1,16 @@
+[gd_resource type="ShaderMaterial" load_steps=2 format=3]
+
+[ext_resource type="Shader" path="res://baltor/godot_shaders/brushed_metal_anisotropic/brushed_metal_anisotropic.gdshader" id="1_shader"]
+
+[resource]
+shader = ExtResource("1_shader")
+shader_parameter/metal_color = Color(0.82, 0.83, 0.85, 1)
+shader_parameter/roughness_along = 0.08
+shader_parameter/roughness_across = 0.45
+shader_parameter/circular = true
+shader_parameter/circle_center_u = 0.5
+shader_parameter/circle_center_v = 0.5
+shader_parameter/streak_density = 600.0
+shader_parameter/streak_strength = 0.25
+shader_parameter/diffuse_amount = 0.15
+shader_parameter/specular_strength = 0.35

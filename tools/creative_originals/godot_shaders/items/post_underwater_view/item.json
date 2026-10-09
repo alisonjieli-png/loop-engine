@@ -1,0 +1,151 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "post_underwater_view",
+  "title": "Underwater camera view",
+  "purpose": "Make the camera look underwater: wavy screen distortion, wavelength-dependent absorption by distance from the depth buffer (red fades first), a blue-green scattering colour, brighter light from above and a vignette.",
+  "form": "library_module",
+  "asset_role": null,
+  "dimension": "3d",
+  "engine": {
+    "name": "godot",
+    "minimum_version": "4.3"
+  },
+  "tags": [
+    "godot shader",
+    "spatial",
+    "post-process",
+    "underwater",
+    "water",
+    "absorption",
+    "distortion",
+    "full-screen"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "role": "other"
+    },
+    {
+      "path": "post_underwater_view.gdshader",
+      "role": "skill_asset"
+    },
+    {
+      "path": "material.tres",
+      "role": "skill_asset"
+    },
+    {
+      "path": "demo.tscn",
+      "role": "skill_asset"
+    }
+  ],
+  "contract": {
+    "shader_type": "spatial",
+    "render_modes": [
+      "unshaded",
+      "cull_disabled",
+      "depth_test_disabled",
+      "depth_draw_never",
+      "skip_vertex_transform",
+      "fog_disabled"
+    ],
+    "uniforms": [
+      {
+        "name": "screen_texture",
+        "type": "sampler2D",
+        "hint": "hint_screen_texture, filter_linear_mipmap",
+        "default": null
+      },
+      {
+        "name": "depth_texture",
+        "type": "sampler2D",
+        "hint": "hint_depth_texture, filter_nearest",
+        "default": null
+      },
+      {
+        "name": "water_color",
+        "type": "vec4",
+        "hint": "source_color",
+        "default": [
+          0.04,
+          0.28,
+          0.38,
+          1.0
+        ]
+      },
+      {
+        "name": "absorption",
+        "type": "float",
+        "hint": "hint_range(0.0, 2.0)",
+        "default": 0.22
+      },
+      {
+        "name": "red_absorption",
+        "type": "float",
+        "hint": "hint_range(1.0, 6.0)",
+        "default": 3.0
+      },
+      {
+        "name": "distortion",
+        "type": "float",
+        "hint": "hint_range(0.0, 0.03)",
+        "default": 0.006
+      },
+      {
+        "name": "wave_frequency",
+        "type": "float",
+        "hint": "hint_range(1.0, 60.0)",
+        "default": 18.0
+      },
+      {
+        "name": "wave_speed",
+        "type": "float",
+        "hint": "hint_range(0.0, 6.0)",
+        "default": 1.5
+      },
+      {
+        "name": "surface_light",
+        "type": "float",
+        "hint": "hint_range(0.0, 1.0)",
+        "default": 0.35
+      },
+      {
+        "name": "vignette",
+        "type": "float",
+        "hint": "hint_range(0.0, 1.0)",
+        "default": 0.45
+      }
+    ],
+    "placement": "res://baltor/godot_shaders/post_underwater_view/",
+    "usage": "post_process_quad",
+    "renderers": {
+      "compatibility": "compiled_and_rendered",
+      "forward_plus": "not_verified",
+      "mobile": "not_verified"
+    },
+    "inputs": [
+      "A MeshInstance3D with a 2 x 2 QuadMesh, `material.tres` as its material override and a large extra cull margin, as in `demo.tscn`."
+    ],
+    "outputs": "The scene tinted deep teal and fading into murk with distance, gently wavering."
+  },
+  "limits": "Sky pixels are clamped to 200 metres of water. The wobble is screen-space and the same at all depths. No caustics or particles (see `underwater_caustics` for surface caustics). The pass reads Godot's screen texture after opaque geometry, so transparent objects drawn after it are not processed and its order among other transparent passes is not controlled.",
+  "related": [
+    "underwater_caustics",
+    "post_depth_fog",
+    "sky_underwater_ambient"
+  ],
+  "technique_references": [
+    "Beer-Lambert absorption with per-channel coefficients",
+    "In-scattering proportional to absorbed light",
+    "Sine wave screen distortion",
+    "Distance from reconstructed view position"
+  ],
+  "native_checks": [
+    "contract_static",
+    "engine_run",
+    "engine_log_clean",
+    "shader_in_scene",
+    "capture_written",
+    "render_not_uniform",
+    "shader_changes_pixels"
+  ]
+}

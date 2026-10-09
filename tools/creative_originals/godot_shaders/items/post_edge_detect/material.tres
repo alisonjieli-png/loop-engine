@@ -1,0 +1,13 @@
+[gd_resource type="ShaderMaterial" load_steps=2 format=3]
+
+[ext_resource type="Shader" path="res://baltor/godot_shaders/post_edge_detect/post_edge_detect.gdshader" id="1_shader"]
+
+[resource]
+shader = ExtResource("1_shader")
+shader_parameter/line_color = Color(0.06, 0.05, 0.1, 1)
+shader_parameter/line_width = 1.0
+shader_parameter/depth_sensitivity = 8.0
+shader_parameter/color_sensitivity = 1.5
+shader_parameter/threshold = 0.3
+shader_parameter/paper_mix = 0.35
+shader_parameter/paper_color = Color(0.97, 0.95, 0.88, 1)

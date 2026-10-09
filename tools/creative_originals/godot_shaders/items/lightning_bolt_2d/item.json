@@ -1,0 +1,147 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "lightning_bolt_2d",
+  "title": "Procedural lightning bolt with branches",
+  "purpose": "Draw a lightning strike: a jagged main bolt from top to bottom built from layered noise displacement, a branch splitting off, a wide glow, and a new random shape at every strike with flicker between strikes.",
+  "form": "library_module",
+  "asset_role": null,
+  "dimension": "2d",
+  "engine": {
+    "name": "godot",
+    "minimum_version": "4.3"
+  },
+  "tags": [
+    "godot shader",
+    "canvas item",
+    "lightning",
+    "bolt",
+    "electricity",
+    "vfx",
+    "procedural"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "role": "other"
+    },
+    {
+      "path": "lightning_bolt_2d.gdshader",
+      "role": "skill_asset"
+    },
+    {
+      "path": "material.tres",
+      "role": "skill_asset"
+    },
+    {
+      "path": "demo.tscn",
+      "role": "skill_asset"
+    }
+  ],
+  "contract": {
+    "shader_type": "canvas_item",
+    "render_modes": [],
+    "uniforms": [
+      {
+        "name": "core_color",
+        "type": "vec4",
+        "hint": "source_color",
+        "default": [
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      {
+        "name": "glow_color",
+        "type": "vec4",
+        "hint": "source_color",
+        "default": [
+          0.55,
+          0.6,
+          1.0,
+          1.0
+        ]
+      },
+      {
+        "name": "jaggedness",
+        "type": "float",
+        "hint": "hint_range(0.0, 0.5)",
+        "default": 0.18
+      },
+      {
+        "name": "core_width",
+        "type": "float",
+        "hint": "hint_range(0.001, 0.05)",
+        "default": 0.006
+      },
+      {
+        "name": "glow_width",
+        "type": "float",
+        "hint": "hint_range(0.01, 0.5)",
+        "default": 0.08
+      },
+      {
+        "name": "strike_rate",
+        "type": "float",
+        "hint": "hint_range(0.1, 10.0)",
+        "default": 1.5
+      },
+      {
+        "name": "visible_share",
+        "type": "float",
+        "hint": "hint_range(0.05, 1.0)",
+        "default": 0.6
+      },
+      {
+        "name": "branch_amount",
+        "type": "float",
+        "hint": "hint_range(0.0, 1.0)",
+        "default": 0.6
+      },
+      {
+        "name": "start_x",
+        "type": "float",
+        "hint": "hint_range(0.0, 1.0)",
+        "default": 0.45
+      },
+      {
+        "name": "end_x",
+        "type": "float",
+        "hint": "hint_range(0.0, 1.0)",
+        "default": 0.55
+      }
+    ],
+    "placement": "res://baltor/godot_shaders/lightning_bolt_2d/",
+    "usage": "canvas_material",
+    "renderers": {
+      "compatibility": "compiled_and_rendered",
+      "forward_plus": "not_verified",
+      "mobile": "not_verified"
+    },
+    "inputs": [
+      "A ColorRect (or any CanvasItem) sized to the area to fill; UVs span 0 to 1 across it."
+    ],
+    "outputs": "A white jagged bolt with a blue glow running down the dark rectangle, with one side branch."
+  },
+  "limits": "Distance is measured horizontally, so near-horizontal bolts thin out; keep bolts mostly vertical or rotate the rectangle. One branch per strike.",
+  "related": [
+    "laser_beam_2d",
+    "energy_beam_cylinder"
+  ],
+  "technique_references": [
+    "Fractal (octave) noise displacement of a line",
+    "Distance-based core and glow",
+    "Re-seeding per strike",
+    "Value noise with quintic interpolation and fractional Brownian motion"
+  ],
+  "native_checks": [
+    "contract_static",
+    "engine_run",
+    "engine_log_clean",
+    "shader_in_scene",
+    "capture_written",
+    "render_not_uniform",
+    "shader_changes_pixels"
+  ]
+}

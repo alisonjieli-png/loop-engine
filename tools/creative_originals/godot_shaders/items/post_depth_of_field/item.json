@@ -1,0 +1,132 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "post_depth_of_field",
+  "title": "Depth of field with a golden-angle bokeh gather",
+  "purpose": "Blur the scene by distance from a focus plane: a circle of confusion per pixel from the depth buffer and a gather of samples on a golden-angle spiral, weighted so sharp foreground edges do not smear.",
+  "form": "library_module",
+  "asset_role": null,
+  "dimension": "3d",
+  "engine": {
+    "name": "godot",
+    "minimum_version": "4.3"
+  },
+  "tags": [
+    "godot shader",
+    "spatial",
+    "post-process",
+    "depth of field",
+    "bokeh",
+    "blur",
+    "camera",
+    "full-screen"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "role": "other"
+    },
+    {
+      "path": "post_depth_of_field.gdshader",
+      "role": "skill_asset"
+    },
+    {
+      "path": "material.tres",
+      "role": "skill_asset"
+    },
+    {
+      "path": "demo.tscn",
+      "role": "skill_asset"
+    }
+  ],
+  "contract": {
+    "shader_type": "spatial",
+    "render_modes": [
+      "unshaded",
+      "cull_disabled",
+      "depth_test_disabled",
+      "depth_draw_never",
+      "skip_vertex_transform",
+      "fog_disabled"
+    ],
+    "uniforms": [
+      {
+        "name": "screen_texture",
+        "type": "sampler2D",
+        "hint": "hint_screen_texture, filter_linear_mipmap",
+        "default": null
+      },
+      {
+        "name": "depth_texture",
+        "type": "sampler2D",
+        "hint": "hint_depth_texture, filter_nearest",
+        "default": null
+      },
+      {
+        "name": "focus_distance",
+        "type": "float",
+        "hint": "hint_range(0.1, 100.0)",
+        "default": 2.4
+      },
+      {
+        "name": "focus_range",
+        "type": "float",
+        "hint": "hint_range(0.0, 20.0)",
+        "default": 0.4
+      },
+      {
+        "name": "blur_falloff",
+        "type": "float",
+        "hint": "hint_range(0.1, 20.0)",
+        "default": 2.5
+      },
+      {
+        "name": "max_blur_pixels",
+        "type": "float",
+        "hint": "hint_range(0.0, 32.0)",
+        "default": 9.0
+      },
+      {
+        "name": "samples",
+        "type": "int",
+        "hint": "hint_range(4, 64)",
+        "default": 32
+      },
+      {
+        "name": "show_focus",
+        "type": "bool",
+        "hint": null,
+        "default": false
+      }
+    ],
+    "placement": "res://baltor/godot_shaders/post_depth_of_field/",
+    "usage": "post_process_quad",
+    "renderers": {
+      "compatibility": "compiled_and_rendered",
+      "forward_plus": "not_verified",
+      "mobile": "not_verified"
+    },
+    "inputs": [
+      "A MeshInstance3D with a 2 x 2 QuadMesh, `material.tres` as its material override and a large extra cull margin, as in `demo.tscn`."
+    ],
+    "outputs": "The scene with the red sphere sharp and the far pillars and floor softly blurred."
+  },
+  "limits": "A gather approximation: out-of-focus foreground cannot spread over in-focus objects behind it (no scatter). Each sample reads depth again, so the cost is twice the sample count in texture reads. The pass reads Godot's screen texture after opaque geometry, so transparent objects drawn after it are not processed and its order among other transparent passes is not controlled.",
+  "related": [
+    "post_tilt_shift",
+    "post_depth_fog"
+  ],
+  "technique_references": [
+    "Circle of confusion from linear depth",
+    "Golden-angle (Vogel) disc sampling",
+    "Mutual radius weighting to limit bleeding"
+  ],
+  "native_checks": [
+    "contract_static",
+    "engine_run",
+    "engine_log_clean",
+    "shader_in_scene",
+    "capture_written",
+    "render_not_uniform",
+    "shader_changes_pixels"
+  ]
+}

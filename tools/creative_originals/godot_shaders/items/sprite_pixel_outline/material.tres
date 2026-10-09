@@ -1,0 +1,11 @@
+[gd_resource type="ShaderMaterial" load_steps=2 format=3]
+
+[ext_resource type="Shader" path="res://baltor/godot_shaders/sprite_pixel_outline/sprite_pixel_outline.gdshader" id="1_shader"]
+
+[resource]
+shader = ExtResource("1_shader")
+shader_parameter/outline_color = Color(1, 0.95, 0.35, 1)
+shader_parameter/thickness = 3
+shader_parameter/alpha_cutoff = 0.5
+shader_parameter/rounded = true
+shader_parameter/outline_only = false

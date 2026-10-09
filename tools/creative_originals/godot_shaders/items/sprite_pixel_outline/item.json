@@ -1,0 +1,110 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "sprite_pixel_outline",
+  "title": "Pixel-exact sprite outline",
+  "purpose": "Draw an outline of a chosen width in texels around the opaque shape of a 2D sprite, with square or rounded corners, for selection highlights, pickups and pixel art.",
+  "form": "library_module",
+  "asset_role": null,
+  "dimension": "2d",
+  "engine": {
+    "name": "godot",
+    "minimum_version": "4.3"
+  },
+  "tags": [
+    "godot shader",
+    "canvas item",
+    "outline",
+    "sprite",
+    "pixel art",
+    "2d",
+    "selection"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "role": "other"
+    },
+    {
+      "path": "sprite_pixel_outline.gdshader",
+      "role": "skill_asset"
+    },
+    {
+      "path": "material.tres",
+      "role": "skill_asset"
+    },
+    {
+      "path": "demo.tscn",
+      "role": "skill_asset"
+    }
+  ],
+  "contract": {
+    "shader_type": "canvas_item",
+    "render_modes": [],
+    "uniforms": [
+      {
+        "name": "outline_color",
+        "type": "vec4",
+        "hint": "source_color",
+        "default": [
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      {
+        "name": "thickness",
+        "type": "int",
+        "hint": "hint_range(0, 8)",
+        "default": 2
+      },
+      {
+        "name": "alpha_cutoff",
+        "type": "float",
+        "hint": "hint_range(0.01, 1.0)",
+        "default": 0.5
+      },
+      {
+        "name": "rounded",
+        "type": "bool",
+        "hint": null,
+        "default": true
+      },
+      {
+        "name": "outline_only",
+        "type": "bool",
+        "hint": null,
+        "default": false
+      }
+    ],
+    "placement": "res://baltor/godot_shaders/sprite_pixel_outline/",
+    "usage": "canvas_material",
+    "renderers": {
+      "compatibility": "compiled_and_rendered",
+      "forward_plus": "not_verified",
+      "mobile": "not_verified"
+    },
+    "inputs": [
+      "A sprite texture with transparent space around the shape, assigned to the node as usual. The outline is drawn inside the texture's rectangle, so leave a margin at least `thickness` texels wide."
+    ],
+    "outputs": "The sprite with a solid line of the chosen colour hugging its silhouette."
+  },
+  "limits": "The outline cannot extend past the texture rectangle; trim or pad sprites accordingly. Cost grows with the square of `thickness` (up to 289 samples at 8). With texture filtering on and the sprite scaled, edges are as soft as the texture sampling. Texture atlases need padding between regions or neighbouring sprites bleed into the outline.",
+  "related": [
+    "sprite_soft_glow",
+    "sprite_inner_outline"
+  ],
+  "technique_references": [
+    "Neighbourhood alpha dilation",
+    "Euclidean and Manhattan distance kernels"
+  ],
+  "native_checks": [
+    "contract_static",
+    "engine_run",
+    "engine_log_clean",
+    "shader_in_scene",
+    "capture_written",
+    "render_not_uniform",
+    "shader_changes_pixels"
+  ]
+}

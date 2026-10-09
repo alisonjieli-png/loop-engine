@@ -1,0 +1,156 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "neon_grid_floor",
+  "title": "Scrolling neon grid floor",
+  "purpose": "Retro synthwave floor: glowing grid lines with a soft halo that scroll toward the camera, colour shifting with distance and fading into a horizon haze.",
+  "form": "library_module",
+  "asset_role": null,
+  "dimension": "3d",
+  "engine": {
+    "name": "godot",
+    "minimum_version": "4.3"
+  },
+  "tags": [
+    "godot shader",
+    "spatial",
+    "synthwave",
+    "neon",
+    "grid",
+    "retro",
+    "emission"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "role": "other"
+    },
+    {
+      "path": "neon_grid_floor.gdshader",
+      "role": "skill_asset"
+    },
+    {
+      "path": "material.tres",
+      "role": "skill_asset"
+    },
+    {
+      "path": "demo.tscn",
+      "role": "skill_asset"
+    }
+  ],
+  "contract": {
+    "shader_type": "spatial",
+    "render_modes": [
+      "unshaded"
+    ],
+    "uniforms": [
+      {
+        "name": "near_color",
+        "type": "vec4",
+        "hint": "source_color",
+        "default": [
+          1.0,
+          0.2,
+          0.75,
+          1.0
+        ]
+      },
+      {
+        "name": "far_color",
+        "type": "vec4",
+        "hint": "source_color",
+        "default": [
+          0.2,
+          0.8,
+          1.0,
+          1.0
+        ]
+      },
+      {
+        "name": "floor_color",
+        "type": "vec4",
+        "hint": "source_color",
+        "default": [
+          0.03,
+          0.0,
+          0.06,
+          1.0
+        ]
+      },
+      {
+        "name": "haze_color",
+        "type": "vec4",
+        "hint": "source_color",
+        "default": [
+          0.35,
+          0.05,
+          0.4,
+          1.0
+        ]
+      },
+      {
+        "name": "cell_size",
+        "type": "float",
+        "hint": "hint_range(0.1, 10.0)",
+        "default": 1.0
+      },
+      {
+        "name": "line_pixels",
+        "type": "float",
+        "hint": "hint_range(0.5, 6.0)",
+        "default": 1.5
+      },
+      {
+        "name": "glow_width",
+        "type": "float",
+        "hint": "hint_range(0.0, 0.5)",
+        "default": 0.12
+      },
+      {
+        "name": "scroll_speed",
+        "type": "float",
+        "hint": "hint_range(-10.0, 10.0)",
+        "default": 1.5
+      },
+      {
+        "name": "haze_distance",
+        "type": "float",
+        "hint": "hint_range(1.0, 200.0)",
+        "default": 40.0
+      },
+      {
+        "name": "intensity",
+        "type": "float",
+        "hint": "hint_range(0.0, 4.0)",
+        "default": 1.6
+      }
+    ],
+    "placement": "res://baltor/godot_shaders/neon_grid_floor/",
+    "usage": "surface_material",
+    "renderers": {
+      "compatibility": "compiled_and_rendered",
+      "forward_plus": "not_verified",
+      "mobile": "not_verified"
+    },
+    "inputs": [],
+    "outputs": "A dark purple floor ruled with pink lines that turn cyan toward a hazy horizon and scroll forward."
+  },
+  "limits": "The halo is in world units, so it thins on screen with distance while the core stays pixel sized. Unshaded: no reflections of the lines. Very distant lines merge into haze rather than moire only because of the fade.",
+  "related": [
+    "world_grid_debug",
+    "sky_synthwave_sun"
+  ],
+  "technique_references": [
+    "Derivative anti-aliased grid lines",
+    "Distance-based colour and haze blend",
+    "Scrolling world-space coordinates"
+  ],
+  "native_checks": [
+    "contract_static",
+    "engine_run",
+    "engine_log_clean",
+    "shader_in_scene",
+    "capture_written",
+    "render_not_uniform",
+    "shader_changes_pixels"
+  ]
+}

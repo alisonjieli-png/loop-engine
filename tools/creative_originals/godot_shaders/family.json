@@ -1,0 +1,12 @@
+{
+  "record_type": "creative_original_family/v1",
+  "family": "godot_shaders",
+  "title": "Original Godot 4 shaders",
+  "description": "Original Godot 4 shaders, one effect per item: spatial surface materials, full-screen post-process passes, 2D canvas item effects, GPU particle process shaders and sky shaders. Each item ships the .gdshader, a material.tres with tuned values, a demo.tscn that shows the effect and a README listing every uniform. The contract card records the shader type, render modes, every uniform with its type, hint and default, the install folder res://baltor/godot_shaders/<identity>/, how the material is applied and the renderer status. Each package carries inspect_shader.py, a standard-library parser that checks the shader, material and scene against the contract, and test_package.py with known-wrong controls. The native verifier opens the exact item bytes in Godot 4.7.2 with the Compatibility renderer under Xvfb, refuses any shader or script error line, renders the demo scene, and requires a non-uniform frame that differs from the same scene rendered without the shader.",
+  "engine": {"name": "godot", "minimum_version": "4.3", "notes": "Compiled and rendered in Godot 4.7.2 with the Compatibility renderer (OpenGL 3, Mesa llvmpipe, Xvfb). Forward+ and Mobile not verified."},
+  "shared_files": [{"path": "inspect_shader.py", "role": "executable_tool"},
+                   {"path": "test_package.py", "role": "executable_tool"}],
+  "native_verifier": "native.py",
+  "generator_version": "1.0.0",
+  "default_dimension": "3d"
+}

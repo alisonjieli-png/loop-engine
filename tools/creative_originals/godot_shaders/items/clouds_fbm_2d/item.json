@@ -1,0 +1,156 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "clouds_fbm_2d",
+  "title": "Drifting 2D clouds with self-shading",
+  "purpose": "Draw a sky with drifting clouds from fractional Brownian motion: a coverage threshold shapes the clouds, a second lookup toward the sun shades their undersides, and the sky behind follows a vertical gradient.",
+  "form": "library_module",
+  "asset_role": null,
+  "dimension": "2d",
+  "engine": {
+    "name": "godot",
+    "minimum_version": "4.3"
+  },
+  "tags": [
+    "godot shader",
+    "canvas item",
+    "clouds",
+    "sky",
+    "fbm",
+    "background",
+    "procedural"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "role": "other"
+    },
+    {
+      "path": "clouds_fbm_2d.gdshader",
+      "role": "skill_asset"
+    },
+    {
+      "path": "material.tres",
+      "role": "skill_asset"
+    },
+    {
+      "path": "demo.tscn",
+      "role": "skill_asset"
+    }
+  ],
+  "contract": {
+    "shader_type": "canvas_item",
+    "render_modes": [],
+    "uniforms": [
+      {
+        "name": "sky_top",
+        "type": "vec4",
+        "hint": "source_color",
+        "default": [
+          0.25,
+          0.5,
+          0.88,
+          1.0
+        ]
+      },
+      {
+        "name": "sky_bottom",
+        "type": "vec4",
+        "hint": "source_color",
+        "default": [
+          0.7,
+          0.85,
+          0.98,
+          1.0
+        ]
+      },
+      {
+        "name": "cloud_light",
+        "type": "vec4",
+        "hint": "source_color",
+        "default": [
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      {
+        "name": "cloud_shadow",
+        "type": "vec4",
+        "hint": "source_color",
+        "default": [
+          0.55,
+          0.6,
+          0.72,
+          1.0
+        ]
+      },
+      {
+        "name": "coverage",
+        "type": "float",
+        "hint": "hint_range(0.0, 1.0)",
+        "default": 0.5
+      },
+      {
+        "name": "softness",
+        "type": "float",
+        "hint": "hint_range(0.01, 0.5)",
+        "default": 0.15
+      },
+      {
+        "name": "scale",
+        "type": "float",
+        "hint": "hint_range(0.5, 20.0)",
+        "default": 3.0
+      },
+      {
+        "name": "wind_speed",
+        "type": "float",
+        "hint": "hint_range(-1.0, 1.0)",
+        "default": 0.03
+      },
+      {
+        "name": "sun_angle_degrees",
+        "type": "float",
+        "hint": "hint_range(0.0, 360.0)",
+        "default": 300.0
+      },
+      {
+        "name": "shading",
+        "type": "float",
+        "hint": "hint_range(0.0, 2.0)",
+        "default": 1.0
+      }
+    ],
+    "placement": "res://baltor/godot_shaders/clouds_fbm_2d/",
+    "usage": "canvas_material",
+    "renderers": {
+      "compatibility": "compiled_and_rendered",
+      "forward_plus": "not_verified",
+      "mobile": "not_verified"
+    },
+    "inputs": [
+      "A ColorRect (or any CanvasItem) sized to the area to fill; UVs span 0 to 1 across it."
+    ],
+    "outputs": "A blue sky gradient with white puffy clouds shaded grey on one side."
+  },
+  "limits": "One shading step, not light marching, so thick clouds lack depth. Clouds repeat with no structure at very large scales.",
+  "related": [
+    "sky_cloud_layer",
+    "fog_layers_2d"
+  ],
+  "technique_references": [
+    "Fractional Brownian motion density with coverage threshold",
+    "Offset-sample self-shadowing",
+    "Value noise with quintic interpolation and fractional Brownian motion"
+  ],
+  "native_checks": [
+    "contract_static",
+    "engine_run",
+    "engine_log_clean",
+    "shader_in_scene",
+    "capture_written",
+    "render_not_uniform",
+    "shader_changes_pixels"
+  ]
+}

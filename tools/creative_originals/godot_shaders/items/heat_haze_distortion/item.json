@@ -1,0 +1,129 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "heat_haze_distortion",
+  "title": "Heat haze distortion card",
+  "purpose": "Place a card over a hot area to shimmer the scene behind it: scrolling noise offsets the screen texture, rising faster toward the top, faded at the card edges and by distance.",
+  "form": "library_module",
+  "asset_role": null,
+  "dimension": "3d",
+  "engine": {
+    "name": "godot",
+    "minimum_version": "4.3"
+  },
+  "tags": [
+    "godot shader",
+    "spatial",
+    "heat haze",
+    "distortion",
+    "screen texture",
+    "shimmer",
+    "fire"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "role": "other"
+    },
+    {
+      "path": "heat_haze_distortion.gdshader",
+      "role": "skill_asset"
+    },
+    {
+      "path": "material.tres",
+      "role": "skill_asset"
+    },
+    {
+      "path": "demo.tscn",
+      "role": "skill_asset"
+    }
+  ],
+  "contract": {
+    "shader_type": "spatial",
+    "render_modes": [
+      "unshaded",
+      "cull_disabled",
+      "depth_draw_never",
+      "shadows_disabled"
+    ],
+    "uniforms": [
+      {
+        "name": "screen_texture",
+        "type": "sampler2D",
+        "hint": "hint_screen_texture, filter_linear_mipmap",
+        "default": null
+      },
+      {
+        "name": "strength",
+        "type": "float",
+        "hint": "hint_range(0.0, 0.1)",
+        "default": 0.018
+      },
+      {
+        "name": "noise_scale",
+        "type": "float",
+        "hint": "hint_range(1.0, 40.0)",
+        "default": 9.0
+      },
+      {
+        "name": "rise_speed",
+        "type": "float",
+        "hint": "hint_range(0.0, 5.0)",
+        "default": 1.4
+      },
+      {
+        "name": "edge_softness",
+        "type": "float",
+        "hint": "hint_range(0.01, 0.5)",
+        "default": 0.25
+      },
+      {
+        "name": "top_fade",
+        "type": "float",
+        "hint": "hint_range(0.0, 1.0)",
+        "default": 0.6
+      },
+      {
+        "name": "distance_falloff",
+        "type": "float",
+        "hint": "hint_range(0.0, 1.0)",
+        "default": 0.15
+      },
+      {
+        "name": "tint_amount",
+        "type": "float",
+        "hint": "hint_range(0.0, 0.3)",
+        "default": 0.04
+      }
+    ],
+    "placement": "res://baltor/godot_shaders/heat_haze_distortion/",
+    "usage": "surface_material",
+    "renderers": {
+      "compatibility": "compiled_and_rendered",
+      "forward_plus": "not_verified",
+      "mobile": "not_verified"
+    },
+    "inputs": [
+      "A QuadMesh or other card placed over the hot area."
+    ],
+    "outputs": "A shimmering patch where the scene behind ripples upward."
+  },
+  "limits": "Screen-space: it cannot show what is off screen and cannot distort other transparent objects. A card seen edge-on disappears. The distortion is an artistic noise field, not a refraction calculation.",
+  "related": [
+    "glass_refraction",
+    "fire_billboard"
+  ],
+  "technique_references": [
+    "Screen texture offset by scrolling value noise",
+    "UV and distance based effect masks",
+    "Value noise with quintic interpolation and fractional Brownian motion"
+  ],
+  "native_checks": [
+    "contract_static",
+    "engine_run",
+    "engine_log_clean",
+    "shader_in_scene",
+    "capture_written",
+    "render_not_uniform",
+    "shader_changes_pixels"
+  ]
+}

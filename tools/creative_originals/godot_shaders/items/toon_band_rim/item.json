@@ -1,0 +1,137 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "toon_band_rim",
+  "title": "Toon shading in bands with a rim light",
+  "purpose": "Cel-shade a lit mesh in a chosen number of flat light bands with tinted shadows and add a view-dependent rim that is stronger on the lit side. Use for stylized characters, props and toy-like scenes.",
+  "form": "library_module",
+  "asset_role": null,
+  "dimension": "3d",
+  "engine": {
+    "name": "godot",
+    "minimum_version": "4.3"
+  },
+  "tags": [
+    "godot shader",
+    "spatial",
+    "toon",
+    "cel shading",
+    "rim light",
+    "stylized",
+    "custom light function"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "role": "other"
+    },
+    {
+      "path": "toon_band_rim.gdshader",
+      "role": "skill_asset"
+    },
+    {
+      "path": "material.tres",
+      "role": "skill_asset"
+    },
+    {
+      "path": "demo.tscn",
+      "role": "skill_asset"
+    }
+  ],
+  "contract": {
+    "shader_type": "spatial",
+    "render_modes": [],
+    "uniforms": [
+      {
+        "name": "base_color",
+        "type": "vec4",
+        "hint": "source_color",
+        "default": [
+          0.32,
+          0.55,
+          0.85,
+          1.0
+        ]
+      },
+      {
+        "name": "shadow_tint",
+        "type": "vec4",
+        "hint": "source_color",
+        "default": [
+          0.18,
+          0.16,
+          0.36,
+          1.0
+        ]
+      },
+      {
+        "name": "bands",
+        "type": "int",
+        "hint": "hint_range(1, 8)",
+        "default": 3
+      },
+      {
+        "name": "band_softness",
+        "type": "float",
+        "hint": "hint_range(0.0, 0.3)",
+        "default": 0.04
+      },
+      {
+        "name": "rim_color",
+        "type": "vec4",
+        "hint": "source_color",
+        "default": [
+          1.0,
+          0.93,
+          0.78,
+          1.0
+        ]
+      },
+      {
+        "name": "rim_width",
+        "type": "float",
+        "hint": "hint_range(0.0, 1.0)",
+        "default": 0.32
+      },
+      {
+        "name": "rim_strength",
+        "type": "float",
+        "hint": "hint_range(0.0, 4.0)",
+        "default": 1.4
+      },
+      {
+        "name": "rim_light_bias",
+        "type": "float",
+        "hint": "hint_range(0.0, 1.0)",
+        "default": 0.65
+      }
+    ],
+    "placement": "res://baltor/godot_shaders/toon_band_rim/",
+    "usage": "surface_material",
+    "renderers": {
+      "compatibility": "compiled_and_rendered",
+      "forward_plus": "not_verified",
+      "mobile": "not_verified"
+    },
+    "inputs": [],
+    "outputs": "A mesh lit in flat colour bands with tinted shadows and a bright edge toward the light."
+  },
+  "limits": "Stylized and not physically based. Each light adds its own bands, so several lights stack into extra steps. Ambient light from the environment is added unbanded. Band edges alias at grazing angles without multisample anti-aliasing.",
+  "related": [
+    "outline_inverted_hull",
+    "gooch_cool_warm"
+  ],
+  "technique_references": [
+    "Half-Lambert diffuse term",
+    "Quantized lighting with a smoothstep band edge",
+    "View-angle rim term (1 - N.V) masked by the light term"
+  ],
+  "native_checks": [
+    "contract_static",
+    "engine_run",
+    "engine_log_clean",
+    "shader_in_scene",
+    "capture_written",
+    "render_not_uniform",
+    "shader_changes_pixels"
+  ]
+}

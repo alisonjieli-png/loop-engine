@@ -1,0 +1,123 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "ramp_texture_lighting",
+  "title": "Lighting through an artist colour ramp",
+  "purpose": "Map the light term through a gradient texture so an artist controls the whole shading curve and its colours: warm lights, coloured shadows, sharp or soft transitions, plus a ramp-driven specular and rim.",
+  "form": "library_module",
+  "asset_role": null,
+  "dimension": "3d",
+  "engine": {
+    "name": "godot",
+    "minimum_version": "4.3"
+  },
+  "tags": [
+    "godot shader",
+    "spatial",
+    "ramp shading",
+    "toon",
+    "gradient",
+    "stylized",
+    "custom light function"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "role": "other"
+    },
+    {
+      "path": "ramp_texture_lighting.gdshader",
+      "role": "skill_asset"
+    },
+    {
+      "path": "material.tres",
+      "role": "skill_asset"
+    },
+    {
+      "path": "demo.tscn",
+      "role": "skill_asset"
+    }
+  ],
+  "contract": {
+    "shader_type": "spatial",
+    "render_modes": [],
+    "uniforms": [
+      {
+        "name": "light_ramp",
+        "type": "sampler2D",
+        "hint": "source_color, filter_linear, repeat_disable",
+        "default": null
+      },
+      {
+        "name": "albedo",
+        "type": "vec4",
+        "hint": "source_color",
+        "default": [
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      {
+        "name": "ramp_offset",
+        "type": "float",
+        "hint": "hint_range(-0.5, 0.5)",
+        "default": 0.0
+      },
+      {
+        "name": "specular_size",
+        "type": "float",
+        "hint": "hint_range(0.0, 1.0)",
+        "default": 0.12
+      },
+      {
+        "name": "specular_strength",
+        "type": "float",
+        "hint": "hint_range(0.0, 2.0)",
+        "default": 0.6
+      },
+      {
+        "name": "rim_amount",
+        "type": "float",
+        "hint": "hint_range(0.0, 1.0)",
+        "default": 0.3
+      },
+      {
+        "name": "rim_width",
+        "type": "float",
+        "hint": "hint_range(0.0, 1.0)",
+        "default": 0.25
+      }
+    ],
+    "placement": "res://baltor/godot_shaders/ramp_texture_lighting/",
+    "usage": "surface_material",
+    "renderers": {
+      "compatibility": "compiled_and_rendered",
+      "forward_plus": "not_verified",
+      "mobile": "not_verified"
+    },
+    "inputs": [
+      "A ramp texture; edit the bundled GradientTexture1D or assign any horizontal gradient image."
+    ],
+    "outputs": "Shapes shaded from purple shadows through an orange edge to warm white light."
+  },
+  "limits": "Each light samples the ramp separately and adds, so several lights brighten past the ramp. Ambient light does not use the ramp. A ramp with sharp steps aliases at grazing angles.",
+  "related": [
+    "toon_band_rim",
+    "matcap_gradient"
+  ],
+  "technique_references": [
+    "Ramp texture lighting (lookup of the half-Lambert term)",
+    "Hard step specular",
+    "Ramp-tinted rim"
+  ],
+  "native_checks": [
+    "contract_static",
+    "engine_run",
+    "engine_log_clean",
+    "shader_in_scene",
+    "capture_written",
+    "render_not_uniform",
+    "shader_changes_pixels"
+  ]
+}

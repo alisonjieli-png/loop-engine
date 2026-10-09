@@ -1,0 +1,139 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "wrap_subsurface_skin",
+  "title": "Wrap lighting with subsurface tint and back light",
+  "purpose": "Soft skin and wax look with a custom light function: wrapped diffuse that lets light bleed past the terminator in a warm scatter colour, translucency where light comes from behind, and a soft specular.",
+  "form": "library_module",
+  "asset_role": null,
+  "dimension": "3d",
+  "engine": {
+    "name": "godot",
+    "minimum_version": "4.3"
+  },
+  "tags": [
+    "godot shader",
+    "spatial",
+    "subsurface",
+    "skin",
+    "wrap lighting",
+    "translucency",
+    "custom light function"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "role": "other"
+    },
+    {
+      "path": "wrap_subsurface_skin.gdshader",
+      "role": "skill_asset"
+    },
+    {
+      "path": "material.tres",
+      "role": "skill_asset"
+    },
+    {
+      "path": "demo.tscn",
+      "role": "skill_asset"
+    }
+  ],
+  "contract": {
+    "shader_type": "spatial",
+    "render_modes": [],
+    "uniforms": [
+      {
+        "name": "albedo",
+        "type": "vec4",
+        "hint": "source_color",
+        "default": [
+          0.88,
+          0.68,
+          0.58,
+          1.0
+        ]
+      },
+      {
+        "name": "scatter_color",
+        "type": "vec4",
+        "hint": "source_color",
+        "default": [
+          0.85,
+          0.2,
+          0.12,
+          1.0
+        ]
+      },
+      {
+        "name": "wrap",
+        "type": "float",
+        "hint": "hint_range(0.0, 1.0)",
+        "default": 0.45
+      },
+      {
+        "name": "scatter_width",
+        "type": "float",
+        "hint": "hint_range(0.0, 1.0)",
+        "default": 0.35
+      },
+      {
+        "name": "translucency",
+        "type": "float",
+        "hint": "hint_range(0.0, 2.0)",
+        "default": 0.6
+      },
+      {
+        "name": "translucency_power",
+        "type": "float",
+        "hint": "hint_range(1.0, 16.0)",
+        "default": 4.0
+      },
+      {
+        "name": "translucency_distortion",
+        "type": "float",
+        "hint": "hint_range(0.0, 1.0)",
+        "default": 0.25
+      },
+      {
+        "name": "specular_strength",
+        "type": "float",
+        "hint": "hint_range(0.0, 1.0)",
+        "default": 0.25
+      },
+      {
+        "name": "specular_power",
+        "type": "float",
+        "hint": "hint_range(2.0, 128.0)",
+        "default": 24.0
+      }
+    ],
+    "placement": "res://baltor/godot_shaders/wrap_subsurface_skin/",
+    "usage": "surface_material",
+    "renderers": {
+      "compatibility": "compiled_and_rendered",
+      "forward_plus": "not_verified",
+      "mobile": "not_verified"
+    },
+    "inputs": [],
+    "outputs": "Peach-coloured shapes lit from behind and the side with a warm red glow along the shadow edge and through the thin capsule."
+  },
+  "limits": "An approximation without real thickness: translucency is the same on thick and thin parts unless you scale it per object. Wrap lighting brightens shadowed regions, so cast shadows look softer than the light. Not energy conserving.",
+  "related": [
+    "velvet_sheen",
+    "gooch_cool_warm"
+  ],
+  "technique_references": [
+    "Wrap lighting ((N.L + w) / (1 + w))",
+    "Terminator scatter band tint",
+    "View and light direction translucency with normal distortion",
+    "Blinn-Phong specular"
+  ],
+  "native_checks": [
+    "contract_static",
+    "engine_run",
+    "engine_log_clean",
+    "shader_in_scene",
+    "capture_written",
+    "render_not_uniform",
+    "shader_changes_pixels"
+  ]
+}

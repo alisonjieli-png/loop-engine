@@ -1,0 +1,153 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "hair_strand_highlight",
+  "title": "Hair with Kajiya-Kay shifted highlights",
+  "purpose": "Hair shading for meshes and cards with strands along UV v: two Kajiya-Kay specular lobes shifted along the strand, a white primary and a tinted secondary, broken up per strand by noise, over a root to tip colour.",
+  "form": "library_module",
+  "asset_role": null,
+  "dimension": "3d",
+  "engine": {
+    "name": "godot",
+    "minimum_version": "4.3"
+  },
+  "tags": [
+    "godot shader",
+    "spatial",
+    "hair",
+    "kajiya-kay",
+    "anisotropic",
+    "anime",
+    "custom light function"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "role": "other"
+    },
+    {
+      "path": "hair_strand_highlight.gdshader",
+      "role": "skill_asset"
+    },
+    {
+      "path": "material.tres",
+      "role": "skill_asset"
+    },
+    {
+      "path": "demo.tscn",
+      "role": "skill_asset"
+    }
+  ],
+  "contract": {
+    "shader_type": "spatial",
+    "render_modes": [
+      "cull_disabled"
+    ],
+    "uniforms": [
+      {
+        "name": "root_color",
+        "type": "vec4",
+        "hint": "source_color",
+        "default": [
+          0.12,
+          0.06,
+          0.03,
+          1.0
+        ]
+      },
+      {
+        "name": "tip_color",
+        "type": "vec4",
+        "hint": "source_color",
+        "default": [
+          0.45,
+          0.25,
+          0.12,
+          1.0
+        ]
+      },
+      {
+        "name": "secondary_tint",
+        "type": "vec4",
+        "hint": "source_color",
+        "default": [
+          0.85,
+          0.55,
+          0.3,
+          1.0
+        ]
+      },
+      {
+        "name": "primary_shift",
+        "type": "float",
+        "hint": "hint_range(-1.0, 1.0)",
+        "default": 0.1
+      },
+      {
+        "name": "secondary_shift",
+        "type": "float",
+        "hint": "hint_range(-1.0, 1.0)",
+        "default": -0.15
+      },
+      {
+        "name": "primary_exponent",
+        "type": "float",
+        "hint": "hint_range(4.0, 512.0)",
+        "default": 160.0
+      },
+      {
+        "name": "secondary_exponent",
+        "type": "float",
+        "hint": "hint_range(4.0, 512.0)",
+        "default": 40.0
+      },
+      {
+        "name": "strand_noise",
+        "type": "float",
+        "hint": "hint_range(0.0, 1.0)",
+        "default": 0.4
+      },
+      {
+        "name": "strand_count",
+        "type": "float",
+        "hint": "hint_range(10.0, 2000.0)",
+        "default": 400.0
+      },
+      {
+        "name": "highlight_strength",
+        "type": "float",
+        "hint": "hint_range(0.0, 2.0)",
+        "default": 0.6
+      }
+    ],
+    "placement": "res://baltor/godot_shaders/hair_strand_highlight/",
+    "usage": "surface_material",
+    "renderers": {
+      "compatibility": "compiled_and_rendered",
+      "forward_plus": "not_verified",
+      "mobile": "not_verified"
+    },
+    "inputs": [
+      "Hair geometry whose UV v runs along the strands, with tangents."
+    ],
+    "outputs": "A brown sphere with a bright, ragged highlight band across its strands and a warmer second band."
+  },
+  "limits": "No transparency, depth sorting or self-shadowing of strands: pair it with alpha-tested cards for strand silhouettes. Strand direction comes from UV layout; badly unwrapped hair gives broken bands.",
+  "related": [
+    "brushed_metal_anisotropic",
+    "velvet_sheen"
+  ],
+  "technique_references": [
+    "Kajiya-Kay strand specular (1989) with two shifted lobes (after Scheuermann 2004)",
+    "Per-strand noise jitter",
+    "Fragment-to-light varyings"
+  ],
+  "native_checks": [
+    "contract_static",
+    "engine_run",
+    "engine_log_clean",
+    "shader_in_scene",
+    "capture_written",
+    "render_not_uniform",
+    "shader_changes_pixels"
+  ]
+}

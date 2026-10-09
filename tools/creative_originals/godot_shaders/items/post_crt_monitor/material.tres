@@ -1,0 +1,15 @@
+[gd_resource type="ShaderMaterial" load_steps=2 format=3]
+
+[ext_resource type="Shader" path="res://baltor/godot_shaders/post_crt_monitor/post_crt_monitor.gdshader" id="1_shader"]
+
+[resource]
+shader = ExtResource("1_shader")
+shader_parameter/curvature = 0.12
+shader_parameter/scanline_pixels = 3.0
+shader_parameter/scanline_strength = 0.45
+shader_parameter/mask_strength = 0.3
+shader_parameter/mask_pixels = 1.0
+shader_parameter/glow = 0.25
+shader_parameter/vignette = 0.6
+shader_parameter/corner_radius = 0.04
+shader_parameter/brightness = 1.2

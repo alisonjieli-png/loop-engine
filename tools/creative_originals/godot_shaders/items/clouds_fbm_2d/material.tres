@@ -1,0 +1,16 @@
+[gd_resource type="ShaderMaterial" load_steps=2 format=3]
+
+[ext_resource type="Shader" path="res://baltor/godot_shaders/clouds_fbm_2d/clouds_fbm_2d.gdshader" id="1_shader"]
+
+[resource]
+shader = ExtResource("1_shader")
+shader_parameter/sky_top = Color(0.25, 0.5, 0.88, 1)
+shader_parameter/sky_bottom = Color(0.7, 0.85, 0.98, 1)
+shader_parameter/cloud_light = Color(1, 1, 1, 1)
+shader_parameter/cloud_shadow = Color(0.55, 0.6, 0.72, 1)
+shader_parameter/coverage = 0.5
+shader_parameter/softness = 0.15
+shader_parameter/scale = 3.0
+shader_parameter/wind_speed = 0.03
+shader_parameter/sun_angle_degrees = 300.0
+shader_parameter/shading = 1.0

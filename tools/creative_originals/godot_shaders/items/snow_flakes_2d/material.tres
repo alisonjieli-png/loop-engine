@@ -1,0 +1,13 @@
+[gd_resource type="ShaderMaterial" load_steps=2 format=3]
+
+[ext_resource type="Shader" path="res://baltor/godot_shaders/snow_flakes_2d/snow_flakes_2d.gdshader" id="1_shader"]
+
+[resource]
+shader = ExtResource("1_shader")
+shader_parameter/snow_color = Color(1, 1, 1, 0.9)
+shader_parameter/density = 0.55
+shader_parameter/fall_speed = 0.15
+shader_parameter/sway = 0.35
+shader_parameter/wind = 0.1
+shader_parameter/flake_scale = 14.0
+shader_parameter/aspect = 1.0

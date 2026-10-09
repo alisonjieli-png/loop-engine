@@ -1,0 +1,14 @@
+[gd_resource type="ShaderMaterial" load_steps=2 format=3]
+
+[ext_resource type="Shader" path="res://baltor/godot_shaders/lit_hatching/lit_hatching.gdshader" id="1_shader"]
+
+[resource]
+shader = ExtResource("1_shader")
+shader_parameter/paper_color = Color(0.96, 0.94, 0.88, 1)
+shader_parameter/line_density = 90.0
+shader_parameter/line_width = 0.35
+shader_parameter/level_1 = 0.8
+shader_parameter/level_2 = 0.55
+shader_parameter/level_3 = 0.32
+shader_parameter/level_4 = 0.15
+shader_parameter/ink_strength = 0.92

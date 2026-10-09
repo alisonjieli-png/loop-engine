@@ -1,0 +1,15 @@
+[gd_resource type="ShaderMaterial" load_steps=2 format=3]
+
+[ext_resource type="Shader" path="res://baltor/godot_shaders/underwater_caustics/underwater_caustics.gdshader" id="1_shader"]
+
+[resource]
+shader = ExtResource("1_shader")
+shader_parameter/albedo = Color(0.75, 0.7, 0.55, 1)
+shader_parameter/caustic_color = Color(0.65, 1, 0.95, 1)
+shader_parameter/caustic_scale = 1.6
+shader_parameter/caustic_strength = 1.4
+shader_parameter/sharpness = 5.0
+shader_parameter/drift_speed = 0.25
+shader_parameter/water_surface_height = 2.0
+shader_parameter/depth_falloff = 0.25
+shader_parameter/roughness = 0.9

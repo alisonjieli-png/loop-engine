@@ -1,0 +1,60 @@
+[gd_scene load_steps=7 format=3]
+
+[ext_resource type="ShaderMaterial" path="res://baltor/godot_shaders/clip_plane_cutaway/material.tres" id="1_material"]
+
+[sub_resource type="Environment" id="Environment_1"]
+background_mode = 1
+background_color = Color(0.16, 0.17, 0.2, 1)
+ambient_light_source = 2
+ambient_light_color = Color(0.4, 0.4, 0.45, 1)
+ambient_light_energy = 1.0
+
+[sub_resource type="SphereMesh" id="SphereMesh_2"]
+radial_segments = 64
+rings = 32
+radius = 0.22
+height = 0.44
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_3"]
+albedo_color = Color(0.95, 0.75, 0.2, 1)
+roughness = 0.3
+emission_enabled = true
+emission = Color(0.6, 0.4, 0.05, 1)
+
+[sub_resource type="SphereMesh" id="SphereMesh_4"]
+radial_segments = 64
+rings = 32
+radius = 0.6
+height = 1.2
+
+[sub_resource type="TorusMesh" id="TorusMesh_5"]
+rings = 64
+ring_segments = 32
+inner_radius = 0.7
+outer_radius = 0.85
+
+[node name="Root" type="Node3D"]
+
+[node name="Environment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_1")
+
+[node name="Core" type="MeshInstance3D" parent="."]
+mesh = SubResource("SphereMesh_2")
+material_override = SubResource("StandardMaterial3D_3")
+
+[node name="Shell" type="MeshInstance3D" parent="."]
+mesh = SubResource("SphereMesh_4")
+material_override = ExtResource("1_material")
+
+[node name="Ring" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0.25882, -0.96593, 0, 0.96593, 0.25882, 0, 0, 0)
+mesh = SubResource("TorusMesh_5")
+material_override = ExtResource("1_material")
+
+[node name="Sun" type="DirectionalLight3D" parent="."]
+transform = Transform3D(0.70711, -0.49747, 0.50252, 0, 0.71067, 0.70353, -0.70711, -0.49747, 0.50252, 0.5, 0.7, 0.5)
+light_color = Color(1, 0.97, 0.92, 1)
+light_energy = 1.1
+
+[node name="Camera" type="Camera3D" parent="."]
+transform = Transform3D(0.85749, -0.16692, 0.48666, 0, 0.94591, 0.32444, -0.5145, -0.27821, 0.81111, 0.9, 0.6, 1.5)

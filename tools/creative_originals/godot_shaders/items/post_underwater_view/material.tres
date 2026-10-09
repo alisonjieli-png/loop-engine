@@ -1,0 +1,14 @@
+[gd_resource type="ShaderMaterial" load_steps=2 format=3]
+
+[ext_resource type="Shader" path="res://baltor/godot_shaders/post_underwater_view/post_underwater_view.gdshader" id="1_shader"]
+
+[resource]
+shader = ExtResource("1_shader")
+shader_parameter/water_color = Color(0.04, 0.28, 0.38, 1)
+shader_parameter/absorption = 0.22
+shader_parameter/red_absorption = 3.0
+shader_parameter/distortion = 0.006
+shader_parameter/wave_frequency = 18.0
+shader_parameter/wave_speed = 1.5
+shader_parameter/surface_light = 0.35
+shader_parameter/vignette = 0.45

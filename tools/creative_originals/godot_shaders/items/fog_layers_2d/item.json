@@ -1,0 +1,123 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "fog_layers_2d",
+  "title": "Parallax fog bands",
+  "purpose": "Drifting layered fog for 2D scenes: several fBm bands at different heights, speeds and opacities, denser toward the ground, drawn as a transparent overlay.",
+  "form": "library_module",
+  "asset_role": null,
+  "dimension": "2d",
+  "engine": {
+    "name": "godot",
+    "minimum_version": "4.3"
+  },
+  "tags": [
+    "godot shader",
+    "canvas item",
+    "fog",
+    "mist",
+    "parallax",
+    "atmosphere",
+    "procedural"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "role": "other"
+    },
+    {
+      "path": "fog_layers_2d.gdshader",
+      "role": "skill_asset"
+    },
+    {
+      "path": "material.tres",
+      "role": "skill_asset"
+    },
+    {
+      "path": "demo.tscn",
+      "role": "skill_asset"
+    }
+  ],
+  "contract": {
+    "shader_type": "canvas_item",
+    "render_modes": [],
+    "uniforms": [
+      {
+        "name": "fog_color",
+        "type": "vec4",
+        "hint": "source_color",
+        "default": [
+          0.85,
+          0.88,
+          0.92,
+          1.0
+        ]
+      },
+      {
+        "name": "density",
+        "type": "float",
+        "hint": "hint_range(0.0, 2.0)",
+        "default": 0.9
+      },
+      {
+        "name": "ground_line",
+        "type": "float",
+        "hint": "hint_range(0.0, 1.0)",
+        "default": 0.8
+      },
+      {
+        "name": "fog_height",
+        "type": "float",
+        "hint": "hint_range(0.05, 1.0)",
+        "default": 0.45
+      },
+      {
+        "name": "drift_speed",
+        "type": "float",
+        "hint": "hint_range(-0.5, 0.5)",
+        "default": 0.04
+      },
+      {
+        "name": "scale",
+        "type": "float",
+        "hint": "hint_range(0.5, 12.0)",
+        "default": 3.0
+      },
+      {
+        "name": "layers",
+        "type": "int",
+        "hint": "hint_range(1, 6)",
+        "default": 3
+      }
+    ],
+    "placement": "res://baltor/godot_shaders/fog_layers_2d/",
+    "usage": "canvas_material",
+    "renderers": {
+      "compatibility": "compiled_and_rendered",
+      "forward_plus": "not_verified",
+      "mobile": "not_verified"
+    },
+    "inputs": [
+      "A ColorRect above the scene covering the area that should show fog."
+    ],
+    "outputs": "Soft white fog banks drifting across the lower half of the city scene."
+  },
+  "limits": "Fog does not interact with scene depth: every layer covers everything under it. Large rectangles with many layers cost several fBm evaluations per pixel.",
+  "related": [
+    "clouds_fbm_2d",
+    "post_depth_fog"
+  ],
+  "technique_references": [
+    "Layered drifting fractional Brownian motion",
+    "Height masks per layer",
+    "Value noise with quintic interpolation and fractional Brownian motion"
+  ],
+  "native_checks": [
+    "contract_static",
+    "engine_run",
+    "engine_log_clean",
+    "shader_in_scene",
+    "capture_written",
+    "render_not_uniform",
+    "shader_changes_pixels"
+  ]
+}

@@ -1,0 +1,13 @@
+[gd_resource type="ShaderMaterial" load_steps=2 format=3]
+
+[ext_resource type="Shader" path="res://baltor/godot_shaders/sprite_soft_glow/sprite_soft_glow.gdshader" id="1_shader"]
+
+[resource]
+shader = ExtResource("1_shader")
+shader_parameter/glow_color = Color(0.4, 0.85, 1, 1)
+shader_parameter/radius = 10.0
+shader_parameter/intensity = 1.6
+shader_parameter/rings = 3
+shader_parameter/directions = 12
+shader_parameter/pulse_speed = 2.0
+shader_parameter/pulse_depth = 0.3

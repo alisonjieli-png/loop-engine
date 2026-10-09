@@ -1,0 +1,55 @@
+[gd_scene load_steps=4 format=3]
+
+[ext_resource type="ShaderMaterial" path="res://baltor/godot_shaders/sprite_wind_sway/material.tres" id="1_material"]
+
+[sub_resource type="Gradient" id="Gradient_1"]
+offsets = PackedFloat32Array(0, 0.6, 0.8, 0.81, 1)
+colors = PackedColorArray(0.55, 0.85, 0.35, 1, 0.25, 0.6, 0.2, 1, 0.15, 0.4, 0.15, 1, 0.15, 0.4, 0.15, 0, 0.15, 0.4, 0.15, 0)
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_2"]
+gradient = SubResource("Gradient_1")
+width = 64
+height = 64
+fill = 1
+fill_from = Vector2(0.5, 0.75)
+fill_to = Vector2(0.5, 0)
+
+[node name="Root" type="Node2D"]
+
+[node name="Sky" type="ColorRect" parent="."]
+offset_left = 0.0
+offset_top = 0.0
+offset_right = 256.0
+offset_bottom = 256.0
+color = Color(0.6, 0.78, 0.92, 1)
+
+[node name="Ground" type="ColorRect" parent="."]
+offset_left = 0.0
+offset_top = 190.0
+offset_right = 256.0
+offset_bottom = 256.0
+color = Color(0.3, 0.22, 0.15, 1)
+
+[node name="Plant0" type="Sprite2D" parent="."]
+material = ExtResource("1_material")
+position = Vector2(40, 135.6)
+scale = Vector2(0.9, 1.7)
+texture = SubResource("GradientTexture2D_2")
+
+[node name="Plant1" type="Sprite2D" parent="."]
+material = ExtResource("1_material")
+position = Vector2(95, 119.6)
+scale = Vector2(0.9, 2.2)
+texture = SubResource("GradientTexture2D_2")
+
+[node name="Plant2" type="Sprite2D" parent="."]
+material = ExtResource("1_material")
+position = Vector2(150, 142)
+scale = Vector2(0.9, 1.5)
+texture = SubResource("GradientTexture2D_2")
+
+[node name="Plant3" type="Sprite2D" parent="."]
+material = ExtResource("1_material")
+position = Vector2(205, 126)
+scale = Vector2(0.9, 2)
+texture = SubResource("GradientTexture2D_2")

@@ -1,0 +1,33 @@
+[gd_scene load_steps=4 format=3]
+
+[ext_resource type="ShaderMaterial" path="res://baltor/godot_shaders/low_poly_flat_shading/material.tres" id="1_material"]
+
+[sub_resource type="Environment" id="Environment_1"]
+background_mode = 1
+background_color = Color(0.75, 0.82, 0.9, 1)
+ambient_light_source = 2
+ambient_light_color = Color(0.45, 0.5, 0.55, 1)
+ambient_light_energy = 1.0
+
+[sub_resource type="SphereMesh" id="SphereMesh_2"]
+radial_segments = 14
+rings = 8
+radius = 0.62
+height = 1.24
+
+[node name="Root" type="Node3D"]
+
+[node name="Environment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_1")
+
+[node name="Subject" type="MeshInstance3D" parent="."]
+mesh = SubResource("SphereMesh_2")
+material_override = ExtResource("1_material")
+
+[node name="Sun" type="DirectionalLight3D" parent="."]
+transform = Transform3D(0.50387, -0.61313, 0.60842, 0, 0.70437, 0.70983, -0.86378, -0.35766, 0.35491, 0.6, 0.7, 0.35)
+light_color = Color(1, 0.97, 0.92, 1)
+light_energy = 1.0
+
+[node name="Camera" type="Camera3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0.98162, 0.19087, 0, -0.19087, 0.98162, 0, 0.35, 1.8)

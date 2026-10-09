@@ -1,0 +1,15 @@
+[gd_resource type="ShaderMaterial" load_steps=2 format=3]
+
+[ext_resource type="Shader" path="res://baltor/godot_shaders/world_grid_debug/world_grid_debug.gdshader" id="1_shader"]
+
+[resource]
+shader = ExtResource("1_shader")
+shader_parameter/base_color = Color(0.32, 0.34, 0.38, 1)
+shader_parameter/minor_color = Color(0.48, 0.5, 0.55, 1)
+shader_parameter/major_color = Color(0.82, 0.84, 0.88, 1)
+shader_parameter/cell_size = 0.5
+shader_parameter/major_every = 4
+shader_parameter/line_pixels = 1.2
+shader_parameter/show_axes = true
+shader_parameter/fade_distance = 40.0
+shader_parameter/roughness = 0.8

@@ -1,0 +1,12 @@
+[gd_resource type="ShaderMaterial" load_steps=2 format=3]
+
+[ext_resource type="Shader" path="res://baltor/godot_shaders/sprite_glitch_split/sprite_glitch_split.gdshader" id="1_shader"]
+
+[resource]
+shader = ExtResource("1_shader")
+shader_parameter/split = 0.025
+shader_parameter/slice_strength = 0.08
+shader_parameter/slice_count = 18.0
+shader_parameter/glitch_rate = 8.0
+shader_parameter/glitch_share = 0.3
+shader_parameter/band_flash = 0.3

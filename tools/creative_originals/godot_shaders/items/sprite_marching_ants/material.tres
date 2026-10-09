@@ -1,0 +1,13 @@
+[gd_resource type="ShaderMaterial" load_steps=2 format=3]
+
+[ext_resource type="Shader" path="res://baltor/godot_shaders/sprite_marching_ants/sprite_marching_ants.gdshader" id="1_shader"]
+
+[resource]
+shader = ExtResource("1_shader")
+shader_parameter/dash_dark = Color(0.05, 0.05, 0.05, 1)
+shader_parameter/dash_light = Color(1, 1, 1, 1)
+shader_parameter/dash_pixels = 6.0
+shader_parameter/speed = 12.0
+shader_parameter/width = 1
+shader_parameter/outside = true
+shader_parameter/alpha_cutoff = 0.5

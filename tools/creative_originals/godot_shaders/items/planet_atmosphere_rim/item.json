@@ -1,0 +1,139 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "planet_atmosphere_rim",
+  "title": "Planet atmosphere shell with analytic path length",
+  "purpose": "Atmosphere glow for planets: on a shell sphere around the planet, the length of each view ray through the atmosphere is computed analytically, turned into scattering with an exponential, and lit only on the sun side.",
+  "form": "library_module",
+  "asset_role": null,
+  "dimension": "3d",
+  "engine": {
+    "name": "godot",
+    "minimum_version": "4.3"
+  },
+  "tags": [
+    "godot shader",
+    "spatial",
+    "atmosphere",
+    "planet",
+    "space",
+    "rim",
+    "custom light function"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "role": "other"
+    },
+    {
+      "path": "planet_atmosphere_rim.gdshader",
+      "role": "skill_asset"
+    },
+    {
+      "path": "material.tres",
+      "role": "skill_asset"
+    },
+    {
+      "path": "demo.tscn",
+      "role": "skill_asset"
+    }
+  ],
+  "contract": {
+    "shader_type": "spatial",
+    "render_modes": [
+      "blend_add",
+      "cull_back",
+      "depth_draw_never",
+      "shadows_disabled"
+    ],
+    "uniforms": [
+      {
+        "name": "atmosphere_color",
+        "type": "vec4",
+        "hint": "source_color",
+        "default": [
+          0.35,
+          0.6,
+          1.0,
+          1.0
+        ]
+      },
+      {
+        "name": "sunset_color",
+        "type": "vec4",
+        "hint": "source_color",
+        "default": [
+          1.0,
+          0.5,
+          0.3,
+          1.0
+        ]
+      },
+      {
+        "name": "shell_radius",
+        "type": "float",
+        "hint": "hint_range(0.1, 10.0)",
+        "default": 1.0
+      },
+      {
+        "name": "planet_radius",
+        "type": "float",
+        "hint": "hint_range(0.1, 10.0)",
+        "default": 0.9
+      },
+      {
+        "name": "density",
+        "type": "float",
+        "hint": "hint_range(0.0, 10.0)",
+        "default": 1.2
+      },
+      {
+        "name": "brightness",
+        "type": "float",
+        "hint": "hint_range(0.0, 8.0)",
+        "default": 1.6
+      },
+      {
+        "name": "terminator_softness",
+        "type": "float",
+        "hint": "hint_range(0.0, 1.0)",
+        "default": 0.35
+      },
+      {
+        "name": "night_glow",
+        "type": "float",
+        "hint": "hint_range(0.0, 0.5)",
+        "default": 0.02
+      }
+    ],
+    "placement": "res://baltor/godot_shaders/planet_atmosphere_rim/",
+    "usage": "surface_material",
+    "renderers": {
+      "compatibility": "compiled_and_rendered",
+      "forward_plus": "not_verified",
+      "mobile": "not_verified"
+    },
+    "inputs": [
+      "A planet mesh and a slightly larger sphere for the shell, both centred at the same point; a DirectionalLight3D as the sun."
+    ],
+    "outputs": "A planet with a thin blue halo on its sunlit limb that turns orange at the terminator."
+  },
+  "limits": "Single-colour scattering with an exponential falloff, not Rayleigh and Mie integration. The shell must be a sphere centred on its origin without non-uniform scale. Additive, so it cannot darken the planet. The camera must stay outside the shell.",
+  "related": [
+    "procedural_planet_surface",
+    "sky_physical_scattering"
+  ],
+  "technique_references": [
+    "Analytic ray-sphere chord length (closest approach distance)",
+    "Exponential scattering from optical depth",
+    "Fragment-to-light varying for light-dependent glow"
+  ],
+  "native_checks": [
+    "contract_static",
+    "engine_run",
+    "engine_log_clean",
+    "shader_in_scene",
+    "capture_written",
+    "render_not_uniform",
+    "shader_changes_pixels"
+  ]
+}

@@ -1,0 +1,10 @@
+[gd_resource type="ShaderMaterial" load_steps=2 format=3]
+
+[ext_resource type="Shader" path="res://baltor/godot_shaders/normal_debug_view/normal_debug_view.gdshader" id="1_shader"]
+
+[resource]
+shader = ExtResource("1_shader")
+shader_parameter/mode = 0
+shader_parameter/depth_band = 0.5
+shader_parameter/position_cell = 0.25
+shader_parameter/flip_back_faces = true

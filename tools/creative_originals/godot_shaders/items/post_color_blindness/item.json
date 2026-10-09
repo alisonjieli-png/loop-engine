@@ -1,0 +1,108 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "post_color_blindness",
+  "title": "Colour vision deficiency simulation",
+  "purpose": "Simulate protanopia, deuteranopia, tritanopia or achromatopsia on the whole screen with a severity mix, to check that a game's colours stay distinguishable for colour-blind players.",
+  "form": "library_module",
+  "asset_role": null,
+  "dimension": "3d",
+  "engine": {
+    "name": "godot",
+    "minimum_version": "4.3"
+  },
+  "tags": [
+    "godot shader",
+    "spatial",
+    "post-process",
+    "accessibility",
+    "color blindness",
+    "simulation",
+    "colour vision",
+    "full-screen"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "role": "other"
+    },
+    {
+      "path": "post_color_blindness.gdshader",
+      "role": "skill_asset"
+    },
+    {
+      "path": "material.tres",
+      "role": "skill_asset"
+    },
+    {
+      "path": "demo.tscn",
+      "role": "skill_asset"
+    }
+  ],
+  "contract": {
+    "shader_type": "spatial",
+    "render_modes": [
+      "unshaded",
+      "cull_disabled",
+      "depth_test_disabled",
+      "depth_draw_never",
+      "skip_vertex_transform",
+      "fog_disabled"
+    ],
+    "uniforms": [
+      {
+        "name": "screen_texture",
+        "type": "sampler2D",
+        "hint": "hint_screen_texture, filter_linear_mipmap",
+        "default": null
+      },
+      {
+        "name": "mode",
+        "type": "int",
+        "hint": "hint_range(0, 3)",
+        "default": 1
+      },
+      {
+        "name": "severity",
+        "type": "float",
+        "hint": "hint_range(0.0, 1.0)",
+        "default": 1.0
+      },
+      {
+        "name": "split_view",
+        "type": "bool",
+        "hint": null,
+        "default": false
+      }
+    ],
+    "placement": "res://baltor/godot_shaders/post_color_blindness/",
+    "usage": "post_process_quad",
+    "renderers": {
+      "compatibility": "compiled_and_rendered",
+      "forward_plus": "not_verified",
+      "mobile": "not_verified"
+    },
+    "inputs": [
+      "A MeshInstance3D with a 2 x 2 QuadMesh, `material.tres` as its material override and a large extra cull margin, as in `demo.tscn`."
+    ],
+    "outputs": "The scene as seen with deuteranopia: reds and greens collapse toward ochre and olive while blues remain."
+  },
+  "limits": "A simulation for testing, not a correction filter, and only for typical dichromacy. Individual vision varies. The pass assumes the screen texture holds sRGB-encoded colour. The pass reads Godot's screen texture after opaque geometry, so transparent objects drawn after it are not processed and its order among other transparent passes is not controlled.",
+  "related": [
+    "post_color_grading",
+    "post_gradient_map"
+  ],
+  "technique_references": [
+    "Machado et al. 2009 colour vision deficiency matrices",
+    "sRGB to linear conversion",
+    "Rec. 709 luminance for achromatopsia"
+  ],
+  "native_checks": [
+    "contract_static",
+    "engine_run",
+    "engine_log_clean",
+    "shader_in_scene",
+    "capture_written",
+    "render_not_uniform",
+    "shader_changes_pixels"
+  ]
+}

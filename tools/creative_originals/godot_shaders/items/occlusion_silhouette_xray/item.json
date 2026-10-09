@@ -1,0 +1,135 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "occlusion_silhouette_xray",
+  "title": "X-ray silhouette where an object is hidden",
+  "purpose": "Keep a character or item visible through walls: the visible part renders as a lit surface, the part hidden behind other geometry renders as a coloured see-through silhouette with a rim, decided per pixel against the depth buffer.",
+  "form": "library_module",
+  "asset_role": null,
+  "dimension": "3d",
+  "engine": {
+    "name": "godot",
+    "minimum_version": "4.3"
+  },
+  "tags": [
+    "godot shader",
+    "spatial",
+    "x-ray",
+    "occlusion",
+    "silhouette",
+    "see through walls",
+    "depth buffer"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "role": "other"
+    },
+    {
+      "path": "occlusion_silhouette_xray.gdshader",
+      "role": "skill_asset"
+    },
+    {
+      "path": "material.tres",
+      "role": "skill_asset"
+    },
+    {
+      "path": "demo.tscn",
+      "role": "skill_asset"
+    }
+  ],
+  "contract": {
+    "shader_type": "spatial",
+    "render_modes": [
+      "depth_test_disabled",
+      "depth_draw_never",
+      "cull_back"
+    ],
+    "uniforms": [
+      {
+        "name": "depth_texture",
+        "type": "sampler2D",
+        "hint": "hint_depth_texture, filter_nearest",
+        "default": null
+      },
+      {
+        "name": "albedo",
+        "type": "vec4",
+        "hint": "source_color",
+        "default": [
+          0.8,
+          0.45,
+          0.2,
+          1.0
+        ]
+      },
+      {
+        "name": "roughness",
+        "type": "float",
+        "hint": "hint_range(0.0, 1.0)",
+        "default": 0.6
+      },
+      {
+        "name": "xray_color",
+        "type": "vec4",
+        "hint": "source_color",
+        "default": [
+          0.25,
+          0.75,
+          1.0,
+          1.0
+        ]
+      },
+      {
+        "name": "xray_fill",
+        "type": "float",
+        "hint": "hint_range(0.0, 1.0)",
+        "default": 0.35
+      },
+      {
+        "name": "xray_rim_power",
+        "type": "float",
+        "hint": "hint_range(0.5, 8.0)",
+        "default": 2.0
+      },
+      {
+        "name": "depth_bias",
+        "type": "float",
+        "hint": "hint_range(0.0, 0.5)",
+        "default": 0.02
+      },
+      {
+        "name": "pattern_density",
+        "type": "float",
+        "hint": "hint_range(0.0, 400.0)",
+        "default": 120.0
+      }
+    ],
+    "placement": "res://baltor/godot_shaders/occlusion_silhouette_xray/",
+    "usage": "surface_material",
+    "renderers": {
+      "compatibility": "compiled_and_rendered",
+      "forward_plus": "not_verified",
+      "mobile": "not_verified"
+    },
+    "inputs": [],
+    "outputs": "A character whose exposed part is shaded normally and whose part behind the wall shows as a glowing blue outline with a striped fill."
+  },
+  "limits": "Without a depth test the object does not sort against itself: concave meshes can show far parts over near ones, so it suits convex characters and props best. The object is drawn in the transparent pass, so it casts no shadow from this material and does not occlude other transparent objects.",
+  "related": [
+    "blueprint_schematic",
+    "screen_door_fade"
+  ],
+  "technique_references": [
+    "Depth test disabled with per-pixel occlusion test against the depth buffer",
+    "Fresnel rim silhouette with screen-space stripes"
+  ],
+  "native_checks": [
+    "contract_static",
+    "engine_run",
+    "engine_log_clean",
+    "shader_in_scene",
+    "capture_written",
+    "render_not_uniform",
+    "shader_changes_pixels"
+  ]
+}

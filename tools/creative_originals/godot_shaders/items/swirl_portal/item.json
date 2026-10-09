@@ -1,0 +1,168 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "swirl_portal",
+  "title": "Swirling portal disc",
+  "purpose": "Unlit portal surface: spiral arms twist toward the centre in polar coordinates, a bright rim ring and a dark core frame it, noise sparkles drift inward, and everything outside the disc is transparent.",
+  "form": "library_module",
+  "asset_role": null,
+  "dimension": "3d",
+  "engine": {
+    "name": "godot",
+    "minimum_version": "4.3"
+  },
+  "tags": [
+    "godot shader",
+    "spatial",
+    "portal",
+    "vortex",
+    "polar coordinates",
+    "magic",
+    "sci-fi"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "role": "other"
+    },
+    {
+      "path": "swirl_portal.gdshader",
+      "role": "skill_asset"
+    },
+    {
+      "path": "material.tres",
+      "role": "skill_asset"
+    },
+    {
+      "path": "demo.tscn",
+      "role": "skill_asset"
+    }
+  ],
+  "contract": {
+    "shader_type": "spatial",
+    "render_modes": [
+      "unshaded",
+      "cull_disabled",
+      "depth_draw_opaque",
+      "shadows_disabled"
+    ],
+    "uniforms": [
+      {
+        "name": "outer_color",
+        "type": "vec4",
+        "hint": "source_color",
+        "default": [
+          0.45,
+          0.15,
+          0.95,
+          1.0
+        ]
+      },
+      {
+        "name": "inner_color",
+        "type": "vec4",
+        "hint": "source_color",
+        "default": [
+          0.2,
+          0.9,
+          1.0,
+          1.0
+        ]
+      },
+      {
+        "name": "core_color",
+        "type": "vec4",
+        "hint": "source_color",
+        "default": [
+          0.02,
+          0.0,
+          0.05,
+          1.0
+        ]
+      },
+      {
+        "name": "rim_color",
+        "type": "vec4",
+        "hint": "source_color",
+        "default": [
+          1.0,
+          0.85,
+          1.0,
+          1.0
+        ]
+      },
+      {
+        "name": "arms",
+        "type": "int",
+        "hint": "hint_range(1, 12)",
+        "default": 4
+      },
+      {
+        "name": "twist",
+        "type": "float",
+        "hint": "hint_range(0.0, 20.0)",
+        "default": 6.0
+      },
+      {
+        "name": "spin_speed",
+        "type": "float",
+        "hint": "hint_range(-10.0, 10.0)",
+        "default": 2.0
+      },
+      {
+        "name": "core_radius",
+        "type": "float",
+        "hint": "hint_range(0.0, 0.5)",
+        "default": 0.12
+      },
+      {
+        "name": "rim_width",
+        "type": "float",
+        "hint": "hint_range(0.0, 0.2)",
+        "default": 0.04
+      },
+      {
+        "name": "sparkle_amount",
+        "type": "float",
+        "hint": "hint_range(0.0, 1.0)",
+        "default": 0.5
+      },
+      {
+        "name": "glow",
+        "type": "float",
+        "hint": "hint_range(0.0, 4.0)",
+        "default": 1.4
+      }
+    ],
+    "placement": "res://baltor/godot_shaders/swirl_portal/",
+    "usage": "surface_material",
+    "renderers": {
+      "compatibility": "compiled_and_rendered",
+      "forward_plus": "not_verified",
+      "mobile": "not_verified"
+    },
+    "inputs": [
+      "A quad or disc with UVs spanning 0 to 1; the portal fills the inscribed circle."
+    ],
+    "outputs": "A spinning purple and cyan spiral disc with a dark centre and a bright outer ring."
+  },
+  "limits": "Flat effect on a card; it has no depth or parallax. The polar angle has a seam where atan wraps, hidden by whole numbers of arms but visible with sparkles at high zoom. Unshaded, so it ignores scene light.",
+  "related": [
+    "energy_beam_cylinder",
+    "radar_sweep_disc",
+    "tunnel_polar_2d"
+  ],
+  "technique_references": [
+    "Polar coordinate spiral (angle plus twist over radius)",
+    "Thresholded value noise sparkles",
+    "MurmurHash3 32-bit finalizer over prime-combined lattice coordinates as a hash"
+  ],
+  "native_checks": [
+    "contract_static",
+    "engine_run",
+    "engine_log_clean",
+    "shader_in_scene",
+    "capture_written",
+    "render_not_uniform",
+    "shader_changes_pixels"
+  ]
+}

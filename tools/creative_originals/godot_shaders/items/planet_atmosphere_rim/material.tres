@@ -1,0 +1,14 @@
+[gd_resource type="ShaderMaterial" load_steps=2 format=3]
+
+[ext_resource type="Shader" path="res://baltor/godot_shaders/planet_atmosphere_rim/planet_atmosphere_rim.gdshader" id="1_shader"]
+
+[resource]
+shader = ExtResource("1_shader")
+shader_parameter/atmosphere_color = Color(0.35, 0.6, 1, 1)
+shader_parameter/sunset_color = Color(1, 0.5, 0.3, 1)
+shader_parameter/shell_radius = 1.0
+shader_parameter/planet_radius = 0.9
+shader_parameter/density = 1.2
+shader_parameter/brightness = 1.6
+shader_parameter/terminator_softness = 0.35
+shader_parameter/night_glow = 0.02

@@ -1,0 +1,134 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "starfield_parallax_2d",
+  "title": "Parallax starfield with twinkling layers",
+  "purpose": "Fill a rectangle with a scrolling starfield: three layers of hashed stars at different densities, sizes and speeds for parallax, colour temperature per star, twinkle, and a scroll direction.",
+  "form": "library_module",
+  "asset_role": null,
+  "dimension": "2d",
+  "engine": {
+    "name": "godot",
+    "minimum_version": "4.3"
+  },
+  "tags": [
+    "godot shader",
+    "canvas item",
+    "starfield",
+    "space",
+    "parallax",
+    "background",
+    "procedural"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "role": "other"
+    },
+    {
+      "path": "starfield_parallax_2d.gdshader",
+      "role": "skill_asset"
+    },
+    {
+      "path": "material.tres",
+      "role": "skill_asset"
+    },
+    {
+      "path": "demo.tscn",
+      "role": "skill_asset"
+    }
+  ],
+  "contract": {
+    "shader_type": "canvas_item",
+    "render_modes": [],
+    "uniforms": [
+      {
+        "name": "space_color",
+        "type": "vec4",
+        "hint": "source_color",
+        "default": [
+          0.01,
+          0.01,
+          0.04,
+          1.0
+        ]
+      },
+      {
+        "name": "nebula_tint",
+        "type": "vec4",
+        "hint": "source_color",
+        "default": [
+          0.12,
+          0.05,
+          0.2,
+          1.0
+        ]
+      },
+      {
+        "name": "density",
+        "type": "float",
+        "hint": "hint_range(0.0, 1.0)",
+        "default": 0.45
+      },
+      {
+        "name": "scroll_speed",
+        "type": "float",
+        "hint": "hint_range(-2.0, 2.0)",
+        "default": 0.05
+      },
+      {
+        "name": "scroll_angle_degrees",
+        "type": "float",
+        "hint": "hint_range(0.0, 360.0)",
+        "default": 200.0
+      },
+      {
+        "name": "twinkle_speed",
+        "type": "float",
+        "hint": "hint_range(0.0, 10.0)",
+        "default": 3.0
+      },
+      {
+        "name": "star_scale",
+        "type": "float",
+        "hint": "hint_range(10.0, 200.0)",
+        "default": 60.0
+      },
+      {
+        "name": "brightness",
+        "type": "float",
+        "hint": "hint_range(0.0, 3.0)",
+        "default": 1.3
+      }
+    ],
+    "placement": "res://baltor/godot_shaders/starfield_parallax_2d/",
+    "usage": "canvas_material",
+    "renderers": {
+      "compatibility": "compiled_and_rendered",
+      "forward_plus": "not_verified",
+      "mobile": "not_verified"
+    },
+    "inputs": [
+      "A ColorRect (or any CanvasItem) sized to the area to fill; UVs span 0 to 1 across it."
+    ],
+    "outputs": "A dark purple space with many small blue and warm stars at three sizes."
+  },
+  "limits": "Stars are placed per grid cell, so their density is regular at large scales. Very fast scrolling streaks nothing; it only translates the layers.",
+  "related": [
+    "sky_twinkling_stars",
+    "particles_warp_stars_2d"
+  ],
+  "technique_references": [
+    "Hashed per-cell star placement",
+    "Multi-layer parallax scrolling",
+    "MurmurHash3 32-bit finalizer over prime-combined lattice coordinates as a hash"
+  ],
+  "native_checks": [
+    "contract_static",
+    "engine_run",
+    "engine_log_clean",
+    "shader_in_scene",
+    "capture_written",
+    "render_not_uniform",
+    "shader_changes_pixels"
+  ]
+}

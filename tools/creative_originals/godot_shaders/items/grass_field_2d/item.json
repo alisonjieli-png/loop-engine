@@ -1,0 +1,140 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "grass_field_2d",
+  "title": "Procedural 2D grass field with wind",
+  "purpose": "Fill a rectangle with layers of grass blades drawn procedurally: each blade has its own height, width, lean and colour, bends with travelling wind, and back layers are darker for depth.",
+  "form": "library_module",
+  "asset_role": null,
+  "dimension": "2d",
+  "engine": {
+    "name": "godot",
+    "minimum_version": "4.3"
+  },
+  "tags": [
+    "godot shader",
+    "canvas item",
+    "grass",
+    "field",
+    "wind",
+    "foliage",
+    "procedural"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "role": "other"
+    },
+    {
+      "path": "grass_field_2d.gdshader",
+      "role": "skill_asset"
+    },
+    {
+      "path": "material.tres",
+      "role": "skill_asset"
+    },
+    {
+      "path": "demo.tscn",
+      "role": "skill_asset"
+    }
+  ],
+  "contract": {
+    "shader_type": "canvas_item",
+    "render_modes": [],
+    "uniforms": [
+      {
+        "name": "front_color",
+        "type": "vec4",
+        "hint": "source_color",
+        "default": [
+          0.42,
+          0.72,
+          0.25,
+          1.0
+        ]
+      },
+      {
+        "name": "back_color",
+        "type": "vec4",
+        "hint": "source_color",
+        "default": [
+          0.12,
+          0.32,
+          0.12,
+          1.0
+        ]
+      },
+      {
+        "name": "tip_color",
+        "type": "vec4",
+        "hint": "source_color",
+        "default": [
+          0.8,
+          0.85,
+          0.45,
+          1.0
+        ]
+      },
+      {
+        "name": "blades",
+        "type": "float",
+        "hint": "hint_range(10.0, 200.0)",
+        "default": 60.0
+      },
+      {
+        "name": "blade_height",
+        "type": "float",
+        "hint": "hint_range(0.1, 1.0)",
+        "default": 0.55
+      },
+      {
+        "name": "wind_strength",
+        "type": "float",
+        "hint": "hint_range(0.0, 0.3)",
+        "default": 0.06
+      },
+      {
+        "name": "wind_speed",
+        "type": "float",
+        "hint": "hint_range(0.0, 5.0)",
+        "default": 1.4
+      },
+      {
+        "name": "layers",
+        "type": "int",
+        "hint": "hint_range(1, 5)",
+        "default": 3
+      }
+    ],
+    "placement": "res://baltor/godot_shaders/grass_field_2d/",
+    "usage": "canvas_material",
+    "renderers": {
+      "compatibility": "compiled_and_rendered",
+      "forward_plus": "not_verified",
+      "mobile": "not_verified"
+    },
+    "inputs": [
+      "A ColorRect (or any CanvasItem) sized to the area to fill; UVs span 0 to 1 across it."
+    ],
+    "outputs": "A strip of layered green grass blades with light tips swaying in front of a blue sky."
+  },
+  "limits": "Blades are flat colour without lighting. Very strong wind bends blades beyond the neighbour search and clips them. Cost is layers times three blade tests per pixel.",
+  "related": [
+    "sprite_wind_sway",
+    "grass_blade_sway"
+  ],
+  "technique_references": [
+    "Hashed blade placement per slot with neighbour search",
+    "Height-squared wind bending",
+    "Back-to-front layer compositing",
+    "MurmurHash3 32-bit finalizer over prime-combined lattice coordinates as a hash"
+  ],
+  "native_checks": [
+    "contract_static",
+    "engine_run",
+    "engine_log_clean",
+    "shader_in_scene",
+    "capture_written",
+    "render_not_uniform",
+    "shader_changes_pixels"
+  ]
+}

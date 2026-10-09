@@ -1,0 +1,10 @@
+[gd_resource type="ShaderMaterial" load_steps=2 format=3]
+
+[ext_resource type="Shader" path="res://baltor/godot_shaders/sprite_drop_shadow/sprite_drop_shadow.gdshader" id="1_shader"]
+
+[resource]
+shader = ExtResource("1_shader")
+shader_parameter/shadow_color = Color(0, 0, 0.05, 0.6)
+shader_parameter/offset_x = 7.0
+shader_parameter/offset_y = 7.0
+shader_parameter/softness = 2.5

@@ -1,0 +1,15 @@
+[gd_resource type="ShaderMaterial" load_steps=2 format=3]
+
+[ext_resource type="Shader" path="res://baltor/godot_shaders/sprite_color_key_swap/sprite_color_key_swap.gdshader" id="1_shader"]
+
+[resource]
+shader = ExtResource("1_shader")
+shader_parameter/key_1 = Color(0.95, 0.6, 0.25, 1)
+shader_parameter/target_1 = Color(0.25, 0.8, 0.75, 1)
+shader_parameter/key_2 = Color(0.85, 0.35, 0.3, 1)
+shader_parameter/target_2 = Color(0.2, 0.45, 0.9, 1)
+shader_parameter/key_3 = Color(0.55, 0.2, 0.35, 1)
+shader_parameter/target_3 = Color(0.15, 0.15, 0.45, 1)
+shader_parameter/tolerance = 0.16
+shader_parameter/softness = 0.1
+shader_parameter/keep_shading = true

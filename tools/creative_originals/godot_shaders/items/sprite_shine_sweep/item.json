@@ -1,0 +1,128 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "sprite_shine_sweep",
+  "title": "Shine sweep across a sprite",
+  "purpose": "Run a bright diagonal shine band across a sprite at intervals, masked by the sprite's alpha, with control of angle, width, softness, speed and the pause between sweeps.",
+  "form": "library_module",
+  "asset_role": null,
+  "dimension": "2d",
+  "engine": {
+    "name": "godot",
+    "minimum_version": "4.3"
+  },
+  "tags": [
+    "godot shader",
+    "canvas item",
+    "shine",
+    "sweep",
+    "glint",
+    "ui",
+    "2d"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "role": "other"
+    },
+    {
+      "path": "sprite_shine_sweep.gdshader",
+      "role": "skill_asset"
+    },
+    {
+      "path": "material.tres",
+      "role": "skill_asset"
+    },
+    {
+      "path": "demo.tscn",
+      "role": "skill_asset"
+    }
+  ],
+  "contract": {
+    "shader_type": "canvas_item",
+    "render_modes": [],
+    "uniforms": [
+      {
+        "name": "shine_color",
+        "type": "vec4",
+        "hint": "source_color",
+        "default": [
+          1.0,
+          1.0,
+          0.95,
+          1.0
+        ]
+      },
+      {
+        "name": "angle_degrees",
+        "type": "float",
+        "hint": "hint_range(-90.0, 90.0)",
+        "default": 30.0
+      },
+      {
+        "name": "band_width",
+        "type": "float",
+        "hint": "hint_range(0.01, 0.6)",
+        "default": 0.14
+      },
+      {
+        "name": "softness",
+        "type": "float",
+        "hint": "hint_range(0.0, 1.0)",
+        "default": 0.5
+      },
+      {
+        "name": "intensity",
+        "type": "float",
+        "hint": "hint_range(0.0, 2.0)",
+        "default": 0.9
+      },
+      {
+        "name": "sweep_time",
+        "type": "float",
+        "hint": "hint_range(0.1, 5.0)",
+        "default": 0.8
+      },
+      {
+        "name": "pause_time",
+        "type": "float",
+        "hint": "hint_range(0.0, 10.0)",
+        "default": 1.4
+      },
+      {
+        "name": "progress_override",
+        "type": "float",
+        "hint": "hint_range(-1.0, 1.0)",
+        "default": -1.0
+      }
+    ],
+    "placement": "res://baltor/godot_shaders/sprite_shine_sweep/",
+    "usage": "canvas_material",
+    "renderers": {
+      "compatibility": "compiled_and_rendered",
+      "forward_plus": "not_verified",
+      "mobile": "not_verified"
+    },
+    "inputs": [
+      "A Sprite2D (or other textured CanvasItem) with transparent space around its shape, assigned to the node as usual."
+    ],
+    "outputs": "The sprite with a bright diagonal band of light across its middle."
+  },
+  "limits": "The band moves in UV space, so in an atlas it sweeps across the whole atlas region. It brightens additively and can clip on light sprites.",
+  "related": [
+    "holographic_foil",
+    "sprite_hit_flash"
+  ],
+  "technique_references": [
+    "Projected band along a direction",
+    "Timed sweep with pause"
+  ],
+  "native_checks": [
+    "contract_static",
+    "engine_run",
+    "engine_log_clean",
+    "shader_in_scene",
+    "capture_written",
+    "render_not_uniform",
+    "shader_changes_pixels"
+  ]
+}

@@ -1,0 +1,151 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "radar_sweep_disc",
+  "title": "Radar display with sweep and fading blips",
+  "purpose": "Unlit radar screen for a disc or quad: range rings and spokes, a rotating sweep with a phosphor trail, and blips at hashed positions that flare when the sweep passes and then fade.",
+  "form": "library_module",
+  "asset_role": null,
+  "dimension": "3d",
+  "engine": {
+    "name": "godot",
+    "minimum_version": "4.3"
+  },
+  "tags": [
+    "godot shader",
+    "spatial",
+    "radar",
+    "sweep",
+    "hud",
+    "display",
+    "sci-fi"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "role": "other"
+    },
+    {
+      "path": "radar_sweep_disc.gdshader",
+      "role": "skill_asset"
+    },
+    {
+      "path": "material.tres",
+      "role": "skill_asset"
+    },
+    {
+      "path": "demo.tscn",
+      "role": "skill_asset"
+    }
+  ],
+  "contract": {
+    "shader_type": "spatial",
+    "render_modes": [
+      "unshaded",
+      "cull_disabled"
+    ],
+    "uniforms": [
+      {
+        "name": "screen_color",
+        "type": "vec4",
+        "hint": "source_color",
+        "default": [
+          0.0,
+          0.06,
+          0.03,
+          1.0
+        ]
+      },
+      {
+        "name": "phosphor_color",
+        "type": "vec4",
+        "hint": "source_color",
+        "default": [
+          0.25,
+          1.0,
+          0.45,
+          1.0
+        ]
+      },
+      {
+        "name": "sweep_speed",
+        "type": "float",
+        "hint": "hint_range(-6.0, 6.0)",
+        "default": 1.2
+      },
+      {
+        "name": "trail_angle",
+        "type": "float",
+        "hint": "hint_range(0.1, 6.28)",
+        "default": 1.8
+      },
+      {
+        "name": "range_rings",
+        "type": "int",
+        "hint": "hint_range(1, 10)",
+        "default": 4
+      },
+      {
+        "name": "spokes",
+        "type": "int",
+        "hint": "hint_range(0, 24)",
+        "default": 8
+      },
+      {
+        "name": "line_width",
+        "type": "float",
+        "hint": "hint_range(0.001, 0.05)",
+        "default": 0.006
+      },
+      {
+        "name": "blip_density",
+        "type": "float",
+        "hint": "hint_range(0.0, 1.0)",
+        "default": 0.12
+      },
+      {
+        "name": "blip_size",
+        "type": "float",
+        "hint": "hint_range(0.005, 0.1)",
+        "default": 0.025
+      },
+      {
+        "name": "blip_cells",
+        "type": "float",
+        "hint": "hint_range(2.0, 40.0)",
+        "default": 10.0
+      }
+    ],
+    "placement": "res://baltor/godot_shaders/radar_sweep_disc/",
+    "usage": "surface_material",
+    "renderers": {
+      "compatibility": "compiled_and_rendered",
+      "forward_plus": "not_verified",
+      "mobile": "not_verified"
+    },
+    "inputs": [
+      "A quad or disc with UVs spanning 0 to 1. Replace the hashed blips with uniforms or a texture for real contacts."
+    ],
+    "outputs": "A dark green radar screen with rings and spokes, a bright rotating sweep and blips that light up as it passes."
+  },
+  "limits": "Blips are decorative hash positions, not data. Thin lines alias when the display is small on screen. Unlit, so it ignores scene lighting.",
+  "related": [
+    "swirl_portal",
+    "scan_pulse_world",
+    "progress_ring"
+  ],
+  "technique_references": [
+    "Polar coordinate rings, spokes and sweep",
+    "Angle-lag phosphor decay",
+    "Hashed cell blips",
+    "MurmurHash3 32-bit finalizer over prime-combined lattice coordinates as a hash"
+  ],
+  "native_checks": [
+    "contract_static",
+    "engine_run",
+    "engine_log_clean",
+    "shader_in_scene",
+    "capture_written",
+    "render_not_uniform",
+    "shader_changes_pixels"
+  ]
+}

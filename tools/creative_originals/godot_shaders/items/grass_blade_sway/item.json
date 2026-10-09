@@ -1,0 +1,143 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "grass_blade_sway",
+  "title": "Grass blades swaying in travelling wind gusts",
+  "purpose": "Vertex wind for grass and plant cards: blades bend more toward the tip, gusts travel across the field as moving noise in world space, each blade gets its own phase, and the blade is cut to a tapered shape with a root to tip gradient.",
+  "form": "library_module",
+  "asset_role": null,
+  "dimension": "3d",
+  "engine": {
+    "name": "godot",
+    "minimum_version": "4.3"
+  },
+  "tags": [
+    "godot shader",
+    "spatial",
+    "grass",
+    "wind",
+    "vertex animation",
+    "foliage",
+    "nature"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "role": "other"
+    },
+    {
+      "path": "grass_blade_sway.gdshader",
+      "role": "skill_asset"
+    },
+    {
+      "path": "material.tres",
+      "role": "skill_asset"
+    },
+    {
+      "path": "demo.tscn",
+      "role": "skill_asset"
+    }
+  ],
+  "contract": {
+    "shader_type": "spatial",
+    "render_modes": [
+      "cull_disabled"
+    ],
+    "uniforms": [
+      {
+        "name": "root_color",
+        "type": "vec4",
+        "hint": "source_color",
+        "default": [
+          0.12,
+          0.26,
+          0.08,
+          1.0
+        ]
+      },
+      {
+        "name": "tip_color",
+        "type": "vec4",
+        "hint": "source_color",
+        "default": [
+          0.58,
+          0.78,
+          0.3,
+          1.0
+        ]
+      },
+      {
+        "name": "wind_angle_degrees",
+        "type": "float",
+        "hint": "hint_range(0.0, 360.0)",
+        "default": 30.0
+      },
+      {
+        "name": "wind_strength",
+        "type": "float",
+        "hint": "hint_range(0.0, 1.0)",
+        "default": 0.25
+      },
+      {
+        "name": "gust_scale",
+        "type": "float",
+        "hint": "hint_range(0.05, 2.0)",
+        "default": 0.35
+      },
+      {
+        "name": "gust_speed",
+        "type": "float",
+        "hint": "hint_range(0.0, 5.0)",
+        "default": 1.2
+      },
+      {
+        "name": "flutter",
+        "type": "float",
+        "hint": "hint_range(0.0, 0.3)",
+        "default": 0.05
+      },
+      {
+        "name": "taper",
+        "type": "float",
+        "hint": "hint_range(0.0, 1.0)",
+        "default": 0.9
+      },
+      {
+        "name": "translucency",
+        "type": "float",
+        "hint": "hint_range(0.0, 1.0)",
+        "default": 0.4
+      }
+    ],
+    "placement": "res://baltor/godot_shaders/grass_blade_sway/",
+    "usage": "surface_material",
+    "renderers": {
+      "compatibility": "compiled_and_rendered",
+      "forward_plus": "not_verified",
+      "mobile": "not_verified"
+    },
+    "inputs": [
+      "Grass cards whose UV v runs from 1 at the root to 0 at the tip (a vertical QuadMesh with its origin at the root, as in the demo); enough vertical subdivisions to bend smoothly."
+    ],
+    "outputs": "A patch of tapered grass blades leaning and waving as gusts pass."
+  },
+  "limits": "Blades bend but do not keep exact length or collide. Per-blade variation uses the instance origin, so all blades sharing one mesh instance move together. Discard-based shape costs fill rate on dense fields. Shadows follow the moving shape.",
+  "related": [
+    "flag_wave_cloth",
+    "multimesh_instance_variation"
+  ],
+  "technique_references": [
+    "Height-weighted vertex bending",
+    "Scrolling world-space value noise gusts",
+    "Position-hash phase variation",
+    "MurmurHash3 32-bit finalizer over prime-combined lattice coordinates as a hash"
+  ],
+  "native_checks": [
+    "contract_static",
+    "engine_run",
+    "engine_log_clean",
+    "shader_in_scene",
+    "capture_written",
+    "render_not_uniform",
+    "shader_changes_pixels"
+  ]
+}

@@ -1,0 +1,13 @@
+[gd_resource type="ShaderMaterial" load_steps=2 format=3]
+
+[ext_resource type="Shader" path="res://baltor/godot_shaders/multimesh_instance_variation/multimesh_instance_variation.gdshader" id="1_shader"]
+
+[resource]
+shader = ExtResource("1_shader")
+shader_parameter/base_color = Color(0.25, 0.6, 0.85, 1)
+shader_parameter/hue_variation = 0.35
+shader_parameter/brightness_variation = 0.3
+shader_parameter/height_variation = 0.8
+shader_parameter/bob_height = 0.12
+shader_parameter/bob_speed = 2.0
+shader_parameter/roughness = 0.6

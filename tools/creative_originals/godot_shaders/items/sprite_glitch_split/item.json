@@ -1,0 +1,113 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "sprite_glitch_split",
+  "title": "Sprite glitch with RGB split and slice jumps",
+  "purpose": "Glitch a sprite: horizontal slices jump sideways in random time slots, the red and blue channels split apart, and occasional bright scan bands flicker, all masked to the sprite's own texture.",
+  "form": "library_module",
+  "asset_role": null,
+  "dimension": "2d",
+  "engine": {
+    "name": "godot",
+    "minimum_version": "4.3"
+  },
+  "tags": [
+    "godot shader",
+    "canvas item",
+    "glitch",
+    "rgb split",
+    "digital",
+    "corruption",
+    "2d"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "role": "other"
+    },
+    {
+      "path": "sprite_glitch_split.gdshader",
+      "role": "skill_asset"
+    },
+    {
+      "path": "material.tres",
+      "role": "skill_asset"
+    },
+    {
+      "path": "demo.tscn",
+      "role": "skill_asset"
+    }
+  ],
+  "contract": {
+    "shader_type": "canvas_item",
+    "render_modes": [],
+    "uniforms": [
+      {
+        "name": "split",
+        "type": "float",
+        "hint": "hint_range(0.0, 0.1)",
+        "default": 0.02
+      },
+      {
+        "name": "slice_strength",
+        "type": "float",
+        "hint": "hint_range(0.0, 0.3)",
+        "default": 0.08
+      },
+      {
+        "name": "slice_count",
+        "type": "float",
+        "hint": "hint_range(2.0, 64.0)",
+        "default": 18.0
+      },
+      {
+        "name": "glitch_rate",
+        "type": "float",
+        "hint": "hint_range(0.0, 30.0)",
+        "default": 8.0
+      },
+      {
+        "name": "glitch_share",
+        "type": "float",
+        "hint": "hint_range(0.0, 1.0)",
+        "default": 0.25
+      },
+      {
+        "name": "band_flash",
+        "type": "float",
+        "hint": "hint_range(0.0, 1.0)",
+        "default": 0.3
+      }
+    ],
+    "placement": "res://baltor/godot_shaders/sprite_glitch_split/",
+    "usage": "canvas_material",
+    "renderers": {
+      "compatibility": "compiled_and_rendered",
+      "forward_plus": "not_verified",
+      "mobile": "not_verified"
+    },
+    "inputs": [
+      "A Sprite2D (or other textured CanvasItem) with transparent space around its shape, assigned to the node as usual."
+    ],
+    "outputs": "The sprite torn into shifted slices with red and blue fringes."
+  },
+  "limits": "Displacement stays inside the texture rectangle. Glitch timing is global (all sprites with the material glitch together).",
+  "related": [
+    "glitch_screen_2d",
+    "vhs_tape_2d",
+    "hologram_scanlines"
+  ],
+  "technique_references": [
+    "Time-slotted hashed slice displacement",
+    "Per-channel offset sampling",
+    "MurmurHash3 32-bit finalizer over prime-combined lattice coordinates as a hash"
+  ],
+  "native_checks": [
+    "contract_static",
+    "engine_run",
+    "engine_log_clean",
+    "shader_in_scene",
+    "capture_written",
+    "render_not_uniform",
+    "shader_changes_pixels"
+  ]
+}

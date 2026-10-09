@@ -1,0 +1,16 @@
+[gd_resource type="ShaderMaterial" load_steps=2 format=3]
+
+[ext_resource type="Shader" path="res://baltor/godot_shaders/cloak_reveal/cloak_reveal.gdshader" id="1_shader"]
+
+[resource]
+shader = ExtResource("1_shader")
+shader_parameter/albedo = Color(0.6, 0.62, 0.66, 1)
+shader_parameter/roughness = 0.5
+shader_parameter/cloak = 0.55
+shader_parameter/object_height = 1.5
+shader_parameter/distortion = 0.025
+shader_parameter/shimmer_speed = 1.2
+shader_parameter/edge_noise = 0.25
+shader_parameter/seam_color = Color(0.4, 0.9, 1, 1)
+shader_parameter/seam_width = 0.04
+shader_parameter/rim_visibility = 0.3

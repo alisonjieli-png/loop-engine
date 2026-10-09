@@ -1,0 +1,153 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "flag_wave_cloth",
+  "title": "Waving flag with a pinned edge",
+  "purpose": "Animate a flag on a subdivided quad: travelling waves grow away from the pole edge, a droop adds weight, analytic derivatives rebuild the normals, and the face shows procedural stripes and a disc or an assigned texture.",
+  "form": "library_module",
+  "asset_role": null,
+  "dimension": "3d",
+  "engine": {
+    "name": "godot",
+    "minimum_version": "4.3"
+  },
+  "tags": [
+    "godot shader",
+    "spatial",
+    "flag",
+    "cloth",
+    "wind",
+    "vertex animation",
+    "banner"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "role": "other"
+    },
+    {
+      "path": "flag_wave_cloth.gdshader",
+      "role": "skill_asset"
+    },
+    {
+      "path": "material.tres",
+      "role": "skill_asset"
+    },
+    {
+      "path": "demo.tscn",
+      "role": "skill_asset"
+    }
+  ],
+  "contract": {
+    "shader_type": "spatial",
+    "render_modes": [
+      "cull_disabled"
+    ],
+    "uniforms": [
+      {
+        "name": "flag_texture",
+        "type": "sampler2D",
+        "hint": "source_color, hint_default_white",
+        "default": null
+      },
+      {
+        "name": "stripe_a",
+        "type": "vec4",
+        "hint": "source_color",
+        "default": [
+          0.1,
+          0.25,
+          0.6,
+          1.0
+        ]
+      },
+      {
+        "name": "stripe_b",
+        "type": "vec4",
+        "hint": "source_color",
+        "default": [
+          0.95,
+          0.95,
+          0.92,
+          1.0
+        ]
+      },
+      {
+        "name": "emblem_color",
+        "type": "vec4",
+        "hint": "source_color",
+        "default": [
+          0.9,
+          0.7,
+          0.15,
+          1.0
+        ]
+      },
+      {
+        "name": "stripes",
+        "type": "int",
+        "hint": "hint_range(0, 12)",
+        "default": 5
+      },
+      {
+        "name": "amplitude",
+        "type": "float",
+        "hint": "hint_range(0.0, 0.5)",
+        "default": 0.12
+      },
+      {
+        "name": "wavelength",
+        "type": "float",
+        "hint": "hint_range(0.1, 4.0)",
+        "default": 0.9
+      },
+      {
+        "name": "speed",
+        "type": "float",
+        "hint": "hint_range(0.0, 10.0)",
+        "default": 3.0
+      },
+      {
+        "name": "droop",
+        "type": "float",
+        "hint": "hint_range(0.0, 0.5)",
+        "default": 0.06
+      },
+      {
+        "name": "flutter",
+        "type": "float",
+        "hint": "hint_range(0.0, 1.0)",
+        "default": 0.35
+      }
+    ],
+    "placement": "res://baltor/godot_shaders/flag_wave_cloth/",
+    "usage": "surface_material",
+    "renderers": {
+      "compatibility": "compiled_and_rendered",
+      "forward_plus": "not_verified",
+      "mobile": "not_verified"
+    },
+    "inputs": [
+      "A QuadMesh (or plane) with enough subdivisions along U; the pole side must be at U = 0.",
+      "Optional: a flag image for `flag_texture`."
+    ],
+    "outputs": "A striped flag with a gold disc rippling in waves that start at the pole."
+  },
+  "limits": "Not a cloth simulation: no gravity response to orientation, no wind direction and no collision. Normals come from the UV-space function, assuming an unscaled quad, so strongly non-uniform scale skews lighting. Shadows follow the moving shape.",
+  "related": [
+    "grass_blade_sway",
+    "jelly_wobble"
+  ],
+  "technique_references": [
+    "Travelling sine waves weighted by distance from a pinned edge",
+    "Finite-difference normals of a displacement function"
+  ],
+  "native_checks": [
+    "contract_static",
+    "engine_run",
+    "engine_log_clean",
+    "shader_in_scene",
+    "capture_written",
+    "render_not_uniform",
+    "shader_changes_pixels"
+  ]
+}

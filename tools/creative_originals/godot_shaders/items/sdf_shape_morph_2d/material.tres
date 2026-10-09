@@ -1,0 +1,17 @@
+[gd_resource type="ShaderMaterial" load_steps=2 format=3]
+
+[ext_resource type="Shader" path="res://baltor/godot_shaders/sdf_shape_morph_2d/sdf_shape_morph_2d.gdshader" id="1_shader"]
+
+[resource]
+shader = ExtResource("1_shader")
+shader_parameter/fill_color = Color(0.95, 0.45, 0.55, 1)
+shader_parameter/outline_color = Color(1, 1, 1, 1)
+shader_parameter/glow_color = Color(1, 0.5, 0.7, 1)
+shader_parameter/background_color = Color(0.1, 0.08, 0.16, 1)
+shader_parameter/morph_speed = 0.4
+shader_parameter/shape_index = 2.5
+shader_parameter/animate = false
+shader_parameter/size = 0.3
+shader_parameter/outline_width = 0.012
+shader_parameter/glow_width = 0.08
+shader_parameter/show_contours = true

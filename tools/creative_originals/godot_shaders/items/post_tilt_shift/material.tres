@@ -1,0 +1,12 @@
+[gd_resource type="ShaderMaterial" load_steps=2 format=3]
+
+[ext_resource type="Shader" path="res://baltor/godot_shaders/post_tilt_shift/post_tilt_shift.gdshader" id="1_shader"]
+
+[resource]
+shader = ExtResource("1_shader")
+shader_parameter/focus_center = 0.55
+shader_parameter/focus_width = 0.12
+shader_parameter/blur_ramp = 0.3
+shader_parameter/max_blur_pixels = 8.0
+shader_parameter/saturation = 1.35
+shader_parameter/contrast = 1.1

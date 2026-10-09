@@ -1,0 +1,129 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "soft_particle_depth_fade",
+  "title": "Soft particle card with depth fade",
+  "purpose": "Transparent card material for smoke, dust and glow sprites that removes the hard line where the card cuts into geometry: alpha fades by the distance to the scene depth behind it, and near the camera.",
+  "form": "library_module",
+  "asset_role": null,
+  "dimension": "3d",
+  "engine": {
+    "name": "godot",
+    "minimum_version": "4.3"
+  },
+  "tags": [
+    "godot shader",
+    "spatial",
+    "soft particles",
+    "depth fade",
+    "transparency",
+    "sprites",
+    "vfx"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "role": "other"
+    },
+    {
+      "path": "soft_particle_depth_fade.gdshader",
+      "role": "skill_asset"
+    },
+    {
+      "path": "material.tres",
+      "role": "skill_asset"
+    },
+    {
+      "path": "demo.tscn",
+      "role": "skill_asset"
+    }
+  ],
+  "contract": {
+    "shader_type": "spatial",
+    "render_modes": [
+      "unshaded",
+      "cull_disabled",
+      "depth_draw_never",
+      "shadows_disabled"
+    ],
+    "uniforms": [
+      {
+        "name": "depth_texture",
+        "type": "sampler2D",
+        "hint": "hint_depth_texture, filter_nearest",
+        "default": null
+      },
+      {
+        "name": "sprite",
+        "type": "sampler2D",
+        "hint": "source_color, hint_default_white, filter_linear",
+        "default": null
+      },
+      {
+        "name": "tint",
+        "type": "vec4",
+        "hint": "source_color",
+        "default": [
+          0.8,
+          0.82,
+          0.88,
+          0.8
+        ]
+      },
+      {
+        "name": "fade_distance",
+        "type": "float",
+        "hint": "hint_range(0.01, 4.0)",
+        "default": 0.6
+      },
+      {
+        "name": "camera_fade_near",
+        "type": "float",
+        "hint": "hint_range(0.0, 5.0)",
+        "default": 0.3
+      },
+      {
+        "name": "camera_fade_far",
+        "type": "float",
+        "hint": "hint_range(0.0, 10.0)",
+        "default": 0.8
+      },
+      {
+        "name": "fade_power",
+        "type": "float",
+        "hint": "hint_range(0.25, 4.0)",
+        "default": 1.0
+      }
+    ],
+    "placement": "res://baltor/godot_shaders/soft_particle_depth_fade/",
+    "usage": "surface_material",
+    "renderers": {
+      "compatibility": "compiled_and_rendered",
+      "forward_plus": "not_verified",
+      "mobile": "not_verified"
+    },
+    "inputs": [
+      "Optional: a sprite texture with alpha for `sprite` (the bundled material uses a procedural one)."
+    ],
+    "outputs": "Soft grey puffs that blend smoothly into the floor and the crate where they intersect."
+  },
+  "limits": "Only opaque geometry is in the depth buffer; cards do not soften against each other. The gap is measured along the view axis. Unshaded: combine with `smoke_billboard` ideas for lit puffs. Cards are sorted per object.",
+  "related": [
+    "smoke_billboard",
+    "toon_water_foam",
+    "light_shaft_cone"
+  ],
+  "technique_references": [
+    "Soft particles by scene depth difference",
+    "Camera-distance fade",
+    "Depth reconstruction with INV_PROJECTION_MATRIX"
+  ],
+  "native_checks": [
+    "contract_static",
+    "engine_run",
+    "engine_log_clean",
+    "shader_in_scene",
+    "capture_written",
+    "render_not_uniform",
+    "shader_changes_pixels"
+  ]
+}

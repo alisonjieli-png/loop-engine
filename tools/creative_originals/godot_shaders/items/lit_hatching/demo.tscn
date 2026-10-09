@@ -1,0 +1,45 @@
+[gd_scene load_steps=5 format=3]
+
+[ext_resource type="ShaderMaterial" path="res://baltor/godot_shaders/lit_hatching/material.tres" id="1_material"]
+
+[sub_resource type="Environment" id="Environment_1"]
+background_mode = 1
+background_color = Color(0.96, 0.94, 0.88, 1)
+ambient_light_source = 2
+ambient_light_color = Color(0.08, 0.08, 0.08, 1)
+ambient_light_energy = 1.0
+
+[sub_resource type="SphereMesh" id="SphereMesh_2"]
+radial_segments = 64
+rings = 32
+radius = 0.5
+height = 1.0
+
+[sub_resource type="TorusMesh" id="TorusMesh_3"]
+rings = 64
+ring_segments = 32
+inner_radius = 0.18
+outer_radius = 0.38
+
+[node name="Root" type="Node3D"]
+
+[node name="Environment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_1")
+
+[node name="Subject0" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.35, 0, 0)
+mesh = SubResource("SphereMesh_2")
+material_override = ExtResource("1_material")
+
+[node name="Subject1" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.93969, -0.34202, 0, 0.17101, 0.46985, -0.86603, 0.2962, 0.8138, 0.5, 0.55, 0.05, -0.2)
+mesh = SubResource("TorusMesh_3")
+material_override = ExtResource("1_material")
+
+[node name="Sun" type="DirectionalLight3D" parent="."]
+transform = Transform3D(0.49614, -0.51836, 0.69653, 0, 0.80222, 0.59702, -0.86824, -0.29621, 0.39801, 0.7, 0.6, 0.4)
+light_color = Color(1, 0.97, 0.92, 1)
+light_energy = 1.2
+
+[node name="Camera" type="Camera3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0.98639, 0.1644, 0, -0.1644, 0.98639, 0, 0.3, 1.8)

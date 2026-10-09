@@ -1,0 +1,13 @@
+[gd_resource type="ShaderMaterial" load_steps=2 format=3]
+
+[ext_resource type="Shader" path="res://baltor/godot_shaders/post_night_vision/post_night_vision.gdshader" id="1_shader"]
+
+[resource]
+shader = ExtResource("1_shader")
+shader_parameter/phosphor = Color(0.35, 1, 0.45, 1)
+shader_parameter/gain = 2.4
+shader_parameter/glow = 0.6
+shader_parameter/noise_amount = 0.25
+shader_parameter/scanline_strength = 0.15
+shader_parameter/binocular = true
+shader_parameter/mask_radius = 0.46

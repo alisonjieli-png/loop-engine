@@ -1,0 +1,16 @@
+[gd_resource type="ShaderMaterial" load_steps=2 format=3]
+
+[ext_resource type="Shader" path="res://baltor/godot_shaders/stained_glass_cells/stained_glass_cells.gdshader" id="1_shader"]
+
+[resource]
+shader = ExtResource("1_shader")
+shader_parameter/glass_a = Color(0.75, 0.12, 0.15, 1)
+shader_parameter/glass_b = Color(0.12, 0.3, 0.75, 1)
+shader_parameter/glass_c = Color(0.95, 0.75, 0.15, 1)
+shader_parameter/glass_d = Color(0.15, 0.55, 0.25, 1)
+shader_parameter/lead_color = Color(0.06, 0.06, 0.07, 1)
+shader_parameter/cell_scale = 6.0
+shader_parameter/lead_width = 0.07
+shader_parameter/backlight = 1.6
+shader_parameter/mottling = 0.35
+shader_parameter/glass_opacity = 0.85

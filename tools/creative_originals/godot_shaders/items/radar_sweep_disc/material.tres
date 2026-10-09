@@ -1,0 +1,16 @@
+[gd_resource type="ShaderMaterial" load_steps=2 format=3]
+
+[ext_resource type="Shader" path="res://baltor/godot_shaders/radar_sweep_disc/radar_sweep_disc.gdshader" id="1_shader"]
+
+[resource]
+shader = ExtResource("1_shader")
+shader_parameter/screen_color = Color(0, 0.06, 0.03, 1)
+shader_parameter/phosphor_color = Color(0.25, 1, 0.45, 1)
+shader_parameter/sweep_speed = 1.2
+shader_parameter/trail_angle = 1.8
+shader_parameter/range_rings = 4
+shader_parameter/spokes = 8
+shader_parameter/line_width = 0.006
+shader_parameter/blip_density = 0.12
+shader_parameter/blip_size = 0.025
+shader_parameter/blip_cells = 10.0

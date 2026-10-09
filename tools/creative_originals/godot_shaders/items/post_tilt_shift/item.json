@@ -1,0 +1,126 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "post_tilt_shift",
+  "title": "Tilt-shift miniature effect",
+  "purpose": "Make a scene look like a miniature model: a horizontal band stays sharp while blur grows above and below it, with boosted saturation and contrast as in tilt-shift photographs.",
+  "form": "library_module",
+  "asset_role": null,
+  "dimension": "3d",
+  "engine": {
+    "name": "godot",
+    "minimum_version": "4.3"
+  },
+  "tags": [
+    "godot shader",
+    "spatial",
+    "post-process",
+    "tilt shift",
+    "miniature",
+    "blur",
+    "photography",
+    "full-screen"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "role": "other"
+    },
+    {
+      "path": "post_tilt_shift.gdshader",
+      "role": "skill_asset"
+    },
+    {
+      "path": "material.tres",
+      "role": "skill_asset"
+    },
+    {
+      "path": "demo.tscn",
+      "role": "skill_asset"
+    }
+  ],
+  "contract": {
+    "shader_type": "spatial",
+    "render_modes": [
+      "unshaded",
+      "cull_disabled",
+      "depth_test_disabled",
+      "depth_draw_never",
+      "skip_vertex_transform",
+      "fog_disabled"
+    ],
+    "uniforms": [
+      {
+        "name": "screen_texture",
+        "type": "sampler2D",
+        "hint": "hint_screen_texture, filter_linear_mipmap",
+        "default": null
+      },
+      {
+        "name": "focus_center",
+        "type": "float",
+        "hint": "hint_range(0.0, 1.0)",
+        "default": 0.55
+      },
+      {
+        "name": "focus_width",
+        "type": "float",
+        "hint": "hint_range(0.0, 0.8)",
+        "default": 0.12
+      },
+      {
+        "name": "blur_ramp",
+        "type": "float",
+        "hint": "hint_range(0.01, 1.0)",
+        "default": 0.3
+      },
+      {
+        "name": "max_blur_pixels",
+        "type": "float",
+        "hint": "hint_range(0.0, 24.0)",
+        "default": 8.0
+      },
+      {
+        "name": "saturation",
+        "type": "float",
+        "hint": "hint_range(0.0, 2.0)",
+        "default": 1.35
+      },
+      {
+        "name": "contrast",
+        "type": "float",
+        "hint": "hint_range(0.5, 2.0)",
+        "default": 1.1
+      }
+    ],
+    "placement": "res://baltor/godot_shaders/post_tilt_shift/",
+    "usage": "post_process_quad",
+    "renderers": {
+      "compatibility": "compiled_and_rendered",
+      "forward_plus": "not_verified",
+      "mobile": "not_verified"
+    },
+    "inputs": [
+      "A MeshInstance3D with a 2 x 2 QuadMesh, `material.tres` as its material override and a large extra cull margin, as in `demo.tscn`."
+    ],
+    "outputs": "The scene with a sharp middle band and blurred top and bottom, colours boosted like a toy model."
+  },
+  "limits": "Blur ignores depth, so foreground objects crossing the sharp band stay sharp where they should not. Works best with high, tilted camera angles. The pass reads Godot's screen texture after opaque geometry, so transparent objects drawn after it are not processed and its order among other transparent passes is not controlled.",
+  "related": [
+    "post_depth_of_field",
+    "post_color_grading"
+  ],
+  "technique_references": [
+    "Screen-position based blur band",
+    "Golden-angle disc blur",
+    "Saturation and contrast boost"
+  ],
+  "native_checks": [
+    "contract_static",
+    "engine_run",
+    "engine_log_clean",
+    "shader_in_scene",
+    "capture_written",
+    "render_not_uniform",
+    "shader_changes_pixels"
+  ]
+}

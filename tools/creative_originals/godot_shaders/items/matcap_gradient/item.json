@@ -1,0 +1,118 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "matcap_gradient",
+  "title": "Matcap shading with a procedural sphere texture",
+  "purpose": "Light a mesh entirely from a matcap: the view-space normal looks up a lit-sphere texture, so shading is baked and costs one sample. Ships with a procedural gradient matcap and accepts any matcap image.",
+  "form": "library_module",
+  "asset_role": null,
+  "dimension": "3d",
+  "engine": {
+    "name": "godot",
+    "minimum_version": "4.3"
+  },
+  "tags": [
+    "godot shader",
+    "spatial",
+    "matcap",
+    "lit sphere",
+    "sculpt",
+    "unshaded",
+    "preview"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "role": "other"
+    },
+    {
+      "path": "matcap_gradient.gdshader",
+      "role": "skill_asset"
+    },
+    {
+      "path": "material.tres",
+      "role": "skill_asset"
+    },
+    {
+      "path": "demo.tscn",
+      "role": "skill_asset"
+    }
+  ],
+  "contract": {
+    "shader_type": "spatial",
+    "render_modes": [
+      "unshaded"
+    ],
+    "uniforms": [
+      {
+        "name": "matcap",
+        "type": "sampler2D",
+        "hint": "source_color, hint_default_white, filter_linear",
+        "default": null
+      },
+      {
+        "name": "tint",
+        "type": "vec4",
+        "hint": "source_color",
+        "default": [
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      {
+        "name": "rim_strength",
+        "type": "float",
+        "hint": "hint_range(0.0, 2.0)",
+        "default": 0.25
+      },
+      {
+        "name": "rim_color",
+        "type": "vec4",
+        "hint": "source_color",
+        "default": [
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      {
+        "name": "cavity_strength",
+        "type": "float",
+        "hint": "hint_range(0.0, 1.0)",
+        "default": 0.3
+      }
+    ],
+    "placement": "res://baltor/godot_shaders/matcap_gradient/",
+    "usage": "surface_material",
+    "renderers": {
+      "compatibility": "compiled_and_rendered",
+      "forward_plus": "not_verified",
+      "mobile": "not_verified"
+    },
+    "inputs": [
+      "Optional: a square matcap image assigned to `matcap` (the bundled material uses a procedural one)."
+    ],
+    "outputs": "Objects shaded like soft clay from the matcap colours, the same from every light setup."
+  },
+  "limits": "Lighting is fixed to the view, so it turns with the camera and never casts or receives shadows. The cavity term only darkens where normals change within a pixel quad, which is subtle on smooth meshes. Matcaps with a visible horizon look wrong when the camera rolls.",
+  "related": [
+    "ramp_texture_lighting",
+    "toon_band_rim"
+  ],
+  "technique_references": [
+    "Matcap (lit sphere) lookup from the view-space reflection vector",
+    "Facing ratio rim",
+    "Derivative cavity approximation"
+  ],
+  "native_checks": [
+    "contract_static",
+    "engine_run",
+    "engine_log_clean",
+    "shader_in_scene",
+    "capture_written",
+    "render_not_uniform",
+    "shader_changes_pixels"
+  ]
+}

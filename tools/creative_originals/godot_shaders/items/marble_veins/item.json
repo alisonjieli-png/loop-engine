@@ -1,0 +1,144 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "marble_veins",
+  "title": "Procedural marble with turbulent veins",
+  "purpose": "Polished marble in object space: veins from a sine of position bent by fractal turbulence, a second finer vein network, cloudy body variation and glossy finish, for floors, statues and counters without textures.",
+  "form": "library_module",
+  "asset_role": null,
+  "dimension": "3d",
+  "engine": {
+    "name": "godot",
+    "minimum_version": "4.3"
+  },
+  "tags": [
+    "godot shader",
+    "spatial",
+    "marble",
+    "procedural",
+    "turbulence",
+    "stone",
+    "solid texture"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "role": "other"
+    },
+    {
+      "path": "marble_veins.gdshader",
+      "role": "skill_asset"
+    },
+    {
+      "path": "material.tres",
+      "role": "skill_asset"
+    },
+    {
+      "path": "demo.tscn",
+      "role": "skill_asset"
+    }
+  ],
+  "contract": {
+    "shader_type": "spatial",
+    "render_modes": [],
+    "uniforms": [
+      {
+        "name": "body_color",
+        "type": "vec4",
+        "hint": "source_color",
+        "default": [
+          0.92,
+          0.91,
+          0.88,
+          1.0
+        ]
+      },
+      {
+        "name": "cloud_color",
+        "type": "vec4",
+        "hint": "source_color",
+        "default": [
+          0.82,
+          0.8,
+          0.78,
+          1.0
+        ]
+      },
+      {
+        "name": "vein_color",
+        "type": "vec4",
+        "hint": "source_color",
+        "default": [
+          0.25,
+          0.27,
+          0.3,
+          1.0
+        ]
+      },
+      {
+        "name": "scale",
+        "type": "float",
+        "hint": "hint_range(0.2, 10.0)",
+        "default": 1.6
+      },
+      {
+        "name": "vein_frequency",
+        "type": "float",
+        "hint": "hint_range(0.5, 20.0)",
+        "default": 3.5
+      },
+      {
+        "name": "turbulence",
+        "type": "float",
+        "hint": "hint_range(0.0, 10.0)",
+        "default": 4.5
+      },
+      {
+        "name": "vein_sharpness",
+        "type": "float",
+        "hint": "hint_range(1.0, 40.0)",
+        "default": 14.0
+      },
+      {
+        "name": "fine_veins",
+        "type": "float",
+        "hint": "hint_range(0.0, 1.0)",
+        "default": 0.4
+      },
+      {
+        "name": "roughness",
+        "type": "float",
+        "hint": "hint_range(0.0, 1.0)",
+        "default": 0.12
+      }
+    ],
+    "placement": "res://baltor/godot_shaders/marble_veins/",
+    "usage": "surface_material",
+    "renderers": {
+      "compatibility": "compiled_and_rendered",
+      "forward_plus": "not_verified",
+      "mobile": "not_verified"
+    },
+    "inputs": [],
+    "outputs": "White polished stone with dark grey wandering veins and soft cloudy areas."
+  },
+  "limits": "Solid texture in object space: objects that should continue one slab need the same transform. Veins have no depth or translucency. Ten noise octaves per pixel plus fBm make it moderately expensive.",
+  "related": [
+    "wood_rings",
+    "terrazzo_floor",
+    "lava_domain_warp"
+  ],
+  "technique_references": [
+    "Turbulence marble (sine of position plus absolute-noise turbulence, Perlin 1985)",
+    "Two vein networks",
+    "Value noise with quintic interpolation and fractional Brownian motion"
+  ],
+  "native_checks": [
+    "contract_static",
+    "engine_run",
+    "engine_log_clean",
+    "shader_in_scene",
+    "capture_written",
+    "render_not_uniform",
+    "shader_changes_pixels"
+  ]
+}

@@ -1,0 +1,162 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "scan_pulse_world",
+  "title": "Full-screen world scan pulse from depth",
+  "purpose": "Full-screen scanner effect: world positions are rebuilt from the depth buffer and bright rings expand from a world point across every surface, with a fading trail, a world grid inside the trail and edge highlights.",
+  "form": "library_module",
+  "asset_role": null,
+  "dimension": "3d",
+  "engine": {
+    "name": "godot",
+    "minimum_version": "4.3"
+  },
+  "tags": [
+    "godot shader",
+    "spatial",
+    "post-process",
+    "scan",
+    "pulse",
+    "sonar",
+    "depth buffer",
+    "world position"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "role": "other"
+    },
+    {
+      "path": "scan_pulse_world.gdshader",
+      "role": "skill_asset"
+    },
+    {
+      "path": "material.tres",
+      "role": "skill_asset"
+    },
+    {
+      "path": "demo.tscn",
+      "role": "skill_asset"
+    }
+  ],
+  "contract": {
+    "shader_type": "spatial",
+    "render_modes": [
+      "unshaded",
+      "cull_disabled",
+      "depth_test_disabled",
+      "depth_draw_never",
+      "skip_vertex_transform",
+      "fog_disabled"
+    ],
+    "uniforms": [
+      {
+        "name": "screen_texture",
+        "type": "sampler2D",
+        "hint": "hint_screen_texture, filter_linear_mipmap",
+        "default": null
+      },
+      {
+        "name": "depth_texture",
+        "type": "sampler2D",
+        "hint": "hint_depth_texture, filter_nearest",
+        "default": null
+      },
+      {
+        "name": "pulse_color",
+        "type": "vec4",
+        "hint": "source_color",
+        "default": [
+          0.25,
+          1.0,
+          0.85,
+          1.0
+        ]
+      },
+      {
+        "name": "center_x",
+        "type": "float",
+        "hint": "hint_range(-50.0, 50.0)",
+        "default": 0.0
+      },
+      {
+        "name": "center_y",
+        "type": "float",
+        "hint": "hint_range(-50.0, 50.0)",
+        "default": 0.0
+      },
+      {
+        "name": "center_z",
+        "type": "float",
+        "hint": "hint_range(-50.0, 50.0)",
+        "default": 0.0
+      },
+      {
+        "name": "pulse_speed",
+        "type": "float",
+        "hint": "hint_range(0.1, 50.0)",
+        "default": 4.0
+      },
+      {
+        "name": "pulse_period",
+        "type": "float",
+        "hint": "hint_range(0.5, 20.0)",
+        "default": 3.0
+      },
+      {
+        "name": "ring_width",
+        "type": "float",
+        "hint": "hint_range(0.01, 2.0)",
+        "default": 0.15
+      },
+      {
+        "name": "trail_length",
+        "type": "float",
+        "hint": "hint_range(0.0, 10.0)",
+        "default": 2.5
+      },
+      {
+        "name": "grid_size",
+        "type": "float",
+        "hint": "hint_range(0.05, 5.0)",
+        "default": 0.5
+      },
+      {
+        "name": "max_distance",
+        "type": "float",
+        "hint": "hint_range(1.0, 500.0)",
+        "default": 100.0
+      }
+    ],
+    "placement": "res://baltor/godot_shaders/scan_pulse_world/",
+    "usage": "post_process_quad",
+    "renderers": {
+      "compatibility": "compiled_and_rendered",
+      "forward_plus": "not_verified",
+      "mobile": "not_verified"
+    },
+    "inputs": [
+      "A world position for the pulse origin (set the three centre uniforms from a script)."
+    ],
+    "outputs": "The scene with a glowing cyan ring sweeping outward over floors and objects, leaving a gridded trail."
+  },
+  "limits": "Only opaque geometry is in the depth buffer, so transparent objects are not scanned. The grid uses 3D world coordinates, so it shows lines on all faces. One pulse centre at a time.",
+  "related": [
+    "post_depth_fog",
+    "post_edge_detect",
+    "radar_sweep_disc"
+  ],
+  "technique_references": [
+    "World position reconstruction from depth with inverse projection and view matrices",
+    "Distance-based expanding ring with trail",
+    "Derivative anti-aliased 3D grid"
+  ],
+  "native_checks": [
+    "contract_static",
+    "engine_run",
+    "engine_log_clean",
+    "shader_in_scene",
+    "capture_written",
+    "render_not_uniform",
+    "shader_changes_pixels"
+  ]
+}

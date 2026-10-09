@@ -1,0 +1,16 @@
+[gd_resource type="ShaderMaterial" load_steps=2 format=3]
+
+[ext_resource type="Shader" path="res://baltor/godot_shaders/hair_strand_highlight/hair_strand_highlight.gdshader" id="1_shader"]
+
+[resource]
+shader = ExtResource("1_shader")
+shader_parameter/root_color = Color(0.12, 0.06, 0.03, 1)
+shader_parameter/tip_color = Color(0.45, 0.25, 0.12, 1)
+shader_parameter/secondary_tint = Color(0.85, 0.55, 0.3, 1)
+shader_parameter/primary_shift = 0.1
+shader_parameter/secondary_shift = -0.15
+shader_parameter/primary_exponent = 160.0
+shader_parameter/secondary_exponent = 40.0
+shader_parameter/strand_noise = 0.4
+shader_parameter/strand_count = 400.0
+shader_parameter/highlight_strength = 0.6

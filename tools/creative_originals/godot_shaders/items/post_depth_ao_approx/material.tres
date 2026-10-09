@@ -1,0 +1,13 @@
+[gd_resource type="ShaderMaterial" load_steps=2 format=3]
+
+[ext_resource type="Shader" path="res://baltor/godot_shaders/post_depth_ao_approx/post_depth_ao_approx.gdshader" id="1_shader"]
+
+[resource]
+shader = ExtResource("1_shader")
+shader_parameter/radius = 0.45
+shader_parameter/intensity = 1.4
+shader_parameter/samples = 16
+shader_parameter/bias = 0.03
+shader_parameter/max_pixels = 48.0
+shader_parameter/shadow_tint = Color(0, 0, 0.05, 1)
+shader_parameter/show_occlusion = false

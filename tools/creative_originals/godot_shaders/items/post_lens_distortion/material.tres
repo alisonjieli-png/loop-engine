@@ -1,0 +1,11 @@
+[gd_resource type="ShaderMaterial" load_steps=2 format=3]
+
+[ext_resource type="Shader" path="res://baltor/godot_shaders/post_lens_distortion/post_lens_distortion.gdshader" id="1_shader"]
+
+[resource]
+shader = ExtResource("1_shader")
+shader_parameter/k1 = 0.22
+shader_parameter/k2 = 0.06
+shader_parameter/auto_fit = true
+shader_parameter/zoom = 1.0
+shader_parameter/edge_darkening = 0.3

@@ -1,0 +1,90 @@
+[gd_scene load_steps=11 format=3]
+
+[ext_resource type="ShaderMaterial" path="res://baltor/godot_shaders/toon_water_foam/material.tres" id="1_material"]
+
+[sub_resource type="Environment" id="Environment_1"]
+background_mode = 1
+background_color = Color(0.55, 0.75, 0.9, 1)
+ambient_light_source = 2
+ambient_light_color = Color(0.55, 0.58, 0.62, 1)
+ambient_light_energy = 1.0
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_2"]
+albedo_color = Color(0.85, 0.75, 0.52, 1)
+roughness = 0.95
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_3"]
+size = Vector2(12, 12)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_4"]
+albedo_color = Color(0.45, 0.42, 0.4, 1)
+roughness = 0.9
+
+[sub_resource type="SphereMesh" id="SphereMesh_5"]
+radial_segments = 64
+rings = 32
+radius = 0.35
+height = 0.7
+
+[sub_resource type="SphereMesh" id="SphereMesh_6"]
+radial_segments = 64
+rings = 32
+radius = 0.45
+height = 0.9
+
+[sub_resource type="SphereMesh" id="SphereMesh_7"]
+radial_segments = 64
+rings = 32
+radius = 0.5
+height = 1.0
+
+[sub_resource type="SphereMesh" id="SphereMesh_8"]
+radial_segments = 64
+rings = 32
+radius = 0.4
+height = 0.8
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_9"]
+size = Vector2(12, 12)
+
+[node name="Root" type="Node3D"]
+
+[node name="Environment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_1")
+
+[node name="Seabed" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0.9703, -0.24192, 0, 0.24192, 0.9703, 0, -0.6, -1.5)
+mesh = SubResource("PlaneMesh_3")
+material_override = SubResource("StandardMaterial3D_2")
+
+[node name="Rock0" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0.7, 0, 0, 0, 1, -0.9, -0.05, 0.2)
+mesh = SubResource("SphereMesh_5")
+material_override = SubResource("StandardMaterial3D_4")
+
+[node name="Rock1" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0.7, 0, 0, 0, 1, 0.7, 0, -0.4)
+mesh = SubResource("SphereMesh_6")
+material_override = SubResource("StandardMaterial3D_4")
+
+[node name="Rock2" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0.7, 0, 0, 0, 1, 0.1, -0.15, -1.8)
+mesh = SubResource("SphereMesh_7")
+material_override = SubResource("StandardMaterial3D_4")
+
+[node name="Rock3" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0.7, 0, 0, 0, 1, 1.8, -0.1, -2.6)
+mesh = SubResource("SphereMesh_8")
+material_override = SubResource("StandardMaterial3D_4")
+
+[node name="Water" type="MeshInstance3D" parent="."]
+mesh = SubResource("PlaneMesh_9")
+material_override = ExtResource("1_material")
+
+[node name="Sun" type="DirectionalLight3D" parent="."]
+transform = Transform3D(0.74741, -0.53083, 0.3995, 0, 0.60133, 0.799, -0.66436, -0.59718, 0.44944, 0.4, 0.8, 0.45)
+light_color = Color(1, 0.97, 0.92, 1)
+light_energy = 1.0
+
+[node name="Camera" type="Camera3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0.83957, 0.54325, 0, -0.54325, 0.83957, 0, 2, 2.6)

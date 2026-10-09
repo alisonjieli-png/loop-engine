@@ -1,0 +1,14 @@
+[gd_resource type="ShaderMaterial" load_steps=2 format=3]
+
+[ext_resource type="Shader" path="res://baltor/godot_shaders/rain_glass_droplets/rain_glass_droplets.gdshader" id="1_shader"]
+
+[resource]
+shader = ExtResource("1_shader")
+shader_parameter/drop_density = 12.0
+shader_parameter/drop_size = 0.28
+shader_parameter/runner_columns = 7.0
+shader_parameter/runner_speed = 0.35
+shader_parameter/refraction = 0.06
+shader_parameter/mist_blur = 3.0
+shader_parameter/mist_tint = Color(0.82, 0.87, 0.92, 1)
+shader_parameter/mist_amount = 0.25

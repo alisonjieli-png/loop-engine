@@ -1,0 +1,147 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "depth_decal_projector",
+  "title": "Box-projected decal from the depth buffer",
+  "purpose": "Project a decal onto whatever geometry lies inside a box: the box's pixels rebuild the scene position from depth, move it into the box's local space, discard outside the box, fade on steep surfaces, and draw a procedural emblem or an assigned image.",
+  "form": "library_module",
+  "asset_role": null,
+  "dimension": "3d",
+  "engine": {
+    "name": "godot",
+    "minimum_version": "4.3"
+  },
+  "tags": [
+    "godot shader",
+    "spatial",
+    "decal",
+    "projection",
+    "depth buffer",
+    "deferred decal",
+    "graffiti"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "role": "other"
+    },
+    {
+      "path": "depth_decal_projector.gdshader",
+      "role": "skill_asset"
+    },
+    {
+      "path": "material.tres",
+      "role": "skill_asset"
+    },
+    {
+      "path": "demo.tscn",
+      "role": "skill_asset"
+    }
+  ],
+  "contract": {
+    "shader_type": "spatial",
+    "render_modes": [
+      "unshaded",
+      "cull_front",
+      "depth_test_disabled",
+      "depth_draw_never",
+      "shadows_disabled"
+    ],
+    "uniforms": [
+      {
+        "name": "depth_texture",
+        "type": "sampler2D",
+        "hint": "hint_depth_texture, filter_nearest",
+        "default": null
+      },
+      {
+        "name": "decal_texture",
+        "type": "sampler2D",
+        "hint": "source_color, hint_default_white, filter_linear",
+        "default": null
+      },
+      {
+        "name": "decal_color",
+        "type": "vec4",
+        "hint": "source_color",
+        "default": [
+          0.95,
+          0.75,
+          0.1,
+          1.0
+        ]
+      },
+      {
+        "name": "accent_color",
+        "type": "vec4",
+        "hint": "source_color",
+        "default": [
+          0.08,
+          0.08,
+          0.08,
+          1.0
+        ]
+      },
+      {
+        "name": "opacity",
+        "type": "float",
+        "hint": "hint_range(0.0, 1.0)",
+        "default": 0.9
+      },
+      {
+        "name": "angle_fade",
+        "type": "float",
+        "hint": "hint_range(0.0, 1.0)",
+        "default": 0.4
+      },
+      {
+        "name": "edge_fade",
+        "type": "float",
+        "hint": "hint_range(0.0, 0.5)",
+        "default": 0.05
+      },
+      {
+        "name": "stripe_count",
+        "type": "int",
+        "hint": "hint_range(0, 24)",
+        "default": 10
+      },
+      {
+        "name": "ring_width",
+        "type": "float",
+        "hint": "hint_range(0.0, 0.5)",
+        "default": 0.12
+      }
+    ],
+    "placement": "res://baltor/godot_shaders/depth_decal_projector/",
+    "usage": "surface_material",
+    "renderers": {
+      "compatibility": "compiled_and_rendered",
+      "forward_plus": "not_verified",
+      "mobile": "not_verified"
+    },
+    "inputs": [
+      "A unit BoxMesh node scaled and rotated to the decal volume; its local Y is the projection axis.",
+      "Optional: a decal image for `decal_texture`."
+    ],
+    "outputs": "A yellow and black hazard disc painted across the floor and wrapping onto the crate inside the box."
+  },
+  "limits": "Projects onto every opaque surface in the box, including moving characters; filter with layers if needed. Transparent objects are not in the depth buffer. The decal does not receive lighting (unshaded). Reconstructed normals are flat per pixel quad and can flicker at depth discontinuities.",
+  "related": [
+    "scan_pulse_world",
+    "soft_particle_depth_fade"
+  ],
+  "technique_references": [
+    "Deferred (screen-space) decal by depth reconstruction into box space",
+    "Normal from derivatives of the reconstructed position",
+    "Procedural emblem"
+  ],
+  "native_checks": [
+    "contract_static",
+    "engine_run",
+    "engine_log_clean",
+    "shader_in_scene",
+    "capture_written",
+    "render_not_uniform",
+    "shader_changes_pixels"
+  ]
+}

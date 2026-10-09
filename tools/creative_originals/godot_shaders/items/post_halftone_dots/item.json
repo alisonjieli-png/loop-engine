@@ -1,0 +1,127 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "post_halftone_dots",
+  "title": "CMYK halftone print screens",
+  "purpose": "Reproduce colour printing: the image is split into cyan, magenta, yellow and black, each printed as dots on its own rotated grid with dot size following the ink amount, then composited on paper.",
+  "form": "library_module",
+  "asset_role": null,
+  "dimension": "3d",
+  "engine": {
+    "name": "godot",
+    "minimum_version": "4.3"
+  },
+  "tags": [
+    "godot shader",
+    "spatial",
+    "post-process",
+    "halftone",
+    "cmyk",
+    "print",
+    "comic",
+    "full-screen"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "role": "other"
+    },
+    {
+      "path": "post_halftone_dots.gdshader",
+      "role": "skill_asset"
+    },
+    {
+      "path": "material.tres",
+      "role": "skill_asset"
+    },
+    {
+      "path": "demo.tscn",
+      "role": "skill_asset"
+    }
+  ],
+  "contract": {
+    "shader_type": "spatial",
+    "render_modes": [
+      "unshaded",
+      "cull_disabled",
+      "depth_test_disabled",
+      "depth_draw_never",
+      "skip_vertex_transform",
+      "fog_disabled"
+    ],
+    "uniforms": [
+      {
+        "name": "screen_texture",
+        "type": "sampler2D",
+        "hint": "hint_screen_texture, filter_linear_mipmap",
+        "default": null
+      },
+      {
+        "name": "dot_spacing",
+        "type": "float",
+        "hint": "hint_range(2.0, 40.0)",
+        "default": 7.0
+      },
+      {
+        "name": "dot_softness",
+        "type": "float",
+        "hint": "hint_range(0.0, 2.0)",
+        "default": 0.8
+      },
+      {
+        "name": "paper_color",
+        "type": "vec4",
+        "hint": "source_color",
+        "default": [
+          0.97,
+          0.95,
+          0.9,
+          1.0
+        ]
+      },
+      {
+        "name": "ink_strength",
+        "type": "float",
+        "hint": "hint_range(0.0, 1.5)",
+        "default": 1.0
+      },
+      {
+        "name": "monochrome",
+        "type": "bool",
+        "hint": null,
+        "default": false
+      }
+    ],
+    "placement": "res://baltor/godot_shaders/post_halftone_dots/",
+    "usage": "post_process_quad",
+    "renderers": {
+      "compatibility": "compiled_and_rendered",
+      "forward_plus": "not_verified",
+      "mobile": "not_verified"
+    },
+    "inputs": [
+      "A MeshInstance3D with a 2 x 2 QuadMesh, `material.tres` as its material override and a large extra cull margin, as in `demo.tscn`."
+    ],
+    "outputs": "The scene printed as overlapping cyan, magenta, yellow and black dot screens on cream paper."
+  },
+  "limits": "Dots sample the ink at each pixel, not at the cell centre, so dot edges follow image edges slightly. The RGB to CMYK conversion is the naive formula without colour management. Dot spacing is in screen pixels. The pass reads Godot's screen texture after opaque geometry, so transparent objects drawn after it are not processed and its order among other transparent passes is not controlled.",
+  "related": [
+    "post_bayer_dither",
+    "lit_hatching",
+    "post_posterize_gamma"
+  ],
+  "technique_references": [
+    "CMYK separation",
+    "Rotated halftone screens at traditional angles",
+    "Dot area proportional to ink",
+    "Subtractive compositing"
+  ],
+  "native_checks": [
+    "contract_static",
+    "engine_run",
+    "engine_log_clean",
+    "shader_in_scene",
+    "capture_written",
+    "render_not_uniform",
+    "shader_changes_pixels"
+  ]
+}

@@ -1,0 +1,123 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "multimesh_instance_variation",
+  "title": "Per-instance variation for MultiMesh crowds",
+  "purpose": "Give thousands of MultiMesh instances individual looks and motion from INSTANCE_ID alone: hue and brightness variation, random height scale, and a bobbing wave with its own phase per instance.",
+  "form": "library_module",
+  "asset_role": null,
+  "dimension": "3d",
+  "engine": {
+    "name": "godot",
+    "minimum_version": "4.3"
+  },
+  "tags": [
+    "godot shader",
+    "spatial",
+    "multimesh",
+    "instancing",
+    "variation",
+    "crowd",
+    "vertex animation"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "role": "other"
+    },
+    {
+      "path": "multimesh_instance_variation.gdshader",
+      "role": "skill_asset"
+    },
+    {
+      "path": "material.tres",
+      "role": "skill_asset"
+    },
+    {
+      "path": "demo.tscn",
+      "role": "skill_asset"
+    }
+  ],
+  "contract": {
+    "shader_type": "spatial",
+    "render_modes": [],
+    "uniforms": [
+      {
+        "name": "base_color",
+        "type": "vec4",
+        "hint": "source_color",
+        "default": [
+          0.25,
+          0.6,
+          0.85,
+          1.0
+        ]
+      },
+      {
+        "name": "hue_variation",
+        "type": "float",
+        "hint": "hint_range(0.0, 1.0)",
+        "default": 0.35
+      },
+      {
+        "name": "brightness_variation",
+        "type": "float",
+        "hint": "hint_range(0.0, 1.0)",
+        "default": 0.3
+      },
+      {
+        "name": "height_variation",
+        "type": "float",
+        "hint": "hint_range(0.0, 2.0)",
+        "default": 0.8
+      },
+      {
+        "name": "bob_height",
+        "type": "float",
+        "hint": "hint_range(0.0, 1.0)",
+        "default": 0.12
+      },
+      {
+        "name": "bob_speed",
+        "type": "float",
+        "hint": "hint_range(0.0, 10.0)",
+        "default": 2.0
+      },
+      {
+        "name": "roughness",
+        "type": "float",
+        "hint": "hint_range(0.0, 1.0)",
+        "default": 0.6
+      }
+    ],
+    "placement": "res://baltor/godot_shaders/multimesh_instance_variation/",
+    "usage": "surface_material",
+    "renderers": {
+      "compatibility": "compiled_and_rendered",
+      "forward_plus": "not_verified",
+      "mobile": "not_verified"
+    },
+    "inputs": [
+      "A MultiMeshInstance3D; meshes should have their base near object y = -0.25 (or edit `base` in the shader)."
+    ],
+    "outputs": "A field of blue, teal and violet boxes of different heights bobbing out of step."
+  },
+  "limits": "Variation is tied to the instance index, so reordering instances changes their looks. INSTANCE_ID is 0 for a plain MeshInstance3D, so all copies look the same there. Normals are not adjusted for the height stretch (fine for boxes and columns).",
+  "related": [
+    "grass_blade_sway",
+    "particles_shape_morph"
+  ],
+  "technique_references": [
+    "Hashed INSTANCE_ID per-instance randomness (MurmurHash3 finalizer)",
+    "Hue rotation about the grey axis (Rodrigues rotation)",
+    "Per-instance phase animation"
+  ],
+  "native_checks": [
+    "contract_static",
+    "engine_run",
+    "engine_log_clean",
+    "shader_in_scene",
+    "capture_written",
+    "render_not_uniform",
+    "shader_changes_pixels"
+  ]
+}

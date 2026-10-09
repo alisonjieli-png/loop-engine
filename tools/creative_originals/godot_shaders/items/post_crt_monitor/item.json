@@ -1,0 +1,146 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "post_crt_monitor",
+  "title": "CRT monitor with curvature, scanlines and shadow mask",
+  "purpose": "Make the screen look like a curved cathode ray tube: barrel-curved image with rounded black corners, horizontal scanlines, an RGB aperture mask, glow from blurred mip levels and a vignette.",
+  "form": "library_module",
+  "asset_role": null,
+  "dimension": "3d",
+  "engine": {
+    "name": "godot",
+    "minimum_version": "4.3"
+  },
+  "tags": [
+    "godot shader",
+    "spatial",
+    "post-process",
+    "crt",
+    "retro",
+    "scanlines",
+    "shadow mask",
+    "full-screen"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "role": "other"
+    },
+    {
+      "path": "post_crt_monitor.gdshader",
+      "role": "skill_asset"
+    },
+    {
+      "path": "material.tres",
+      "role": "skill_asset"
+    },
+    {
+      "path": "demo.tscn",
+      "role": "skill_asset"
+    }
+  ],
+  "contract": {
+    "shader_type": "spatial",
+    "render_modes": [
+      "unshaded",
+      "cull_disabled",
+      "depth_test_disabled",
+      "depth_draw_never",
+      "skip_vertex_transform",
+      "fog_disabled"
+    ],
+    "uniforms": [
+      {
+        "name": "screen_texture",
+        "type": "sampler2D",
+        "hint": "hint_screen_texture, filter_linear_mipmap",
+        "default": null
+      },
+      {
+        "name": "curvature",
+        "type": "float",
+        "hint": "hint_range(0.0, 0.5)",
+        "default": 0.12
+      },
+      {
+        "name": "scanline_pixels",
+        "type": "float",
+        "hint": "hint_range(2.0, 12.0)",
+        "default": 3.0
+      },
+      {
+        "name": "scanline_strength",
+        "type": "float",
+        "hint": "hint_range(0.0, 1.0)",
+        "default": 0.45
+      },
+      {
+        "name": "mask_strength",
+        "type": "float",
+        "hint": "hint_range(0.0, 1.0)",
+        "default": 0.3
+      },
+      {
+        "name": "mask_pixels",
+        "type": "float",
+        "hint": "hint_range(1.0, 6.0)",
+        "default": 1.0
+      },
+      {
+        "name": "glow",
+        "type": "float",
+        "hint": "hint_range(0.0, 1.0)",
+        "default": 0.25
+      },
+      {
+        "name": "vignette",
+        "type": "float",
+        "hint": "hint_range(0.0, 2.0)",
+        "default": 0.6
+      },
+      {
+        "name": "corner_radius",
+        "type": "float",
+        "hint": "hint_range(0.0, 0.2)",
+        "default": 0.04
+      },
+      {
+        "name": "brightness",
+        "type": "float",
+        "hint": "hint_range(0.5, 2.0)",
+        "default": 1.2
+      }
+    ],
+    "placement": "res://baltor/godot_shaders/post_crt_monitor/",
+    "usage": "post_process_quad",
+    "renderers": {
+      "compatibility": "compiled_and_rendered",
+      "forward_plus": "not_verified",
+      "mobile": "not_verified"
+    },
+    "inputs": [
+      "A MeshInstance3D with a 2 x 2 QuadMesh, `material.tres` as its material override and a large extra cull margin, as in `demo.tscn`."
+    ],
+    "outputs": "The scene curved inside a rounded tube frame with fine dark scanlines, coloured stripes and a soft glow."
+  },
+  "limits": "The aperture mask is tied to screen pixels and creates moire when the output is scaled. Curvature crops the picture edges. Glow depends on the screen texture's mipmaps. The pass reads Godot's screen texture after opaque geometry, so transparent objects drawn after it are not processed and its order among other transparent passes is not controlled.",
+  "related": [
+    "post_vhs_tape",
+    "vhs_tape_2d",
+    "post_lens_distortion"
+  ],
+  "technique_references": [
+    "Barrel coordinate warp",
+    "Cosine scanlines",
+    "Aperture grille mask by screen column",
+    "Mip-level glow"
+  ],
+  "native_checks": [
+    "contract_static",
+    "engine_run",
+    "engine_log_clean",
+    "shader_in_scene",
+    "capture_written",
+    "render_not_uniform",
+    "shader_changes_pixels"
+  ]
+}

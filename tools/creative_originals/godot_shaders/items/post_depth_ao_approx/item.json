@@ -1,0 +1,144 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "post_depth_ao_approx",
+  "title": "Screen-space ambient occlusion from depth only",
+  "purpose": "Darken creases and contacts with ambient occlusion estimated in one pass from the depth buffer: normals from position derivatives, a disc of samples scaled by distance, and a range check against far geometry.",
+  "form": "library_module",
+  "asset_role": null,
+  "dimension": "3d",
+  "engine": {
+    "name": "godot",
+    "minimum_version": "4.3"
+  },
+  "tags": [
+    "godot shader",
+    "spatial",
+    "post-process",
+    "ambient occlusion",
+    "ssao",
+    "depth buffer",
+    "contact shadows",
+    "full-screen"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "role": "other"
+    },
+    {
+      "path": "post_depth_ao_approx.gdshader",
+      "role": "skill_asset"
+    },
+    {
+      "path": "material.tres",
+      "role": "skill_asset"
+    },
+    {
+      "path": "demo.tscn",
+      "role": "skill_asset"
+    }
+  ],
+  "contract": {
+    "shader_type": "spatial",
+    "render_modes": [
+      "unshaded",
+      "cull_disabled",
+      "depth_test_disabled",
+      "depth_draw_never",
+      "skip_vertex_transform",
+      "fog_disabled"
+    ],
+    "uniforms": [
+      {
+        "name": "screen_texture",
+        "type": "sampler2D",
+        "hint": "hint_screen_texture, filter_linear_mipmap",
+        "default": null
+      },
+      {
+        "name": "depth_texture",
+        "type": "sampler2D",
+        "hint": "hint_depth_texture, filter_nearest",
+        "default": null
+      },
+      {
+        "name": "radius",
+        "type": "float",
+        "hint": "hint_range(0.05, 3.0)",
+        "default": 0.45
+      },
+      {
+        "name": "intensity",
+        "type": "float",
+        "hint": "hint_range(0.0, 4.0)",
+        "default": 1.4
+      },
+      {
+        "name": "samples",
+        "type": "int",
+        "hint": "hint_range(4, 32)",
+        "default": 16
+      },
+      {
+        "name": "bias",
+        "type": "float",
+        "hint": "hint_range(0.0, 0.3)",
+        "default": 0.03
+      },
+      {
+        "name": "max_pixels",
+        "type": "float",
+        "hint": "hint_range(4.0, 128.0)",
+        "default": 48.0
+      },
+      {
+        "name": "shadow_tint",
+        "type": "vec4",
+        "hint": "source_color",
+        "default": [
+          0.0,
+          0.0,
+          0.05,
+          1.0
+        ]
+      },
+      {
+        "name": "show_occlusion",
+        "type": "bool",
+        "hint": null,
+        "default": false
+      }
+    ],
+    "placement": "res://baltor/godot_shaders/post_depth_ao_approx/",
+    "usage": "post_process_quad",
+    "renderers": {
+      "compatibility": "compiled_and_rendered",
+      "forward_plus": "not_verified",
+      "mobile": "not_verified"
+    },
+    "inputs": [
+      "A MeshInstance3D with a 2 x 2 QuadMesh, `material.tres` as its material override and a large extra cull margin, as in `demo.tscn`."
+    ],
+    "outputs": "The scene with soft darkening where objects meet the floor and in corners."
+  },
+  "limits": "Applied after lighting, so it also darkens directly lit areas. Noisy without a blur pass (the per-pixel rotation trades banding for grain). Derivative normals break at object edges and give thin halos there. The pass reads Godot's screen texture after opaque geometry, so transparent objects drawn after it are not processed and its order among other transparent passes is not controlled.",
+  "related": [
+    "post_edge_detect",
+    "post_depth_fog"
+  ],
+  "technique_references": [
+    "Screen-space ambient occlusion with normal-oriented hemisphere test",
+    "Golden-angle disc with per-pixel rotation",
+    "Normals from derivatives of reconstructed position",
+    "MurmurHash3 32-bit finalizer over prime-combined lattice coordinates as a hash"
+  ],
+  "native_checks": [
+    "contract_static",
+    "engine_run",
+    "engine_log_clean",
+    "shader_in_scene",
+    "capture_written",
+    "render_not_uniform",
+    "shader_changes_pixels"
+  ]
+}

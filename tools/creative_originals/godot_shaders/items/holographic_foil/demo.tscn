@@ -1,0 +1,40 @@
+[gd_scene load_steps=6 format=3]
+
+[ext_resource type="ShaderMaterial" path="res://baltor/godot_shaders/holographic_foil/material.tres" id="1_material"]
+
+[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_1"]
+sky_top_color = Color(0.3, 0.32, 0.4, 1)
+sky_horizon_color = Color(0.8, 0.8, 0.82, 1)
+ground_bottom_color = Color(0.12, 0.11, 0.1, 1)
+ground_horizon_color = Color(0.8, 0.8, 0.82, 1)
+
+[sub_resource type="Sky" id="Sky_2"]
+sky_material = SubResource("ProceduralSkyMaterial_1")
+
+[sub_resource type="Environment" id="Environment_3"]
+background_mode = 2
+sky = SubResource("Sky_2")
+ambient_light_source = 3
+reflected_light_source = 2
+ambient_light_energy = 1.0
+
+[sub_resource type="BoxMesh" id="BoxMesh_4"]
+size = Vector3(1, 1.4, 0.02)
+
+[node name="Root" type="Node3D"]
+
+[node name="Environment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_3")
+
+[node name="Subject" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.87624, -0.12677, 0.4649, 0.069078, 0.98786, 0.13917, -0.4769, -0.089835, 0.87435, 0, 0, 0)
+mesh = SubResource("BoxMesh_4")
+material_override = ExtResource("1_material")
+
+[node name="Sun" type="DirectionalLight3D" parent="."]
+transform = Transform3D(0.89443, -0.24914, 0.37139, 0, 0.83045, 0.55709, -0.44721, -0.49827, 0.74278, 0.4, 0.6, 0.8)
+light_color = Color(1, 0.97, 0.92, 1)
+light_energy = 1.0
+
+[node name="Camera" type="Camera3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0.99875, 0.049938, 0, -0.049938, 0.99875, 0, 0.1, 2)

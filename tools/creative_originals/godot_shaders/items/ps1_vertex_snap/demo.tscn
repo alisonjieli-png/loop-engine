@@ -1,0 +1,39 @@
+[gd_scene load_steps=5 format=3]
+
+[ext_resource type="ShaderMaterial" path="res://baltor/godot_shaders/ps1_vertex_snap/material.tres" id="1_material"]
+
+[sub_resource type="Environment" id="Environment_1"]
+background_mode = 1
+background_color = Color(0.2, 0.15, 0.25, 1)
+ambient_light_source = 2
+ambient_light_color = Color(0.35, 0.37, 0.42, 1)
+ambient_light_energy = 1.0
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_2"]
+size = Vector2(6, 6)
+
+[sub_resource type="BoxMesh" id="BoxMesh_3"]
+size = Vector3(0.8, 0.8, 0.8)
+
+[node name="Root" type="Node3D"]
+
+[node name="Environment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_1")
+
+[node name="Subject0" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.5, -1)
+mesh = SubResource("PlaneMesh_2")
+material_override = ExtResource("1_material")
+
+[node name="Subject1" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.81915, 0, 0.57358, 0, 1, 0, -0.57358, 0, 0.81915, 0, 0, -0.4)
+mesh = SubResource("BoxMesh_3")
+material_override = ExtResource("1_material")
+
+[node name="Sun" type="DirectionalLight3D" parent="."]
+transform = Transform3D(0.6247, -0.57618, 0.52705, 0, 0.67495, 0.73786, -0.78087, -0.46094, 0.42164, 0.5, 0.7, 0.4)
+light_color = Color(1, 0.97, 0.92, 1)
+light_energy = 1.0
+
+[node name="Camera" type="Camera3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0.97718, 0.21243, 0, -0.21243, 0.97718, 0, 0.4, 1.7)

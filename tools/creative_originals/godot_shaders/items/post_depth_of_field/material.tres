@@ -1,0 +1,12 @@
+[gd_resource type="ShaderMaterial" load_steps=2 format=3]
+
+[ext_resource type="Shader" path="res://baltor/godot_shaders/post_depth_of_field/post_depth_of_field.gdshader" id="1_shader"]
+
+[resource]
+shader = ExtResource("1_shader")
+shader_parameter/focus_distance = 2.4
+shader_parameter/focus_range = 0.4
+shader_parameter/blur_falloff = 2.5
+shader_parameter/max_blur_pixels = 9.0
+shader_parameter/samples = 32
+shader_parameter/show_focus = false

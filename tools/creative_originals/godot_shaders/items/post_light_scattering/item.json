@@ -1,0 +1,162 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "post_light_scattering",
+  "title": "Screen-space light shafts from the sky",
+  "purpose": "Crepuscular rays as a post process: sky pixels near the sun become light sources, and each pixel marches toward the sun's screen position accumulating them with decay, so objects cut dark shafts into the glow.",
+  "form": "library_module",
+  "asset_role": null,
+  "dimension": "3d",
+  "engine": {
+    "name": "godot",
+    "minimum_version": "4.3"
+  },
+  "tags": [
+    "godot shader",
+    "spatial",
+    "post-process",
+    "god rays",
+    "light shafts",
+    "crepuscular rays",
+    "sun",
+    "full-screen"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "role": "other"
+    },
+    {
+      "path": "post_light_scattering.gdshader",
+      "role": "skill_asset"
+    },
+    {
+      "path": "material.tres",
+      "role": "skill_asset"
+    },
+    {
+      "path": "demo.tscn",
+      "role": "skill_asset"
+    }
+  ],
+  "contract": {
+    "shader_type": "spatial",
+    "render_modes": [
+      "unshaded",
+      "cull_disabled",
+      "depth_test_disabled",
+      "depth_draw_never",
+      "skip_vertex_transform",
+      "fog_disabled"
+    ],
+    "uniforms": [
+      {
+        "name": "screen_texture",
+        "type": "sampler2D",
+        "hint": "hint_screen_texture, filter_linear_mipmap",
+        "default": null
+      },
+      {
+        "name": "depth_texture",
+        "type": "sampler2D",
+        "hint": "hint_depth_texture, filter_nearest",
+        "default": null
+      },
+      {
+        "name": "sun_azimuth_degrees",
+        "type": "float",
+        "hint": "hint_range(-180.0, 180.0)",
+        "default": 8.0
+      },
+      {
+        "name": "sun_elevation_degrees",
+        "type": "float",
+        "hint": "hint_range(-10.0, 90.0)",
+        "default": 9.0
+      },
+      {
+        "name": "ray_color",
+        "type": "vec4",
+        "hint": "source_color",
+        "default": [
+          1.0,
+          0.86,
+          0.6,
+          1.0
+        ]
+      },
+      {
+        "name": "samples",
+        "type": "int",
+        "hint": "hint_range(8, 96)",
+        "default": 48
+      },
+      {
+        "name": "density",
+        "type": "float",
+        "hint": "hint_range(0.1, 1.0)",
+        "default": 0.85
+      },
+      {
+        "name": "decay",
+        "type": "float",
+        "hint": "hint_range(0.8, 1.0)",
+        "default": 0.965
+      },
+      {
+        "name": "exposure",
+        "type": "float",
+        "hint": "hint_range(0.0, 2.0)",
+        "default": 0.5
+      },
+      {
+        "name": "sky_depth",
+        "type": "float",
+        "hint": "hint_range(10.0, 4000.0)",
+        "default": 50.0
+      },
+      {
+        "name": "sun_size",
+        "type": "float",
+        "hint": "hint_range(0.01, 1.0)",
+        "default": 0.25
+      },
+      {
+        "name": "sun_glow",
+        "type": "float",
+        "hint": "hint_range(0.0, 2.0)",
+        "default": 0.6
+      }
+    ],
+    "placement": "res://baltor/godot_shaders/post_light_scattering/",
+    "usage": "post_process_quad",
+    "renderers": {
+      "compatibility": "compiled_and_rendered",
+      "forward_plus": "not_verified",
+      "mobile": "not_verified"
+    },
+    "inputs": [
+      "A MeshInstance3D with a 2 x 2 QuadMesh, `material.tres` as its material override and a large extra cull margin, as in `demo.tscn`."
+    ],
+    "outputs": "Warm shafts of light streaming from a glow near the horizon between the pillars."
+  },
+  "limits": "Only works while the sun is on or near the screen; rays fade when it leaves. Light sources are sky pixels, so bright emissive objects do not cast rays. Long marches at high resolution are costly. The pass reads Godot's screen texture after opaque geometry, so transparent objects drawn after it are not processed and its order among other transparent passes is not controlled.",
+  "related": [
+    "light_shaft_cone",
+    "post_bloom_glow",
+    "post_radial_zoom_blur"
+  ],
+  "technique_references": [
+    "Light scattering as a post process (radial march with decay, after Mitchell 2007)",
+    "Projection of a direction to the screen",
+    "Depth-based sky mask"
+  ],
+  "native_checks": [
+    "contract_static",
+    "engine_run",
+    "engine_log_clean",
+    "shader_in_scene",
+    "capture_written",
+    "render_not_uniform",
+    "shader_changes_pixels"
+  ]
+}

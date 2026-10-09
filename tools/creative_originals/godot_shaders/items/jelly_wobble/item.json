@@ -1,0 +1,143 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "jelly_wobble",
+  "title": "Jelly wobble with squash and stretch",
+  "purpose": "Make a mesh wobble like jelly: a damped sway that grows with height, a periodic bounce with volume preserving squash and stretch, and a glossy translucent body with a soft inner glow.",
+  "form": "library_module",
+  "asset_role": null,
+  "dimension": "3d",
+  "engine": {
+    "name": "godot",
+    "minimum_version": "4.3"
+  },
+  "tags": [
+    "godot shader",
+    "spatial",
+    "jelly",
+    "wobble",
+    "squash and stretch",
+    "vertex animation",
+    "slime"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "role": "other"
+    },
+    {
+      "path": "jelly_wobble.gdshader",
+      "role": "skill_asset"
+    },
+    {
+      "path": "material.tres",
+      "role": "skill_asset"
+    },
+    {
+      "path": "demo.tscn",
+      "role": "skill_asset"
+    }
+  ],
+  "contract": {
+    "shader_type": "spatial",
+    "render_modes": [
+      "cull_back"
+    ],
+    "uniforms": [
+      {
+        "name": "jelly_color",
+        "type": "vec4",
+        "hint": "source_color",
+        "default": [
+          0.35,
+          0.9,
+          0.45,
+          0.82
+        ]
+      },
+      {
+        "name": "core_color",
+        "type": "vec4",
+        "hint": "source_color",
+        "default": [
+          0.85,
+          1.0,
+          0.6,
+          1.0
+        ]
+      },
+      {
+        "name": "bounce_period",
+        "type": "float",
+        "hint": "hint_range(0.3, 5.0)",
+        "default": 1.6
+      },
+      {
+        "name": "squash_amount",
+        "type": "float",
+        "hint": "hint_range(0.0, 0.5)",
+        "default": 0.18
+      },
+      {
+        "name": "wobble_amount",
+        "type": "float",
+        "hint": "hint_range(0.0, 0.5)",
+        "default": 0.12
+      },
+      {
+        "name": "wobble_frequency",
+        "type": "float",
+        "hint": "hint_range(1.0, 30.0)",
+        "default": 11.0
+      },
+      {
+        "name": "damping",
+        "type": "float",
+        "hint": "hint_range(0.0, 10.0)",
+        "default": 3.0
+      },
+      {
+        "name": "object_height",
+        "type": "float",
+        "hint": "hint_range(0.1, 5.0)",
+        "default": 1.0
+      },
+      {
+        "name": "gloss",
+        "type": "float",
+        "hint": "hint_range(0.0, 1.0)",
+        "default": 0.9
+      }
+    ],
+    "placement": "res://baltor/godot_shaders/jelly_wobble/",
+    "usage": "surface_material",
+    "renderers": {
+      "compatibility": "compiled_and_rendered",
+      "forward_plus": "not_verified",
+      "mobile": "not_verified"
+    },
+    "inputs": [
+      "A mesh centred on its origin; set `object_height` to its height so the base stays planted."
+    ],
+    "outputs": "A green translucent blob that bounces, squashes and sways back to rest every 1.6 seconds."
+  },
+  "limits": "Normals are not updated for the deformation, so lighting is slightly off at full squash. The bounce is a timed loop, not a physics response. Transparency means it is not depth sorted against other transparent objects.",
+  "related": [
+    "flag_wave_cloth",
+    "melt_drip_vertex",
+    "sprite_squash_stretch"
+  ],
+  "technique_references": [
+    "Exponentially damped oscillation",
+    "Volume-preserving squash and stretch",
+    "Height-weighted vertex sway"
+  ],
+  "native_checks": [
+    "contract_static",
+    "engine_run",
+    "engine_log_clean",
+    "shader_in_scene",
+    "capture_written",
+    "render_not_uniform",
+    "shader_changes_pixels"
+  ]
+}

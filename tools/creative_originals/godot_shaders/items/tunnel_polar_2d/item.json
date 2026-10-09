@@ -1,0 +1,140 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "tunnel_polar_2d",
+  "title": "Demoscene tunnel from polar coordinates",
+  "purpose": "Fly down an endless tunnel: screen positions become an angle and an inverse distance, which index a procedural checker or stripe wall pattern that scrolls toward the viewer and darkens with depth.",
+  "form": "library_module",
+  "asset_role": null,
+  "dimension": "2d",
+  "engine": {
+    "name": "godot",
+    "minimum_version": "4.3"
+  },
+  "tags": [
+    "godot shader",
+    "canvas item",
+    "tunnel",
+    "demoscene",
+    "polar coordinates",
+    "retro",
+    "procedural"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "role": "other"
+    },
+    {
+      "path": "tunnel_polar_2d.gdshader",
+      "role": "skill_asset"
+    },
+    {
+      "path": "material.tres",
+      "role": "skill_asset"
+    },
+    {
+      "path": "demo.tscn",
+      "role": "skill_asset"
+    }
+  ],
+  "contract": {
+    "shader_type": "canvas_item",
+    "render_modes": [],
+    "uniforms": [
+      {
+        "name": "color_a",
+        "type": "vec4",
+        "hint": "source_color",
+        "default": [
+          0.95,
+          0.4,
+          0.2,
+          1.0
+        ]
+      },
+      {
+        "name": "color_b",
+        "type": "vec4",
+        "hint": "source_color",
+        "default": [
+          0.15,
+          0.1,
+          0.35,
+          1.0
+        ]
+      },
+      {
+        "name": "speed",
+        "type": "float",
+        "hint": "hint_range(-4.0, 4.0)",
+        "default": 1.2
+      },
+      {
+        "name": "twist",
+        "type": "float",
+        "hint": "hint_range(-2.0, 2.0)",
+        "default": 0.3
+      },
+      {
+        "name": "segments",
+        "type": "int",
+        "hint": "hint_range(2, 32)",
+        "default": 12
+      },
+      {
+        "name": "depth_rings",
+        "type": "float",
+        "hint": "hint_range(1.0, 20.0)",
+        "default": 6.0
+      },
+      {
+        "name": "fog",
+        "type": "float",
+        "hint": "hint_range(0.0, 4.0)",
+        "default": 1.4
+      },
+      {
+        "name": "center_x",
+        "type": "float",
+        "hint": "hint_range(-0.5, 0.5)",
+        "default": 0.0
+      },
+      {
+        "name": "center_y",
+        "type": "float",
+        "hint": "hint_range(-0.5, 0.5)",
+        "default": 0.0
+      }
+    ],
+    "placement": "res://baltor/godot_shaders/tunnel_polar_2d/",
+    "usage": "canvas_material",
+    "renderers": {
+      "compatibility": "compiled_and_rendered",
+      "forward_plus": "not_verified",
+      "mobile": "not_verified"
+    },
+    "inputs": [
+      "A ColorRect (or any CanvasItem) sized to the area to fill; UVs span 0 to 1 across it."
+    ],
+    "outputs": "An orange and purple checkered tunnel rushing toward the viewer into darkness."
+  },
+  "limits": "The pattern pinches at the vanishing point; the fade hides it. Checkers alias near the centre without mipmapped textures.",
+  "related": [
+    "plasma_sine_2d",
+    "swirl_portal",
+    "particles_warp_stars_2d"
+  ],
+  "technique_references": [
+    "Polar to tunnel mapping (angle and inverse radius)",
+    "Scrolling checker texture coordinates"
+  ],
+  "native_checks": [
+    "contract_static",
+    "engine_run",
+    "engine_log_clean",
+    "shader_in_scene",
+    "capture_written",
+    "render_not_uniform",
+    "shader_changes_pixels"
+  ]
+}

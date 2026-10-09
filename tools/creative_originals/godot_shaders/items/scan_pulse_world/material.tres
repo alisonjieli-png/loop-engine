@@ -1,0 +1,16 @@
+[gd_resource type="ShaderMaterial" load_steps=2 format=3]
+
+[ext_resource type="Shader" path="res://baltor/godot_shaders/scan_pulse_world/scan_pulse_world.gdshader" id="1_shader"]
+
+[resource]
+shader = ExtResource("1_shader")
+shader_parameter/pulse_color = Color(0.25, 1, 0.85, 1)
+shader_parameter/center_x = 0.0
+shader_parameter/center_y = 0.0
+shader_parameter/center_z = 0.0
+shader_parameter/pulse_speed = 4.0
+shader_parameter/pulse_period = 3.0
+shader_parameter/ring_width = 0.15
+shader_parameter/trail_length = 2.5
+shader_parameter/grid_size = 0.5
+shader_parameter/max_distance = 100.0

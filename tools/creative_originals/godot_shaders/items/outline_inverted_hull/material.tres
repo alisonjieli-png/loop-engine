@@ -1,0 +1,10 @@
+[gd_resource type="ShaderMaterial" load_steps=2 format=3]
+
+[ext_resource type="Shader" path="res://baltor/godot_shaders/outline_inverted_hull/outline_inverted_hull.gdshader" id="1_shader"]
+
+[resource]
+shader = ExtResource("1_shader")
+shader_parameter/outline_color = Color(0.05, 0.03, 0.08, 1)
+shader_parameter/thickness = 0.018
+shader_parameter/distance_scaling = 0.6
+shader_parameter/max_thickness = 0.08

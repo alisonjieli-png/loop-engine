@@ -1,0 +1,151 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "car_paint_flakes",
+  "title": "Two-tone car paint with metal flakes and clear coat",
+  "purpose": "Car paint with a colour that shifts from face to edge, glittering metal flakes from hashed object-space cells whose tilted normals catch the light, and a glossy clear coat layer.",
+  "form": "library_module",
+  "asset_role": null,
+  "dimension": "3d",
+  "engine": {
+    "name": "godot",
+    "minimum_version": "4.3"
+  },
+  "tags": [
+    "godot shader",
+    "spatial",
+    "car paint",
+    "metallic flakes",
+    "clearcoat",
+    "glitter",
+    "automotive"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "role": "other"
+    },
+    {
+      "path": "car_paint_flakes.gdshader",
+      "role": "skill_asset"
+    },
+    {
+      "path": "material.tres",
+      "role": "skill_asset"
+    },
+    {
+      "path": "demo.tscn",
+      "role": "skill_asset"
+    }
+  ],
+  "contract": {
+    "shader_type": "spatial",
+    "render_modes": [],
+    "uniforms": [
+      {
+        "name": "face_color",
+        "type": "vec4",
+        "hint": "source_color",
+        "default": [
+          0.55,
+          0.04,
+          0.08,
+          1.0
+        ]
+      },
+      {
+        "name": "edge_color",
+        "type": "vec4",
+        "hint": "source_color",
+        "default": [
+          0.18,
+          0.02,
+          0.12,
+          1.0
+        ]
+      },
+      {
+        "name": "flip_power",
+        "type": "float",
+        "hint": "hint_range(0.5, 6.0)",
+        "default": 1.6
+      },
+      {
+        "name": "base_roughness",
+        "type": "float",
+        "hint": "hint_range(0.0, 1.0)",
+        "default": 0.38
+      },
+      {
+        "name": "flake_density",
+        "type": "float",
+        "hint": "hint_range(0.0, 1.0)",
+        "default": 0.12
+      },
+      {
+        "name": "flake_scale",
+        "type": "float",
+        "hint": "hint_range(50.0, 2000.0)",
+        "default": 900.0
+      },
+      {
+        "name": "flake_tilt",
+        "type": "float",
+        "hint": "hint_range(0.0, 1.0)",
+        "default": 0.35
+      },
+      {
+        "name": "flake_color",
+        "type": "vec4",
+        "hint": "source_color",
+        "default": [
+          1.0,
+          0.9,
+          0.85,
+          1.0
+        ]
+      },
+      {
+        "name": "clearcoat_amount",
+        "type": "float",
+        "hint": "hint_range(0.0, 1.0)",
+        "default": 1.0
+      },
+      {
+        "name": "clearcoat_gloss",
+        "type": "float",
+        "hint": "hint_range(0.0, 1.0)",
+        "default": 0.95
+      }
+    ],
+    "placement": "res://baltor/godot_shaders/car_paint_flakes/",
+    "usage": "surface_material",
+    "renderers": {
+      "compatibility": "compiled_and_rendered",
+      "forward_plus": "not_verified",
+      "mobile": "not_verified"
+    },
+    "inputs": [],
+    "outputs": "Deep red paint that turns purple at the edges, sparkling with tiny flakes under a glossy coat."
+  },
+  "limits": "Flakes are one pixel or smaller at a distance and then shimmer; they are not filtered. Flake size is tied to object units, so scaled objects need a different `flake_scale`. The clear coat outputs depend on renderer support; the Compatibility run showed the base and flakes.",
+  "related": [
+    "brushed_metal_anisotropic",
+    "thin_film_iridescence",
+    "pearl_sheen"
+  ],
+  "technique_references": [
+    "Facing-ratio colour flip",
+    "Hashed object-space flake cells with perturbed normals",
+    "MurmurHash3 32-bit finalizer over prime-combined lattice coordinates as a hash",
+    "Clear coat layer through CLEARCOAT outputs"
+  ],
+  "native_checks": [
+    "contract_static",
+    "engine_run",
+    "engine_log_clean",
+    "shader_in_scene",
+    "capture_written",
+    "render_not_uniform",
+    "shader_changes_pixels"
+  ]
+}

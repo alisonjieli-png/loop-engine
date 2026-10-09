@@ -1,0 +1,59 @@
+[gd_scene load_steps=8 format=3]
+
+[ext_resource type="ShaderMaterial" path="res://baltor/godot_shaders/light_shaft_cone/material.tres" id="1_material"]
+
+[sub_resource type="Environment" id="Environment_1"]
+background_mode = 1
+background_color = Color(0.03, 0.03, 0.05, 1)
+ambient_light_source = 2
+ambient_light_color = Color(0.12, 0.12, 0.15, 1)
+ambient_light_energy = 1.0
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_2"]
+size = Vector2(8, 8)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_3"]
+albedo_color = Color(0.25, 0.24, 0.22, 1)
+roughness = 0.9
+
+[sub_resource type="CapsuleMesh" id="CapsuleMesh_4"]
+radial_segments = 48
+rings = 16
+radius = 0.2
+height = 0.6
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_5"]
+albedo_color = Color(0.6, 0.6, 0.62, 1)
+roughness = 0.6
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_6"]
+radial_segments = 48
+top_radius = 0.05
+bottom_radius = 0.7
+height = 2.2
+rings = 16
+cap_top = false
+cap_bottom = false
+
+[node name="Root" type="Node3D"]
+
+[node name="Environment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_1")
+
+[node name="Floor" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.6, 0)
+mesh = SubResource("PlaneMesh_2")
+material_override = SubResource("StandardMaterial3D_3")
+
+[node name="Statue" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.15, -0.3, -0.3)
+mesh = SubResource("CapsuleMesh_4")
+material_override = SubResource("StandardMaterial3D_5")
+
+[node name="Subject" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.97815, -0.20791, 0, 0.20791, 0.97815, 0, 0, 0, 1, 0, 0.5, -0.3)
+mesh = SubResource("CylinderMesh_6")
+material_override = ExtResource("1_material")
+
+[node name="Camera" type="Camera3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0.99763, 0.068802, 0, -0.068802, 0.99763, 0, 0.4, 2.6)

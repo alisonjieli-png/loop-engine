@@ -1,0 +1,16 @@
+[gd_resource type="ShaderMaterial" load_steps=2 format=3]
+
+[ext_resource type="Shader" path="res://baltor/godot_shaders/interior_mapping_rooms/interior_mapping_rooms.gdshader" id="1_shader"]
+
+[resource]
+shader = ExtResource("1_shader")
+shader_parameter/rooms_across = 4.0
+shader_parameter/rooms_down = 4.0
+shader_parameter/room_depth = 1.0
+shader_parameter/wall_color = Color(0.78, 0.72, 0.62, 1)
+shader_parameter/floor_color = Color(0.42, 0.3, 0.2, 1)
+shader_parameter/ceiling_color = Color(0.92, 0.92, 0.9, 1)
+shader_parameter/frame_color = Color(0.16, 0.17, 0.2, 1)
+shader_parameter/frame_width = 0.08
+shader_parameter/lights_on = 0.6
+shader_parameter/glass_reflection = 0.2

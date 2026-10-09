@@ -1,0 +1,151 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "lava_domain_warp",
+  "title": "Flowing lava from domain-warped noise",
+  "purpose": "Procedural lava with a dark cooled crust floating on glowing molten rock, built from twice domain-warped fractal noise that slowly flows, with emission only on the hot parts.",
+  "form": "library_module",
+  "asset_role": null,
+  "dimension": "3d",
+  "engine": {
+    "name": "godot",
+    "minimum_version": "4.3"
+  },
+  "tags": [
+    "godot shader",
+    "spatial",
+    "lava",
+    "domain warping",
+    "fbm",
+    "emission",
+    "procedural"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "role": "other"
+    },
+    {
+      "path": "lava_domain_warp.gdshader",
+      "role": "skill_asset"
+    },
+    {
+      "path": "material.tres",
+      "role": "skill_asset"
+    },
+    {
+      "path": "demo.tscn",
+      "role": "skill_asset"
+    }
+  ],
+  "contract": {
+    "shader_type": "spatial",
+    "render_modes": [],
+    "uniforms": [
+      {
+        "name": "crust_color",
+        "type": "vec4",
+        "hint": "source_color",
+        "default": [
+          0.07,
+          0.05,
+          0.05,
+          1.0
+        ]
+      },
+      {
+        "name": "lava_dark",
+        "type": "vec4",
+        "hint": "source_color",
+        "default": [
+          0.62,
+          0.07,
+          0.02,
+          1.0
+        ]
+      },
+      {
+        "name": "lava_bright",
+        "type": "vec4",
+        "hint": "source_color",
+        "default": [
+          1.0,
+          0.66,
+          0.16,
+          1.0
+        ]
+      },
+      {
+        "name": "scale",
+        "type": "float",
+        "hint": "hint_range(0.5, 20.0)",
+        "default": 3.0
+      },
+      {
+        "name": "flow_speed",
+        "type": "float",
+        "hint": "hint_range(0.0, 2.0)",
+        "default": 0.12
+      },
+      {
+        "name": "flow_angle_degrees",
+        "type": "float",
+        "hint": "hint_range(0.0, 360.0)",
+        "default": 20.0
+      },
+      {
+        "name": "warp_strength",
+        "type": "float",
+        "hint": "hint_range(0.0, 4.0)",
+        "default": 1.8
+      },
+      {
+        "name": "crust_amount",
+        "type": "float",
+        "hint": "hint_range(0.0, 1.0)",
+        "default": 0.5
+      },
+      {
+        "name": "crust_edge",
+        "type": "float",
+        "hint": "hint_range(0.01, 0.3)",
+        "default": 0.06
+      },
+      {
+        "name": "emission_strength",
+        "type": "float",
+        "hint": "hint_range(0.0, 10.0)",
+        "default": 3.0
+      }
+    ],
+    "placement": "res://baltor/godot_shaders/lava_domain_warp/",
+    "usage": "surface_material",
+    "renderers": {
+      "compatibility": "compiled_and_rendered",
+      "forward_plus": "not_verified",
+      "mobile": "not_verified"
+    },
+    "inputs": [
+      "A mesh with UV coordinates."
+    ],
+    "outputs": "Black crust plates drifting over swirling orange glowing lava."
+  },
+  "limits": "Twelve fBm evaluations of four octaves per pixel make it one of the heavier shaders here; lower octaves for mobile. Flat: no displacement or normal relief. UV seams show where the mesh UVs are discontinuous.",
+  "related": [
+    "procedural_planet_surface",
+    "marble_veins"
+  ],
+  "technique_references": [
+    "Domain warping of fractional Brownian motion (warp of a warp)",
+    "Value noise with quintic interpolation and fractional Brownian motion",
+    "Threshold crust mask with smoothstep"
+  ],
+  "native_checks": [
+    "contract_static",
+    "engine_run",
+    "engine_log_clean",
+    "shader_in_scene",
+    "capture_written",
+    "render_not_uniform",
+    "shader_changes_pixels"
+  ]
+}

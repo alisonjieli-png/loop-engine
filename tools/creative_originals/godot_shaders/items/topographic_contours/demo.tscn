@@ -1,0 +1,64 @@
+[gd_scene load_steps=7 format=3]
+
+[ext_resource type="ShaderMaterial" path="res://baltor/godot_shaders/topographic_contours/material.tres" id="1_material"]
+
+[sub_resource type="Environment" id="Environment_1"]
+background_mode = 1
+background_color = Color(0.85, 0.85, 0.82, 1)
+ambient_light_source = 2
+ambient_light_color = Color(0.55, 0.55, 0.55, 1)
+ambient_light_energy = 1.0
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_2"]
+size = Vector2(6, 6)
+
+[sub_resource type="SphereMesh" id="SphereMesh_3"]
+radial_segments = 64
+rings = 48
+radius = 0.9
+height = 1.8
+
+[sub_resource type="SphereMesh" id="SphereMesh_4"]
+radial_segments = 64
+rings = 48
+radius = 0.6
+height = 1.2
+
+[sub_resource type="SphereMesh" id="SphereMesh_5"]
+radial_segments = 64
+rings = 48
+radius = 1.1
+height = 2.2
+
+[node name="Root" type="Node3D"]
+
+[node name="Environment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_1")
+
+[node name="Ground" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.55, 0)
+mesh = SubResource("PlaneMesh_2")
+material_override = ExtResource("1_material")
+
+[node name="Hill0" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0.77778, 0, 0, 0, 1, -0.4, -0.55, -0.3)
+mesh = SubResource("SphereMesh_3")
+material_override = ExtResource("1_material")
+
+[node name="Hill1" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0.83333, 0, 0, 0, 1, 0.7, -0.55, 0.2)
+mesh = SubResource("SphereMesh_4")
+material_override = ExtResource("1_material")
+
+[node name="Hill2" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0.90909, 0, 0, 0, 1, 0.2, -0.55, -1.2)
+mesh = SubResource("SphereMesh_5")
+material_override = ExtResource("1_material")
+
+[node name="Sun" type="DirectionalLight3D" parent="."]
+transform = Transform3D(0.78087, -0.48771, 0.39036, 0, 0.62488, 0.78072, -0.6247, -0.60964, 0.48795, 0.4, 0.8, 0.5)
+light_color = Color(1, 0.97, 0.92, 1)
+light_energy = 1.0
+
+[node name="Camera" type="Camera3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0.72199, 0.69191, 0, -0.69191, 0.72199, 0, 2, 2)

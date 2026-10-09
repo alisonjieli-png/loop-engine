@@ -1,0 +1,15 @@
+[gd_resource type="ShaderMaterial" load_steps=2 format=3]
+
+[ext_resource type="Shader" path="res://baltor/godot_shaders/marble_veins/marble_veins.gdshader" id="1_shader"]
+
+[resource]
+shader = ExtResource("1_shader")
+shader_parameter/body_color = Color(0.92, 0.91, 0.88, 1)
+shader_parameter/cloud_color = Color(0.82, 0.8, 0.78, 1)
+shader_parameter/vein_color = Color(0.25, 0.27, 0.3, 1)
+shader_parameter/scale = 1.6
+shader_parameter/vein_frequency = 3.5
+shader_parameter/turbulence = 4.5
+shader_parameter/vein_sharpness = 14.0
+shader_parameter/fine_veins = 0.4
+shader_parameter/roughness = 0.12

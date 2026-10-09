@@ -1,0 +1,168 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "terrazzo_floor",
+  "title": "Terrazzo with random coloured chips",
+  "purpose": "Terrazzo surface: irregular stone chips of several colours and sizes set in a speckled cement matrix, from jittered Voronoi cells with noisy edges, with a polished finish.",
+  "form": "library_module",
+  "asset_role": null,
+  "dimension": "3d",
+  "engine": {
+    "name": "godot",
+    "minimum_version": "4.3"
+  },
+  "tags": [
+    "godot shader",
+    "spatial",
+    "terrazzo",
+    "procedural",
+    "voronoi",
+    "floor",
+    "interior"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "role": "other"
+    },
+    {
+      "path": "terrazzo_floor.gdshader",
+      "role": "skill_asset"
+    },
+    {
+      "path": "material.tres",
+      "role": "skill_asset"
+    },
+    {
+      "path": "demo.tscn",
+      "role": "skill_asset"
+    }
+  ],
+  "contract": {
+    "shader_type": "spatial",
+    "render_modes": [],
+    "uniforms": [
+      {
+        "name": "matrix_color",
+        "type": "vec4",
+        "hint": "source_color",
+        "default": [
+          0.88,
+          0.86,
+          0.82,
+          1.0
+        ]
+      },
+      {
+        "name": "chip_a",
+        "type": "vec4",
+        "hint": "source_color",
+        "default": [
+          0.85,
+          0.45,
+          0.35,
+          1.0
+        ]
+      },
+      {
+        "name": "chip_b",
+        "type": "vec4",
+        "hint": "source_color",
+        "default": [
+          0.25,
+          0.42,
+          0.55,
+          1.0
+        ]
+      },
+      {
+        "name": "chip_c",
+        "type": "vec4",
+        "hint": "source_color",
+        "default": [
+          0.9,
+          0.78,
+          0.45,
+          1.0
+        ]
+      },
+      {
+        "name": "chip_d",
+        "type": "vec4",
+        "hint": "source_color",
+        "default": [
+          0.28,
+          0.28,
+          0.3,
+          1.0
+        ]
+      },
+      {
+        "name": "chip_scale",
+        "type": "float",
+        "hint": "hint_range(1.0, 60.0)",
+        "default": 12.0
+      },
+      {
+        "name": "chip_density",
+        "type": "float",
+        "hint": "hint_range(0.0, 1.0)",
+        "default": 0.65
+      },
+      {
+        "name": "chip_size",
+        "type": "float",
+        "hint": "hint_range(0.1, 0.6)",
+        "default": 0.38
+      },
+      {
+        "name": "edge_roughness",
+        "type": "float",
+        "hint": "hint_range(0.0, 0.3)",
+        "default": 0.12
+      },
+      {
+        "name": "speckle",
+        "type": "float",
+        "hint": "hint_range(0.0, 1.0)",
+        "default": 0.35
+      },
+      {
+        "name": "roughness",
+        "type": "float",
+        "hint": "hint_range(0.0, 1.0)",
+        "default": 0.25
+      }
+    ],
+    "placement": "res://baltor/godot_shaders/terrazzo_floor/",
+    "usage": "surface_material",
+    "renderers": {
+      "compatibility": "compiled_and_rendered",
+      "forward_plus": "not_verified",
+      "mobile": "not_verified"
+    },
+    "inputs": [
+      "A horizontal surface; the pattern uses world X and Z."
+    ],
+    "outputs": "A pale polished floor scattered with irregular terracotta, blue, ochre and grey chips."
+  },
+  "limits": "Chips are limited to neighbouring cells, so a chip larger than about one cell is clipped. Projected from above in world space, so walls show stretched chips. Flat: no relief between chips and matrix.",
+  "related": [
+    "marble_veins",
+    "wet_puddles"
+  ],
+  "technique_references": [
+    "Size-weighted jittered Voronoi chips",
+    "Noise-perturbed chip edges",
+    "Hashed palette selection",
+    "MurmurHash3 32-bit finalizer over prime-combined lattice coordinates as a hash"
+  ],
+  "native_checks": [
+    "contract_static",
+    "engine_run",
+    "engine_log_clean",
+    "shader_in_scene",
+    "capture_written",
+    "render_not_uniform",
+    "shader_changes_pixels"
+  ]
+}

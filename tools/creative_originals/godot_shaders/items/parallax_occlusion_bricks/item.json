@@ -1,0 +1,140 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "parallax_occlusion_bricks",
+  "title": "Parallax occlusion mapped procedural bricks",
+  "purpose": "Brick wall with real-looking depth on a flat surface: the view ray is marched through a procedural brick heightfield in tangent space, so mortar lines sink, bricks occlude each other at angles, and the normal comes from the same height.",
+  "form": "library_module",
+  "asset_role": null,
+  "dimension": "3d",
+  "engine": {
+    "name": "godot",
+    "minimum_version": "4.3"
+  },
+  "tags": [
+    "godot shader",
+    "spatial",
+    "parallax occlusion mapping",
+    "bricks",
+    "procedural",
+    "heightfield",
+    "wall"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "role": "other"
+    },
+    {
+      "path": "parallax_occlusion_bricks.gdshader",
+      "role": "skill_asset"
+    },
+    {
+      "path": "material.tres",
+      "role": "skill_asset"
+    },
+    {
+      "path": "demo.tscn",
+      "role": "skill_asset"
+    }
+  ],
+  "contract": {
+    "shader_type": "spatial",
+    "render_modes": [],
+    "uniforms": [
+      {
+        "name": "brick_color",
+        "type": "vec4",
+        "hint": "source_color",
+        "default": [
+          0.62,
+          0.26,
+          0.18,
+          1.0
+        ]
+      },
+      {
+        "name": "mortar_color",
+        "type": "vec4",
+        "hint": "source_color",
+        "default": [
+          0.72,
+          0.7,
+          0.66,
+          1.0
+        ]
+      },
+      {
+        "name": "bricks_across",
+        "type": "float",
+        "hint": "hint_range(1.0, 20.0)",
+        "default": 4.0
+      },
+      {
+        "name": "bricks_down",
+        "type": "float",
+        "hint": "hint_range(1.0, 40.0)",
+        "default": 8.0
+      },
+      {
+        "name": "mortar_width",
+        "type": "float",
+        "hint": "hint_range(0.0, 0.2)",
+        "default": 0.06
+      },
+      {
+        "name": "bevel",
+        "type": "float",
+        "hint": "hint_range(0.0, 0.3)",
+        "default": 0.08
+      },
+      {
+        "name": "depth_scale",
+        "type": "float",
+        "hint": "hint_range(0.0, 0.2)",
+        "default": 0.05
+      },
+      {
+        "name": "steps",
+        "type": "int",
+        "hint": "hint_range(4, 64)",
+        "default": 24
+      },
+      {
+        "name": "color_variation",
+        "type": "float",
+        "hint": "hint_range(0.0, 1.0)",
+        "default": 0.35
+      }
+    ],
+    "placement": "res://baltor/godot_shaders/parallax_occlusion_bricks/",
+    "usage": "surface_material",
+    "renderers": {
+      "compatibility": "compiled_and_rendered",
+      "forward_plus": "not_verified",
+      "mobile": "not_verified"
+    },
+    "inputs": [
+      "A mesh with UVs and tangents (Godot primitive meshes have both)."
+    ],
+    "outputs": "A red brick wall whose mortar lines look recessed and whose bricks occlude each other at angles."
+  },
+  "limits": "The silhouette stays flat: only the interior of the surface shows depth. Shadows and depth are the flat surface's. Cost grows with `steps`. Strongly curved surfaces bend the illusion. The march runs in UV space, so non-square UV scaling skews the depth.",
+  "related": [
+    "brick_wall_procedural",
+    "interior_mapping_rooms"
+  ],
+  "technique_references": [
+    "Parallax occlusion mapping with linear refinement (Tatarchuk 2006)",
+    "Procedural staggered brick heightfield",
+    "Normal map from height differences"
+  ],
+  "native_checks": [
+    "contract_static",
+    "engine_run",
+    "engine_log_clean",
+    "shader_in_scene",
+    "capture_written",
+    "render_not_uniform",
+    "shader_changes_pixels"
+  ]
+}

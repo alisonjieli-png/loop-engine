@@ -1,0 +1,15 @@
+[gd_resource type="ShaderMaterial" load_steps=2 format=3]
+
+[ext_resource type="Shader" path="res://baltor/godot_shaders/fire_flame_2d/fire_flame_2d.gdshader" id="1_shader"]
+
+[resource]
+shader = ExtResource("1_shader")
+shader_parameter/core_color = Color(1, 0.97, 0.75, 1)
+shader_parameter/inner_color = Color(1, 0.75, 0.2, 1)
+shader_parameter/outer_color = Color(0.95, 0.3, 0.05, 1)
+shader_parameter/smoke_color = Color(0.3, 0.05, 0.02, 1)
+shader_parameter/rise_speed = 1.8
+shader_parameter/turbulence = 0.4
+shader_parameter/base_width = 0.5
+shader_parameter/height = 0.85
+shader_parameter/noise_scale = 4.0

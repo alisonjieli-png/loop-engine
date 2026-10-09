@@ -1,0 +1,121 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "screen_door_fade",
+  "title": "Dithered distance fade for camera occluders",
+  "purpose": "Fade an opaque mesh without transparency sorting: pixels are discarded against a 4 x 4 Bayer threshold pattern as the object comes close to the camera or as a fade uniform drops, so walls and props in front of the camera become see-through.",
+  "form": "library_module",
+  "asset_role": null,
+  "dimension": "3d",
+  "engine": {
+    "name": "godot",
+    "minimum_version": "4.3"
+  },
+  "tags": [
+    "godot shader",
+    "spatial",
+    "dither",
+    "screen door",
+    "fade",
+    "occlusion",
+    "bayer"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "role": "other"
+    },
+    {
+      "path": "screen_door_fade.gdshader",
+      "role": "skill_asset"
+    },
+    {
+      "path": "material.tres",
+      "role": "skill_asset"
+    },
+    {
+      "path": "demo.tscn",
+      "role": "skill_asset"
+    }
+  ],
+  "contract": {
+    "shader_type": "spatial",
+    "render_modes": [],
+    "uniforms": [
+      {
+        "name": "albedo",
+        "type": "vec4",
+        "hint": "source_color",
+        "default": [
+          0.55,
+          0.6,
+          0.68,
+          1.0
+        ]
+      },
+      {
+        "name": "roughness",
+        "type": "float",
+        "hint": "hint_range(0.0, 1.0)",
+        "default": 0.7
+      },
+      {
+        "name": "fade",
+        "type": "float",
+        "hint": "hint_range(0.0, 1.0)",
+        "default": 1.0
+      },
+      {
+        "name": "near_distance",
+        "type": "float",
+        "hint": "hint_range(0.0, 20.0)",
+        "default": 1.0
+      },
+      {
+        "name": "far_distance",
+        "type": "float",
+        "hint": "hint_range(0.1, 40.0)",
+        "default": 2.6
+      },
+      {
+        "name": "dither_scale",
+        "type": "float",
+        "hint": "hint_range(1.0, 8.0)",
+        "default": 1.0
+      },
+      {
+        "name": "use_distance",
+        "type": "bool",
+        "hint": null,
+        "default": true
+      }
+    ],
+    "placement": "res://baltor/godot_shaders/screen_door_fade/",
+    "usage": "surface_material",
+    "renderers": {
+      "compatibility": "compiled_and_rendered",
+      "forward_plus": "not_verified",
+      "mobile": "not_verified"
+    },
+    "inputs": [],
+    "outputs": "Pillars near the camera break into a regular dot pattern you can see through, solid further away."
+  },
+  "limits": "The pattern is visible as a grid at low resolutions and flickers with temporal anti-aliasing off; with TAA or FSR it smooths out. Shadows use the shadow camera's distance, not the main camera's, so a faded object can still cast a full shadow.",
+  "related": [
+    "occlusion_silhouette_xray",
+    "post_bayer_dither"
+  ],
+  "technique_references": [
+    "Ordered dithering with a 4 x 4 Bayer matrix",
+    "Alpha-tested screen-door transparency",
+    "Camera distance fade"
+  ],
+  "native_checks": [
+    "contract_static",
+    "engine_run",
+    "engine_log_clean",
+    "shader_in_scene",
+    "capture_written",
+    "render_not_uniform",
+    "shader_changes_pixels"
+  ]
+}

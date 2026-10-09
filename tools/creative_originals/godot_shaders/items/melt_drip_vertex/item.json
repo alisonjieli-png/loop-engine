@@ -1,0 +1,147 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "melt_drip_vertex",
+  "title": "Melting mesh with drips and a spreading puddle",
+  "purpose": "Melt a mesh from the top down: vertices sag below a rising melt amount, drips hang at hashed points around the outline, the base spreads into a puddle, and the surface becomes glossier as it melts.",
+  "form": "library_module",
+  "asset_role": null,
+  "dimension": "3d",
+  "engine": {
+    "name": "godot",
+    "minimum_version": "4.3"
+  },
+  "tags": [
+    "godot shader",
+    "spatial",
+    "melt",
+    "drip",
+    "vertex animation",
+    "wax",
+    "deformation"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "role": "other"
+    },
+    {
+      "path": "melt_drip_vertex.gdshader",
+      "role": "skill_asset"
+    },
+    {
+      "path": "material.tres",
+      "role": "skill_asset"
+    },
+    {
+      "path": "demo.tscn",
+      "role": "skill_asset"
+    }
+  ],
+  "contract": {
+    "shader_type": "spatial",
+    "render_modes": [],
+    "uniforms": [
+      {
+        "name": "albedo",
+        "type": "vec4",
+        "hint": "source_color",
+        "default": [
+          0.95,
+          0.85,
+          0.62,
+          1.0
+        ]
+      },
+      {
+        "name": "melted_color",
+        "type": "vec4",
+        "hint": "source_color",
+        "default": [
+          0.98,
+          0.75,
+          0.45,
+          1.0
+        ]
+      },
+      {
+        "name": "melt",
+        "type": "float",
+        "hint": "hint_range(0.0, 1.0)",
+        "default": 0.45
+      },
+      {
+        "name": "object_height",
+        "type": "float",
+        "hint": "hint_range(0.1, 10.0)",
+        "default": 1.2
+      },
+      {
+        "name": "sag",
+        "type": "float",
+        "hint": "hint_range(0.0, 1.0)",
+        "default": 0.35
+      },
+      {
+        "name": "drip_length",
+        "type": "float",
+        "hint": "hint_range(0.0, 1.0)",
+        "default": 0.25
+      },
+      {
+        "name": "drip_thickness",
+        "type": "float",
+        "hint": "hint_range(0.0, 0.2)",
+        "default": 0.05
+      },
+      {
+        "name": "drip_count",
+        "type": "int",
+        "hint": "hint_range(1, 24)",
+        "default": 9
+      },
+      {
+        "name": "puddle_spread",
+        "type": "float",
+        "hint": "hint_range(0.0, 1.0)",
+        "default": 0.4
+      },
+      {
+        "name": "loop_animation",
+        "type": "bool",
+        "hint": null,
+        "default": false
+      }
+    ],
+    "placement": "res://baltor/godot_shaders/melt_drip_vertex/",
+    "usage": "surface_material",
+    "renderers": {
+      "compatibility": "compiled_and_rendered",
+      "forward_plus": "not_verified",
+      "mobile": "not_verified"
+    },
+    "inputs": [
+      "A mesh centred on its origin with enough height subdivisions; set `object_height`."
+    ],
+    "outputs": "A wax candle sagging at the top with drips running down its sides and a widened base."
+  },
+  "limits": "Normals are not recomputed, so lighting on the sagged shape is approximate. Volume is not conserved. Drips are placed by angle around the Y axis, which suits round objects best.",
+  "related": [
+    "jelly_wobble",
+    "noise_dissolve_burn"
+  ],
+  "technique_references": [
+    "Height-weighted vertex sag with base clamp",
+    "Angular slots with cosine lobes for drips",
+    "Base spread for a puddle",
+    "MurmurHash3 32-bit finalizer over prime-combined lattice coordinates as a hash"
+  ],
+  "native_checks": [
+    "contract_static",
+    "engine_run",
+    "engine_log_clean",
+    "shader_in_scene",
+    "capture_written",
+    "render_not_uniform",
+    "shader_changes_pixels"
+  ]
+}

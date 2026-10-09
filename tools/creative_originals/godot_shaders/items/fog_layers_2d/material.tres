@@ -1,0 +1,13 @@
+[gd_resource type="ShaderMaterial" load_steps=2 format=3]
+
+[ext_resource type="Shader" path="res://baltor/godot_shaders/fog_layers_2d/fog_layers_2d.gdshader" id="1_shader"]
+
+[resource]
+shader = ExtResource("1_shader")
+shader_parameter/fog_color = Color(0.85, 0.88, 0.92, 1)
+shader_parameter/density = 0.9
+shader_parameter/ground_line = 0.8
+shader_parameter/fog_height = 0.45
+shader_parameter/drift_speed = 0.04
+shader_parameter/scale = 3.0
+shader_parameter/layers = 3

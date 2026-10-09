@@ -1,0 +1,145 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "particles_fountain",
+  "title": "Particle water fountain with swirl and floor bounce",
+  "purpose": "GPU particle process shader for a fountain: droplets leave a nozzle disc in a cone, swirl around the axis, fall under gravity, bounce once on a floor height and fade from water to spray colour.",
+  "form": "library_module",
+  "asset_role": null,
+  "dimension": "3d",
+  "engine": {
+    "name": "godot",
+    "minimum_version": "4.3"
+  },
+  "tags": [
+    "godot shader",
+    "particles",
+    "fountain",
+    "water",
+    "gravity",
+    "bounce"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "role": "other"
+    },
+    {
+      "path": "particles_fountain.gdshader",
+      "role": "skill_asset"
+    },
+    {
+      "path": "material.tres",
+      "role": "skill_asset"
+    },
+    {
+      "path": "demo.tscn",
+      "role": "skill_asset"
+    }
+  ],
+  "contract": {
+    "shader_type": "particles",
+    "render_modes": [],
+    "uniforms": [
+      {
+        "name": "launch_speed",
+        "type": "float",
+        "hint": "hint_range(0.0, 20.0)",
+        "default": 5.5
+      },
+      {
+        "name": "spread_degrees",
+        "type": "float",
+        "hint": "hint_range(0.0, 45.0)",
+        "default": 9.0
+      },
+      {
+        "name": "nozzle_radius",
+        "type": "float",
+        "hint": "hint_range(0.0, 1.0)",
+        "default": 0.06
+      },
+      {
+        "name": "swirl_speed",
+        "type": "float",
+        "hint": "hint_range(-4.0, 4.0)",
+        "default": 0.8
+      },
+      {
+        "name": "gravity",
+        "type": "float",
+        "hint": "hint_range(0.0, 30.0)",
+        "default": 9.8
+      },
+      {
+        "name": "floor_height",
+        "type": "float",
+        "hint": "hint_range(-5.0, 5.0)",
+        "default": 0.0
+      },
+      {
+        "name": "bounce",
+        "type": "float",
+        "hint": "hint_range(0.0, 1.0)",
+        "default": 0.3
+      },
+      {
+        "name": "droplet_scale",
+        "type": "float",
+        "hint": "hint_range(0.1, 4.0)",
+        "default": 1.0
+      },
+      {
+        "name": "water_color",
+        "type": "vec4",
+        "hint": "source_color",
+        "default": [
+          0.45,
+          0.75,
+          1.0,
+          1.0
+        ]
+      },
+      {
+        "name": "spray_color",
+        "type": "vec4",
+        "hint": "source_color",
+        "default": [
+          0.92,
+          0.97,
+          1.0,
+          1.0
+        ]
+      }
+    ],
+    "placement": "res://baltor/godot_shaders/particles_fountain/",
+    "usage": "particle_process_material",
+    "renderers": {
+      "compatibility": "compiled_and_rendered",
+      "forward_plus": "not_verified",
+      "mobile": "not_verified"
+    },
+    "inputs": [
+      "A GPUParticles3D node with a draw pass mesh (for example a small QuadMesh) whose material uses vertex colour as albedo and particle billboarding, as in `demo.tscn`."
+    ],
+    "outputs": "An arcing jet of droplets that rises, falls, bounces on the floor height and fades into spray."
+  },
+  "limits": "The floor is an infinite horizontal plane; there is no collision with scene geometry (use Godot's particle collision nodes for that). Each droplet bounces with the same rule, so repeated bounces lose energy quickly. Positions are in world space (local_coords off), so moving the emitter leaves droplets behind as real water would.",
+  "related": [
+    "particles_sparks_bounce",
+    "particles_rain_splash"
+  ],
+  "technique_references": [
+    "Integer hash for per-particle random numbers",
+    "Uniform sampling of a cone and a disc",
+    "Explicit Euler integration with velocity reflection at a plane"
+  ],
+  "native_checks": [
+    "contract_static",
+    "engine_run",
+    "engine_log_clean",
+    "shader_in_scene",
+    "capture_written",
+    "render_not_uniform",
+    "shader_changes_pixels"
+  ]
+}

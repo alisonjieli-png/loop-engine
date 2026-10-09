@@ -1,0 +1,37 @@
+[gd_scene load_steps=6 format=3]
+
+[ext_resource type="ShaderMaterial" path="res://baltor/godot_shaders/swirl_portal/material.tres" id="1_material"]
+
+[sub_resource type="Environment" id="Environment_1"]
+background_mode = 1
+background_color = Color(0.04, 0.03, 0.06, 1)
+ambient_light_source = 2
+ambient_light_color = Color(0.35, 0.37, 0.42, 1)
+ambient_light_energy = 1.0
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_2"]
+size = Vector2(8, 8)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_3"]
+albedo_color = Color(0.12, 0.12, 0.14, 1)
+roughness = 0.9
+
+[sub_resource type="QuadMesh" id="QuadMesh_4"]
+size = Vector2(1.6, 1.6)
+
+[node name="Root" type="Node3D"]
+
+[node name="Environment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_1")
+
+[node name="Floor" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.6, 0)
+mesh = SubResource("PlaneMesh_2")
+material_override = SubResource("StandardMaterial3D_3")
+
+[node name="Subject" type="MeshInstance3D" parent="."]
+mesh = SubResource("QuadMesh_4")
+material_override = ExtResource("1_material")
+
+[node name="Camera" type="Camera3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0.99846, 0.05547, 0, -0.05547, 0.99846, 0, 0.1, 1.8)

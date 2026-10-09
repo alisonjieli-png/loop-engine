@@ -1,0 +1,17 @@
+[gd_resource type="ShaderMaterial" load_steps=2 format=3]
+
+[ext_resource type="Shader" path="res://baltor/godot_shaders/hologram_scanlines/hologram_scanlines.gdshader" id="1_shader"]
+
+[resource]
+shader = ExtResource("1_shader")
+shader_parameter/holo_color = Color(0.25, 0.85, 1, 1)
+shader_parameter/line_density = 110.0
+shader_parameter/line_speed = 0.5
+shader_parameter/line_sharpness = 0.6
+shader_parameter/line_strength = 0.4
+shader_parameter/rim_power = 2.0
+shader_parameter/base_strength = 0.18
+shader_parameter/flicker_amount = 0.3
+shader_parameter/glitch_offset = 0.05
+shader_parameter/glitch_rate = 5.0
+shader_parameter/glitch_bands = 10.0

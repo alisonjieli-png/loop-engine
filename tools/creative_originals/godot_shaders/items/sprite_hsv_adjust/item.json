@@ -1,0 +1,112 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "sprite_hsv_adjust",
+  "title": "Hue, saturation, value and sepia adjustment",
+  "purpose": "Adjust a sprite's colours in HSV space (hue rotation, saturation, value), then optionally fade it toward greyscale or sepia, with contrast control, for variants, status effects and old-photo looks.",
+  "form": "library_module",
+  "asset_role": null,
+  "dimension": "2d",
+  "engine": {
+    "name": "godot",
+    "minimum_version": "4.3"
+  },
+  "tags": [
+    "godot shader",
+    "canvas item",
+    "hsv",
+    "hue shift",
+    "sepia",
+    "grayscale",
+    "color adjustment"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "role": "other"
+    },
+    {
+      "path": "sprite_hsv_adjust.gdshader",
+      "role": "skill_asset"
+    },
+    {
+      "path": "material.tres",
+      "role": "skill_asset"
+    },
+    {
+      "path": "demo.tscn",
+      "role": "skill_asset"
+    }
+  ],
+  "contract": {
+    "shader_type": "canvas_item",
+    "render_modes": [],
+    "uniforms": [
+      {
+        "name": "hue_shift_degrees",
+        "type": "float",
+        "hint": "hint_range(-180.0, 180.0)",
+        "default": 0.0
+      },
+      {
+        "name": "saturation",
+        "type": "float",
+        "hint": "hint_range(0.0, 3.0)",
+        "default": 1.0
+      },
+      {
+        "name": "value",
+        "type": "float",
+        "hint": "hint_range(0.0, 3.0)",
+        "default": 1.0
+      },
+      {
+        "name": "contrast",
+        "type": "float",
+        "hint": "hint_range(0.0, 3.0)",
+        "default": 1.0
+      },
+      {
+        "name": "grayscale",
+        "type": "float",
+        "hint": "hint_range(0.0, 1.0)",
+        "default": 0.0
+      },
+      {
+        "name": "sepia",
+        "type": "float",
+        "hint": "hint_range(0.0, 1.0)",
+        "default": 0.0
+      }
+    ],
+    "placement": "res://baltor/godot_shaders/sprite_hsv_adjust/",
+    "usage": "canvas_material",
+    "renderers": {
+      "compatibility": "compiled_and_rendered",
+      "forward_plus": "not_verified",
+      "mobile": "not_verified"
+    },
+    "inputs": [
+      "A Sprite2D (or other textured CanvasItem) with transparent space around its shape, assigned to the node as usual."
+    ],
+    "outputs": "The orange sprite rotated to cool blue and green hues with a little more saturation."
+  },
+  "limits": "Hue rotation in HSV is not perceptually uniform, so some hues change brightness as they rotate. Greys have no hue to rotate.",
+  "related": [
+    "sprite_color_key_swap",
+    "sprite_hit_flash",
+    "post_color_grading"
+  ],
+  "technique_references": [
+    "RGB to HSV hexcone conversion and back",
+    "Luminance-based greyscale and sepia toning"
+  ],
+  "native_checks": [
+    "contract_static",
+    "engine_run",
+    "engine_log_clean",
+    "shader_in_scene",
+    "capture_written",
+    "render_not_uniform",
+    "shader_changes_pixels"
+  ]
+}

@@ -1,0 +1,28 @@
+[gd_scene load_steps=4 format=3]
+
+[ext_resource type="ShaderMaterial" path="res://baltor/godot_shaders/hexagon_shield_pulse/material.tres" id="1_material"]
+
+[sub_resource type="Environment" id="Environment_1"]
+background_mode = 1
+background_color = Color(0.02, 0.03, 0.05, 1)
+ambient_light_source = 2
+ambient_light_color = Color(0.35, 0.37, 0.42, 1)
+ambient_light_energy = 1.0
+
+[sub_resource type="SphereMesh" id="SphereMesh_2"]
+radial_segments = 64
+rings = 32
+radius = 0.85
+height = 1.7
+
+[node name="Root" type="Node3D"]
+
+[node name="Environment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_1")
+
+[node name="Subject" type="MeshInstance3D" parent="."]
+mesh = SubResource("SphereMesh_2")
+material_override = ExtResource("1_material")
+
+[node name="Camera" type="Camera3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0.9916, 0.12934, 0, -0.12934, 0.9916, 0, 0.3, 2.3)

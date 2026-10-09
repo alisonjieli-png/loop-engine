@@ -1,0 +1,389 @@
+[gd_scene load_steps=6 format=3]
+
+[ext_resource type="ShaderMaterial" path="res://baltor/godot_shaders/grass_blade_sway/material.tres" id="1_material"]
+
+[sub_resource type="Environment" id="Environment_1"]
+background_mode = 1
+background_color = Color(0.6, 0.75, 0.9, 1)
+ambient_light_source = 2
+ambient_light_color = Color(0.5, 0.55, 0.5, 1)
+ambient_light_energy = 1.0
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_2"]
+size = Vector2(6, 6)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_3"]
+albedo_color = Color(0.22, 0.32, 0.14, 1)
+roughness = 0.95
+
+[sub_resource type="QuadMesh" id="QuadMesh_4"]
+size = Vector2(0.07, 0.55)
+subdivide_depth = 6
+center_offset = Vector3(0, 0.275, 0)
+
+[node name="Root" type="Node3D"]
+
+[node name="Environment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_1")
+
+[node name="Ground" type="MeshInstance3D" parent="."]
+mesh = SubResource("PlaneMesh_2")
+material_override = SubResource("StandardMaterial3D_3")
+
+[node name="Blade0" type="MeshInstance3D" parent="."]
+transform = Transform3D(1.0307, 0, 0.23869, 0, 1.058, 0, -0.23869, 0, 1.0307, -0.45803, 0, -1.2681)
+mesh = SubResource("QuadMesh_4")
+material_override = ExtResource("1_material")
+
+[node name="Blade1" type="MeshInstance3D" parent="."]
+transform = Transform3D(-0.017096, 0, 0.7317, 0, 0.7319, 0, -0.7317, 0, -0.017096, 0.093293, 0, -0.79548)
+mesh = SubResource("QuadMesh_4")
+material_override = ExtResource("1_material")
+
+[node name="Blade2" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.70864, 0, 0.2076, 0, 0.73842, 0, -0.2076, 0, 0.70864, -1.2025, 0, -0.64598)
+mesh = SubResource("QuadMesh_4")
+material_override = ExtResource("1_material")
+
+[node name="Blade3" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.58681, 0, 0.4956, 0, 0.76809, 0, -0.4956, 0, 0.58681, -0.19625, 0, 0.21907)
+mesh = SubResource("QuadMesh_4")
+material_override = ExtResource("1_material")
+
+[node name="Blade4" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.32447, 0, 0.96428, 0, 1.0174, 0, -0.96428, 0, 0.32447, 0.33133, 0, 0.48496)
+mesh = SubResource("QuadMesh_4")
+material_override = ExtResource("1_material")
+
+[node name="Blade5" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.71956, 0, 0.9253, 0, 1.1722, 0, -0.9253, 0, 0.71956, 1.2383, 0, -1.4975)
+mesh = SubResource("QuadMesh_4")
+material_override = ExtResource("1_material")
+
+[node name="Blade6" type="MeshInstance3D" parent="."]
+transform = Transform3D(-0.72856, 0, 0.47489, 0, 0.86967, 0, -0.47489, 0, -0.72856, -0.92494, 0, -1.3409)
+mesh = SubResource("QuadMesh_4")
+material_override = ExtResource("1_material")
+
+[node name="Blade7" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.41028, 0, 0.96805, 0, 1.0514, 0, -0.96805, 0, 0.41028, -0.83011, 0, -0.32048)
+mesh = SubResource("QuadMesh_4")
+material_override = ExtResource("1_material")
+
+[node name="Blade8" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.58467, 0, 0.44174, 0, 0.73278, 0, -0.44174, 0, 0.58467, 0.12414, 0, -1.4619)
+mesh = SubResource("QuadMesh_4")
+material_override = ExtResource("1_material")
+
+[node name="Blade9" type="MeshInstance3D" parent="."]
+transform = Transform3D(-0.23179, 0, 0.84144, 0, 0.87278, 0, -0.84144, 0, -0.23179, 0.46904, 0, -0.6593)
+mesh = SubResource("QuadMesh_4")
+material_override = ExtResource("1_material")
+
+[node name="Blade10" type="MeshInstance3D" parent="."]
+transform = Transform3D(-0.66535, 0, 0.92188, 0, 1.1369, 0, -0.92188, 0, -0.66535, -0.12172, 0, -0.94051)
+mesh = SubResource("QuadMesh_4")
+material_override = ExtResource("1_material")
+
+[node name="Blade11" type="MeshInstance3D" parent="."]
+transform = Transform3D(-0.91375, 0, 0.37802, 0, 0.98886, 0, -0.37802, 0, -0.91375, -0.66535, 0, -0.33627)
+mesh = SubResource("QuadMesh_4")
+material_override = ExtResource("1_material")
+
+[node name="Blade12" type="MeshInstance3D" parent="."]
+transform = Transform3D(1.1548, 0, 0.44913, 0, 1.2391, 0, -0.44913, 0, 1.1548, 0.59656, 0, -0.96654)
+mesh = SubResource("QuadMesh_4")
+material_override = ExtResource("1_material")
+
+[node name="Blade13" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.027164, 0, 0.78312, 0, 0.78359, 0, -0.78312, 0, 0.027164, -0.21288, 0, 0.06571)
+mesh = SubResource("QuadMesh_4")
+material_override = ExtResource("1_material")
+
+[node name="Blade14" type="MeshInstance3D" parent="."]
+transform = Transform3D(-0.25482, 0, 1.0912, 0, 1.1205, 0, -1.0912, 0, -0.25482, -1.1981, 0, -0.12993)
+mesh = SubResource("QuadMesh_4")
+material_override = ExtResource("1_material")
+
+[node name="Blade15" type="MeshInstance3D" parent="."]
+transform = Transform3D(-0.31622, 0, 1.0352, 0, 1.0824, 0, -1.0352, 0, -0.31622, 0.97624, 0, -0.90976)
+mesh = SubResource("QuadMesh_4")
+material_override = ExtResource("1_material")
+
+[node name="Blade16" type="MeshInstance3D" parent="."]
+transform = Transform3D(-1.1445, 0, 0.20093, 0, 1.162, 0, -0.20093, 0, -1.1445, 0.20773, 0, -0.59635)
+mesh = SubResource("QuadMesh_4")
+material_override = ExtResource("1_material")
+
+[node name="Blade17" type="MeshInstance3D" parent="."]
+transform = Transform3D(-0.43384, 0, 0.59128, 0, 0.73337, 0, -0.59128, 0, -0.43384, -0.067344, 0, -0.13887)
+mesh = SubResource("QuadMesh_4")
+material_override = ExtResource("1_material")
+
+[node name="Blade18" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.72146, 0, 0.89819, 0, 1.1521, 0, -0.89819, 0, 0.72146, 0.38254, 0, 0.58481)
+mesh = SubResource("QuadMesh_4")
+material_override = ExtResource("1_material")
+
+[node name="Blade19" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.085523, 0, 0.70726, 0, 0.71241, 0, -0.70726, 0, 0.085523, -0.29694, 0, -0.12896)
+mesh = SubResource("QuadMesh_4")
+material_override = ExtResource("1_material")
+
+[node name="Blade20" type="MeshInstance3D" parent="."]
+transform = Transform3D(-0.5467, 0, 0.4874, 0, 0.73242, 0, -0.4874, 0, -0.5467, -0.86307, 0, -1.3424)
+mesh = SubResource("QuadMesh_4")
+material_override = ExtResource("1_material")
+
+[node name="Blade21" type="MeshInstance3D" parent="."]
+transform = Transform3D(-0.84138, 0, 0.35964, 0, 0.91502, 0, -0.35964, 0, -0.84138, -0.96372, 0, -1.0552)
+mesh = SubResource("QuadMesh_4")
+material_override = ExtResource("1_material")
+
+[node name="Blade22" type="MeshInstance3D" parent="."]
+transform = Transform3D(-0.93568, 0, 0.35901, 0, 1.0022, 0, -0.35901, 0, -0.93568, -1.0905, 0, -0.61179)
+mesh = SubResource("QuadMesh_4")
+material_override = ExtResource("1_material")
+
+[node name="Blade23" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.22435, 0, 0.8231, 0, 0.85313, 0, -0.8231, 0, 0.22435, 0.83013, 0, 0.30077)
+mesh = SubResource("QuadMesh_4")
+material_override = ExtResource("1_material")
+
+[node name="Blade24" type="MeshInstance3D" parent="."]
+transform = Transform3D(1.0914, 0, 0.56009, 0, 1.2268, 0, -0.56009, 0, 1.0914, -0.36719, 0, 0.34522)
+mesh = SubResource("QuadMesh_4")
+material_override = ExtResource("1_material")
+
+[node name="Blade25" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.039117, 0, 0.82741, 0, 0.82833, 0, -0.82741, 0, 0.039117, -0.84183, 0, -1.0897)
+mesh = SubResource("QuadMesh_4")
+material_override = ExtResource("1_material")
+
+[node name="Blade26" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.17689, 0, 0.67961, 0, 0.70225, 0, -0.67961, 0, 0.17689, 0.23172, 0, -1.022)
+mesh = SubResource("QuadMesh_4")
+material_override = ExtResource("1_material")
+
+[node name="Blade27" type="MeshInstance3D" parent="."]
+transform = Transform3D(-0.68967, 0, 1.0114, 0, 1.2242, 0, -1.0114, 0, -0.68967, -0.33994, 0, -0.35405)
+mesh = SubResource("QuadMesh_4")
+material_override = ExtResource("1_material")
+
+[node name="Blade28" type="MeshInstance3D" parent="."]
+transform = Transform3D(1.0565, 0, 0.18095, 0, 1.0719, 0, -0.18095, 0, 1.0565, 0.040278, 0, -0.2413)
+mesh = SubResource("QuadMesh_4")
+material_override = ExtResource("1_material")
+
+[node name="Blade29" type="MeshInstance3D" parent="."]
+transform = Transform3D(-0.95078, 0, 0.70053, 0, 1.181, 0, -0.70053, 0, -0.95078, 1.0388, 0, 0.11593)
+mesh = SubResource("QuadMesh_4")
+material_override = ExtResource("1_material")
+
+[node name="Blade30" type="MeshInstance3D" parent="."]
+transform = Transform3D(-0.30995, 0, 0.69058, 0, 0.75695, 0, -0.69058, 0, -0.30995, -0.27981, 0, -0.72225)
+mesh = SubResource("QuadMesh_4")
+material_override = ExtResource("1_material")
+
+[node name="Blade31" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.71117, 0, 0.3977, 0, 0.81482, 0, -0.3977, 0, 0.71117, -1.1382, 0, -1.4518)
+mesh = SubResource("QuadMesh_4")
+material_override = ExtResource("1_material")
+
+[node name="Blade32" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.62255, 0, 0.32033, 0, 0.70013, 0, -0.32033, 0, 0.62255, -0.41586, 0, -1.4843)
+mesh = SubResource("QuadMesh_4")
+material_override = ExtResource("1_material")
+
+[node name="Blade33" type="MeshInstance3D" parent="."]
+transform = Transform3D(-0.6591, 0, 0.27463, 0, 0.71403, 0, -0.27463, 0, -0.6591, -1.0362, 0, -0.80006)
+mesh = SubResource("QuadMesh_4")
+material_override = ExtResource("1_material")
+
+[node name="Blade34" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.3869, 0, 0.74418, 0, 0.83874, 0, -0.74418, 0, 0.3869, 0.29658, 0, -1.2732)
+mesh = SubResource("QuadMesh_4")
+material_override = ExtResource("1_material")
+
+[node name="Blade35" type="MeshInstance3D" parent="."]
+transform = Transform3D(-1.1666, 0, 0.025283, 0, 1.1669, 0, -0.025283, 0, -1.1666, -0.35318, 0, -1.3297)
+mesh = SubResource("QuadMesh_4")
+material_override = ExtResource("1_material")
+
+[node name="Blade36" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.70906, 0, 0.23579, 0, 0.74724, 0, -0.23579, 0, 0.70906, -0.088427, 0, -0.53556)
+mesh = SubResource("QuadMesh_4")
+material_override = ExtResource("1_material")
+
+[node name="Blade37" type="MeshInstance3D" parent="."]
+transform = Transform3D(1.0104, 0, 0.56142, 0, 1.1559, 0, -0.56142, 0, 1.0104, -0.40915, 0, -1.0175)
+mesh = SubResource("QuadMesh_4")
+material_override = ExtResource("1_material")
+
+[node name="Blade38" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.88733, 0, 0.44025, 0, 0.99054, 0, -0.44025, 0, 0.88733, -1.24, 0, 0.49217)
+mesh = SubResource("QuadMesh_4")
+material_override = ExtResource("1_material")
+
+[node name="Blade39" type="MeshInstance3D" parent="."]
+transform = Transform3D(-0.9882, 0, 0.066845, 0, 0.99046, 0, -0.066845, 0, -0.9882, 0.11225, 0, -1.5405)
+mesh = SubResource("QuadMesh_4")
+material_override = ExtResource("1_material")
+
+[node name="Blade40" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.34305, 0, 0.77071, 0, 0.84361, 0, -0.77071, 0, 0.34305, 0.94465, 0, -0.068367)
+mesh = SubResource("QuadMesh_4")
+material_override = ExtResource("1_material")
+
+[node name="Blade41" type="MeshInstance3D" parent="."]
+transform = Transform3D(-0.76318, 0, 0.63518, 0, 0.99293, 0, -0.63518, 0, -0.76318, -0.86569, 0, 0.098263)
+mesh = SubResource("QuadMesh_4")
+material_override = ExtResource("1_material")
+
+[node name="Blade42" type="MeshInstance3D" parent="."]
+transform = Transform3D(-1.145, 0, 0.054266, 0, 1.1463, 0, -0.054266, 0, -1.145, -0.44287, 0, -1.1093)
+mesh = SubResource("QuadMesh_4")
+material_override = ExtResource("1_material")
+
+[node name="Blade43" type="MeshInstance3D" parent="."]
+transform = Transform3D(-0.78695, 0, 0.83869, 0, 1.1501, 0, -0.83869, 0, -0.78695, 0.91683, 0, 0.17337)
+mesh = SubResource("QuadMesh_4")
+material_override = ExtResource("1_material")
+
+[node name="Blade44" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.89185, 0, 0.081423, 0, 0.89556, 0, -0.081423, 0, 0.89185, -0.71048, 0, -0.46119)
+mesh = SubResource("QuadMesh_4")
+material_override = ExtResource("1_material")
+
+[node name="Blade45" type="MeshInstance3D" parent="."]
+transform = Transform3D(-0.47909, 0, 0.69308, 0, 0.84255, 0, -0.69308, 0, -0.47909, -1.2274, 0, -0.98528)
+mesh = SubResource("QuadMesh_4")
+material_override = ExtResource("1_material")
+
+[node name="Blade46" type="MeshInstance3D" parent="."]
+transform = Transform3D(-1.2145, 0, 0.045662, 0, 1.2154, 0, -0.045662, 0, -1.2145, 1.1869, 0, -0.6161)
+mesh = SubResource("QuadMesh_4")
+material_override = ExtResource("1_material")
+
+[node name="Blade47" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.62138, 0, 0.53697, 0, 0.82125, 0, -0.53697, 0, 0.62138, 1.183, 0, -0.7978)
+mesh = SubResource("QuadMesh_4")
+material_override = ExtResource("1_material")
+
+[node name="Blade48" type="MeshInstance3D" parent="."]
+transform = Transform3D(-0.99249, 0, 0.32142, 0, 1.0432, 0, -0.32142, 0, -0.99249, -0.78856, 0, -1.1504)
+mesh = SubResource("QuadMesh_4")
+material_override = ExtResource("1_material")
+
+[node name="Blade49" type="MeshInstance3D" parent="."]
+transform = Transform3D(-0.85616, 0, 0.6235, 0, 1.0591, 0, -0.6235, 0, -0.85616, 0.88513, 0, -0.54516)
+mesh = SubResource("QuadMesh_4")
+material_override = ExtResource("1_material")
+
+[node name="Blade50" type="MeshInstance3D" parent="."]
+transform = Transform3D(-0.93042, 0, 0.75844, 0, 1.2004, 0, -0.75844, 0, -0.93042, -1.0796, 0, -0.14671)
+mesh = SubResource("QuadMesh_4")
+material_override = ExtResource("1_material")
+
+[node name="Blade51" type="MeshInstance3D" parent="."]
+transform = Transform3D(-0.62936, 0, 0.49093, 0, 0.79819, 0, -0.49093, 0, -0.62936, 0.65037, 0, -0.54833)
+mesh = SubResource("QuadMesh_4")
+material_override = ExtResource("1_material")
+
+[node name="Blade52" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.39677, 0, 1.1689, 0, 1.2344, 0, -1.1689, 0, 0.39677, -0.43546, 0, 0.16181)
+mesh = SubResource("QuadMesh_4")
+material_override = ExtResource("1_material")
+
+[node name="Blade53" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.94564, 0, 0.55926, 0, 1.0986, 0, -0.55926, 0, 0.94564, -0.25639, 0, 0.48295)
+mesh = SubResource("QuadMesh_4")
+material_override = ExtResource("1_material")
+
+[node name="Blade54" type="MeshInstance3D" parent="."]
+transform = Transform3D(-0.98311, 0, 0.68403, 0, 1.1977, 0, -0.68403, 0, -0.98311, -0.9697, 0, -1.2675)
+mesh = SubResource("QuadMesh_4")
+material_override = ExtResource("1_material")
+
+[node name="Blade55" type="MeshInstance3D" parent="."]
+transform = Transform3D(-0.58763, 0, 1.091, 0, 1.2392, 0, -1.091, 0, -0.58763, -0.91995, 0, 0.21832)
+mesh = SubResource("QuadMesh_4")
+material_override = ExtResource("1_material")
+
+[node name="Blade56" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.77127, 0, 0.034534, 0, 0.77204, 0, -0.034534, 0, 0.77127, -0.38894, 0, -0.39295)
+mesh = SubResource("QuadMesh_4")
+material_override = ExtResource("1_material")
+
+[node name="Blade57" type="MeshInstance3D" parent="."]
+transform = Transform3D(-0.96818, 0, 0.20487, 0, 0.98962, 0, -0.20487, 0, -0.96818, 1.2243, 0, -0.17072)
+mesh = SubResource("QuadMesh_4")
+material_override = ExtResource("1_material")
+
+[node name="Blade58" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.90982, 0, 0.71051, 0, 1.1544, 0, -0.71051, 0, 0.90982, -0.1721, 0, 0.31783)
+mesh = SubResource("QuadMesh_4")
+material_override = ExtResource("1_material")
+
+[node name="Blade59" type="MeshInstance3D" parent="."]
+transform = Transform3D(-0.22324, 0, 0.8018, 0, 0.8323, 0, -0.8018, 0, -0.22324, -0.64523, 0, -0.95547)
+mesh = SubResource("QuadMesh_4")
+material_override = ExtResource("1_material")
+
+[node name="Blade60" type="MeshInstance3D" parent="."]
+transform = Transform3D(-0.74145, 0, 0.21537, 0, 0.77209, 0, -0.21537, 0, -0.74145, -0.62565, 0, -0.67817)
+mesh = SubResource("QuadMesh_4")
+material_override = ExtResource("1_material")
+
+[node name="Blade61" type="MeshInstance3D" parent="."]
+transform = Transform3D(-0.97505, 0, 0.30232, 0, 1.0208, 0, -0.30232, 0, -0.97505, -0.38016, 0, -0.59205)
+mesh = SubResource("QuadMesh_4")
+material_override = ExtResource("1_material")
+
+[node name="Blade62" type="MeshInstance3D" parent="."]
+transform = Transform3D(-0.09741, 0, 0.97103, 0, 0.97591, 0, -0.97103, 0, -0.09741, -0.20637, 0, 0.41899)
+mesh = SubResource("QuadMesh_4")
+material_override = ExtResource("1_material")
+
+[node name="Blade63" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.79045, 0, 0.51253, 0, 0.94207, 0, -0.51253, 0, 0.79045, 0.061117, 0, -1.5588)
+mesh = SubResource("QuadMesh_4")
+material_override = ExtResource("1_material")
+
+[node name="Blade64" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.066109, 0, 0.79204, 0, 0.79479, 0, -0.79204, 0, 0.066109, -1.2898, 0, 0.15817)
+mesh = SubResource("QuadMesh_4")
+material_override = ExtResource("1_material")
+
+[node name="Blade65" type="MeshInstance3D" parent="."]
+transform = Transform3D(-0.050658, 0, 0.87783, 0, 0.87929, 0, -0.87783, 0, -0.050658, 0.5855, 0, -0.37575)
+mesh = SubResource("QuadMesh_4")
+material_override = ExtResource("1_material")
+
+[node name="Blade66" type="MeshInstance3D" parent="."]
+transform = Transform3D(-0.1428, 0, 0.7448, 0, 0.75836, 0, -0.7448, 0, -0.1428, 0.14415, 0, 0.1254)
+mesh = SubResource("QuadMesh_4")
+material_override = ExtResource("1_material")
+
+[node name="Blade67" type="MeshInstance3D" parent="."]
+transform = Transform3D(-0.027255, 0, 1.1244, 0, 1.1247, 0, -1.1244, 0, -0.027255, -0.65391, 0, -0.99078)
+mesh = SubResource("QuadMesh_4")
+material_override = ExtResource("1_material")
+
+[node name="Blade68" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.21315, 0, 1.1828, 0, 1.2019, 0, -1.1828, 0, 0.21315, 0.1605, 0, 0.071985)
+mesh = SubResource("QuadMesh_4")
+material_override = ExtResource("1_material")
+
+[node name="Blade69" type="MeshInstance3D" parent="."]
+transform = Transform3D(-0.55874, 0, 0.80717, 0, 0.98169, 0, -0.80717, 0, -0.55874, 0.29257, 0, -0.48778)
+mesh = SubResource("QuadMesh_4")
+material_override = ExtResource("1_material")
+
+[node name="Sun" type="DirectionalLight3D" parent="."]
+transform = Transform3D(-0.83205, -0.38636, 0.39801, 0, 0.71753, 0.69653, -0.5547, 0.57954, -0.59702, 0.4, 0.7, -0.6)
+light_color = Color(1, 0.97, 0.92, 1)
+light_energy = 1.2
+
+[node name="Camera" type="Camera3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0.98776, 0.15596, 0, -0.15596, 0.98776, 0, 0.55, 1.6)

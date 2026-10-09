@@ -1,0 +1,15 @@
+[gd_resource type="ShaderMaterial" load_steps=2 format=3]
+
+[ext_resource type="Shader" path="res://baltor/godot_shaders/wood_rings/wood_rings.gdshader" id="1_shader"]
+
+[resource]
+shader = ExtResource("1_shader")
+shader_parameter/early_wood = Color(0.78, 0.56, 0.34, 1)
+shader_parameter/late_wood = Color(0.45, 0.26, 0.13, 1)
+shader_parameter/ring_density = 18.0
+shader_parameter/ring_sharpness = 0.7
+shader_parameter/distortion = 0.6
+shader_parameter/grain_density = 140.0
+shader_parameter/grain_strength = 0.25
+shader_parameter/axis_tilt_degrees = 4.0
+shader_parameter/roughness = 0.65

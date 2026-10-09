@@ -1,0 +1,109 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "outline_inverted_hull",
+  "title": "Inverted hull outline pass",
+  "purpose": "Draw a solid ink outline around a mesh by rendering its back faces pushed out along the normals, as a next pass on any existing material, with optional distance scaling so the line keeps a similar width on screen.",
+  "form": "library_module",
+  "asset_role": null,
+  "dimension": "3d",
+  "engine": {
+    "name": "godot",
+    "minimum_version": "4.3"
+  },
+  "tags": [
+    "godot shader",
+    "spatial",
+    "outline",
+    "inverted hull",
+    "toon",
+    "next pass",
+    "stylized"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "role": "other"
+    },
+    {
+      "path": "outline_inverted_hull.gdshader",
+      "role": "skill_asset"
+    },
+    {
+      "path": "material.tres",
+      "role": "skill_asset"
+    },
+    {
+      "path": "demo.tscn",
+      "role": "skill_asset"
+    }
+  ],
+  "contract": {
+    "shader_type": "spatial",
+    "render_modes": [
+      "unshaded",
+      "cull_front",
+      "shadows_disabled",
+      "fog_disabled"
+    ],
+    "uniforms": [
+      {
+        "name": "outline_color",
+        "type": "vec4",
+        "hint": "source_color",
+        "default": [
+          0.04,
+          0.03,
+          0.07,
+          1.0
+        ]
+      },
+      {
+        "name": "thickness",
+        "type": "float",
+        "hint": "hint_range(0.0, 0.2)",
+        "default": 0.015
+      },
+      {
+        "name": "distance_scaling",
+        "type": "float",
+        "hint": "hint_range(0.0, 1.0)",
+        "default": 0.6
+      },
+      {
+        "name": "max_thickness",
+        "type": "float",
+        "hint": "hint_range(0.0, 0.5)",
+        "default": 0.08
+      }
+    ],
+    "placement": "res://baltor/godot_shaders/outline_inverted_hull/",
+    "usage": "next_pass_material",
+    "renderers": {
+      "compatibility": "compiled_and_rendered",
+      "forward_plus": "not_verified",
+      "mobile": "not_verified"
+    },
+    "inputs": [
+      "A mesh with smooth normals and an existing base material; set `material.tres` as that material's `next_pass`."
+    ],
+    "outputs": "The mesh with a solid dark contour around its silhouette and along outer edges."
+  },
+  "limits": "Hard-edged meshes (split normals, for example a BoxMesh) show gaps at the corners because each face moves along its own normal; use smoothed normals for those. Width is in object units, so non-uniform scale changes it. Inner creases are not outlined. The hull can poke through nearby geometry.",
+  "related": [
+    "toon_band_rim",
+    "post_edge_detect"
+  ],
+  "technique_references": [
+    "Inverted hull (back-face extrusion along normals)",
+    "View-distance width compensation"
+  ],
+  "native_checks": [
+    "contract_static",
+    "engine_run",
+    "engine_log_clean",
+    "shader_in_scene",
+    "capture_written",
+    "render_not_uniform",
+    "shader_changes_pixels"
+  ]
+}

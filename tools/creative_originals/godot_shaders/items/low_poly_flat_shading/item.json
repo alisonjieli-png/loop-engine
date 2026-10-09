@@ -1,0 +1,127 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "low_poly_flat_shading",
+  "title": "Low-poly flat shading with per-facet colour",
+  "purpose": "Give any mesh a faceted low-poly look: per-pixel face normals from screen derivatives, per-facet colour variation from a hash of the face normal, a height gradient, and optional vertex jitter to break up regular primitives.",
+  "form": "library_module",
+  "asset_role": null,
+  "dimension": "3d",
+  "engine": {
+    "name": "godot",
+    "minimum_version": "4.3"
+  },
+  "tags": [
+    "godot shader",
+    "spatial",
+    "low poly",
+    "flat shading",
+    "faceted",
+    "stylized",
+    "derivatives"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "role": "other"
+    },
+    {
+      "path": "low_poly_flat_shading.gdshader",
+      "role": "skill_asset"
+    },
+    {
+      "path": "material.tres",
+      "role": "skill_asset"
+    },
+    {
+      "path": "demo.tscn",
+      "role": "skill_asset"
+    }
+  ],
+  "contract": {
+    "shader_type": "spatial",
+    "render_modes": [],
+    "uniforms": [
+      {
+        "name": "low_color",
+        "type": "vec4",
+        "hint": "source_color",
+        "default": [
+          0.18,
+          0.42,
+          0.3,
+          1.0
+        ]
+      },
+      {
+        "name": "high_color",
+        "type": "vec4",
+        "hint": "source_color",
+        "default": [
+          0.85,
+          0.82,
+          0.55,
+          1.0
+        ]
+      },
+      {
+        "name": "gradient_bottom",
+        "type": "float",
+        "hint": "hint_range(-5.0, 5.0)",
+        "default": -0.6
+      },
+      {
+        "name": "gradient_top",
+        "type": "float",
+        "hint": "hint_range(-5.0, 5.0)",
+        "default": 0.6
+      },
+      {
+        "name": "facet_variation",
+        "type": "float",
+        "hint": "hint_range(0.0, 0.5)",
+        "default": 0.12
+      },
+      {
+        "name": "jitter",
+        "type": "float",
+        "hint": "hint_range(0.0, 0.3)",
+        "default": 0.06
+      },
+      {
+        "name": "roughness",
+        "type": "float",
+        "hint": "hint_range(0.0, 1.0)",
+        "default": 0.9
+      }
+    ],
+    "placement": "res://baltor/godot_shaders/low_poly_flat_shading/",
+    "usage": "surface_material",
+    "renderers": {
+      "compatibility": "compiled_and_rendered",
+      "forward_plus": "not_verified",
+      "mobile": "not_verified"
+    },
+    "inputs": [],
+    "outputs": "A faceted sphere with visibly flat triangles shaded in greens fading to sand at the top."
+  },
+  "limits": "Derivative normals are per 2 x 2 pixel block, so tiny triangles get noisy normals. Jitter moves vertices by a hash of their quantized position: vertices closer than 1/50 object unit can merge their offsets. Shadows use the jittered shape.",
+  "related": [
+    "ps1_vertex_snap",
+    "toon_band_rim"
+  ],
+  "technique_references": [
+    "Face normals from screen-space derivatives (cross of dFdx and dFdy)",
+    "Hashed per-facet colour variation",
+    "Position-hashed vertex jitter",
+    "MurmurHash3 32-bit finalizer over prime-combined lattice coordinates as a hash"
+  ],
+  "native_checks": [
+    "contract_static",
+    "engine_run",
+    "engine_log_clean",
+    "shader_in_scene",
+    "capture_written",
+    "render_not_uniform",
+    "shader_changes_pixels"
+  ]
+}

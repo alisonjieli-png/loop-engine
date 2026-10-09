@@ -1,0 +1,153 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "topographic_contours",
+  "title": "Topographic contour lines with elevation tints",
+  "purpose": "Map-style shading by world height: minor and major contour lines of constant pixel width every few metres, hypsometric colour bands from lowland green to highland brown and white, on any mesh.",
+  "form": "library_module",
+  "asset_role": null,
+  "dimension": "3d",
+  "engine": {
+    "name": "godot",
+    "minimum_version": "4.3"
+  },
+  "tags": [
+    "godot shader",
+    "spatial",
+    "contour lines",
+    "topographic",
+    "map",
+    "elevation",
+    "visualization"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "role": "other"
+    },
+    {
+      "path": "topographic_contours.gdshader",
+      "role": "skill_asset"
+    },
+    {
+      "path": "material.tres",
+      "role": "skill_asset"
+    },
+    {
+      "path": "demo.tscn",
+      "role": "skill_asset"
+    }
+  ],
+  "contract": {
+    "shader_type": "spatial",
+    "render_modes": [],
+    "uniforms": [
+      {
+        "name": "interval",
+        "type": "float",
+        "hint": "hint_range(0.01, 50.0)",
+        "default": 0.1
+      },
+      {
+        "name": "major_every",
+        "type": "int",
+        "hint": "hint_range(1, 20)",
+        "default": 5
+      },
+      {
+        "name": "line_pixels",
+        "type": "float",
+        "hint": "hint_range(0.5, 4.0)",
+        "default": 1.0
+      },
+      {
+        "name": "line_color",
+        "type": "vec4",
+        "hint": "source_color",
+        "default": [
+          0.35,
+          0.22,
+          0.12,
+          1.0
+        ]
+      },
+      {
+        "name": "height_low",
+        "type": "float",
+        "hint": "hint_range(-100.0, 100.0)",
+        "default": -0.5
+      },
+      {
+        "name": "height_high",
+        "type": "float",
+        "hint": "hint_range(-100.0, 100.0)",
+        "default": 0.6
+      },
+      {
+        "name": "low_tint",
+        "type": "vec4",
+        "hint": "source_color",
+        "default": [
+          0.55,
+          0.75,
+          0.5,
+          1.0
+        ]
+      },
+      {
+        "name": "mid_tint",
+        "type": "vec4",
+        "hint": "source_color",
+        "default": [
+          0.9,
+          0.85,
+          0.6,
+          1.0
+        ]
+      },
+      {
+        "name": "high_tint",
+        "type": "vec4",
+        "hint": "source_color",
+        "default": [
+          0.72,
+          0.55,
+          0.42,
+          1.0
+        ]
+      },
+      {
+        "name": "tint_steps",
+        "type": "int",
+        "hint": "hint_range(0, 32)",
+        "default": 8
+      }
+    ],
+    "placement": "res://baltor/godot_shaders/topographic_contours/",
+    "usage": "surface_material",
+    "renderers": {
+      "compatibility": "compiled_and_rendered",
+      "forward_plus": "not_verified",
+      "mobile": "not_verified"
+    },
+    "inputs": [],
+    "outputs": "Hills shaded in green, sand and brown bands with brown contour rings that thicken every fifth line."
+  },
+  "limits": "On flat areas exactly at a contour height the line covers the whole surface. Lines on near-vertical walls bunch together. Heights are world Y, so the material must not move vertically to keep the map stable.",
+  "related": [
+    "terrain_slope_height",
+    "world_grid_debug"
+  ],
+  "technique_references": [
+    "Derivative anti-aliased iso-lines of world height",
+    "Hypsometric tinting with optional steps"
+  ],
+  "native_checks": [
+    "contract_static",
+    "engine_run",
+    "engine_log_clean",
+    "shader_in_scene",
+    "capture_written",
+    "render_not_uniform",
+    "shader_changes_pixels"
+  ]
+}

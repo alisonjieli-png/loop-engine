@@ -1,0 +1,16 @@
+[gd_resource type="ShaderMaterial" load_steps=2 format=3]
+
+[ext_resource type="Shader" path="res://baltor/godot_shaders/topographic_contours/topographic_contours.gdshader" id="1_shader"]
+
+[resource]
+shader = ExtResource("1_shader")
+shader_parameter/interval = 0.1
+shader_parameter/major_every = 5
+shader_parameter/line_pixels = 1.0
+shader_parameter/line_color = Color(0.35, 0.22, 0.12, 1)
+shader_parameter/height_low = -0.5
+shader_parameter/height_high = 0.6
+shader_parameter/low_tint = Color(0.55, 0.75, 0.5, 1)
+shader_parameter/mid_tint = Color(0.9, 0.85, 0.6, 1)
+shader_parameter/high_tint = Color(0.72, 0.55, 0.42, 1)
+shader_parameter/tint_steps = 8

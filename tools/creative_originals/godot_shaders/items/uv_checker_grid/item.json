@@ -1,0 +1,128 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "uv_checker_grid",
+  "title": "UV checker with direction ramps and stretch map",
+  "purpose": "Debug a mesh's UV layout: a numbered-style checker with red and green ramps showing the U and V directions, cell lines, and an optional heat map of texel stretching from screen-space UV derivatives.",
+  "form": "library_module",
+  "asset_role": null,
+  "dimension": "3d",
+  "engine": {
+    "name": "godot",
+    "minimum_version": "4.3"
+  },
+  "tags": [
+    "godot shader",
+    "spatial",
+    "uv",
+    "debug",
+    "checker",
+    "texel density",
+    "tool"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "role": "other"
+    },
+    {
+      "path": "uv_checker_grid.gdshader",
+      "role": "skill_asset"
+    },
+    {
+      "path": "material.tres",
+      "role": "skill_asset"
+    },
+    {
+      "path": "demo.tscn",
+      "role": "skill_asset"
+    }
+  ],
+  "contract": {
+    "shader_type": "spatial",
+    "render_modes": [
+      "unshaded"
+    ],
+    "uniforms": [
+      {
+        "name": "cells",
+        "type": "float",
+        "hint": "hint_range(1.0, 64.0)",
+        "default": 8.0
+      },
+      {
+        "name": "dark_color",
+        "type": "vec4",
+        "hint": "source_color",
+        "default": [
+          0.18,
+          0.18,
+          0.2,
+          1.0
+        ]
+      },
+      {
+        "name": "light_color",
+        "type": "vec4",
+        "hint": "source_color",
+        "default": [
+          0.82,
+          0.82,
+          0.85,
+          1.0
+        ]
+      },
+      {
+        "name": "direction_tint",
+        "type": "float",
+        "hint": "hint_range(0.0, 1.0)",
+        "default": 0.45
+      },
+      {
+        "name": "line_pixels",
+        "type": "float",
+        "hint": "hint_range(0.0, 4.0)",
+        "default": 1.0
+      },
+      {
+        "name": "show_stretch",
+        "type": "bool",
+        "hint": null,
+        "default": false
+      },
+      {
+        "name": "stretch_range",
+        "type": "float",
+        "hint": "hint_range(1.0, 8.0)",
+        "default": 3.0
+      }
+    ],
+    "placement": "res://baltor/godot_shaders/uv_checker_grid/",
+    "usage": "surface_material",
+    "renderers": {
+      "compatibility": "compiled_and_rendered",
+      "forward_plus": "not_verified",
+      "mobile": "not_verified"
+    },
+    "inputs": [],
+    "outputs": "Objects covered in a tinted checker with corner markers that reveal the UV direction on every face."
+  },
+  "limits": "The stretch map compares screen-space derivatives, so it depends on the viewing angle; judge stretch facing the surface. UVs outside 0 to 1 repeat the ramps. Unshaded, so it shows no lighting.",
+  "related": [
+    "normal_debug_view",
+    "world_grid_debug"
+  ],
+  "technique_references": [
+    "Checker with directional ramps and corner markers",
+    "Derivative anti-aliased cell lines",
+    "UV stretch ratio from screen-space derivatives"
+  ],
+  "native_checks": [
+    "contract_static",
+    "engine_run",
+    "engine_log_clean",
+    "shader_in_scene",
+    "capture_written",
+    "render_not_uniform",
+    "shader_changes_pixels"
+  ]
+}

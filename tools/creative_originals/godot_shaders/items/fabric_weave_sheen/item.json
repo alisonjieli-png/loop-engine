@@ -1,0 +1,137 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "fabric_weave_sheen",
+  "title": "Woven fabric with thread relief and sheen",
+  "purpose": "Woven cloth from UVs: warp and weft threads crossing over and under in a plain or twill pattern, each thread shaded as a rounded strand through the normal map, with Godot's rim term for the soft cloth sheen.",
+  "form": "library_module",
+  "asset_role": null,
+  "dimension": "3d",
+  "engine": {
+    "name": "godot",
+    "minimum_version": "4.3"
+  },
+  "tags": [
+    "godot shader",
+    "spatial",
+    "fabric",
+    "cloth",
+    "weave",
+    "textile",
+    "normal map"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "role": "other"
+    },
+    {
+      "path": "fabric_weave_sheen.gdshader",
+      "role": "skill_asset"
+    },
+    {
+      "path": "material.tres",
+      "role": "skill_asset"
+    },
+    {
+      "path": "demo.tscn",
+      "role": "skill_asset"
+    }
+  ],
+  "contract": {
+    "shader_type": "spatial",
+    "render_modes": [
+      "cull_disabled"
+    ],
+    "uniforms": [
+      {
+        "name": "warp_color",
+        "type": "vec4",
+        "hint": "source_color",
+        "default": [
+          0.22,
+          0.32,
+          0.55,
+          1.0
+        ]
+      },
+      {
+        "name": "weft_color",
+        "type": "vec4",
+        "hint": "source_color",
+        "default": [
+          0.75,
+          0.72,
+          0.65,
+          1.0
+        ]
+      },
+      {
+        "name": "threads",
+        "type": "float",
+        "hint": "hint_range(4.0, 400.0)",
+        "default": 60.0
+      },
+      {
+        "name": "twill",
+        "type": "bool",
+        "hint": null,
+        "default": true
+      },
+      {
+        "name": "thread_gap",
+        "type": "float",
+        "hint": "hint_range(0.0, 0.4)",
+        "default": 0.12
+      },
+      {
+        "name": "relief",
+        "type": "float",
+        "hint": "hint_range(0.0, 1.0)",
+        "default": 0.6
+      },
+      {
+        "name": "fuzz",
+        "type": "float",
+        "hint": "hint_range(0.0, 1.0)",
+        "default": 0.25
+      },
+      {
+        "name": "sheen",
+        "type": "float",
+        "hint": "hint_range(0.0, 1.0)",
+        "default": 0.6
+      }
+    ],
+    "placement": "res://baltor/godot_shaders/fabric_weave_sheen/",
+    "usage": "surface_material",
+    "renderers": {
+      "compatibility": "compiled_and_rendered",
+      "forward_plus": "not_verified",
+      "mobile": "not_verified"
+    },
+    "inputs": [
+      "A mesh with UVs and tangents; thread size follows the UV scale."
+    ],
+    "outputs": "A blue and cream twill cloth with visible rounded threads and diagonal ribs."
+  },
+  "limits": "Threads alias into moire when they get smaller than a few pixels; lower `threads` for distant cloth. Relief is a normal map only. The rim sheen depends on renderer support for the RIM output.",
+  "related": [
+    "velvet_sheen",
+    "flag_wave_cloth"
+  ],
+  "technique_references": [
+    "Plain and twill weave from a cell over/under rule",
+    "Rounded thread profile as a normal map",
+    "Directional fibre noise",
+    "RIM output for cloth sheen"
+  ],
+  "native_checks": [
+    "contract_static",
+    "engine_run",
+    "engine_log_clean",
+    "shader_in_scene",
+    "capture_written",
+    "render_not_uniform",
+    "shader_changes_pixels"
+  ]
+}

@@ -1,0 +1,15 @@
+[gd_resource type="ShaderMaterial" load_steps=2 format=3]
+
+[ext_resource type="Shader" path="res://baltor/godot_shaders/grass_blade_sway/grass_blade_sway.gdshader" id="1_shader"]
+
+[resource]
+shader = ExtResource("1_shader")
+shader_parameter/root_color = Color(0.12, 0.26, 0.08, 1)
+shader_parameter/tip_color = Color(0.58, 0.78, 0.3, 1)
+shader_parameter/wind_angle_degrees = 30.0
+shader_parameter/wind_strength = 0.25
+shader_parameter/gust_scale = 0.35
+shader_parameter/gust_speed = 1.2
+shader_parameter/flutter = 0.05
+shader_parameter/taper = 0.9
+shader_parameter/translucency = 0.4

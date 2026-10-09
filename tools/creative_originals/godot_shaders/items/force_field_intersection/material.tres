@@ -1,0 +1,15 @@
+[gd_resource type="ShaderMaterial" load_steps=2 format=3]
+
+[ext_resource type="Shader" path="res://baltor/godot_shaders/force_field_intersection/force_field_intersection.gdshader" id="1_shader"]
+
+[resource]
+shader = ExtResource("1_shader")
+shader_parameter/field_color = Color(0.3, 0.7, 1, 1)
+shader_parameter/base_strength = 0.06
+shader_parameter/rim_power = 3.0
+shader_parameter/rim_strength = 1.1
+shader_parameter/contact_width = 0.18
+shader_parameter/contact_strength = 2.5
+shader_parameter/band_frequency = 14.0
+shader_parameter/band_speed = 0.6
+shader_parameter/band_strength = 0.35

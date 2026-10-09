@@ -1,0 +1,126 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "post_film_grain",
+  "title": "Animated film grain with luminance response",
+  "purpose": "Add moving film grain whose strength follows image brightness (strongest in midtones), with adjustable grain size, colour or monochrome grain, and a gentle exposure flicker.",
+  "form": "library_module",
+  "asset_role": null,
+  "dimension": "3d",
+  "engine": {
+    "name": "godot",
+    "minimum_version": "4.3"
+  },
+  "tags": [
+    "godot shader",
+    "spatial",
+    "post-process",
+    "film grain",
+    "noise",
+    "cinematic",
+    "analog",
+    "full-screen"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "role": "other"
+    },
+    {
+      "path": "post_film_grain.gdshader",
+      "role": "skill_asset"
+    },
+    {
+      "path": "material.tres",
+      "role": "skill_asset"
+    },
+    {
+      "path": "demo.tscn",
+      "role": "skill_asset"
+    }
+  ],
+  "contract": {
+    "shader_type": "spatial",
+    "render_modes": [
+      "unshaded",
+      "cull_disabled",
+      "depth_test_disabled",
+      "depth_draw_never",
+      "skip_vertex_transform",
+      "fog_disabled"
+    ],
+    "uniforms": [
+      {
+        "name": "screen_texture",
+        "type": "sampler2D",
+        "hint": "hint_screen_texture, filter_linear_mipmap",
+        "default": null
+      },
+      {
+        "name": "amount",
+        "type": "float",
+        "hint": "hint_range(0.0, 1.0)",
+        "default": 0.35
+      },
+      {
+        "name": "grain_size",
+        "type": "float",
+        "hint": "hint_range(1.0, 6.0)",
+        "default": 1.6
+      },
+      {
+        "name": "color_grain",
+        "type": "float",
+        "hint": "hint_range(0.0, 1.0)",
+        "default": 0.25
+      },
+      {
+        "name": "midtone_bias",
+        "type": "float",
+        "hint": "hint_range(0.0, 1.0)",
+        "default": 0.7
+      },
+      {
+        "name": "frames_per_second",
+        "type": "float",
+        "hint": "hint_range(1.0, 60.0)",
+        "default": 24.0
+      },
+      {
+        "name": "flicker",
+        "type": "float",
+        "hint": "hint_range(0.0, 0.2)",
+        "default": 0.03
+      }
+    ],
+    "placement": "res://baltor/godot_shaders/post_film_grain/",
+    "usage": "post_process_quad",
+    "renderers": {
+      "compatibility": "compiled_and_rendered",
+      "forward_plus": "not_verified",
+      "mobile": "not_verified"
+    },
+    "inputs": [
+      "A MeshInstance3D with a 2 x 2 QuadMesh, `material.tres` as its material override and a large extra cull margin, as in `demo.tscn`."
+    ],
+    "outputs": "The scene with fine flickering grain most visible in its midtones."
+  },
+  "limits": "Hashed white noise, not a scanned film stock: grain has no clumping or shape. Visible grain changes with resolution because it is sized in screen pixels. The pass reads Godot's screen texture after opaque geometry, so transparent objects drawn after it are not processed and its order among other transparent passes is not controlled.",
+  "related": [
+    "post_vignette",
+    "vhs_tape_2d"
+  ],
+  "technique_references": [
+    "Hashed per-cell noise updated at a fixed frame rate",
+    "Luminance-dependent grain response",
+    "MurmurHash3 32-bit finalizer over prime-combined lattice coordinates as a hash"
+  ],
+  "native_checks": [
+    "contract_static",
+    "engine_run",
+    "engine_log_clean",
+    "shader_in_scene",
+    "capture_written",
+    "render_not_uniform",
+    "shader_changes_pixels"
+  ]
+}

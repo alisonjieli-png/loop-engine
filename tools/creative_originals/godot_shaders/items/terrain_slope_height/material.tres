@@ -1,0 +1,18 @@
+[gd_resource type="ShaderMaterial" load_steps=2 format=3]
+
+[ext_resource type="Shader" path="res://baltor/godot_shaders/terrain_slope_height/terrain_slope_height.gdshader" id="1_shader"]
+
+[resource]
+shader = ExtResource("1_shader")
+shader_parameter/height_scale = 1.4
+shader_parameter/frequency = 0.45
+shader_parameter/noise_octaves = 5
+shader_parameter/sea_level = 0.38
+shader_parameter/water_color = Color(0.12, 0.35, 0.55, 1)
+shader_parameter/sand_color = Color(0.82, 0.74, 0.52, 1)
+shader_parameter/grass_color = Color(0.25, 0.48, 0.18, 1)
+shader_parameter/rock_color = Color(0.42, 0.38, 0.34, 1)
+shader_parameter/snow_color = Color(0.94, 0.96, 1, 1)
+shader_parameter/sand_band = 0.035
+shader_parameter/rock_slope = 0.78
+shader_parameter/snow_line = 0.62

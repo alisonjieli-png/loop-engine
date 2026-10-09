@@ -1,0 +1,186 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "procedural_planet_surface",
+  "title": "Procedural planet surface with oceans, biomes and ice caps",
+  "purpose": "Paint a whole planet on a sphere from 3D noise of the surface direction: oceans with shallow coasts, land coloured by height and latitude, ridged mountains, polar ice caps and glossy water, with optional slow spin.",
+  "form": "library_module",
+  "asset_role": null,
+  "dimension": "3d",
+  "engine": {
+    "name": "godot",
+    "minimum_version": "4.3"
+  },
+  "tags": [
+    "godot shader",
+    "spatial",
+    "planet",
+    "procedural",
+    "space",
+    "biomes",
+    "noise"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "role": "other"
+    },
+    {
+      "path": "procedural_planet_surface.gdshader",
+      "role": "skill_asset"
+    },
+    {
+      "path": "material.tres",
+      "role": "skill_asset"
+    },
+    {
+      "path": "demo.tscn",
+      "role": "skill_asset"
+    }
+  ],
+  "contract": {
+    "shader_type": "spatial",
+    "render_modes": [],
+    "uniforms": [
+      {
+        "name": "deep_ocean",
+        "type": "vec4",
+        "hint": "source_color",
+        "default": [
+          0.02,
+          0.08,
+          0.25,
+          1.0
+        ]
+      },
+      {
+        "name": "shallow_ocean",
+        "type": "vec4",
+        "hint": "source_color",
+        "default": [
+          0.08,
+          0.35,
+          0.55,
+          1.0
+        ]
+      },
+      {
+        "name": "lowland",
+        "type": "vec4",
+        "hint": "source_color",
+        "default": [
+          0.2,
+          0.42,
+          0.16,
+          1.0
+        ]
+      },
+      {
+        "name": "desert",
+        "type": "vec4",
+        "hint": "source_color",
+        "default": [
+          0.78,
+          0.66,
+          0.4,
+          1.0
+        ]
+      },
+      {
+        "name": "highland",
+        "type": "vec4",
+        "hint": "source_color",
+        "default": [
+          0.45,
+          0.38,
+          0.3,
+          1.0
+        ]
+      },
+      {
+        "name": "ice",
+        "type": "vec4",
+        "hint": "source_color",
+        "default": [
+          0.94,
+          0.96,
+          1.0,
+          1.0
+        ]
+      },
+      {
+        "name": "continent_scale",
+        "type": "float",
+        "hint": "hint_range(0.5, 8.0)",
+        "default": 1.8
+      },
+      {
+        "name": "sea_level",
+        "type": "float",
+        "hint": "hint_range(0.0, 1.0)",
+        "default": 0.52
+      },
+      {
+        "name": "mountain_strength",
+        "type": "float",
+        "hint": "hint_range(0.0, 1.0)",
+        "default": 0.5
+      },
+      {
+        "name": "ice_latitude",
+        "type": "float",
+        "hint": "hint_range(0.0, 1.0)",
+        "default": 0.78
+      },
+      {
+        "name": "desert_band",
+        "type": "float",
+        "hint": "hint_range(0.0, 1.0)",
+        "default": 0.3
+      },
+      {
+        "name": "spin_speed",
+        "type": "float",
+        "hint": "hint_range(-1.0, 1.0)",
+        "default": 0.05
+      },
+      {
+        "name": "seed",
+        "type": "int",
+        "hint": "hint_range(0, 1000)",
+        "default": 7
+      }
+    ],
+    "placement": "res://baltor/godot_shaders/procedural_planet_surface/",
+    "usage": "surface_material",
+    "renderers": {
+      "compatibility": "compiled_and_rendered",
+      "forward_plus": "not_verified",
+      "mobile": "not_verified"
+    },
+    "inputs": [
+      "A sphere centred on its origin (directions come from vertex positions)."
+    ],
+    "outputs": "A rotating Earth-like planet with blue oceans, green and tan continents, brown highlands and white poles."
+  },
+  "limits": "Colour only: the surface is not displaced and has no normal relief. About thirteen octaves of 3D value noise per pixel are costly for full-screen planets. Biomes follow simple rules (height, latitude, one dryness noise), not climate.",
+  "related": [
+    "planet_atmosphere_rim",
+    "terrain_slope_height",
+    "lava_domain_warp"
+  ],
+  "technique_references": [
+    "3D fractional Brownian motion on the unit sphere",
+    "Ridged noise mountain chains",
+    "Height and latitude biome rules",
+    "Value noise with quintic interpolation and fractional Brownian motion"
+  ],
+  "native_checks": [
+    "contract_static",
+    "engine_run",
+    "engine_log_clean",
+    "shader_in_scene",
+    "capture_written",
+    "render_not_uniform",
+    "shader_changes_pixels"
+  ]
+}

@@ -1,0 +1,143 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "gooch_cool_warm",
+  "title": "Gooch cool to warm technical shading",
+  "purpose": "Shade a mesh from a cool tone facing away from the light to a warm tone facing it, with a white Blinn highlight and darkened silhouettes, for technical illustration that keeps shape readable in shadow.",
+  "form": "library_module",
+  "asset_role": null,
+  "dimension": "3d",
+  "engine": {
+    "name": "godot",
+    "minimum_version": "4.3"
+  },
+  "tags": [
+    "godot shader",
+    "spatial",
+    "gooch shading",
+    "technical illustration",
+    "npr",
+    "custom light function",
+    "stylized"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "role": "other"
+    },
+    {
+      "path": "gooch_cool_warm.gdshader",
+      "role": "skill_asset"
+    },
+    {
+      "path": "material.tres",
+      "role": "skill_asset"
+    },
+    {
+      "path": "demo.tscn",
+      "role": "skill_asset"
+    }
+  ],
+  "contract": {
+    "shader_type": "spatial",
+    "render_modes": [],
+    "uniforms": [
+      {
+        "name": "surface_color",
+        "type": "vec4",
+        "hint": "source_color",
+        "default": [
+          0.72,
+          0.66,
+          0.58,
+          1.0
+        ]
+      },
+      {
+        "name": "cool_color",
+        "type": "vec4",
+        "hint": "source_color",
+        "default": [
+          0.08,
+          0.16,
+          0.55,
+          1.0
+        ]
+      },
+      {
+        "name": "warm_color",
+        "type": "vec4",
+        "hint": "source_color",
+        "default": [
+          0.62,
+          0.48,
+          0.08,
+          1.0
+        ]
+      },
+      {
+        "name": "cool_mix",
+        "type": "float",
+        "hint": "hint_range(0.0, 1.0)",
+        "default": 0.25
+      },
+      {
+        "name": "warm_mix",
+        "type": "float",
+        "hint": "hint_range(0.0, 1.0)",
+        "default": 0.5
+      },
+      {
+        "name": "highlight_strength",
+        "type": "float",
+        "hint": "hint_range(0.0, 2.0)",
+        "default": 0.7
+      },
+      {
+        "name": "shininess",
+        "type": "float",
+        "hint": "hint_range(1.0, 256.0)",
+        "default": 48.0
+      },
+      {
+        "name": "edge_darkening",
+        "type": "float",
+        "hint": "hint_range(0.0, 1.0)",
+        "default": 0.7
+      },
+      {
+        "name": "edge_width",
+        "type": "float",
+        "hint": "hint_range(0.0, 0.6)",
+        "default": 0.22
+      }
+    ],
+    "placement": "res://baltor/godot_shaders/gooch_cool_warm/",
+    "usage": "surface_material",
+    "renderers": {
+      "compatibility": "compiled_and_rendered",
+      "forward_plus": "not_verified",
+      "mobile": "not_verified"
+    },
+    "inputs": [],
+    "outputs": "A mesh in blue to yellow shading with a white highlight and darkened outline band."
+  },
+  "limits": "Non-photorealistic. Shadows from other objects are not darkened (Gooch shading ignores cast shadows except in the highlight); environment ambient light adds a uniform term. Edge darkening is a facing-ratio approximation: flat faces seen edge-on darken entirely.",
+  "related": [
+    "toon_band_rim",
+    "lit_hatching"
+  ],
+  "technique_references": [
+    "Gooch cool-to-warm shading (Gooch et al. 1998)",
+    "Blinn-Phong specular",
+    "Facing-ratio silhouette darkening"
+  ],
+  "native_checks": [
+    "contract_static",
+    "engine_run",
+    "engine_log_clean",
+    "shader_in_scene",
+    "capture_written",
+    "render_not_uniform",
+    "shader_changes_pixels"
+  ]
+}

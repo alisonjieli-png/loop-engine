@@ -1,0 +1,138 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "triplanar_rock",
+  "title": "Procedural triplanar rock with surface-gradient bump",
+  "purpose": "Rock material for meshes without usable UVs: layered and ridged noise projected along the three world axes and blended by the normal, with crevice darkening and screen-space bump mapping from the same height.",
+  "form": "library_module",
+  "asset_role": null,
+  "dimension": "3d",
+  "engine": {
+    "name": "godot",
+    "minimum_version": "4.3"
+  },
+  "tags": [
+    "godot shader",
+    "spatial",
+    "rock",
+    "triplanar",
+    "procedural",
+    "bump mapping",
+    "stone"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "role": "other"
+    },
+    {
+      "path": "triplanar_rock.gdshader",
+      "role": "skill_asset"
+    },
+    {
+      "path": "material.tres",
+      "role": "skill_asset"
+    },
+    {
+      "path": "demo.tscn",
+      "role": "skill_asset"
+    }
+  ],
+  "contract": {
+    "shader_type": "spatial",
+    "render_modes": [],
+    "uniforms": [
+      {
+        "name": "rock_light",
+        "type": "vec4",
+        "hint": "source_color",
+        "default": [
+          0.58,
+          0.55,
+          0.5,
+          1.0
+        ]
+      },
+      {
+        "name": "rock_dark",
+        "type": "vec4",
+        "hint": "source_color",
+        "default": [
+          0.3,
+          0.28,
+          0.26,
+          1.0
+        ]
+      },
+      {
+        "name": "crevice_color",
+        "type": "vec4",
+        "hint": "source_color",
+        "default": [
+          0.12,
+          0.11,
+          0.1,
+          1.0
+        ]
+      },
+      {
+        "name": "scale",
+        "type": "float",
+        "hint": "hint_range(0.1, 10.0)",
+        "default": 1.6
+      },
+      {
+        "name": "blend_sharpness",
+        "type": "float",
+        "hint": "hint_range(1.0, 16.0)",
+        "default": 6.0
+      },
+      {
+        "name": "crack_amount",
+        "type": "float",
+        "hint": "hint_range(0.0, 1.0)",
+        "default": 0.5
+      },
+      {
+        "name": "bump_strength",
+        "type": "float",
+        "hint": "hint_range(0.0, 4.0)",
+        "default": 1.2
+      },
+      {
+        "name": "roughness",
+        "type": "float",
+        "hint": "hint_range(0.0, 1.0)",
+        "default": 0.9
+      }
+    ],
+    "placement": "res://baltor/godot_shaders/triplanar_rock/",
+    "usage": "surface_material",
+    "renderers": {
+      "compatibility": "compiled_and_rendered",
+      "forward_plus": "not_verified",
+      "mobile": "not_verified"
+    },
+    "inputs": [],
+    "outputs": "Grey-brown stone with darker cracks and bumpy lighting that wraps seamlessly around any shape."
+  },
+  "limits": "The pattern is fixed in world space: moving the object slides it through the texture (use object space for movable props). Screen-space bumps can shimmer on distant or tiny surfaces and are flat in shadow. Three projections cost three times the noise.",
+  "related": [
+    "terrain_slope_height",
+    "snow_cover_normals"
+  ],
+  "technique_references": [
+    "Triplanar projection with normal-power blend weights",
+    "Bump mapping with the surface gradient from screen-space derivatives (Mikkelsen 2010)",
+    "Value noise with quintic interpolation and fractional Brownian motion",
+    "Ridged noise cracks"
+  ],
+  "native_checks": [
+    "contract_static",
+    "engine_run",
+    "engine_log_clean",
+    "shader_in_scene",
+    "capture_written",
+    "render_not_uniform",
+    "shader_changes_pixels"
+  ]
+}

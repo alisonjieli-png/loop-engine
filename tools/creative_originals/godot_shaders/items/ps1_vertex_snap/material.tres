@@ -1,0 +1,14 @@
+[gd_resource type="ShaderMaterial" load_steps=2 format=3]
+
+[ext_resource type="Shader" path="res://baltor/godot_shaders/ps1_vertex_snap/ps1_vertex_snap.gdshader" id="1_shader"]
+
+[resource]
+shader = ExtResource("1_shader")
+shader_parameter/color_a = Color(0.85, 0.75, 0.55, 1)
+shader_parameter/color_b = Color(0.45, 0.25, 0.2, 1)
+shader_parameter/checker_cells = 6.0
+shader_parameter/snap_width = 160.0
+shader_parameter/snap_height = 120.0
+shader_parameter/affine_amount = 1.0
+shader_parameter/color_levels = 32.0
+shader_parameter/dither_amount = 0.6

@@ -1,0 +1,15 @@
+[gd_resource type="ShaderMaterial" load_steps=2 format=3]
+
+[ext_resource type="Shader" path="res://baltor/godot_shaders/gooch_cool_warm/gooch_cool_warm.gdshader" id="1_shader"]
+
+[resource]
+shader = ExtResource("1_shader")
+shader_parameter/surface_color = Color(0.72, 0.66, 0.58, 1)
+shader_parameter/cool_color = Color(0.08, 0.16, 0.55, 1)
+shader_parameter/warm_color = Color(0.62, 0.48, 0.08, 1)
+shader_parameter/cool_mix = 0.25
+shader_parameter/warm_mix = 0.5
+shader_parameter/highlight_strength = 0.7
+shader_parameter/shininess = 48.0
+shader_parameter/edge_darkening = 0.7
+shader_parameter/edge_width = 0.22

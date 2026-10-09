@@ -1,0 +1,13 @@
+[gd_resource type="ShaderMaterial" load_steps=2 format=3]
+
+[ext_resource type="Shader" path="res://baltor/godot_shaders/screen_door_fade/screen_door_fade.gdshader" id="1_shader"]
+
+[resource]
+shader = ExtResource("1_shader")
+shader_parameter/albedo = Color(0.55, 0.6, 0.68, 1)
+shader_parameter/roughness = 0.7
+shader_parameter/fade = 1.0
+shader_parameter/near_distance = 1.0
+shader_parameter/far_distance = 2.6
+shader_parameter/dither_scale = 1.0
+shader_parameter/use_distance = true

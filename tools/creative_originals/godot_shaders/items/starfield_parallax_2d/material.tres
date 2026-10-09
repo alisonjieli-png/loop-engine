@@ -1,0 +1,14 @@
+[gd_resource type="ShaderMaterial" load_steps=2 format=3]
+
+[ext_resource type="Shader" path="res://baltor/godot_shaders/starfield_parallax_2d/starfield_parallax_2d.gdshader" id="1_shader"]
+
+[resource]
+shader = ExtResource("1_shader")
+shader_parameter/space_color = Color(0.01, 0.01, 0.04, 1)
+shader_parameter/nebula_tint = Color(0.12, 0.05, 0.2, 1)
+shader_parameter/density = 0.45
+shader_parameter/scroll_speed = 0.05
+shader_parameter/scroll_angle_degrees = 200.0
+shader_parameter/twinkle_speed = 3.0
+shader_parameter/star_scale = 60.0
+shader_parameter/brightness = 1.3

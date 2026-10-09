@@ -1,0 +1,164 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "toon_water_foam",
+  "title": "Toon water with depth bands and contact foam",
+  "purpose": "Flat-shaded stylized water: colour steps from shallow to deep by the water depth read from the depth buffer, a foam band with a noisy edge around anything that touches the surface, and drifting ripple lines.",
+  "form": "library_module",
+  "asset_role": null,
+  "dimension": "3d",
+  "engine": {
+    "name": "godot",
+    "minimum_version": "4.3"
+  },
+  "tags": [
+    "godot shader",
+    "spatial",
+    "water",
+    "toon",
+    "foam",
+    "depth buffer",
+    "stylized"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "role": "other"
+    },
+    {
+      "path": "toon_water_foam.gdshader",
+      "role": "skill_asset"
+    },
+    {
+      "path": "material.tres",
+      "role": "skill_asset"
+    },
+    {
+      "path": "demo.tscn",
+      "role": "skill_asset"
+    }
+  ],
+  "contract": {
+    "shader_type": "spatial",
+    "render_modes": [
+      "unshaded",
+      "cull_back",
+      "depth_draw_never",
+      "shadows_disabled"
+    ],
+    "uniforms": [
+      {
+        "name": "depth_texture",
+        "type": "sampler2D",
+        "hint": "hint_depth_texture, filter_nearest",
+        "default": null
+      },
+      {
+        "name": "shallow_color",
+        "type": "vec4",
+        "hint": "source_color",
+        "default": [
+          0.38,
+          0.86,
+          0.85,
+          0.7
+        ]
+      },
+      {
+        "name": "deep_color",
+        "type": "vec4",
+        "hint": "source_color",
+        "default": [
+          0.05,
+          0.32,
+          0.55,
+          0.95
+        ]
+      },
+      {
+        "name": "depth_range",
+        "type": "float",
+        "hint": "hint_range(0.05, 5.0)",
+        "default": 1.0
+      },
+      {
+        "name": "color_steps",
+        "type": "int",
+        "hint": "hint_range(1, 8)",
+        "default": 3
+      },
+      {
+        "name": "foam_color",
+        "type": "vec4",
+        "hint": "source_color",
+        "default": [
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      {
+        "name": "foam_distance",
+        "type": "float",
+        "hint": "hint_range(0.0, 1.0)",
+        "default": 0.18
+      },
+      {
+        "name": "foam_noise_scale",
+        "type": "float",
+        "hint": "hint_range(1.0, 40.0)",
+        "default": 9.0
+      },
+      {
+        "name": "foam_speed",
+        "type": "float",
+        "hint": "hint_range(0.0, 2.0)",
+        "default": 0.25
+      },
+      {
+        "name": "ripple_amount",
+        "type": "float",
+        "hint": "hint_range(0.0, 1.0)",
+        "default": 0.35
+      },
+      {
+        "name": "ripple_scale",
+        "type": "float",
+        "hint": "hint_range(0.5, 20.0)",
+        "default": 3.0
+      }
+    ],
+    "placement": "res://baltor/godot_shaders/toon_water_foam/",
+    "usage": "surface_material",
+    "renderers": {
+      "compatibility": "compiled_and_rendered",
+      "forward_plus": "not_verified",
+      "mobile": "not_verified"
+    },
+    "inputs": [
+      "Opaque terrain or objects below and through the water surface."
+    ],
+    "outputs": "Banded turquoise water with white foam rings around rocks and along the shallows."
+  },
+  "limits": "Thickness is measured along the view ray, not vertically, so it grows at grazing angles. Transparent objects are not in the depth buffer and get no foam. Unshaded: the sun does not light the water. Flat surface; combine with a vertex wave shader for motion.",
+  "related": [
+    "gerstner_wave_water",
+    "force_field_intersection",
+    "soft_particle_depth_fade"
+  ],
+  "technique_references": [
+    "Depth buffer water thickness",
+    "Quantized colour steps",
+    "Noise-perturbed contact foam",
+    "Value noise with quintic interpolation and fractional Brownian motion"
+  ],
+  "native_checks": [
+    "contract_static",
+    "engine_run",
+    "engine_log_clean",
+    "shader_in_scene",
+    "capture_written",
+    "render_not_uniform",
+    "shader_changes_pixels"
+  ]
+}

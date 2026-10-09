@@ -1,0 +1,153 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "clip_plane_cutaway",
+  "title": "Cutaway along a world plane with solid caps",
+  "purpose": "Slice meshes open along a world-space plane: everything on one side is discarded, the exposed inside shows as a flat cap colour, and a glowing band marks the cut, for cross sections and reveal effects.",
+  "form": "library_module",
+  "asset_role": null,
+  "dimension": "3d",
+  "engine": {
+    "name": "godot",
+    "minimum_version": "4.3"
+  },
+  "tags": [
+    "godot shader",
+    "spatial",
+    "cutaway",
+    "cross section",
+    "clipping plane",
+    "reveal",
+    "visualization"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "role": "other"
+    },
+    {
+      "path": "clip_plane_cutaway.gdshader",
+      "role": "skill_asset"
+    },
+    {
+      "path": "material.tres",
+      "role": "skill_asset"
+    },
+    {
+      "path": "demo.tscn",
+      "role": "skill_asset"
+    }
+  ],
+  "contract": {
+    "shader_type": "spatial",
+    "render_modes": [
+      "cull_disabled"
+    ],
+    "uniforms": [
+      {
+        "name": "albedo",
+        "type": "vec4",
+        "hint": "source_color",
+        "default": [
+          0.35,
+          0.55,
+          0.85,
+          1.0
+        ]
+      },
+      {
+        "name": "roughness",
+        "type": "float",
+        "hint": "hint_range(0.0, 1.0)",
+        "default": 0.45
+      },
+      {
+        "name": "cap_color",
+        "type": "vec4",
+        "hint": "source_color",
+        "default": [
+          0.9,
+          0.3,
+          0.25,
+          1.0
+        ]
+      },
+      {
+        "name": "edge_color",
+        "type": "vec4",
+        "hint": "source_color",
+        "default": [
+          1.0,
+          0.85,
+          0.4,
+          1.0
+        ]
+      },
+      {
+        "name": "plane_pitch_degrees",
+        "type": "float",
+        "hint": "hint_range(-90.0, 90.0)",
+        "default": 0.0
+      },
+      {
+        "name": "plane_yaw_degrees",
+        "type": "float",
+        "hint": "hint_range(-180.0, 180.0)",
+        "default": 35.0
+      },
+      {
+        "name": "plane_offset",
+        "type": "float",
+        "hint": "hint_range(-10.0, 10.0)",
+        "default": 0.0
+      },
+      {
+        "name": "edge_width",
+        "type": "float",
+        "hint": "hint_range(0.0, 0.2)",
+        "default": 0.02
+      },
+      {
+        "name": "sweep_speed",
+        "type": "float",
+        "hint": "hint_range(0.0, 2.0)",
+        "default": 0.0
+      },
+      {
+        "name": "sweep_range",
+        "type": "float",
+        "hint": "hint_range(0.0, 10.0)",
+        "default": 0.5
+      }
+    ],
+    "placement": "res://baltor/godot_shaders/clip_plane_cutaway/",
+    "usage": "surface_material",
+    "renderers": {
+      "compatibility": "compiled_and_rendered",
+      "forward_plus": "not_verified",
+      "mobile": "not_verified"
+    },
+    "inputs": [
+      "Closed meshes (open meshes show their real back faces as caps). Several objects can share the material and are cut by the same plane."
+    ],
+    "outputs": "A sphere and ring sliced open diagonally with red cut faces, a glowing seam and the inner core visible."
+  },
+  "limits": "Caps are the inside of the mesh, not new geometry: overlapping inner surfaces show through each other and the cap shading is flat. Discard disables some depth optimizations. Shadows are cut by the same plane.",
+  "related": [
+    "noise_dissolve_burn",
+    "blueprint_schematic"
+  ],
+  "technique_references": [
+    "World-space plane clipping with discard",
+    "Back faces as cross-section caps",
+    "Edge distance glow"
+  ],
+  "native_checks": [
+    "contract_static",
+    "engine_run",
+    "engine_log_clean",
+    "shader_in_scene",
+    "capture_written",
+    "render_not_uniform",
+    "shader_changes_pixels"
+  ]
+}

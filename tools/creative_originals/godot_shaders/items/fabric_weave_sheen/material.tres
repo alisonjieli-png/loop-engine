@@ -1,0 +1,14 @@
+[gd_resource type="ShaderMaterial" load_steps=2 format=3]
+
+[ext_resource type="Shader" path="res://baltor/godot_shaders/fabric_weave_sheen/fabric_weave_sheen.gdshader" id="1_shader"]
+
+[resource]
+shader = ExtResource("1_shader")
+shader_parameter/warp_color = Color(0.22, 0.32, 0.55, 1)
+shader_parameter/weft_color = Color(0.75, 0.72, 0.65, 1)
+shader_parameter/threads = 40.0
+shader_parameter/twill = true
+shader_parameter/thread_gap = 0.12
+shader_parameter/relief = 0.6
+shader_parameter/fuzz = 0.25
+shader_parameter/sheen = 0.6

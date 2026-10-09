@@ -1,0 +1,141 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "wood_rings",
+  "title": "Procedural wood with growth rings and grain",
+  "purpose": "Solid wood from object-space 3D math: growth rings around a trunk axis with noisy distortion, sharp latewood bands, fine grain streaks along the axis and per-ring colour variation, so cut ends and long sides both read correctly.",
+  "form": "library_module",
+  "asset_role": null,
+  "dimension": "3d",
+  "engine": {
+    "name": "godot",
+    "minimum_version": "4.3"
+  },
+  "tags": [
+    "godot shader",
+    "spatial",
+    "wood",
+    "procedural",
+    "growth rings",
+    "solid texture",
+    "material"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "role": "other"
+    },
+    {
+      "path": "wood_rings.gdshader",
+      "role": "skill_asset"
+    },
+    {
+      "path": "material.tres",
+      "role": "skill_asset"
+    },
+    {
+      "path": "demo.tscn",
+      "role": "skill_asset"
+    }
+  ],
+  "contract": {
+    "shader_type": "spatial",
+    "render_modes": [],
+    "uniforms": [
+      {
+        "name": "early_wood",
+        "type": "vec4",
+        "hint": "source_color",
+        "default": [
+          0.78,
+          0.56,
+          0.34,
+          1.0
+        ]
+      },
+      {
+        "name": "late_wood",
+        "type": "vec4",
+        "hint": "source_color",
+        "default": [
+          0.45,
+          0.26,
+          0.13,
+          1.0
+        ]
+      },
+      {
+        "name": "ring_density",
+        "type": "float",
+        "hint": "hint_range(1.0, 60.0)",
+        "default": 18.0
+      },
+      {
+        "name": "ring_sharpness",
+        "type": "float",
+        "hint": "hint_range(0.0, 1.0)",
+        "default": 0.7
+      },
+      {
+        "name": "distortion",
+        "type": "float",
+        "hint": "hint_range(0.0, 2.0)",
+        "default": 0.6
+      },
+      {
+        "name": "grain_density",
+        "type": "float",
+        "hint": "hint_range(10.0, 400.0)",
+        "default": 140.0
+      },
+      {
+        "name": "grain_strength",
+        "type": "float",
+        "hint": "hint_range(0.0, 1.0)",
+        "default": 0.25
+      },
+      {
+        "name": "axis_tilt_degrees",
+        "type": "float",
+        "hint": "hint_range(0.0, 45.0)",
+        "default": 4.0
+      },
+      {
+        "name": "roughness",
+        "type": "float",
+        "hint": "hint_range(0.0, 1.0)",
+        "default": 0.65
+      }
+    ],
+    "placement": "res://baltor/godot_shaders/wood_rings/",
+    "usage": "surface_material",
+    "renderers": {
+      "compatibility": "compiled_and_rendered",
+      "forward_plus": "not_verified",
+      "mobile": "not_verified"
+    },
+    "inputs": [
+      "A mesh whose object Z axis runs along the grain (rotate the node to change it)."
+    ],
+    "outputs": "A plank with arched grain on top and a log end showing concentric growth rings."
+  },
+  "limits": "Solid texture in object space: scaling the object scales the rings. No knots, pores or normal relief. Rings are centred on the object origin; offset the mesh to move the pith.",
+  "related": [
+    "marble_veins",
+    "terrazzo_floor"
+  ],
+  "technique_references": [
+    "Solid (3D) texturing",
+    "Distance-from-axis growth rings with noise distortion",
+    "Axis-stretched value noise grain",
+    "Value noise with quintic interpolation and fractional Brownian motion"
+  ],
+  "native_checks": [
+    "contract_static",
+    "engine_run",
+    "engine_log_clean",
+    "shader_in_scene",
+    "capture_written",
+    "render_not_uniform",
+    "shader_changes_pixels"
+  ]
+}

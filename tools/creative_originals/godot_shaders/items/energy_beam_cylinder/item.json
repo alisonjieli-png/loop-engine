@@ -1,0 +1,154 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "energy_beam_cylinder",
+  "title": "Energy beam with scrolling core and jitter",
+  "purpose": "Additive energy beam on an open cylinder: a bright core from the facing ratio, noise and pulses scrolling along the length, tapered ends and a slight radial jitter in the vertex stage.",
+  "form": "library_module",
+  "asset_role": null,
+  "dimension": "3d",
+  "engine": {
+    "name": "godot",
+    "minimum_version": "4.3"
+  },
+  "tags": [
+    "godot shader",
+    "spatial",
+    "beam",
+    "laser",
+    "energy",
+    "additive",
+    "sci-fi"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "role": "other"
+    },
+    {
+      "path": "energy_beam_cylinder.gdshader",
+      "role": "skill_asset"
+    },
+    {
+      "path": "material.tres",
+      "role": "skill_asset"
+    },
+    {
+      "path": "demo.tscn",
+      "role": "skill_asset"
+    }
+  ],
+  "contract": {
+    "shader_type": "spatial",
+    "render_modes": [
+      "unshaded",
+      "blend_add",
+      "cull_disabled",
+      "depth_draw_never",
+      "shadows_disabled"
+    ],
+    "uniforms": [
+      {
+        "name": "core_color",
+        "type": "vec4",
+        "hint": "source_color",
+        "default": [
+          1.0,
+          0.95,
+          0.85,
+          1.0
+        ]
+      },
+      {
+        "name": "beam_color",
+        "type": "vec4",
+        "hint": "source_color",
+        "default": [
+          1.0,
+          0.3,
+          0.15,
+          1.0
+        ]
+      },
+      {
+        "name": "intensity",
+        "type": "float",
+        "hint": "hint_range(0.0, 6.0)",
+        "default": 2.0
+      },
+      {
+        "name": "core_sharpness",
+        "type": "float",
+        "hint": "hint_range(0.5, 10.0)",
+        "default": 3.0
+      },
+      {
+        "name": "scroll_speed",
+        "type": "float",
+        "hint": "hint_range(-10.0, 10.0)",
+        "default": 3.0
+      },
+      {
+        "name": "noise_scale",
+        "type": "float",
+        "hint": "hint_range(1.0, 40.0)",
+        "default": 10.0
+      },
+      {
+        "name": "pulse_spacing",
+        "type": "float",
+        "hint": "hint_range(0.05, 1.0)",
+        "default": 0.25
+      },
+      {
+        "name": "pulse_strength",
+        "type": "float",
+        "hint": "hint_range(0.0, 2.0)",
+        "default": 0.6
+      },
+      {
+        "name": "end_fade",
+        "type": "float",
+        "hint": "hint_range(0.0, 0.5)",
+        "default": 0.08
+      },
+      {
+        "name": "jitter",
+        "type": "float",
+        "hint": "hint_range(0.0, 0.2)",
+        "default": 0.03
+      }
+    ],
+    "placement": "res://baltor/godot_shaders/energy_beam_cylinder/",
+    "usage": "surface_material",
+    "renderers": {
+      "compatibility": "compiled_and_rendered",
+      "forward_plus": "not_verified",
+      "mobile": "not_verified"
+    },
+    "inputs": [
+      "An open CylinderMesh (or any tube) with V running along its length."
+    ],
+    "outputs": "A glowing orange beam with a white core and bright pulses travelling along it."
+  },
+  "limits": "Additive, so it is invisible on white backgrounds. Thin beams far from the camera alias without MSAA. The core is computed per pixel from the facing ratio, so very low radial segment counts show facets.",
+  "related": [
+    "laser_beam_2d",
+    "swirl_portal",
+    "light_shaft_cone"
+  ],
+  "technique_references": [
+    "Facing ratio core brightness",
+    "Scrolling value noise and periodic pulses",
+    "Vertex radial jitter",
+    "Value noise with quintic interpolation and fractional Brownian motion"
+  ],
+  "native_checks": [
+    "contract_static",
+    "engine_run",
+    "engine_log_clean",
+    "shader_in_scene",
+    "capture_written",
+    "render_not_uniform",
+    "shader_changes_pixels"
+  ]
+}

@@ -1,0 +1,17 @@
+[gd_resource type="ShaderMaterial" load_steps=2 format=3]
+
+[ext_resource type="Shader" path="res://baltor/godot_shaders/sky_day_night_cycle/sky_day_night_cycle.gdshader" id="1_shader"]
+
+[resource]
+shader = ExtResource("1_shader")
+shader_parameter/day_zenith = Color(0.16, 0.38, 0.82, 1)
+shader_parameter/day_horizon = Color(0.62, 0.78, 0.95, 1)
+shader_parameter/sunset_glow = Color(1, 0.48, 0.2, 1)
+shader_parameter/night_zenith = Color(0.01, 0.015, 0.05, 1)
+shader_parameter/night_horizon = Color(0.06, 0.08, 0.18, 1)
+shader_parameter/ground_color = Color(0.16, 0.15, 0.14, 1)
+shader_parameter/horizon_falloff = 3.0
+shader_parameter/sun_size = 0.035
+shader_parameter/halo_strength = 0.9
+shader_parameter/star_density = 0.45
+shader_parameter/star_brightness = 1.6

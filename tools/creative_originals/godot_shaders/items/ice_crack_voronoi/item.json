@@ -1,0 +1,145 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "ice_crack_voronoi",
+  "title": "Ice with surface and inner Voronoi cracks",
+  "purpose": "Ice material with white Voronoi crack lines on the surface and a second crack layer that appears below the surface through tangent-space parallax, plus a cold frost rim and glossy highlights.",
+  "form": "library_module",
+  "asset_role": null,
+  "dimension": "3d",
+  "engine": {
+    "name": "godot",
+    "minimum_version": "4.3"
+  },
+  "tags": [
+    "godot shader",
+    "spatial",
+    "ice",
+    "voronoi",
+    "cracks",
+    "parallax",
+    "frozen"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "role": "other"
+    },
+    {
+      "path": "ice_crack_voronoi.gdshader",
+      "role": "skill_asset"
+    },
+    {
+      "path": "material.tres",
+      "role": "skill_asset"
+    },
+    {
+      "path": "demo.tscn",
+      "role": "skill_asset"
+    }
+  ],
+  "contract": {
+    "shader_type": "spatial",
+    "render_modes": [],
+    "uniforms": [
+      {
+        "name": "ice_color",
+        "type": "vec4",
+        "hint": "source_color",
+        "default": [
+          0.62,
+          0.82,
+          0.95,
+          1.0
+        ]
+      },
+      {
+        "name": "deep_color",
+        "type": "vec4",
+        "hint": "source_color",
+        "default": [
+          0.12,
+          0.32,
+          0.58,
+          1.0
+        ]
+      },
+      {
+        "name": "crack_color",
+        "type": "vec4",
+        "hint": "source_color",
+        "default": [
+          0.95,
+          0.98,
+          1.0,
+          1.0
+        ]
+      },
+      {
+        "name": "cell_scale",
+        "type": "float",
+        "hint": "hint_range(1.0, 30.0)",
+        "default": 5.0
+      },
+      {
+        "name": "crack_width",
+        "type": "float",
+        "hint": "hint_range(0.0, 0.2)",
+        "default": 0.035
+      },
+      {
+        "name": "inner_depth",
+        "type": "float",
+        "hint": "hint_range(0.0, 0.5)",
+        "default": 0.15
+      },
+      {
+        "name": "inner_strength",
+        "type": "float",
+        "hint": "hint_range(0.0, 1.0)",
+        "default": 0.55
+      },
+      {
+        "name": "frost_rim",
+        "type": "float",
+        "hint": "hint_range(0.0, 4.0)",
+        "default": 1.2
+      },
+      {
+        "name": "roughness",
+        "type": "float",
+        "hint": "hint_range(0.0, 1.0)",
+        "default": 0.12
+      }
+    ],
+    "placement": "res://baltor/godot_shaders/ice_crack_voronoi/",
+    "usage": "surface_material",
+    "renderers": {
+      "compatibility": "compiled_and_rendered",
+      "forward_plus": "not_verified",
+      "mobile": "not_verified"
+    },
+    "inputs": [
+      "A mesh with UVs and tangents (Godot primitive meshes have both)."
+    ],
+    "outputs": "Pale blue ice with bright fracture lines on top and fainter fractures that shift inside as you move."
+  },
+  "limits": "The inner layer is a single parallax offset, not refraction or real volume; at grazing angles it smears. Not transparent; objects behind the ice are not visible. Crack density follows the mesh UVs, so stretched UVs give stretched cells.",
+  "related": [
+    "stained_glass_cells",
+    "snow_cover_normals"
+  ],
+  "technique_references": [
+    "Voronoi (Worley) cell borders from F2 - F1",
+    "Tangent-space parallax offset for a second layer",
+    "MurmurHash3 32-bit finalizer over prime-combined lattice coordinates as a hash"
+  ],
+  "native_checks": [
+    "contract_static",
+    "engine_run",
+    "engine_log_clean",
+    "shader_in_scene",
+    "capture_written",
+    "render_not_uniform",
+    "shader_changes_pixels"
+  ]
+}

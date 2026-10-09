@@ -1,0 +1,141 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "brushed_metal_anisotropic",
+  "title": "Brushed metal with a Ward anisotropic highlight",
+  "purpose": "Brushed metal with a custom light function: a Ward anisotropic specular stretched along a brushing direction (linear along the tangent or circular around a UV centre) plus fine procedural brush streaks.",
+  "form": "library_module",
+  "asset_role": null,
+  "dimension": "3d",
+  "engine": {
+    "name": "godot",
+    "minimum_version": "4.3"
+  },
+  "tags": [
+    "godot shader",
+    "spatial",
+    "metal",
+    "anisotropic",
+    "brushed",
+    "ward brdf",
+    "custom light function"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "role": "other"
+    },
+    {
+      "path": "brushed_metal_anisotropic.gdshader",
+      "role": "skill_asset"
+    },
+    {
+      "path": "material.tres",
+      "role": "skill_asset"
+    },
+    {
+      "path": "demo.tscn",
+      "role": "skill_asset"
+    }
+  ],
+  "contract": {
+    "shader_type": "spatial",
+    "render_modes": [],
+    "uniforms": [
+      {
+        "name": "metal_color",
+        "type": "vec4",
+        "hint": "source_color",
+        "default": [
+          0.82,
+          0.83,
+          0.85,
+          1.0
+        ]
+      },
+      {
+        "name": "roughness_along",
+        "type": "float",
+        "hint": "hint_range(0.02, 1.0)",
+        "default": 0.08
+      },
+      {
+        "name": "roughness_across",
+        "type": "float",
+        "hint": "hint_range(0.02, 1.0)",
+        "default": 0.45
+      },
+      {
+        "name": "circular",
+        "type": "bool",
+        "hint": null,
+        "default": false
+      },
+      {
+        "name": "circle_center_u",
+        "type": "float",
+        "hint": "hint_range(0.0, 1.0)",
+        "default": 0.5
+      },
+      {
+        "name": "circle_center_v",
+        "type": "float",
+        "hint": "hint_range(0.0, 1.0)",
+        "default": 0.5
+      },
+      {
+        "name": "streak_density",
+        "type": "float",
+        "hint": "hint_range(10.0, 2000.0)",
+        "default": 600.0
+      },
+      {
+        "name": "streak_strength",
+        "type": "float",
+        "hint": "hint_range(0.0, 1.0)",
+        "default": 0.25
+      },
+      {
+        "name": "diffuse_amount",
+        "type": "float",
+        "hint": "hint_range(0.0, 1.0)",
+        "default": 0.15
+      },
+      {
+        "name": "specular_strength",
+        "type": "float",
+        "hint": "hint_range(0.0, 2.0)",
+        "default": 0.2
+      }
+    ],
+    "placement": "res://baltor/godot_shaders/brushed_metal_anisotropic/",
+    "usage": "surface_material",
+    "renderers": {
+      "compatibility": "compiled_and_rendered",
+      "forward_plus": "not_verified",
+      "mobile": "not_verified"
+    },
+    "inputs": [
+      "A mesh with UVs and tangents."
+    ],
+    "outputs": "Metal with a bright highlight smeared along the brushing, here as rings across a spun disc."
+  },
+  "limits": "Ignores environment reflections: only scene lights give specular, so add a light or use Godot's built-in ANISOTROPY output when reflections matter. Ward's model is not energy conserving at grazing angles. Circular brushing needs UVs centred on the disc (the CylinderMesh caps qualify).",
+  "related": [
+    "car_paint_flakes",
+    "hair_strand_highlight"
+  ],
+  "technique_references": [
+    "Ward anisotropic BRDF (Ward 1992)",
+    "Fragment-to-light varying for a per-pixel tangent frame",
+    "Value noise with quintic interpolation and fractional Brownian motion for brush streaks"
+  ],
+  "native_checks": [
+    "contract_static",
+    "engine_run",
+    "engine_log_clean",
+    "shader_in_scene",
+    "capture_written",
+    "render_not_uniform",
+    "shader_changes_pixels"
+  ]
+}

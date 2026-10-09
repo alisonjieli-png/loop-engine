@@ -1,0 +1,119 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "sprite_wind_sway",
+  "title": "Wind sway for 2D plants and banners",
+  "purpose": "Sway 2D foliage in the wind by shearing the sprite's top while its base stays planted, with a gust wave that travels across the scene and a phase taken from each node's position so neighbours move out of step.",
+  "form": "library_module",
+  "asset_role": null,
+  "dimension": "2d",
+  "engine": {
+    "name": "godot",
+    "minimum_version": "4.3"
+  },
+  "tags": [
+    "godot shader",
+    "canvas item",
+    "wind",
+    "sway",
+    "foliage",
+    "vertex animation",
+    "2d"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "role": "other"
+    },
+    {
+      "path": "sprite_wind_sway.gdshader",
+      "role": "skill_asset"
+    },
+    {
+      "path": "material.tres",
+      "role": "skill_asset"
+    },
+    {
+      "path": "demo.tscn",
+      "role": "skill_asset"
+    }
+  ],
+  "contract": {
+    "shader_type": "canvas_item",
+    "render_modes": [],
+    "uniforms": [
+      {
+        "name": "strength",
+        "type": "float",
+        "hint": "hint_range(0.0, 64.0)",
+        "default": 14.0
+      },
+      {
+        "name": "speed",
+        "type": "float",
+        "hint": "hint_range(0.0, 10.0)",
+        "default": 1.6
+      },
+      {
+        "name": "gust_strength",
+        "type": "float",
+        "hint": "hint_range(0.0, 64.0)",
+        "default": 10.0
+      },
+      {
+        "name": "gust_wavelength",
+        "type": "float",
+        "hint": "hint_range(50.0, 2000.0)",
+        "default": 600.0
+      },
+      {
+        "name": "gust_speed",
+        "type": "float",
+        "hint": "hint_range(0.0, 1000.0)",
+        "default": 220.0
+      },
+      {
+        "name": "stiffness",
+        "type": "float",
+        "hint": "hint_range(0.5, 4.0)",
+        "default": 1.5
+      },
+      {
+        "name": "base_v",
+        "type": "float",
+        "hint": "hint_range(0.0, 1.0)",
+        "default": 1.0
+      }
+    ],
+    "placement": "res://baltor/godot_shaders/sprite_wind_sway/",
+    "usage": "canvas_material",
+    "renderers": {
+      "compatibility": "compiled_and_rendered",
+      "forward_plus": "not_verified",
+      "mobile": "not_verified"
+    },
+    "inputs": [
+      "Sprites whose planted edge is at the bottom (or set `base_v`)."
+    ],
+    "outputs": "Four plant sprites leaning and swaying at different phases above the ground."
+  },
+  "limits": "A Sprite2D has four vertices, so it shears rather than curves; use a subdivided Polygon2D or MeshInstance2D for a curved bend. Large shears push the sprite beyond its bounding rectangle used for culling.",
+  "related": [
+    "grass_field_2d",
+    "grass_blade_sway",
+    "flag_wave_cloth"
+  ],
+  "technique_references": [
+    "Vertex shear weighted by distance from a pinned edge",
+    "Travelling one-sided sine gusts",
+    "Phase from node position"
+  ],
+  "native_checks": [
+    "contract_static",
+    "engine_run",
+    "engine_log_clean",
+    "shader_in_scene",
+    "capture_written",
+    "render_not_uniform",
+    "shader_changes_pixels"
+  ]
+}

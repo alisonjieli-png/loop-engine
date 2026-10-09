@@ -1,0 +1,148 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "force_field_intersection",
+  "title": "Force field with glowing contact lines",
+  "purpose": "Additive energy shield that brightens at its silhouette, carries moving bands, and glows where it cuts through other geometry, found by comparing its depth with the scene depth buffer.",
+  "form": "library_module",
+  "asset_role": null,
+  "dimension": "3d",
+  "engine": {
+    "name": "godot",
+    "minimum_version": "4.3"
+  },
+  "tags": [
+    "godot shader",
+    "spatial",
+    "force field",
+    "shield",
+    "depth intersection",
+    "sci-fi",
+    "additive"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "role": "other"
+    },
+    {
+      "path": "force_field_intersection.gdshader",
+      "role": "skill_asset"
+    },
+    {
+      "path": "material.tres",
+      "role": "skill_asset"
+    },
+    {
+      "path": "demo.tscn",
+      "role": "skill_asset"
+    }
+  ],
+  "contract": {
+    "shader_type": "spatial",
+    "render_modes": [
+      "unshaded",
+      "blend_add",
+      "cull_disabled",
+      "depth_draw_never",
+      "shadows_disabled"
+    ],
+    "uniforms": [
+      {
+        "name": "depth_texture",
+        "type": "sampler2D",
+        "hint": "hint_depth_texture, filter_nearest",
+        "default": null
+      },
+      {
+        "name": "field_color",
+        "type": "vec4",
+        "hint": "source_color",
+        "default": [
+          0.3,
+          0.7,
+          1.0,
+          1.0
+        ]
+      },
+      {
+        "name": "base_strength",
+        "type": "float",
+        "hint": "hint_range(0.0, 1.0)",
+        "default": 0.06
+      },
+      {
+        "name": "rim_power",
+        "type": "float",
+        "hint": "hint_range(0.5, 8.0)",
+        "default": 3.0
+      },
+      {
+        "name": "rim_strength",
+        "type": "float",
+        "hint": "hint_range(0.0, 4.0)",
+        "default": 1.1
+      },
+      {
+        "name": "contact_width",
+        "type": "float",
+        "hint": "hint_range(0.01, 2.0)",
+        "default": 0.18
+      },
+      {
+        "name": "contact_strength",
+        "type": "float",
+        "hint": "hint_range(0.0, 8.0)",
+        "default": 2.5
+      },
+      {
+        "name": "band_frequency",
+        "type": "float",
+        "hint": "hint_range(1.0, 60.0)",
+        "default": 14.0
+      },
+      {
+        "name": "band_speed",
+        "type": "float",
+        "hint": "hint_range(-4.0, 4.0)",
+        "default": 0.6
+      },
+      {
+        "name": "band_strength",
+        "type": "float",
+        "hint": "hint_range(0.0, 1.0)",
+        "default": 0.35
+      }
+    ],
+    "placement": "res://baltor/godot_shaders/force_field_intersection/",
+    "usage": "surface_material",
+    "renderers": {
+      "compatibility": "compiled_and_rendered",
+      "forward_plus": "not_verified",
+      "mobile": "not_verified"
+    },
+    "inputs": [
+      "Opaque geometry intersecting the shield; transparent objects are not in the depth buffer."
+    ],
+    "outputs": "A faint blue bubble with a bright outline, moving bands and bright lines where it cuts the floor and objects."
+  },
+  "limits": "The contact test compares depths along the view ray, so the glow band widens where the shield meets a surface at a shallow angle. Additive blending cannot darken. Depth reconstruction uses the CURRENT_RENDERER define to pick the depth range convention; only the Compatibility path ran.",
+  "related": [
+    "hexagon_shield_pulse",
+    "shield_hit_ripple",
+    "soft_particle_depth_fade"
+  ],
+  "technique_references": [
+    "Scene depth reconstruction with INV_PROJECTION_MATRIX",
+    "Depth difference intersection glow",
+    "Facing ratio rim with scrolling sine bands"
+  ],
+  "native_checks": [
+    "contract_static",
+    "engine_run",
+    "engine_log_clean",
+    "shader_in_scene",
+    "capture_written",
+    "render_not_uniform",
+    "shader_changes_pixels"
+  ]
+}

@@ -1,0 +1,129 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "smoke_billboard",
+  "title": "Lit smoke puff on a camera-facing card",
+  "purpose": "Soft smoke puff on a camera-facing quad that the scene lights shade like a sphere: a fake spherical normal plus noise detail, churning fractal noise for the shape, and soft alpha falloff.",
+  "form": "library_module",
+  "asset_role": null,
+  "dimension": "3d",
+  "engine": {
+    "name": "godot",
+    "minimum_version": "4.3"
+  },
+  "tags": [
+    "godot shader",
+    "spatial",
+    "smoke",
+    "billboard",
+    "volumetric look",
+    "procedural",
+    "vfx"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "role": "other"
+    },
+    {
+      "path": "smoke_billboard.gdshader",
+      "role": "skill_asset"
+    },
+    {
+      "path": "material.tres",
+      "role": "skill_asset"
+    },
+    {
+      "path": "demo.tscn",
+      "role": "skill_asset"
+    }
+  ],
+  "contract": {
+    "shader_type": "spatial",
+    "render_modes": [
+      "cull_disabled",
+      "depth_draw_never",
+      "shadows_disabled"
+    ],
+    "uniforms": [
+      {
+        "name": "smoke_color",
+        "type": "vec4",
+        "hint": "source_color",
+        "default": [
+          0.62,
+          0.62,
+          0.65,
+          1.0
+        ]
+      },
+      {
+        "name": "density",
+        "type": "float",
+        "hint": "hint_range(0.0, 2.0)",
+        "default": 1.0
+      },
+      {
+        "name": "noise_scale",
+        "type": "float",
+        "hint": "hint_range(0.5, 12.0)",
+        "default": 3.5
+      },
+      {
+        "name": "churn_speed",
+        "type": "float",
+        "hint": "hint_range(0.0, 3.0)",
+        "default": 0.35
+      },
+      {
+        "name": "softness",
+        "type": "float",
+        "hint": "hint_range(0.05, 1.0)",
+        "default": 0.45
+      },
+      {
+        "name": "roundness",
+        "type": "float",
+        "hint": "hint_range(0.0, 1.0)",
+        "default": 0.7
+      },
+      {
+        "name": "detail_normal",
+        "type": "float",
+        "hint": "hint_range(0.0, 2.0)",
+        "default": 0.6
+      }
+    ],
+    "placement": "res://baltor/godot_shaders/smoke_billboard/",
+    "usage": "surface_material",
+    "renderers": {
+      "compatibility": "compiled_and_rendered",
+      "forward_plus": "not_verified",
+      "mobile": "not_verified"
+    },
+    "inputs": [
+      "A QuadMesh; scene lights shade it."
+    ],
+    "outputs": "A grey puff of smoke lit from one side with soft, churning edges."
+  },
+  "limits": "Lit as a single sphere-like shell, not as a volume: no self-shadowing or light scattering. Overlapping puffs are sorted per object, not per pixel. Seven fBm evaluations of four octaves per pixel cost a lot on large puffs.",
+  "related": [
+    "fire_billboard",
+    "soft_particle_depth_fade",
+    "particles_smoke_column"
+  ],
+  "technique_references": [
+    "Spherical billboard",
+    "Fake sphere normals on a card for lighting",
+    "Finite-difference noise normals",
+    "Value noise with quintic interpolation and fractional Brownian motion in 3D (space and time)"
+  ],
+  "native_checks": [
+    "contract_static",
+    "engine_run",
+    "engine_log_clean",
+    "shader_in_scene",
+    "capture_written",
+    "render_not_uniform",
+    "shader_changes_pixels"
+  ]
+}

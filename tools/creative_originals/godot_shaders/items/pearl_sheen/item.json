@@ -1,0 +1,160 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "pearl_sheen",
+  "title": "Pearlescent sheen with orient colours",
+  "purpose": "Pearl-like surface: a soft white body whose sheen drifts through pink, green and gold tints with the viewing angle, a broad satin highlight, a faint inner glow and a cool rim, for pearls, shells and lacquered toys.",
+  "form": "library_module",
+  "asset_role": null,
+  "dimension": "3d",
+  "engine": {
+    "name": "godot",
+    "minimum_version": "4.3"
+  },
+  "tags": [
+    "godot shader",
+    "spatial",
+    "pearl",
+    "pearlescent",
+    "sheen",
+    "nacre",
+    "stylized"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "role": "other"
+    },
+    {
+      "path": "pearl_sheen.gdshader",
+      "role": "skill_asset"
+    },
+    {
+      "path": "material.tres",
+      "role": "skill_asset"
+    },
+    {
+      "path": "demo.tscn",
+      "role": "skill_asset"
+    }
+  ],
+  "contract": {
+    "shader_type": "spatial",
+    "render_modes": [],
+    "uniforms": [
+      {
+        "name": "body_color",
+        "type": "vec4",
+        "hint": "source_color",
+        "default": [
+          0.93,
+          0.9,
+          0.86,
+          1.0
+        ]
+      },
+      {
+        "name": "tint_a",
+        "type": "vec4",
+        "hint": "source_color",
+        "default": [
+          1.0,
+          0.78,
+          0.86,
+          1.0
+        ]
+      },
+      {
+        "name": "tint_b",
+        "type": "vec4",
+        "hint": "source_color",
+        "default": [
+          0.78,
+          1.0,
+          0.88,
+          1.0
+        ]
+      },
+      {
+        "name": "tint_c",
+        "type": "vec4",
+        "hint": "source_color",
+        "default": [
+          1.0,
+          0.92,
+          0.7,
+          1.0
+        ]
+      },
+      {
+        "name": "orient_strength",
+        "type": "float",
+        "hint": "hint_range(0.0, 1.0)",
+        "default": 0.55
+      },
+      {
+        "name": "orient_bands",
+        "type": "float",
+        "hint": "hint_range(0.5, 6.0)",
+        "default": 1.6
+      },
+      {
+        "name": "satin_roughness",
+        "type": "float",
+        "hint": "hint_range(0.0, 1.0)",
+        "default": 0.32
+      },
+      {
+        "name": "inner_glow",
+        "type": "float",
+        "hint": "hint_range(0.0, 1.0)",
+        "default": 0.12
+      },
+      {
+        "name": "rim_color",
+        "type": "vec4",
+        "hint": "source_color",
+        "default": [
+          0.75,
+          0.85,
+          1.0,
+          1.0
+        ]
+      },
+      {
+        "name": "rim_strength",
+        "type": "float",
+        "hint": "hint_range(0.0, 1.0)",
+        "default": 0.25
+      }
+    ],
+    "placement": "res://baltor/godot_shaders/pearl_sheen/",
+    "usage": "surface_material",
+    "renderers": {
+      "compatibility": "compiled_and_rendered",
+      "forward_plus": "not_verified",
+      "mobile": "not_verified"
+    },
+    "inputs": [],
+    "outputs": "Creamy white spheres with soft pastel colour rings and a satin highlight."
+  },
+  "limits": "An artistic angle-based tint, not interference optics (see `thin_film_iridescence` for that). The colour rings are centred on the view, so they move with the camera. Emission keeps a glow even in darkness.",
+  "related": [
+    "thin_film_iridescence",
+    "car_paint_flakes",
+    "velvet_sheen"
+  ],
+  "technique_references": [
+    "Facing-ratio driven three-colour tint cycle",
+    "Satin highlight from moderate roughness",
+    "Emissive core and rim"
+  ],
+  "native_checks": [
+    "contract_static",
+    "engine_run",
+    "engine_log_clean",
+    "shader_in_scene",
+    "capture_written",
+    "render_not_uniform",
+    "shader_changes_pixels"
+  ]
+}

@@ -1,0 +1,19 @@
+[gd_resource type="ShaderMaterial" load_steps=2 format=3]
+
+[ext_resource type="Shader" path="res://baltor/godot_shaders/procedural_planet_surface/procedural_planet_surface.gdshader" id="1_shader"]
+
+[resource]
+shader = ExtResource("1_shader")
+shader_parameter/deep_ocean = Color(0.02, 0.08, 0.25, 1)
+shader_parameter/shallow_ocean = Color(0.08, 0.35, 0.55, 1)
+shader_parameter/lowland = Color(0.2, 0.42, 0.16, 1)
+shader_parameter/desert = Color(0.78, 0.66, 0.4, 1)
+shader_parameter/highland = Color(0.45, 0.38, 0.3, 1)
+shader_parameter/ice = Color(0.94, 0.96, 1, 1)
+shader_parameter/continent_scale = 1.8
+shader_parameter/sea_level = 0.52
+shader_parameter/mountain_strength = 0.5
+shader_parameter/ice_latitude = 0.78
+shader_parameter/desert_band = 0.3
+shader_parameter/spin_speed = 0.05
+shader_parameter/seed = 7

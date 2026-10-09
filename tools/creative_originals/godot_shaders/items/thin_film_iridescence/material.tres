@@ -1,0 +1,14 @@
+[gd_resource type="ShaderMaterial" load_steps=2 format=3]
+
+[ext_resource type="Shader" path="res://baltor/godot_shaders/thin_film_iridescence/thin_film_iridescence.gdshader" id="1_shader"]
+
+[resource]
+shader = ExtResource("1_shader")
+shader_parameter/film_index = 1.33
+shader_parameter/thickness_min_nm = 250.0
+shader_parameter/thickness_max_nm = 750.0
+shader_parameter/swirl_scale = 2.0
+shader_parameter/swirl_speed = 0.15
+shader_parameter/opacity = 0.35
+shader_parameter/roughness = 0.05
+shader_parameter/base_color = Color(0.02, 0.02, 0.03, 1)

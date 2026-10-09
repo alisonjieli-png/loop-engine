@@ -1,0 +1,17 @@
+[gd_resource type="ShaderMaterial" load_steps=2 format=3]
+
+[ext_resource type="Shader" path="res://baltor/godot_shaders/noise_dissolve_burn/noise_dissolve_burn.gdshader" id="1_shader"]
+
+[resource]
+shader = ExtResource("1_shader")
+shader_parameter/albedo = Color(0.82, 0.78, 0.72, 1)
+shader_parameter/roughness = 0.6
+shader_parameter/dissolve = 0.45
+shader_parameter/noise_scale = 3.5
+shader_parameter/edge_width = 0.04
+shader_parameter/char_width = 0.08
+shader_parameter/edge_color = Color(1, 0.42, 0.06, 1)
+shader_parameter/ember_color = Color(1, 0.9, 0.55, 1)
+shader_parameter/edge_emission = 5.0
+shader_parameter/loop_animation = false
+shader_parameter/loop_speed = 0.2

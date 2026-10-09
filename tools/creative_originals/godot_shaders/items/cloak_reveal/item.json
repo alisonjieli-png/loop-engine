@@ -1,0 +1,157 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "cloak_reveal",
+  "title": "Active camouflage cloak with a reveal sweep",
+  "purpose": "Turn a mesh invisible like active camouflage: the cloaked part shows the refracted, shimmering scene behind it, a noisy sweep along the object's height switches between cloaked and visible, and a glowing seam marks the transition.",
+  "form": "library_module",
+  "asset_role": null,
+  "dimension": "3d",
+  "engine": {
+    "name": "godot",
+    "minimum_version": "4.3"
+  },
+  "tags": [
+    "godot shader",
+    "spatial",
+    "cloak",
+    "invisibility",
+    "refraction",
+    "transition",
+    "sci-fi"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "role": "other"
+    },
+    {
+      "path": "cloak_reveal.gdshader",
+      "role": "skill_asset"
+    },
+    {
+      "path": "material.tres",
+      "role": "skill_asset"
+    },
+    {
+      "path": "demo.tscn",
+      "role": "skill_asset"
+    }
+  ],
+  "contract": {
+    "shader_type": "spatial",
+    "render_modes": [
+      "cull_back",
+      "depth_draw_always"
+    ],
+    "uniforms": [
+      {
+        "name": "screen_texture",
+        "type": "sampler2D",
+        "hint": "hint_screen_texture, filter_linear_mipmap",
+        "default": null
+      },
+      {
+        "name": "albedo",
+        "type": "vec4",
+        "hint": "source_color",
+        "default": [
+          0.6,
+          0.62,
+          0.66,
+          1.0
+        ]
+      },
+      {
+        "name": "roughness",
+        "type": "float",
+        "hint": "hint_range(0.0, 1.0)",
+        "default": 0.5
+      },
+      {
+        "name": "cloak",
+        "type": "float",
+        "hint": "hint_range(0.0, 1.0)",
+        "default": 0.55
+      },
+      {
+        "name": "object_height",
+        "type": "float",
+        "hint": "hint_range(0.1, 10.0)",
+        "default": 1.5
+      },
+      {
+        "name": "distortion",
+        "type": "float",
+        "hint": "hint_range(0.0, 0.1)",
+        "default": 0.025
+      },
+      {
+        "name": "shimmer_speed",
+        "type": "float",
+        "hint": "hint_range(0.0, 5.0)",
+        "default": 1.2
+      },
+      {
+        "name": "edge_noise",
+        "type": "float",
+        "hint": "hint_range(0.0, 1.0)",
+        "default": 0.25
+      },
+      {
+        "name": "seam_color",
+        "type": "vec4",
+        "hint": "source_color",
+        "default": [
+          0.4,
+          0.9,
+          1.0,
+          1.0
+        ]
+      },
+      {
+        "name": "seam_width",
+        "type": "float",
+        "hint": "hint_range(0.0, 0.2)",
+        "default": 0.04
+      },
+      {
+        "name": "rim_visibility",
+        "type": "float",
+        "hint": "hint_range(0.0, 1.0)",
+        "default": 0.3
+      }
+    ],
+    "placement": "res://baltor/godot_shaders/cloak_reveal/",
+    "usage": "surface_material",
+    "renderers": {
+      "compatibility": "compiled_and_rendered",
+      "forward_plus": "not_verified",
+      "mobile": "not_verified"
+    },
+    "inputs": [
+      "A mesh centred on its origin; set `object_height` to its height."
+    ],
+    "outputs": "A capsule whose lower half has turned into a rippling see-through shape with a glowing seam above."
+  },
+  "limits": "The cloaked part still writes depth and casts shadows; turn shadows off on the node while cloaked if needed. Screen-space refraction cannot show objects behind other transparent surfaces or off screen. The reveal runs along the object's Y axis only.",
+  "related": [
+    "glass_refraction",
+    "noise_dissolve_burn",
+    "hologram_scanlines"
+  ],
+  "technique_references": [
+    "Screen texture refraction with animated noise offsets",
+    "Noise-perturbed height threshold reveal",
+    "Emission-only cloaked region",
+    "Value noise with quintic interpolation and fractional Brownian motion"
+  ],
+  "native_checks": [
+    "contract_static",
+    "engine_run",
+    "engine_log_clean",
+    "shader_in_scene",
+    "capture_written",
+    "render_not_uniform",
+    "shader_changes_pixels"
+  ]
+}

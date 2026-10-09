@@ -1,0 +1,145 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "glass_refraction",
+  "title": "Screen-space glass refraction with dispersion",
+  "purpose": "Transparent glass that bends the scene behind it by offsetting the screen texture with the view-space normal, splits the colour channels for dispersion, blurs with mip levels for frosted glass, and adds a Fresnel rim and tint.",
+  "form": "library_module",
+  "asset_role": null,
+  "dimension": "3d",
+  "engine": {
+    "name": "godot",
+    "minimum_version": "4.3"
+  },
+  "tags": [
+    "godot shader",
+    "spatial",
+    "glass",
+    "refraction",
+    "dispersion",
+    "screen texture",
+    "transparent"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "role": "other"
+    },
+    {
+      "path": "glass_refraction.gdshader",
+      "role": "skill_asset"
+    },
+    {
+      "path": "material.tres",
+      "role": "skill_asset"
+    },
+    {
+      "path": "demo.tscn",
+      "role": "skill_asset"
+    }
+  ],
+  "contract": {
+    "shader_type": "spatial",
+    "render_modes": [
+      "unshaded",
+      "cull_back",
+      "depth_draw_always",
+      "shadows_disabled"
+    ],
+    "uniforms": [
+      {
+        "name": "screen_texture",
+        "type": "sampler2D",
+        "hint": "hint_screen_texture, filter_linear_mipmap",
+        "default": null
+      },
+      {
+        "name": "tint",
+        "type": "vec4",
+        "hint": "source_color",
+        "default": [
+          0.85,
+          0.95,
+          1.0,
+          1.0
+        ]
+      },
+      {
+        "name": "refraction_strength",
+        "type": "float",
+        "hint": "hint_range(0.0, 0.3)",
+        "default": 0.08
+      },
+      {
+        "name": "dispersion",
+        "type": "float",
+        "hint": "hint_range(0.0, 1.0)",
+        "default": 0.25
+      },
+      {
+        "name": "frost",
+        "type": "float",
+        "hint": "hint_range(0.0, 6.0)",
+        "default": 0.0
+      },
+      {
+        "name": "fresnel_power",
+        "type": "float",
+        "hint": "hint_range(0.5, 8.0)",
+        "default": 4.0
+      },
+      {
+        "name": "fresnel_strength",
+        "type": "float",
+        "hint": "hint_range(0.0, 1.0)",
+        "default": 0.6
+      },
+      {
+        "name": "reflection_color",
+        "type": "vec4",
+        "hint": "source_color",
+        "default": [
+          0.9,
+          0.95,
+          1.0,
+          1.0
+        ]
+      },
+      {
+        "name": "thickness_tint",
+        "type": "float",
+        "hint": "hint_range(0.0, 1.0)",
+        "default": 0.35
+      }
+    ],
+    "placement": "res://baltor/godot_shaders/glass_refraction/",
+    "usage": "surface_material",
+    "renderers": {
+      "compatibility": "compiled_and_rendered",
+      "forward_plus": "not_verified",
+      "mobile": "not_verified"
+    },
+    "inputs": [],
+    "outputs": "A clear sphere that magnifies and bends the scene behind it with coloured fringes at the edges."
+  },
+  "limits": "Screen-space: objects outside the screen or in front of the glass cannot be refracted, and edges of the screen clamp. Other transparent objects are not in the screen copy. The reflection is a flat colour, not the environment. Unshaded, so scene lights add no highlight.",
+  "related": [
+    "rain_glass_droplets",
+    "heat_haze_distortion",
+    "cloak_reveal"
+  ],
+  "technique_references": [
+    "Screen texture refraction offset by view-space normals",
+    "Per-channel offsets for chromatic dispersion",
+    "Mip level blur for frosted glass",
+    "Fresnel-style edge blend"
+  ],
+  "native_checks": [
+    "contract_static",
+    "engine_run",
+    "engine_log_clean",
+    "shader_in_scene",
+    "capture_written",
+    "render_not_uniform",
+    "shader_changes_pixels"
+  ]
+}

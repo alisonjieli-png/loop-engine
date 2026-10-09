@@ -1,0 +1,51 @@
+[gd_scene load_steps=7 format=3]
+
+[ext_resource type="ShaderMaterial" path="res://baltor/godot_shaders/rust_paint_chipping/material.tres" id="1_material"]
+
+[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_1"]
+sky_top_color = Color(0.35, 0.4, 0.5, 1)
+sky_horizon_color = Color(0.75, 0.75, 0.75, 1)
+ground_bottom_color = Color(0.12, 0.11, 0.1, 1)
+ground_horizon_color = Color(0.75, 0.75, 0.75, 1)
+
+[sub_resource type="Sky" id="Sky_2"]
+sky_material = SubResource("ProceduralSkyMaterial_1")
+
+[sub_resource type="Environment" id="Environment_3"]
+background_mode = 2
+sky = SubResource("Sky_2")
+ambient_light_source = 3
+reflected_light_source = 2
+ambient_light_energy = 1.0
+
+[sub_resource type="BoxMesh" id="BoxMesh_4"]
+size = Vector3(0.9, 0.9, 0.9)
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_5"]
+radial_segments = 48
+top_radius = 0.3
+bottom_radius = 0.3
+height = 1.0
+
+[node name="Root" type="Node3D"]
+
+[node name="Environment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_3")
+
+[node name="Subject0" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.86603, 0, 0.5, 0, 1, 0, -0.5, 0, 0.86603, -0.4, -0.05, -0.1)
+mesh = SubResource("BoxMesh_4")
+material_override = ExtResource("1_material")
+
+[node name="Subject1" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.55, 0, -0.2)
+mesh = SubResource("CylinderMesh_5")
+material_override = ExtResource("1_material")
+
+[node name="Sun" type="DirectionalLight3D" parent="."]
+transform = Transform3D(0.70711, -0.49747, 0.50252, 0, 0.71067, 0.70353, -0.70711, -0.49747, 0.50252, 0.5, 0.7, 0.5)
+light_color = Color(1, 0.97, 0.92, 1)
+light_energy = 1.0
+
+[node name="Camera" type="Camera3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0.97855, 0.20601, 0, -0.20601, 0.97855, 0, 0.4, 1.9)

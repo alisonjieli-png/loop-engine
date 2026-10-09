@@ -1,0 +1,14 @@
+[gd_resource type="ShaderMaterial" load_steps=2 format=3]
+
+[ext_resource type="Shader" path="res://baltor/godot_shaders/holographic_foil/holographic_foil.gdshader" id="1_shader"]
+
+[resource]
+shader = ExtResource("1_shader")
+shader_parameter/print_color = Color(0.12, 0.14, 0.3, 1)
+shader_parameter/foil_strength = 0.8
+shader_parameter/band_frequency = 4.0
+shader_parameter/view_shift = 3.0
+shader_parameter/tile_count = 14.0
+shader_parameter/tile_contrast = 0.5
+shader_parameter/sparkle_density = 0.15
+shader_parameter/saturation = 0.85

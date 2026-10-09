@@ -1,0 +1,21 @@
+[gd_resource type="ShaderMaterial" load_steps=4 format=3]
+
+[ext_resource type="Shader" path="res://baltor/godot_shaders/ramp_texture_lighting/ramp_texture_lighting.gdshader" id="1_shader"]
+
+[sub_resource type="Gradient" id="Gradient_1"]
+offsets = PackedFloat32Array(0, 0.42, 0.48, 0.8, 0.86, 1)
+colors = PackedColorArray(0.12, 0.08, 0.28, 1, 0.35, 0.18, 0.45, 1, 0.92, 0.45, 0.32, 1, 1, 0.78, 0.5, 1, 1, 0.96, 0.85, 1, 1, 1, 0.95, 1)
+
+[sub_resource type="GradientTexture1D" id="GradientTexture1D_2"]
+gradient = SubResource("Gradient_1")
+width = 256
+
+[resource]
+shader = ExtResource("1_shader")
+shader_parameter/light_ramp = SubResource("GradientTexture1D_2")
+shader_parameter/albedo = Color(1, 1, 1, 1)
+shader_parameter/ramp_offset = 0.0
+shader_parameter/specular_size = 0.12
+shader_parameter/specular_strength = 0.6
+shader_parameter/rim_amount = 0.3
+shader_parameter/rim_width = 0.25

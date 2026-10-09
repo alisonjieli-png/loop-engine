@@ -1,0 +1,16 @@
+[gd_resource type="ShaderMaterial" load_steps=2 format=3]
+
+[ext_resource type="Shader" path="res://baltor/godot_shaders/melt_drip_vertex/melt_drip_vertex.gdshader" id="1_shader"]
+
+[resource]
+shader = ExtResource("1_shader")
+shader_parameter/albedo = Color(0.95, 0.85, 0.62, 1)
+shader_parameter/melted_color = Color(0.98, 0.75, 0.45, 1)
+shader_parameter/melt = 0.6
+shader_parameter/object_height = 1.2
+shader_parameter/sag = 0.25
+shader_parameter/drip_length = 1.0
+shader_parameter/drip_thickness = 0.07
+shader_parameter/drip_count = 7
+shader_parameter/puddle_spread = 0.4
+shader_parameter/loop_animation = false

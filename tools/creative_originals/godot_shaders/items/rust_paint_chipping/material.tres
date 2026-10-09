@@ -1,0 +1,15 @@
+[gd_resource type="ShaderMaterial" load_steps=2 format=3]
+
+[ext_resource type="Shader" path="res://baltor/godot_shaders/rust_paint_chipping/rust_paint_chipping.gdshader" id="1_shader"]
+
+[resource]
+shader = ExtResource("1_shader")
+shader_parameter/paint_color = Color(0.2, 0.42, 0.35, 1)
+shader_parameter/metal_color = Color(0.62, 0.62, 0.64, 1)
+shader_parameter/rust_color = Color(0.48, 0.22, 0.08, 1)
+shader_parameter/rust_dark = Color(0.22, 0.1, 0.05, 1)
+shader_parameter/scale = 4.0
+shader_parameter/chipping = 0.35
+shader_parameter/rust_spread = 0.12
+shader_parameter/streak_amount = 0.5
+shader_parameter/streak_length = 3.0

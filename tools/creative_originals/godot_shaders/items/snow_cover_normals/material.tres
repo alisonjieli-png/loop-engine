@@ -1,0 +1,16 @@
+[gd_resource type="ShaderMaterial" load_steps=2 format=3]
+
+[ext_resource type="Shader" path="res://baltor/godot_shaders/snow_cover_normals/snow_cover_normals.gdshader" id="1_shader"]
+
+[resource]
+shader = ExtResource("1_shader")
+shader_parameter/base_color = Color(0.36, 0.3, 0.26, 1)
+shader_parameter/base_roughness = 0.85
+shader_parameter/base_pattern_scale = 12.0
+shader_parameter/snow_color = Color(0.95, 0.97, 1, 1)
+shader_parameter/snow_amount = 0.55
+shader_parameter/snow_sharpness = 0.06
+shader_parameter/noise_scale = 5.0
+shader_parameter/noise_strength = 0.35
+shader_parameter/snow_lift = 0.015
+shader_parameter/sparkle_density = 0.25

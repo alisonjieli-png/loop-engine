@@ -1,0 +1,148 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "rust_paint_chipping",
+  "title": "Painted metal with chips, rust and streaks",
+  "purpose": "Weathered painted metal in layers: paint chips away in noisy patches to show bare metal, rust grows around the chips, and rust streaks run downward in world space below them.",
+  "form": "library_module",
+  "asset_role": null,
+  "dimension": "3d",
+  "engine": {
+    "name": "godot",
+    "minimum_version": "4.3"
+  },
+  "tags": [
+    "godot shader",
+    "spatial",
+    "rust",
+    "weathering",
+    "paint chipping",
+    "metal",
+    "grunge"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "role": "other"
+    },
+    {
+      "path": "rust_paint_chipping.gdshader",
+      "role": "skill_asset"
+    },
+    {
+      "path": "material.tres",
+      "role": "skill_asset"
+    },
+    {
+      "path": "demo.tscn",
+      "role": "skill_asset"
+    }
+  ],
+  "contract": {
+    "shader_type": "spatial",
+    "render_modes": [],
+    "uniforms": [
+      {
+        "name": "paint_color",
+        "type": "vec4",
+        "hint": "source_color",
+        "default": [
+          0.2,
+          0.42,
+          0.35,
+          1.0
+        ]
+      },
+      {
+        "name": "metal_color",
+        "type": "vec4",
+        "hint": "source_color",
+        "default": [
+          0.62,
+          0.62,
+          0.64,
+          1.0
+        ]
+      },
+      {
+        "name": "rust_color",
+        "type": "vec4",
+        "hint": "source_color",
+        "default": [
+          0.48,
+          0.22,
+          0.08,
+          1.0
+        ]
+      },
+      {
+        "name": "rust_dark",
+        "type": "vec4",
+        "hint": "source_color",
+        "default": [
+          0.22,
+          0.1,
+          0.05,
+          1.0
+        ]
+      },
+      {
+        "name": "scale",
+        "type": "float",
+        "hint": "hint_range(0.5, 20.0)",
+        "default": 4.0
+      },
+      {
+        "name": "chipping",
+        "type": "float",
+        "hint": "hint_range(0.0, 1.0)",
+        "default": 0.35
+      },
+      {
+        "name": "rust_spread",
+        "type": "float",
+        "hint": "hint_range(0.0, 0.5)",
+        "default": 0.12
+      },
+      {
+        "name": "streak_amount",
+        "type": "float",
+        "hint": "hint_range(0.0, 1.0)",
+        "default": 0.5
+      },
+      {
+        "name": "streak_length",
+        "type": "float",
+        "hint": "hint_range(0.5, 10.0)",
+        "default": 3.0
+      }
+    ],
+    "placement": "res://baltor/godot_shaders/rust_paint_chipping/",
+    "usage": "surface_material",
+    "renderers": {
+      "compatibility": "compiled_and_rendered",
+      "forward_plus": "not_verified",
+      "mobile": "not_verified"
+    },
+    "inputs": [],
+    "outputs": "Green painted shapes with silver chipped patches ringed by rust and faint rust runs."
+  },
+  "limits": "Wear is placed by noise, not by edges or cavities, so it does not favour corners. World-space masks slide over moving objects; switch to object space for props that move. No relief between paint and metal.",
+  "related": [
+    "triplanar_rock",
+    "car_paint_flakes"
+  ],
+  "technique_references": [
+    "Layered thresholds of 3D fBm for paint, metal and rust",
+    "Vertically stretched noise for streaks",
+    "Value noise with quintic interpolation and fractional Brownian motion"
+  ],
+  "native_checks": [
+    "contract_static",
+    "engine_run",
+    "engine_log_clean",
+    "shader_in_scene",
+    "capture_written",
+    "render_not_uniform",
+    "shader_changes_pixels"
+  ]
+}

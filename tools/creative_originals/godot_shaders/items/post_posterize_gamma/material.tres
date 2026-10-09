@@ -1,0 +1,11 @@
+[gd_resource type="ShaderMaterial" load_steps=2 format=3]
+
+[ext_resource type="Shader" path="res://baltor/godot_shaders/post_posterize_gamma/post_posterize_gamma.gdshader" id="1_shader"]
+
+[resource]
+shader = ExtResource("1_shader")
+shader_parameter/levels = 5
+shader_parameter/gamma = 1.0
+shader_parameter/luminance_only = false
+shader_parameter/edge_softness = 0.0
+shader_parameter/saturation = 1.15

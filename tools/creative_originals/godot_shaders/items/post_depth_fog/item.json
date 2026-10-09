@@ -1,0 +1,184 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "post_depth_fog",
+  "title": "Distance and height fog from the depth buffer",
+  "purpose": "Full-screen fog computed from reconstructed world positions: exponential distance fog, exponential height fog that pools low, a near to far colour gradient and a brighter glow toward a sun direction.",
+  "form": "library_module",
+  "asset_role": null,
+  "dimension": "3d",
+  "engine": {
+    "name": "godot",
+    "minimum_version": "4.3"
+  },
+  "tags": [
+    "godot shader",
+    "spatial",
+    "post-process",
+    "fog",
+    "atmosphere",
+    "height fog",
+    "depth buffer",
+    "full-screen"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "role": "other"
+    },
+    {
+      "path": "post_depth_fog.gdshader",
+      "role": "skill_asset"
+    },
+    {
+      "path": "material.tres",
+      "role": "skill_asset"
+    },
+    {
+      "path": "demo.tscn",
+      "role": "skill_asset"
+    }
+  ],
+  "contract": {
+    "shader_type": "spatial",
+    "render_modes": [
+      "unshaded",
+      "cull_disabled",
+      "depth_test_disabled",
+      "depth_draw_never",
+      "skip_vertex_transform",
+      "fog_disabled"
+    ],
+    "uniforms": [
+      {
+        "name": "screen_texture",
+        "type": "sampler2D",
+        "hint": "hint_screen_texture, filter_linear_mipmap",
+        "default": null
+      },
+      {
+        "name": "depth_texture",
+        "type": "sampler2D",
+        "hint": "hint_depth_texture, filter_nearest",
+        "default": null
+      },
+      {
+        "name": "near_color",
+        "type": "vec4",
+        "hint": "source_color",
+        "default": [
+          0.62,
+          0.68,
+          0.75,
+          1.0
+        ]
+      },
+      {
+        "name": "far_color",
+        "type": "vec4",
+        "hint": "source_color",
+        "default": [
+          0.78,
+          0.82,
+          0.88,
+          1.0
+        ]
+      },
+      {
+        "name": "sun_color",
+        "type": "vec4",
+        "hint": "source_color",
+        "default": [
+          1.0,
+          0.85,
+          0.6,
+          1.0
+        ]
+      },
+      {
+        "name": "distance_density",
+        "type": "float",
+        "hint": "hint_range(0.0, 1.0)",
+        "default": 0.08
+      },
+      {
+        "name": "height_density",
+        "type": "float",
+        "hint": "hint_range(0.0, 2.0)",
+        "default": 0.6
+      },
+      {
+        "name": "height_falloff",
+        "type": "float",
+        "hint": "hint_range(0.01, 4.0)",
+        "default": 1.2
+      },
+      {
+        "name": "fog_base_height",
+        "type": "float",
+        "hint": "hint_range(-50.0, 50.0)",
+        "default": -0.5
+      },
+      {
+        "name": "color_distance",
+        "type": "float",
+        "hint": "hint_range(1.0, 200.0)",
+        "default": 25.0
+      },
+      {
+        "name": "sun_azimuth_degrees",
+        "type": "float",
+        "hint": "hint_range(-180.0, 180.0)",
+        "default": 20.0
+      },
+      {
+        "name": "sun_elevation_degrees",
+        "type": "float",
+        "hint": "hint_range(-10.0, 90.0)",
+        "default": 15.0
+      },
+      {
+        "name": "sun_glow",
+        "type": "float",
+        "hint": "hint_range(0.0, 2.0)",
+        "default": 0.6
+      },
+      {
+        "name": "max_opacity",
+        "type": "float",
+        "hint": "hint_range(0.0, 1.0)",
+        "default": 1.0
+      }
+    ],
+    "placement": "res://baltor/godot_shaders/post_depth_fog/",
+    "usage": "post_process_quad",
+    "renderers": {
+      "compatibility": "compiled_and_rendered",
+      "forward_plus": "not_verified",
+      "mobile": "not_verified"
+    },
+    "inputs": [
+      "A MeshInstance3D with a 2 x 2 QuadMesh, `material.tres` as its material override and a large extra cull margin, as in `demo.tscn`."
+    ],
+    "outputs": "The scene fading into pale blue-grey fog with distance and near the ground, warmer toward the sun."
+  },
+  "limits": "Sky pixels are at the far plane, so they take full fog unless `max_opacity` is lowered. Fog is computed after lighting, so it does not affect shadows or light scattering. Transparent objects are fogged as their background. The pass reads Godot's screen texture after opaque geometry, so transparent objects drawn after it are not processed and its order among other transparent passes is not controlled.",
+  "related": [
+    "scan_pulse_world",
+    "post_depth_of_field",
+    "post_underwater_view"
+  ],
+  "technique_references": [
+    "Exponential distance fog",
+    "Analytic integral of exponential height fog along the view ray",
+    "World position reconstruction from depth"
+  ],
+  "native_checks": [
+    "contract_static",
+    "engine_run",
+    "engine_log_clean",
+    "shader_in_scene",
+    "capture_written",
+    "render_not_uniform",
+    "shader_changes_pixels"
+  ]
+}

@@ -1,0 +1,114 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "billboard_axis_modes",
+  "title": "Billboard modes: spherical or upright cylindrical",
+  "purpose": "Vertex billboarding for cards with two modes: spherical (faces the camera fully, for glows and particles) or cylindrical (turns only around the world Y axis, for trees and characters that must stay upright), keeping node position and scale.",
+  "form": "library_module",
+  "asset_role": null,
+  "dimension": "3d",
+  "engine": {
+    "name": "godot",
+    "minimum_version": "4.3"
+  },
+  "tags": [
+    "godot shader",
+    "spatial",
+    "billboard",
+    "impostor",
+    "vertex shader",
+    "sprites",
+    "foliage"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "role": "other"
+    },
+    {
+      "path": "billboard_axis_modes.gdshader",
+      "role": "skill_asset"
+    },
+    {
+      "path": "material.tres",
+      "role": "skill_asset"
+    },
+    {
+      "path": "demo.tscn",
+      "role": "skill_asset"
+    }
+  ],
+  "contract": {
+    "shader_type": "spatial",
+    "render_modes": [
+      "cull_disabled"
+    ],
+    "uniforms": [
+      {
+        "name": "card_texture",
+        "type": "sampler2D",
+        "hint": "source_color, hint_default_white, filter_linear_mipmap",
+        "default": null
+      },
+      {
+        "name": "tint",
+        "type": "vec4",
+        "hint": "source_color",
+        "default": [
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      {
+        "name": "mode",
+        "type": "int",
+        "hint": "hint_range(0, 1)",
+        "default": 1
+      },
+      {
+        "name": "alpha_cutoff",
+        "type": "float",
+        "hint": "hint_range(0.0, 1.0)",
+        "default": 0.5
+      },
+      {
+        "name": "shade_as_upright",
+        "type": "bool",
+        "hint": null,
+        "default": true
+      }
+    ],
+    "placement": "res://baltor/godot_shaders/billboard_axis_modes/",
+    "usage": "surface_material",
+    "renderers": {
+      "compatibility": "compiled_and_rendered",
+      "forward_plus": "not_verified",
+      "mobile": "not_verified"
+    },
+    "inputs": [
+      "Card textures with alpha, and quads whose origin sits at the base for cylindrical mode (the demo uses `center_offset`)."
+    ],
+    "outputs": "Round green tree cards standing upright and turning to face the camera as it moves."
+  },
+  "limits": "Cards rotate in the vertex stage, so frustum culling and shadows use the unrotated mesh bounds; give nodes a margin. Shadow maps render the card facing the light camera, not the main camera. Cylindrical mode degenerates when the camera is exactly above the card.",
+  "related": [
+    "fire_billboard",
+    "smoke_billboard",
+    "grass_blade_sway"
+  ],
+  "technique_references": [
+    "Spherical billboard from the inverse view rotation",
+    "Axis-locked cylindrical billboard",
+    "Alpha cut-out with bent normals"
+  ],
+  "native_checks": [
+    "contract_static",
+    "engine_run",
+    "engine_log_clean",
+    "shader_in_scene",
+    "capture_written",
+    "render_not_uniform",
+    "shader_changes_pixels"
+  ]
+}

@@ -1,0 +1,171 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "sky_day_night_cycle",
+  "title": "Day and night sky driven by the sun height",
+  "purpose": "Sky shader whose colours follow the first directional light: day, sunset and night gradients blend by the sun's elevation, a sunset band leans toward the sun, a sun disc and halo track the light, and stars fade in after dusk.",
+  "form": "library_module",
+  "asset_role": null,
+  "dimension": "3d",
+  "engine": {
+    "name": "godot",
+    "minimum_version": "4.3"
+  },
+  "tags": [
+    "godot shader",
+    "sky",
+    "day night cycle",
+    "sunset",
+    "stars",
+    "time of day"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "role": "other"
+    },
+    {
+      "path": "sky_day_night_cycle.gdshader",
+      "role": "skill_asset"
+    },
+    {
+      "path": "material.tres",
+      "role": "skill_asset"
+    },
+    {
+      "path": "demo.tscn",
+      "role": "skill_asset"
+    }
+  ],
+  "contract": {
+    "shader_type": "sky",
+    "render_modes": [],
+    "uniforms": [
+      {
+        "name": "day_zenith",
+        "type": "vec4",
+        "hint": "source_color",
+        "default": [
+          0.16,
+          0.38,
+          0.82,
+          1.0
+        ]
+      },
+      {
+        "name": "day_horizon",
+        "type": "vec4",
+        "hint": "source_color",
+        "default": [
+          0.62,
+          0.78,
+          0.95,
+          1.0
+        ]
+      },
+      {
+        "name": "sunset_glow",
+        "type": "vec4",
+        "hint": "source_color",
+        "default": [
+          1.0,
+          0.48,
+          0.2,
+          1.0
+        ]
+      },
+      {
+        "name": "night_zenith",
+        "type": "vec4",
+        "hint": "source_color",
+        "default": [
+          0.01,
+          0.015,
+          0.05,
+          1.0
+        ]
+      },
+      {
+        "name": "night_horizon",
+        "type": "vec4",
+        "hint": "source_color",
+        "default": [
+          0.05,
+          0.07,
+          0.16,
+          1.0
+        ]
+      },
+      {
+        "name": "ground_color",
+        "type": "vec4",
+        "hint": "source_color",
+        "default": [
+          0.16,
+          0.15,
+          0.14,
+          1.0
+        ]
+      },
+      {
+        "name": "horizon_falloff",
+        "type": "float",
+        "hint": "hint_range(0.5, 10.0)",
+        "default": 3.0
+      },
+      {
+        "name": "sun_size",
+        "type": "float",
+        "hint": "hint_range(0.001, 0.2)",
+        "default": 0.03
+      },
+      {
+        "name": "halo_strength",
+        "type": "float",
+        "hint": "hint_range(0.0, 4.0)",
+        "default": 0.8
+      },
+      {
+        "name": "star_density",
+        "type": "float",
+        "hint": "hint_range(0.0, 1.0)",
+        "default": 0.35
+      },
+      {
+        "name": "star_brightness",
+        "type": "float",
+        "hint": "hint_range(0.0, 4.0)",
+        "default": 1.4
+      }
+    ],
+    "placement": "res://baltor/godot_shaders/sky_day_night_cycle/",
+    "usage": "sky_material",
+    "renderers": {
+      "compatibility": "compiled_and_rendered",
+      "forward_plus": "not_verified",
+      "mobile": "not_verified"
+    },
+    "inputs": [
+      "A DirectionalLight3D in the scene. Its direction is the sun; without one the sun sits at a fixed low angle."
+    ],
+    "outputs": "A gradient sky with a sun and halo that changes from day blue through an orange sunset to a starry night as the light's elevation changes."
+  },
+  "limits": "Stylized, not a physical atmosphere: colours come from the uniforms, not from scattering. Stars are point-like only at moderate field of view; at very wide angles grid cells can show. Only the first directional light is read. Sky radiance for reflections updates with Godot's sky process mode.",
+  "related": [
+    "sky_physical_scattering",
+    "sky_twinkling_stars"
+  ],
+  "technique_references": [
+    "Elevation-driven colour blending",
+    "Angular sun disc with smoothstep edge",
+    "Hashed 3D grid star field on view directions"
+  ],
+  "native_checks": [
+    "contract_static",
+    "engine_run",
+    "engine_log_clean",
+    "shader_in_scene",
+    "capture_written",
+    "render_not_uniform",
+    "shader_changes_pixels"
+  ]
+}

@@ -1,0 +1,16 @@
+[gd_resource type="ShaderMaterial" load_steps=2 format=3]
+
+[ext_resource type="Shader" path="res://baltor/godot_shaders/gerstner_wave_water/gerstner_wave_water.gdshader" id="1_shader"]
+
+[resource]
+shader = ExtResource("1_shader")
+shader_parameter/deep_color = Color(0.02, 0.1, 0.18, 1)
+shader_parameter/shallow_color = Color(0.06, 0.38, 0.45, 1)
+shader_parameter/crest_color = Color(0.8, 0.92, 0.95, 1)
+shader_parameter/amplitude = 0.22
+shader_parameter/wavelength = 3.5
+shader_parameter/steepness = 0.65
+shader_parameter/speed = 1.0
+shader_parameter/direction_degrees = 25.0
+shader_parameter/roughness = 0.06
+shader_parameter/crest_threshold = 0.55

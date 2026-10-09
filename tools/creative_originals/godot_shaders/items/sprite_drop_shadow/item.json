@@ -1,0 +1,105 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "sprite_drop_shadow",
+  "title": "Soft drop shadow inside the sprite rectangle",
+  "purpose": "Add an offset, softened drop shadow behind a sprite's shape without an extra node: the shader samples the alpha at an offset with a small blur and composites the sprite over it.",
+  "form": "library_module",
+  "asset_role": null,
+  "dimension": "2d",
+  "engine": {
+    "name": "godot",
+    "minimum_version": "4.3"
+  },
+  "tags": [
+    "godot shader",
+    "canvas item",
+    "drop shadow",
+    "shadow",
+    "sprite",
+    "2d",
+    "ui"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "role": "other"
+    },
+    {
+      "path": "sprite_drop_shadow.gdshader",
+      "role": "skill_asset"
+    },
+    {
+      "path": "material.tres",
+      "role": "skill_asset"
+    },
+    {
+      "path": "demo.tscn",
+      "role": "skill_asset"
+    }
+  ],
+  "contract": {
+    "shader_type": "canvas_item",
+    "render_modes": [],
+    "uniforms": [
+      {
+        "name": "shadow_color",
+        "type": "vec4",
+        "hint": "source_color",
+        "default": [
+          0.0,
+          0.0,
+          0.05,
+          0.6
+        ]
+      },
+      {
+        "name": "offset_x",
+        "type": "float",
+        "hint": "hint_range(-32.0, 32.0)",
+        "default": 7.0
+      },
+      {
+        "name": "offset_y",
+        "type": "float",
+        "hint": "hint_range(-32.0, 32.0)",
+        "default": 7.0
+      },
+      {
+        "name": "softness",
+        "type": "float",
+        "hint": "hint_range(0.0, 8.0)",
+        "default": 2.5
+      }
+    ],
+    "placement": "res://baltor/godot_shaders/sprite_drop_shadow/",
+    "usage": "canvas_material",
+    "renderers": {
+      "compatibility": "compiled_and_rendered",
+      "forward_plus": "not_verified",
+      "mobile": "not_verified"
+    },
+    "inputs": [
+      "A Sprite2D (or other textured CanvasItem) with transparent space around its shape, assigned to the node as usual. Effects outside the shape are drawn inside the texture rectangle, so the texture needs a margin."
+    ],
+    "outputs": "An orange disc floating above the background with a soft dark shadow to its lower right."
+  },
+  "limits": "Effects outside the shape are drawn inside the texture rectangle, so the texture needs a margin. Offsets larger than the margin are cut at the texture edge. The shadow ignores what lies under the sprite (it is not a light).",
+  "related": [
+    "sprite_soft_glow",
+    "sprite_ground_shadow",
+    "rounded_panel_sdf"
+  ],
+  "technique_references": [
+    "Offset alpha sampling with a Gaussian kernel",
+    "Porter-Duff over compositing"
+  ],
+  "native_checks": [
+    "contract_static",
+    "engine_run",
+    "engine_log_clean",
+    "shader_in_scene",
+    "capture_written",
+    "render_not_uniform",
+    "shader_changes_pixels"
+  ]
+}

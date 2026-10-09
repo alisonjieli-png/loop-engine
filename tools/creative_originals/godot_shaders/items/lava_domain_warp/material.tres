@@ -1,0 +1,16 @@
+[gd_resource type="ShaderMaterial" load_steps=2 format=3]
+
+[ext_resource type="Shader" path="res://baltor/godot_shaders/lava_domain_warp/lava_domain_warp.gdshader" id="1_shader"]
+
+[resource]
+shader = ExtResource("1_shader")
+shader_parameter/crust_color = Color(0.07, 0.05, 0.05, 1)
+shader_parameter/lava_dark = Color(0.62, 0.07, 0.02, 1)
+shader_parameter/lava_bright = Color(1, 0.66, 0.16, 1)
+shader_parameter/scale = 3.0
+shader_parameter/flow_speed = 0.12
+shader_parameter/flow_angle_degrees = 20.0
+shader_parameter/warp_strength = 1.8
+shader_parameter/crust_amount = 0.5
+shader_parameter/crust_edge = 0.06
+shader_parameter/emission_strength = 3.0

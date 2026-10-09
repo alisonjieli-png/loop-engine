@@ -1,0 +1,146 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "circuit_trace_pulses",
+  "title": "Circuit board traces with travelling pulses",
+  "purpose": "Printed circuit board surface: a cell grid of random copper traces (straight runs, corners and via pads) on solder mask, with emissive signal pulses running along the traces.",
+  "form": "library_module",
+  "asset_role": null,
+  "dimension": "3d",
+  "engine": {
+    "name": "godot",
+    "minimum_version": "4.3"
+  },
+  "tags": [
+    "godot shader",
+    "spatial",
+    "circuit",
+    "pcb",
+    "sci-fi",
+    "emission",
+    "procedural"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "role": "other"
+    },
+    {
+      "path": "circuit_trace_pulses.gdshader",
+      "role": "skill_asset"
+    },
+    {
+      "path": "material.tres",
+      "role": "skill_asset"
+    },
+    {
+      "path": "demo.tscn",
+      "role": "skill_asset"
+    }
+  ],
+  "contract": {
+    "shader_type": "spatial",
+    "render_modes": [],
+    "uniforms": [
+      {
+        "name": "board_color",
+        "type": "vec4",
+        "hint": "source_color",
+        "default": [
+          0.04,
+          0.22,
+          0.12,
+          1.0
+        ]
+      },
+      {
+        "name": "copper_color",
+        "type": "vec4",
+        "hint": "source_color",
+        "default": [
+          0.78,
+          0.6,
+          0.3,
+          1.0
+        ]
+      },
+      {
+        "name": "pulse_color",
+        "type": "vec4",
+        "hint": "source_color",
+        "default": [
+          0.3,
+          1.0,
+          0.9,
+          1.0
+        ]
+      },
+      {
+        "name": "cells",
+        "type": "float",
+        "hint": "hint_range(2.0, 80.0)",
+        "default": 14.0
+      },
+      {
+        "name": "trace_width",
+        "type": "float",
+        "hint": "hint_range(0.02, 0.3)",
+        "default": 0.09
+      },
+      {
+        "name": "via_radius",
+        "type": "float",
+        "hint": "hint_range(0.05, 0.4)",
+        "default": 0.18
+      },
+      {
+        "name": "pulse_speed",
+        "type": "float",
+        "hint": "hint_range(0.0, 5.0)",
+        "default": 1.2
+      },
+      {
+        "name": "pulse_share",
+        "type": "float",
+        "hint": "hint_range(0.0, 1.0)",
+        "default": 0.45
+      },
+      {
+        "name": "glow",
+        "type": "float",
+        "hint": "hint_range(0.0, 6.0)",
+        "default": 2.5
+      }
+    ],
+    "placement": "res://baltor/godot_shaders/circuit_trace_pulses/",
+    "usage": "surface_material",
+    "renderers": {
+      "compatibility": "compiled_and_rendered",
+      "forward_plus": "not_verified",
+      "mobile": "not_verified"
+    },
+    "inputs": [
+      "A mesh with UVs."
+    ],
+    "outputs": "A green board covered in copper lines, corners and rings with cyan sparks running along some lines."
+  },
+  "limits": "Traces are chosen per cell independently, so many end at cell borders without connecting; it reads as decoration, not a routed circuit. Thin traces alias at small sizes.",
+  "related": [
+    "hexagon_shield_pulse",
+    "truchet_tiles_2d"
+  ],
+  "technique_references": [
+    "Hashed cell tile selection",
+    "Segment and ring distance fields",
+    "Phase-shifted pulses along a trace parameter",
+    "MurmurHash3 32-bit finalizer over prime-combined lattice coordinates as a hash"
+  ],
+  "native_checks": [
+    "contract_static",
+    "engine_run",
+    "engine_log_clean",
+    "shader_in_scene",
+    "capture_written",
+    "render_not_uniform",
+    "shader_changes_pixels"
+  ]
+}

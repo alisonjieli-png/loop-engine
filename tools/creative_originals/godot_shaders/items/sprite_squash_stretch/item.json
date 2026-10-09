@@ -1,0 +1,117 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "sprite_squash_stretch",
+  "title": "Squash and stretch bounce for sprites",
+  "purpose": "Animate a sprite with volume-preserving squash and stretch around a pivot at its base: a looping bounce curve with adjustable amount, speed and pivot, or a fixed amount set from a script.",
+  "form": "library_module",
+  "asset_role": null,
+  "dimension": "2d",
+  "engine": {
+    "name": "godot",
+    "minimum_version": "4.3"
+  },
+  "tags": [
+    "godot shader",
+    "canvas item",
+    "squash and stretch",
+    "bounce",
+    "animation",
+    "vertex animation",
+    "2d"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "role": "other"
+    },
+    {
+      "path": "sprite_squash_stretch.gdshader",
+      "role": "skill_asset"
+    },
+    {
+      "path": "material.tres",
+      "role": "skill_asset"
+    },
+    {
+      "path": "demo.tscn",
+      "role": "skill_asset"
+    }
+  ],
+  "contract": {
+    "shader_type": "canvas_item",
+    "render_modes": [],
+    "uniforms": [
+      {
+        "name": "amount",
+        "type": "float",
+        "hint": "hint_range(0.0, 0.8)",
+        "default": 0.22
+      },
+      {
+        "name": "speed",
+        "type": "float",
+        "hint": "hint_range(0.0, 20.0)",
+        "default": 5.0
+      },
+      {
+        "name": "pivot_u",
+        "type": "float",
+        "hint": "hint_range(0.0, 1.0)",
+        "default": 0.5
+      },
+      {
+        "name": "pivot_v",
+        "type": "float",
+        "hint": "hint_range(0.0, 1.0)",
+        "default": 1.0
+      },
+      {
+        "name": "use_fixed_stretch",
+        "type": "bool",
+        "hint": null,
+        "default": false
+      },
+      {
+        "name": "fixed_stretch",
+        "type": "float",
+        "hint": "hint_range(-0.8, 0.8)",
+        "default": 0.0
+      },
+      {
+        "name": "hop_height",
+        "type": "float",
+        "hint": "hint_range(0.0, 200.0)",
+        "default": 24.0
+      }
+    ],
+    "placement": "res://baltor/godot_shaders/sprite_squash_stretch/",
+    "usage": "canvas_material",
+    "renderers": {
+      "compatibility": "compiled_and_rendered",
+      "forward_plus": "not_verified",
+      "mobile": "not_verified"
+    },
+    "inputs": [
+      "A Sprite2D (or other textured CanvasItem) with transparent space around its shape, assigned to the node as usual."
+    ],
+    "outputs": "The disc squashed wide and flat against the ground line."
+  },
+  "limits": "Scaling a four-vertex quad gives uniform squash, not a bulge. The hop moves only the drawing, not the node, so collision does not follow it.",
+  "related": [
+    "jelly_wobble",
+    "sprite_wind_sway"
+  ],
+  "technique_references": [
+    "Volume-preserving squash and stretch",
+    "Pivot recovered from vertex position and UV"
+  ],
+  "native_checks": [
+    "contract_static",
+    "engine_run",
+    "engine_log_clean",
+    "shader_in_scene",
+    "capture_written",
+    "render_not_uniform",
+    "shader_changes_pixels"
+  ]
+}

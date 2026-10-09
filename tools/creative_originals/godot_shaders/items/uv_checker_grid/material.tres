@@ -1,0 +1,13 @@
+[gd_resource type="ShaderMaterial" load_steps=2 format=3]
+
+[ext_resource type="Shader" path="res://baltor/godot_shaders/uv_checker_grid/uv_checker_grid.gdshader" id="1_shader"]
+
+[resource]
+shader = ExtResource("1_shader")
+shader_parameter/cells = 8.0
+shader_parameter/dark_color = Color(0.18, 0.18, 0.2, 1)
+shader_parameter/light_color = Color(0.82, 0.82, 0.85, 1)
+shader_parameter/direction_tint = 0.45
+shader_parameter/line_pixels = 1.0
+shader_parameter/show_stretch = false
+shader_parameter/stretch_range = 3.0

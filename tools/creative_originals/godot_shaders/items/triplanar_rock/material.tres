@@ -1,0 +1,14 @@
+[gd_resource type="ShaderMaterial" load_steps=2 format=3]
+
+[ext_resource type="Shader" path="res://baltor/godot_shaders/triplanar_rock/triplanar_rock.gdshader" id="1_shader"]
+
+[resource]
+shader = ExtResource("1_shader")
+shader_parameter/rock_light = Color(0.58, 0.55, 0.5, 1)
+shader_parameter/rock_dark = Color(0.3, 0.28, 0.26, 1)
+shader_parameter/crevice_color = Color(0.12, 0.11, 0.1, 1)
+shader_parameter/scale = 1.6
+shader_parameter/blend_sharpness = 6.0
+shader_parameter/crack_amount = 0.5
+shader_parameter/bump_strength = 1.2
+shader_parameter/roughness = 0.9

@@ -1,0 +1,150 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "fire_flame_2d",
+  "title": "2D flame with rising turbulence",
+  "purpose": "Draw a flickering flame in a rectangle: distorted fractal noise rising over time, shaped by a tapering mask, coloured through a four-step heat ramp with transparency outside the flame.",
+  "form": "library_module",
+  "asset_role": null,
+  "dimension": "2d",
+  "engine": {
+    "name": "godot",
+    "minimum_version": "4.3"
+  },
+  "tags": [
+    "godot shader",
+    "canvas item",
+    "fire",
+    "flame",
+    "2d",
+    "vfx",
+    "procedural"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "role": "other"
+    },
+    {
+      "path": "fire_flame_2d.gdshader",
+      "role": "skill_asset"
+    },
+    {
+      "path": "material.tres",
+      "role": "skill_asset"
+    },
+    {
+      "path": "demo.tscn",
+      "role": "skill_asset"
+    }
+  ],
+  "contract": {
+    "shader_type": "canvas_item",
+    "render_modes": [],
+    "uniforms": [
+      {
+        "name": "core_color",
+        "type": "vec4",
+        "hint": "source_color",
+        "default": [
+          1.0,
+          0.97,
+          0.75,
+          1.0
+        ]
+      },
+      {
+        "name": "inner_color",
+        "type": "vec4",
+        "hint": "source_color",
+        "default": [
+          1.0,
+          0.75,
+          0.2,
+          1.0
+        ]
+      },
+      {
+        "name": "outer_color",
+        "type": "vec4",
+        "hint": "source_color",
+        "default": [
+          0.95,
+          0.3,
+          0.05,
+          1.0
+        ]
+      },
+      {
+        "name": "smoke_color",
+        "type": "vec4",
+        "hint": "source_color",
+        "default": [
+          0.3,
+          0.05,
+          0.02,
+          1.0
+        ]
+      },
+      {
+        "name": "rise_speed",
+        "type": "float",
+        "hint": "hint_range(0.0, 5.0)",
+        "default": 1.8
+      },
+      {
+        "name": "turbulence",
+        "type": "float",
+        "hint": "hint_range(0.0, 1.0)",
+        "default": 0.4
+      },
+      {
+        "name": "base_width",
+        "type": "float",
+        "hint": "hint_range(0.1, 1.0)",
+        "default": 0.5
+      },
+      {
+        "name": "height",
+        "type": "float",
+        "hint": "hint_range(0.2, 1.2)",
+        "default": 0.85
+      },
+      {
+        "name": "noise_scale",
+        "type": "float",
+        "hint": "hint_range(1.0, 12.0)",
+        "default": 4.0
+      }
+    ],
+    "placement": "res://baltor/godot_shaders/fire_flame_2d/",
+    "usage": "canvas_material",
+    "renderers": {
+      "compatibility": "compiled_and_rendered",
+      "forward_plus": "not_verified",
+      "mobile": "not_verified"
+    },
+    "inputs": [
+      "A ColorRect (or any CanvasItem) sized to the area to fill; UVs span 0 to 1 across it."
+    ],
+    "outputs": "A tall flickering flame with a pale core, yellow and orange body and dark red tips."
+  },
+  "limits": "Flat 2D effect with no light emission; add a PointLight2D to light the scene. The shape is symmetric on average, so very wide flames look like a column.",
+  "related": [
+    "fire_billboard",
+    "particles_embers_rising"
+  ],
+  "technique_references": [
+    "Height-weighted coordinate wobble",
+    "Rising fractional Brownian motion with heat ramp",
+    "Value noise with quintic interpolation and fractional Brownian motion"
+  ],
+  "native_checks": [
+    "contract_static",
+    "engine_run",
+    "engine_log_clean",
+    "shader_in_scene",
+    "capture_written",
+    "render_not_uniform",
+    "shader_changes_pixels"
+  ]
+}

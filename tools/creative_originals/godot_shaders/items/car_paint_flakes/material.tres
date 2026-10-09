@@ -1,0 +1,16 @@
+[gd_resource type="ShaderMaterial" load_steps=2 format=3]
+
+[ext_resource type="Shader" path="res://baltor/godot_shaders/car_paint_flakes/car_paint_flakes.gdshader" id="1_shader"]
+
+[resource]
+shader = ExtResource("1_shader")
+shader_parameter/face_color = Color(0.55, 0.04, 0.08, 1)
+shader_parameter/edge_color = Color(0.18, 0.02, 0.12, 1)
+shader_parameter/flip_power = 1.6
+shader_parameter/base_roughness = 0.38
+shader_parameter/flake_density = 0.12
+shader_parameter/flake_scale = 900.0
+shader_parameter/flake_tilt = 0.35
+shader_parameter/flake_color = Color(1, 0.9, 0.85, 1)
+shader_parameter/clearcoat_amount = 1.0
+shader_parameter/clearcoat_gloss = 0.95

@@ -1,0 +1,142 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "world_grid_debug",
+  "title": "World-space prototyping grid",
+  "purpose": "Anti-aliased world-space grid for level blockouts: minor and major lines of constant pixel width, X and Z axis lines in colour, projection picked from the dominant normal axis so floors and walls both get squares, and distance fade.",
+  "form": "library_module",
+  "asset_role": null,
+  "dimension": "3d",
+  "engine": {
+    "name": "godot",
+    "minimum_version": "4.3"
+  },
+  "tags": [
+    "godot shader",
+    "spatial",
+    "grid",
+    "prototyping",
+    "blockout",
+    "debug",
+    "level design"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "role": "other"
+    },
+    {
+      "path": "world_grid_debug.gdshader",
+      "role": "skill_asset"
+    },
+    {
+      "path": "material.tres",
+      "role": "skill_asset"
+    },
+    {
+      "path": "demo.tscn",
+      "role": "skill_asset"
+    }
+  ],
+  "contract": {
+    "shader_type": "spatial",
+    "render_modes": [],
+    "uniforms": [
+      {
+        "name": "base_color",
+        "type": "vec4",
+        "hint": "source_color",
+        "default": [
+          0.32,
+          0.34,
+          0.38,
+          1.0
+        ]
+      },
+      {
+        "name": "minor_color",
+        "type": "vec4",
+        "hint": "source_color",
+        "default": [
+          0.48,
+          0.5,
+          0.55,
+          1.0
+        ]
+      },
+      {
+        "name": "major_color",
+        "type": "vec4",
+        "hint": "source_color",
+        "default": [
+          0.82,
+          0.84,
+          0.88,
+          1.0
+        ]
+      },
+      {
+        "name": "cell_size",
+        "type": "float",
+        "hint": "hint_range(0.05, 10.0)",
+        "default": 0.5
+      },
+      {
+        "name": "major_every",
+        "type": "int",
+        "hint": "hint_range(1, 20)",
+        "default": 4
+      },
+      {
+        "name": "line_pixels",
+        "type": "float",
+        "hint": "hint_range(0.5, 4.0)",
+        "default": 1.2
+      },
+      {
+        "name": "show_axes",
+        "type": "bool",
+        "hint": null,
+        "default": true
+      },
+      {
+        "name": "fade_distance",
+        "type": "float",
+        "hint": "hint_range(1.0, 200.0)",
+        "default": 40.0
+      },
+      {
+        "name": "roughness",
+        "type": "float",
+        "hint": "hint_range(0.0, 1.0)",
+        "default": 0.8
+      }
+    ],
+    "placement": "res://baltor/godot_shaders/world_grid_debug/",
+    "usage": "surface_material",
+    "renderers": {
+      "compatibility": "compiled_and_rendered",
+      "forward_plus": "not_verified",
+      "mobile": "not_verified"
+    },
+    "inputs": [],
+    "outputs": "Grey surfaces with crisp light grid lines, heavier every few cells, and red and blue axis lines on the floor."
+  },
+  "limits": "Sloped surfaces snap to the nearest axis plane, so lines stretch on 45 degree slopes. The grid is fixed in world space and slides across moving objects. Lines thinner than one pixel fade instead of vanishing.",
+  "related": [
+    "uv_checker_grid",
+    "normal_debug_view"
+  ],
+  "technique_references": [
+    "Screen-space derivative (fwidth) line anti-aliasing",
+    "Dominant-axis planar projection"
+  ],
+  "native_checks": [
+    "contract_static",
+    "engine_run",
+    "engine_log_clean",
+    "shader_in_scene",
+    "capture_written",
+    "render_not_uniform",
+    "shader_changes_pixels"
+  ]
+}

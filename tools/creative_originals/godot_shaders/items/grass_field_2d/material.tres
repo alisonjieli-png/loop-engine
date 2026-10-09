@@ -1,0 +1,14 @@
+[gd_resource type="ShaderMaterial" load_steps=2 format=3]
+
+[ext_resource type="Shader" path="res://baltor/godot_shaders/grass_field_2d/grass_field_2d.gdshader" id="1_shader"]
+
+[resource]
+shader = ExtResource("1_shader")
+shader_parameter/front_color = Color(0.42, 0.72, 0.25, 1)
+shader_parameter/back_color = Color(0.12, 0.32, 0.12, 1)
+shader_parameter/tip_color = Color(0.8, 0.85, 0.45, 1)
+shader_parameter/blades = 60.0
+shader_parameter/blade_height = 0.55
+shader_parameter/wind_strength = 0.06
+shader_parameter/wind_speed = 1.4
+shader_parameter/layers = 3

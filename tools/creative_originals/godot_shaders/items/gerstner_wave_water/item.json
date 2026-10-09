@@ -1,0 +1,151 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "gerstner_wave_water",
+  "title": "Gerstner wave ocean surface",
+  "purpose": "Displace a subdivided plane with three summed Gerstner waves computed in world space, with analytic normals, sharp crests, crest foam colour and a view-dependent deep to shallow tint.",
+  "form": "library_module",
+  "asset_role": null,
+  "dimension": "3d",
+  "engine": {
+    "name": "godot",
+    "minimum_version": "4.3"
+  },
+  "tags": [
+    "godot shader",
+    "spatial",
+    "water",
+    "ocean",
+    "gerstner waves",
+    "vertex displacement",
+    "waves"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "role": "other"
+    },
+    {
+      "path": "gerstner_wave_water.gdshader",
+      "role": "skill_asset"
+    },
+    {
+      "path": "material.tres",
+      "role": "skill_asset"
+    },
+    {
+      "path": "demo.tscn",
+      "role": "skill_asset"
+    }
+  ],
+  "contract": {
+    "shader_type": "spatial",
+    "render_modes": [],
+    "uniforms": [
+      {
+        "name": "deep_color",
+        "type": "vec4",
+        "hint": "source_color",
+        "default": [
+          0.02,
+          0.1,
+          0.18,
+          1.0
+        ]
+      },
+      {
+        "name": "shallow_color",
+        "type": "vec4",
+        "hint": "source_color",
+        "default": [
+          0.06,
+          0.38,
+          0.45,
+          1.0
+        ]
+      },
+      {
+        "name": "crest_color",
+        "type": "vec4",
+        "hint": "source_color",
+        "default": [
+          0.8,
+          0.92,
+          0.95,
+          1.0
+        ]
+      },
+      {
+        "name": "amplitude",
+        "type": "float",
+        "hint": "hint_range(0.0, 2.0)",
+        "default": 0.22
+      },
+      {
+        "name": "wavelength",
+        "type": "float",
+        "hint": "hint_range(0.5, 20.0)",
+        "default": 3.5
+      },
+      {
+        "name": "steepness",
+        "type": "float",
+        "hint": "hint_range(0.0, 1.0)",
+        "default": 0.65
+      },
+      {
+        "name": "speed",
+        "type": "float",
+        "hint": "hint_range(0.0, 4.0)",
+        "default": 1.0
+      },
+      {
+        "name": "direction_degrees",
+        "type": "float",
+        "hint": "hint_range(0.0, 360.0)",
+        "default": 25.0
+      },
+      {
+        "name": "roughness",
+        "type": "float",
+        "hint": "hint_range(0.0, 1.0)",
+        "default": 0.06
+      },
+      {
+        "name": "crest_threshold",
+        "type": "float",
+        "hint": "hint_range(0.0, 1.0)",
+        "default": 0.55
+      }
+    ],
+    "placement": "res://baltor/godot_shaders/gerstner_wave_water/",
+    "usage": "surface_material",
+    "renderers": {
+      "compatibility": "compiled_and_rendered",
+      "forward_plus": "not_verified",
+      "mobile": "not_verified"
+    },
+    "inputs": [
+      "A subdivided PlaneMesh (or other flat grid); the demo uses 120 x 120 subdivisions."
+    ],
+    "outputs": "A rolling sea with sharp crests, light foam on top and sun glints."
+  },
+  "limits": "The plane must be dense enough for the shortest wave or the shape aliases. No transparency, refraction or depth fade (see `toon_water_foam` for depth-based shading). The CPU does not know the wave height, so floating objects need the same formula in a script.",
+  "related": [
+    "toon_water_foam",
+    "underwater_caustics"
+  ],
+  "technique_references": [
+    "Gerstner (trochoidal) waves with deep-water dispersion",
+    "Analytic tangent and binormal sums for normals",
+    "World-space wave phase for seamless tiling"
+  ],
+  "native_checks": [
+    "contract_static",
+    "engine_run",
+    "engine_log_clean",
+    "shader_in_scene",
+    "capture_written",
+    "render_not_uniform",
+    "shader_changes_pixels"
+  ]
+}

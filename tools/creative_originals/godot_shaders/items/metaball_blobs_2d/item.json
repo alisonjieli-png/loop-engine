@@ -1,0 +1,150 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "metaball_blobs_2d",
+  "title": "Lava lamp metaballs",
+  "purpose": "Soft blobs that merge and split like a lava lamp: several metaballs follow Lissajous paths, their summed inverse-square field is thresholded into shapes, shaded by the field gradient and given a glowing rim.",
+  "form": "library_module",
+  "asset_role": null,
+  "dimension": "2d",
+  "engine": {
+    "name": "godot",
+    "minimum_version": "4.3"
+  },
+  "tags": [
+    "godot shader",
+    "canvas item",
+    "metaballs",
+    "lava lamp",
+    "blobs",
+    "background",
+    "procedural"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "role": "other"
+    },
+    {
+      "path": "metaball_blobs_2d.gdshader",
+      "role": "skill_asset"
+    },
+    {
+      "path": "material.tres",
+      "role": "skill_asset"
+    },
+    {
+      "path": "demo.tscn",
+      "role": "skill_asset"
+    }
+  ],
+  "contract": {
+    "shader_type": "canvas_item",
+    "render_modes": [],
+    "uniforms": [
+      {
+        "name": "blob_color",
+        "type": "vec4",
+        "hint": "source_color",
+        "default": [
+          1.0,
+          0.35,
+          0.25,
+          1.0
+        ]
+      },
+      {
+        "name": "highlight_color",
+        "type": "vec4",
+        "hint": "source_color",
+        "default": [
+          1.0,
+          0.85,
+          0.45,
+          1.0
+        ]
+      },
+      {
+        "name": "background_top",
+        "type": "vec4",
+        "hint": "source_color",
+        "default": [
+          0.2,
+          0.05,
+          0.3,
+          1.0
+        ]
+      },
+      {
+        "name": "background_bottom",
+        "type": "vec4",
+        "hint": "source_color",
+        "default": [
+          0.45,
+          0.08,
+          0.25,
+          1.0
+        ]
+      },
+      {
+        "name": "blob_count",
+        "type": "int",
+        "hint": "hint_range(1, 12)",
+        "default": 7
+      },
+      {
+        "name": "blob_size",
+        "type": "float",
+        "hint": "hint_range(0.01, 0.2)",
+        "default": 0.06
+      },
+      {
+        "name": "threshold",
+        "type": "float",
+        "hint": "hint_range(0.5, 4.0)",
+        "default": 1.0
+      },
+      {
+        "name": "speed",
+        "type": "float",
+        "hint": "hint_range(0.0, 3.0)",
+        "default": 0.4
+      },
+      {
+        "name": "rim_glow",
+        "type": "float",
+        "hint": "hint_range(0.0, 2.0)",
+        "default": 0.6
+      }
+    ],
+    "placement": "res://baltor/godot_shaders/metaball_blobs_2d/",
+    "usage": "canvas_material",
+    "renderers": {
+      "compatibility": "compiled_and_rendered",
+      "forward_plus": "not_verified",
+      "mobile": "not_verified"
+    },
+    "inputs": [
+      "A ColorRect (or any CanvasItem) sized to the area to fill; UVs span 0 to 1 across it."
+    ],
+    "outputs": "Orange blobs with yellow highlights flowing and merging over a purple gradient."
+  },
+  "limits": "Cost grows with blob count times three field evaluations per pixel. Blobs are 2D: no occlusion or depth.",
+  "related": [
+    "plasma_sine_2d",
+    "liquid_orb_meter"
+  ],
+  "technique_references": [
+    "Metaballs (summed inverse-square field, after Blinn 1982)",
+    "Lissajous motion paths",
+    "Gradient-based shading"
+  ],
+  "native_checks": [
+    "contract_static",
+    "engine_run",
+    "engine_log_clean",
+    "shader_in_scene",
+    "capture_written",
+    "render_not_uniform",
+    "shader_changes_pixels"
+  ]
+}

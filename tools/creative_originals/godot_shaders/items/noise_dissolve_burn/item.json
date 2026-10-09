@@ -1,0 +1,157 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "noise_dissolve_burn",
+  "title": "Noise dissolve with a burning edge",
+  "purpose": "Dissolve a mesh by discarding fragments where 3D object-space noise falls below a threshold, with a glowing ember edge and a charred band behind it. Drive the threshold from a script or let it loop.",
+  "form": "library_module",
+  "asset_role": null,
+  "dimension": "3d",
+  "engine": {
+    "name": "godot",
+    "minimum_version": "4.3"
+  },
+  "tags": [
+    "godot shader",
+    "spatial",
+    "dissolve",
+    "burn",
+    "noise",
+    "disintegrate",
+    "emission"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "role": "other"
+    },
+    {
+      "path": "noise_dissolve_burn.gdshader",
+      "role": "skill_asset"
+    },
+    {
+      "path": "material.tres",
+      "role": "skill_asset"
+    },
+    {
+      "path": "demo.tscn",
+      "role": "skill_asset"
+    }
+  ],
+  "contract": {
+    "shader_type": "spatial",
+    "render_modes": [
+      "cull_disabled"
+    ],
+    "uniforms": [
+      {
+        "name": "albedo",
+        "type": "vec4",
+        "hint": "source_color",
+        "default": [
+          0.82,
+          0.78,
+          0.72,
+          1.0
+        ]
+      },
+      {
+        "name": "roughness",
+        "type": "float",
+        "hint": "hint_range(0.0, 1.0)",
+        "default": 0.6
+      },
+      {
+        "name": "dissolve",
+        "type": "float",
+        "hint": "hint_range(0.0, 1.0)",
+        "default": 0.45
+      },
+      {
+        "name": "noise_scale",
+        "type": "float",
+        "hint": "hint_range(0.5, 20.0)",
+        "default": 4.0
+      },
+      {
+        "name": "edge_width",
+        "type": "float",
+        "hint": "hint_range(0.0, 0.2)",
+        "default": 0.04
+      },
+      {
+        "name": "char_width",
+        "type": "float",
+        "hint": "hint_range(0.0, 0.3)",
+        "default": 0.08
+      },
+      {
+        "name": "edge_color",
+        "type": "vec4",
+        "hint": "source_color",
+        "default": [
+          1.0,
+          0.42,
+          0.06,
+          1.0
+        ]
+      },
+      {
+        "name": "ember_color",
+        "type": "vec4",
+        "hint": "source_color",
+        "default": [
+          1.0,
+          0.9,
+          0.55,
+          1.0
+        ]
+      },
+      {
+        "name": "edge_emission",
+        "type": "float",
+        "hint": "hint_range(0.0, 12.0)",
+        "default": 5.0
+      },
+      {
+        "name": "loop_animation",
+        "type": "bool",
+        "hint": null,
+        "default": false
+      },
+      {
+        "name": "loop_speed",
+        "type": "float",
+        "hint": "hint_range(0.0, 2.0)",
+        "default": 0.2
+      }
+    ],
+    "placement": "res://baltor/godot_shaders/noise_dissolve_burn/",
+    "usage": "surface_material",
+    "renderers": {
+      "compatibility": "compiled_and_rendered",
+      "forward_plus": "not_verified",
+      "mobile": "not_verified"
+    },
+    "inputs": [],
+    "outputs": "A mesh with holes eaten into it, rimmed by orange glowing edges and a dark charred border."
+  },
+  "limits": "Discard disables some early depth optimizations, so large dissolving meshes cost more to draw. The inside of the mesh is the back faces, lit as the outside. Shadows use the same discard and match the holes. The noise is value noise, so its lattice can show at very low scales.",
+  "related": [
+    "cloak_reveal",
+    "clip_plane_cutaway"
+  ],
+  "technique_references": [
+    "Value noise with quintic interpolation and fractional Brownian motion in 3D object space",
+    "Alpha-tested dissolve with distance bands",
+    "MurmurHash3 32-bit finalizer over prime-combined lattice coordinates as a hash"
+  ],
+  "native_checks": [
+    "contract_static",
+    "engine_run",
+    "engine_log_clean",
+    "shader_in_scene",
+    "capture_written",
+    "render_not_uniform",
+    "shader_changes_pixels"
+  ]
+}

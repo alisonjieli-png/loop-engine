@@ -1,0 +1,114 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "post_unsharp_sharpen",
+  "title": "Unsharp mask sharpening",
+  "purpose": "Sharpen the rendered image with an unsharp mask: the difference between each pixel and a small blur of its neighbourhood is added back, with a threshold that leaves noise and flat areas alone and a luminance-only option.",
+  "form": "library_module",
+  "asset_role": null,
+  "dimension": "3d",
+  "engine": {
+    "name": "godot",
+    "minimum_version": "4.3"
+  },
+  "tags": [
+    "godot shader",
+    "spatial",
+    "post-process",
+    "sharpen",
+    "unsharp mask",
+    "clarity",
+    "image filter",
+    "full-screen"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "role": "other"
+    },
+    {
+      "path": "post_unsharp_sharpen.gdshader",
+      "role": "skill_asset"
+    },
+    {
+      "path": "material.tres",
+      "role": "skill_asset"
+    },
+    {
+      "path": "demo.tscn",
+      "role": "skill_asset"
+    }
+  ],
+  "contract": {
+    "shader_type": "spatial",
+    "render_modes": [
+      "unshaded",
+      "cull_disabled",
+      "depth_test_disabled",
+      "depth_draw_never",
+      "skip_vertex_transform",
+      "fog_disabled"
+    ],
+    "uniforms": [
+      {
+        "name": "screen_texture",
+        "type": "sampler2D",
+        "hint": "hint_screen_texture, filter_nearest",
+        "default": null
+      },
+      {
+        "name": "amount",
+        "type": "float",
+        "hint": "hint_range(0.0, 3.0)",
+        "default": 1.2
+      },
+      {
+        "name": "radius_pixels",
+        "type": "float",
+        "hint": "hint_range(0.5, 4.0)",
+        "default": 1.0
+      },
+      {
+        "name": "threshold",
+        "type": "float",
+        "hint": "hint_range(0.0, 0.2)",
+        "default": 0.01
+      },
+      {
+        "name": "luminance_only",
+        "type": "bool",
+        "hint": null,
+        "default": true
+      }
+    ],
+    "placement": "res://baltor/godot_shaders/post_unsharp_sharpen/",
+    "usage": "post_process_quad",
+    "renderers": {
+      "compatibility": "compiled_and_rendered",
+      "forward_plus": "not_verified",
+      "mobile": "not_verified"
+    },
+    "inputs": [
+      "A MeshInstance3D with a 2 x 2 QuadMesh, `material.tres` as its material override and a large extra cull margin, as in `demo.tscn`."
+    ],
+    "outputs": "The scene with crisper edges and slightly stronger texture."
+  },
+  "limits": "Over-sharpening creates bright and dark halos along edges. Sharpening also enhances aliasing and noise above the threshold. The pass reads Godot's screen texture after opaque geometry, so transparent objects drawn after it are not processed and its order among other transparent passes is not controlled.",
+  "related": [
+    "post_kuwahara_painterly",
+    "post_color_grading"
+  ],
+  "technique_references": [
+    "Unsharp masking with a 3 x 3 binomial blur",
+    "Detail threshold",
+    "Luminance-only detail"
+  ],
+  "native_checks": [
+    "contract_static",
+    "engine_run",
+    "engine_log_clean",
+    "shader_in_scene",
+    "capture_written",
+    "render_not_uniform",
+    "shader_changes_pixels"
+  ]
+}

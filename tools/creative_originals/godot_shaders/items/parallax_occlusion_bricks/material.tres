@@ -1,0 +1,15 @@
+[gd_resource type="ShaderMaterial" load_steps=2 format=3]
+
+[ext_resource type="Shader" path="res://baltor/godot_shaders/parallax_occlusion_bricks/parallax_occlusion_bricks.gdshader" id="1_shader"]
+
+[resource]
+shader = ExtResource("1_shader")
+shader_parameter/brick_color = Color(0.62, 0.26, 0.18, 1)
+shader_parameter/mortar_color = Color(0.72, 0.7, 0.66, 1)
+shader_parameter/bricks_across = 4.0
+shader_parameter/bricks_down = 8.0
+shader_parameter/mortar_width = 0.06
+shader_parameter/bevel = 0.08
+shader_parameter/depth_scale = 0.05
+shader_parameter/steps = 24
+shader_parameter/color_variation = 0.35

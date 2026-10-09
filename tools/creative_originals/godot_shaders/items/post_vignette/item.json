@@ -1,0 +1,136 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "post_vignette",
+  "title": "Shaped vignette with colour and focus point",
+  "purpose": "Darken or tint the screen toward its edges with control over size, softness, roundness, aspect, colour and the point it centres on.",
+  "form": "library_module",
+  "asset_role": null,
+  "dimension": "3d",
+  "engine": {
+    "name": "godot",
+    "minimum_version": "4.3"
+  },
+  "tags": [
+    "godot shader",
+    "spatial",
+    "post-process",
+    "vignette",
+    "framing",
+    "camera",
+    "mood",
+    "full-screen"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "role": "other"
+    },
+    {
+      "path": "post_vignette.gdshader",
+      "role": "skill_asset"
+    },
+    {
+      "path": "material.tres",
+      "role": "skill_asset"
+    },
+    {
+      "path": "demo.tscn",
+      "role": "skill_asset"
+    }
+  ],
+  "contract": {
+    "shader_type": "spatial",
+    "render_modes": [
+      "unshaded",
+      "cull_disabled",
+      "depth_test_disabled",
+      "depth_draw_never",
+      "skip_vertex_transform",
+      "fog_disabled"
+    ],
+    "uniforms": [
+      {
+        "name": "screen_texture",
+        "type": "sampler2D",
+        "hint": "hint_screen_texture, filter_linear_mipmap",
+        "default": null
+      },
+      {
+        "name": "vignette_color",
+        "type": "vec4",
+        "hint": "source_color",
+        "default": [
+          0.02,
+          0.0,
+          0.04,
+          1.0
+        ]
+      },
+      {
+        "name": "intensity",
+        "type": "float",
+        "hint": "hint_range(0.0, 1.0)",
+        "default": 0.75
+      },
+      {
+        "name": "radius",
+        "type": "float",
+        "hint": "hint_range(0.0, 1.5)",
+        "default": 0.55
+      },
+      {
+        "name": "softness",
+        "type": "float",
+        "hint": "hint_range(0.01, 1.0)",
+        "default": 0.45
+      },
+      {
+        "name": "roundness",
+        "type": "float",
+        "hint": "hint_range(0.0, 1.0)",
+        "default": 1.0
+      },
+      {
+        "name": "focus_x",
+        "type": "float",
+        "hint": "hint_range(0.0, 1.0)",
+        "default": 0.5
+      },
+      {
+        "name": "focus_y",
+        "type": "float",
+        "hint": "hint_range(0.0, 1.0)",
+        "default": 0.5
+      }
+    ],
+    "placement": "res://baltor/godot_shaders/post_vignette/",
+    "usage": "post_process_quad",
+    "renderers": {
+      "compatibility": "compiled_and_rendered",
+      "forward_plus": "not_verified",
+      "mobile": "not_verified"
+    },
+    "inputs": [
+      "A MeshInstance3D with a 2 x 2 QuadMesh, `material.tres` as its material override and a large extra cull margin, as in `demo.tscn`."
+    ],
+    "outputs": "The scene with soft, very dark purple edges and a clear centre."
+  },
+  "limits": "A colour blend, not an exposure change: bright highlights at the edges are flattened toward the colour. The pass reads Godot's screen texture after opaque geometry, so transparent objects drawn after it are not processed and its order among other transparent passes is not controlled.",
+  "related": [
+    "post_film_grain",
+    "post_color_grading"
+  ],
+  "technique_references": [
+    "Distance mask with adjustable roundness and aspect",
+    "Colour blend vignette"
+  ],
+  "native_checks": [
+    "contract_static",
+    "engine_run",
+    "engine_log_clean",
+    "shader_in_scene",
+    "capture_written",
+    "render_not_uniform",
+    "shader_changes_pixels"
+  ]
+}

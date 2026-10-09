@@ -1,0 +1,13 @@
+[gd_resource type="ShaderMaterial" load_steps=2 format=3]
+
+[ext_resource type="Shader" path="res://baltor/godot_shaders/occlusion_silhouette_xray/occlusion_silhouette_xray.gdshader" id="1_shader"]
+
+[resource]
+shader = ExtResource("1_shader")
+shader_parameter/albedo = Color(0.8, 0.45, 0.2, 1)
+shader_parameter/roughness = 0.6
+shader_parameter/xray_color = Color(0.25, 0.75, 1, 1)
+shader_parameter/xray_fill = 0.35
+shader_parameter/xray_rim_power = 2.0
+shader_parameter/depth_bias = 0.02
+shader_parameter/pattern_density = 120.0

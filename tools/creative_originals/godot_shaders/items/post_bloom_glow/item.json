@@ -1,0 +1,131 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "post_bloom_glow",
+  "title": "Single-pass bloom from screen mip levels",
+  "purpose": "Add glow around bright areas without extra viewports: a soft threshold keeps only the bright parts, several blurred mip levels of the screen are summed with decreasing weights, and the glow is added back with a tint.",
+  "form": "library_module",
+  "asset_role": null,
+  "dimension": "3d",
+  "engine": {
+    "name": "godot",
+    "minimum_version": "4.3"
+  },
+  "tags": [
+    "godot shader",
+    "spatial",
+    "post-process",
+    "bloom",
+    "glow",
+    "highlights",
+    "cinematic",
+    "full-screen"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "role": "other"
+    },
+    {
+      "path": "post_bloom_glow.gdshader",
+      "role": "skill_asset"
+    },
+    {
+      "path": "material.tres",
+      "role": "skill_asset"
+    },
+    {
+      "path": "demo.tscn",
+      "role": "skill_asset"
+    }
+  ],
+  "contract": {
+    "shader_type": "spatial",
+    "render_modes": [
+      "unshaded",
+      "cull_disabled",
+      "depth_test_disabled",
+      "depth_draw_never",
+      "skip_vertex_transform",
+      "fog_disabled"
+    ],
+    "uniforms": [
+      {
+        "name": "screen_texture",
+        "type": "sampler2D",
+        "hint": "hint_screen_texture, filter_linear_mipmap",
+        "default": null
+      },
+      {
+        "name": "threshold",
+        "type": "float",
+        "hint": "hint_range(0.0, 1.0)",
+        "default": 0.62
+      },
+      {
+        "name": "knee",
+        "type": "float",
+        "hint": "hint_range(0.0, 0.5)",
+        "default": 0.15
+      },
+      {
+        "name": "intensity",
+        "type": "float",
+        "hint": "hint_range(0.0, 4.0)",
+        "default": 1.3
+      },
+      {
+        "name": "levels",
+        "type": "int",
+        "hint": "hint_range(1, 6)",
+        "default": 5
+      },
+      {
+        "name": "spread",
+        "type": "float",
+        "hint": "hint_range(0.0, 1.0)",
+        "default": 0.6
+      },
+      {
+        "name": "tint",
+        "type": "vec4",
+        "hint": "source_color",
+        "default": [
+          1.0,
+          0.92,
+          0.8,
+          1.0
+        ]
+      }
+    ],
+    "placement": "res://baltor/godot_shaders/post_bloom_glow/",
+    "usage": "post_process_quad",
+    "renderers": {
+      "compatibility": "compiled_and_rendered",
+      "forward_plus": "not_verified",
+      "mobile": "not_verified"
+    },
+    "inputs": [
+      "A MeshInstance3D with a 2 x 2 QuadMesh, `material.tres` as its material override and a large extra cull margin, as in `demo.tscn`."
+    ],
+    "outputs": "The scene with soft warm halos around its brightest areas."
+  },
+  "limits": "Mip levels are box filtered, so the glow is less smooth than a separable Gaussian chain and can flicker on small moving highlights. The bright pass works on display colours, not HDR values. The pass reads Godot's screen texture after opaque geometry, so transparent objects drawn after it are not processed and its order among other transparent passes is not controlled.",
+  "related": [
+    "post_light_scattering",
+    "fresnel_rim_glow"
+  ],
+  "technique_references": [
+    "Soft-knee bright pass",
+    "Bloom from summed screen mip levels",
+    "Geometric level weighting"
+  ],
+  "native_checks": [
+    "contract_static",
+    "engine_run",
+    "engine_log_clean",
+    "shader_in_scene",
+    "capture_written",
+    "render_not_uniform",
+    "shader_changes_pixels"
+  ]
+}

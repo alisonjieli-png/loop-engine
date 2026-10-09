@@ -1,0 +1,23 @@
+[gd_resource type="ShaderMaterial" load_steps=4 format=3]
+
+[ext_resource type="Shader" path="res://baltor/godot_shaders/billboard_axis_modes/billboard_axis_modes.gdshader" id="1_shader"]
+
+[sub_resource type="Gradient" id="Gradient_1"]
+offsets = PackedFloat32Array(0, 0.62, 0.64, 1)
+colors = PackedColorArray(0.25, 0.6, 0.2, 1, 0.15, 0.42, 0.15, 1, 0.15, 0.42, 0.15, 0, 0.15, 0.42, 0.15, 0)
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_2"]
+gradient = SubResource("Gradient_1")
+width = 128
+height = 128
+fill = 1
+fill_from = Vector2(0.5, 0.4)
+fill_to = Vector2(0.5, 0)
+
+[resource]
+shader = ExtResource("1_shader")
+shader_parameter/card_texture = SubResource("GradientTexture2D_2")
+shader_parameter/tint = Color(1, 1, 1, 1)
+shader_parameter/mode = 1
+shader_parameter/alpha_cutoff = 0.5
+shader_parameter/shade_as_upright = true

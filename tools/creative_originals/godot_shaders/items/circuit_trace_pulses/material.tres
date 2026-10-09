@@ -1,0 +1,15 @@
+[gd_resource type="ShaderMaterial" load_steps=2 format=3]
+
+[ext_resource type="Shader" path="res://baltor/godot_shaders/circuit_trace_pulses/circuit_trace_pulses.gdshader" id="1_shader"]
+
+[resource]
+shader = ExtResource("1_shader")
+shader_parameter/board_color = Color(0.04, 0.22, 0.12, 1)
+shader_parameter/copper_color = Color(0.78, 0.6, 0.3, 1)
+shader_parameter/pulse_color = Color(0.3, 1, 0.9, 1)
+shader_parameter/cells = 14.0
+shader_parameter/trace_width = 0.09
+shader_parameter/via_radius = 0.18
+shader_parameter/pulse_speed = 1.2
+shader_parameter/pulse_share = 0.45
+shader_parameter/glow = 2.5

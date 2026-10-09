@@ -1,0 +1,152 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "hologram_scanlines",
+  "title": "Hologram with scanlines, flicker and slice glitches",
+  "purpose": "Render a mesh as an additive hologram: world-space scanlines that scroll, a Fresnel edge, random flicker and horizontal slices that jump sideways for a moment, all from TIME and hashes.",
+  "form": "library_module",
+  "asset_role": null,
+  "dimension": "3d",
+  "engine": {
+    "name": "godot",
+    "minimum_version": "4.3"
+  },
+  "tags": [
+    "godot shader",
+    "spatial",
+    "hologram",
+    "scanlines",
+    "sci-fi",
+    "glitch",
+    "additive"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "role": "other"
+    },
+    {
+      "path": "hologram_scanlines.gdshader",
+      "role": "skill_asset"
+    },
+    {
+      "path": "material.tres",
+      "role": "skill_asset"
+    },
+    {
+      "path": "demo.tscn",
+      "role": "skill_asset"
+    }
+  ],
+  "contract": {
+    "shader_type": "spatial",
+    "render_modes": [
+      "unshaded",
+      "blend_add",
+      "cull_disabled",
+      "depth_draw_never",
+      "shadows_disabled"
+    ],
+    "uniforms": [
+      {
+        "name": "holo_color",
+        "type": "vec4",
+        "hint": "source_color",
+        "default": [
+          0.25,
+          0.85,
+          1.0,
+          1.0
+        ]
+      },
+      {
+        "name": "line_density",
+        "type": "float",
+        "hint": "hint_range(10.0, 400.0)",
+        "default": 110.0
+      },
+      {
+        "name": "line_speed",
+        "type": "float",
+        "hint": "hint_range(-4.0, 4.0)",
+        "default": 0.5
+      },
+      {
+        "name": "line_sharpness",
+        "type": "float",
+        "hint": "hint_range(0.0, 1.0)",
+        "default": 0.6
+      },
+      {
+        "name": "line_strength",
+        "type": "float",
+        "hint": "hint_range(0.0, 1.0)",
+        "default": 0.4
+      },
+      {
+        "name": "rim_power",
+        "type": "float",
+        "hint": "hint_range(0.5, 8.0)",
+        "default": 2.0
+      },
+      {
+        "name": "base_strength",
+        "type": "float",
+        "hint": "hint_range(0.0, 1.0)",
+        "default": 0.18
+      },
+      {
+        "name": "flicker_amount",
+        "type": "float",
+        "hint": "hint_range(0.0, 1.0)",
+        "default": 0.3
+      },
+      {
+        "name": "glitch_offset",
+        "type": "float",
+        "hint": "hint_range(0.0, 0.3)",
+        "default": 0.05
+      },
+      {
+        "name": "glitch_rate",
+        "type": "float",
+        "hint": "hint_range(0.0, 20.0)",
+        "default": 5.0
+      },
+      {
+        "name": "glitch_bands",
+        "type": "float",
+        "hint": "hint_range(1.0, 40.0)",
+        "default": 10.0
+      }
+    ],
+    "placement": "res://baltor/godot_shaders/hologram_scanlines/",
+    "usage": "surface_material",
+    "renderers": {
+      "compatibility": "compiled_and_rendered",
+      "forward_plus": "not_verified",
+      "mobile": "not_verified"
+    },
+    "inputs": [],
+    "outputs": "A translucent cyan figure with moving horizontal lines, a bright outline, flicker and slice jumps."
+  },
+  "limits": "Additive blending cannot darken, so the hologram is invisible against white. The slice glitch moves vertices along the object X axis and needs enough vertical subdivisions to cut cleanly. Not depth sorted against other transparent objects.",
+  "related": [
+    "fresnel_rim_glow",
+    "cloak_reveal"
+  ],
+  "technique_references": [
+    "Additive unshaded transparency",
+    "World-space sine scanlines",
+    "Facing ratio rim",
+    "Hashed time slots for flicker and vertex glitches"
+  ],
+  "native_checks": [
+    "contract_static",
+    "engine_run",
+    "engine_log_clean",
+    "shader_in_scene",
+    "capture_written",
+    "render_not_uniform",
+    "shader_changes_pixels"
+  ]
+}

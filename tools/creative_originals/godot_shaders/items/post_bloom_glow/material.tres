@@ -1,0 +1,12 @@
+[gd_resource type="ShaderMaterial" load_steps=2 format=3]
+
+[ext_resource type="Shader" path="res://baltor/godot_shaders/post_bloom_glow/post_bloom_glow.gdshader" id="1_shader"]
+
+[resource]
+shader = ExtResource("1_shader")
+shader_parameter/threshold = 0.62
+shader_parameter/knee = 0.15
+shader_parameter/intensity = 1.3
+shader_parameter/levels = 5
+shader_parameter/spread = 0.6
+shader_parameter/tint = Color(1, 0.92, 0.8, 1)

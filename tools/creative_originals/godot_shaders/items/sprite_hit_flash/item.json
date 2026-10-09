@@ -1,0 +1,116 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "sprite_hit_flash",
+  "title": "Hit flash, blink and silhouette modes",
+  "purpose": "Flash a sprite toward a colour when it takes damage: mix, additive or full silhouette modes, an amount to animate from a script, and an optional automatic blink for invulnerability frames.",
+  "form": "library_module",
+  "asset_role": null,
+  "dimension": "2d",
+  "engine": {
+    "name": "godot",
+    "minimum_version": "4.3"
+  },
+  "tags": [
+    "godot shader",
+    "canvas item",
+    "hit flash",
+    "damage",
+    "blink",
+    "silhouette",
+    "2d"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "role": "other"
+    },
+    {
+      "path": "sprite_hit_flash.gdshader",
+      "role": "skill_asset"
+    },
+    {
+      "path": "material.tres",
+      "role": "skill_asset"
+    },
+    {
+      "path": "demo.tscn",
+      "role": "skill_asset"
+    }
+  ],
+  "contract": {
+    "shader_type": "canvas_item",
+    "render_modes": [],
+    "uniforms": [
+      {
+        "name": "flash_color",
+        "type": "vec4",
+        "hint": "source_color",
+        "default": [
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      {
+        "name": "flash_amount",
+        "type": "float",
+        "hint": "hint_range(0.0, 1.0)",
+        "default": 0.0
+      },
+      {
+        "name": "mode",
+        "type": "int",
+        "hint": "hint_range(0, 2)",
+        "default": 0
+      },
+      {
+        "name": "auto_blink",
+        "type": "bool",
+        "hint": null,
+        "default": false
+      },
+      {
+        "name": "blink_rate",
+        "type": "float",
+        "hint": "hint_range(0.5, 30.0)",
+        "default": 12.0
+      },
+      {
+        "name": "blink_duty",
+        "type": "float",
+        "hint": "hint_range(0.0, 1.0)",
+        "default": 0.5
+      }
+    ],
+    "placement": "res://baltor/godot_shaders/sprite_hit_flash/",
+    "usage": "canvas_material",
+    "renderers": {
+      "compatibility": "compiled_and_rendered",
+      "forward_plus": "not_verified",
+      "mobile": "not_verified"
+    },
+    "inputs": [
+      "A Sprite2D (or other textured CanvasItem) with transparent space around its shape, assigned to the node as usual."
+    ],
+    "outputs": "The sprite tinted strongly toward red as on a damage frame."
+  },
+  "limits": "One flash colour at a time. Driving `flash_amount` per instance needs separate materials (or instance uniforms in your own variant).",
+  "related": [
+    "sprite_hsv_adjust",
+    "sprite_soft_glow"
+  ],
+  "technique_references": [
+    "Colour blend modes",
+    "Square-wave blinking"
+  ],
+  "native_checks": [
+    "contract_static",
+    "engine_run",
+    "engine_log_clean",
+    "shader_in_scene",
+    "capture_written",
+    "render_not_uniform",
+    "shader_changes_pixels"
+  ]
+}

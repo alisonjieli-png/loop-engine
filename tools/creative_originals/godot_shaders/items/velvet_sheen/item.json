@@ -1,0 +1,127 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "velvet_sheen",
+  "title": "Velvet lighting with grazing sheen",
+  "purpose": "Velvet and plush fabric with a custom light function: a dark, soft diffuse core and a bright sheen that appears where the surface turns away from the viewer and catches the light, plus back-scatter toward the light.",
+  "form": "library_module",
+  "asset_role": null,
+  "dimension": "3d",
+  "engine": {
+    "name": "godot",
+    "minimum_version": "4.3"
+  },
+  "tags": [
+    "godot shader",
+    "spatial",
+    "velvet",
+    "fabric",
+    "sheen",
+    "plush",
+    "custom light function"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "role": "other"
+    },
+    {
+      "path": "velvet_sheen.gdshader",
+      "role": "skill_asset"
+    },
+    {
+      "path": "material.tres",
+      "role": "skill_asset"
+    },
+    {
+      "path": "demo.tscn",
+      "role": "skill_asset"
+    }
+  ],
+  "contract": {
+    "shader_type": "spatial",
+    "render_modes": [],
+    "uniforms": [
+      {
+        "name": "core_color",
+        "type": "vec4",
+        "hint": "source_color",
+        "default": [
+          0.35,
+          0.03,
+          0.12,
+          1.0
+        ]
+      },
+      {
+        "name": "sheen_color",
+        "type": "vec4",
+        "hint": "source_color",
+        "default": [
+          1.0,
+          0.55,
+          0.7,
+          1.0
+        ]
+      },
+      {
+        "name": "sheen_power",
+        "type": "float",
+        "hint": "hint_range(0.5, 8.0)",
+        "default": 2.2
+      },
+      {
+        "name": "sheen_strength",
+        "type": "float",
+        "hint": "hint_range(0.0, 3.0)",
+        "default": 1.2
+      },
+      {
+        "name": "back_scatter",
+        "type": "float",
+        "hint": "hint_range(0.0, 2.0)",
+        "default": 0.5
+      },
+      {
+        "name": "diffuse_softness",
+        "type": "float",
+        "hint": "hint_range(0.0, 1.0)",
+        "default": 0.5
+      },
+      {
+        "name": "fiber_noise",
+        "type": "float",
+        "hint": "hint_range(0.0, 1.0)",
+        "default": 0.15
+      }
+    ],
+    "placement": "res://baltor/godot_shaders/velvet_sheen/",
+    "usage": "surface_material",
+    "renderers": {
+      "compatibility": "compiled_and_rendered",
+      "forward_plus": "not_verified",
+      "mobile": "not_verified"
+    },
+    "inputs": [],
+    "outputs": "Deep raspberry velvet shapes with pink, glowing edges where the surface turns away."
+  },
+  "limits": "Empirical lighting, not a microfibre model; not energy conserving. Sheen also appears on surfaces facing away from the light at grazing angles through the back-scatter term. Environment light adds a plain term.",
+  "related": [
+    "fabric_weave_sheen",
+    "wrap_subsurface_skin",
+    "pearl_sheen"
+  ],
+  "technique_references": [
+    "Grazing-angle sheen lobe",
+    "Wrapped diffuse",
+    "Back-scatter at the silhouette"
+  ],
+  "native_checks": [
+    "contract_static",
+    "engine_run",
+    "engine_log_clean",
+    "shader_in_scene",
+    "capture_written",
+    "render_not_uniform",
+    "shader_changes_pixels"
+  ]
+}

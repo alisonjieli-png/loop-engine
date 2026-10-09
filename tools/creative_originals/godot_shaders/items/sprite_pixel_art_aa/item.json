@@ -1,0 +1,87 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "sprite_pixel_art_aa",
+  "title": "Smooth nearest sampling for scaled pixel art",
+  "purpose": "Keep pixel art crisp but free of shimmering when it is rotated, moved by sub-pixels or scaled by non-integer factors: texel edges are blended over exactly one screen pixel with linear filtering, interiors stay flat.",
+  "form": "library_module",
+  "asset_role": null,
+  "dimension": "2d",
+  "engine": {
+    "name": "godot",
+    "minimum_version": "4.3"
+  },
+  "tags": [
+    "godot shader",
+    "canvas item",
+    "pixel art",
+    "anti-aliasing",
+    "scaling",
+    "rotation",
+    "2d"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "role": "other"
+    },
+    {
+      "path": "sprite_pixel_art_aa.gdshader",
+      "role": "skill_asset"
+    },
+    {
+      "path": "material.tres",
+      "role": "skill_asset"
+    },
+    {
+      "path": "demo.tscn",
+      "role": "skill_asset"
+    }
+  ],
+  "contract": {
+    "shader_type": "canvas_item",
+    "render_modes": [],
+    "uniforms": [
+      {
+        "name": "edge_sharpness",
+        "type": "float",
+        "hint": "hint_range(0.25, 4.0)",
+        "default": 1.0
+      },
+      {
+        "name": "enabled",
+        "type": "bool",
+        "hint": null,
+        "default": true
+      }
+    ],
+    "placement": "res://baltor/godot_shaders/sprite_pixel_art_aa/",
+    "usage": "canvas_material",
+    "renderers": {
+      "compatibility": "compiled_and_rendered",
+      "forward_plus": "not_verified",
+      "mobile": "not_verified"
+    },
+    "inputs": [
+      "A pixel art texture on a Sprite2D whose `texture_filter` is set to Linear (as in `demo.tscn`)."
+    ],
+    "outputs": "A 24-pixel sprite scaled seven times with crisp, flat texels and smooth edges."
+  },
+  "limits": "Requires the node's texture filter set to Linear; with Nearest filtering it has no effect. Mipmaps must be off or the blend smears when minified.",
+  "related": [
+    "post_pixelate_palette",
+    "ps1_vertex_snap"
+  ],
+  "technique_references": [
+    "Anti-aliased nearest-neighbour sampling (bilinear blend confined to one screen pixel at texel edges)",
+    "Screen-space derivatives of texel coordinates"
+  ],
+  "native_checks": [
+    "contract_static",
+    "engine_run",
+    "engine_log_clean",
+    "shader_in_scene",
+    "capture_written",
+    "render_not_uniform",
+    "shader_changes_pixels"
+  ]
+}

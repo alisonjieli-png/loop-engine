@@ -1,0 +1,130 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "lit_hatching",
+  "title": "Pen hatching driven by lighting",
+  "purpose": "Pen-and-ink shading from scene lights: brighter areas stay paper, darker areas get one, two, three and four layers of hatching lines at different angles, aligned to the surface UVs so the strokes stick to the object.",
+  "form": "library_module",
+  "asset_role": null,
+  "dimension": "3d",
+  "engine": {
+    "name": "godot",
+    "minimum_version": "4.3"
+  },
+  "tags": [
+    "godot shader",
+    "spatial",
+    "hatching",
+    "pen and ink",
+    "npr",
+    "sketch",
+    "custom light function"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "role": "other"
+    },
+    {
+      "path": "lit_hatching.gdshader",
+      "role": "skill_asset"
+    },
+    {
+      "path": "material.tres",
+      "role": "skill_asset"
+    },
+    {
+      "path": "demo.tscn",
+      "role": "skill_asset"
+    }
+  ],
+  "contract": {
+    "shader_type": "spatial",
+    "render_modes": [],
+    "uniforms": [
+      {
+        "name": "paper_color",
+        "type": "vec4",
+        "hint": "source_color",
+        "default": [
+          0.96,
+          0.94,
+          0.88,
+          1.0
+        ]
+      },
+      {
+        "name": "line_density",
+        "type": "float",
+        "hint": "hint_range(10.0, 400.0)",
+        "default": 90.0
+      },
+      {
+        "name": "line_width",
+        "type": "float",
+        "hint": "hint_range(0.05, 0.9)",
+        "default": 0.35
+      },
+      {
+        "name": "level_1",
+        "type": "float",
+        "hint": "hint_range(0.0, 1.0)",
+        "default": 0.8
+      },
+      {
+        "name": "level_2",
+        "type": "float",
+        "hint": "hint_range(0.0, 1.0)",
+        "default": 0.55
+      },
+      {
+        "name": "level_3",
+        "type": "float",
+        "hint": "hint_range(0.0, 1.0)",
+        "default": 0.32
+      },
+      {
+        "name": "level_4",
+        "type": "float",
+        "hint": "hint_range(0.0, 1.0)",
+        "default": 0.15
+      },
+      {
+        "name": "ink_strength",
+        "type": "float",
+        "hint": "hint_range(0.0, 1.0)",
+        "default": 0.92
+      }
+    ],
+    "placement": "res://baltor/godot_shaders/lit_hatching/",
+    "usage": "surface_material",
+    "renderers": {
+      "compatibility": "compiled_and_rendered",
+      "forward_plus": "not_verified",
+      "mobile": "not_verified"
+    },
+    "inputs": [
+      "A mesh with reasonably even UVs; keep the environment ambient light low so shadows stay dark."
+    ],
+    "outputs": "Paper-white shapes shaded with layers of crossing ink lines that thicken toward the shadow side."
+  },
+  "limits": "Lines follow UVs, so seams and stretched UVs show in the strokes. Each light adds its own hatching. Ambient light is added unhatched. Lines alias into moire when UV density is far higher than screen pixels.",
+  "related": [
+    "gooch_cool_warm",
+    "post_edge_detect",
+    "post_halftone_dots"
+  ],
+  "technique_references": [
+    "Tonal hatching layers by light thresholds",
+    "Derivative anti-aliased procedural lines",
+    "Custom light function"
+  ],
+  "native_checks": [
+    "contract_static",
+    "engine_run",
+    "engine_log_clean",
+    "shader_in_scene",
+    "capture_written",
+    "render_not_uniform",
+    "shader_changes_pixels"
+  ]
+}

@@ -1,0 +1,14 @@
+[gd_resource type="ShaderMaterial" load_steps=2 format=3]
+
+[ext_resource type="Shader" path="res://baltor/godot_shaders/light_shaft_cone/light_shaft_cone.gdshader" id="1_shader"]
+
+[resource]
+shader = ExtResource("1_shader")
+shader_parameter/beam_color = Color(1, 0.92, 0.7, 1)
+shader_parameter/intensity = 0.9
+shader_parameter/edge_softness = 2.5
+shader_parameter/length_falloff = 1.4
+shader_parameter/dust_amount = 0.5
+shader_parameter/dust_scale = 60.0
+shader_parameter/dust_speed = 0.05
+shader_parameter/contact_fade = 0.4

@@ -1,0 +1,10 @@
+[gd_resource type="ShaderMaterial" load_steps=2 format=3]
+
+[ext_resource type="Shader" path="res://baltor/godot_shaders/post_unsharp_sharpen/post_unsharp_sharpen.gdshader" id="1_shader"]
+
+[resource]
+shader = ExtResource("1_shader")
+shader_parameter/amount = 1.2
+shader_parameter/radius_pixels = 1.0
+shader_parameter/threshold = 0.01
+shader_parameter/luminance_only = true

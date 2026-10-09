@@ -1,0 +1,99 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "normal_debug_view",
+  "title": "Geometry debug views: normals, tangents, UV, depth",
+  "purpose": "One unshaded debug material with a mode switch: world normals, view normals, tangents, binormals, UVs, vertex colours, linear depth bands or world position cells, for checking imported meshes and shader inputs.",
+  "form": "library_module",
+  "asset_role": null,
+  "dimension": "3d",
+  "engine": {
+    "name": "godot",
+    "minimum_version": "4.3"
+  },
+  "tags": [
+    "godot shader",
+    "spatial",
+    "debug",
+    "normals",
+    "tangents",
+    "visualization",
+    "tool"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "role": "other"
+    },
+    {
+      "path": "normal_debug_view.gdshader",
+      "role": "skill_asset"
+    },
+    {
+      "path": "material.tres",
+      "role": "skill_asset"
+    },
+    {
+      "path": "demo.tscn",
+      "role": "skill_asset"
+    }
+  ],
+  "contract": {
+    "shader_type": "spatial",
+    "render_modes": [
+      "unshaded"
+    ],
+    "uniforms": [
+      {
+        "name": "mode",
+        "type": "int",
+        "hint": "hint_range(0, 7)",
+        "default": 0
+      },
+      {
+        "name": "depth_band",
+        "type": "float",
+        "hint": "hint_range(0.05, 10.0)",
+        "default": 0.5
+      },
+      {
+        "name": "position_cell",
+        "type": "float",
+        "hint": "hint_range(0.05, 10.0)",
+        "default": 0.25
+      },
+      {
+        "name": "flip_back_faces",
+        "type": "bool",
+        "hint": null,
+        "default": true
+      }
+    ],
+    "placement": "res://baltor/godot_shaders/normal_debug_view/",
+    "usage": "surface_material",
+    "renderers": {
+      "compatibility": "compiled_and_rendered",
+      "forward_plus": "not_verified",
+      "mobile": "not_verified"
+    },
+    "inputs": [],
+    "outputs": "Meshes coloured by their world-space normals (red, green and blue per axis) in the default mode."
+  },
+  "limits": "Debug output only: unshaded and not meant for final art. Tangent and binormal modes need meshes with tangents. Normals are the interpolated vertex normals after any normal map is ignored.",
+  "related": [
+    "uv_checker_grid",
+    "world_grid_debug"
+  ],
+  "technique_references": [
+    "Direction to colour mapping (n * 0.5 + 0.5)",
+    "Mode switch in one material"
+  ],
+  "native_checks": [
+    "contract_static",
+    "engine_run",
+    "engine_log_clean",
+    "shader_in_scene",
+    "capture_written",
+    "render_not_uniform",
+    "shader_changes_pixels"
+  ]
+}

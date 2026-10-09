@@ -1,0 +1,47 @@
+[gd_scene load_steps=6 format=3]
+
+[ext_resource type="ShaderMaterial" path="res://baltor/godot_shaders/planet_atmosphere_rim/material.tres" id="1_material"]
+
+[sub_resource type="Environment" id="Environment_1"]
+background_mode = 1
+background_color = Color(0, 0, 0.02, 1)
+ambient_light_source = 2
+ambient_light_color = Color(0.02, 0.02, 0.03, 1)
+ambient_light_energy = 1.0
+
+[sub_resource type="SphereMesh" id="SphereMesh_2"]
+radial_segments = 64
+rings = 32
+radius = 0.9
+height = 1.8
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_3"]
+albedo_color = Color(0.2, 0.35, 0.25, 1)
+roughness = 0.8
+
+[sub_resource type="SphereMesh" id="SphereMesh_4"]
+radial_segments = 64
+rings = 32
+radius = 1.0
+height = 2.0
+
+[node name="Root" type="Node3D"]
+
+[node name="Environment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_1")
+
+[node name="Planet" type="MeshInstance3D" parent="."]
+mesh = SubResource("SphereMesh_2")
+material_override = SubResource("StandardMaterial3D_3")
+
+[node name="Subject" type="MeshInstance3D" parent="."]
+mesh = SubResource("SphereMesh_4")
+material_override = ExtResource("1_material")
+
+[node name="Sun" type="DirectionalLight3D" parent="."]
+transform = Transform3D(0.50702, -0.21181, 0.8355, 0, 0.96934, 0.24574, -0.86193, -0.12459, 0.49147, 0.85, 0.25, 0.5)
+light_color = Color(1, 0.97, 0.92, 1)
+light_energy = 1.2
+
+[node name="Camera" type="Camera3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0.99613, 0.087894, 0, -0.087894, 0.99613, 0, 0.3, 3.4)

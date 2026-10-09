@@ -1,0 +1,16 @@
+[gd_resource type="ShaderMaterial" load_steps=2 format=3]
+
+[ext_resource type="Shader" path="res://baltor/godot_shaders/particles_fountain/particles_fountain.gdshader" id="1_shader"]
+
+[resource]
+shader = ExtResource("1_shader")
+shader_parameter/launch_speed = 5.5
+shader_parameter/spread_degrees = 9.0
+shader_parameter/nozzle_radius = 0.06
+shader_parameter/swirl_speed = 0.8
+shader_parameter/gravity = 9.8
+shader_parameter/floor_height = 0.0
+shader_parameter/bounce = 0.3
+shader_parameter/droplet_scale = 1.0
+shader_parameter/water_color = Color(0.45, 0.75, 1, 1)
+shader_parameter/spray_color = Color(0.92, 0.97, 1, 1)

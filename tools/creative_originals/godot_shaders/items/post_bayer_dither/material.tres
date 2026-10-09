@@ -1,0 +1,12 @@
+[gd_resource type="ShaderMaterial" load_steps=2 format=3]
+
+[ext_resource type="Shader" path="res://baltor/godot_shaders/post_bayer_dither/post_bayer_dither.gdshader" id="1_shader"]
+
+[resource]
+shader = ExtResource("1_shader")
+shader_parameter/levels = 4
+shader_parameter/dot_scale = 2.0
+shader_parameter/one_bit = false
+shader_parameter/dark_color = Color(0.1, 0.08, 0.16, 1)
+shader_parameter/light_color = Color(0.92, 0.9, 0.8, 1)
+shader_parameter/contrast = 1.1

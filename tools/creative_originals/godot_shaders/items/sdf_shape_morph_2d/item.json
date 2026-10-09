@@ -1,0 +1,162 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "sdf_shape_morph_2d",
+  "title": "Morphing signed distance shapes",
+  "purpose": "Draw resolution-independent shapes from 2D signed distance functions (circle, rounded box, star, heart) and morph between them over time, with fill, outline, glow and optional distance contour lines.",
+  "form": "library_module",
+  "asset_role": null,
+  "dimension": "2d",
+  "engine": {
+    "name": "godot",
+    "minimum_version": "4.3"
+  },
+  "tags": [
+    "godot shader",
+    "canvas item",
+    "sdf",
+    "signed distance",
+    "morph",
+    "vector shapes",
+    "ui"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "role": "other"
+    },
+    {
+      "path": "sdf_shape_morph_2d.gdshader",
+      "role": "skill_asset"
+    },
+    {
+      "path": "material.tres",
+      "role": "skill_asset"
+    },
+    {
+      "path": "demo.tscn",
+      "role": "skill_asset"
+    }
+  ],
+  "contract": {
+    "shader_type": "canvas_item",
+    "render_modes": [],
+    "uniforms": [
+      {
+        "name": "fill_color",
+        "type": "vec4",
+        "hint": "source_color",
+        "default": [
+          0.95,
+          0.45,
+          0.55,
+          1.0
+        ]
+      },
+      {
+        "name": "outline_color",
+        "type": "vec4",
+        "hint": "source_color",
+        "default": [
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      {
+        "name": "glow_color",
+        "type": "vec4",
+        "hint": "source_color",
+        "default": [
+          1.0,
+          0.5,
+          0.7,
+          1.0
+        ]
+      },
+      {
+        "name": "background_color",
+        "type": "vec4",
+        "hint": "source_color",
+        "default": [
+          0.1,
+          0.08,
+          0.16,
+          1.0
+        ]
+      },
+      {
+        "name": "morph_speed",
+        "type": "float",
+        "hint": "hint_range(0.0, 3.0)",
+        "default": 0.4
+      },
+      {
+        "name": "shape_index",
+        "type": "float",
+        "hint": "hint_range(0.0, 4.0)",
+        "default": 2.5
+      },
+      {
+        "name": "animate",
+        "type": "bool",
+        "hint": null,
+        "default": true
+      },
+      {
+        "name": "size",
+        "type": "float",
+        "hint": "hint_range(0.05, 0.5)",
+        "default": 0.3
+      },
+      {
+        "name": "outline_width",
+        "type": "float",
+        "hint": "hint_range(0.0, 0.05)",
+        "default": 0.012
+      },
+      {
+        "name": "glow_width",
+        "type": "float",
+        "hint": "hint_range(0.0, 0.3)",
+        "default": 0.08
+      },
+      {
+        "name": "show_contours",
+        "type": "bool",
+        "hint": null,
+        "default": false
+      }
+    ],
+    "placement": "res://baltor/godot_shaders/sdf_shape_morph_2d/",
+    "usage": "canvas_material",
+    "renderers": {
+      "compatibility": "compiled_and_rendered",
+      "forward_plus": "not_verified",
+      "mobile": "not_verified"
+    },
+    "inputs": [
+      "A ColorRect (or any CanvasItem) sized to the area to fill; UVs span 0 to 1 across it."
+    ],
+    "outputs": "A pink shape halfway between a star and a heart with a white outline, glow and distance contours."
+  },
+  "limits": "The star and heart functions are approximate distances (bounded but not exact), so outlines vary slightly in width. Blending distances does not preserve exact area during a morph.",
+  "related": [
+    "rounded_panel_sdf",
+    "progress_ring"
+  ],
+  "technique_references": [
+    "2D signed distance functions",
+    "Distance blending for morphing",
+    "Derivative anti-aliasing of iso-lines"
+  ],
+  "native_checks": [
+    "contract_static",
+    "engine_run",
+    "engine_log_clean",
+    "shader_in_scene",
+    "capture_written",
+    "render_not_uniform",
+    "shader_changes_pixels"
+  ]
+}

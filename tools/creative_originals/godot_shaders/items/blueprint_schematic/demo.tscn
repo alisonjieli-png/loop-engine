@@ -1,0 +1,29 @@
+[gd_scene load_steps=4 format=3]
+
+[ext_resource type="ShaderMaterial" path="res://baltor/godot_shaders/blueprint_schematic/material.tres" id="1_material"]
+
+[sub_resource type="Environment" id="Environment_1"]
+background_mode = 1
+background_color = Color(0.05, 0.18, 0.42, 1)
+ambient_light_source = 2
+ambient_light_color = Color(0.35, 0.37, 0.42, 1)
+ambient_light_energy = 1.0
+
+[sub_resource type="TorusMesh" id="TorusMesh_2"]
+rings = 64
+ring_segments = 32
+inner_radius = 0.3
+outer_radius = 0.62
+
+[node name="Root" type="Node3D"]
+
+[node name="Environment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_1")
+
+[node name="Subject" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.96593, -0.25882, 0, 0.14845, 0.55403, -0.81915, 0.21201, 0.79124, 0.57358, 0, 0, 0)
+mesh = SubResource("TorusMesh_2")
+material_override = ExtResource("1_material")
+
+[node name="Camera" type="Camera3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0.99315, 0.11684, 0, -0.11684, 0.99315, 0, 0.2, 1.7)

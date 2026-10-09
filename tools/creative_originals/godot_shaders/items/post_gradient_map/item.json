@@ -1,0 +1,121 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "post_gradient_map",
+  "title": "Gradient map recolouring",
+  "purpose": "Recolour the scene by mapping its luminance through a gradient texture (duotone, tritone or any ramp), with contrast and offset controls and a mix with the original colours.",
+  "form": "library_module",
+  "asset_role": null,
+  "dimension": "3d",
+  "engine": {
+    "name": "godot",
+    "minimum_version": "4.3"
+  },
+  "tags": [
+    "godot shader",
+    "spatial",
+    "post-process",
+    "gradient map",
+    "duotone",
+    "color grading",
+    "stylized",
+    "full-screen"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "role": "other"
+    },
+    {
+      "path": "post_gradient_map.gdshader",
+      "role": "skill_asset"
+    },
+    {
+      "path": "material.tres",
+      "role": "skill_asset"
+    },
+    {
+      "path": "demo.tscn",
+      "role": "skill_asset"
+    }
+  ],
+  "contract": {
+    "shader_type": "spatial",
+    "render_modes": [
+      "unshaded",
+      "cull_disabled",
+      "depth_test_disabled",
+      "depth_draw_never",
+      "skip_vertex_transform",
+      "fog_disabled"
+    ],
+    "uniforms": [
+      {
+        "name": "screen_texture",
+        "type": "sampler2D",
+        "hint": "hint_screen_texture, filter_linear_mipmap",
+        "default": null
+      },
+      {
+        "name": "gradient",
+        "type": "sampler2D",
+        "hint": "source_color, filter_linear, repeat_disable",
+        "default": null
+      },
+      {
+        "name": "contrast",
+        "type": "float",
+        "hint": "hint_range(0.2, 3.0)",
+        "default": 1.2
+      },
+      {
+        "name": "offset",
+        "type": "float",
+        "hint": "hint_range(-0.5, 0.5)",
+        "default": 0.0
+      },
+      {
+        "name": "mix_amount",
+        "type": "float",
+        "hint": "hint_range(0.0, 1.0)",
+        "default": 1.0
+      },
+      {
+        "name": "reverse",
+        "type": "bool",
+        "hint": null,
+        "default": false
+      }
+    ],
+    "placement": "res://baltor/godot_shaders/post_gradient_map/",
+    "usage": "post_process_quad",
+    "renderers": {
+      "compatibility": "compiled_and_rendered",
+      "forward_plus": "not_verified",
+      "mobile": "not_verified"
+    },
+    "inputs": [
+      "A MeshInstance3D with a 2 x 2 QuadMesh, `material.tres` as its material override and a large extra cull margin, as in `demo.tscn`.",
+      "A gradient texture for `gradient` (the bundled material has one)."
+    ],
+    "outputs": "The scene recoloured into violet shadows, pink midtones and pale gold highlights."
+  },
+  "limits": "All hue information is discarded at full mix; objects of equal brightness become the same colour. The pass reads Godot's screen texture after opaque geometry, so transparent objects drawn after it are not processed and its order among other transparent passes is not controlled.",
+  "related": [
+    "post_posterize_gamma",
+    "post_color_grading",
+    "post_night_vision"
+  ],
+  "technique_references": [
+    "Luminance to gradient lookup (gradient map)",
+    "Contrast and offset before lookup"
+  ],
+  "native_checks": [
+    "contract_static",
+    "engine_run",
+    "engine_log_clean",
+    "shader_in_scene",
+    "capture_written",
+    "render_not_uniform",
+    "shader_changes_pixels"
+  ]
+}

@@ -1,0 +1,153 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "fire_billboard",
+  "title": "Procedural fire on a camera-facing card",
+  "purpose": "Fire on a single quad that always faces the camera: rising distorted noise shaped into a flame silhouette and coloured through a heat ramp, with no textures or particles.",
+  "form": "library_module",
+  "asset_role": null,
+  "dimension": "3d",
+  "engine": {
+    "name": "godot",
+    "minimum_version": "4.3"
+  },
+  "tags": [
+    "godot shader",
+    "spatial",
+    "fire",
+    "flame",
+    "billboard",
+    "procedural",
+    "vfx"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "role": "other"
+    },
+    {
+      "path": "fire_billboard.gdshader",
+      "role": "skill_asset"
+    },
+    {
+      "path": "material.tres",
+      "role": "skill_asset"
+    },
+    {
+      "path": "demo.tscn",
+      "role": "skill_asset"
+    }
+  ],
+  "contract": {
+    "shader_type": "spatial",
+    "render_modes": [
+      "unshaded",
+      "blend_add",
+      "cull_disabled",
+      "depth_draw_never",
+      "shadows_disabled"
+    ],
+    "uniforms": [
+      {
+        "name": "core_color",
+        "type": "vec4",
+        "hint": "source_color",
+        "default": [
+          1.0,
+          0.95,
+          0.6,
+          1.0
+        ]
+      },
+      {
+        "name": "mid_color",
+        "type": "vec4",
+        "hint": "source_color",
+        "default": [
+          1.0,
+          0.5,
+          0.08,
+          1.0
+        ]
+      },
+      {
+        "name": "tip_color",
+        "type": "vec4",
+        "hint": "source_color",
+        "default": [
+          0.6,
+          0.05,
+          0.02,
+          1.0
+        ]
+      },
+      {
+        "name": "rise_speed",
+        "type": "float",
+        "hint": "hint_range(0.0, 5.0)",
+        "default": 1.6
+      },
+      {
+        "name": "noise_scale",
+        "type": "float",
+        "hint": "hint_range(1.0, 20.0)",
+        "default": 5.0
+      },
+      {
+        "name": "distortion",
+        "type": "float",
+        "hint": "hint_range(0.0, 1.0)",
+        "default": 0.35
+      },
+      {
+        "name": "flame_width",
+        "type": "float",
+        "hint": "hint_range(0.1, 1.0)",
+        "default": 0.55
+      },
+      {
+        "name": "flame_height",
+        "type": "float",
+        "hint": "hint_range(0.2, 1.5)",
+        "default": 0.9
+      },
+      {
+        "name": "intensity",
+        "type": "float",
+        "hint": "hint_range(0.0, 4.0)",
+        "default": 1.6
+      }
+    ],
+    "placement": "res://baltor/godot_shaders/fire_billboard/",
+    "usage": "surface_material",
+    "renderers": {
+      "compatibility": "compiled_and_rendered",
+      "forward_plus": "not_verified",
+      "mobile": "not_verified"
+    },
+    "inputs": [
+      "A QuadMesh placed where the fire burns; its bottom edge is the base of the flame."
+    ],
+    "outputs": "A flickering flame with a pale core and red tips that faces the camera from every angle."
+  },
+  "limits": "A single card: seen from directly above the flame flattens. Additive blending means it cannot occlude and looks weak on bright backgrounds. It casts no light; add an OmniLight3D for that.",
+  "related": [
+    "smoke_billboard",
+    "heat_haze_distortion",
+    "fire_flame_2d"
+  ],
+  "technique_references": [
+    "Spherical billboard by replacing the modelview rotation",
+    "Height-weighted domain distortion",
+    "Fractional Brownian motion turbulence with a heat colour ramp",
+    "Value noise with quintic interpolation and fractional Brownian motion"
+  ],
+  "native_checks": [
+    "contract_static",
+    "engine_run",
+    "engine_log_clean",
+    "shader_in_scene",
+    "capture_written",
+    "render_not_uniform",
+    "shader_changes_pixels"
+  ]
+}

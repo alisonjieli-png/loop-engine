@@ -1,0 +1,13 @@
+[gd_resource type="ShaderMaterial" load_steps=2 format=3]
+
+[ext_resource type="Shader" path="res://baltor/godot_shaders/curved_world_bend/curved_world_bend.gdshader" id="1_shader"]
+
+[resource]
+shader = ExtResource("1_shader")
+shader_parameter/curvature = 0.02
+shader_parameter/sideways_curvature = 0.004
+shader_parameter/flat_radius = 2.0
+shader_parameter/color_a = Color(0.85, 0.82, 0.75, 1)
+shader_parameter/color_b = Color(0.35, 0.55, 0.75, 1)
+shader_parameter/checker_size = 1.0
+shader_parameter/roughness = 0.8

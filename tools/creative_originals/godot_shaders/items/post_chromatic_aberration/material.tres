@@ -1,0 +1,11 @@
+[gd_resource type="ShaderMaterial" load_steps=2 format=3]
+
+[ext_resource type="Shader" path="res://baltor/godot_shaders/post_chromatic_aberration/post_chromatic_aberration.gdshader" id="1_shader"]
+
+[resource]
+shader = ExtResource("1_shader")
+shader_parameter/strength = 0.035
+shader_parameter/falloff_power = 1.5
+shader_parameter/samples = 8
+shader_parameter/center_x = 0.5
+shader_parameter/center_y = 0.5

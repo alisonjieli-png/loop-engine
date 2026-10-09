@@ -1,0 +1,13 @@
+[gd_resource type="ShaderMaterial" load_steps=2 format=3]
+
+[ext_resource type="Shader" path="res://baltor/godot_shaders/smoke_billboard/smoke_billboard.gdshader" id="1_shader"]
+
+[resource]
+shader = ExtResource("1_shader")
+shader_parameter/smoke_color = Color(0.62, 0.62, 0.65, 1)
+shader_parameter/density = 1.0
+shader_parameter/noise_scale = 3.5
+shader_parameter/churn_speed = 0.35
+shader_parameter/softness = 0.45
+shader_parameter/roundness = 0.7
+shader_parameter/detail_normal = 0.6

@@ -1,0 +1,137 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "fresnel_rim_glow",
+  "title": "Emissive Fresnel rim glow with pulse",
+  "purpose": "Make the silhouette of a mesh glow with an emissive rim whose width follows a Fresnel power curve, independent of scene lights, with an optional slow pulse. Use for pickups, energy objects and highlighted interactables.",
+  "form": "library_module",
+  "asset_role": null,
+  "dimension": "3d",
+  "engine": {
+    "name": "godot",
+    "minimum_version": "4.3"
+  },
+  "tags": [
+    "godot shader",
+    "spatial",
+    "fresnel",
+    "rim glow",
+    "emission",
+    "highlight",
+    "pulse"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "role": "other"
+    },
+    {
+      "path": "fresnel_rim_glow.gdshader",
+      "role": "skill_asset"
+    },
+    {
+      "path": "material.tres",
+      "role": "skill_asset"
+    },
+    {
+      "path": "demo.tscn",
+      "role": "skill_asset"
+    }
+  ],
+  "contract": {
+    "shader_type": "spatial",
+    "render_modes": [],
+    "uniforms": [
+      {
+        "name": "base_color",
+        "type": "vec4",
+        "hint": "source_color",
+        "default": [
+          0.08,
+          0.1,
+          0.16,
+          1.0
+        ]
+      },
+      {
+        "name": "roughness",
+        "type": "float",
+        "hint": "hint_range(0.0, 1.0)",
+        "default": 0.35
+      },
+      {
+        "name": "metallic",
+        "type": "float",
+        "hint": "hint_range(0.0, 1.0)",
+        "default": 0.2
+      },
+      {
+        "name": "glow_color",
+        "type": "vec4",
+        "hint": "source_color",
+        "default": [
+          0.2,
+          0.85,
+          1.0,
+          1.0
+        ]
+      },
+      {
+        "name": "glow_power",
+        "type": "float",
+        "hint": "hint_range(0.5, 8.0)",
+        "default": 2.5
+      },
+      {
+        "name": "glow_intensity",
+        "type": "float",
+        "hint": "hint_range(0.0, 8.0)",
+        "default": 3.0
+      },
+      {
+        "name": "inner_glow",
+        "type": "float",
+        "hint": "hint_range(0.0, 1.0)",
+        "default": 0.08
+      },
+      {
+        "name": "pulse_speed",
+        "type": "float",
+        "hint": "hint_range(0.0, 10.0)",
+        "default": 2.0
+      },
+      {
+        "name": "pulse_depth",
+        "type": "float",
+        "hint": "hint_range(0.0, 1.0)",
+        "default": 0.35
+      }
+    ],
+    "placement": "res://baltor/godot_shaders/fresnel_rim_glow/",
+    "usage": "surface_material",
+    "renderers": {
+      "compatibility": "compiled_and_rendered",
+      "forward_plus": "not_verified",
+      "mobile": "not_verified"
+    },
+    "inputs": [],
+    "outputs": "A dark surface with a bright coloured edge that breathes slowly."
+  },
+  "limits": "An empirical Fresnel-style curve, not a physical Fresnel term. Flat faces seen head-on get no rim, so boxes glow only at grazing angles. Without the Glow post effect the emission does not bloom past the silhouette.",
+  "related": [
+    "toon_band_rim",
+    "hologram_scanlines"
+  ],
+  "technique_references": [
+    "Facing ratio rim mask (1 - N.V raised to a power)",
+    "Emission-only highlight"
+  ],
+  "native_checks": [
+    "contract_static",
+    "engine_run",
+    "engine_log_clean",
+    "shader_in_scene",
+    "capture_written",
+    "render_not_uniform",
+    "shader_changes_pixels"
+  ]
+}

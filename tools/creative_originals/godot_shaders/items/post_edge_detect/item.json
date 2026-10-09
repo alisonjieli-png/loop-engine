@@ -1,0 +1,146 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "post_edge_detect",
+  "title": "Full-screen ink edges from depth and colour",
+  "purpose": "Draw ink lines over a 3D scene where depth or colour changes sharply: a Laplacian of inverse depth finds silhouettes and creases, a Sobel filter on luminance finds colour borders. Optional paper tint for a drawn look.",
+  "form": "library_module",
+  "asset_role": null,
+  "dimension": "3d",
+  "engine": {
+    "name": "godot",
+    "minimum_version": "4.3"
+  },
+  "tags": [
+    "godot shader",
+    "spatial",
+    "post-process",
+    "edge detection",
+    "outline",
+    "sobel",
+    "depth buffer",
+    "ink",
+    "full-screen"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "role": "other"
+    },
+    {
+      "path": "post_edge_detect.gdshader",
+      "role": "skill_asset"
+    },
+    {
+      "path": "material.tres",
+      "role": "skill_asset"
+    },
+    {
+      "path": "demo.tscn",
+      "role": "skill_asset"
+    }
+  ],
+  "contract": {
+    "shader_type": "spatial",
+    "render_modes": [
+      "unshaded",
+      "cull_disabled",
+      "depth_test_disabled",
+      "depth_draw_never",
+      "skip_vertex_transform",
+      "fog_disabled"
+    ],
+    "uniforms": [
+      {
+        "name": "screen_texture",
+        "type": "sampler2D",
+        "hint": "hint_screen_texture, filter_nearest",
+        "default": null
+      },
+      {
+        "name": "depth_texture",
+        "type": "sampler2D",
+        "hint": "hint_depth_texture, filter_nearest",
+        "default": null
+      },
+      {
+        "name": "line_color",
+        "type": "vec4",
+        "hint": "source_color",
+        "default": [
+          0.05,
+          0.05,
+          0.08,
+          1.0
+        ]
+      },
+      {
+        "name": "line_width",
+        "type": "float",
+        "hint": "hint_range(0.5, 4.0)",
+        "default": 1.0
+      },
+      {
+        "name": "depth_sensitivity",
+        "type": "float",
+        "hint": "hint_range(0.0, 50.0)",
+        "default": 8.0
+      },
+      {
+        "name": "color_sensitivity",
+        "type": "float",
+        "hint": "hint_range(0.0, 10.0)",
+        "default": 1.5
+      },
+      {
+        "name": "threshold",
+        "type": "float",
+        "hint": "hint_range(0.0, 2.0)",
+        "default": 0.3
+      },
+      {
+        "name": "paper_mix",
+        "type": "float",
+        "hint": "hint_range(0.0, 1.0)",
+        "default": 0.0
+      },
+      {
+        "name": "paper_color",
+        "type": "vec4",
+        "hint": "source_color",
+        "default": [
+          0.96,
+          0.94,
+          0.88,
+          1.0
+        ]
+      }
+    ],
+    "placement": "res://baltor/godot_shaders/post_edge_detect/",
+    "usage": "post_process_quad",
+    "renderers": {
+      "compatibility": "compiled_and_rendered",
+      "forward_plus": "not_verified",
+      "mobile": "not_verified"
+    },
+    "inputs": [],
+    "outputs": "The scene with dark lines along silhouettes, creases and colour borders, optionally faded toward paper."
+  },
+  "limits": "Lines are found in screen space, so their width is in pixels and does not scale with distance. Transparent objects are not in the depth buffer and only get colour edges. Very distant geometry can produce faint depth lines from precision. The pass sees only what is drawn before it; draw order relative to other transparent passes is not controlled.",
+  "related": [
+    "outline_inverted_hull"
+  ],
+  "technique_references": [
+    "Laplacian of inverse view depth for silhouette and crease detection",
+    "Sobel operator on luminance",
+    "Depth reconstruction with INV_PROJECTION_MATRIX"
+  ],
+  "native_checks": [
+    "contract_static",
+    "engine_run",
+    "engine_log_clean",
+    "shader_in_scene",
+    "capture_written",
+    "render_not_uniform",
+    "shader_changes_pixels"
+  ]
+}

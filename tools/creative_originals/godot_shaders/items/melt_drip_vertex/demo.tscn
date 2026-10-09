@@ -1,0 +1,50 @@
+[gd_scene load_steps=6 format=3]
+
+[ext_resource type="ShaderMaterial" path="res://baltor/godot_shaders/melt_drip_vertex/material.tres" id="1_material"]
+
+[sub_resource type="Environment" id="Environment_1"]
+background_mode = 1
+background_color = Color(0.16, 0.13, 0.12, 1)
+ambient_light_source = 2
+ambient_light_color = Color(0.35, 0.37, 0.42, 1)
+ambient_light_energy = 1.0
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_2"]
+radial_segments = 48
+top_radius = 0.75
+bottom_radius = 0.7
+height = 0.03
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_3"]
+albedo_color = Color(0.3, 0.32, 0.35, 1)
+roughness = 0.4
+metallic = 0.5
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_4"]
+radial_segments = 64
+top_radius = 0.3
+bottom_radius = 0.3
+height = 1.2
+rings = 48
+
+[node name="Root" type="Node3D"]
+
+[node name="Environment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_1")
+
+[node name="Plate" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.62, 0)
+mesh = SubResource("CylinderMesh_2")
+material_override = SubResource("StandardMaterial3D_3")
+
+[node name="Subject" type="MeshInstance3D" parent="."]
+mesh = SubResource("CylinderMesh_4")
+material_override = ExtResource("1_material")
+
+[node name="Sun" type="DirectionalLight3D" parent="."]
+transform = Transform3D(0.76822, -0.42727, 0.47673, 0, 0.74468, 0.66742, -0.64018, -0.51273, 0.57208, 0.5, 0.7, 0.6)
+light_color = Color(1, 0.97, 0.92, 1)
+light_energy = 1.0
+
+[node name="Camera" type="Camera3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0.96352, 0.26764, 0, -0.26764, 0.96352, 0, 0.5, 1.8)

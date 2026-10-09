@@ -1,0 +1,80 @@
+[gd_scene load_steps=11 format=3]
+
+[ext_resource type="ShaderMaterial" path="res://baltor/godot_shaders/screen_door_fade/material.tres" id="1_material"]
+
+[sub_resource type="Environment" id="Environment_1"]
+background_mode = 1
+background_color = Color(0.5, 0.6, 0.75, 1)
+ambient_light_source = 2
+ambient_light_color = Color(0.45, 0.47, 0.52, 1)
+ambient_light_energy = 1.0
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_2"]
+size = Vector2(10, 10)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_3"]
+albedo_color = Color(0.35, 0.4, 0.3, 1)
+roughness = 0.9
+
+[sub_resource type="SphereMesh" id="SphereMesh_4"]
+radial_segments = 64
+rings = 32
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_5"]
+albedo_color = Color(0.95, 0.75, 0.2, 1)
+roughness = 0.4
+
+[sub_resource type="BoxMesh" id="BoxMesh_6"]
+size = Vector3(0.45, 1.4, 0.45)
+
+[sub_resource type="BoxMesh" id="BoxMesh_7"]
+size = Vector3(0.45, 1.4, 0.45)
+
+[sub_resource type="BoxMesh" id="BoxMesh_8"]
+size = Vector3(0.45, 1.4, 0.45)
+
+[sub_resource type="BoxMesh" id="BoxMesh_9"]
+size = Vector3(0.45, 1.4, 0.45)
+
+[node name="Root" type="Node3D"]
+
+[node name="Environment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_1")
+
+[node name="Floor" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.6, -1)
+mesh = SubResource("PlaneMesh_2")
+material_override = SubResource("StandardMaterial3D_3")
+
+[node name="Target" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -1.6)
+mesh = SubResource("SphereMesh_4")
+material_override = SubResource("StandardMaterial3D_5")
+
+[node name="Pillar0" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.35, 0.1, 0.6)
+mesh = SubResource("BoxMesh_6")
+material_override = ExtResource("1_material")
+
+[node name="Pillar1" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.35, 0.1, 0.3)
+mesh = SubResource("BoxMesh_7")
+material_override = ExtResource("1_material")
+
+[node name="Pillar2" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.2, 0.1, -0.6)
+mesh = SubResource("BoxMesh_8")
+material_override = ExtResource("1_material")
+
+[node name="Pillar3" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.2, 0.1, -0.9)
+mesh = SubResource("BoxMesh_9")
+material_override = ExtResource("1_material")
+
+[node name="Sun" type="DirectionalLight3D" parent="."]
+transform = Transform3D(0.78087, -0.48771, 0.39036, 0, 0.62488, 0.78072, -0.6247, -0.60964, 0.48795, 0.4, 0.8, 0.5)
+light_color = Color(1, 0.97, 0.92, 1)
+light_energy = 1.1
+
+[node name="Camera" type="Camera3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0.99326, 0.11588, 0, -0.11588, 0.99326, 0, 0.35, 1.6)

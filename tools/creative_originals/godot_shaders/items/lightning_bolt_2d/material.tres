@@ -1,0 +1,16 @@
+[gd_resource type="ShaderMaterial" load_steps=2 format=3]
+
+[ext_resource type="Shader" path="res://baltor/godot_shaders/lightning_bolt_2d/lightning_bolt_2d.gdshader" id="1_shader"]
+
+[resource]
+shader = ExtResource("1_shader")
+shader_parameter/core_color = Color(1, 1, 1, 1)
+shader_parameter/glow_color = Color(0.55, 0.6, 1, 1)
+shader_parameter/jaggedness = 0.18
+shader_parameter/core_width = 0.006
+shader_parameter/glow_width = 0.08
+shader_parameter/strike_rate = 1.5
+shader_parameter/visible_share = 0.6
+shader_parameter/branch_amount = 0.6
+shader_parameter/start_x = 0.45
+shader_parameter/end_x = 0.55

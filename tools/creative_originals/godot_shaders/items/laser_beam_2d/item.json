@@ -1,0 +1,141 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "laser_beam_2d",
+  "title": "2D laser beam with core, glow and sparks",
+  "purpose": "Draw a horizontal laser across a rectangle: a hot core and coloured glow with noisy width, pulses travelling along it, a flare at the emitter end and sparkling impact at the far end.",
+  "form": "library_module",
+  "asset_role": null,
+  "dimension": "2d",
+  "engine": {
+    "name": "godot",
+    "minimum_version": "4.3"
+  },
+  "tags": [
+    "godot shader",
+    "canvas item",
+    "laser",
+    "beam",
+    "vfx",
+    "sci-fi",
+    "2d"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "role": "other"
+    },
+    {
+      "path": "laser_beam_2d.gdshader",
+      "role": "skill_asset"
+    },
+    {
+      "path": "material.tres",
+      "role": "skill_asset"
+    },
+    {
+      "path": "demo.tscn",
+      "role": "skill_asset"
+    }
+  ],
+  "contract": {
+    "shader_type": "canvas_item",
+    "render_modes": [],
+    "uniforms": [
+      {
+        "name": "core_color",
+        "type": "vec4",
+        "hint": "source_color",
+        "default": [
+          1.0,
+          0.95,
+          0.95,
+          1.0
+        ]
+      },
+      {
+        "name": "beam_color",
+        "type": "vec4",
+        "hint": "source_color",
+        "default": [
+          1.0,
+          0.15,
+          0.3,
+          1.0
+        ]
+      },
+      {
+        "name": "core_width",
+        "type": "float",
+        "hint": "hint_range(0.0, 0.3)",
+        "default": 0.04
+      },
+      {
+        "name": "glow_width",
+        "type": "float",
+        "hint": "hint_range(0.0, 0.5)",
+        "default": 0.18
+      },
+      {
+        "name": "flicker",
+        "type": "float",
+        "hint": "hint_range(0.0, 1.0)",
+        "default": 0.3
+      },
+      {
+        "name": "pulse_speed",
+        "type": "float",
+        "hint": "hint_range(-10.0, 10.0)",
+        "default": 3.0
+      },
+      {
+        "name": "pulse_spacing",
+        "type": "float",
+        "hint": "hint_range(0.05, 1.0)",
+        "default": 0.2
+      },
+      {
+        "name": "flare_size",
+        "type": "float",
+        "hint": "hint_range(0.0, 0.5)",
+        "default": 0.18
+      },
+      {
+        "name": "impact_size",
+        "type": "float",
+        "hint": "hint_range(0.0, 0.5)",
+        "default": 0.12
+      }
+    ],
+    "placement": "res://baltor/godot_shaders/laser_beam_2d/",
+    "usage": "canvas_material",
+    "renderers": {
+      "compatibility": "compiled_and_rendered",
+      "forward_plus": "not_verified",
+      "mobile": "not_verified"
+    },
+    "inputs": [
+      "A ColorRect stretched along the beam (rotate it to aim)."
+    ],
+    "outputs": "A red laser with a white core crossing the rectangle, flared at the left and sparkling at the right."
+  },
+  "limits": "Stretching the rectangle stretches the glow; adjust widths to its aspect. The beam is straight.",
+  "related": [
+    "lightning_bolt_2d",
+    "energy_beam_cylinder"
+  ],
+  "technique_references": [
+    "Distance-based core and exponential glow",
+    "Noise-modulated width",
+    "Endpoint flares",
+    "Value noise with quintic interpolation and fractional Brownian motion"
+  ],
+  "native_checks": [
+    "contract_static",
+    "engine_run",
+    "engine_log_clean",
+    "shader_in_scene",
+    "capture_written",
+    "render_not_uniform",
+    "shader_changes_pixels"
+  ]
+}
