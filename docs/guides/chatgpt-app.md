@@ -4,7 +4,12 @@ Kind: operating guide for the Baltor app in OpenAI's plugin directory, the one
 directory that ChatGPT and Codex share. It lists the directory's requirements
 with the source and the date each was read, what the live service did on
 October 5, 2026 before this work, what was built, the proof, and the steps
-that remain for the release owner and for the owner.
+that remain for the release owner and for the owner. On October 9, 2026 the
+work was rebased onto main, and OAuth client registration was opened to the
+documented callbacks of Claude, Cursor on the web, VS Code and Codex, with
+issuer identification advertised. [Other hosted clients](#other-hosted-clients-and-issuer-identification)
+lists each address and its source, and [the steps by channel](#remaining-steps-by-channel)
+say what remains for each directory and client.
 
 The app is not a second server. `https://baltor.ai/mcp` answers every client;
 after it authenticates a request it chooses one of two presentations of the
@@ -42,24 +47,44 @@ the `/plugins` pages. The SHA-256 prefix is of the bytes read.
 
 | Id | Page | Address | SHA-256 prefix |
 |---|---|---|---|
-| S1 | Plugin guidelines | https://developers.openai.com/plugins/plugin-guidelines | d756819aa5e7c9db |
-| S2 | Upload and submit your plugin | https://developers.openai.com/plugins/deploy/submission | b04f4d248b3fd7b4 |
-| S3 | Remote MCP server review requirements | https://developers.openai.com/plugins/deploy/app-review | 70480e0967ef3df6 |
-| S4 | Plugin submission errors | https://developers.openai.com/plugins/deploy/submission-errors | 48fa811989b30179 |
-| S5 | Authentication | https://developers.openai.com/plugins/build/auth | 30906090c8e55b0e |
-| S6 | Build an MCP server | https://developers.openai.com/plugins/build/mcp-server | db5ccf6e3b692ff1 |
-| S7 | Add UI to your MCP server | https://developers.openai.com/plugins/build/chatgpt-ui | 9403394ff61d97fd |
-| S8 | Reference | https://developers.openai.com/plugins/reference | c4479095e718215f |
-| S9 | Security and privacy | https://developers.openai.com/plugins/guides/security-privacy | 2354bba4b09c87d3 |
-| S10 | Optimize metadata | https://developers.openai.com/plugins/guides/optimize-metadata | a553d71ee2adf6c8 |
-| S11 | Define tools | https://developers.openai.com/plugins/plan/tools | c0cb4c691004aedd |
-| S12 | Connect and test your plugin | https://developers.openai.com/plugins/deploy/connect-chatgpt | 979f47ad47e83757 |
-| S13 | Checkout and monetization | https://developers.openai.com/plugins/build/monetization | ddca306881a79679 |
-| S14 | UI guidelines | https://developers.openai.com/plugins/concepts/ui-guidelines | 20f5a48aec06032d |
-| S15 | Package your plugin | https://developers.openai.com/plugins/build/plugins | 41410752fccb74ba |
-| S16 | App Developer Terms, updated September 28, 2026 | https://openai.com/policies/developer-apps-terms/ | 9b39599e63e7e4dc |
-| S17 | Usage policies, effective October 29, 2025 | https://openai.com/policies/usage-policies/ | bfb44a7e07683f63 |
-| S18 | MCP Apps specification 2026-01-26 | https://github.com/modelcontextprotocol/ext-apps/blob/main/specification/2026-01-26/apps.mdx | ee452a7d1b9b7fb9 |
+| S1 | Plugin guidelines | <https://developers.openai.com/plugins/plugin-guidelines> | d756819aa5e7c9db |
+| S2 | Upload and submit your plugin | <https://developers.openai.com/plugins/deploy/submission> | b04f4d248b3fd7b4 |
+| S3 | Remote MCP server review requirements | <https://developers.openai.com/plugins/deploy/app-review> | 70480e0967ef3df6 |
+| S4 | Plugin submission errors | <https://developers.openai.com/plugins/deploy/submission-errors> | 48fa811989b30179 |
+| S5 | Authentication | <https://developers.openai.com/plugins/build/auth> | 30906090c8e55b0e |
+| S6 | Build an MCP server | <https://developers.openai.com/plugins/build/mcp-server> | db5ccf6e3b692ff1 |
+| S7 | Add UI to your MCP server | <https://developers.openai.com/plugins/build/chatgpt-ui> | 9403394ff61d97fd |
+| S8 | Reference | <https://developers.openai.com/plugins/reference> | c4479095e718215f |
+| S9 | Security and privacy | <https://developers.openai.com/plugins/guides/security-privacy> | 2354bba4b09c87d3 |
+| S10 | Optimize metadata | <https://developers.openai.com/plugins/guides/optimize-metadata> | a553d71ee2adf6c8 |
+| S11 | Define tools | <https://developers.openai.com/plugins/plan/tools> | c0cb4c691004aedd |
+| S12 | Connect and test your plugin | <https://developers.openai.com/plugins/deploy/connect-chatgpt> | 979f47ad47e83757 |
+| S13 | Checkout and monetization | <https://developers.openai.com/plugins/build/monetization> | ddca306881a79679 |
+| S14 | UI guidelines | <https://developers.openai.com/plugins/concepts/ui-guidelines> | 20f5a48aec06032d |
+| S15 | Package your plugin | <https://developers.openai.com/plugins/build/plugins> | 41410752fccb74ba |
+| S16 | App Developer Terms, updated September 28, 2026 | <https://openai.com/policies/developer-apps-terms/> | 9b39599e63e7e4dc |
+| S17 | Usage policies, effective October 29, 2025 | <https://openai.com/policies/usage-policies/> | bfb44a7e07683f63 |
+| S18 | MCP Apps specification 2026-01-26 | <https://github.com/modelcontextprotocol/ext-apps/blob/main/specification/2026-01-26/apps.mdx> | ee452a7d1b9b7fb9 |
+
+These were read on October 9, 2026 for the other hosted clients. S5 was read
+again the same day and its bytes had not changed. A source file is cited at the
+exact revision read.
+
+| Id | Page | Address | SHA-256 prefix |
+|---|---|---|---|
+| S19 | Claude: authentication for connectors | <https://claude.com/docs/connectors/building/authentication.md> | 7d96f0eda4297ab0 |
+| S20 | Cursor: Model Context Protocol | <https://cursor.com/docs/mcp.md> | 8f6b54387a93616c |
+| S21 | VS Code: MCP developer guide | <https://code.visualstudio.com/api/extension-guides/ai/mcp> | 19d99c73b6f47b71 |
+| S22 | VS Code source, `fetchDynamicRegistration` | <https://github.com/microsoft/vscode/blob/dd036a1c6935ecf2fa7fb3ca0373327652a87716/src/vs/base/common/oauth.ts> | 5e36f60eadb04a7e |
+| S23 | VS Code source, loopback listener | <https://github.com/microsoft/vscode/blob/dd036a1c6935ecf2fa7fb3ca0373327652a87716/src/vs/workbench/api/node/loopbackServer.ts> | 2e3a86318fc2dd11 |
+| S24 | Codex: Model Context Protocol, command line | <https://learn.chatgpt.com/docs/extend/mcp.md?surface=cli> | adb28990c0c7be47 |
+| S25 | Codex source, callback identifier | <https://github.com/openai/codex/blob/36ae1561b9324c93d5638b45eb19fe2cc070a581/codex-rs/rmcp-client/src/oauth_callback.rs> | 9afdda85c48255d9 |
+| S26 | Codex source, client registration | <https://github.com/openai/codex/blob/36ae1561b9324c93d5638b45eb19fe2cc070a581/codex-rs/rmcp-client/src/oauth_client_registration.rs> | 2420e339645a9fd5 |
+| S27 | Codex source, login and listener port | <https://github.com/openai/codex/blob/36ae1561b9324c93d5638b45eb19fe2cc070a581/codex-rs/rmcp-client/src/perform_oauth_login.rs> | 37f93b487f0f0558 |
+| S28 | OpenCode source, MCP OAuth provider | <https://github.com/anomalyco/opencode/blob/388406238bd5ca15564a762840a2362c3a45bd9c/packages/opencode/src/mcp/oauth-provider.ts> | f3da0edab04aa7c3 |
+| S29 | Replit: connect via MCP | <https://docs.replit.com/build/connect-via-mcp.md> | d6b920e88744ce7e |
+| S30 | Replit: connectors | <https://docs.replit.com/chat/connectors.md> | 2f857b4cdc665290 |
+| S31 | MCP authorization, 2026-07-28 | <https://modelcontextprotocol.io/specification/2026-07-28/basic/authorization.md> | 93fd383906873fed |
 
 The two openai.com policy pages refuse plain HTTP clients, so they were read
 through a real browser. Two public reports from September and October 2026
@@ -104,7 +129,7 @@ Status: **met** means the live service already met it before this work;
 | R23 | OAuth 2.1 by the MCP authorization specification: protected resource metadata naming the resource and issuer. | S5 | Met |
 | R24 | Authorization server metadata with S256 in `code_challenge_methods_supported`, the token endpoint methods, and registration (DCR) or client ID metadata documents. | S5 | Met: DCR, method `none` |
 | R25 | The `resource` echoed through authorization and token requests, tokens bound to it, and every request verified. | S5 | Met |
-| R26 | The redirect ChatGPT uses: `https://chatgpt.com/connector/oauth/{callback_id}` without issuer advertisement, or `https://chatgpt.com/connector_platform_oauth_redirect` with it; the exact address the management page shows must be allowed. | S5 Redirect URL | Met for both; built: host setting `http.openai_oauth_redirect_uris` for any further exact address |
+| R26 | The redirect ChatGPT uses: `https://chatgpt.com/connector/oauth/{callback_id}` without issuer advertisement, or `https://chatgpt.com/connector_platform_oauth_redirect` with it; the exact address the management page shows must be allowed. | S5 Redirect URL | Met for both; built: host setting `http.openai_oauth_redirect_uris` for any further exact address. Built October 9: issuer identification advertised, so new connections use the stable redirect |
 | R27 | 401 with `WWW-Authenticate` naming the resource metadata, per-tool `securitySchemes`, and `_meta["mcp/www_authenticate"]` on a tool's authentication refusal. | S5 Triggering authentication UI | Met for 401 and the refusal metadata; built: per-tool schemes |
 | R28 | The registered client and its secret stay valid while the connection is used. | S5 Client registration | Met with a limit, see Limits |
 | R29 | Requested permissions shown to the person, and only what the app needs. | S1 Authentication and permissions | Met: the consent page names the client, its destination and each scope in plain words |
@@ -199,6 +224,63 @@ For the portal, if it asks for one per value.
 | `request_material` | Not read only: it stores a request for staff. Not destructive: it only adds, and the same text again records nothing new. Not open world: it reaches Baltor staff only. |
 | `report_item_problem` | Not read only: it stores a report. Destructive: one report withdraws a Community item from the library for every account, and a second report from another account withdraws a Verified one. Not open world: it acts on Baltor's own catalogue. |
 
+## Other hosted clients and issuer identification
+
+Added on October 9, 2026. Until then client registration admitted only
+ChatGPT's two callback forms and `http` loopback addresses on the paths
+/callback, /oauth/callback, /auth/callback and /mcp/oauth/callback. Claude's
+hosted apps, Cursor on the web, VS Code, and Codex without issuer support were
+refused with `invalid_redirect_uri`. The authorization server also sent `iss`
+with the consent decision without advertising it, which the MCP authorization
+specification of 2026-07-28 requires of a server that sends it (S31).
+
+Each address below was read from the client's own documentation or source on
+October 9, 2026. The rows are `HOSTED_CLIENT_REDIRECTS`,
+`NATIVE_LOOPBACK_PATHS` and `NATIVE_LOOPBACK_CALLBACK_ID_PATHS` in
+[`oauth_authorization.py`](../../src/loop_engine/core/service_runtime/oauth_authorization.py),
+with each source, date and digest prefix beside the address.
+
+| Client | Redirect it registers | Source | Status |
+|---|---|---|---|
+| ChatGPT, with issuer identification | `https://chatgpt.com/connector_platform_oauth_redirect` | S5 | Admitted before; new ChatGPT connections now use it |
+| ChatGPT, without it | `https://chatgpt.com/connector/oauth/{callback_id}` | S5 | Admitted before and kept for earlier connections |
+| Claude on the web, Claude Desktop, Claude mobile and Cowork | `https://claude.ai/api/mcp/auth_callback` | S19 | Built |
+| Claude Code | `http://localhost:{port}/callback` | S19 | Admitted before |
+| Cursor on the web and Cursor Agents | `https://www.cursor.com/agents/mcp/oauth/callback` | S20 | Built |
+| Cursor desktop app | `http://localhost:8787/callback` | S20 | Admitted before |
+| VS Code | `https://insiders.vscode.dev/redirect`, `https://vscode.dev/redirect`, `http://127.0.0.1/` and `http://127.0.0.1:33418/`, all four in one registration | S21 names two; S22 is the registration VS Code sends | Built: both hosted addresses, the loopback root path and any loopback port |
+| Codex, with issuer identification | `http://127.0.0.1:{port}/callback` | S24, S26, S27 | Admitted before; Codex chooses it once the flag is advertised |
+| Codex, without it | `http://127.0.0.1:{port}/callback/{id}`, where the id is twelve URL-safe Base64 characters, `F9ZByiiojchq` for `https://baltor.ai/mcp` | S24, S25 | Built: exactly one twelve-character segment after /callback |
+| OpenCode | `http://127.0.0.1:19876/mcp/oauth/callback` | S28 | Admitted before |
+| Replit | No address is documented for MCP servers | S29, S30 | Not added, see the decisions |
+
+These rules hold for every row:
+
+- A hosted address is admitted only as the exact string: no prefix, path below
+  it, other port, other scheme, credentials, query or fragment, and no exact
+  address in the policy may carry a query of its own.
+  `tools/test_oauth_authorization.py` holds each address to eighteen
+  known-wrong forms of it.
+- A loopback address may name another port when it is used than when it was
+  registered (RFC 8252 section 7.3). VS Code takes port 33418 when it is free
+  and a port the system chooses when it is not (S23); before October 9 that
+  second case was refused. Scheme, host and path still match exactly, so
+  `localhost` never stands for `127.0.0.1`.
+- None of these clients redirects to an OpenAI host, so each reads the harness
+  presentation.
+
+Issuer identification (RFC 9207): the authorization server metadata sets
+`authorization_response_iss_parameter_supported` to true. The consent decision
+already sent `iss` with an approval and a denial. The pinned SDK sends its own
+refusals back to the client without it: an unregistered scope, another
+resource, a missing state, a malformed or missing challenge, another response
+type. The transport now sends each of them again with its stable error code,
+the client's `state` and `iss`, and leaves out the SDK's description. A
+request whose client or redirect address is unknown is answered by the service
+and never redirected, so it is not an authorization response.
+`tools/test_oauth_http.py` checks each of these answers, and its known-wrong
+case runs the SDK handler alone to show the refusal it sends without `iss`.
+
 ## Decisions
 
 - **One endpoint, a presentation per client.** A second server would split
@@ -218,11 +300,33 @@ For the portal, if it asks for one per value.
 - **The refusal reference stays.** `request_reference` is the code a person
   quotes to support, and the operator finds the one failure record by it; that
   is the strict need S1 allows. Answers that succeed carry no identifier.
-- **Not built yet:** client ID metadata documents, issuer advertisement for
-  the stable redirect, an OpenID UserInfo endpoint for workspace domain
-  restrictions, and a profile tool. Each is optional (S5); DCR and the
-  callback-specific redirect already work, and each adds a provider surface
-  that deserves its own review.
+- **Not built yet:** client ID metadata documents, an OpenID UserInfo
+  endpoint for workspace domain restrictions, and a profile tool. Each is
+  optional (S5); DCR already works, and each adds a provider surface that
+  deserves its own review. Issuer identification was built on October 9.
+- **Exact addresses only, from each client's own documentation (October 9).**
+  A hosted callback is admitted as one exact string; no prefix, wildcard or
+  host the documentation does not name. VS Code Insiders' address is admitted
+  because every VS Code registration names it beside vscode.dev (S22), and a
+  registration with one refused address is refused whole.
+- **Replit is not added (October 9).** Replit documents
+  `https://replit.com/connectors/oauth/callback` for Enterprise connector OAuth
+  apps with a client secret (S30), and documents no redirect for MCP servers,
+  which register through DCR (S29). Admitting an address no document ties to
+  MCP would be a guess; a sign-in attempt from Replit shows what it registers.
+- **Any port on loopback (October 9).** RFC 8252 section 7.3 requires it for
+  native clients; VS Code falls back to a port the system chooses when 33418
+  is taken (S23), and the pinned SDK compared redirects exactly. Scheme, host
+  and path still match exactly.
+- **A refusal sent back to a client keeps only its code and state (October 9).**
+  The SDK's description can repeat submitted values, and RFC 6749 makes it
+  optional; the code and `state` are what a client acts on.
+- **The other hosted clients read the harness presentation.** Claude, Cursor
+  and VS Code redirect to no OpenAI host, so their tool names and records stay
+  as harness clients expect. Codex installed from the directory signs in on a
+  loopback address and therefore reads the harness presentation too, with its
+  plan offer; whether a directory installation should ask for the OpenAI
+  presentation is open, see the steps by channel.
 - **United States only at first.** The privacy notice is written for a United
   States operator and has no section for other jurisdictions; widening the
   countries is the owner's decision.
@@ -244,12 +348,27 @@ For the portal, if it asks for one per value.
 After the release that serves this work, the same command with
 `--expect-presentation --screens integrations/chatgpt-app/assets` must pass
 with `presentation_served` true; it then remakes the screenshots from the view
-the service serves.
+the service serves. It now also checks that the authorization response names
+the issuer the metadata advertises.
+
+| Check | Result on October 9, 2026, on the integration rebased onto main |
+|---|---|
+| `tools/test_oauth_authorization.py` | 32 tests, 3 new: each hosted address against eighteen known-wrong forms and each source id against this guide; the loopback root path and Codex's identifier against 28 known-wrong addresses, and the rules main served before; the loopback port rule against 11 known-wrong pairs, and a VS Code client authorized on a chosen port that the SDK's own comparison refuses |
+| `tools/test_oauth_http.py` | 16 tests, 3 new, on the deployment's own redirect rules: `iss` on the approval, the denial and six SDK refusals, and none on an answer that is not redirected; the SDK handler alone, and the transport with its step removed, send a refusal without `iss`; documented clients register and lookalikes do not; VS Code's registration, consent and code exchange on port 51004 |
+| `tools/test_chatgpt_app.py`, `tools/test_build_chatgpt_app_package.py` | 19 and 4 tests |
+| Mutation controls | Removing the transport step, the metadata flag, the port rule or the host match, widening the identifier, matching hosted addresses as prefixes and citing an unlisted source each fail an owning test |
+| Owning tests | 178 tests in the ten owning modules of the app, OAuth, site map, regeneration, deck, status pages and documentation. The four shards of the tools tests that continuous integration runs: 4,147 tests; the only failures were main's stale records index, which main regenerated in `70d1cc79` |
+| `tools/check_website_site_map.py` | 7 of 7, with `/support` in the footers of the deck and directory pages as well |
+| Service smoke | 766 checks, none failed |
+| Conformance and self-test | Every conformance gate passes; the full self-test passes once `chatgpt_app` and `support_page` are in the architecture map |
+| Hardcoding audit | No new high finding: 632 high, as on main, after five dated allowlist entries for the five hosted callbacks |
 
 ## Steps for the release owner
 
 1. Release the commits through the guarded workflow; no catalogue or host
-   change is needed for the release itself.
+   change is needed for the release itself. After it,
+   `https://baltor.ai/.well-known/oauth-authorization-server` must show
+   `authorization_response_iss_parameter_supported` as true.
 2. Run the live proof above with a fresh account and keep its report with the
    release record.
 3. When the owner has the portal's token, set `http.openai_apps_challenge` in
@@ -269,10 +388,10 @@ the service serves.
 ## Steps for the owner
 
 1. Verify the developer identity in the OpenAI Platform dashboard
-   (https://platform.openai.com/settings/organization/general): individual
+   (<https://platform.openai.com/settings/organization/general>): individual
    verification to publish under your own name, business verification to
    publish as Baltor.AI. Use a project with global data residency.
-2. Open https://platform.openai.com/plugins, choose **Upload new or existing
+2. Open <https://platform.openai.com/plugins>, choose **Upload new or existing
    plugin**, select the verified identity and upload the archive from
    `tools/build_chatgpt_app_package.py --zip`.
 3. In **MCPs**, connect `https://baltor.ai/mcp` with OAuth, complete the domain
@@ -286,6 +405,22 @@ the service serves.
    [the notice change draft](../legal/CHATGPT-APP-NOTICE-CHANGES-DRAFT.md).
 7. Submit for review, accept the attestations, and publish once approved.
 
+## Remaining steps by channel
+
+As of October 9, 2026, after the integration reached main and before the
+release that serves it. The ChatGPT steps above stay the detailed list for that
+directory.
+
+| Channel | Engineering | Owner |
+|---|---|---|
+| ChatGPT and Codex plugin directory | Release, then run the live proof with `--expect-presentation` and remake the screenshots. Serve the domain token, route the support mail and set `http.support_email`, make the reviewer account, revoke the October 5 check account's founding place, and rebuild the package once the video address exists. | Identity verification, a project with global data residency, the privacy notice draft, the upload, the portal connection and scan, the reviewer details, the video, the attestations, submission and publication |
+| Claude connector directory | Release. Add tool titles and annotations and hide staff tools for connections that are not staff, replace generic refusals such as `operation_failed`, build client ID metadata documents or raise the 128-client ceiling, and capture screenshots at least 1,000 pixels wide if the view is listed. | A paid Claude plan to submit, a first custom connector test from claude.ai, the directory terms and policy acknowledgements, which are a legal commitment, and the submission with its permanent slug |
+| Cursor | Release, test sign-in from the desktop app and from Cursor Agents, publish an install link, and prepare an Agent Plugins package in a small public repository for the marketplace. | The marketplace submission, which requires an open-source plugin and is reviewed by hand |
+| VS Code | Release, test sign-in with VS Code's own registration on port 33418 and on a chosen port, publish an install link, then submit the Agent Plugins package and ask about the GitHub MCP Registry once the official MCP Registry entry exists. | Nothing required; any submission that must come from the owner's GitHub account |
+| OpenCode | Nothing in the redirect rules: its address was admitted before. Test `opencode mcp auth`, publish the configuration snippet and open the ecosystem page pull request. | Nothing |
+| Codex | Release, then test `codex mcp add` and `codex mcp login` against the stable /callback address the flag selects. Decide whether a directory installation should ask for the OpenAI presentation, for example with the `Baltor-Client-Profile` header in the package, so that no plan offer reaches a Codex conversation, and add a root `.agents/plugins/marketplace.json` in a small public repository. | The ChatGPT directory steps above, which also list Baltor in Codex |
+| Replit | Not admitted. Find the address Replit registers for an MCP server, from Replit or from one refused sign-in, and add it only with a source. | One sign-in test from a Replit account, which may need a paid plan |
+
 ## Limits
 
 - The proof uses the official MCP client and a real browser on the live
@@ -298,4 +433,10 @@ the service serves.
 - At the registered client ceiling (128), the service reclaims a client with
   no live grant after its first authorization lifetime. ChatGPT reuses one
   registered client per connection, so a connection unused for that long and
-  then reclaimed answers `invalid_client` until it connects again.
+  then reclaimed answers `invalid_client` until it connects again. Claude
+  registers a new client on every fresh connection (S19), so at about 128
+  live Claude connections new ones are refused until grants end; client ID
+  metadata documents or a higher ceiling remove that limit.
+- The October 9 addresses were checked against each client's documentation
+  and source, and with local registrations, consents and code exchanges, not
+  with a sign-in from Claude, Cursor, VS Code or Codex themselves.

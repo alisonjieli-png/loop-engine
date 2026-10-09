@@ -49,17 +49,32 @@ Public Good limits remain in force. Refresh and account disabling are checked
 against Baltor's records; an upstream identity-provider change must reach those
 records before it takes effect on an existing delegation.
 
-The host admits the documented ChatGPT connector callbacks and explicitly
-listed native loopback paths. It does not accept arbitrary remote callback
-addresses. The supported client-local paths are /callback, /oauth/callback,
-/auth/callback and /mcp/oauth/callback; the client selects a valid port.
+The host admits the exact callback address each supported hosted app
+documents, ChatGPT's callback-specific addresses, and loopback addresses on
+the paths native apps use. It accepts no other remote callback address, and
+no prefix, port or host near a listed one.
+
+| App | Callback addresses the host admits |
+| --- | --- |
+| ChatGPT | `https://chatgpt.com/connector_platform_oauth_redirect`, or `https://chatgpt.com/connector/oauth/` followed by one callback identifier |
+| Claude on the web, Claude Desktop, Claude mobile and Cowork | `https://claude.ai/api/mcp/auth_callback` |
+| Cursor on the web and Cursor Agents | `https://www.cursor.com/agents/mcp/oauth/callback` |
+| VS Code and VS Code Insiders | `https://vscode.dev/redirect` and `https://insiders.vscode.dev/redirect` |
+| Apps on your own computer, such as Claude Code, Codex, Cursor, OpenCode and VS Code | `http` on 127.0.0.1, localhost or ::1, with the path /, /callback, /oauth/callback, /auth/callback or /mcp/oauth/callback, or /callback and Codex's twelve-character callback identifier |
+
+An app on your computer may listen on a different port each time it signs
+in; the port may differ from the one it registered, as RFC 8252 requires,
+and nothing else may. The authorization server advertises
+`authorization_response_iss_parameter_supported`: every authorization
+response, an approval or a refusal, names the issuer in `iss`.
 No confidential-client, CIMD, ID-token or UserInfo support is advertised.
 
 This uses the existing account sign-in and pinned MCP transport. The bounded
 initial host profile retains at most 128 registered clients and 20,000 OAuth
 records; automatic expiry cleanup is not yet implemented. Client registration
-and authorization also have request limits. A real ChatGPT/dot account connection
-and marketplace review are separate from local protocol and browser tests.
+and authorization also have request limits. A real connection from ChatGPT,
+Claude, Cursor or VS Code, a dot account connection and any directory review
+are separate from local protocol and browser tests.
 [OpenAI's authentication guide](https://developers.openai.com/plugins/build/auth)
 describes its connector requirements. OAuth does not itself grant permission
 to publish a plugin or enable a dot's schedules.
