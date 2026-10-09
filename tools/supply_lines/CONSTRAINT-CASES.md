@@ -106,12 +106,23 @@ and recomputed byte accounting. The last event has the same checks as every
 other event; an unchanged retained hash cannot authorize changing its counts
 or dropping its groups. Version-1 event journals are refused, not migrated.
 
-Each retained parent record has a separate 4 MiB read/write bound, because it
-can hold hundreds of diagnostic rows. Served schemas and individual case files
-keep their existing smaller bounds. Retained bytes still count toward the
-whole-run byte ceiling; the restart reader checks the file size before reading
+Each retained parent record has a separate 4 MiB read/write bound and a
+250,000-value traversal allowance, because it can hold hundreds of diagnostic
+path arrays. The served decoder keeps its 20,000-value allowance. Depth,
+duplicate-key, finite-number and cycle checks do not change. The writer and
+restart reader use the same private decoder; a structural limit has its own
+safe exception class in the Loop failure record. Retained bytes still count
+toward the whole-run byte ceiling; the restart reader checks the file size before reading
 and repeats strict JSON and structure validation. A changed generator binding
 requires a fresh run, not a rewrite of an earlier campaign's journal.
+
+Construction findings distinguish a missing baseline member from a present
+value for which the generator has no probe candidate. The latter includes
+constructor bounds and assertions that cannot be violated with the supported
+edits; it is not a promise that another constructor can recover the case.
+Attempted edits that fail the isolated-error checks keep the separate
+`no_isolated_agreed_target_failure` finding. These diagnostics do not change
+case identity or weaken the two validators' agreement requirement.
 
 Before writing, the runner checks the whole output tree for aliases and
 special files, including staging and packages not named by the journal.

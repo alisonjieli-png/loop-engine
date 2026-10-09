@@ -12,7 +12,7 @@ from .openapi_operations import run_tests
 from .packaging import PackageFile, SupplyPackage, build
 from .records import GENERATED, JSON_SCHEMAS, LICENCE_TEXT, UPSTREAM_VERBATIM, upstream_key
 
-GENERATOR_VERSION = "1.1.0"
+GENERATOR_VERSION = "1.2.0"
 PRODUCER_FAMILY = "openai"
 RUNNER_BYTES = Path(runtime.__file__).read_bytes()
 VALIDATOR_BYTES = Path(schema_check.__file__).read_bytes()

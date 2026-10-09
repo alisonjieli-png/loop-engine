@@ -3,7 +3,7 @@
 Kind: generated view. Do not edit by hand. The only task authority is
 [roadmap.yaml](roadmap.yaml); change it, then run
 `PYTHONPATH=src:tools .venv/bin/python tools/build_development_tracker.py`.
-Source fingerprint: `sha256:c4de79ce69f788310e8de7d9bf33f41346d0c017ba9a86664a048c3298aa6512`.
+Source fingerprint: `sha256:0529f7f2d394fe71a5ec6aabd61661fb7baea926bf19b5a9f0913d99237a9b51`.
 
 ## Where things stand
 
@@ -37,9 +37,9 @@ Next eligible subtask: S-6.215.07: Publish the reconciled contract delta
 | 10 | [ ] S-6.215.08: Verify the new catalogue as a customer | ready | live_qualified | Waiting on S-6.215.07 |
 | 11 | [ ] S-6.215.09: Mirror the new bodies and refresh public counts | proposed | live_qualified | Waiting on S-6.215.08 |
 | 12 | [x] S-6.215.10: Complete the repaired case-generation pilot | offline_verified | offline_verified | Qualify and globally deduplicate the completed pilot. |
-| 13 | [ ] S-6.215.11: Qualify and admit the new case groups | ready | offline_verified | Build a bounded qualification run for the 379 groups. |
+| 13 | [ ] S-6.215.11: Qualify and admit the new case groups | building | offline_verified | Qualify the 379-group pilot separately, then combine only non-overlapping admitted material through the release owner. Use the larger campaign's cleared admission, not its initial 6,733-group folder. |
 | 14 | [ ] S-6.215.12: Publish the qualified case delta | proposed | published | Waiting on S-6.215.11, S-6.215.08 |
-| 15 | [ ] S-6.215.13: Measure and broaden production capacity | ready | offline_verified | Waiting on S-6.215.08 |
+| 15 | [ ] S-6.215.13: Measure and broaden production capacity | building | offline_verified | Waiting on S-6.215.08 |
 | 16 | [ ] S-6.214.01: Define canonical source counting | ready | offline_verified | Write and test the source-counting rules in the existing source owner. |
 | 17 | [ ] S-6.214.02: Build the source coverage census | ready | offline_verified | Waiting on S-6.214.01 |
 | 18 | [ ] S-6.214.03: Normalize the supplied provider operations | building | offline_verified | Waiting on S-6.214.01 |
@@ -282,7 +282,7 @@ Comment: Candidate payloads include shared support files and parent schemas.
 
 ### S-6.215.11 Qualify and admit the new case groups
 
-Owner step: S-6.215. State: ready. Completion requires: offline_verified.
+Owner step: S-6.215. State: building. Completion requires: offline_verified.
 
 Acceptance: New groups pass native checks and do not repeat case jobs from any selected comparison population.
 
@@ -290,9 +290,9 @@ Acceptance: New groups pass native checks and do not repeat case jobs from any s
 2. Run the qualification controls and exact candidate checks.
 3. Admit only qualified groups under the existing policy.
 
-Evidence: Not yet recorded.
+Evidence: October 9: the separate scalable campaign's completed prefix held 6,733 groups and 96,077 distinct payloads. All passed its original all-checks qualification. A new native duplicate pass compared both prior case populations and held 376 overlapping groups; 6,357 were admitted into a new cleared folder. Prior execution evidence was reused, not rerun or relabelled as fresh execution. Publication remains separate.
 
-Next: Build a bounded qualification run for the 379 groups.
+Next: Qualify the 379-group pilot separately, then combine only non-overlapping admitted material through the release owner. Use the larger campaign's cleared admission, not its initial 6,733-group folder.
 
 Comment: Do not count the failed and repaired copies twice.
 
@@ -314,7 +314,7 @@ Comment: An old baseline must not be replayed after another publication.
 
 ### S-6.215.13 Measure and broaden production capacity
 
-Owner step: S-6.215. State: ready. Completion requires: offline_verified.
+Owner step: S-6.215. State: building. Completion requires: offline_verified.
 
 Acceptance: A frozen production plan measures candidate yield, accepted yield, time, storage and cost across several useful file families.
 
@@ -322,9 +322,9 @@ Acceptance: A frozen production plan measures candidate yield, accepted yield, t
 2. Select licensed data tables, executable utilities, harness templates and editable creative materials.
 3. Reuse unchanged implementations and allocate bounded cohorts with explicit stops.
 
-Evidence: Not yet recorded.
+Evidence: October 9: 19 of 92 ranges completed before a private diagnostic record reached 22,313 JSON values while using only 424,336 of its 4 MiB allowance. The decoder incorrectly shared the served-file 20,000-value limit. The local repair has a separate bounded control-record traversal profile, preserves served limits and processes the formerly failing parent. Construction findings now separate missing baseline members from unavailable probe candidates; a fixed 64-parent comparison retains all 496 case jobs.
 
-Next: Record the source population needed for the remaining two-million-file gap.
+Next: Release the retained-record traversal repair, confirm a fresh committed-source pilot, and use a new bounded recovery run with updated exclusions. Preserve the old failed journal and keep Claude's creative lane separate.
 
 Comment: Common-word and parameter combinations are research dimensions, not automatically useful files.
 

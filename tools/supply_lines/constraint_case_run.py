@@ -27,6 +27,23 @@ RETAINED_FIELDS = {"record_type", "parent", "accounting", "case_jobs", "groups"}
 # One parent can retain hundreds of diagnostic rows. This private control
 # record has its own bound; served schemas and individual cases keep theirs.
 MAXIMUM_RETAINED_BYTES = 4 * 1024 * 1024
+# Diagnostic path arrays can exceed a served file's traversal allowance while
+# remaining well below the private byte bound. Depth and content guards stay
+# unchanged; only this private control-record decoder uses the larger budget.
+MAXIMUM_RETAINED_NODES = 250_000
+
+
+class RetainedRecordStructureError(ValueError):
+    """A private diagnostic record exceeded its depth or traversal allowance."""
+
+
+def decode_retained(raw):
+    try:
+        return runtime.decode(raw, maximum=MAXIMUM_RETAINED_BYTES, maximum_nodes=MAXIMUM_RETAINED_NODES)
+    except ValueError as error:
+        if error.args == (runtime.STRUCTURE_BOUND,):
+            raise RetainedRecordStructureError("constraint_retained_structure_bound") from error
+        raise
 
 
 def read_retained(path):
@@ -34,7 +51,7 @@ def read_retained(path):
     if not path.is_file() or path.stat().st_size > MAXIMUM_RETAINED_BYTES:
         raise ValueError("constraint_retained_byte_bound")
     raw = path.read_bytes()
-    return raw, runtime.decode(raw, maximum=MAXIMUM_RETAINED_BYTES)
+    return raw, decode_retained(raw)
 
 
 def inputs(folders, maximum):
@@ -238,7 +255,7 @@ def run(args, *, revision, licence_text, generator_digest):
             raw = runtime.encode(retained)
             # Refuse an unreadable retained record before any candidate/cursor
             # write, using the same bounded reader policy as restart.
-            runtime.decode(raw, maximum=MAXIMUM_RETAINED_BYTES)
+            decode_retained(raw)
             byte_count = len(raw) + sum(sum(file["size_bytes"] for file in payload["package"]["files"])
                                        + len(runtime.encode(payload)) for payload, _bodies in built)
             if len(seen) + len(unique) > args.maximum_cases or used_bytes + byte_count > args.maximum_candidate_bytes:

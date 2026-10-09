@@ -138,6 +138,22 @@ class ConstructionTests(unittest.TestCase):
         self.assertFalse(any(row["expected"]["validator"] == "minimum" for row in cases))
         self.assertEqual(report["invalid_baselines_ignored"], 1)
 
+    def test_missing_baseline_and_unavailable_probe_are_separate_findings(self):
+        _cases, _bodies, missing = construction.construct(runtime.encode({"type": "object", "properties": {
+            "optional": {"type": "integer", "minimum": 1}}}), [{}])
+        _cases, _bodies, bounded = construction.construct(runtime.encode({"type": "array", "maxItems": 1000}), [[1]])
+        self.assertGreater(missing["findings"].get("missing_baseline_member", 0), 0)
+        self.assertEqual(missing["findings"].get("no_probe_candidate", 0), 0)
+        self.assertGreater(bounded["findings"].get("no_probe_candidate", 0), 0)
+        self.assertNotIn("missing_baseline_member_or_constructor_bound", missing["findings"])
+        self.assertNotIn("missing_baseline_member_or_constructor_bound", bounded["findings"])
+
+    def test_attempted_but_coupled_failures_do_not_become_missing_examples(self):
+        _cases, _bodies, report = construction.construct(runtime.encode({"type": "string", "enum": ["a"], "minLength": 1}), ["a"])
+        self.assertGreater(report["findings"].get("no_isolated_agreed_target_failure", 0), 0)
+        self.assertNotIn("missing_baseline_member", report["findings"])
+        self.assertNotIn("no_probe_candidate", report["findings"])
+
 
 class PackageAndRunTests(unittest.TestCase):
     def setUp(self):
@@ -320,6 +336,40 @@ class PackageAndRunTests(unittest.TestCase):
         self.assertEqual(retained["accounting"][construction.DIAGNOSTICS_FIELD], accounting[construction.DIAGNOSTICS_FIELD])
         event = runner.events(self.args.run_folder / "events.jsonl")[0]
         self.assertGreaterEqual(event["retained_and_candidate_bytes"], retained_path.stat().st_size)
+
+    def test_private_diagnostics_have_their_own_traversal_bound(self):
+        accounting = deepcopy(self.accounting)
+        accounting[construction.DIAGNOSTICS_FIELD] = [
+            {"job_id": runtime.sha(str(index).encode()), "keyword": "type",
+             "schema_path": ["properties", "field"] * 16, "reason": "missing_example"}
+            for index in range(650)]
+        raw = runtime.encode(accounting)
+        self.assertLess(len(raw), runner.MAXIMUM_RETAINED_BYTES)
+        with self.assertRaisesRegex(ValueError, "case_json_structure_bound"):
+            runtime.decode(raw, maximum=runner.MAXIMUM_RETAINED_BYTES)
+        with patch.object(construction, "construct", return_value=(self.cases, self.baselines, accounting)):
+            result = self.invoke()
+        self.assertTrue(result["complete"])
+        self.assertEqual(self.invoke()["new_case_jobs"], 0)
+        path = next((self.args.run_folder / "retained").iterdir())
+        _raw, retained = runner.read_retained(path)
+        self.assertEqual(retained["accounting"][construction.DIAGNOSTICS_FIELD], accounting[construction.DIAGNOSTICS_FIELD])
+
+    def test_control_traversal_override_cannot_remove_other_guards(self):
+        for value in ([0] * runner.MAXIMUM_RETAINED_NODES, [[[[None]]]]):
+            if value == [[[[None]]]]:
+                with patch.object(runtime, "MAX_DEPTH", 2):
+                    with self.assertRaises(ValueError):
+                        runner.decode_retained(runtime.encode(value))
+            else:
+                with self.assertRaisesRegex(runner.RetainedRecordStructureError, "constraint_retained_structure_bound"):
+                    runner.decode_retained(runtime.encode(value))
+        for raw in (b'{"x":1,"x":2}', b'{"x":NaN}'):
+            with self.assertRaises(ValueError):
+                runner.decode_retained(raw)
+        for invalid in (0, -1, True, 3.5):
+            with self.assertRaisesRegex(ValueError, "structure_limit_invalid"):
+                runtime.decode(b"{}", maximum_nodes=invalid)
 
     def test_retained_bound_refuses_before_reading_and_does_not_widen_case_limits(self):
         path = self.root / "too-large-retained.json"

@@ -132,11 +132,11 @@ def construct(schema_bytes, baseline_values):
     for identity, alternatives in jobs.items():
         keyword = alternatives[0][0]["keyword"]
         keywords[keyword] += 1
-        reason = "missing_baseline_member_or_constructor_bound"
+        emitted, available_value, had_probe = False, False, False
         for job, baseline_ref, body in alternatives:
+            available_value = available_value or job["value"] is not MISSING
             options = edits(job)
-            if options:
-                reason = "no_isolated_agreed_target_failure"
+            had_probe = had_probe or bool(options)
             path, message = shipped_expected(job, schema)
             expected = {"validator": keyword, "schema_path": job["schema_path"], "instance_path": job["data_path"],
                         "shipped_path": path, "shipped_message": message}
@@ -154,11 +154,13 @@ def construct(schema_bytes, baseline_values):
                 cases.append(case)
                 used_baselines[baseline_ref["path"]] = body
                 accepted[keyword] += 1
-                reason = ""
+                emitted = True
                 break
-            if not reason:
+            if emitted:
                 break
-        if reason:
+        if not emitted:
+            reason = ("no_isolated_agreed_target_failure" if had_probe else
+                      "no_probe_candidate" if available_value else "missing_baseline_member")
             findings[reason] += 1
             diagnostics.append({"job_id": identity, "keyword": keyword, "schema_path": job["schema_path"], "reason": reason})
     return cases, used_baselines, {

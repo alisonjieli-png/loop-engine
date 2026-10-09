@@ -25,6 +25,7 @@ MAX_BYTES = 256 * 1024
 MAX_CASE_BYTES = 16 * 1024
 MAX_DEPTH = 40
 MAX_NODES = 20_000
+STRUCTURE_BOUND = "case_json_structure_bound"
 MAX_FILES = 64  # This generator's grouping policy, not a platform-wide file-count claim.
 HEX = re.compile(r"[0-9a-f]{64}\Z")
 CASE_FIELDS = {"record_type", "job_id", "parent_semantic_sha256", "schema", "baseline", "edit", "expected", "constraint_value"}
@@ -52,13 +53,15 @@ def _shape(value, fields, code):
         raise ValueError(code)
 
 
-def _bounded(value):
-    remaining, active = [MAX_NODES], set()
+def _bounded(value, *, maximum_nodes=MAX_NODES):
+    if type(maximum_nodes) is not int or maximum_nodes < 1:
+        raise ValueError("case_json_structure_limit_invalid")
+    remaining, active = [maximum_nodes], set()
 
     def walk(node, depth=0):
         remaining[0] -= 1
         if depth > MAX_DEPTH or remaining[0] < 0:
-            raise ValueError("case_json_structure_bound")
+            raise ValueError(STRUCTURE_BOUND)
         if type(node) in (dict, list):
             if id(node) in active:
                 raise ValueError("case_json_cycle")
@@ -77,7 +80,7 @@ def _bounded(value):
     walk(value)
 
 
-def decode(raw, maximum=MAX_BYTES):
+def decode(raw, maximum=MAX_BYTES, *, maximum_nodes=MAX_NODES):
     if type(raw) is not bytes or len(raw) > maximum:
         raise ValueError("case_json_byte_bound")
     def pairs(rows):
@@ -93,7 +96,7 @@ def decode(raw, maximum=MAX_BYTES):
         value = json.loads(raw, object_pairs_hook=pairs, parse_constant=nonfinite)
     except (UnicodeError, RecursionError):
         raise ValueError("case_json_unreadable") from None
-    _bounded(value)
+    _bounded(value, maximum_nodes=maximum_nodes)
     return value
 
 
