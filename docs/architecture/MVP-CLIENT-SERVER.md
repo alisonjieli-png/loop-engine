@@ -68,8 +68,10 @@ the release-83 review found overstated.
 
 All nine product hostnames now serve public assets through Cloudflare and
 forward dynamic requests to Fly. The technical Fly hostname remains a direct
-fallback. Export `a5d9cd327dab...` contains 2,556 files, all verified on
-`baltor.ai` against their exact bodies and required headers. It reads the live
+fallback. Export `cad2ab154429...` contains 2,556 files, all verified on
+`baltor.ai` against their exact bodies and required headers. It was refreshed
+from the deployed revision after the case publication so the homepage shows
+the 1,557,669 files served now. It reads the live
 population, so the homepage shows the 1,473,065 files served now. Disable proxying on the saved DNS
 records to recover the direct paths; do not delete the routes or resources.
 
@@ -116,10 +118,15 @@ It is not a third paid hosted plan. The flexible price clause is published;
 reconcile a new-signup Price without changing existing subscriptions or grants.
 Hosted Overnight / AFK Work needs actual coordination, isolation, recovery
 and checkout before sale.
-The October 9 catalogue publication now serves 249,610 packages and
-1,473,065 distinct files, release `a4ba2053f715...`, content `7741e196ac4e...`,
-catalogue state revision 39. It adds 31,459 qualified API-contract packages
-and 120,036 distinct files, preserving every previous version. No previously
+The catalogue now serves 255,967 packages and 1,557,669 distinct files,
+release `413a05d39aab...`, content `1b89e70c1dc1...`, catalogue state revision
+40. The October 9 afternoon publication added 6,357 qualified API
+constraint-case packages and 84,604 distinct files; a non-staff account
+downloaded a new case package exactly, and its
+[publication record](../../artifacts/architecture-audit-2026-09-19/catalogue-api-cases-2026-10-09.json)
+binds the checks. The October 9 morning publication, release `a4ba2053f715...`,
+added 31,459 qualified API-contract packages and 120,036 distinct files.
+Both preserve every previous version. No previously
 found expected result was lost across 354 saved queries, and all 448 Public
 Good grants remain valid. Its first attempt stopped before activation because
 the staged objects kept the workstation owner; an exact-stage ownership repair
@@ -135,9 +142,9 @@ tool as an ordinary no-plan customer, preserves paid usage and passes its
 isolated declared example, schemas and calendar-oracle checks.
 Volume body storage, custom SQLite search and Supabase identity remain
 selected. R2 has verified the preceding 1,352,837 files, a separate 192-body
-delta and the 120,036 new bodies of release `a4ba2053`: complete
-current-catalogue coverage across three scopes, not a fresh full rerun or a
-body-engine switch. Public Good policy `9f0f5cfe...`
+delta and the new bodies of releases `a4ba2053` (120,036) and `413a05d3`
+(84,604): complete current-catalogue coverage across four scopes, not a fresh
+full rerun or a body-engine switch. Public Good policy `9f0f5cfe...`
 preserves 424 grants and adds the 24 SDG tools, for 448 available groups and
 1,128 distinct useful files across all 17 goals. Limits are unchanged;
 new grants expire October 31 at 00:00 UTC. The complete granted group remains

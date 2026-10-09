@@ -3,7 +3,7 @@
 Kind: generated view. Do not edit by hand. The only task authority is
 [roadmap.yaml](roadmap.yaml); change it, then run
 `PYTHONPATH=src:tools .venv/bin/python tools/build_development_tracker.py`.
-Source fingerprint: `sha256:01d95e9b9bbfb464ac40f9baff633d5f5e114000f988a290ebcc39080a0e9b5d`.
+Source fingerprint: `sha256:895f4e90e16baf0a07028a266cbae9bece7832b6f64392f1e4dbe8c3c7a81cb7`.
 
 ## Where things stand
 
@@ -19,9 +19,9 @@ Source fingerprint: `sha256:01d95e9b9bbfb464ac40f9baff633d5f5e114000f988a290ebcc
 
 Each subtask lives in its owning step in roadmap.yaml. A local check does not complete a task that requires publication.
 
-Completed within their stated scope: 13 of 60 subtasks.
+Completed within their stated scope: 15 of 60 subtasks.
 
-Next eligible subtask: S-6.215.11: Qualify and admit the new case groups
+Next eligible subtask: S-6.215.13: Measure and broaden production capacity
 
 | Order | Task | State | Completion required | Next action or dependency |
 |---:|---|---|---|---|
@@ -37,8 +37,8 @@ Next eligible subtask: S-6.215.11: Qualify and admit the new case groups
 | 10 | [x] S-6.215.08: Verify the new catalogue as a customer | live_qualified | live_qualified | Repeat for each later publication with one new and one earlier package. |
 | 11 | [x] S-6.215.09: Mirror the new bodies and refresh public counts | live_qualified | live_qualified | Mirror each later publication's new bodies after its customer check. |
 | 12 | [x] S-6.215.10: Complete the repaired case-generation pilot | offline_verified | offline_verified | Qualify and globally deduplicate the completed pilot. |
-| 13 | [ ] S-6.215.11: Qualify and admit the new case groups | building | offline_verified | Qualify the 379-group pilot separately, then combine only non-overlapping admitted material through the release owner. Use the larger campaign's cleared admission, not its initial 6,733-group folder. |
-| 14 | [ ] S-6.215.12: Publish the qualified case delta | proposed | published | Waiting on S-6.215.11 |
+| 13 | [x] S-6.215.11: Qualify and admit the new case groups | offline_verified | offline_verified | Regroup the 1,983 non-overlapping jobs held in 376 groups and qualify the 379-group pilot separately before the next case publication. |
+| 14 | [x] S-6.215.12: Publish the qualified case delta | published | published | Publish later case cohorts against the release live at that time. |
 | 15 | [ ] S-6.215.13: Measure and broaden production capacity | building | offline_verified | Integrate the retained-record repair into the release owner's next application release. Prepare a fresh bounded recovery with updated exclusions and enough disk headroom for generation, qualification and publication. Preserve the old failed journal and keep Claude's creative lane separate. |
 | 16 | [ ] S-6.214.01: Define canonical source counting | ready | offline_verified | Write and test the source-counting rules in the existing source owner. |
 | 17 | [ ] S-6.214.02: Build the source coverage census | ready | offline_verified | Waiting on S-6.214.01 |
@@ -83,7 +83,7 @@ Next eligible subtask: S-6.215.11: Qualify and admit the new case groups
 | 56 | [ ] S-6.67.01: Review the complete public page and design surface | ready | live_qualified | Run the owning browser checks for each visible release and verify the live result. |
 | 57 | [ ] S-6.35.02: Publish a progress checkpoint after every completed subtask | building | offline_verified | Complete the first canonical subtask checklist and then advance it one result at a time. |
 | 58 | [ ] S-6.217.01: Reconcile recent prompts and action history | building | offline_verified | Review prioritized recent chunks instead of treating extraction as full understanding. |
-| 59 | [ ] S-6.215.14: Reach two million useful served files | proposed | published | Waiting on S-6.215.12, S-6.215.13 |
+| 59 | [ ] S-6.215.14: Reach two million useful served files | proposed | published | Waiting on S-6.215.13 |
 | 60 | [ ] S-6.214.08: Reach ten thousand active qualified sources | proposed | live_qualified | Waiting on S-6.214.07 |
 
 ## Subtask procedures and evidence
@@ -282,7 +282,7 @@ Comment: Candidate payloads include shared support files and parent schemas.
 
 ### S-6.215.11 Qualify and admit the new case groups
 
-Owner step: S-6.215. State: building. Completion requires: offline_verified.
+Owner step: S-6.215. State: offline_verified. Completion requires: offline_verified.
 
 Acceptance: New groups pass native checks and do not repeat case jobs from any selected comparison population.
 
@@ -292,13 +292,13 @@ Acceptance: New groups pass native checks and do not repeat case jobs from any s
 
 Evidence: October 9: the separate scalable campaign's completed prefix held 6,733 groups and 96,077 distinct payloads. All passed its original all-checks qualification. A new native duplicate pass compared both prior case populations and held 376 overlapping groups; 6,357 were admitted into a new cleared folder. Its byte-verified bundle contains 90,957 distinct payloads and 64,993 case jobs, with zero job overlap against those two populations. The held groups also retain 1,983 non-overlapping jobs for later regrouping. Prior execution evidence was reused, not rerun or relabelled as fresh execution. Publication remains separate.
 
-Next: Qualify the 379-group pilot separately, then combine only non-overlapping admitted material through the release owner. Use the larger campaign's cleared admission, not its initial 6,733-group folder.
+Next: Regroup the 1,983 non-overlapping jobs held in 376 groups and qualify the 379-group pilot separately before the next case publication.
 
 Comment: Do not count the failed and repaired copies twice.
 
 ### S-6.215.12 Publish the qualified case delta
 
-Owner step: S-6.215. State: proposed. Completion requires: published.
+Owner step: S-6.215. State: published. Completion requires: published.
 
 Acceptance: Only net-new admitted case material is served and verified from the current release.
 
@@ -306,11 +306,11 @@ Acceptance: Only net-new admitted case material is served and verified from the 
 2. Repeat preservation, exact reconciliation and current-live preflight.
 3. Publish and test ordinary customer retrieval.
 
-Evidence: Not yet recorded.
+Evidence: Live since October 9 15:20 UTC: release 413a05d3, content 1b89e70c, catalogue state revision 40, 255,967 packages and 1,557,669 distinct files (6,357 additions, 84,604 new bodies, nothing replaced or withdrawn). Reconciled against a4ba2053 with all 1,473,065 base bodies verified; no expected search result lost across 354 judged queries; all 448 Public Good grants preserved. A non-staff account downloaded one new case package (13 exact files) and one a4ba2053 contract (9 files); a wrong digest got 404 and an unauthenticated request 401. The 84,604 new bodies are mirrored to R2 and read back.
 
-Next: Use the release current at execution time.
+Next: Publish later case cohorts against the release live at that time.
 
-Comment: An old baseline must not be replayed after another publication.
+Comment: Record: artifacts/architecture-audit-2026-09-19/catalogue-api-cases-2026-10-09.json. The first reconcile attempt was stopped by the memory limit and is kept; the staged objects were owned by the service user, so no ownership repair was needed.
 
 ### S-6.215.13 Measure and broaden production capacity
 

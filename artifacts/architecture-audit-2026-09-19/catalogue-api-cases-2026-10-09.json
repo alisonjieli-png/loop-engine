@@ -1,0 +1,3829 @@
+{
+ "record_type": "catalogue_publication_evidence/v1",
+ "recorded_on": "2026-10-09",
+ "application_release": 85,
+ "publisher_source_revision": "c1e3c1313998584bda79f0f6f0e9bac03ebfddef",
+ "base_release": "a4ba2053f7151d5c277a939b3525be98542f9ee2ac08e252a962e4721ea63d0b",
+ "active_release": "413a05d39aab9fc9785c2c93cb9d748a0c54b4f056048a094ff8d85af8f8cf6a",
+ "bundle_digest": "39af72c8c9afbf5e039ba1c2a21ba9848952bac9c5bb13d1be82abed1f6e5ec7",
+ "content_digest": "1b89e70c1dc162bae7cca0df46dcb650f847e966367cbf815a210b8d4b1ad32e",
+ "reconciliation_digest": "26fb025fc3cea6f9adac741603520a17af7b5dccf524cf664041379014e0a8be",
+ "catalogue_state_revision": 40,
+ "confirmed_at": "2026-10-09T15:20:46.172551+00:00",
+ "items_before": 249610,
+ "items_after": 255967,
+ "distinct_files_before": 1473065,
+ "distinct_files_after": 1557669,
+ "new_distinct_files": 84604,
+ "new_distinct_bytes": 113999483,
+ "distinct_file_bytes_after": 8277674785,
+ "unchanged_item_versions": 249610,
+ "replaced": 0,
+ "withdrawn": [],
+ "admission": {
+  "tier": "community",
+  "line": "json_schemas",
+  "kind": "isolated API constraint cases",
+  "groups": 6357,
+  "case_jobs": 64993,
+  "distinct_payloads": 90957,
+  "basis": "deterministic qualification reusing the original all-checks evidence; independent review ongoing",
+  "duplicate_clearance": "zero case-job overlap against both prior case populations; 376 overlapping groups held for later regrouping",
+  "licences": {
+   "MIT AND Apache-2.0": 6351,
+   "MIT": 6
+  }
+ },
+ "checks": {
+  "judged_queries": 354,
+  "judged_queries_first_results_changed": [
+   {
+    "after": [
+     "canonicalize_company_legal_suffixes",
+     "restore_capitalisation_of_names",
+     "layer_exception_catalogs_with_precedence",
+     "library.supply.openapi_operations.1986a83ff0eaeb77f752911b.92769cc9e2eca0e5",
+     "import_skill_refactoring_c060019b1896",
+     "library.supply.data_tables.fac3f2b2ca53314f77ec72da.7bb654e4bedef8bc",
+     "import_rules_30_background_agents_ec57ba4fbf9c",
+     "import_skill_policy_drafting_6ac6e62fa2a7",
+     "library.supply.openapi_operations.9ad2339ea889002caee5c246.1af8fdc5a6308b19",
+     "import_skill_chemaudit_standardization_0b960fa868fc"
+    ],
+    "before": [
+     "canonicalize_company_legal_suffixes",
+     "restore_capitalisation_of_names",
+     "layer_exception_catalogs_with_precedence",
+     "library.supply.openapi_operations.1986a83ff0eaeb77f752911b.92769cc9e2eca0e5",
+     "import_skill_refactoring_c060019b1896",
+     "library.supply.data_tables.fac3f2b2ca53314f77ec72da.7bb654e4bedef8bc",
+     "import_skill_policy_drafting_6ac6e62fa2a7",
+     "import_skill_chemaudit_standardization_0b960fa868fc",
+     "import_rules_30_background_agents_ec57ba4fbf9c",
+     "library.supply.openapi_operations.9ad2339ea889002caee5c246.1af8fdc5a6308b19"
+    ],
+    "entered": [],
+    "expected": [
+     "canonicalize_company_legal_suffixes"
+    ],
+    "expected_ranks": {
+     "canonicalize_company_legal_suffixes": [
+      1,
+      1
+     ]
+    },
+    "left": [],
+    "query": "standardize Inc and LLC in company names"
+   },
+   {
+    "after": [
+     "normalize_and_recover_email_addresses",
+     "restore_capitalisation_of_names",
+     "analyse_errors_by_segment_and_cluster",
+     "freeze_the_success_metric_before_measuring",
+     "score_duplicate_pairs_by_weakest_signal",
+     "library.supply.openapi_operations.4831cbeac8b9d3337b9937b8.0b36be6283d71ea9",
+     "library.supply.mcp_registry.712a8eb5ffc31efed8b38ee3.9f921a1fcd4b0ba3",
+     "library.supply.openapi_operations.2d71a9a65bde78d92eeffeaf.5c4def355841b9eb",
+     "library.supply.openapi_operations.750d07f18bdb8c597454c77f.365f81a432727f20",
+     "library.supply.openapi_operations.b0f73510740177512be11b19.7f68cbc70a54097a"
+    ],
+    "before": [
+     "normalize_and_recover_email_addresses",
+     "restore_capitalisation_of_names",
+     "analyse_errors_by_segment_and_cluster",
+     "score_duplicate_pairs_by_weakest_signal",
+     "freeze_the_success_metric_before_measuring",
+     "library.supply.openapi_operations.4831cbeac8b9d3337b9937b8.0b36be6283d71ea9",
+     "library.supply.mcp_registry.712a8eb5ffc31efed8b38ee3.9f921a1fcd4b0ba3",
+     "library.supply.openapi_operations.2d71a9a65bde78d92eeffeaf.5c4def355841b9eb",
+     "library.supply.openapi_operations.b0f73510740177512be11b19.7f68cbc70a54097a",
+     "library.supply.openapi_operations.750d07f18bdb8c597454c77f.365f81a432727f20"
+    ],
+    "entered": [],
+    "expected": [
+     "normalize_and_recover_email_addresses"
+    ],
+    "expected_ranks": {
+     "normalize_and_recover_email_addresses": [
+      1,
+      1
+     ]
+    },
+    "left": [],
+    "query": "fix typos in email domains like gmail.con"
+   },
+   {
+    "after": [
+     "choose_metrics_by_task_type_and_industry",
+     "freeze_the_success_metric_before_measuring",
+     "read_the_train_validation_gap",
+     "apply_hold_or_escalate_each_correction",
+     "import_skill_vikhyath_routing_ec1c76400e2d",
+     "import_command_seo_drift_c46659a82f70",
+     "import_skill_seo_drift_0463f7d068f2",
+     "library.supply.openapi_operations.9ce34291972feacf2cf1dcc7.803936d097741828",
+     "library.supply.openapi_operations.c28423756a87e742671929f1.52849a6bea4d9667",
+     "library.supply.json_schemas.4033964137a1f5be89e4aaef.69e9eec6dc0652c3"
+    ],
+    "before": [
+     "choose_metrics_by_task_type_and_industry",
+     "freeze_the_success_metric_before_measuring",
+     "apply_hold_or_escalate_each_correction",
+     "read_the_train_validation_gap",
+     "import_skill_vikhyath_routing_ec1c76400e2d",
+     "import_command_seo_drift_c46659a82f70",
+     "import_skill_seo_drift_0463f7d068f2",
+     "library.supply.openapi_operations.9ce34291972feacf2cf1dcc7.803936d097741828",
+     "library.supply.openapi_operations.c28423756a87e742671929f1.52849a6bea4d9667",
+     "library.supply.json_schemas.4033964137a1f5be89e4aaef.69e9eec6dc0652c3"
+    ],
+    "entered": [],
+    "expected": [
+     "choose_metrics_by_task_type_and_industry"
+    ],
+    "expected_ranks": {
+     "choose_metrics_by_task_type_and_industry": [
+      1,
+      1
+     ]
+    },
+    "left": [],
+    "query": "which metric for imbalanced classification"
+   },
+   {
+    "after": [
+     "apply_hold_or_escalate_each_correction",
+     "test_driven_change_red_green_refactor",
+     "write_a_pinned_container_and_batch_job",
+     "export_a_standalone_python_package",
+     "import_rules_pyspark_etl_best_practices_cursorrules_p_16db3ce372c3",
+     "import_skill_job_search_2c29c09d1888",
+     "import_command_data_pipe_8605fa3d1413",
+     "import_subagent_clean_bdfd79d34d5e",
+     "import_skill_motion_polish_e6da4b48013d",
+     "import_subagent_data_engineer_acf93eb7b46c"
+    ],
+    "before": [
+     "apply_hold_or_escalate_each_correction",
+     "test_driven_change_red_green_refactor",
+     "write_a_pinned_container_and_batch_job",
+     "export_a_standalone_python_package",
+     "import_rules_pyspark_etl_best_practices_cursorrules_p_16db3ce372c3",
+     "import_command_data_pipe_8605fa3d1413",
+     "import_skill_job_search_2c29c09d1888",
+     "import_subagent_clean_bdfd79d34d5e",
+     "import_skill_motion_polish_e6da4b48013d",
+     "import_subagent_data_engineer_acf93eb7b46c"
+    ],
+    "entered": [],
+    "expected": [
+     "make_a_data_pipeline_safe_to_run_again"
+    ],
+    "expected_ranks": {
+     "make_a_data_pipeline_safe_to_run_again": [
+      null,
+      null
+     ]
+    },
+    "left": [],
+    "query": "make my ETL job idempotent"
+   },
+   {
+    "after": [
+     "test_driven_change_red_green_refactor",
+     "analyse_errors_by_segment_and_cluster",
+     "audit_data_splits_for_errors_and_leakage",
+     "check_for_existing_work_before_building",
+     "choose_review_perspectives",
+     "decide_whether_a_step_needs_a_model",
+     "restore_capitalisation_of_names",
+     "hand_over_a_result_its_consumer_can_use",
+     "propose_a_dedupe_without_deleting_rows",
+     "freeze_the_success_metric_before_measuring"
+    ],
+    "before": [
+     "test_driven_change_red_green_refactor",
+     "analyse_errors_by_segment_and_cluster",
+     "audit_data_splits_for_errors_and_leakage",
+     "choose_review_perspectives",
+     "check_for_existing_work_before_building",
+     "decide_whether_a_step_needs_a_model",
+     "restore_capitalisation_of_names",
+     "hand_over_a_result_its_consumer_can_use",
+     "propose_a_dedupe_without_deleting_rows",
+     "freeze_the_success_metric_before_measuring"
+    ],
+    "entered": [],
+    "expected": [
+     "package_one_skill_for_two_coding_harnesses"
+    ],
+    "expected_ranks": {
+     "package_one_skill_for_two_coding_harnesses": [
+      null,
+      null
+     ]
+    },
+    "left": [],
+    "query": "publish a skill for claude code and codex"
+   },
+   {
+    "after": [
+     "test_driven_change_red_green_refactor",
+     "detect_malformed_values_by_dominant_pattern",
+     "choose_metrics_by_task_type_and_industry",
+     "score_duplicate_pairs_by_weakest_signal",
+     "audit_data_splits_for_errors_and_leakage",
+     "apply_hold_or_escalate_each_correction",
+     "review_an_accepted_solution_adversarially",
+     "report_observed_derived_assumed_and_unknown",
+     "forecast_an_action_then_compare",
+     "normalize_website_addresses"
+    ],
+    "before": [
+     "test_driven_change_red_green_refactor",
+     "detect_malformed_values_by_dominant_pattern",
+     "choose_metrics_by_task_type_and_industry",
+     "score_duplicate_pairs_by_weakest_signal",
+     "audit_data_splits_for_errors_and_leakage",
+     "apply_hold_or_escalate_each_correction",
+     "review_an_accepted_solution_adversarially",
+     "report_observed_derived_assumed_and_unknown",
+     "forecast_an_action_then_compare",
+     "write_a_pinned_container_and_batch_job"
+    ],
+    "entered": [
+     "normalize_website_addresses"
+    ],
+    "expected": [
+     "choose_test_cases_from_boundaries_and_classes"
+    ],
+    "expected_ranks": {
+     "choose_test_cases_from_boundaries_and_classes": [
+      null,
+      null
+     ]
+    },
+    "left": [
+     "write_a_pinned_container_and_batch_job"
+    ],
+    "query": "which test cases should I write for a field with a range"
+   },
+   {
+    "after": [
+     "look_for_structure_the_model_missed",
+     "detect_malformed_values_by_dominant_pattern",
+     "carry_competing_readings_of_a_request",
+     "find_duplicate_records_with_blocking_keys",
+     "profile_text_column_before_cleaning",
+     "decide_whether_a_step_needs_a_model",
+     "score_duplicate_pairs_by_weakest_signal",
+     "resolve_missing_information",
+     "freeze_the_success_metric_before_measuring",
+     "review_an_accepted_solution_adversarially"
+    ],
+    "before": [
+     "look_for_structure_the_model_missed",
+     "detect_malformed_values_by_dominant_pattern",
+     "find_duplicate_records_with_blocking_keys",
+     "carry_competing_readings_of_a_request",
+     "profile_text_column_before_cleaning",
+     "decide_whether_a_step_needs_a_model",
+     "score_duplicate_pairs_by_weakest_signal",
+     "resolve_missing_information",
+     "freeze_the_success_metric_before_measuring",
+     "review_an_accepted_solution_adversarially"
+    ],
+    "entered": [],
+    "expected": [
+     "bisect_a_regression_across_revisions"
+    ],
+    "expected_ranks": {
+     "bisect_a_regression_across_revisions": [
+      null,
+      null
+     ]
+    },
+    "left": [],
+    "query": "find the commit that broke the build"
+   },
+   {
+    "after": [
+     "carry_competing_readings_of_a_request",
+     "read_the_train_validation_gap",
+     "decide_whether_a_step_needs_a_model",
+     "import_command_question_9d059cb6eabf",
+     "import_rules_get_more_from_ai_3774e097b2ff",
+     "import_skill_ddw_help_de246cf47e02",
+     "import_skill_pragmatic_howto_b0e55f0dcb63",
+     "import_skill_call_coaching_cdbe302fe031",
+     "import_skill_purchaseplus_how_to_cb30faddc186",
+     "import_skill_gno_onboard_00a7a13f7663"
+    ],
+    "before": [
+     "carry_competing_readings_of_a_request",
+     "read_the_train_validation_gap",
+     "decide_whether_a_step_needs_a_model",
+     "import_command_question_9d059cb6eabf",
+     "import_rules_get_more_from_ai_3774e097b2ff",
+     "import_skill_ddw_help_de246cf47e02",
+     "import_skill_pragmatic_howto_b0e55f0dcb63",
+     "import_skill_call_coaching_cdbe302fe031",
+     "import_skill_gno_onboard_00a7a13f7663",
+     "import_skill_purchaseplus_how_to_cb30faddc186"
+    ],
+    "entered": [],
+    "expected": [
+     "read_a_failure_report_and_name_the_first_wrong_value"
+    ],
+    "expected_ranks": {
+     "read_a_failure_report_and_name_the_first_wrong_value": [
+      null,
+      null
+     ]
+    },
+    "left": [],
+    "query": "how do I read a stack trace"
+   },
+   {
+    "after": [
+     "forecast_an_action_then_compare",
+     "hand_over_a_result_its_consumer_can_use",
+     "carry_competing_readings_of_a_request",
+     "detect_malformed_values_by_dominant_pattern",
+     "look_for_structure_the_model_missed",
+     "check_for_existing_work_before_building",
+     "choose_metrics_by_task_type_and_industry",
+     "report_observed_derived_assumed_and_unknown",
+     "import_skill_blast_radius_review_0a3a3cd106a9",
+     "import_skill_research_3f8c503e7f7b"
+    ],
+    "before": [
+     "forecast_an_action_then_compare",
+     "hand_over_a_result_its_consumer_can_use",
+     "carry_competing_readings_of_a_request",
+     "detect_malformed_values_by_dominant_pattern",
+     "check_for_existing_work_before_building",
+     "look_for_structure_the_model_missed",
+     "choose_metrics_by_task_type_and_industry",
+     "report_observed_derived_assumed_and_unknown",
+     "import_skill_blast_radius_review_0a3a3cd106a9",
+     "import_skill_research_3f8c503e7f7b"
+    ],
+    "entered": [],
+    "expected": [
+     "review_a_change_for_correctness"
+    ],
+    "expected_ranks": {
+     "review_a_change_for_correctness": [
+      null,
+      null
+     ]
+    },
+    "left": [],
+    "query": "what should I look for when reviewing a pull request"
+   },
+   {
+    "after": [
+     "report_observed_derived_assumed_and_unknown",
+     "forecast_an_action_then_compare",
+     "test_driven_change_red_green_refactor",
+     "carry_competing_readings_of_a_request",
+     "normalize_website_addresses",
+     "check_for_existing_work_before_building",
+     "choose_metrics_by_task_type_and_industry",
+     "choose_one_next_action",
+     "orient_on_a_task_and_write_its_contracts",
+     "library.supply.openapi_operations.9f10c153ecd431cf1409552d.e8d20d53a9c2a4b8"
+    ],
+    "before": [
+     "report_observed_derived_assumed_and_unknown",
+     "forecast_an_action_then_compare",
+     "carry_competing_readings_of_a_request",
+     "test_driven_change_red_green_refactor",
+     "normalize_website_addresses",
+     "check_for_existing_work_before_building",
+     "choose_metrics_by_task_type_and_industry",
+     "choose_one_next_action",
+     "orient_on_a_task_and_write_its_contracts",
+     "library.supply.openapi_operations.9f10c153ecd431cf1409552d.e8d20d53a9c2a4b8"
+    ],
+    "entered": [],
+    "expected": [
+     "review_error_paths_and_partial_failure"
+    ],
+    "expected_ranks": {
+     "review_error_paths_and_partial_failure": [
+      null,
+      null
+     ]
+    },
+    "left": [],
+    "query": "what happens if one write succeeds and the next one fails"
+   },
+   {
+    "after": [
+     "copy_a_table_with_corrections_never_in_place",
+     "propose_a_dedupe_without_deleting_rows",
+     "find_duplicate_records_with_blocking_keys",
+     "test_driven_change_red_green_refactor",
+     "write_a_pinned_container_and_batch_job",
+     "library.supply.openapi_operations.d4aa2fe0d1d82b7ee4dbd591.bcb4f2220ba63ec0",
+     "library.supply.publisher_tables.e438801c3fe8d96d18e581f6.8a8bd02bc5156668",
+     "library.supply.publisher_tables.858627f9912589197d0df8cb.40750887740dac73",
+     "library.supply.publisher_tables.8846a2ea81e88c93f1c98bc5.28a5e3c13520837b",
+     "library.supply.publisher_tables.d0d86374d83fdacc2334d4c1.0855b046f3662b5d"
+    ],
+    "before": [
+     "copy_a_table_with_corrections_never_in_place",
+     "propose_a_dedupe_without_deleting_rows",
+     "find_duplicate_records_with_blocking_keys",
+     "test_driven_change_red_green_refactor",
+     "write_a_pinned_container_and_batch_job",
+     "library.supply.openapi_operations.d4aa2fe0d1d82b7ee4dbd591.bcb4f2220ba63ec0",
+     "library.supply.publisher_tables.e438801c3fe8d96d18e581f6.8a8bd02bc5156668",
+     "library.supply.publisher_tables.858627f9912589197d0df8cb.40750887740dac73",
+     "library.supply.publisher_tables.8846a2ea81e88c93f1c98bc5.28a5e3c13520837b",
+     "library.supply.data_tables.ba99eb66a768d3554843ef76.b5e6025a0384ef55"
+    ],
+    "entered": [
+     "library.supply.publisher_tables.d0d86374d83fdacc2334d4c1.0855b046f3662b5d"
+    ],
+    "expected": [
+     "backfill_a_large_table_in_bounded_batches"
+    ],
+    "expected_ranks": {
+     "backfill_a_large_table_in_bounded_batches": [
+      null,
+      null
+     ]
+    },
+    "left": [
+     "library.supply.data_tables.ba99eb66a768d3554843ef76.b5e6025a0384ef55"
+    ],
+    "query": "update forty million rows without locking the table"
+   },
+   {
+    "after": [
+     "propose_a_dedupe_without_deleting_rows",
+     "find_duplicate_records_with_blocking_keys",
+     "import_rules_support_a_friend_in_crisis_981b1745dce1",
+     "import_rules_reconnect_with_someone_b33a50298ee5",
+     "library.supply.data_tables.ba99eb66a768d3554843ef76.b5e6025a0384ef55",
+     "library.supply.publisher_tables.e438801c3fe8d96d18e581f6.8a8bd02bc5156668",
+     "library.supply.publisher_tables.858627f9912589197d0df8cb.40750887740dac73",
+     "library.supply.publisher_tables.8846a2ea81e88c93f1c98bc5.28a5e3c13520837b",
+     "import_rules_digital_death_plan_f6caaf2befe1",
+     "library.supply.publisher_tables.d0d86374d83fdacc2334d4c1.0855b046f3662b5d"
+    ],
+    "before": [
+     "propose_a_dedupe_without_deleting_rows",
+     "find_duplicate_records_with_blocking_keys",
+     "import_rules_support_a_friend_in_crisis_981b1745dce1",
+     "import_rules_reconnect_with_someone_b33a50298ee5",
+     "library.supply.data_tables.ba99eb66a768d3554843ef76.b5e6025a0384ef55",
+     "library.supply.publisher_tables.e438801c3fe8d96d18e581f6.8a8bd02bc5156668",
+     "import_rules_digital_death_plan_f6caaf2befe1",
+     "library.supply.publisher_tables.858627f9912589197d0df8cb.40750887740dac73",
+     "library.supply.publisher_tables.8846a2ea81e88c93f1c98bc5.28a5e3c13520837b",
+     "library.supply.publisher_tables.d0d86374d83fdacc2334d4c1.0855b046f3662b5d"
+    ],
+    "entered": [],
+    "expected": [
+     "bound_a_list_endpoint_with_paging_and_limits"
+    ],
+    "expected_ranks": {
+     "bound_a_list_endpoint_with_paging_and_limits": [
+      null,
+      null
+     ]
+    },
+    "left": [],
+    "query": "someone asked my endpoint for a million rows"
+   },
+   {
+    "after": [
+     "forecast_an_action_then_compare",
+     "deliver_the_best_available_result_when_blocked",
+     "detect_malformed_values_by_dominant_pattern",
+     "restore_capitalisation_of_names",
+     "check_that_a_result_is_stable_and_generalizes",
+     "import_skill_optimize_a552f0ceca73",
+     "import_skill_mlx_core_semantics_a51a21d84c45",
+     "import_skill_pg_extensions_c6ef32598521",
+     "import_skill_search_speed_optimization_6b6d93729d94",
+     "import_skill_deep_audit_3bad90a3250d"
+    ],
+    "before": [
+     "forecast_an_action_then_compare",
+     "deliver_the_best_available_result_when_blocked",
+     "detect_malformed_values_by_dominant_pattern",
+     "restore_capitalisation_of_names",
+     "check_that_a_result_is_stable_and_generalizes",
+     "import_skill_optimize_a552f0ceca73",
+     "import_skill_mlx_core_semantics_a51a21d84c45",
+     "import_skill_pg_extensions_c6ef32598521",
+     "import_skill_deep_audit_3bad90a3250d",
+     "import_skill_search_speed_optimization_6b6d93729d94"
+    ],
+    "entered": [],
+    "expected": [
+     "set_timeouts_and_cancel_an_outbound_call"
+    ],
+    "expected_ranks": {
+     "set_timeouts_and_cancel_an_outbound_call": [
+      null,
+      null
+     ]
+    },
+    "left": [],
+    "query": "one slow service is holding all my threads"
+   },
+   {
+    "after": [
+     "forecast_an_action_then_compare",
+     "choose_one_next_action",
+     "decide_whether_a_step_needs_a_model",
+     "detect_malformed_values_by_dominant_pattern",
+     "check_for_existing_work_before_building",
+     "import_skill_os_step_by_step_7b2289b7534c",
+     "import_skill_next_step_42f1bb28c1e8",
+     "import_skill_os_whats_next_68d655f2245c",
+     "import_skill_accelerate_opportunities_4d308fc2b9bb",
+     "import_skill_next_1fc4e9eb84cb"
+    ],
+    "before": [
+     "forecast_an_action_then_compare",
+     "choose_one_next_action",
+     "decide_whether_a_step_needs_a_model",
+     "detect_malformed_values_by_dominant_pattern",
+     "check_for_existing_work_before_building",
+     "choose_metrics_by_task_type_and_industry",
+     "import_skill_os_step_by_step_7b2289b7534c",
+     "import_skill_next_step_42f1bb28c1e8",
+     "import_skill_accelerate_opportunities_4d308fc2b9bb",
+     "import_skill_os_whats_next_68d655f2245c"
+    ],
+    "entered": [
+     "import_skill_next_1fc4e9eb84cb"
+    ],
+    "expected": [
+     "assemble_the_context_for_one_step"
+    ],
+    "expected_ranks": {
+     "assemble_the_context_for_one_step": [
+      null,
+      null
+     ]
+    },
+    "left": [
+     "choose_metrics_by_task_type_and_industry"
+    ],
+    "query": "what should I put in the prompt for one step"
+   },
+   {
+    "after": [
+     "review_an_accepted_solution_adversarially",
+     "import_command_llm_redteam_025108c2af39",
+     "import_skill_help_center_article_generator_9cad220d8321",
+     "library.supply.openapi_operations.4a97085d9dfaa5c0c6dcbb31.39836998794b59ea",
+     "library.supply.openapi_operations.b78de9c30a6e2a92525f91de.a83e553d06817e31",
+     "import_skill_llm_b17c8bdfe1d1",
+     "library.supply.openapi_operations.12324679e5b6b2f3ed7e169d.3160ce66a5ab0236",
+     "library.supply.openapi_operations.ed00a2457561f9f467912cec.2d4393ff68bc683d",
+     "import_skill_argus_66b1c3495da7",
+     "import_rules_security_patterns_13506ac69364"
+    ],
+    "before": [
+     "review_an_accepted_solution_adversarially",
+     "import_command_llm_redteam_025108c2af39",
+     "import_skill_help_center_article_generator_9cad220d8321",
+     "library.supply.openapi_operations.b78de9c30a6e2a92525f91de.a83e553d06817e31",
+     "library.supply.openapi_operations.4a97085d9dfaa5c0c6dcbb31.39836998794b59ea",
+     "import_skill_llm_b17c8bdfe1d1",
+     "library.supply.openapi_operations.12324679e5b6b2f3ed7e169d.3160ce66a5ab0236",
+     "library.supply.openapi_operations.ed00a2457561f9f467912cec.2d4393ff68bc683d",
+     "import_skill_argus_66b1c3495da7",
+     "import_rules_security_patterns_13506ac69364"
+    ],
+    "entered": [],
+    "expected": [
+     "keep_instructions_and_supplied_text_apart"
+    ],
+    "expected_ranks": {
+     "keep_instructions_and_supplied_text_apart": [
+      null,
+      null
+     ]
+    },
+    "left": [],
+    "query": "stop prompt injection from a support ticket"
+   },
+   {
+    "after": [
+     "layer_exception_catalogs_with_precedence",
+     "orient_on_a_task_and_write_its_contracts",
+     "choose_metrics_by_task_type_and_industry",
+     "deliver_the_best_available_result_when_blocked",
+     "write_a_pinned_container_and_batch_job",
+     "plan_and_split_work_with_explicit_joins",
+     "import_skill_session_lifecycle_3b225b5e7cc6",
+     "import_skill_recall_a31bc591d734",
+     "import_skill_emem_verify_before_publish_344daddd7c55",
+     "import_skill_memory_ae45629190c0"
+    ],
+    "before": [
+     "layer_exception_catalogs_with_precedence",
+     "orient_on_a_task_and_write_its_contracts",
+     "choose_metrics_by_task_type_and_industry",
+     "deliver_the_best_available_result_when_blocked",
+     "write_a_pinned_container_and_batch_job",
+     "plan_and_split_work_with_explicit_joins",
+     "import_skill_session_lifecycle_3b225b5e7cc6",
+     "import_skill_recall_a31bc591d734",
+     "import_skill_emem_verify_before_publish_344daddd7c55",
+     "import_command_why_1a8c7a1bd622"
+    ],
+    "entered": [
+     "import_skill_memory_ae45629190c0"
+    ],
+    "expected": [
+     "carry_earlier_decisions_forward_without_the_whole_transcript"
+    ],
+    "expected_ranks": {
+     "carry_earlier_decisions_forward_without_the_whole_transcript": [
+      null,
+      null
+     ]
+    },
+    "left": [
+     "import_command_why_1a8c7a1bd622"
+    ],
+    "query": "the agent forgot a decision from earlier in the task"
+   },
+   {
+    "after": [
+     "verify_the_requested_output",
+     "test_driven_change_red_green_refactor",
+     "report_observed_derived_assumed_and_unknown",
+     "normalize_website_addresses",
+     "write_a_pinned_container_and_batch_job",
+     "import_command_spec_2dc447d2ac3a",
+     "import_skill_technical_specification_a8a45855da4f",
+     "import_skill_sdd_requirements_engineer_1718fa8cdb9d",
+     "import_skill_discover_acs_5af9e36935d1",
+     "import_skill_qa_verify_backend_e8dfe7b0316c"
+    ],
+    "before": [
+     "verify_the_requested_output",
+     "test_driven_change_red_green_refactor",
+     "report_observed_derived_assumed_and_unknown",
+     "write_a_pinned_container_and_batch_job",
+     "normalize_website_addresses",
+     "import_command_spec_2dc447d2ac3a",
+     "import_skill_technical_specification_a8a45855da4f",
+     "import_skill_sdd_requirements_engineer_1718fa8cdb9d",
+     "import_skill_discover_acs_5af9e36935d1",
+     "import_skill_requirements_engineering_ccc293868df1"
+    ],
+    "entered": [
+     "import_skill_qa_verify_backend_e8dfe7b0316c"
+    ],
+    "expected": [
+     "write_acceptance_criteria_a_reviewer_can_check"
+    ],
+    "expected_ranks": {
+     "write_acceptance_criteria_a_reviewer_can_check": [
+      null,
+      null
+     ]
+    },
+    "left": [
+     "import_skill_requirements_engineering_ccc293868df1"
+    ],
+    "query": "write acceptance criteria for a ticket"
+   },
+   {
+    "after": [
+     "verify_an_export_in_an_isolated_interpreter",
+     "copy_a_table_with_corrections_never_in_place",
+     "measure_the_environment_before_relying_on_it",
+     "normalize_website_addresses",
+     "choose_one_next_action",
+     "choose_review_perspectives",
+     "layer_exception_catalogs_with_precedence",
+     "detect_malformed_values_by_dominant_pattern",
+     "restore_capitalisation_of_names",
+     "library.supply.openapi_operations.143bf4ce491c6a0d178f87b9.f29c10fd403c6589"
+    ],
+    "before": [
+     "verify_an_export_in_an_isolated_interpreter",
+     "copy_a_table_with_corrections_never_in_place",
+     "measure_the_environment_before_relying_on_it",
+     "normalize_website_addresses",
+     "choose_one_next_action",
+     "choose_review_perspectives",
+     "layer_exception_catalogs_with_precedence",
+     "detect_malformed_values_by_dominant_pattern",
+     "library.supply.openapi_operations.143bf4ce491c6a0d178f87b9.f29c10fd403c6589",
+     "library.supply.openapi_operations.dd991e264d430201b73c72af.0264440e6433ccc5"
+    ],
+    "entered": [
+     "restore_capitalisation_of_names"
+    ],
+    "expected": [
+     "build_an_incident_timeline_from_evidence"
+    ],
+    "expected_ranks": {
+     "build_an_incident_timeline_from_evidence": [
+      null,
+      null
+     ]
+    },
+    "left": [
+     "library.supply.openapi_operations.dd991e264d430201b73c72af.0264440e6433ccc5"
+    ],
+    "query": "put the outage events in order"
+   },
+   {
+    "after": [
+     "propose_a_dedupe_without_deleting_rows",
+     "review_an_accepted_solution_adversarially",
+     "split_address_lines_into_components",
+     "verify_an_export_in_an_isolated_interpreter",
+     "carry_competing_readings_of_a_request",
+     "choose_one_next_action",
+     "report_observed_derived_assumed_and_unknown",
+     "normalize_and_recover_email_addresses",
+     "escalate_uncertain_values_with_candidates",
+     "copy_a_table_with_corrections_never_in_place"
+    ],
+    "before": [
+     "propose_a_dedupe_without_deleting_rows",
+     "review_an_accepted_solution_adversarially",
+     "split_address_lines_into_components",
+     "verify_an_export_in_an_isolated_interpreter",
+     "carry_competing_readings_of_a_request",
+     "report_observed_derived_assumed_and_unknown",
+     "choose_one_next_action",
+     "normalize_and_recover_email_addresses",
+     "escalate_uncertain_values_with_candidates",
+     "copy_a_table_with_corrections_never_in_place"
+    ],
+    "entered": [],
+    "expected": [
+     "turn_an_incident_into_a_check_that_would_have_caught_it"
+    ],
+    "expected_ranks": {
+     "turn_an_incident_into_a_check_that_would_have_caught_it": [
+      null,
+      null
+     ]
+    },
+    "left": [],
+    "query": "turn the lesson from an outage into an alarm"
+   },
+   {
+    "after": [
+     "test_driven_change_red_green_refactor",
+     "report_observed_derived_assumed_and_unknown",
+     "normalize_website_addresses",
+     "write_a_pinned_container_and_batch_job",
+     "orient_on_a_task_and_write_its_contracts",
+     "import_rules_coding_df937f2b6927",
+     "import_rules_04_coding_standards_103e612c68df",
+     "import_skill_safe_write_delegation_dd1984759bbb",
+     "import_skill_ponytail_1c85a8cbff23",
+     "import_subagent_aide_auditor_4ca40de07848"
+    ],
+    "before": [
+     "test_driven_change_red_green_refactor",
+     "report_observed_derived_assumed_and_unknown",
+     "write_a_pinned_container_and_batch_job",
+     "normalize_website_addresses",
+     "orient_on_a_task_and_write_its_contracts",
+     "import_rules_coding_df937f2b6927",
+     "import_rules_04_coding_standards_103e612c68df",
+     "import_skill_safe_write_delegation_dd1984759bbb",
+     "import_skill_ponytail_1c85a8cbff23",
+     "import_subagent_aide_auditor_4ca40de07848"
+    ],
+    "entered": [],
+    "expected": [
+     "write_a_task_brief_for_an_agent"
+    ],
+    "expected_ranks": {
+     "write_a_task_brief_for_an_agent": [
+      null,
+      null
+     ]
+    },
+    "left": [],
+    "query": "write instructions for a coding agent"
+   },
+   {
+    "after": [
+     "report_observed_derived_assumed_and_unknown",
+     "apply_hold_or_escalate_each_correction",
+     "choose_metrics_by_task_type_and_industry",
+     "forecast_an_action_then_compare",
+     "detect_malformed_values_by_dominant_pattern",
+     "import_skill_refinement_advisor_75cf079a2505",
+     "import_skill_hotspot_9932efc5b5dd",
+     "import_skill_pragmatic_howto_b0e55f0dcb63",
+     "import_skill_brainstorm_4499d44cd213",
+     "import_skill_qdrant_version_upgrade_d92a0ec237a2"
+    ],
+    "before": [
+     "report_observed_derived_assumed_and_unknown",
+     "choose_metrics_by_task_type_and_industry",
+     "apply_hold_or_escalate_each_correction",
+     "forecast_an_action_then_compare",
+     "detect_malformed_values_by_dominant_pattern",
+     "import_skill_refinement_advisor_75cf079a2505",
+     "import_skill_hotspot_9932efc5b5dd",
+     "import_skill_pragmatic_howto_b0e55f0dcb63",
+     "import_skill_brainstorm_4499d44cd213",
+     "import_skill_qdrant_version_upgrade_d92a0ec237a2"
+    ],
+    "entered": [],
+    "expected": [
+     "supply_the_files_and_facts_an_assignment_needs"
+    ],
+    "expected_ranks": {
+     "supply_the_files_and_facts_an_assignment_needs": [
+      null,
+      null
+     ]
+    },
+    "left": [],
+    "query": "which files should I attach to the assignment"
+   },
+   {
+    "after": [
+     "decide_whether_a_step_needs_a_model",
+     "look_for_structure_the_model_missed",
+     "check_that_a_result_is_stable_and_generalizes",
+     "escalate_uncertain_values_with_candidates",
+     "verify_an_export_in_an_isolated_interpreter",
+     "library.supply.mcp_registry.989d198cb1401ef763687322.55ec7fac1fd2db5a",
+     "library.supply.mcp_registry.4e0c0f97f9e4156fd0d47a7e.c910fd06ce069879",
+     "library.supply.mcp_registry.cac6e8849d6968416266d1bb.3431405d0b6203fb",
+     "library.supply.mcp_registry.9d9c5eab465cd5b8c3444e59.e1626856c66c86bc",
+     "library.supply.mcp_registry.419b4cef16cc97528f5edf5b.507a89a57b9e55f9"
+    ],
+    "before": [
+     "decide_whether_a_step_needs_a_model",
+     "look_for_structure_the_model_missed",
+     "check_that_a_result_is_stable_and_generalizes",
+     "escalate_uncertain_values_with_candidates",
+     "library.supply.mcp_registry.989d198cb1401ef763687322.55ec7fac1fd2db5a",
+     "library.supply.mcp_registry.4e0c0f97f9e4156fd0d47a7e.c910fd06ce069879",
+     "library.supply.mcp_registry.cac6e8849d6968416266d1bb.3431405d0b6203fb",
+     "library.supply.mcp_registry.9d9c5eab465cd5b8c3444e59.e1626856c66c86bc",
+     "library.supply.mcp_registry.419b4cef16cc97528f5edf5b.507a89a57b9e55f9",
+     "library.supply.mcp_registry.59aa6b83f600ba7e2950649a.22c1c797c33e3f4f"
+    ],
+    "entered": [
+     "verify_an_export_in_an_isolated_interpreter"
+    ],
+    "expected": [
+     "check_generated_code_against_the_request"
+    ],
+    "expected_ranks": {
+     "check_generated_code_against_the_request": [
+      null,
+      null
+     ]
+    },
+    "left": [
+     "library.supply.mcp_registry.59aa6b83f600ba7e2950649a.22c1c797c33e3f4f"
+    ],
+    "query": "the model wrote the code and the tests"
+   },
+   {
+    "after": [
+     "normalize_whitespace_and_unicode_text",
+     "import_skill_plain_db1d59102958",
+     "import_subagent_planner_f5c266111589",
+     "import_subagent_hatch3r_maintainability_2f5dcbe96985",
+     "import_skill_browser_automation_18eeda79a485",
+     "import_skill_journeys_to_hypotheses_d5f1f1bf87d2",
+     "import_subagent_version_delta_analyst_f44394187f76",
+     "import_subagent_compat_6ae03f1c3950",
+     "library.supply.function_extracts.b4d2c7fdd757475334820844.6d9181c3c8fc341d",
+     "import_subagent_risk_assessment_b98fa4ef926c"
+    ],
+    "before": [
+     "normalize_whitespace_and_unicode_text",
+     "import_skill_plain_db1d59102958",
+     "import_subagent_planner_f5c266111589",
+     "import_subagent_hatch3r_maintainability_2f5dcbe96985",
+     "import_skill_browser_automation_18eeda79a485",
+     "import_skill_journeys_to_hypotheses_d5f1f1bf87d2",
+     "import_subagent_version_delta_analyst_f44394187f76",
+     "library.supply.function_extracts.b4d2c7fdd757475334820844.6d9181c3c8fc341d",
+     "import_subagent_compat_6ae03f1c3950",
+     "import_subagent_risk_assessment_b98fa4ef926c"
+    ],
+    "entered": [],
+    "expected": [
+     "normalize_whitespace_and_unicode_text"
+    ],
+    "expected_ranks": {
+     "normalize_whitespace_and_unicode_text": [
+      1,
+      1
+     ]
+    },
+    "left": [],
+    "query": "curly quotes and tabs are breaking my import"
+   },
+   {
+    "after": [
+     "restore_capitalisation_of_names",
+     "library.supply.function_extracts.24f78125f28000df2745682a.6721ce2c72ee24bc",
+     "library.supply.data_tables.33c66b0e9a9516428e00de75.7a3d036495f611d6",
+     "library.supply.data_tables.41cc38c07ded6bafe981221a.d6124fff7c3a64a3",
+     "import_skill_cortex_recall_global_f1eb09f45a0e",
+     "import_skill_upgrade_dependencies_11c9703489bb",
+     "library.supply.function_extracts.3370758c7b7baadcaefd612b.f36e802de6981430",
+     "import_command_usage_d278d5762f85",
+     "library.supply.function_extracts.5ed8ce35ea8205a9e964145b.733aeec8315ebd6c",
+     "library.supply.function_extracts.f3a54ba208801e2caf7cdcde.6d095e3e95dd7898"
+    ],
+    "before": [
+     "restore_capitalisation_of_names",
+     "library.supply.function_extracts.24f78125f28000df2745682a.6721ce2c72ee24bc",
+     "library.supply.data_tables.33c66b0e9a9516428e00de75.7a3d036495f611d6",
+     "library.supply.data_tables.41cc38c07ded6bafe981221a.d6124fff7c3a64a3",
+     "import_skill_cortex_recall_global_f1eb09f45a0e",
+     "import_skill_upgrade_dependencies_11c9703489bb",
+     "library.supply.function_extracts.3370758c7b7baadcaefd612b.f36e802de6981430",
+     "library.supply.function_extracts.5ed8ce35ea8205a9e964145b.733aeec8315ebd6c",
+     "import_command_usage_d278d5762f85",
+     "library.supply.function_extracts.f3a54ba208801e2caf7cdcde.6d095e3e95dd7898"
+    ],
+    "entered": [],
+    "expected": [
+     "restore_capitalisation_of_names"
+    ],
+    "expected_ranks": {
+     "restore_capitalisation_of_names": [
+      1,
+      1
+     ]
+    },
+    "left": [],
+    "query": "surnames like mcdonald are all lowercase"
+   },
+   {
+    "after": [
+     "normalize_website_addresses",
+     "normalize_and_recover_email_addresses",
+     "resolve_missing_information",
+     "score_duplicate_pairs_by_weakest_signal",
+     "split_address_lines_into_components",
+     "import_skill_pragma_and_addresses_a8c08e7649a9",
+     "library.supply.openapi_operations.f439d5deef6eb06069a5687d.9d47f648460d2131",
+     "import_skill_email_enrichment_e97a469351f3",
+     "library.supply.openapi_operations.7a2ec3daa229664c2813b441.243f4cd556b6eccf",
+     "import_skill_analyze_web_traffic_d79429e8ecba"
+    ],
+    "before": [
+     "normalize_website_addresses",
+     "normalize_and_recover_email_addresses",
+     "resolve_missing_information",
+     "score_duplicate_pairs_by_weakest_signal",
+     "import_skill_pragma_and_addresses_a8c08e7649a9",
+     "library.supply.openapi_operations.f439d5deef6eb06069a5687d.9d47f648460d2131",
+     "import_skill_email_enrichment_e97a469351f3",
+     "library.supply.openapi_operations.7a2ec3daa229664c2813b441.243f4cd556b6eccf",
+     "import_skill_analyze_web_traffic_d79429e8ecba",
+     "import_skill_check_timeout_strategy_7573738f603b"
+    ],
+    "entered": [
+     "split_address_lines_into_components"
+    ],
+    "expected": [
+     "normalize_website_addresses"
+    ],
+    "expected_ranks": {
+     "normalize_website_addresses": [
+      1,
+      1
+     ]
+    },
+    "left": [
+     "import_skill_check_timeout_strategy_7573738f603b"
+    ],
+    "query": "web addresses are missing http"
+   },
+   {
+    "after": [
+     "profile_text_column_before_cleaning",
+     "layer_exception_catalogs_with_precedence",
+     "import_skill_research_harness_setup_d907db293bc8",
+     "email_address_aggregation_data_engineering",
+     "import_skill_ac_audit_configure_audit_7cf7134d7f52",
+     "import_rules_examples_246bf8b84d57",
+     "import_rules_project_epic_template_cursorrules_prompt_a3074d6a25c0",
+     "import_skill_ac_safety_configure_safety_883405681b6b",
+     "import_rules_project_1b4846847df1",
+     "library.supply.openapi_operations.0c445e13460977b761d925ac.5e90b181c1e3addc"
+    ],
+    "before": [
+     "profile_text_column_before_cleaning",
+     "layer_exception_catalogs_with_precedence",
+     "import_skill_research_harness_setup_d907db293bc8",
+     "email_address_aggregation_data_engineering",
+     "import_skill_ac_audit_configure_audit_7cf7134d7f52",
+     "import_rules_examples_246bf8b84d57",
+     "import_rules_project_epic_template_cursorrules_prompt_a3074d6a25c0",
+     "library.supply.openapi_operations.0c445e13460977b761d925ac.5e90b181c1e3addc",
+     "import_skill_ac_safety_configure_safety_883405681b6b",
+     "import_rules_project_1b4846847df1"
+    ],
+    "entered": [],
+    "expected": [
+     "layer_exception_catalogs_with_precedence"
+    ],
+    "expected_ranks": {
+     "layer_exception_catalogs_with_precedence": [
+      2,
+      2
+     ]
+    },
+    "left": [],
+    "query": "per project overrides for cleaning rules"
+   },
+   {
+    "after": [
+     "copy_a_table_with_corrections_never_in_place",
+     "diagnose_a_stall_and_change_strategy",
+     "score_duplicate_pairs_by_weakest_signal",
+     "find_duplicate_records_with_blocking_keys",
+     "library.supply.openapi_operations.87dccdecb2d8af415d16ba76.7170330b009de76c",
+     "library.supply.openapi_operations.8c66dc79c9959dd2b1059b6d.3c94e93301aebe1b",
+     "library.supply.openapi_operations.2edca153c32eab474930079a.40195ea17fd35f53",
+     "import_skill_people_report_db90934c86fe",
+     "import_skill_coordinated_data_views_78e19c7a1510",
+     "import_subagent_fable_advisor_2902cb6f4560"
+    ],
+    "before": [
+     "copy_a_table_with_corrections_never_in_place",
+     "diagnose_a_stall_and_change_strategy",
+     "score_duplicate_pairs_by_weakest_signal",
+     "find_duplicate_records_with_blocking_keys",
+     "library.supply.openapi_operations.87dccdecb2d8af415d16ba76.7170330b009de76c",
+     "library.supply.openapi_operations.8c66dc79c9959dd2b1059b6d.3c94e93301aebe1b",
+     "library.supply.openapi_operations.2edca153c32eab474930079a.40195ea17fd35f53",
+     "import_skill_people_report_db90934c86fe",
+     "import_subagent_fable_advisor_2902cb6f4560",
+     "import_skill_coordinated_data_views_78e19c7a1510"
+    ],
+    "entered": [],
+    "expected": [
+     "find_duplicate_records_with_blocking_keys"
+    ],
+    "expected_ranks": {
+     "find_duplicate_records_with_blocking_keys": [
+      4,
+      4
+     ]
+    },
+    "left": [],
+    "query": "the same customer appears twice in my table"
+   },
+   {
+    "after": [
+     "copy_a_table_with_corrections_never_in_place",
+     "normalize_whitespace_and_unicode_text",
+     "import_command_rollback_0705555ca1bc",
+     "import_instruction_file_umbraco_cms_persistence_sqlite_claude_946a4259f0ed",
+     "import_subagent_hatch3r_brownfield_spec_0bb253205877",
+     "import_instruction_file_umbraco_cms_persistence_efcore_sqlite_cl_82542d5c2986",
+     "import_rules_sqlite_persistence_4f1e8971b576",
+     "import_skill_maintain_people_memory_cd4b19e9b689",
+     "import_rules_destructive_commands_0b271bb13409",
+     "import_rules_destructive_operations_e14afc1326bd"
+    ],
+    "before": [
+     "copy_a_table_with_corrections_never_in_place",
+     "normalize_whitespace_and_unicode_text",
+     "import_command_rollback_0705555ca1bc",
+     "import_instruction_file_umbraco_cms_persistence_sqlite_claude_946a4259f0ed",
+     "import_subagent_hatch3r_brownfield_spec_0bb253205877",
+     "import_instruction_file_umbraco_cms_persistence_efcore_sqlite_cl_82542d5c2986",
+     "import_skill_maintain_people_memory_cd4b19e9b689",
+     "import_rules_sqlite_persistence_4f1e8971b576",
+     "import_rules_destructive_commands_0b271bb13409",
+     "import_rules_destructive_operations_e14afc1326bd"
+    ],
+    "entered": [],
+    "expected": [
+     "copy_a_table_with_corrections_never_in_place"
+    ],
+    "expected_ranks": {
+     "copy_a_table_with_corrections_never_in_place": [
+      1,
+      1
+     ]
+    },
+    "left": [],
+    "query": "non destructive cleanup of a sqlite file"
+   },
+   {
+    "after": [
+     "detect_malformed_values_by_dominant_pattern",
+     "verify_an_export_in_an_isolated_interpreter",
+     "test_driven_change_red_green_refactor",
+     "verify_the_requested_output",
+     "profile_text_column_before_cleaning",
+     "import_skill_ccm_load_81b1cdd0c6e6",
+     "import_skill_go_a4c0c1391103",
+     "import_skill_deepen_plan_9668aaa73e83",
+     "library.supply.openapi_operations.89e0580c4a7144770318c334.7cae38cac80caa9c",
+     "import_skill_email_deliverability_ece8a92a551d"
+    ],
+    "before": [
+     "detect_malformed_values_by_dominant_pattern",
+     "verify_an_export_in_an_isolated_interpreter",
+     "test_driven_change_red_green_refactor",
+     "verify_the_requested_output",
+     "profile_text_column_before_cleaning",
+     "import_skill_ccm_load_81b1cdd0c6e6",
+     "import_skill_go_a4c0c1391103",
+     "import_skill_deepen_plan_9668aaa73e83",
+     "import_skill_email_deliverability_ece8a92a551d",
+     "library.supply.openapi_operations.89e0580c4a7144770318c334.7cae38cac80caa9c"
+    ],
+    "entered": [],
+    "expected": [
+     "refuse_secrets_and_unsafe_paths_in_generated_files"
+    ],
+    "expected_ranks": {
+     "refuse_secrets_and_unsafe_paths_in_generated_files": [
+      null,
+      null
+     ]
+    },
+    "left": [],
+    "query": "make sure no credentials end up in the output files"
+   },
+   {
+    "after": [
+     "write_a_pinned_container_and_batch_job",
+     "export_a_standalone_python_package",
+     "test_driven_change_red_green_refactor",
+     "verify_an_export_in_an_isolated_interpreter",
+     "import_skill_docker_patterns_4ebae8d82501",
+     "library.supply.openapi_operations.4065748015b12b24e6dcff09.6855de413b5ef9f7",
+     "library.supply.openapi_operations.d978530d8caf81edd663c83e.49d007823f782d23",
+     "import_skill_docker_feabfcd61c0a",
+     "import_skill_cloudrun_development_eec4f17e3233",
+     "import_rules_hatch3r_container_hardening_79732e56995c"
+    ],
+    "before": [
+     "write_a_pinned_container_and_batch_job",
+     "export_a_standalone_python_package",
+     "test_driven_change_red_green_refactor",
+     "verify_an_export_in_an_isolated_interpreter",
+     "import_skill_docker_patterns_4ebae8d82501",
+     "library.supply.openapi_operations.4065748015b12b24e6dcff09.6855de413b5ef9f7",
+     "library.supply.openapi_operations.d978530d8caf81edd663c83e.49d007823f782d23",
+     "import_skill_docker_feabfcd61c0a",
+     "import_skill_cloudrun_development_eec4f17e3233",
+     "library.supply.openapi_operations.e16c779681bc35dfae5dc0ee.fe26cad735d3914c"
+    ],
+    "entered": [
+     "import_rules_hatch3r_container_hardening_79732e56995c"
+    ],
+    "expected": [
+     "write_a_pinned_container_and_batch_job"
+    ],
+    "expected_ranks": {
+     "write_a_pinned_container_and_batch_job": [
+      1,
+      1
+     ]
+    },
+    "left": [
+     "library.supply.openapi_operations.e16c779681bc35dfae5dc0ee.fe26cad735d3914c"
+    ],
+    "query": "container image for a nightly batch run"
+   },
+   {
+    "after": [
+     "orient_on_a_task_and_write_its_contracts",
+     "check_for_existing_work_before_building",
+     "test_driven_change_red_green_refactor",
+     "normalize_website_addresses",
+     "report_observed_derived_assumed_and_unknown",
+     "export_a_standalone_python_package",
+     "import_skill_requirements_engineering_ccc293868df1",
+     "library.supply.openapi_operations.3e42dcd197ef42207226dba9.6e498ab3b6250143",
+     "library.supply.openapi_operations.9d0520a7771e9e9e385a536d.21b5bc1155d1ca51",
+     "import_skill_customer_story_builder_505d81d48e7b"
+    ],
+    "before": [
+     "orient_on_a_task_and_write_its_contracts",
+     "check_for_existing_work_before_building",
+     "test_driven_change_red_green_refactor",
+     "report_observed_derived_assumed_and_unknown",
+     "normalize_website_addresses",
+     "export_a_standalone_python_package",
+     "import_skill_requirements_engineering_ccc293868df1",
+     "library.supply.openapi_operations.3e42dcd197ef42207226dba9.6e498ab3b6250143",
+     "import_skill_customer_story_builder_505d81d48e7b",
+     "library.supply.openapi_operations.9d0520a7771e9e9e385a536d.21b5bc1155d1ca51"
+    ],
+    "entered": [],
+    "expected": [
+     "orient_on_a_task_and_write_its_contracts",
+     "questions_to_ask_before_starting_work"
+    ],
+    "expected_ranks": {
+     "orient_on_a_task_and_write_its_contracts": [
+      1,
+      1
+     ],
+     "questions_to_ask_before_starting_work": [
+      null,
+      null
+     ]
+    },
+    "left": [],
+    "query": "write down the inputs outputs and definition of done"
+   },
+   {
+    "after": [
+     "verify_an_export_in_an_isolated_interpreter",
+     "check_for_existing_work_before_building",
+     "copy_a_table_with_corrections_never_in_place",
+     "normalize_whitespace_and_unicode_text",
+     "choose_one_next_action",
+     "check_that_a_result_is_stable_and_generalizes",
+     "test_driven_change_red_green_refactor",
+     "import_command_craft_workflow_run_90f0338097e9",
+     "import_command_typegen_417520ee0d2a",
+     "import_command_amazing_e2e_check_5c5622f54c5c"
+    ],
+    "before": [
+     "verify_an_export_in_an_isolated_interpreter",
+     "check_for_existing_work_before_building",
+     "copy_a_table_with_corrections_never_in_place",
+     "normalize_whitespace_and_unicode_text",
+     "check_that_a_result_is_stable_and_generalizes",
+     "choose_one_next_action",
+     "test_driven_change_red_green_refactor",
+     "import_command_craft_workflow_run_90f0338097e9",
+     "import_command_typegen_417520ee0d2a",
+     "import_skill_stripe_test_clock_constraints_35bd8ffa4ad7"
+    ],
+    "entered": [
+     "import_command_amazing_e2e_check_5c5622f54c5c"
+    ],
+    "expected": [
+     "forecast_an_action_then_compare"
+    ],
+    "expected_ranks": {
+     "forecast_an_action_then_compare": [
+      null,
+      null
+     ]
+    },
+    "left": [
+     "import_skill_stripe_test_clock_constraints_35bd8ffa4ad7"
+    ],
+    "query": "sanity check an expensive run in advance"
+   },
+   {
+    "after": [
+     "carry_competing_readings_of_a_request",
+     "forecast_an_action_then_compare",
+     "report_observed_derived_assumed_and_unknown",
+     "escalate_uncertain_values_with_candidates",
+     "check_for_existing_work_before_building",
+     "profile_text_column_before_cleaning",
+     "write_a_pinned_container_and_batch_job",
+     "diagnose_a_stall_and_change_strategy",
+     "choose_metrics_by_task_type_and_industry",
+     "read_the_train_validation_gap"
+    ],
+    "before": [
+     "carry_competing_readings_of_a_request",
+     "forecast_an_action_then_compare",
+     "report_observed_derived_assumed_and_unknown",
+     "escalate_uncertain_values_with_candidates",
+     "check_for_existing_work_before_building",
+     "profile_text_column_before_cleaning",
+     "write_a_pinned_container_and_batch_job",
+     "choose_metrics_by_task_type_and_industry",
+     "diagnose_a_stall_and_change_strategy",
+     "read_the_train_validation_gap"
+    ],
+    "entered": [],
+    "expected": [
+     "diagnose_a_stall_and_change_strategy"
+    ],
+    "expected_ranks": {
+     "diagnose_a_stall_and_change_strategy": [
+      9,
+      8
+     ]
+    },
+    "left": [],
+    "query": "no progress for an hour what now"
+   },
+   {
+    "after": [
+     "report_observed_derived_assumed_and_unknown",
+     "normalize_website_addresses",
+     "test_driven_change_red_green_refactor",
+     "layer_exception_catalogs_with_precedence",
+     "orient_on_a_task_and_write_its_contracts",
+     "write_a_pinned_container_and_batch_job",
+     "review_an_accepted_solution_adversarially",
+     "import_skill_cco_tools_f28f84768c26",
+     "import_command_slither_bf3df3a72296",
+     "library.supply.openapi_operations.8c66dc79c9959dd2b1059b6d.3c94e93301aebe1b"
+    ],
+    "before": [
+     "report_observed_derived_assumed_and_unknown",
+     "normalize_website_addresses",
+     "test_driven_change_red_green_refactor",
+     "layer_exception_catalogs_with_precedence",
+     "orient_on_a_task_and_write_its_contracts",
+     "write_a_pinned_container_and_batch_job",
+     "review_an_accepted_solution_adversarially",
+     "import_skill_cco_tools_f28f84768c26",
+     "import_command_slither_bf3df3a72296",
+     "import_skill_service_omni_presence_user_config_deploy_d8ba32b52c12"
+    ],
+    "entered": [
+     "library.supply.openapi_operations.8c66dc79c9959dd2b1059b6d.3c94e93301aebe1b"
+    ],
+    "expected": [
+     "report_observed_derived_assumed_and_unknown"
+    ],
+    "expected_ranks": {
+     "report_observed_derived_assumed_and_unknown": [
+      1,
+      1
+     ]
+    },
+    "left": [
+     "import_skill_service_omni_presence_user_config_deploy_d8ba32b52c12"
+    ],
+    "query": "separate facts from guesses in the write up"
+   },
+   {
+    "after": [
+     "check_for_existing_work_before_building",
+     "import_skill_brag_slim_f7efae8269ee",
+     "import_skill_ynh_adopt_3d1619824ecf",
+     "import_skill_java_8043c24799bd",
+     "import_skill_database_mapping_9ded8f109e54",
+     "import_subagent_domain_researcher_2b34f028ea09",
+     "import_subagent_boomi_canvas_arranger_6c6f1f88f9a2",
+     "import_skill_intent_capture_02e722a82ab2",
+     "import_skill_communication_coach_418b4ae76433",
+     "import_skill_is_capture_51225bf549d4"
+    ],
+    "before": [
+     "check_for_existing_work_before_building",
+     "import_skill_brag_slim_f7efae8269ee",
+     "import_skill_ynh_adopt_3d1619824ecf",
+     "import_skill_java_8043c24799bd",
+     "import_skill_database_mapping_9ded8f109e54",
+     "import_subagent_domain_researcher_2b34f028ea09",
+     "import_subagent_boomi_canvas_arranger_6c6f1f88f9a2",
+     "import_skill_intent_capture_02e722a82ab2",
+     "import_skill_communication_coach_418b4ae76433",
+     "import_rules_component_pipeline_113145712059"
+    ],
+    "entered": [
+     "import_skill_is_capture_51225bf549d4"
+    ],
+    "expected": [
+     "check_for_existing_work_before_building"
+    ],
+    "expected_ranks": {
+     "check_for_existing_work_before_building": [
+      1,
+      1
+     ]
+    },
+    "left": [
+     "import_rules_component_pipeline_113145712059"
+    ],
+    "query": "has someone already built this"
+   },
+   {
+    "after": [
+     "test_driven_change_red_green_refactor",
+     "normalize_website_addresses",
+     "report_observed_derived_assumed_and_unknown",
+     "write_a_pinned_container_and_batch_job",
+     "import_subagent_meta_handover_e0cf99f1706c",
+     "import_skill_session_summary_ae431ba60cad",
+     "import_rules_agent_severance_5bc2200e82db",
+     "import_skill_02_who_is_this_for_d14fb66d6e0d",
+     "import_skill_cold_email_6b383c3dac52",
+     "import_skill_linkedin_content_a206cf22fdb3"
+    ],
+    "before": [
+     "test_driven_change_red_green_refactor",
+     "report_observed_derived_assumed_and_unknown",
+     "normalize_website_addresses",
+     "write_a_pinned_container_and_batch_job",
+     "import_subagent_meta_handover_e0cf99f1706c",
+     "import_skill_session_summary_ae431ba60cad",
+     "import_rules_agent_severance_5bc2200e82db",
+     "import_skill_02_who_is_this_for_d14fb66d6e0d",
+     "import_skill_cold_email_6b383c3dac52",
+     "import_skill_handoff_11eec1065015"
+    ],
+    "entered": [
+     "import_skill_linkedin_content_a206cf22fdb3"
+    ],
+    "expected": [
+     "hand_over_a_result_its_consumer_can_use"
+    ],
+    "expected_ranks": {
+     "hand_over_a_result_its_consumer_can_use": [
+      null,
+      null
+     ]
+    },
+    "left": [
+     "import_skill_handoff_11eec1065015"
+    ],
+    "query": "write the handover for whoever picks this up"
+   },
+   {
+    "after": [
+     "decide_whether_a_step_needs_a_model",
+     "escalate_uncertain_values_with_candidates",
+     "carry_competing_readings_of_a_request",
+     "look_for_structure_the_model_missed",
+     "check_that_a_result_is_stable_and_generalizes",
+     "import_skill_explain_02ad8a8a4826",
+     "import_skill_catchup_37a842b4feaa",
+     "import_skill_os_whats_next_68d655f2245c",
+     "import_skill_os_step_by_step_7b2289b7534c",
+     "import_skill_plain_language_ff55d74f3b97"
+    ],
+    "before": [
+     "decide_whether_a_step_needs_a_model",
+     "escalate_uncertain_values_with_candidates",
+     "carry_competing_readings_of_a_request",
+     "look_for_structure_the_model_missed",
+     "check_that_a_result_is_stable_and_generalizes",
+     "import_skill_explain_02ad8a8a4826",
+     "import_skill_catchup_37a842b4feaa",
+     "import_skill_os_whats_next_68d655f2245c",
+     "import_skill_os_step_by_step_7b2289b7534c",
+     "import_skill_openseo_coach_5be3902519b1"
+    ],
+    "entered": [
+     "import_skill_plain_language_ff55d74f3b97"
+    ],
+    "expected": [
+     "decide_whether_a_step_needs_a_model"
+    ],
+    "expected_ranks": {
+     "decide_whether_a_step_needs_a_model": [
+      1,
+      1
+     ]
+    },
+    "left": [
+     "import_skill_openseo_coach_5be3902519b1"
+    ],
+    "query": "can plain code do this instead of a language model"
+   },
+   {
+    "after": [
+     "decide_whether_a_step_needs_a_model",
+     "choose_one_next_action",
+     "choose_review_perspectives",
+     "carry_competing_readings_of_a_request",
+     "verify_the_requested_output",
+     "restore_capitalisation_of_names",
+     "detect_malformed_values_by_dominant_pattern",
+     "apply_hold_or_escalate_each_correction",
+     "score_duplicate_pairs_by_weakest_signal",
+     "resolve_missing_information"
+    ],
+    "before": [
+     "decide_whether_a_step_needs_a_model",
+     "choose_one_next_action",
+     "choose_review_perspectives",
+     "carry_competing_readings_of_a_request",
+     "verify_the_requested_output",
+     "restore_capitalisation_of_names",
+     "detect_malformed_values_by_dominant_pattern",
+     "score_duplicate_pairs_by_weakest_signal",
+     "apply_hold_or_escalate_each_correction",
+     "resolve_missing_information"
+    ],
+    "entered": [],
+    "expected": [
+     "decide_whether_a_step_needs_a_model"
+    ],
+    "expected_ranks": {
+     "decide_whether_a_step_needs_a_model": [
+      1,
+      1
+     ]
+    },
+    "left": [],
+    "query": "cut the token spend of each step"
+   },
+   {
+    "after": [
+     "look_for_structure_the_model_missed",
+     "detect_malformed_values_by_dominant_pattern",
+     "check_for_existing_work_before_building",
+     "carry_competing_readings_of_a_request",
+     "verify_an_export_in_an_isolated_interpreter",
+     "copy_a_table_with_corrections_never_in_place",
+     "import_skill_reconcile_backlog_sweep_plan_4f3329112bea",
+     "import_skill_verify_resolved_issues_7e3aab60c2e1",
+     "baltor_waste_mass_balance",
+     "import_skill_fix_3d12545fef4d"
+    ],
+    "before": [
+     "look_for_structure_the_model_missed",
+     "detect_malformed_values_by_dominant_pattern",
+     "check_for_existing_work_before_building",
+     "carry_competing_readings_of_a_request",
+     "import_skill_reconcile_backlog_sweep_plan_4f3329112bea",
+     "import_skill_verify_resolved_issues_7e3aab60c2e1",
+     "baltor_waste_mass_balance",
+     "import_skill_fix_3d12545fef4d",
+     "import_command_coverage_gaps_dc7aa2441d98",
+     "library.supply.openapi_operations.e469fc10bb1e374c775469bb.281332ef6536d983"
+    ],
+    "entered": [
+     "verify_an_export_in_an_isolated_interpreter",
+     "copy_a_table_with_corrections_never_in_place"
+    ],
+    "expected": [
+     "look_for_structure_the_model_missed"
+    ],
+    "expected_ranks": {
+     "look_for_structure_the_model_missed": [
+      1,
+      1
+     ]
+    },
+    "left": [
+     "import_command_coverage_gaps_dc7aa2441d98",
+     "library.supply.openapi_operations.e469fc10bb1e374c775469bb.281332ef6536d983"
+    ],
+    "query": "the residuals still have a pattern in them"
+   },
+   {
+    "after": [
+     "plan_and_split_work_with_explicit_joins",
+     "normalize_whitespace_and_unicode_text",
+     "test_driven_change_red_green_refactor",
+     "check_for_existing_work_before_building",
+     "read_the_train_validation_gap",
+     "check_that_a_result_is_stable_and_generalizes",
+     "audit_data_splits_for_errors_and_leakage",
+     "verify_the_requested_output",
+     "split_address_lines_into_components",
+     "library.supply.openapi_operations.d5b2510dce42376b51ebcb8f.598890451da86942"
+    ],
+    "before": [
+     "plan_and_split_work_with_explicit_joins",
+     "normalize_whitespace_and_unicode_text",
+     "test_driven_change_red_green_refactor",
+     "check_for_existing_work_before_building",
+     "read_the_train_validation_gap",
+     "check_that_a_result_is_stable_and_generalizes",
+     "audit_data_splits_for_errors_and_leakage",
+     "split_address_lines_into_components",
+     "verify_the_requested_output",
+     "library.supply.openapi_operations.d5b2510dce42376b51ebcb8f.598890451da86942"
+    ],
+    "entered": [],
+    "expected": [
+     "audit_data_splits_for_errors_and_leakage"
+    ],
+    "expected_ranks": {
+     "audit_data_splits_for_errors_and_leakage": [
+      7,
+      7
+     ]
+    },
+    "left": [],
+    "query": "check my train test split"
+   },
+   {
+    "after": [
+     "check_that_a_result_is_stable_and_generalizes",
+     "test_driven_change_red_green_refactor",
+     "propose_a_dedupe_without_deleting_rows",
+     "decide_whether_a_step_needs_a_model",
+     "look_for_structure_the_model_missed",
+     "detect_malformed_values_by_dominant_pattern",
+     "escalate_uncertain_values_with_candidates",
+     "verify_the_requested_output",
+     "forecast_an_action_then_compare",
+     "check_for_existing_work_before_building"
+    ],
+    "before": [
+     "check_that_a_result_is_stable_and_generalizes",
+     "test_driven_change_red_green_refactor",
+     "propose_a_dedupe_without_deleting_rows",
+     "decide_whether_a_step_needs_a_model",
+     "look_for_structure_the_model_missed",
+     "detect_malformed_values_by_dominant_pattern",
+     "escalate_uncertain_values_with_candidates",
+     "verify_the_requested_output",
+     "check_for_existing_work_before_building",
+     "forecast_an_action_then_compare"
+    ],
+    "entered": [],
+    "expected": [
+     "analyse_errors_by_segment_and_cluster"
+    ],
+    "expected_ranks": {
+     "analyse_errors_by_segment_and_cluster": [
+      null,
+      null
+     ]
+    },
+    "left": [],
+    "query": "where is the model failing most"
+   },
+   {
+    "after": [
+     "split_address_lines_into_components",
+     "analyse_errors_by_segment_and_cluster",
+     "propose_a_dedupe_without_deleting_rows",
+     "plan_and_split_work_with_explicit_joins",
+     "find_duplicate_records_with_blocking_keys",
+     "import_rules_common_mistakes_800c888ebd25",
+     "library.supply.openapi_operations.ca76944eb51cffc69c631523.f6cefe464fc58149",
+     "library.supply.openapi_operations.f5809c3a1a9a492459137285.ac58d074c340e393",
+     "import_skill_ast_skeletonizer_d79e958eea9c",
+     "library.supply.openapi_operations.6d6fcaa41cbc88fd3291df1e.6664680999171774"
+    ],
+    "before": [
+     "split_address_lines_into_components",
+     "analyse_errors_by_segment_and_cluster",
+     "propose_a_dedupe_without_deleting_rows",
+     "plan_and_split_work_with_explicit_joins",
+     "find_duplicate_records_with_blocking_keys",
+     "import_rules_common_mistakes_800c888ebd25",
+     "library.supply.openapi_operations.ca76944eb51cffc69c631523.f6cefe464fc58149",
+     "import_skill_ast_skeletonizer_d79e958eea9c",
+     "library.supply.openapi_operations.f5809c3a1a9a492459137285.ac58d074c340e393",
+     "library.supply.openapi_operations.6d6fcaa41cbc88fd3291df1e.6664680999171774"
+    ],
+    "entered": [],
+    "expected": [
+     "analyse_errors_by_segment_and_cluster"
+    ],
+    "expected_ranks": {
+     "analyse_errors_by_segment_and_cluster": [
+      2,
+      2
+     ]
+    },
+    "left": [],
+    "query": "group the mistakes into types"
+   },
+   {
+    "after": [
+     "normalize_and_recover_email_addresses",
+     "check_for_existing_work_before_building",
+     "measure_the_environment_before_relying_on_it",
+     "plan_and_split_work_with_explicit_joins",
+     "choose_one_next_action",
+     "choose_review_perspectives",
+     "import_skill_accelerate_diagnose_fa021d4f361b",
+     "import_skill_cargo_analytics_7547a96455a8",
+     "import_command_offload_570f5d0456db",
+     "import_skill_os_what_could_go_wrong_ad1b3003777d"
+    ],
+    "before": [
+     "normalize_and_recover_email_addresses",
+     "check_for_existing_work_before_building",
+     "measure_the_environment_before_relying_on_it",
+     "plan_and_split_work_with_explicit_joins",
+     "choose_one_next_action",
+     "choose_review_perspectives",
+     "import_skill_accelerate_diagnose_fa021d4f361b",
+     "import_skill_cargo_analytics_7547a96455a8",
+     "import_skill_os_what_could_go_wrong_ad1b3003777d",
+     "import_command_offload_570f5d0456db"
+    ],
+    "entered": [],
+    "expected": [
+     "review_an_accepted_solution_adversarially"
+    ],
+    "expected_ranks": {
+     "review_an_accepted_solution_adversarially": [
+      null,
+      null
+     ]
+    },
+    "left": [],
+    "query": "imagine this failed and work out why"
+   },
+   {
+    "after": [
+     "test_driven_change_red_green_refactor",
+     "freeze_the_success_metric_before_measuring",
+     "verify_the_requested_output",
+     "orient_on_a_task_and_write_its_contracts",
+     "analyse_errors_by_segment_and_cluster",
+     "restore_capitalisation_of_names",
+     "normalize_website_addresses",
+     "audit_data_splits_for_errors_and_leakage",
+     "import_subagent_test_writer_764d1e3ff27d",
+     "import_skill_test_driven_development_c007517700b0"
+    ],
+    "before": [
+     "test_driven_change_red_green_refactor",
+     "freeze_the_success_metric_before_measuring",
+     "verify_the_requested_output",
+     "orient_on_a_task_and_write_its_contracts",
+     "analyse_errors_by_segment_and_cluster",
+     "restore_capitalisation_of_names",
+     "normalize_website_addresses",
+     "import_subagent_test_writer_764d1e3ff27d",
+     "import_skill_test_driven_development_c007517700b0",
+     "import_skill_tdd_e9ca00d6f0a4"
+    ],
+    "entered": [
+     "audit_data_splits_for_errors_and_leakage"
+    ],
+    "expected": [
+     "test_driven_change_red_green_refactor"
+    ],
+    "expected_ranks": {
+     "test_driven_change_red_green_refactor": [
+      1,
+      1
+     ]
+    },
+    "left": [
+     "import_skill_tdd_e9ca00d6f0a4"
+    ],
+    "query": "write the failing test before the fix"
+   },
+   {
+    "after": [
+     "score_duplicate_pairs_by_weakest_signal",
+     "propose_a_dedupe_without_deleting_rows",
+     "diagnose_a_stall_and_change_strategy",
+     "read_the_train_validation_gap",
+     "test_driven_change_red_green_refactor",
+     "analyse_errors_by_segment_and_cluster",
+     "audit_data_splits_for_errors_and_leakage",
+     "import_skill_emem_shared_identity_6e85e41eaf9a",
+     "import_skill_emem_referential_drift_18cac1d20b7d",
+     "import_skill_basemind_comms_441caa180e8a"
+    ],
+    "before": [
+     "score_duplicate_pairs_by_weakest_signal",
+     "propose_a_dedupe_without_deleting_rows",
+     "diagnose_a_stall_and_change_strategy",
+     "read_the_train_validation_gap",
+     "test_driven_change_red_green_refactor",
+     "analyse_errors_by_segment_and_cluster",
+     "audit_data_splits_for_errors_and_leakage",
+     "choose_review_perspectives",
+     "check_for_existing_work_before_building",
+     "decide_whether_a_step_needs_a_model"
+    ],
+    "entered": [
+     "import_skill_emem_shared_identity_6e85e41eaf9a",
+     "import_skill_emem_referential_drift_18cac1d20b7d",
+     "import_skill_basemind_comms_441caa180e8a"
+    ],
+    "expected": [
+     "package_one_skill_for_two_coding_harnesses"
+    ],
+    "expected_ranks": {
+     "package_one_skill_for_two_coding_harnesses": [
+      null,
+      null
+     ]
+    },
+    "left": [
+     "choose_review_perspectives",
+     "check_for_existing_work_before_building",
+     "decide_whether_a_step_needs_a_model"
+    ],
+    "query": "same skill published for two coding agents"
+   },
+   {
+    "after": [
+     "write_a_pinned_container_and_batch_job",
+     "deliver_the_best_available_result_when_blocked",
+     "test_driven_change_red_green_refactor",
+     "verify_an_export_in_an_isolated_interpreter",
+     "escalate_uncertain_values_with_candidates",
+     "resolve_missing_information",
+     "apply_hold_or_escalate_each_correction",
+     "import_skill_lsp_refactor_d111357a6928",
+     "library.supply.openapi_operations.87dccdecb2d8af415d16ba76.7170330b009de76c",
+     "import_skill_performance_testing_0fae51016040"
+    ],
+    "before": [
+     "write_a_pinned_container_and_batch_job",
+     "deliver_the_best_available_result_when_blocked",
+     "test_driven_change_red_green_refactor",
+     "verify_an_export_in_an_isolated_interpreter",
+     "escalate_uncertain_values_with_candidates",
+     "resolve_missing_information",
+     "apply_hold_or_escalate_each_correction",
+     "import_skill_lsp_refactor_d111357a6928",
+     "library.supply.openapi_operations.87dccdecb2d8af415d16ba76.7170330b009de76c",
+     "import_skill_http_load_profiler_40c065cde27e"
+    ],
+    "entered": [
+     "import_skill_performance_testing_0fae51016040"
+    ],
+    "expected": [
+     "make_a_data_pipeline_safe_to_run_again"
+    ],
+    "expected_ranks": {
+     "make_a_data_pipeline_safe_to_run_again": [
+      null,
+      null
+     ]
+    },
+    "left": [
+     "import_skill_http_load_profiler_40c065cde27e"
+    ],
+    "query": "safe to run the load twice"
+   },
+   {
+    "after": [
+     "propose_a_dedupe_without_deleting_rows",
+     "find_duplicate_records_with_blocking_keys",
+     "test_driven_change_red_green_refactor",
+     "copy_a_table_with_corrections_never_in_place",
+     "write_a_pinned_container_and_batch_job",
+     "library.supply.openapi_operations.d66a00464277675a4d207d0c.606bfc6104af0b46",
+     "import_skill_backfill_7b4107339f99",
+     "library.supply.openapi_operations.4646262f49da2b734b565121.44b84c35dd72b04b",
+     "library.supply.openapi_operations.c43dee5f01be0ce449b9a9f0.ad0e5ea856536ca6",
+     "library.supply.openapi_operations.fe700b02f42466571238c894.dce19db76d7d4544"
+    ],
+    "before": [
+     "propose_a_dedupe_without_deleting_rows",
+     "find_duplicate_records_with_blocking_keys",
+     "test_driven_change_red_green_refactor",
+     "write_a_pinned_container_and_batch_job",
+     "copy_a_table_with_corrections_never_in_place",
+     "library.supply.openapi_operations.d66a00464277675a4d207d0c.606bfc6104af0b46",
+     "import_skill_backfill_7b4107339f99",
+     "library.supply.openapi_operations.c43dee5f01be0ce449b9a9f0.ad0e5ea856536ca6",
+     "library.supply.openapi_operations.4646262f49da2b734b565121.44b84c35dd72b04b",
+     "library.supply.openapi_operations.4c33911af47f94a2529aa756.e93bfbd2157cbe71"
+    ],
+    "entered": [
+     "library.supply.openapi_operations.fe700b02f42466571238c894.dce19db76d7d4544"
+    ],
+    "expected": [
+     "make_a_data_pipeline_safe_to_run_again"
+    ],
+    "expected_ranks": {
+     "make_a_data_pipeline_safe_to_run_again": [
+      null,
+      null
+     ]
+    },
+    "left": [
+     "library.supply.openapi_operations.4c33911af47f94a2529aa756.e93bfbd2157cbe71"
+    ],
+    "query": "backfill without doubling the rows"
+   },
+   {
+    "after": [
+     "normalize_and_recover_email_addresses",
+     "import_skill_latex_conference_template_organizer_a6c6fc066338",
+     "import_skill_ownership_enrichment_10d96a4945c7",
+     "import_skill_cco_clean_42e7dfd3de2d",
+     "import_skill_refactor_c2b80c0d3727",
+     "import_skill_sf_clean_gone_branches_f95d51606297",
+     "import_skill_refine_fe14c97929d8",
+     "import_command_fec_refactor_clean_b3ef9106903f",
+     "import_skill_remove_workspace_d17ee24aaa27",
+     "import_skill_git_workflow_and_versioning_f9f553d68c90"
+    ],
+    "before": [
+     "normalize_and_recover_email_addresses",
+     "import_skill_latex_conference_template_organizer_a6c6fc066338",
+     "import_skill_ownership_enrichment_10d96a4945c7",
+     "import_skill_cco_clean_42e7dfd3de2d",
+     "import_skill_refactor_c2b80c0d3727",
+     "import_skill_sf_clean_gone_branches_f95d51606297",
+     "import_skill_refine_fe14c97929d8",
+     "import_skill_git_workflow_and_versioning_f9f553d68c90",
+     "import_command_fec_refactor_clean_b3ef9106903f",
+     "import_skill_remove_workspace_d17ee24aaa27"
+    ],
+    "entered": [],
+    "expected": [
+     "profile_text_column_before_cleaning",
+     "canonicalize_company_legal_suffixes",
+     "restore_capitalisation_of_names",
+     "normalize_whitespace_and_unicode_text"
+    ],
+    "expected_ranks": {
+     "canonicalize_company_legal_suffixes": [
+      null,
+      null
+     ],
+     "normalize_whitespace_and_unicode_text": [
+      null,
+      null
+     ],
+     "profile_text_column_before_cleaning": [
+      null,
+      null
+     ],
+     "restore_capitalisation_of_names": [
+      null,
+      null
+     ]
+    },
+    "left": [],
+    "query": "clean up a messy spreadsheet of companies"
+   },
+   {
+    "after": [
+     "normalize_whitespace_and_unicode_text",
+     "copy_a_table_with_corrections_never_in_place",
+     "detect_malformed_values_by_dominant_pattern",
+     "normalize_website_addresses",
+     "layer_exception_catalogs_with_precedence",
+     "find_duplicate_records_with_blocking_keys",
+     "restore_capitalisation_of_names",
+     "profile_text_column_before_cleaning",
+     "verify_an_export_in_an_isolated_interpreter",
+     "export_a_standalone_python_package"
+    ],
+    "before": [
+     "normalize_whitespace_and_unicode_text",
+     "copy_a_table_with_corrections_never_in_place",
+     "detect_malformed_values_by_dominant_pattern",
+     "find_duplicate_records_with_blocking_keys",
+     "normalize_website_addresses",
+     "layer_exception_catalogs_with_precedence",
+     "restore_capitalisation_of_names",
+     "profile_text_column_before_cleaning",
+     "verify_an_export_in_an_isolated_interpreter",
+     "export_a_standalone_python_package"
+    ],
+    "entered": [],
+    "expected": [
+     "normalize_whitespace_and_unicode_text",
+     "restore_capitalisation_of_names",
+     "normalize_phone_numbers",
+     "normalize_and_recover_email_addresses",
+     "normalize_website_addresses"
+    ],
+    "expected_ranks": {
+     "normalize_and_recover_email_addresses": [
+      null,
+      null
+     ],
+     "normalize_phone_numbers": [
+      null,
+      null
+     ],
+     "normalize_website_addresses": [
+      5,
+      4
+     ],
+     "normalize_whitespace_and_unicode_text": [
+      1,
+      1
+     ],
+     "restore_capitalisation_of_names": [
+      7,
+      7
+     ]
+    },
+    "left": [],
+    "query": "standardise the text fields in a contact table"
+   },
+   {
+    "after": [
+     "score_duplicate_pairs_by_weakest_signal",
+     "test_driven_change_red_green_refactor",
+     "profile_text_column_before_cleaning",
+     "report_observed_derived_assumed_and_unknown",
+     "choose_metrics_by_task_type_and_industry",
+     "normalize_and_recover_email_addresses",
+     "normalize_website_addresses",
+     "write_a_pinned_container_and_batch_job",
+     "find_duplicate_records_with_blocking_keys",
+     "import_skill_write_a572576fd335"
+    ],
+    "before": [
+     "score_duplicate_pairs_by_weakest_signal",
+     "test_driven_change_red_green_refactor",
+     "profile_text_column_before_cleaning",
+     "choose_metrics_by_task_type_and_industry",
+     "normalize_and_recover_email_addresses",
+     "report_observed_derived_assumed_and_unknown",
+     "write_a_pinned_container_and_batch_job",
+     "normalize_website_addresses",
+     "find_duplicate_records_with_blocking_keys",
+     "import_skill_copywriting_242afc574fef"
+    ],
+    "entered": [
+     "import_skill_write_a572576fd335"
+    ],
+    "expected": [],
+    "expected_ranks": {},
+    "left": [
+     "import_skill_copywriting_242afc574fef"
+    ],
+    "query": "write a marketing email for a product launch"
+   },
+   {
+    "after": [
+     "import_skill_daily_meeting_update_ca3d23bc9a12",
+     "import_skill_daily_task_prep_50e27864c607",
+     "import_subagent_meeting_qualifier_e114cfa25b36",
+     "import_skill_daily_brief_a202af98eb31",
+     "import_skill_mermail_scheduling_agent_90b3b19045db",
+     "import_skill_exec_brief_e3df92259580",
+     "import_command_end_day_1bc344da2164",
+     "import_skill_send_sms_398107bd7e6a",
+     "import_skill_meeting_prep_8cd396f1e2d2",
+     "import_skill_book_publishing_a5c89014b740"
+    ],
+    "before": [
+     "import_skill_daily_meeting_update_ca3d23bc9a12",
+     "import_skill_daily_task_prep_50e27864c607",
+     "import_subagent_meeting_qualifier_e114cfa25b36",
+     "import_skill_daily_brief_a202af98eb31",
+     "import_skill_mermail_scheduling_agent_90b3b19045db",
+     "import_skill_exec_brief_e3df92259580",
+     "import_skill_send_sms_398107bd7e6a",
+     "import_command_end_day_1bc344da2164",
+     "import_skill_meeting_prep_8cd396f1e2d2",
+     "import_skill_book_publishing_a5c89014b740"
+    ],
+    "entered": [],
+    "expected": [],
+    "expected_ranks": {},
+    "left": [],
+    "query": "book a meeting room for tomorrow morning"
+   },
+   {
+    "after": [
+     "layer_exception_catalogs_with_precedence",
+     "escalate_uncertain_values_with_candidates",
+     "import_skill_ddw_help_de246cf47e02",
+     "import_skill_reorient_03df1d0b76f7",
+     "import_rules_boundary_setting_scripts_eb4be1a34dc6",
+     "import_skill_is_guide_ac561e33ff42",
+     "import_rules_reconnect_with_someone_b33a50298ee5",
+     "import_rules_ai_context_primer_03f1c0792355",
+     "import_skill_gno_onboard_00a7a13f7663",
+     "import_skill_pragmatic_howto_b0e55f0dcb63"
+    ],
+    "before": [
+     "layer_exception_catalogs_with_precedence",
+     "escalate_uncertain_values_with_candidates",
+     "import_skill_ddw_help_de246cf47e02",
+     "import_skill_reorient_03df1d0b76f7",
+     "import_rules_boundary_setting_scripts_eb4be1a34dc6",
+     "import_rules_reconnect_with_someone_b33a50298ee5",
+     "import_skill_is_guide_ac561e33ff42",
+     "import_skill_gno_onboard_00a7a13f7663",
+     "import_rules_ai_context_primer_03f1c0792355",
+     "import_skill_pragmatic_howto_b0e55f0dcb63"
+    ],
+    "entered": [],
+    "expected": [
+     "write_a_regression_test_that_pins_a_defect"
+    ],
+    "expected_ranks": {
+     "write_a_regression_test_that_pins_a_defect": [
+      null,
+      null
+     ]
+    },
+    "left": [],
+    "query": "i fixed a bug how do i stop it coming back"
+   },
+   {
+    "after": [
+     "test_driven_change_red_green_refactor",
+     "freeze_the_success_metric_before_measuring",
+     "find_duplicate_records_with_blocking_keys",
+     "plan_and_split_work_with_explicit_joins",
+     "analyse_errors_by_segment_and_cluster",
+     "propose_a_dedupe_without_deleting_rows",
+     "restore_capitalisation_of_names",
+     "copy_a_table_with_corrections_never_in_place",
+     "write_a_pinned_container_and_batch_job",
+     "audit_data_splits_for_errors_and_leakage"
+    ],
+    "before": [
+     "test_driven_change_red_green_refactor",
+     "freeze_the_success_metric_before_measuring",
+     "find_duplicate_records_with_blocking_keys",
+     "plan_and_split_work_with_explicit_joins",
+     "analyse_errors_by_segment_and_cluster",
+     "propose_a_dedupe_without_deleting_rows",
+     "restore_capitalisation_of_names",
+     "write_a_pinned_container_and_batch_job",
+     "copy_a_table_with_corrections_never_in_place",
+     "audit_data_splits_for_errors_and_leakage"
+    ],
+    "entered": [],
+    "expected": [
+     "write_a_regression_test_that_pins_a_defect"
+    ],
+    "expected_ranks": {
+     "write_a_regression_test_that_pins_a_defect": [
+      null,
+      null
+     ]
+    },
+    "left": [],
+    "query": "add a test that fails without the fix"
+   },
+   {
+    "after": [
+     "test_driven_change_red_green_refactor",
+     "audit_data_splits_for_errors_and_leakage",
+     "choose_metrics_by_task_type_and_industry",
+     "apply_hold_or_escalate_each_correction",
+     "import_subagent_tester_af891be4a359",
+     "import_skill_test_harness_63c6f6dfb270",
+     "import_skill_test_case_design_69a621f779e2",
+     "import_subagent_agent_7a8a8047705a",
+     "import_command_grillme_b93e3ea00f51",
+     "import_skill_test_generation_patterns_f4794198d2a8"
+    ],
+    "before": [
+     "test_driven_change_red_green_refactor",
+     "audit_data_splits_for_errors_and_leakage",
+     "choose_metrics_by_task_type_and_industry",
+     "apply_hold_or_escalate_each_correction",
+     "import_subagent_tester_af891be4a359",
+     "import_skill_test_harness_63c6f6dfb270",
+     "import_skill_test_case_design_69a621f779e2",
+     "import_command_grillme_b93e3ea00f51",
+     "import_subagent_agent_7a8a8047705a",
+     "import_skill_test_generation_patterns_f4794198d2a8"
+    ],
+    "entered": [],
+    "expected": [
+     "choose_test_cases_from_boundaries_and_classes"
+    ],
+    "expected_ranks": {
+     "choose_test_cases_from_boundaries_and_classes": [
+      null,
+      null
+     ]
+    },
+    "left": [],
+    "query": "which test cases should i write for this validation"
+   },
+   {
+    "after": [
+     "orient_on_a_task_and_write_its_contracts",
+     "measure_the_environment_before_relying_on_it",
+     "normalize_and_recover_email_addresses",
+     "apply_hold_or_escalate_each_correction",
+     "detect_malformed_values_by_dominant_pattern",
+     "import_skill_cesiumjs_interaction_fa3889784bc1",
+     "library.supply.openapi_operations.f6e779879aa2ab1d049b41d5.4ce895fabb8e5f54",
+     "library.supply.openapi_operations.efefcdb64d98153bb4cfb29e.8bd304b0e5431a1c",
+     "import_skill_next_1fc4e9eb84cb",
+     "library.supply.openapi_operations.78ea1b33534959fbfb52e5fe.91905e321f83c2e2"
+    ],
+    "before": [
+     "orient_on_a_task_and_write_its_contracts",
+     "measure_the_environment_before_relying_on_it",
+     "normalize_and_recover_email_addresses",
+     "apply_hold_or_escalate_each_correction",
+     "import_skill_cesiumjs_interaction_fa3889784bc1",
+     "library.supply.openapi_operations.f6e779879aa2ab1d049b41d5.4ce895fabb8e5f54",
+     "library.supply.openapi_operations.efefcdb64d98153bb4cfb29e.8bd304b0e5431a1c",
+     "import_skill_next_1fc4e9eb84cb",
+     "library.supply.openapi_operations.78ea1b33534959fbfb52e5fe.91905e321f83c2e2",
+     "library.supply.function_extracts.1ab7b6aba1465fe58978f3f5.c2ec999970eb9ee2"
+    ],
+    "entered": [
+     "detect_malformed_values_by_dominant_pattern"
+    ],
+    "expected": [
+     "choose_test_cases_from_boundaries_and_classes"
+    ],
+    "expected_ranks": {
+     "choose_test_cases_from_boundaries_and_classes": [
+      null,
+      null
+     ]
+    },
+    "left": [
+     "library.supply.function_extracts.1ab7b6aba1465fe58978f3f5.c2ec999970eb9ee2"
+    ],
+    "query": "pick input values at the edges of the allowed range"
+   },
+   {
+    "after": [
+     "resolve_missing_information",
+     "look_for_structure_the_model_missed",
+     "verify_an_export_in_an_isolated_interpreter",
+     "measure_the_environment_before_relying_on_it",
+     "forecast_an_action_then_compare",
+     "escalate_uncertain_values_with_candidates",
+     "freeze_the_success_metric_before_measuring",
+     "apply_hold_or_escalate_each_correction",
+     "import_skill_gitnexus_impact_analysis_972afac8d38c",
+     "import_skill_10_reverse_kpi_global_d06873483ef6"
+    ],
+    "before": [
+     "resolve_missing_information",
+     "look_for_structure_the_model_missed",
+     "verify_an_export_in_an_isolated_interpreter",
+     "measure_the_environment_before_relying_on_it",
+     "forecast_an_action_then_compare",
+     "escalate_uncertain_values_with_candidates",
+     "import_skill_gitnexus_impact_analysis_972afac8d38c",
+     "import_skill_10_reverse_kpi_global_d06873483ef6",
+     "import_skill_to_issues_c19c886e9ba4",
+     "import_skill_hate_4fe4f403eaa0"
+    ],
+    "entered": [
+     "freeze_the_success_metric_before_measuring",
+     "apply_hold_or_escalate_each_correction"
+    ],
+    "expected": [
+     "prove_a_check_can_fail_when_the_behaviour_is_removed"
+    ],
+    "expected_ranks": {
+     "prove_a_check_can_fail_when_the_behaviour_is_removed": [
+      null,
+      null
+     ]
+    },
+    "left": [
+     "import_skill_to_issues_c19c886e9ba4",
+     "import_skill_hate_4fe4f403eaa0"
+    ],
+    "query": "break the code on purpose to see the guard reject it"
+   },
+   {
+    "after": [
+     "hand_over_a_result_its_consumer_can_use",
+     "choose_review_perspectives",
+     "propose_a_dedupe_without_deleting_rows",
+     "canonicalize_company_legal_suffixes",
+     "restore_capitalisation_of_names",
+     "apply_hold_or_escalate_each_correction",
+     "review_an_accepted_solution_adversarially",
+     "import_skill_review_ed9c762b948d",
+     "import_skill_review_pr_c318bc87ca08",
+     "import_skill_github_review_pr_7ee05dcab04f"
+    ],
+    "before": [
+     "hand_over_a_result_its_consumer_can_use",
+     "choose_review_perspectives",
+     "propose_a_dedupe_without_deleting_rows",
+     "restore_capitalisation_of_names",
+     "canonicalize_company_legal_suffixes",
+     "apply_hold_or_escalate_each_correction",
+     "review_an_accepted_solution_adversarially",
+     "import_skill_review_ed9c762b948d",
+     "import_skill_review_pr_c318bc87ca08",
+     "import_skill_github_review_pr_7ee05dcab04f"
+    ],
+    "entered": [],
+    "expected": [
+     "review_a_change_for_correctness"
+    ],
+    "expected_ranks": {
+     "review_a_change_for_correctness": [
+      null,
+      null
+     ]
+    },
+    "left": [],
+    "query": "review this pull request for bugs"
+   },
+   {
+    "after": [
+     "plan_and_split_work_with_explicit_joins",
+     "look_for_structure_the_model_missed",
+     "import_subagent_test_failure_analyzer_51c72e9a36fc",
+     "import_subagent_bizlogic_hunter_12652fa14a56",
+     "import_skill_debugging_5c8de4133f70",
+     "import_subagent_red_team_6f6775c9c7c9",
+     "import_subagent_conductor_6271b1429ddf",
+     "import_subagent_bug_hunter_142368d88cef",
+     "import_subagent_review_correctness_3ff277bb8cf8",
+     "import_subagent_debugger_a14d883be88e"
+    ],
+    "before": [
+     "plan_and_split_work_with_explicit_joins",
+     "look_for_structure_the_model_missed",
+     "import_subagent_test_failure_analyzer_51c72e9a36fc",
+     "import_subagent_bizlogic_hunter_12652fa14a56",
+     "import_skill_debugging_5c8de4133f70",
+     "import_subagent_red_team_6f6775c9c7c9",
+     "import_subagent_bug_hunter_142368d88cef",
+     "import_subagent_review_correctness_3ff277bb8cf8",
+     "import_subagent_conductor_6271b1429ddf",
+     "import_subagent_debugger_a14d883be88e"
+    ],
+    "entered": [],
+    "expected": [
+     "review_shared_state_for_ordering_defects"
+    ],
+    "expected_ranks": {
+     "review_shared_state_for_ordering_defects": [
+      null,
+      null
+     ]
+    },
+    "left": [],
+    "query": "look for race conditions in this code"
+   },
+   {
+    "after": [
+     "review_an_accepted_solution_adversarially",
+     "layer_exception_catalogs_with_precedence",
+     "test_driven_change_red_green_refactor",
+     "normalize_website_addresses",
+     "report_observed_derived_assumed_and_unknown",
+     "orient_on_a_task_and_write_its_contracts",
+     "import_skill_freeze_70a9290e687b",
+     "library.supply.openapi_operations.8b4210d01a613a62befb1e82.86e2eca871d3dc61",
+     "library.supply.openapi_operations.70c66ba42c6259ddc37ea23e.e65af6655ce96c74",
+     "import_skill_approve_57aa395c969e"
+    ],
+    "before": [
+     "review_an_accepted_solution_adversarially",
+     "layer_exception_catalogs_with_precedence",
+     "test_driven_change_red_green_refactor",
+     "report_observed_derived_assumed_and_unknown",
+     "normalize_website_addresses",
+     "orient_on_a_task_and_write_its_contracts",
+     "import_skill_freeze_70a9290e687b",
+     "library.supply.openapi_operations.8b4210d01a613a62befb1e82.86e2eca871d3dc61",
+     "library.supply.openapi_operations.70c66ba42c6259ddc37ea23e.e65af6655ce96c74",
+     "import_skill_approve_57aa395c969e"
+    ],
+    "entered": [],
+    "expected": [
+     "review_file_paths_for_traversal_and_link_escape"
+    ],
+    "expected_ranks": {
+     "review_file_paths_for_traversal_and_link_escape": [
+      null,
+      null
+     ]
+    },
+    "left": [],
+    "query": "a zip entry could write outside the upload folder"
+   },
+   {
+    "after": [
+     "export_a_standalone_python_package",
+     "library.supply.openapi_operations.c4b1befe18b2f472bf444a41.c9f8f90588aed05a",
+     "library.supply.json_schemas.da1f7dd2216c812309e3cb77.d325c3bf5afbe2a0",
+     "library.supply.json_schemas.0e84ddf2cf1c5c0f4e99262d.45594e1b75dd0fef",
+     "import_skill_snippet_eval_b61d3c769455",
+     "import_skill_expo_skill_eval_e9da0c81f1f4",
+     "import_skill_eval_config_b9b1daf7b005",
+     "import_skill_agent_platform_eval_flywheel_a8a6f34034fa",
+     "library.supply.openapi_operations.c1d98528a10c9ab535964321.607aa939ffdefff7",
+     "import_plugin_manifest_avoid_ai_writing_plugin_88a043d40914"
+    ],
+    "before": [
+     "export_a_standalone_python_package",
+     "library.supply.openapi_operations.c4b1befe18b2f472bf444a41.c9f8f90588aed05a",
+     "library.supply.json_schemas.da1f7dd2216c812309e3cb77.d325c3bf5afbe2a0",
+     "library.supply.json_schemas.0e84ddf2cf1c5c0f4e99262d.45594e1b75dd0fef",
+     "import_skill_snippet_eval_b61d3c769455",
+     "import_skill_expo_skill_eval_e9da0c81f1f4",
+     "import_skill_eval_config_b9b1daf7b005",
+     "library.supply.openapi_operations.c1d98528a10c9ab535964321.607aa939ffdefff7",
+     "import_skill_agent_platform_eval_flywheel_a8a6f34034fa",
+     "import_plugin_manifest_avoid_ai_writing_plugin_88a043d40914"
+    ],
+    "entered": [],
+    "expected": [
+     "review_generated_output_before_it_is_executed"
+    ],
+    "expected_ranks": {
+     "review_generated_output_before_it_is_executed": [
+      null,
+      null
+     ]
+    },
+    "left": [],
+    "query": "avoid eval on a generated expression"
+   },
+   {
+    "after": [
+     "normalize_website_addresses",
+     "forecast_an_action_then_compare",
+     "detect_malformed_values_by_dominant_pattern",
+     "import_skill_unfolding_architecture_6601ae8a9907",
+     "import_skill_scientific_problem_selection_7eeef0ecf16e",
+     "import_skill_architect_58092b7ea91d",
+     "import_skill_brainstorming_6b468a652520",
+     "import_skill_distribution_strategist_b49614f8fd65",
+     "import_skill_next_642b17fad7e7",
+     "import_skill_brainstorming_74f8ce7cd2c5"
+    ],
+    "before": [
+     "normalize_website_addresses",
+     "forecast_an_action_then_compare",
+     "detect_malformed_values_by_dominant_pattern",
+     "import_skill_unfolding_architecture_6601ae8a9907",
+     "import_skill_scientific_problem_selection_7eeef0ecf16e",
+     "import_skill_architect_58092b7ea91d",
+     "import_skill_brainstorming_6b468a652520",
+     "import_skill_distribution_strategist_b49614f8fd65",
+     "import_skill_brainstorming_74f8ce7cd2c5",
+     "import_skill_next_642b17fad7e7"
+    ],
+    "entered": [],
+    "expected": [
+     "review_a_new_dependency_before_adding_it"
+    ],
+    "expected_ranks": {
+     "review_a_new_dependency_before_adding_it": [
+      null,
+      null
+     ]
+    },
+    "left": [],
+    "query": "should i add this library to the project"
+   },
+   {
+    "after": [
+     "diagnose_a_stall_and_change_strategy",
+     "forecast_an_action_then_compare",
+     "hand_over_a_result_its_consumer_can_use",
+     "layer_exception_catalogs_with_precedence",
+     "import_rules_apexyard_a809b2d0a957",
+     "import_command_integrate_46bc980c7dbd",
+     "import_rules_licensing_posture_b15545eca725",
+     "import_subagent_chain_f6bc44753e9f",
+     "library.supply.openapi_operations.3b3528e55d3d82c678ba8d62.a77632215dbb518e",
+     "library.supply.openapi_operations.29b56061bc838ded79405de6.e32d37e93dcd4042"
+    ],
+    "before": [
+     "diagnose_a_stall_and_change_strategy",
+     "forecast_an_action_then_compare",
+     "hand_over_a_result_its_consumer_can_use",
+     "layer_exception_catalogs_with_precedence",
+     "export_a_standalone_python_package",
+     "import_rules_apexyard_a809b2d0a957",
+     "import_command_integrate_46bc980c7dbd",
+     "import_rules_licensing_posture_b15545eca725",
+     "import_subagent_chain_f6bc44753e9f",
+     "library.supply.openapi_operations.3b3528e55d3d82c678ba8d62.a77632215dbb518e"
+    ],
+    "entered": [
+     "library.supply.openapi_operations.29b56061bc838ded79405de6.e32d37e93dcd4042"
+    ],
+    "expected": [
+     "record_the_licence_of_every_bundled_component"
+    ],
+    "expected_ranks": {
+     "record_the_licence_of_every_bundled_component": [
+      null,
+      null
+     ]
+    },
+    "left": [
+     "export_a_standalone_python_package"
+    ],
+    "query": "produce the third party notice file for a release"
+   },
+   {
+    "after": [
+     "test_driven_change_red_green_refactor",
+     "detect_malformed_values_by_dominant_pattern",
+     "profile_text_column_before_cleaning",
+     "layer_exception_catalogs_with_precedence",
+     "propose_a_dedupe_without_deleting_rows",
+     "copy_a_table_with_corrections_never_in_place",
+     "write_a_pinned_container_and_batch_job",
+     "choose_review_perspectives",
+     "find_duplicate_records_with_blocking_keys",
+     "diagnose_a_stall_and_change_strategy"
+    ],
+    "before": [
+     "test_driven_change_red_green_refactor",
+     "detect_malformed_values_by_dominant_pattern",
+     "profile_text_column_before_cleaning",
+     "layer_exception_catalogs_with_precedence",
+     "propose_a_dedupe_without_deleting_rows",
+     "write_a_pinned_container_and_batch_job",
+     "copy_a_table_with_corrections_never_in_place",
+     "choose_review_perspectives",
+     "find_duplicate_records_with_blocking_keys",
+     "diagnose_a_stall_and_change_strategy"
+    ],
+    "entered": [],
+    "expected": [
+     "plan_a_schema_change_in_compatible_steps"
+    ],
+    "expected_ranks": {
+     "plan_a_schema_change_in_compatible_steps": [
+      null,
+      null
+     ]
+    },
+    "left": [],
+    "query": "change a column without taking the service down"
+   },
+   {
+    "after": [
+     "verify_an_export_in_an_isolated_interpreter",
+     "resolve_missing_information",
+     "test_driven_change_red_green_refactor",
+     "import_skill_is_guide_ac561e33ff42",
+     "import_skill_flows_9e5bfb6316aa",
+     "import_skill_os_step_by_step_7b2289b7534c",
+     "import_subagent_database_1623ebd0243b",
+     "import_skill_triaging_test_failures_fca66e4f65ac",
+     "import_skill_os_what_could_go_wrong_ad1b3003777d",
+     "import_skill_compartmentalize_be7034908b68"
+    ],
+    "before": [
+     "verify_an_export_in_an_isolated_interpreter",
+     "resolve_missing_information",
+     "test_driven_change_red_green_refactor",
+     "import_skill_is_guide_ac561e33ff42",
+     "import_skill_flows_9e5bfb6316aa",
+     "import_skill_os_step_by_step_7b2289b7534c",
+     "import_subagent_database_1623ebd0243b",
+     "import_skill_triaging_test_failures_fca66e4f65ac",
+     "import_skill_os_what_could_go_wrong_ad1b3003777d",
+     "library.supply.openapi_operations.77ebfa2c3ab0f8c6608f85f9.db1836881c42ed07"
+    ],
+    "entered": [
+     "import_skill_compartmentalize_be7034908b68"
+    ],
+    "expected": [
+     "write_a_migration_that_is_safe_to_run_twice"
+    ],
+    "expected_ranks": {
+     "write_a_migration_that_is_safe_to_run_twice": [
+      null,
+      null
+     ]
+    },
+    "left": [
+     "library.supply.openapi_operations.77ebfa2c3ab0f8c6608f85f9.db1836881c42ed07"
+    ],
+    "query": "the migration failed halfway and i need to run it again"
+   },
+   {
+    "after": [
+     "copy_a_table_with_corrections_never_in_place",
+     "propose_a_dedupe_without_deleting_rows",
+     "find_duplicate_records_with_blocking_keys",
+     "test_driven_change_red_green_refactor",
+     "write_a_pinned_container_and_batch_job",
+     "library.supply.openapi_operations.d4aa2fe0d1d82b7ee4dbd591.bcb4f2220ba63ec0",
+     "library.supply.publisher_tables.e438801c3fe8d96d18e581f6.8a8bd02bc5156668",
+     "library.supply.publisher_tables.858627f9912589197d0df8cb.40750887740dac73",
+     "library.supply.publisher_tables.8846a2ea81e88c93f1c98bc5.28a5e3c13520837b",
+     "library.supply.publisher_tables.d0d86374d83fdacc2334d4c1.0855b046f3662b5d"
+    ],
+    "before": [
+     "copy_a_table_with_corrections_never_in_place",
+     "propose_a_dedupe_without_deleting_rows",
+     "find_duplicate_records_with_blocking_keys",
+     "test_driven_change_red_green_refactor",
+     "write_a_pinned_container_and_batch_job",
+     "library.supply.openapi_operations.d4aa2fe0d1d82b7ee4dbd591.bcb4f2220ba63ec0",
+     "library.supply.publisher_tables.e438801c3fe8d96d18e581f6.8a8bd02bc5156668",
+     "library.supply.publisher_tables.858627f9912589197d0df8cb.40750887740dac73",
+     "library.supply.publisher_tables.8846a2ea81e88c93f1c98bc5.28a5e3c13520837b",
+     "library.supply.data_tables.ba99eb66a768d3554843ef76.b5e6025a0384ef55"
+    ],
+    "entered": [
+     "library.supply.publisher_tables.d0d86374d83fdacc2334d4c1.0855b046f3662b5d"
+    ],
+    "expected": [
+     "backfill_a_large_table_in_bounded_batches"
+    ],
+    "expected_ranks": {
+     "backfill_a_large_table_in_bounded_batches": [
+      null,
+      null
+     ]
+    },
+    "left": [
+     "library.supply.data_tables.ba99eb66a768d3554843ef76.b5e6025a0384ef55"
+    ],
+    "query": "update twenty million rows without locking the table"
+   },
+   {
+    "after": [
+     "freeze_the_success_metric_before_measuring",
+     "copy_a_table_with_corrections_never_in_place",
+     "verify_the_requested_output",
+     "test_driven_change_red_green_refactor",
+     "propose_a_dedupe_without_deleting_rows",
+     "look_for_structure_the_model_missed",
+     "verify_an_export_in_an_isolated_interpreter",
+     "import_skill_62_marketing_review_global_6f593add4bed",
+     "import_skill_ce_noslop_0784f3141841",
+     "library.supply.openapi_operations.6c61ba2f640df62394ee1454.c9b1b5017617c616"
+    ],
+    "before": [
+     "freeze_the_success_metric_before_measuring",
+     "copy_a_table_with_corrections_never_in_place",
+     "test_driven_change_red_green_refactor",
+     "verify_the_requested_output",
+     "propose_a_dedupe_without_deleting_rows",
+     "look_for_structure_the_model_missed",
+     "verify_an_export_in_an_isolated_interpreter",
+     "import_skill_62_marketing_review_global_6f593add4bed",
+     "import_skill_ce_noslop_0784f3141841",
+     "library.supply.openapi_operations.6c61ba2f640df62394ee1454.c9b1b5017617c616"
+    ],
+    "entered": [],
+    "expected": [
+     "rehearse_a_migration_on_a_copy_of_real_data"
+    ],
+    "expected_ranks": {
+     "rehearse_a_migration_on_a_copy_of_real_data": [
+      null,
+      null
+     ]
+    },
+    "left": [],
+    "query": "practise the migration on a copy first"
+   },
+   {
+    "after": [
+     "freeze_the_success_metric_before_measuring",
+     "copy_a_table_with_corrections_never_in_place",
+     "import_skill_estimate_calibrator_273fe9178782",
+     "import_subagent_agent_c69561ed0f73",
+     "library.supply.openapi_operations.f896b107976fa2f4d20ec3e4.524ea13930fbec2b",
+     "library.supply.openapi_operations.631d11344a450139330d8839.21d530e303ab086b",
+     "import_skill_performance_testing_0fae51016040",
+     "import_rules_read_the_room_a61598a34512",
+     "library.supply.openapi_operations.0f4ef6f653ddb950123c28ae.9759ee0bff9681be",
+     "library.supply.openapi_operations.96116396f9e5ec0df6ce370f.371197245d5b4de1"
+    ],
+    "before": [
+     "freeze_the_success_metric_before_measuring",
+     "copy_a_table_with_corrections_never_in_place",
+     "import_skill_estimate_calibrator_273fe9178782",
+     "import_subagent_agent_c69561ed0f73",
+     "library.supply.openapi_operations.f896b107976fa2f4d20ec3e4.524ea13930fbec2b",
+     "library.supply.openapi_operations.631d11344a450139330d8839.21d530e303ab086b",
+     "import_skill_performance_testing_0fae51016040",
+     "import_rules_read_the_room_a61598a34512",
+     "library.supply.openapi_operations.0f4ef6f653ddb950123c28ae.9759ee0bff9681be",
+     "import_skill_long_context_1m_64d0b94aa3f4"
+    ],
+    "entered": [
+     "library.supply.openapi_operations.96116396f9e5ec0df6ce370f.371197245d5b4de1"
+    ],
+    "expected": [
+     "rehearse_a_migration_on_a_copy_of_real_data"
+    ],
+    "expected_ranks": {
+     "rehearse_a_migration_on_a_copy_of_real_data": [
+      null,
+      null
+     ]
+    },
+    "left": [
+     "import_skill_long_context_1m_64d0b94aa3f4"
+    ],
+    "query": "how long will this alter table take on real volumes"
+   },
+   {
+    "after": [
+     "test_driven_change_red_green_refactor",
+     "normalize_whitespace_and_unicode_text",
+     "propose_a_dedupe_without_deleting_rows",
+     "copy_a_table_with_corrections_never_in_place",
+     "write_a_pinned_container_and_batch_job",
+     "choose_review_perspectives",
+     "find_duplicate_records_with_blocking_keys",
+     "diagnose_a_stall_and_change_strategy",
+     "import_skill_contract_testing_562e1825e033",
+     "import_subagent_change_a1767b9650e6"
+    ],
+    "before": [
+     "test_driven_change_red_green_refactor",
+     "normalize_whitespace_and_unicode_text",
+     "propose_a_dedupe_without_deleting_rows",
+     "write_a_pinned_container_and_batch_job",
+     "copy_a_table_with_corrections_never_in_place",
+     "choose_review_perspectives",
+     "find_duplicate_records_with_blocking_keys",
+     "diagnose_a_stall_and_change_strategy",
+     "import_skill_contract_testing_562e1825e033",
+     "import_subagent_change_a1767b9650e6"
+    ],
+    "entered": [],
+    "expected": [
+     "version_an_interface_so_older_callers_keep_working"
+    ],
+    "expected_ranks": {
+     "version_an_interface_so_older_callers_keep_working": [
+      null,
+      null
+     ]
+    },
+    "left": [],
+    "query": "change the api without breaking existing clients"
+   },
+   {
+    "after": [
+     "normalize_whitespace_and_unicode_text",
+     "test_driven_change_red_green_refactor",
+     "choose_review_perspectives",
+     "detect_malformed_values_by_dominant_pattern",
+     "check_that_a_result_is_stable_and_generalizes",
+     "deliver_the_best_available_result_when_blocked",
+     "diagnose_a_stall_and_change_strategy",
+     "measure_the_environment_before_relying_on_it",
+     "apply_hold_or_escalate_each_correction",
+     "check_for_existing_work_before_building"
+    ],
+    "before": [
+     "normalize_whitespace_and_unicode_text",
+     "test_driven_change_red_green_refactor",
+     "choose_review_perspectives",
+     "check_that_a_result_is_stable_and_generalizes",
+     "detect_malformed_values_by_dominant_pattern",
+     "deliver_the_best_available_result_when_blocked",
+     "diagnose_a_stall_and_change_strategy",
+     "measure_the_environment_before_relying_on_it",
+     "apply_hold_or_escalate_each_correction",
+     "check_for_existing_work_before_building"
+    ],
+    "entered": [],
+    "expected": [
+     "version_an_interface_so_older_callers_keep_working"
+    ],
+    "expected_ranks": {
+     "version_an_interface_so_older_callers_keep_working": [
+      null,
+      null
+     ]
+    },
+    "left": [],
+    "query": "is this a breaking change or a compatible one"
+   },
+   {
+    "after": [
+     "normalize_and_recover_email_addresses",
+     "verify_an_export_in_an_isolated_interpreter",
+     "import_subagent_conflict_resolver_17feb134a762",
+     "library.supply.openapi_operations.2ca764bc4fa9f8c027352bd8.a85bc89d5e7f20e6",
+     "library.supply.openapi_operations.4ad128d138f4ebac99593e72.83f0cc4cca68d96d",
+     "library.supply.openapi_operations.51c128e2b37ed57be7d2c102.82972d8e5f99b075",
+     "library.supply.openapi_operations.08dd1775994652250e86cf3c.48d077750c8444ed",
+     "library.supply.openapi_operations.b9ec7c55105e8b339a3df759.8ef3c733d61b6420",
+     "library.supply.openapi_operations.6f1a2331bf0c181ba7b07c8c.1f7b2243bfc73a2f",
+     "library.supply.openapi_operations.a132606f0b0a491afc9f5d6a.025edbf4bfce429c"
+    ],
+    "before": [
+     "normalize_and_recover_email_addresses",
+     "verify_an_export_in_an_isolated_interpreter",
+     "import_subagent_conflict_resolver_17feb134a762",
+     "library.supply.openapi_operations.2ca764bc4fa9f8c027352bd8.a85bc89d5e7f20e6",
+     "library.supply.openapi_operations.51c128e2b37ed57be7d2c102.82972d8e5f99b075",
+     "library.supply.openapi_operations.4ad128d138f4ebac99593e72.83f0cc4cca68d96d",
+     "library.supply.openapi_operations.08dd1775994652250e86cf3c.48d077750c8444ed",
+     "library.supply.openapi_operations.b9ec7c55105e8b339a3df759.8ef3c733d61b6420",
+     "library.supply.openapi_operations.6f1a2331bf0c181ba7b07c8c.1f7b2243bfc73a2f",
+     "library.supply.openapi_operations.a132606f0b0a491afc9f5d6a.025edbf4bfce429c"
+    ],
+    "entered": [],
+    "expected": [
+     "negotiate_a_supported_version_at_connection_time"
+    ],
+    "expected_ranks": {
+     "negotiate_a_supported_version_at_connection_time": [
+      null,
+      null
+     ]
+    },
+    "left": [],
+    "query": "refuse a downgrade during the handshake"
+   },
+   {
+    "after": [
+     "analyse_errors_by_segment_and_cluster",
+     "orient_on_a_task_and_write_its_contracts",
+     "diagnose_a_stall_and_change_strategy",
+     "forecast_an_action_then_compare",
+     "detect_malformed_values_by_dominant_pattern",
+     "normalize_and_recover_email_addresses",
+     "deliver_the_best_available_result_when_blocked",
+     "apply_hold_or_escalate_each_correction",
+     "restore_capitalisation_of_names",
+     "plan_and_split_work_with_explicit_joins"
+    ],
+    "before": [
+     "analyse_errors_by_segment_and_cluster",
+     "orient_on_a_task_and_write_its_contracts",
+     "diagnose_a_stall_and_change_strategy",
+     "forecast_an_action_then_compare",
+     "detect_malformed_values_by_dominant_pattern",
+     "normalize_and_recover_email_addresses",
+     "deliver_the_best_available_result_when_blocked",
+     "apply_hold_or_escalate_each_correction",
+     "plan_and_split_work_with_explicit_joins",
+     "restore_capitalisation_of_names"
+    ],
+    "entered": [],
+    "expected": [
+     "classify_a_failure_before_deciding_to_retry"
+    ],
+    "expected_ranks": {
+     "classify_a_failure_before_deciding_to_retry": [
+      null,
+      null
+     ]
+    },
+    "left": [],
+    "query": "should this failure be retried at all"
+   },
+   {
+    "after": [
+     "score_duplicate_pairs_by_weakest_signal",
+     "split_address_lines_into_components",
+     "library.supply.mcp_registry.911a7826db76969dfa98a806.8f76e5eb0668d9fb",
+     "import_rules_conflict_deescalation_674f4638d9f0",
+     "import_skill_pitch_position_9b32eea5a856",
+     "import_skill_audit_microsegmentation_posture_fe2c65f2e1dd",
+     "baltor_infrastructure_outage_accounting",
+     "import_skill_analyze_policy_rules_7c42461a8739",
+     "library.supply.openapi_operations.8289289dfbad945631fffd74.55a7a778aaf6c551",
+     "import_skill_diagnosis_5b8f43742619"
+    ],
+    "before": [
+     "score_duplicate_pairs_by_weakest_signal",
+     "split_address_lines_into_components",
+     "library.supply.mcp_registry.911a7826db76969dfa98a806.8f76e5eb0668d9fb",
+     "import_rules_conflict_deescalation_674f4638d9f0",
+     "import_skill_pitch_position_9b32eea5a856",
+     "baltor_infrastructure_outage_accounting",
+     "import_skill_audit_microsegmentation_posture_fe2c65f2e1dd",
+     "import_skill_analyze_policy_rules_7c42461a8739",
+     "import_skill_diagnosis_5b8f43742619",
+     "library.supply.openapi_operations.8289289dfbad945631fffd74.55a7a778aaf6c551"
+    ],
+    "entered": [],
+    "expected": [
+     "retry_with_backoff_inside_a_declared_budget"
+    ],
+    "expected_ranks": {
+     "retry_with_backoff_inside_a_declared_budget": [
+      null,
+      null
+     ]
+    },
+    "left": [],
+    "query": "our retries are making the outage worse"
+   },
+   {
+    "after": [
+     "deliver_the_best_available_result_when_blocked",
+     "resolve_missing_information",
+     "write_a_pinned_container_and_batch_job",
+     "import_skill_azure_role_selector_09e32ca203fb",
+     "import_subagent_nested_leaf_788e2ac0712a",
+     "import_skill_building_role_mining_for_rbac_optimizati_75547434d1b8",
+     "import_subagent_github_actions_expert_14379d660f5c",
+     "import_subagent_database_attacker_0311d247e6e9",
+     "import_skill_agent_permissions_431289108244",
+     "import_subagent_powershell_security_hardening_5de71e30dc44"
+    ],
+    "before": [
+     "deliver_the_best_available_result_when_blocked",
+     "resolve_missing_information",
+     "write_a_pinned_container_and_batch_job",
+     "import_skill_azure_role_selector_09e32ca203fb",
+     "import_subagent_nested_leaf_788e2ac0712a",
+     "import_skill_building_role_mining_for_rbac_optimizati_75547434d1b8",
+     "import_subagent_github_actions_expert_14379d660f5c",
+     "import_skill_agent_permissions_431289108244",
+     "import_subagent_database_attacker_0311d247e6e9",
+     "import_subagent_powershell_security_hardening_5de71e30dc44"
+    ],
+    "entered": [],
+    "expected": [
+     "scope_a_credential_to_the_smallest_permission"
+    ],
+    "expected_ranks": {
+     "scope_a_credential_to_the_smallest_permission": [
+      null,
+      null
+     ]
+    },
+    "left": [],
+    "query": "least privilege for a database user"
+   },
+   {
+    "after": [
+     "escalate_uncertain_values_with_candidates",
+     "hand_over_a_result_its_consumer_can_use",
+     "write_a_pinned_container_and_batch_job",
+     "copy_a_table_with_corrections_never_in_place",
+     "resolve_missing_information",
+     "propose_a_dedupe_without_deleting_rows",
+     "test_driven_change_red_green_refactor",
+     "find_duplicate_records_with_blocking_keys",
+     "import_rules_delegate_to_ai_305665a275f3",
+     "import_skill_sf_setup_automation_f1e4f59bd07f"
+    ],
+    "before": [
+     "escalate_uncertain_values_with_candidates",
+     "hand_over_a_result_its_consumer_can_use",
+     "write_a_pinned_container_and_batch_job",
+     "copy_a_table_with_corrections_never_in_place",
+     "resolve_missing_information",
+     "propose_a_dedupe_without_deleting_rows",
+     "test_driven_change_red_green_refactor",
+     "find_duplicate_records_with_blocking_keys",
+     "import_skill_sf_setup_automation_f1e4f59bd07f",
+     "import_rules_delegate_to_ai_305665a275f3"
+    ],
+    "entered": [],
+    "expected": [
+     "write_a_log_line_that_is_safe_to_share"
+    ],
+    "expected_ranks": {
+     "write_a_log_line_that_is_safe_to_share": [
+      null,
+      null
+     ]
+    },
+    "left": [],
+    "query": "logs i can hand to support without leaking content"
+   },
+   {
+    "after": [
+     "measure_the_environment_before_relying_on_it",
+     "orient_on_a_task_and_write_its_contracts",
+     "deliver_the_best_available_result_when_blocked",
+     "apply_hold_or_escalate_each_correction",
+     "review_an_accepted_solution_adversarially",
+     "analyse_errors_by_segment_and_cluster",
+     "find_duplicate_records_with_blocking_keys",
+     "diagnose_a_stall_and_change_strategy",
+     "verify_an_export_in_an_isolated_interpreter",
+     "report_observed_derived_assumed_and_unknown"
+    ],
+    "before": [
+     "measure_the_environment_before_relying_on_it",
+     "orient_on_a_task_and_write_its_contracts",
+     "deliver_the_best_available_result_when_blocked",
+     "apply_hold_or_escalate_each_correction",
+     "review_an_accepted_solution_adversarially",
+     "analyse_errors_by_segment_and_cluster",
+     "find_duplicate_records_with_blocking_keys",
+     "diagnose_a_stall_and_change_strategy",
+     "report_observed_derived_assumed_and_unknown",
+     "verify_an_export_in_an_isolated_interpreter"
+    ],
+    "entered": [],
+    "expected": [
+     "choose_log_levels_and_what_belongs_in_each"
+    ],
+    "expected_ranks": {
+     "choose_log_levels_and_what_belongs_in_each": [
+      null,
+      null
+     ]
+    },
+    "left": [],
+    "query": "one failure is logged at every level on the way up"
+   },
+   {
+    "after": [
+     "resolve_missing_information",
+     "detect_malformed_values_by_dominant_pattern",
+     "look_for_structure_the_model_missed",
+     "carry_competing_readings_of_a_request",
+     "freeze_the_success_metric_before_measuring",
+     "review_an_accepted_solution_adversarially",
+     "forecast_an_action_then_compare",
+     "check_for_existing_work_before_building",
+     "choose_one_next_action",
+     "hand_over_a_result_its_consumer_can_use"
+    ],
+    "before": [
+     "resolve_missing_information",
+     "detect_malformed_values_by_dominant_pattern",
+     "look_for_structure_the_model_missed",
+     "carry_competing_readings_of_a_request",
+     "freeze_the_success_metric_before_measuring",
+     "review_an_accepted_solution_adversarially",
+     "forecast_an_action_then_compare",
+     "check_for_existing_work_before_building",
+     "hand_over_a_result_its_consumer_can_use",
+     "choose_one_next_action"
+    ],
+    "entered": [],
+    "expected": [
+     "carry_one_correlation_identifier_across_services"
+    ],
+    "expected_ranks": {
+     "carry_one_correlation_identifier_across_services": [
+      null,
+      null
+     ]
+    },
+    "left": [],
+    "query": "a trace id that survives the queue and the worker"
+   },
+   {
+    "after": [
+     "forecast_an_action_then_compare",
+     "carry_competing_readings_of_a_request",
+     "decide_whether_a_step_needs_a_model",
+     "import_skill_brainstorm_4499d44cd213",
+     "import_skill_next_1fc4e9eb84cb",
+     "import_skill_gaccs_brief_9036ba46c4f9",
+     "import_skill_journey_82a29ba0955c",
+     "import_command_performance_specialist_794639a34ae1",
+     "import_skill_optimize_a552f0ceca73",
+     "import_skill_incident_investigation_3ae81b652d82"
+    ],
+    "before": [
+     "forecast_an_action_then_compare",
+     "carry_competing_readings_of_a_request",
+     "decide_whether_a_step_needs_a_model",
+     "import_skill_brainstorm_4499d44cd213",
+     "import_skill_next_1fc4e9eb84cb",
+     "import_skill_gaccs_brief_9036ba46c4f9",
+     "import_command_performance_specialist_794639a34ae1",
+     "import_skill_journey_82a29ba0955c",
+     "import_skill_optimize_a552f0ceca73",
+     "import_skill_incident_investigation_3ae81b652d82"
+    ],
+    "entered": [],
+    "expected": [
+     "measure_before_optimising"
+    ],
+    "expected_ranks": {
+     "measure_before_optimising": [
+      null,
+      null
+     ]
+    },
+    "left": [],
+    "query": "the app feels slow where do i even start"
+   },
+   {
+    "after": [
+     "audit_data_splits_for_errors_and_leakage",
+     "library.supply.openapi_operations.3644c866e6adcdabeac15e32.93b402661a3af738",
+     "library.supply.openapi_operations.e095b1963f157227f9e2ca47.9db91826453ed049",
+     "library.supply.openapi_operations.aa889a5136b4ece48b1e0e8c.bbeb453a48351960",
+     "library.supply.openapi_operations.581e02d51fffd069e7458004.d2a3bcfe25982432",
+     "import_skill_santa_loop_94287444ee2e",
+     "import_skill_onboarding_2ecf74672da1",
+     "library.supply.openapi_operations.11ca61c685bf177c6b0b203c.39ce50b226c193a5",
+     "library.supply.openapi_operations.1ff84f6ffaf29f64699123d7.b9e16a0340b898a6",
+     "library.supply.openapi_operations.e3e018065f8c2e11b38b6dd9.b53490bcf4e97d6b"
+    ],
+    "before": [
+     "audit_data_splits_for_errors_and_leakage",
+     "library.supply.openapi_operations.3644c866e6adcdabeac15e32.93b402661a3af738",
+     "library.supply.openapi_operations.e095b1963f157227f9e2ca47.9db91826453ed049",
+     "library.supply.openapi_operations.aa889a5136b4ece48b1e0e8c.bbeb453a48351960",
+     "library.supply.openapi_operations.581e02d51fffd069e7458004.d2a3bcfe25982432",
+     "import_skill_santa_loop_94287444ee2e",
+     "library.supply.openapi_operations.11ca61c685bf177c6b0b203c.39ce50b226c193a5",
+     "library.supply.openapi_operations.1ff84f6ffaf29f64699123d7.b9e16a0340b898a6",
+     "library.supply.openapi_operations.e3e018065f8c2e11b38b6dd9.b53490bcf4e97d6b",
+     "import_skill_onboarding_2ecf74672da1"
+    ],
+    "entered": [],
+    "expected": [
+     "use_percentiles_not_averages_for_response_time"
+    ],
+    "expected_ranks": {
+     "use_percentiles_not_averages_for_response_time": [
+      null,
+      null
+     ]
+    },
+    "left": [],
+    "query": "the average response time looks fine but users complain"
+   },
+   {
+    "after": [
+     "decide_whether_a_step_needs_a_model",
+     "resolve_missing_information",
+     "apply_hold_or_escalate_each_correction",
+     "verify_an_export_in_an_isolated_interpreter",
+     "choose_one_next_action",
+     "deliver_the_best_available_result_when_blocked",
+     "look_for_structure_the_model_missed",
+     "measure_the_environment_before_relying_on_it",
+     "forecast_an_action_then_compare",
+     "import_skill_discernment_nudge_abe280c16400"
+    ],
+    "before": [
+     "decide_whether_a_step_needs_a_model",
+     "resolve_missing_information",
+     "apply_hold_or_escalate_each_correction",
+     "verify_an_export_in_an_isolated_interpreter",
+     "choose_one_next_action",
+     "deliver_the_best_available_result_when_blocked",
+     "look_for_structure_the_model_missed",
+     "measure_the_environment_before_relying_on_it",
+     "import_skill_discernment_nudge_abe280c16400",
+     "import_skill_catchup_37a842b4feaa"
+    ],
+    "entered": [
+     "forecast_an_action_then_compare"
+    ],
+    "expected": [
+     "assemble_the_context_for_one_step"
+    ],
+    "expected_ranks": {
+     "assemble_the_context_for_one_step": [
+      null,
+      null
+     ]
+    },
+    "left": [
+     "import_skill_catchup_37a842b4feaa"
+    ],
+    "query": "give the step only the material it needs to act on"
+   },
+   {
+    "after": [
+     "check_for_existing_work_before_building",
+     "deliver_the_best_available_result_when_blocked",
+     "verify_the_requested_output",
+     "forecast_an_action_then_compare",
+     "measure_the_environment_before_relying_on_it",
+     "decide_whether_a_step_needs_a_model",
+     "choose_review_perspectives",
+     "resolve_missing_information",
+     "hand_over_a_result_its_consumer_can_use",
+     "carry_competing_readings_of_a_request"
+    ],
+    "before": [
+     "check_for_existing_work_before_building",
+     "deliver_the_best_available_result_when_blocked",
+     "verify_the_requested_output",
+     "measure_the_environment_before_relying_on_it",
+     "forecast_an_action_then_compare",
+     "decide_whether_a_step_needs_a_model",
+     "choose_review_perspectives",
+     "resolve_missing_information",
+     "hand_over_a_result_its_consumer_can_use",
+     "carry_competing_readings_of_a_request"
+    ],
+    "entered": [],
+    "expected": [
+     "decide_what_to_leave_out_of_a_prompt"
+    ],
+    "expected_ranks": {
+     "decide_what_to_leave_out_of_a_prompt": [
+      null,
+      null
+     ]
+    },
+    "left": [],
+    "query": "the prompt is too long for the context window"
+   },
+   {
+    "after": [
+     "verify_an_export_in_an_isolated_interpreter",
+     "forecast_an_action_then_compare",
+     "review_an_accepted_solution_adversarially",
+     "choose_review_perspectives",
+     "carry_competing_readings_of_a_request",
+     "import_subagent_yeschef_expediter_03912298aa4a",
+     "import_skill_briefing_an_agent_dd747774f7e0",
+     "library.supply.openapi_operations.c2d21b39ca0f4fe06f9076e7.7c388a555b5c86ec",
+     "import_subagent_lead_proxy_8af8101f263a",
+     "import_subagent_lateral_movement_f2462db2b9f7"
+    ],
+    "before": [
+     "verify_an_export_in_an_isolated_interpreter",
+     "forecast_an_action_then_compare",
+     "review_an_accepted_solution_adversarially",
+     "choose_review_perspectives",
+     "carry_competing_readings_of_a_request",
+     "import_subagent_yeschef_expediter_03912298aa4a",
+     "import_skill_briefing_an_agent_dd747774f7e0",
+     "library.supply.openapi_operations.c2d21b39ca0f4fe06f9076e7.7c388a555b5c86ec",
+     "import_command_expert_review_03e336b9608f",
+     "import_subagent_lead_proxy_8af8101f263a"
+    ],
+    "entered": [
+     "import_subagent_lateral_movement_f2462db2b9f7"
+    ],
+    "expected": [
+     "keep_instructions_and_supplied_text_apart"
+    ],
+    "expected_ranks": {
+     "keep_instructions_and_supplied_text_apart": [
+      null,
+      null
+     ]
+    },
+    "left": [
+     "import_command_expert_review_03e336b9608f"
+    ],
+    "query": "a ticket contained an instruction and the agent obeyed it"
+   },
+   {
+    "after": [
+     "propose_a_dedupe_without_deleting_rows",
+     "report_observed_derived_assumed_and_unknown",
+     "forecast_an_action_then_compare",
+     "normalize_website_addresses",
+     "choose_one_next_action",
+     "decide_whether_a_step_needs_a_model",
+     "apply_hold_or_escalate_each_correction",
+     "import_command_learn_5177e1c64c6a",
+     "import_subagent_stig_analyst_995b4f7c1999",
+     "import_subagent_document_specialist_a4eaefd95386"
+    ],
+    "before": [
+     "propose_a_dedupe_without_deleting_rows",
+     "report_observed_derived_assumed_and_unknown",
+     "forecast_an_action_then_compare",
+     "normalize_website_addresses",
+     "choose_one_next_action",
+     "decide_whether_a_step_needs_a_model",
+     "apply_hold_or_escalate_each_correction",
+     "import_command_learn_5177e1c64c6a",
+     "import_subagent_document_specialist_a4eaefd95386",
+     "import_subagent_stig_analyst_995b4f7c1999"
+    ],
+    "entered": [],
+    "expected": [
+     "keep_instructions_and_supplied_text_apart"
+    ],
+    "expected_ranks": {
+     "keep_instructions_and_supplied_text_apart": [
+      null,
+      null
+     ]
+    },
+    "left": [],
+    "query": "keep my instruction and the pasted document separate"
+   },
+   {
+    "after": [
+     "import_skill_accessibility_design_75c1d1bafbcf",
+     "import_rules_mural_human_record_53666618901e",
+     "import_skill_using_vibekit_ea7751f37357",
+     "import_skill_audit_2e5d6f1e060d",
+     "import_skill_setup_64a12ab92853",
+     "import_skill_openloomi_memory_897de8281788",
+     "import_skill_handoff_5bc67be26abb",
+     "import_skill_memory_928873966d1b",
+     "import_skill_grill_with_docs_699a39425027",
+     "import_skill_conversational_advertising_97d986c6884c"
+    ],
+    "before": [
+     "import_skill_accessibility_design_75c1d1bafbcf",
+     "import_rules_mural_human_record_53666618901e",
+     "import_skill_audit_2e5d6f1e060d",
+     "import_skill_using_vibekit_ea7751f37357",
+     "import_skill_setup_64a12ab92853",
+     "import_skill_openloomi_memory_897de8281788",
+     "import_skill_handoff_5bc67be26abb",
+     "import_skill_memory_928873966d1b",
+     "import_skill_kin_retrieval_1dbba26db941",
+     "import_skill_conversational_advertising_97d986c6884c"
+    ],
+    "entered": [
+     "import_skill_grill_with_docs_699a39425027"
+    ],
+    "expected": [
+     "carry_earlier_decisions_forward_without_the_whole_transcript"
+    ],
+    "expected_ranks": {
+     "carry_earlier_decisions_forward_without_the_whole_transcript": [
+      null,
+      null
+     ]
+    },
+    "left": [
+     "import_skill_kin_retrieval_1dbba26db941"
+    ],
+    "query": "summarise decisions instead of resending the whole conversation"
+   },
+   {
+    "after": [
+     "resolve_missing_information",
+     "detect_malformed_values_by_dominant_pattern",
+     "check_that_a_result_is_stable_and_generalizes",
+     "verify_the_requested_output",
+     "forecast_an_action_then_compare",
+     "check_for_existing_work_before_building",
+     "measure_the_environment_before_relying_on_it",
+     "library.supply.openapi_operations.a1baebf491ca71f6ccbbd0ac.40d7700a4de7c519",
+     "import_skill_assessing_release_readiness_4e56eea97b2c",
+     "library.supply.openapi_operations.047340b9e1b39050b86d0faf.a7dcd0656d8778f1"
+    ],
+    "before": [
+     "resolve_missing_information",
+     "detect_malformed_values_by_dominant_pattern",
+     "check_that_a_result_is_stable_and_generalizes",
+     "library.supply.openapi_operations.a1baebf491ca71f6ccbbd0ac.40d7700a4de7c519",
+     "import_skill_assessing_release_readiness_4e56eea97b2c",
+     "library.supply.openapi_operations.047340b9e1b39050b86d0faf.a7dcd0656d8778f1",
+     "import_skill_cassette_video_edit_d190b8098498",
+     "import_skill_digital_oracle_27acea6cd883",
+     "import_subagent_ad_creative_refiner_e4920be3c883",
+     "import_skill_release_659e0d873bb1"
+    ],
+    "entered": [
+     "verify_the_requested_output",
+     "forecast_an_action_then_compare",
+     "check_for_existing_work_before_building",
+     "measure_the_environment_before_relying_on_it"
+    ],
+    "expected": [
+     "set_an_output_size_from_a_known_limit"
+    ],
+    "expected_ranks": {
+     "set_an_output_size_from_a_known_limit": [
+      null,
+      null
+     ]
+    },
+    "left": [
+     "import_skill_cassette_video_edit_d190b8098498",
+     "import_skill_digital_oracle_27acea6cd883",
+     "import_subagent_ad_creative_refiner_e4920be3c883",
+     "import_skill_release_659e0d873bb1"
+    ],
+    "query": "the answer is being cut off halfway"
+   },
+   {
+    "after": [
+     "check_for_existing_work_before_building",
+     "plan_and_split_work_with_explicit_joins",
+     "test_driven_change_red_green_refactor",
+     "report_observed_derived_assumed_and_unknown",
+     "resolve_missing_information",
+     "check_that_a_result_is_stable_and_generalizes",
+     "normalize_website_addresses",
+     "write_a_pinned_container_and_batch_job",
+     "hand_over_a_result_its_consumer_can_use",
+     "orient_on_a_task_and_write_its_contracts"
+    ],
+    "before": [
+     "check_for_existing_work_before_building",
+     "plan_and_split_work_with_explicit_joins",
+     "test_driven_change_red_green_refactor",
+     "report_observed_derived_assumed_and_unknown",
+     "resolve_missing_information",
+     "check_that_a_result_is_stable_and_generalizes",
+     "write_a_pinned_container_and_batch_job",
+     "normalize_website_addresses",
+     "hand_over_a_result_its_consumer_can_use",
+     "import_subagent_mcos_code_reviewer_cad81c4ba190"
+    ],
+    "entered": [
+     "orient_on_a_task_and_write_its_contracts"
+    ],
+    "expected": [
+     "write_acceptance_criteria_a_reviewer_can_check"
+    ],
+    "expected_ranks": {
+     "write_acceptance_criteria_a_reviewer_can_check": [
+      null,
+      null
+     ]
+    },
+    "left": [
+     "import_subagent_mcos_code_reviewer_cad81c4ba190"
+    ],
+    "query": "write conditions for done a reviewer can check"
+   },
+   {
+    "after": [
+     "look_for_structure_the_model_missed",
+     "resolve_missing_information",
+     "hand_over_a_result_its_consumer_can_use",
+     "escalate_uncertain_values_with_candidates",
+     "verify_an_export_in_an_isolated_interpreter",
+     "carry_competing_readings_of_a_request",
+     "report_observed_derived_assumed_and_unknown",
+     "restore_capitalisation_of_names",
+     "test_driven_change_red_green_refactor",
+     "detect_malformed_values_by_dominant_pattern"
+    ],
+    "before": [
+     "look_for_structure_the_model_missed",
+     "resolve_missing_information",
+     "hand_over_a_result_its_consumer_can_use",
+     "escalate_uncertain_values_with_candidates",
+     "verify_an_export_in_an_isolated_interpreter",
+     "carry_competing_readings_of_a_request",
+     "report_observed_derived_assumed_and_unknown",
+     "restore_capitalisation_of_names",
+     "test_driven_change_red_green_refactor",
+     "import_skill_is_guide_ac561e33ff42"
+    ],
+    "entered": [
+     "detect_malformed_values_by_dominant_pattern"
+    ],
+    "expected": [
+     "run_an_incident_review_without_blame"
+    ],
+    "expected_ranks": {
+     "run_an_incident_review_without_blame": [
+      null,
+      null
+     ]
+    },
+    "left": [
+     "import_skill_is_guide_ac561e33ff42"
+    ],
+    "query": "run a postmortem that does not blame a person"
+   },
+   {
+    "after": [
+     "verify_an_export_in_an_isolated_interpreter",
+     "copy_a_table_with_corrections_never_in_place",
+     "measure_the_environment_before_relying_on_it",
+     "normalize_website_addresses",
+     "choose_one_next_action",
+     "choose_review_perspectives",
+     "layer_exception_catalogs_with_precedence",
+     "detect_malformed_values_by_dominant_pattern",
+     "restore_capitalisation_of_names",
+     "library.supply.openapi_operations.143bf4ce491c6a0d178f87b9.f29c10fd403c6589"
+    ],
+    "before": [
+     "verify_an_export_in_an_isolated_interpreter",
+     "copy_a_table_with_corrections_never_in_place",
+     "measure_the_environment_before_relying_on_it",
+     "normalize_website_addresses",
+     "choose_one_next_action",
+     "choose_review_perspectives",
+     "layer_exception_catalogs_with_precedence",
+     "detect_malformed_values_by_dominant_pattern",
+     "library.supply.openapi_operations.143bf4ce491c6a0d178f87b9.f29c10fd403c6589",
+     "library.supply.openapi_operations.dd991e264d430201b73c72af.0264440e6433ccc5"
+    ],
+    "entered": [
+     "restore_capitalisation_of_names"
+    ],
+    "expected": [
+     "build_an_incident_timeline_from_evidence"
+    ],
+    "expected_ranks": {
+     "build_an_incident_timeline_from_evidence": [
+      null,
+      null
+     ]
+    },
+    "left": [
+     "library.supply.openapi_operations.dd991e264d430201b73c72af.0264440e6433ccc5"
+    ],
+    "query": "put the outage events in order with times"
+   },
+   {
+    "after": [
+     "carry_competing_readings_of_a_request",
+     "layer_exception_catalogs_with_precedence",
+     "decide_whether_a_step_needs_a_model",
+     "analyse_errors_by_segment_and_cluster",
+     "orient_on_a_task_and_write_its_contracts",
+     "diagnose_a_stall_and_change_strategy",
+     "resolve_missing_information",
+     "detect_malformed_values_by_dominant_pattern",
+     "look_for_structure_the_model_missed",
+     "freeze_the_success_metric_before_measuring"
+    ],
+    "before": [
+     "carry_competing_readings_of_a_request",
+     "layer_exception_catalogs_with_precedence",
+     "decide_whether_a_step_needs_a_model",
+     "analyse_errors_by_segment_and_cluster",
+     "orient_on_a_task_and_write_its_contracts",
+     "diagnose_a_stall_and_change_strategy",
+     "resolve_missing_information",
+     "detect_malformed_values_by_dominant_pattern",
+     "look_for_structure_the_model_missed",
+     "import_rules_life_premortem_7148c1eb3fe7"
+    ],
+    "entered": [
+     "freeze_the_success_metric_before_measuring"
+    ],
+    "expected": [
+     "turn_an_incident_into_a_check_that_would_have_caught_it"
+    ],
+    "expected_ranks": {
+     "turn_an_incident_into_a_check_that_would_have_caught_it": [
+      null,
+      null
+     ]
+    },
+    "left": [
+     "import_rules_life_premortem_7148c1eb3fe7"
+    ],
+    "query": "a monitor that would have caught the recorded failure"
+   },
+   {
+    "after": [
+     "verify_an_export_in_an_isolated_interpreter",
+     "plan_and_split_work_with_explicit_joins",
+     "report_observed_derived_assumed_and_unknown",
+     "orient_on_a_task_and_write_its_contracts",
+     "deliver_the_best_available_result_when_blocked",
+     "review_an_accepted_solution_adversarially",
+     "carry_competing_readings_of_a_request",
+     "hand_over_a_result_its_consumer_can_use",
+     "normalize_whitespace_and_unicode_text",
+     "normalize_and_recover_email_addresses"
+    ],
+    "before": [
+     "verify_an_export_in_an_isolated_interpreter",
+     "plan_and_split_work_with_explicit_joins",
+     "report_observed_derived_assumed_and_unknown",
+     "orient_on_a_task_and_write_its_contracts",
+     "deliver_the_best_available_result_when_blocked",
+     "review_an_accepted_solution_adversarially",
+     "carry_competing_readings_of_a_request",
+     "hand_over_a_result_its_consumer_can_use",
+     "test_driven_change_red_green_refactor",
+     "normalize_whitespace_and_unicode_text"
+    ],
+    "entered": [
+     "normalize_and_recover_email_addresses"
+    ],
+    "expected": [
+     "write_a_task_brief_for_an_agent"
+    ],
+    "expected_ranks": {
+     "write_a_task_brief_for_an_agent": [
+      null,
+      null
+     ]
+    },
+    "left": [
+     "test_driven_change_red_green_refactor"
+    ],
+    "query": "write an assignment an agent can finish on its own"
+   },
+   {
+    "after": [
+     "plan_and_split_work_with_explicit_joins",
+     "choose_review_perspectives",
+     "score_duplicate_pairs_by_weakest_signal",
+     "resolve_missing_information",
+     "check_for_existing_work_before_building",
+     "import_subagent_vesta_spec_10fe0da521d8",
+     "library.supply.openapi_operations.29ad8596b4bb7f5588bf5b7f.0ea272f90f40083b",
+     "import_skill_skill_work_slicing_e70eea5dcf10",
+     "import_skill_prototype_2afd26a9e305",
+     "import_skill_os_whats_next_68d655f2245c"
+    ],
+    "before": [
+     "plan_and_split_work_with_explicit_joins",
+     "choose_review_perspectives",
+     "score_duplicate_pairs_by_weakest_signal",
+     "resolve_missing_information",
+     "check_for_existing_work_before_building",
+     "import_subagent_vesta_spec_10fe0da521d8",
+     "import_skill_skill_work_slicing_e70eea5dcf10",
+     "library.supply.openapi_operations.29ad8596b4bb7f5588bf5b7f.0ea272f90f40083b",
+     "import_skill_prototype_2afd26a9e305",
+     "import_skill_os_whats_next_68d655f2245c"
+    ],
+    "entered": [],
+    "expected": [
+     "split_a_large_request_into_assignable_parts"
+    ],
+    "expected_ranks": {
+     "split_a_large_request_into_assignable_parts": [
+      null,
+      null
+     ]
+    },
+    "left": [],
+    "query": "cut the work so each piece can be checked alone"
+   },
+   {
+    "after": [
+     "deliver_the_best_available_result_when_blocked",
+     "decide_whether_a_step_needs_a_model",
+     "check_for_existing_work_before_building",
+     "test_driven_change_red_green_refactor",
+     "choose_one_next_action",
+     "export_a_standalone_python_package",
+     "verify_the_requested_output",
+     "import_skill_unharness_de7951174d8b",
+     "import_skill_writing_plans_2881958f030d",
+     "library.supply.openapi_operations.5735840b97d455e028d6dd6e.150fc689df213a52"
+    ],
+    "before": [
+     "deliver_the_best_available_result_when_blocked",
+     "decide_whether_a_step_needs_a_model",
+     "check_for_existing_work_before_building",
+     "test_driven_change_red_green_refactor",
+     "export_a_standalone_python_package",
+     "choose_one_next_action",
+     "verify_the_requested_output",
+     "import_skill_unharness_de7951174d8b",
+     "import_skill_writing_plans_2881958f030d",
+     "library.supply.openapi_operations.5735840b97d455e028d6dd6e.150fc689df213a52"
+    ],
+    "entered": [],
+    "expected": [
+     "supply_the_files_and_facts_an_assignment_needs"
+    ],
+    "expected_ranks": {
+     "supply_the_files_and_facts_an_assignment_needs": [
+      null,
+      null
+     ]
+    },
+    "left": [],
+    "query": "exact paths and a revision for the material a step needs"
+   },
+   {
+    "after": [
+     "plan_and_split_work_with_explicit_joins",
+     "test_driven_change_red_green_refactor",
+     "verify_an_export_in_an_isolated_interpreter",
+     "propose_a_dedupe_without_deleting_rows",
+     "decide_whether_a_step_needs_a_model",
+     "look_for_structure_the_model_missed",
+     "copy_a_table_with_corrections_never_in_place",
+     "write_a_pinned_container_and_batch_job",
+     "audit_data_splits_for_errors_and_leakage",
+     "verify_the_requested_output"
+    ],
+    "before": [
+     "plan_and_split_work_with_explicit_joins",
+     "test_driven_change_red_green_refactor",
+     "verify_an_export_in_an_isolated_interpreter",
+     "propose_a_dedupe_without_deleting_rows",
+     "decide_whether_a_step_needs_a_model",
+     "look_for_structure_the_model_missed",
+     "write_a_pinned_container_and_batch_job",
+     "copy_a_table_with_corrections_never_in_place",
+     "audit_data_splits_for_errors_and_leakage",
+     "find_duplicate_records_with_blocking_keys"
+    ],
+    "entered": [
+     "verify_the_requested_output"
+    ],
+    "expected": [
+     "check_generated_code_against_the_request"
+    ],
+    "expected_ranks": {
+     "check_generated_code_against_the_request": [
+      null,
+      null
+     ]
+    },
+    "left": [
+     "find_duplicate_records_with_blocking_keys"
+    ],
+    "query": "test code the model wrote without using its own expectations"
+   },
+   {
+    "after": [
+     "import_skill_translate_4aad431e9c44",
+     "import_skill_multilingual_score_56df99f57c3e",
+     "import_skill_translate_content_fb4f7cd54d24",
+     "import_skill_product_marketing_7257d67fffdd",
+     "library.supply.openapi_operations.82627f138604db238ed0b12a.878c66a90209309c",
+     "library.supply.openapi_operations.c66d4c702ca33019fa7b5d03.1d4a079404108d55",
+     "import_skill_dubbing_69ee9c5aa4b9",
+     "import_skill_pragmatic_spec_build_d609873631fb",
+     "import_skill_translate_ea1e8b949022",
+     "import_subagent_compliance_mapper_e71d5f9a8c28"
+    ],
+    "before": [
+     "plan_and_split_work_with_explicit_joins",
+     "import_skill_translate_4aad431e9c44",
+     "import_skill_multilingual_score_56df99f57c3e",
+     "import_skill_translate_content_fb4f7cd54d24",
+     "import_skill_product_marketing_7257d67fffdd",
+     "library.supply.openapi_operations.82627f138604db238ed0b12a.878c66a90209309c",
+     "library.supply.openapi_operations.c66d4c702ca33019fa7b5d03.1d4a079404108d55",
+     "import_skill_dubbing_69ee9c5aa4b9",
+     "import_skill_pragmatic_spec_build_d609873631fb",
+     "import_skill_translate_ea1e8b949022"
+    ],
+    "entered": [
+     "import_subagent_compliance_mapper_e71d5f9a8c28"
+    ],
+    "expected": [],
+    "expected_ranks": {},
+    "left": [
+     "plan_and_split_work_with_explicit_joins"
+    ],
+    "query": "translate this contract into japanese"
+   }
+  ],
+  "expected_search_items_lost": [],
+  "existing_public_good_grants_orphaned": 0,
+  "public_good_grants_serving_before_and_after": 448,
+  "base_bodies_locally_reverified": 1473065,
+  "native_dry_run": "passed before dispatch",
+  "native_complete_byte_verification": "required before activation; passed",
+  "staged_object_owner": "all bodies staged as UID/GID 65534 with private modes (read-only check after the first batch)",
+  "ordinary_customer_check": {
+   "roadmap": "S-6.215.12",
+   "complete": true,
+   "requests": 34,
+   "packages": {
+    "new_cases": {
+     "identity": "library.supply.json_schemas.00561c34a326d8d387c002f1.b1876dca7c520f13",
+     "digest": "b1876dca7c520f1365aba2ed08171dd998672e8f08fb63f6a555df58b4fc85a8",
+     "exact_files_verified": 13,
+     "bytes": 55458
+    },
+    "earlier_a4ba2053": {
+     "identity": "library.supply.json_schemas.000312e08c3110127d823b5f.7a3ff3cbc6a0fecb",
+     "digest": "7a3ff3cbc6a0fecb47d4915615a56428d4951718704d935e307deb661d4020fc",
+     "exact_files_verified": 9,
+     "bytes": 35034
+    }
+   },
+   "usage_units_added": 1,
+   "wrong_digest": "refused",
+   "unauthenticated_manifest": {
+    "status": 401,
+    "code": "unauthorized"
+   },
+   "live_population": {
+    "packages": 255967,
+    "distinct_files": 1557669,
+    "complete": true
+   }
+  }
+ },
+ "transfer": {
+  "stage": "delta-cases-cleared-20261009-2c4591566b06",
+  "new_blobs": 84604,
+  "new_segments_and_item_lines": 6716,
+  "batches": 7,
+  "objects_uploaded": 91320,
+  "payload_kib_reported": 161772,
+  "compressed_transfer_kib_reported": 59868,
+  "activation_wait_minutes": 4
+ },
+ "r2_mirror": {
+  "verified_objects": 84604,
+  "verified_bytes": 113999483,
+  "batches": 661,
+  "completed_at": "2026-10-09T16:03:58.967268+00:00"
+ },
+ "public_good_policy_changed": false,
+ "production_body_engine_changed": false,
+ "limits": [
+  "The 6,357 packages passed deterministic qualification; independent review is ongoing and they are served at the community tier.",
+  "The consequence verdict covers 354 stored judged queries and the 448-grant Public Good policy, not every query or grant.",
+  "The customer check retrieves two packages; it does not test checkout, model-driven use, a missing body or rollback."
+ ],
+ "private_evidence_root": "/home/username/baltor-private",
+ "evidence": [
+  "case-publication-20261009-5dece5/consequences-dispatch.json",
+  "case-publication-20261009-5dece5/reconciliation-02-stdout.json",
+  "case-publication-20261009-5dece5/reconciliation-02-memory-adjustment.json",
+  "case-publication-20261009-5dece5/dry-run-01-result.json",
+  "case-publication-20261009-5dece5/publication-01-started.json",
+  "case-publication-20261009-5dece5/publication-01.stdout",
+  "case-publication-20261009-5dece5/publication-01-reconciled.json",
+  "case-publication-20261009-5dece5/customer-check-01/retrieval.json",
+  "r2-delta-cases-20261009-882928/progress.jsonl"
+ ]
+}
