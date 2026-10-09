@@ -42,7 +42,7 @@ from loop_engine.core.library_ingestion.record_rules import git_blob_identity
 from . import creative_assets as creative
 from .licences import repository_licence
 from .packaging import LICENCE_NAME, MAXIMUM_REVIEW_FILE_BYTES, UPSTREAM_LICENCE_NAME, PackageFile, SupplyPackage, build
-from .reading import RAW_HOST, github_blob_address, https_address
+from .reading import GITHUB_WEB_HOST, RAW_HOST, github_blob_address, https_address
 from .records import (
     CREATIVE_ASSETS, GENERATED_CODE_LICENCE, GENERATED_TEST_FAILED, LICENCE_TEXT, REFUSAL_REASONS, UPSTREAM_VERBATIM,
     SupplyRecordError, fact_source, provenance, refusal, upstream_key)
@@ -70,6 +70,9 @@ TEXT_MEDIA = {".gd": creative.GDSCRIPT_MEDIA, ".tscn": "text/x-godot-scene", ".t
 #: A package path (catalogue_packages.placement_path): safe segments, at most eight deep and 200 characters.
 _SEGMENT = re.compile(r"[A-Za-z0-9._@+-]{1,100}\Z")
 MAXIMUM_PROJECT_PINNED_BYTES = 256 * 1024 * 1024
+#: The command search path a headless Godot import runs with: the system's own folders, never the caller's PATH,
+#: so the import starts only the Godot executable it is given and the tools of a standard system.
+GODOT_IMPORT_PATH = "/usr/bin:/bin"
 #: File names that are a licence or attribution notice: each must name a licence the line can read.
 NOTICE_NAME = re.compile(r"(licen[cs]e|copying|notice|credits?|attribution|authors)", re.I)
 README_NAME = re.compile(r"readme(\.[a-z]+)?\Z", re.I)
@@ -204,7 +207,7 @@ def godot_import(godot: str, folder: Path, timeout: float = 300.0) -> str:
     home.mkdir(exist_ok=True)
     try:
         done = subprocess.run([godot, "--headless", "--path", str(folder), "--import"], capture_output=True, text=True,
-                              timeout=timeout, check=False, env={"HOME": str(home), "PATH": "/usr/bin:/bin"})
+                              timeout=timeout, check=False, env={"HOME": str(home), "PATH": GODOT_IMPORT_PATH})
     except subprocess.TimeoutExpired:
         return f"failed: no answer within {timeout:.0f} s"
     lines = [_ANSI.sub("", line).strip() for line in (done.stdout + done.stderr).splitlines()]
@@ -431,9 +434,10 @@ def _project(root: str, entries, context: dict) -> tuple:
     scripts = sorted(relative for relative in copied if relative.endswith((".gd", ".cs")))
     scenes = sorted(relative for relative in copied if relative.endswith((".tscn", ".escn")))
     expression = " AND ".join([GENERATED_CODE_LICENCE] + sorted(allowed - {GENERATED_CODE_LICENCE}))
-    asset = {"name": checker.unquoted(application.get("config/name", "")) or root, "type": "godot_project",
-             "source_page": f"https://github.com/{REPOSITORY}/tree/{commit}/{root}", "commit": commit,
-             "asset_role": creative.ASSET_ROLES["godot_project"],
+    project_type = creative.AssetType.GODOT_PROJECT.value
+    asset = {"name": checker.unquoted(application.get("config/name", "")) or root, "type": project_type,
+             "source_page": https_address(GITHUB_WEB_HOST, f"{REPOSITORY}/tree/{commit}/{root}"), "commit": commit,
+             "asset_role": creative.ASSET_ROLES[project_type],
              "credit": "the Godot Engine contributors (godotengine/godot-demo-projects)",
              "project": {"path": root, "folder": PROJECT_FOLDER, "main_scene": checker.main_scene(config),
                          "scripts": scripts, "scenes": scenes, "godot_features": features,
@@ -529,7 +533,7 @@ def _project(root: str, entries, context: dict) -> tuple:
                "command": "python -m unittest test_creative_fetch test_godot_project", "result": "passed",
                "tests_run": count, "skipped": skipped, "network": "loopback_only", "godot_import": imported,
                "references": "every res:// reference present or pinned"},
-        repository={"name": REPOSITORY, "project": root, "asset_type": "godot_project",
+        repository={"name": REPOSITORY, "project": root, "asset_type": asset["type"],
                     "asset_role": asset["asset_role"], "commit": commit, "copied_files": len(copied),
                     "pinned_files": len(rows), "pinned_bytes": variants[0]["total_bytes"] if variants else 0,
                     "notices": len(notices), "stars": 0},

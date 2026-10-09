@@ -42,6 +42,7 @@ import unittest
 import urllib.parse
 import zipfile
 from collections import Counter
+from enum import Enum
 from pathlib import Path, PurePosixPath
 
 from loop_engine.core.library_ingestion.licences import match_licence
@@ -69,14 +70,33 @@ RESOLUTIONS = ("1k", "2k", "4k", "8k")
 #: (neither source publishes a SHA-256), so these bound a run's reads; larger variants are counted, not pinned.
 MAXIMUM_PINNED_FILE_BYTES = 64 * 1024 * 1024
 MAXIMUM_VARIANT_BYTES = 160 * 1024 * 1024
+
+
+class AssetType(str, Enum):
+    """The asset types the line supplies, as creative.json names them (``asset.type``). Each decides the form a
+    harness is served, the role it gives the bytes, the files a recipe pins and how the loaders place them. Code
+    compares a type with these members; the tables below are keyed by their values, which are what records hold."""
+
+    HDRI = "hdri"
+    TEXTURE = "texture"
+    MATERIAL = "material"
+    MODEL = "model"
+    GODOT_PROJECT = "godot_project"
+
+
 #: The form a harness is served for each asset type, and what it does with the bytes (component_form/v1's
 #: reference forms and asset roles).
-TYPE_FORMS = {"hdri": "reference_image", "texture": "reference_image", "material": "reference_image",
-              "model": "three_d_model", "godot_project": "template"}
-ASSET_ROLES = {"hdri": "generation_input", "texture": "generation_input", "material": "generation_input",
-               "model": "editable_source", "godot_project": "editable_source"}
-TYPE_LABELS = {"hdri": "HDRI environment map", "texture": "PBR texture set", "material": "PBR material",
-               "model": "3D model", "godot_project": "editable Godot project"}
+TYPE_FORMS = {AssetType.HDRI.value: "reference_image", AssetType.TEXTURE.value: "reference_image",
+              AssetType.MATERIAL.value: "reference_image", AssetType.MODEL.value: "three_d_model",
+              AssetType.GODOT_PROJECT.value: "template"}
+ASSET_ROLES = {AssetType.HDRI.value: "generation_input", AssetType.TEXTURE.value: "generation_input",
+               AssetType.MATERIAL.value: "generation_input", AssetType.MODEL.value: "editable_source",
+               AssetType.GODOT_PROJECT.value: "editable_source"}
+TYPE_LABELS = {AssetType.HDRI.value: "HDRI environment map", AssetType.TEXTURE.value: "PBR texture set",
+               AssetType.MATERIAL.value: "PBR material", AssetType.MODEL.value: "3D model",
+               AssetType.GODOT_PROJECT.value: "editable Godot project"}
+if not {member.value for member in AssetType} == set(TYPE_FORMS) == set(ASSET_ROLES) == set(TYPE_LABELS):
+    raise ImportError("the asset types, their forms, their roles and their labels disagree")
 EFFECTS = (("network", "creative_fetch.py downloads the pinned files from the origin creative.json names"),
            ("writes_fs", "creative_fetch.py writes the verified files into the folder it is given"),
            ("reads_fs", "the fetcher and the loaders read creative.json and the fetched files"))
@@ -97,14 +117,15 @@ POLYHAVEN_DOWNLOADS = "dl.polyhaven.org"
 POLYHAVEN_HOSTS = (POLYHAVEN_API, POLYHAVEN_SITE, POLYHAVEN_DOWNLOADS)
 POLYHAVEN_TERMS_REPOSITORY, POLYHAVEN_TERMS_PATH = "Poly-Haven/Public-API", "ToS.md"
 POLYHAVEN_LICENCE_PAGE = https_address(POLYHAVEN_SITE, "license")
-POLYHAVEN_TYPES = {0: "hdri", 1: "texture", 2: "model"}
+POLYHAVEN_TYPES = {0: AssetType.HDRI.value, 1: AssetType.TEXTURE.value, 2: AssetType.MODEL.value}
 #: The clauses the line relies on, each a phrase its document must still hold (case and spacing folded).
 POLYHAVEN_TERMS = ("published under the cc0 license", "including commercial use", "build on that data",
                    "user-agent")
 POLYHAVEN_LICENCE = ("all assets", "licensed as cc0", "you can use our assets for any purpose",
                      "you can redistribute them")
 #: The formats each asset type offers, and the map files of a texture's plain maps variant.
-POLYHAVEN_FORMATS = {"texture": ("gltf", "blend", "mtlx"), "model": ("gltf", "blend", "fbx", "usd")}
+POLYHAVEN_FORMATS = {AssetType.TEXTURE.value: ("gltf", "blend", "mtlx"),
+                     AssetType.MODEL.value: ("gltf", "blend", "fbx", "usd")}
 POLYHAVEN_MAPS = ("Diffuse", "nor_gl", "Rough", "AO", "Displacement", "Metal")
 
 # -- ambientCG --------------------------------------------------------------------------------------------------
@@ -117,7 +138,9 @@ AMBIENTCG_API_PAGE = https_address(AMBIENTCG_DOCS, "api/")
 AMBIENTCG_LICENCE = ("all ambientcg assets are provided under the creative commons cc0 1.0 universal license",
                      "this applies to the downloadable asset files")
 AMBIENTCG_API_TERMS = ("search and download assets using code",)
-AMBIENTCG_TYPES = {"material": "material", "hdri": "hdri", "3d-model": "model"}
+#: ambientCG's own type names, each with the line's asset type.
+AMBIENTCG_TYPES = {"material": AssetType.MATERIAL.value, "hdri": AssetType.HDRI.value,
+                   "3d-model": AssetType.MODEL.value}
 AMBIENTCG_INCLUDE = "type,title,url,tags,dimensions,downloads,maps,technique,releaseDate"
 #: The quality levels of a model's downloads the line pins (low and standard; high quality is opt-in by hand).
 AMBIENTCG_MODEL_LEVELS = ("LQ", "SQ")
@@ -332,7 +355,7 @@ def threejs_snippet(manifest: dict, folder: str) -> str:
             files.setdefault(row["role"], row["path"])
     kind = manifest["asset"]["type"]
     base = folder.rstrip("/") + "/"
-    if kind == "hdri":
+    if kind == AssetType.HDRI:
         path = files["environment"]
         loader = "EXRLoader" if path.lower().endswith(".exr") else "HDRLoader"
         return (THREE_HEADER + f'import {{ {loader} }} from "three/addons/loaders/{loader}.js";\n\n'
@@ -340,7 +363,7 @@ def threejs_snippet(manifest: dict, folder: str) -> str:
                 f"new {loader}().load({json.dumps(base + path)}, (texture) => {{\n"
                 "  texture.mapping = THREE.EquirectangularReflectionMapping;\n"
                 "  scene.background = texture;\n  scene.environment = texture;\n});\n")
-    if kind == "model":
+    if kind == AssetType.MODEL:
         path = files["model"]
         if path.lower().endswith((".gltf", ".glb")):
             return (THREE_HEADER + 'import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";\n\n'
@@ -384,14 +407,15 @@ def variants_table(manifest: dict) -> str:
     return "\n".join(rows)
 
 
-BLENDER_LINES = {"hdri": "the HDRI becomes the world's environment light",
-                 "model": "the model is imported, or appended from its .blend file",
-                 "texture": "the material lands on a plane of the texture's real size",
-                 "material": "the material lands on a plane of the material's real size"}
-GODOT_LINES = {"hdri": "the HDRI becomes the sky and its light",
-               "model": "the glTF variant loads at run time; OBJ, FBX and .blend need the editor's import",
-               "texture": "a StandardMaterial3D from the maps on a plane",
-               "material": "a StandardMaterial3D from the maps on a plane"}
+BLENDER_LINES = {AssetType.HDRI.value: "the HDRI becomes the world's environment light",
+                 AssetType.MODEL.value: "the model is imported, or appended from its .blend file",
+                 AssetType.TEXTURE.value: "the material lands on a plane of the texture's real size",
+                 AssetType.MATERIAL.value: "the material lands on a plane of the material's real size"}
+GODOT_LINES = {AssetType.HDRI.value: "the HDRI becomes the sky and its light",
+               AssetType.MODEL.value: "the glTF variant loads at run time; OBJ, FBX and .blend need the editor's "
+                                      "import",
+               AssetType.TEXTURE.value: "a StandardMaterial3D from the maps on a plane",
+               AssetType.MATERIAL.value: "a StandardMaterial3D from the maps on a plane"}
 
 
 def asset_readme(manifest: dict, source_label: str, credit: str, snippet: str, not_pinned: str) -> str:
@@ -567,8 +591,8 @@ def polyhaven_role(path: str, asset_type: str) -> str:
     name = PurePosixPath(path).name.lower()
     suffix = PurePosixPath(name).suffix
     if suffix in _MODEL_SUFFIXES:
-        return "model" if asset_type == "model" else "scene"
-    if suffix in (".hdr", ".exr") and asset_type == "hdri":
+        return "model" if asset_type == AssetType.MODEL else "scene"
+    if suffix in (".hdr", ".exr") and asset_type == AssetType.HDRI:
         return "environment"
     if suffix in _SUFFIX_ROLES:
         return _SUFFIX_ROLES[suffix]
@@ -581,7 +605,7 @@ def polyhaven_role(path: str, asset_type: str) -> str:
 def polyhaven_candidates(asset_type: str, files: dict, resolutions) -> list:
     """(id, format, resolution, [(path, entry, role)]) of every variant the files record offers."""
     found = []
-    if asset_type == "hdri":
+    if asset_type == AssetType.HDRI:
         for resolution in resolutions:
             for file_format in ("hdr", "exr"):
                 entry = ((files.get("hdri") or {}).get(resolution) or {}).get(file_format)
@@ -598,11 +622,11 @@ def polyhaven_candidates(asset_type: str, files: dict, resolutions) -> list:
             main = PurePosixPath(urllib.parse.urlsplit(entry["url"]).path).name
             # A model's main file is the model whatever its format (a .blend file included); a texture's is the
             # scene, Blender file or MaterialX document that holds the material.
-            parts = [(main, entry, "model" if asset_type == "model" else polyhaven_role(main, asset_type))]
+            parts = [(main, entry, "model" if asset_type == AssetType.MODEL else polyhaven_role(main, asset_type))]
             parts += [(include, value, polyhaven_role(include, asset_type))
                       for include, value in sorted((entry.get("include") or {}).items())]
             found.append((f"{file_format}-{resolution}", file_format, resolution, parts))
-    if asset_type == "texture":
+    if asset_type == AssetType.TEXTURE:
         for resolution in resolutions:
             parts = []
             for key in POLYHAVEN_MAPS:
@@ -617,7 +641,7 @@ def polyhaven_candidates(asset_type: str, files: dict, resolutions) -> list:
 
 def polyhaven_resolutions(asset_type: str, files: dict) -> set:
     """Every resolution the files record offers for the asset type's formats."""
-    keys = ("hdri",) if asset_type == "hdri" else POLYHAVEN_FORMATS[asset_type]
+    keys = ("hdri",) if asset_type == AssetType.HDRI else POLYHAVEN_FORMATS[asset_type]
     return {resolution for key in keys for resolution in (files.get(key) or {})}
 
 
@@ -652,7 +676,7 @@ def polyhaven_asset(info: dict, asset_type: str, identity: str) -> dict:
              "authors": {str(name): str(role) for name, role in (info.get("authors") or {}).items()},
              "asset_role": ASSET_ROLES[asset_type], "credit": "Poly Haven (polyhaven.com)",
              "files_hash": info.get("files_hash"), "max_resolution": info.get("max_resolution")}
-    if dimensions and asset_type != "hdri":
+    if dimensions and asset_type != AssetType.HDRI:
         asset["dimensions_mm"] = [round(value, 3) for value in dimensions]
     if info.get("polycount"):
         asset["polycount"] = int(info["polycount"])
@@ -744,8 +768,9 @@ def generate_polyhaven(reader, *, code_revision: str, licence_text: bytes, gener
                                    f"{len(candidates)} offered at {','.join(resolutions)}, none pinned"))
             continue
         asset = polyhaven_asset(details, asset_type, identity)
-        default = default_variant(variants, {"hdri": ("hdr-",), "texture": ("jpg-", "gltf-"),
-                                             "model": ("gltf-", "fbx-")}[asset_type])
+        default = default_variant(variants, {AssetType.HDRI.value: ("hdr-",),
+                                             AssetType.TEXTURE.value: ("jpg-", "gltf-"),
+                                             AssetType.MODEL.value: ("gltf-", "fbx-")}[asset_type])
         licence = {"spdx": "CC0-1.0", "binding": (
             "The asset is listed by api.polyhaven.com (its files record is pinned below), the catalogue of the "
             "site whose licence page states that all its assets are licensed CC0, and the API terms say the assets "
@@ -806,12 +831,13 @@ def ambientcg_role(path: str, asset_type: str) -> str:
             return role
     if suffix in (".hdr", ".exr"):
         return "environment"
-    if suffix == ".obj" or (suffix in _MODEL_SUFFIXES and asset_type == "model" and suffix not in (".usdc", ".usda")):
+    if suffix == ".obj" or (suffix in _MODEL_SUFFIXES and asset_type == AssetType.MODEL
+                            and suffix not in (".usdc", ".usda")):
         return "model"
     if suffix in _SUFFIX_ROLES:
         return _SUFFIX_ROLES[suffix]
     if suffix in (".jpg", ".jpeg", ".png", ".webp"):
-        return "tonemapped" if asset_type == "hdri" else "preview"
+        return "tonemapped" if asset_type == AssetType.HDRI else "preview"
     return "file"
 
 
@@ -842,9 +868,9 @@ def ambientcg_wanted(asset_type: str, resolutions) -> list:
     """The download attributes the line pins, in the order offered: JPG maps for materials, the HDRI archives,
     and low and standard quality models with JPG maps."""
     upper = [resolution.upper() for resolution in resolutions]
-    if asset_type == "material":
+    if asset_type == AssetType.MATERIAL:
         return [f"{value}-JPG" for value in upper]
-    if asset_type == "hdri":
+    if asset_type == AssetType.HDRI:
         return upper
     return [f"{level}-{value}-JPG" for level in AMBIENTCG_MODEL_LEVELS for value in upper]
 
@@ -965,8 +991,9 @@ def generate_ambientcg(reader, *, code_revision: str, licence_text: bytes, gener
         if any(isinstance(value, (int, float)) and value > 0 for value in sides):
             asset["dimensions_mm"] = [round(float(value or 0) * 10, 3) for value in sides if value is not None][:3]
         asset = {key: value for key, value in asset.items() if value not in (None, [], {}, "")}
-        default = default_variant(variants, {"material": ("2k-", "1k-"), "hdri": ("2k", "1k"),
-                                             "model": ("sq-", "lq-")}[asset_type])
+        default = default_variant(variants, {AssetType.MATERIAL.value: ("2k-", "1k-"),
+                                             AssetType.HDRI.value: ("2k", "1k"),
+                                             AssetType.MODEL.value: ("sq-", "lq-")}[asset_type])
         licence = {"spdx": "CC0-1.0", "binding": (
             "The asset is listed by ambientcg.com's API (its record is pinned below), whose licence page states "
             "that all ambientCG assets, the downloadable files and the preview renders, are provided under CC0 1.0."),

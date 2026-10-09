@@ -18,11 +18,24 @@ so this file can be read and tested outside Blender.
 """
 from __future__ import annotations
 
+from enum import Enum
 import json
 from pathlib import Path, PurePosixPath
 import sys
 
 MANIFEST = Path(__file__).resolve().parent / "creative.json"
+
+
+class AssetType(str, Enum):
+    """The asset types this loader places, as creative.json names them (``asset.type``). It is kept in this file
+    because the file runs inside Blender with only the standard library beside it."""
+
+    HDRI = "hdri"
+    TEXTURE = "texture"
+    MATERIAL = "material"
+    MODEL = "model"
+
+
 #: The importer for each model file suffix (Blender 4 operators).
 MODEL_IMPORTERS = {".gltf": ("import_scene", "gltf"), ".glb": ("import_scene", "gltf"),
                    ".fbx": ("import_scene", "fbx"), ".obj": ("wm", "obj_import"), ".usd": ("wm", "usd_import"),
@@ -160,11 +173,11 @@ def load(folder, variant: "str | None" = None, *, manifest: "dict | None" = None
     chosen = chosen_variant(manifest, variant)
     files = files_by_role(folder, chosen)
     kind = manifest["asset"]["type"]
-    if kind == "hdri":
+    if kind == AssetType.HDRI:
         return environment(files["environment"])
-    if kind == "model":
+    if kind == AssetType.MODEL:
         return import_model(files["model"])
-    if kind in ("texture", "material"):
+    if kind in (AssetType.TEXTURE, AssetType.MATERIAL):
         return material_plane(files, manifest["asset"].get("name") or manifest["job"]["identity"],
                               plane_size(manifest))
     raise ValueError(f"Blender loading is not defined for a {kind}")
