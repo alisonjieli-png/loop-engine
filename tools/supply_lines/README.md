@@ -259,7 +259,8 @@ Supply lines (each writes library_supply_candidate/v1 records)
     └── the package: component.json, schema.json (one $defs row schema per table, shards and train/validation/test
         splits of one family as one table), <dataset>.py (TABLES written into the shared standard-library reader
         kaggle_files/kaggle_dataset_loader.py), test_dataset_contract.py (shared) with synthetic fixtures and
-        known-wrong controls, data/ copies of tables within the review bounds, README.md (the dataset card),
+        known-wrong controls, data/ copies of tables within the review bounds (never a table whose rows carry a
+        redistribution flag that is not true for every row), README.md (the dataset card),
         LICENSE, UPSTREAM-LICENSE (the licence's legal code), SOURCE-LICENSE (the dataset's own licence file)
 ```
 

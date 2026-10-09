@@ -32,6 +32,8 @@
   "GPL-3.0-or-later": ["gnu general public license"],
   "LicenseRef-Gemma-Terms-of-Use": ["gemma terms of use"]
  },
+ "row_redistribution_fields": ["allow_public_redistribution", "allow_redistribution", "redistribution_allowed", "public_redistribution"],
+ "row_redistribution_reason": "A table whose rows carry their own redistribution flag is copied into a package only when every row says true: the dataset's licence statement governs the release, and a row that says otherwise (or a flag column too varied to list) keeps its table described but not copied.",
  "permission_phrases": ["please contact", "contact for permission", "for usage and publication", "terms of use", "terms-use", "you agree to the terms", "all rights reserved", "subject to competition rules"],
  "mixed_markers": ["mixed terms", "mixed:"],
  "legal_codes": {

@@ -28,8 +28,8 @@ kaggle_public_good (one package per licensable dataset folder of a local Kaggle 
     ├── test_dataset_contract.py (kaggle_files/, shared) and fixtures/: synthetic rows per table, with known-wrong
     │   controls (a value of the wrong type or a ragged record, a missing column, an unknown column)
     ├── data/: the dataset's own tables byte for byte when its licence allows it and the review bounds hold
-    │   (256 KiB a file, 2 MiB and 64 files a package); dropped, with the reason in the card, when the static
-    │   checks block them
+    │   (256 KiB a file, 2 MiB and 64 files a package), except a table whose rows carry a redistribution flag
+    │   that is not true for every row; dropped, with the reason in the card, when the static checks block them
     └── README.md (the dataset card), LICENSE (MIT, the generated code), UPSTREAM-LICENSE (the licence's legal
         code), SOURCE-LICENSE (the dataset's own licence file, verbatim) and ATTRIBUTION.md
 ```
@@ -138,6 +138,10 @@ TAB = "\t"
 DECLARED_MEDIA = {".jsonl": "text/plain", ".tsv": "text/tab-separated-values"}
 #: The dataset's own documentation the SDG rules read, by lower-case root file name.
 DOCUMENTATION_NAMES = ("readme.md", "data_card.md", "readme.txt")
+#: How a true flag reads once lower-cased, whether the file wrote a JSON boolean or text.
+TRUE_TEXT = "true"
+#: A short name of each table format, which tells apart two tables of one family name.
+FORMAT_SUFFIXES = {kaggle_profile.DELIMITED: "csv", kaggle_profile.JSON_LINES: "jsonl", kaggle_profile.JSON_DOCUMENT: "json"}
 #: The inventory outcome of a dataset that became a package.
 PACKAGED = "packaged"
 
@@ -402,12 +406,13 @@ def table_specs(profile: dict) -> tuple:
         else:
             for split, family, tables in members:
                 merged[(form, delimiter, family)] = (tables, [])
-    specs, names = {}, Counter()
-    for (form, delimiter, family), (tables, splits) in sorted(merged.items(), key=lambda item: item[0][2]):
+    specs, families_by_name = {}, Counter(identifier(family) for _form, _delimiter, family in merged)
+    for (form, delimiter, family), (tables, splits) in sorted(merged.items(), key=lambda item: (item[0][2], item[0][0])):
         name = identifier(family)
-        names[name] += 1
-        if names[name] > 1:
-            name = f"{name}_{names[name]}"
+        if families_by_name[name] > 1:  # preview.csv and preview.json: the format tells them apart
+            name = f"{name}_{FORMAT_SUFFIXES[form]}"
+        while name in specs:
+            name += "_2"
         specs[name] = {**_merged_spec(form, delimiter, family, tables), "splits": splits}
     return specs, left_out
 
@@ -491,6 +496,19 @@ def _bounded(pick, left, right):
         return pick(left, right)
     except TypeError:
         return pick(str(left), str(right))
+
+
+def redistribution_restricted(spec: dict, sources: dict) -> bool:
+    """Whether a table's rows carry a redistribution flag that is not true for every row (or too varied to list)."""
+    for column in spec["columns"]:
+        if column.lower() not in sources["row_redistribution_fields"]:
+            continue
+        listed = spec["observed"][column].get("values")
+        if not listed or spec["observed"][column]["empty"] or spec["observed"][column]["absent"]:
+            return True
+        if any(str(row["value"]).lower() != TRUE_TEXT for row in listed):
+            return True
+    return False
 
 
 def loader_tables(specs: dict) -> dict:
@@ -864,12 +882,15 @@ def build_package(folder: Path, slug: str, owner: str, profile: dict, decision: 
     authors = dataset_authors(folder, owner)
     module = identifier(slug)
     retrieved = profile["latest_modified_at"]
-    files, facts, data_files, data_rows = [], [], {}, []
+    files, facts, data_files, data_rows, withheld = [], [], {}, [], []
     note = None
     if copy_data:
         budget = MAXIMUM_REVIEW_PACKAGE_BYTES - GENERATED_ROOM_BYTES
         count = 0
         for name, spec in sorted(specs.items()):
+            if redistribution_restricted(spec, sources):
+                withheld.append(name)
+                continue
             for path in spec["paths"]:
                 file_name = PurePosixPath(path).name
                 size = spec["sizes"][file_name]
@@ -891,6 +912,10 @@ def build_package(folder: Path, slug: str, owner: str, profile: dict, decision: 
     else:
         note = ("The dataset's small tables were not copied: the static checks of the licensed import blocked a "
                 "copy, so this package carries the schema, reader and fixtures only.")
+    if withheld:
+        note = (f"Not copied: {', '.join(f'`{name}`' for name in withheld)}, whose rows carry their own "
+                "redistribution flag and do not all say true; the card describes them and the reader checks "
+                "a downloaded copy.")
     dataset = {"identity": identity, "address": address, "licence": spdx, "credit": attribution_line(
         title, authors, address, spdx)}
     tables = loader_tables(specs)

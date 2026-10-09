@@ -247,6 +247,10 @@ def download(root: Path) -> Path:
     write(good, "collisions.csv", csv_text(["crash_date", "borough", "injured", "killed", "fatal"],
                                            [["2026-01-0%d" % day, "north" if day % 2 else "south", day, day % 2,
                                              "true" if day % 2 else "false"] for day in range(1, 8)]))
+    write(good, "rights.jsonl", "".join(json.dumps({"id": index, "allow_public_redistribution": index != 2}) + "\n"
+                                        for index in range(3)))
+    write(good, "summary.csv", "metric,value\nrows,7\n")
+    write(good, "summary.json", json.dumps([{"metric": "rows", "value": 7}]))
     for split, count in (("train", 4), ("test", 2)):
         write(good, f"labels-{split}-00000.jsonl", "".join(json.dumps(
             {"id": f"{split}-{index}", "split": split, "label": "safe" if index % 2 else None, "score": index / 2}) + "\n"
@@ -302,7 +306,12 @@ class LineEndToEndTests(unittest.TestCase):
         self.assertEqual(paths["fixtures/labels.jsonl"]["media_type"], "text/plain")
         card = json.loads(bodies[paths["component.json"]["digest"]])
         self.assertEqual(card["job"], {"source": line.JOB_SOURCE, "identity": "exampleowner/road-collisions-sample"})
-        self.assertEqual(sorted(card["fixtures"]), ["collisions", "labels"])  # the train and test shards are one table
+        # The train and test shards are one table; two tables of one family name are told apart by their format.
+        self.assertEqual(sorted(card["fixtures"]), ["collisions", "labels", "rights", "summary_csv", "summary_json"])
+        # A table whose rows carry a redistribution flag that is not true for every row is described, not copied.
+        self.assertNotIn("data/rights.jsonl", paths)
+        self.assertIn("`rights`", card["data_note"])
+        self.assertIn("data/summary.json", paths)
         self.assertEqual(card["sdg"]["goals"], [3, 11])
         self.assertEqual(card["sdg"]["status"], sdg.PROPOSAL_STATUS)
         self.assertEqual(payload["tests"]["result"], "passed")
