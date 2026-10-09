@@ -262,6 +262,24 @@ Supply lines (each writes library_supply_candidate/v1 records)
         known-wrong controls, data/ copies of tables within the review bounds (never a table whose rows carry a
         redistribution flag that is not true for every row), README.md (the dataset card),
         LICENSE, UPSTREAM-LICENSE (the licence's legal code), SOURCE-LICENSE (the dataset's own licence file)
+└── container_image_cards: one contract card per repository and tag family of the Docker Official Images
+    ├── kind contract_schema, form schema; one card format (tools/container_image_cards), one registry engine per
+    │   registry (docker_hub by default, ecr_public); the job key is component.json job.registry, job.repository
+    │   and job.family (the library entry's build context without a commit, or its shortest own tag)
+    ├── facts: every library/<name> of docker-library/official-images at its head commit (Apache-2.0, facts only)
+    │   and the image's folder of docker-library/docs (MIT: the quoted one-line summary, categories, variable names
+    │   from headings and example commands, licence addresses), each proven by blob identity; the family's first
+    │   own tag resolved by HEAD and its index, every platform manifest and every config read by digest through the
+    │   registry's blob endpoint, which counts no pull of the anonymous allowance; no layer is ever read
+    ├── the package: README.md, contract.json (container_image_contract/v1), schema.json, image_contract.py (render
+    │   and check a docker or podman run command, standard library only), schema_check.py,
+    │   test_image_contract.py (known-wrong controls), component.json, verification/registry.json, LICENSE,
+    │   UPSTREAM-LICENSE (the docs' MIT) and ATTRIBUTION.md; the package's own tests pass before it is kept
+    ├── a credential's value is withheld (by its name or its shape) and its name kept; a credential-shaped value
+    │   anywhere else in a config refuses the family
+    └── native evidence: one registry check of every card (every digest by HEAD, every config parsed again); a
+        smoke run on the local engine for the few small images --smoke names; missing, stale or failed evidence
+        refuses the card by name
 ```
 
 Beside the lines, `verbatim_code_sources.json` and
@@ -344,6 +362,25 @@ Limits:
   documentation. Dataset-specific signals the rules do not name are missed
   (an all-capital emissions column without a stem), and a rule can match a
   dataset outside its topic; the review measures the rate on 30 datasets only.
+
+## Container image cards (container_image_cards)
+
+The owner, October 9, 2026: "we could even index full docker images, with
+clear inputs and outputs to accomplish certain tasks, because an LLM doesn't
+need to recreate the code and it doesn't need to reread the entire code if it
+knows the inputs and outputs and functions and basic docstrings of a docker
+image or service, etc, and its compatibilities". The card format, the registry
+engines, the measured allowance, the licence findings and the plan past the
+Docker Official Images are in the component's
+[README](../container_image_cards/README.md).
+
+```bash
+PYTHONPATH=src:tools python tools/build_library_supply.py container-image-cards \
+  --run-folder /run/media/username/baltor-offload/docker-cards-20261009/RUN \
+  --authorize-network-reads [--authorize-store-writes --store-root STORE] \
+  --registry-workers 4 --registry-pause-seconds 0.1 --document-cache CACHE \
+  [--repository NAME] [--maximum-families N] [--smoke name:tag] [--registry ecr_public] [--materialize]
+```
 
 ## What the creative sources' terms permit
 
@@ -432,6 +469,8 @@ what it no longer supplies.
 | The licensed import's licence matcher (`match_licence`) and the API line's declared licence names | Adopted for full licence texts. A dataset's short statement ("CC BY 4.0") is no template, so exact phrases name it, and a phrase of another licence anywhere among the dataset's licence signals holds it. |
 | Croissant (MLCommons) and CITATION.cff licence fields | Adopted as licence signals beside the licence file; they must agree with it. |
 | `data_tables.py` loader and tests | Adapted: one shared reader per line instead of one per table, typed by TABLES and checked by a shared contract test with known-wrong controls, because a dataset holds several tables and its rows are not copied. |
+| OCI image and distribution specifications, Docker Hub's registry API, docker-library/official-images and docker-library/docs | Adopted for the container image card line: the documents and their digests, the token flow, HEAD for tags and the blob endpoint for documents, the library files as tag families and the docs folder's facts ([container image cards](../container_image_cards/README.md#existing-work-adopted-adapted-and-rejected)). |
+| skopeo, crane, regctl, oras, Syft, docker-library/repo-info, Docker Hub's web API | Rejected as engines or sources for the container image card line: a Go binary each to install and pin whose manifest reads count against the anonymous allowance, layer scanning a card never does, a rendering of the registry's facts in place of the registry's own bytes, and a listing without configs; reasons in the component README. |
 
 ## Commands
 
@@ -506,6 +545,8 @@ keeps it a candidate.
 ```bash
 PYTHONPATH=src:tools python -m unittest tools.test_supply_lines
 PYTHONPATH=src:tools:. python -m unittest tools.test_kaggle_public_good_line
+PYTHONPATH=src:tools python -m unittest tools.test_container_image_cards
+PYTHONPATH=src:tools:. python -m unittest tools.test_container_image_cards_line
 ```
 
 ## Generator 1.3.0 of function_extracts
