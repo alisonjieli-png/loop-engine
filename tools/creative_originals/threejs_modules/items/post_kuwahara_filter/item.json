@@ -1,0 +1,56 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "post_kuwahara_filter",
+  "title": "Kuwahara painterly filter pass",
+  "purpose": "Turn a three.js frame into painterly patches while keeping edges sharp: each pixel takes the mean colour of whichever of its four overlapping quadrants (radius 1 to 6) has the least luminance variance, as a ShaderPass definition or full-screen ShaderMaterial with an exact CPU mirror on RGBA arrays.",
+  "form": "library_module",
+  "asset_role": null,
+  "dimension": "2d",
+  "engine": {"name": "webgl2_browser", "minimum_version": "2.0", "notes": "three.js r155 or later passed in as THREE (an int uniform and the colorspace_fragment chunk); only 0.186.1 was run."},
+  "tags": ["three.js", "post-processing", "kuwahara", "painterly", "edge preserving", "npr", "stylized", "shaderpass"],
+  "files": [
+    {"path": "README.md", "role": "other"},
+    {"path": "post_kuwahara_filter.mjs", "role": "skill_asset"},
+    {"path": "test_post_kuwahara_filter.mjs", "role": "executable_tool"},
+    {"path": "demo/scene.mjs", "role": "skill_asset"}
+  ],
+  "contract": {
+    "module": "post_kuwahara_filter.mjs",
+    "category": "post_process_pass",
+    "language": "ECMAScript 2020 module; GLSL ES 3.00 through three.js ShaderMaterial",
+    "three": {"injected": true, "argument": "THREE", "tested_version": "0.186.1", "needed_by": ["createKuwaharaMaterial"]},
+    "input_texture_uniform": "tDiffuse",
+    "exports": [
+      {"name": "createKuwaharaShader", "kind": "function", "signature": "createKuwaharaShader(options = {}) -> {name, uniforms, vertexShader, fragmentShader}", "summary": "A fresh shader definition for three.js ShaderPass or ShaderMaterial."},
+      {"name": "createKuwaharaMaterial", "kind": "function", "signature": "createKuwaharaMaterial(THREE, options = {}) -> THREE.ShaderMaterial", "summary": "The definition as a full-screen ShaderMaterial without depth test or write."},
+      {"name": "kuwaharaQuadrants", "kind": "function", "signature": "kuwaharaQuadrants(data, width, height, x, y, radius) -> [{mean, variance}]", "summary": "CPU mirror of the four quadrant measurements at one pixel."},
+      {"name": "kuwaharaPixel", "kind": "function", "signature": "kuwaharaPixel(data, width, height, x, y, radius) -> [r, g, b, a]", "summary": "CPU mirror of one output pixel."},
+      {"name": "kuwaharaImage", "kind": "function", "signature": "kuwaharaImage(data, width, height, radius) -> Float32Array", "summary": "CPU mirror of the whole pass on an RGBA image."},
+      {"name": "KUWAHARA_DEFAULTS", "kind": "constant", "summary": "Frozen default options."},
+      {"name": "KUWAHARA_VERTEX", "kind": "constant", "glsl": "vertex", "summary": "Full-screen vertex stage passing vUv."},
+      {"name": "KUWAHARA_FRAGMENT", "kind": "constant", "glsl": "fragment", "summary": "Fragment stage: four quadrants, least luminance variance wins."}
+    ],
+    "options": [
+      {"name": "radius", "type": "integer", "default": 3, "range": [1, 6], "meaning": "Quadrant size; each quadrant is (radius + 1) squared pixels."},
+      {"name": "resolution", "type": "[width, height]", "default": [1024, 1024], "meaning": "Input size in pixels; sets uTexelSize to its reciprocal."}
+    ],
+    "uniforms": [
+      {"name": "tDiffuse", "type": "sampler2D", "option": null},
+      {"name": "uTexelSize", "type": "vec2", "option": "resolution"},
+      {"name": "uRadius", "type": "int", "option": "radius"}
+    ],
+    "examples": [
+      {"call": "kuwaharaPixel", "args": [{"$typed": "Float64Array", "values": [0.1, 0.2, 0.3, 1, 0.9, 0.1, 0.4, 1, 0.3, 0.3, 0.3, 1, 0.5, 0.6, 0.1, 1, 0.6, 0.5, 0.4, 0.5, 0.7, 0.7, 0.2, 1, 0.2, 0.25, 0.3, 1, 0.45, 0.4, 0.35, 1, 0.85, 0.8, 0.9, 1]}, 3, 3, 1, 1, 1], "expect": [0.4375, 0.4375, 0.2875, 0.5], "tolerance": 1e-12},
+      {"call": "kuwaharaQuadrants", "args": [{"$typed": "Float64Array", "values": [0.1, 0.2, 0.3, 1, 0.9, 0.1, 0.4, 1, 0.3, 0.3, 0.3, 1, 0.5, 0.6, 0.1, 1, 0.6, 0.5, 0.4, 0.5, 0.7, 0.7, 0.2, 1, 0.2, 0.25, 0.3, 1, 0.45, 0.4, 0.35, 1, 0.85, 0.8, 0.9, 1]}, 3, 3, 1, 1, 1], "select": "2.variance", "expect": 0.013802674100000023, "tolerance": 1e-12},
+      {"call": "kuwaharaImage", "args": [{"$typed": "Float32Array", "values": [0.25, 0.5, 0.75, 1, 0.25, 0.5, 0.75, 1, 0.25, 0.5, 0.75, 1, 0.25, 0.5, 0.75, 1]}, 2, 2, 1], "expect": [0.25, 0.5, 0.75, 1, 0.25, 0.5, 0.75, 1, 0.25, 0.5, 0.75, 1, 0.25, 0.5, 0.75, 1], "tolerance": 1e-7},
+      {"call": "createKuwaharaShader", "args": [{"radius": 5}], "select": "uniforms.uRadius.value", "expect": 5},
+      {"call": "createKuwaharaShader", "args": [{"radius": 9}], "throws": "RangeError"}
+    ],
+    "demo": {"file": "demo/scene.mjs", "export": "demo", "addons": []},
+    "tests": ["test_post_kuwahara_filter.mjs"]
+  },
+  "limits": "The classic four-square Kuwahara filter, not the generalized or anisotropic variants: square quadrants give blocky patches and visible artefacts along diagonal edges at large radii. Variance uses luminance only, so two colours of equal luminance count as flat. When quadrants vary almost equally the choice follows float rounding, so neighbouring pixels can pick different quadrants in flat noisy areas. Cost grows with (radius + 1) squared times four reads per pixel (196 at radius 6). uTexelSize must match the input size. Output goes through three.js's output colour space conversion. Only three.js 0.186.1 was run, in headless Chrome on SwiftShader WebGL 2.",
+  "related": ["post_sobel_edges", "post_gaussian_blur_separable", "toon_band_material"],
+  "technique_references": ["Kuwahara filter: four overlapping quadrants, the least varied quadrant's mean", "Variance as E[L^2] - E[L]^2 of Rec. 709 luminance"],
+  "native_checks": ["module_contract_static", "node_tests_pass", "node_tests_catch_mutants", "three_runtime_pinned", "browser_page_clean", "three_shaders_compiled", "demo_checks_passed", "render_not_uniform", "render_differs_from_baseline"]
+}

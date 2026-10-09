@@ -55,7 +55,7 @@ function smoothstep(edge0, edge1, x) {
 
 function settingsOf(options) {
   for (const key of Object.keys(options)) {
-    if (!(key in VIGNETTE_DEFAULTS)) throw new TypeError(`unknown vignette option ${key}`);
+    if (!Object.prototype.hasOwnProperty.call(VIGNETTE_DEFAULTS, key)) throw new TypeError(`unknown vignette option ${key}`);
   }
   const settings = {...VIGNETTE_DEFAULTS, ...options};
   const ranges = {strength: [0, 1], inner: [0, 4], outer: [0, 4], roundness: [0, 1], aspect: [0.01, 100]};

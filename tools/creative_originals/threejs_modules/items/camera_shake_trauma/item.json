@@ -1,0 +1,52 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "camera_shake_trauma",
+  "title": "Trauma camera shake with seeded gradient noise",
+  "purpose": "Shake a three.js camera after hits and explosions: trauma in [0, 1] decays linearly, and the shake is trauma to a power times seeded smooth gradient noise on three translation and three rotation channels, applied around a base pose that the shake never changes. Deterministic for a seed and time.",
+  "form": "library_module",
+  "asset_role": null,
+  "dimension": "3d",
+  "engine": {"name": "node", "minimum_version": "18", "notes": "Pure ES2020, also runs in any browser; applyTo poses a three.js camera through position.set and quaternion.set. Only three.js 0.186.1 was run."},
+  "tags": ["three.js", "camera", "camera shake", "trauma", "noise", "game feel", "kinematics", "deterministic"],
+  "files": [
+    {"path": "README.md", "role": "other"},
+    {"path": "camera_shake_trauma.mjs", "role": "skill_asset"},
+    {"path": "test_camera_shake_trauma.mjs", "role": "executable_tool"},
+    {"path": "demo/scene.mjs", "role": "skill_asset"}
+  ],
+  "contract": {
+    "module": "camera_shake_trauma.mjs",
+    "category": "camera_rig",
+    "language": "ECMAScript 2020 module",
+    "three": {"injected": false, "argument": null, "tested_version": "0.186.1", "needed_by": []},
+    "exports": [
+      {"name": "CameraShake", "kind": "class", "signature": "new CameraShake(options = {}); addTrauma(amount) -> trauma; update(deltaSeconds) -> trauma; sample(time = this.time) -> {translation, rotation, intensity}; applyTo(camera, basePosition, baseQuaternion = [0, 0, 0, 1]) -> camera", "summary": "A shake with its own trauma and clock that poses any object with position.set and quaternion.set around a base pose."},
+      {"name": "shakeOffsets", "kind": "function", "signature": "shakeOffsets(trauma, time, options = {}) -> {translation: [x, y, z], rotation: [pitch, yaw, roll], intensity}", "summary": "The shake at a time for a trauma level; intensity = clamp(trauma, 0, 1)^exponent."},
+      {"name": "shakeNoise", "kind": "function", "signature": "shakeNoise(seed, x) -> number in [-1, 1]", "summary": "Seeded 1D gradient noise: zero on integers, quintic fade, the same on every platform."},
+      {"name": "traumaAfter", "kind": "function", "signature": "traumaAfter(trauma, seconds, decay = 0.8) -> number", "summary": "Trauma left after linear decay, never below zero."},
+      {"name": "CAMERA_SHAKE_DEFAULTS", "kind": "constant", "summary": "Frozen default options."}
+    ],
+    "options": [
+      {"name": "decay", "type": "number", "default": 0.8, "range": [0, 100], "unit": "trauma per second", "meaning": "Linear trauma decay."},
+      {"name": "exponent", "type": "number", "default": 2, "range": [0.5, 8], "meaning": "Shake intensity is trauma to this power, so small hits stay subtle."},
+      {"name": "frequency", "type": "number", "default": 16, "range": [0, 200], "unit": "noise cells per second", "meaning": "How fast the shake changes direction."},
+      {"name": "translation", "type": "three non-negative numbers", "default": [0.12, 0.12, 0.04], "unit": "scene units", "meaning": "Largest offsets along the camera's right, up and back axes at full trauma."},
+      {"name": "rotation", "type": "three non-negative numbers", "default": [0.05, 0.05, 0.08], "unit": "radians", "meaning": "Largest pitch, yaw and roll at full trauma."},
+      {"name": "seed", "type": "integer", "default": 1, "range": "0 to 2^31 - 1", "meaning": "Noise seed; two shakes with different seeds move differently."}
+    ],
+    "examples": [
+      {"call": "shakeNoise", "args": [1, 3], "expect": 0},
+      {"call": "shakeNoise", "args": [1, 0.5], "expect": 0.047235894249752164, "tolerance": 1e-12},
+      {"call": "traumaAfter", "args": [0.8, 0.5, 0.8], "expect": 0.4, "tolerance": 1e-12},
+      {"call": "shakeOffsets", "args": [0, 1.25], "select": "translation", "expect": [0, 0, 0]},
+      {"call": "shakeOffsets", "args": [0.5, 0.3], "select": "intensity", "expect": 0.25, "tolerance": 1e-12},
+      {"call": "shakeNoise", "args": [1.5, 0], "throws": "TypeError"}
+    ],
+    "demo": {"file": "demo/scene.mjs", "export": "demo", "addons": []},
+    "tests": ["test_camera_shake_trauma.mjs"]
+  },
+  "limits": "A procedural game-feel effect, not a model of a physical camera mount: no inertia, spring or directional response to where the hit came from. The noise is 1D gradient noise, not band-limited, so very high frequencies alias at low frame rates. Translation is applied along the camera's own axes and rotation after the base orientation; the shake does not avoid walls or clipping. Trauma decays linearly; an exponential decay needs a different update. Only three.js 0.186.1 was run, in headless Chrome on SwiftShader WebGL 2; frame-time behaviour was not measured.",
+  "related": ["cinematic_camera_path", "look_at_damped_tracker", "orbit_camera_rig", "smooth_damp_spring"],
+  "technique_references": ["Trauma-squared screen shake model", "1D gradient noise with integer lattice hashing and a quintic fade", "Quaternion composition of a base orientation with Euler offsets"],
+  "native_checks": ["module_contract_static", "node_tests_pass", "node_tests_catch_mutants", "three_runtime_pinned", "browser_page_clean", "three_shaders_compiled", "demo_checks_passed", "render_not_uniform", "render_differs_from_baseline"]
+}

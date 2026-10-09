@@ -40,7 +40,7 @@ export function roundedBoxVolume(width, height, depth, radius) {
 
 function settingsOf(options) {
   for (const key of Object.keys(options)) {
-    if (!(key in ROUNDED_BOX_DEFAULTS)) throw new TypeError(`unknown rounded box option ${key}`);
+    if (!Object.prototype.hasOwnProperty.call(ROUNDED_BOX_DEFAULTS, key)) throw new TypeError(`unknown rounded box option ${key}`);
   }
   const settings = {...ROUNDED_BOX_DEFAULTS, ...options};
   for (const key of ['width', 'height', 'depth']) {

@@ -25,12 +25,12 @@ void main() { gl_FragColor = vec4(toonBandLevel(vUv.x * 2.0 - 1.0, uBands, uSoft
   const scene = new THREE.Scene();
   scene.background = background;
   const camera = new THREE.PerspectiveCamera(34, 1, 0.1, 50);
-  camera.position.set(0.4, 0.9, 5.6);
+  camera.position.set(0.4, 0.9, 6.3);
   camera.lookAt(0, 0, 0);
   const lightDirection = toon.toonLightDirection([4, 6, 3]);
-  const warm = toon.createToonBandMaterial(THREE, {bands: 3, lightDirection});
+  const warm = toon.createToonBandMaterial(THREE, {bands: 3, softness: 0.01, specularSize: 0.04, lightDirection});
   const cool = toon.createToonBandMaterial(THREE, {
-    bands: 2, color: [0.2, 0.55, 0.85], shadowColor: [0.05, 0.08, 0.2], lightDirection, specularSize: 0.1,
+    bands: 2, softness: 0.01, color: [0.2, 0.55, 0.85], shadowColor: [0.05, 0.08, 0.2], lightDirection, specularSize: 0.08,
   });
   const knot = new THREE.Mesh(new THREE.TorusKnotGeometry(0.85, 0.3, 192, 24), warm);
   knot.position.set(-0.55, 0.15, 0);

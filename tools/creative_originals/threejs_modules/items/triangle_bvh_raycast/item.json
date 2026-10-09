@@ -1,0 +1,51 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "triangle_bvh_raycast",
+  "title": "Triangle BVH for fast raycasts",
+  "purpose": "Build a bounding volume hierarchy over a triangle mesh or BufferGeometry with binned surface area heuristic splits in flat typed arrays, then cast closest-hit rays (distance, triangle, barycentrics, point) and early-out any-hit rays with side culling. Use it for picking, shooting and line of sight.",
+  "form": "library_module",
+  "asset_role": null,
+  "dimension": "3d",
+  "engine": {"name": "node", "minimum_version": "18", "notes": "No three.js needed: it reads typed arrays or a BufferGeometry's position and index arrays. The demo was rendered with three.js 0.186.1 in headless Chrome."},
+  "tags": ["three.js", "bvh", "raycast", "picking", "acceleration structure", "surface area heuristic", "collision", "typed arrays"],
+  "files": [
+    {"path": "README.md", "role": "other"},
+    {"path": "triangle_bvh_raycast.mjs", "role": "skill_asset"},
+    {"path": "test_triangle_bvh_raycast.mjs", "role": "executable_tool"},
+    {"path": "demo/scene.mjs", "role": "skill_asset"}
+  ],
+  "contract": {
+    "module": "triangle_bvh_raycast.mjs",
+    "category": "picking_interaction",
+    "language": "ECMAScript 2020 module",
+    "three": {"injected": false, "tested_version": "0.186.1", "needed_by": []},
+    "exports": [
+      {"name": "buildTriangleBVH", "kind": "function", "signature": "buildTriangleBVH(positions, indices = null, options = {}) -> bvh", "summary": "The hierarchy as typed arrays: nodeBounds, nodeOffsets, nodeCounts and the triangle order."},
+      {"name": "bvhFromGeometry", "kind": "function", "signature": "bvhFromGeometry(geometry, options = {}) -> bvh", "summary": "The same from a BufferGeometry's position attribute and index."},
+      {"name": "raycastBVH", "kind": "function", "signature": "raycastBVH(bvh, origin, direction, options = {}) -> {distance, triangle, barycentric, point} | null", "summary": "Closest hit between near and far, nearest child first."},
+      {"name": "raycastAnyBVH", "kind": "function", "signature": "raycastAnyBVH(bvh, origin, direction, options = {}) -> boolean", "summary": "Whether anything is hit; stops at the first hit."},
+      {"name": "describeBVH", "kind": "function", "signature": "describeBVH(bvh) -> {nodes, leaves, maximumDepth, largestLeaf, triangles}", "summary": "Size and shape of a hierarchy."},
+      {"name": "BVH_DEFAULTS", "kind": "constant", "summary": "Frozen build options: maxLeafTriangles 4, bins 12."},
+      {"name": "RAYCAST_DEFAULTS", "kind": "constant", "summary": "Frozen raycast options: near 0, far Infinity, side double."}
+    ],
+    "options": [
+      {"name": "maxLeafTriangles", "type": "integer", "default": 4, "range": [1, 32], "meaning": "Leaves at or under this size are not split."},
+      {"name": "bins", "type": "integer", "default": 12, "range": [2, 64], "meaning": "Centroid bins per axis for the surface area heuristic."},
+      {"name": "near", "type": "number", "default": 0, "meaning": "Closest accepted hit distance."},
+      {"name": "far", "type": "number", "default": "Infinity", "meaning": "Farthest accepted hit distance."},
+      {"name": "side", "type": "string", "default": "double", "meaning": "'double', 'front' (counter-clockwise faces) or 'back'."}
+    ],
+    "examples": [
+      {"call": "buildTriangleBVH", "args": [{"$typed": "Float32Array", "values": [0, 0, 0, 1, 0, 0, 0, 1, 0]}], "select": "nodeCount", "expect": 1},
+      {"call": "raycastBVH", "args": [{"positions": [0, 0, 0, 1, 0, 0, 0, 1, 0], "indices": null, "order": [0], "nodeBounds": [0, 0, 0, 1, 1, 0], "nodeOffsets": [0], "nodeCounts": [1], "nodeCount": 1, "triangleCount": 1}, [0.25, 0.25, 1], [0, 0, -1]], "expect": {"distance": 1, "triangle": 0, "barycentric": [0.5, 0.25, 0.25], "point": [0.25, 0.25, 0]}, "tolerance": 1e-12},
+      {"call": "describeBVH", "args": [{"nodeCount": 1, "triangleCount": 1, "nodeCounts": [1], "nodeOffsets": [0]}], "expect": {"nodes": 1, "leaves": 1, "maximumDepth": 0, "largestLeaf": 1, "triangles": 1}},
+      {"call": "buildTriangleBVH", "args": [{"$typed": "Float32Array", "values": [0, 0, 0, 1]}], "throws": "RangeError"}
+    ],
+    "demo": {"file": "demo/scene.mjs", "export": "demo", "addons": []},
+    "tests": ["test_triangle_bvh_raycast.mjs"]
+  },
+  "limits": "Static meshes: the hierarchy references the position and index arrays, so after editing or animating vertices you must build again; skinned and morphed meshes are not followed. Rays are in the geometry's local space: transform them by the inverse of the object's world matrix yourself. Hits exactly on a shared edge may report either triangle. Building is single-threaded in O(n log n) and holds float64 boxes (48 bytes per node). No ray packets, no closest-point queries and no mesh-mesh collision. Only three.js 0.186.1 was run for the demo, in headless Chrome on SwiftShader WebGL 2.",
+  "related": ["gpu_id_picking", "ray_plane_drag", "mesh_surface_scatter"],
+  "technique_references": ["Bounding volume hierarchy with binned surface area heuristic splits", "Slab test for ray and axis-aligned box", "Moller-Trumbore ray and triangle intersection", "Nearest-child-first stack traversal"],
+  "native_checks": ["module_contract_static", "node_tests_pass", "node_tests_catch_mutants", "three_runtime_pinned", "browser_page_clean", "three_shaders_compiled", "demo_checks_passed", "render_not_uniform", "render_differs_from_baseline"]
+}

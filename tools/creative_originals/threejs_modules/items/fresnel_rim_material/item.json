@@ -1,0 +1,72 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "fresnel_rim_material",
+  "title": "Fresnel rim glow material with additive shell mode",
+  "purpose": "Give three.js meshes a view-dependent rim glow, bias + scale * (1 - N.V)^power, either as emission over a Lambert-lit base or alone on an additive glow shell, with an optional pulse and an exact CPU mirror of the rim. Use it for energy cores, pickups, selection highlights and sci-fi props.",
+  "form": "library_module",
+  "asset_role": null,
+  "dimension": "3d",
+  "engine": {"name": "webgl2_browser", "minimum_version": "2.0", "notes": "three.js r155 or later passed in as THREE (the shader includes the colorspace_fragment chunk); only 0.186.1 was run."},
+  "tags": ["three.js", "shader", "fresnel", "rim light", "glow", "shadermaterial", "glsl", "additive"],
+  "files": [
+    {"path": "README.md", "role": "other"},
+    {"path": "fresnel_rim_material.mjs", "role": "skill_asset"},
+    {"path": "test_fresnel_rim_material.mjs", "role": "executable_tool"},
+    {"path": "demo/scene.mjs", "role": "skill_asset"}
+  ],
+  "contract": {
+    "module": "fresnel_rim_material.mjs",
+    "category": "shader_material",
+    "language": "ECMAScript 2020 module; GLSL ES 3.00 through three.js ShaderMaterial",
+    "three": {"injected": true, "argument": "THREE", "tested_version": "0.186.1", "needed_by": ["createFresnelRimMaterial"]},
+    "exports": [
+      {"name": "createFresnelRimMaterial", "kind": "function", "signature": "createFresnelRimMaterial(THREE, options = {}) -> THREE.ShaderMaterial", "summary": "The rim material; mode 'opaque' or 'additive'; an unknown option throws TypeError, a value out of range RangeError."},
+      {"name": "fresnelRim", "kind": "function", "signature": "fresnelRim(cosTheta, power, bias, scale) -> number", "summary": "CPU mirror of the GLSL rim: bias + scale * (1 - clamp(cosTheta, 0, 1))^power."},
+      {"name": "fresnelPulse", "kind": "function", "signature": "fresnelPulse(time, speed, depth) -> number", "summary": "CPU mirror of the pulse factor: 1 at time 0, dipping to 1 - depth."},
+      {"name": "FRESNEL_RIM_DEFAULTS", "kind": "constant", "summary": "Frozen default options; colours are linear RGB triples."},
+      {"name": "FRESNEL_RIM_GLSL", "kind": "constant", "glsl": "chunk", "summary": "GLSL functions fresnelRim and fresnelPulse."},
+      {"name": "FRESNEL_RIM_VERTEX", "kind": "constant", "glsl": "vertex", "summary": "Vertex stage: world normal and position, InstancedMesh aware."},
+      {"name": "FRESNEL_RIM_FRAGMENT", "kind": "constant", "glsl": "fragment", "summary": "Fragment stage: rim over a lit base or alone for additive glow, then tone mapping and output colour space."}
+    ],
+    "options": [
+      {"name": "mode", "type": "string", "default": "opaque", "values": ["opaque", "additive"], "meaning": "opaque adds the rim to a lit base; additive draws only the rim with additive blending and no depth write."},
+      {"name": "baseColor", "type": "colour", "default": [0.05, 0.07, 0.12], "meaning": "Lit base colour in opaque mode."},
+      {"name": "rimColor", "type": "colour", "default": [0.25, 0.85, 1], "meaning": "Colour of the rim."},
+      {"name": "power", "type": "number", "default": 2.5, "range": [0.1, 16], "meaning": "Exponent; higher keeps the rim closer to the silhouette."},
+      {"name": "bias", "type": "number", "default": 0.02, "range": [0, 1], "meaning": "Rim added everywhere, even facing the camera."},
+      {"name": "scale", "type": "number", "default": 1.4, "range": [0, 8], "meaning": "Rim added at the silhouette on top of the bias."},
+      {"name": "intensity", "type": "number", "default": 1, "range": [0, 16], "meaning": "Multiplier of the rim emission."},
+      {"name": "pulseSpeed", "type": "number", "default": 0, "range": [0, 50], "meaning": "Pulse angular speed in radians per second of uTime; 0 turns the pulse off."},
+      {"name": "pulseDepth", "type": "number", "default": 0.35, "range": [0, 1], "meaning": "How far the pulse dims the rim."},
+      {"name": "lightDirection", "type": "vector3", "default": [0.4, 0.8, 0.45], "meaning": "Direction toward the light for the base in world space; normalized."},
+      {"name": "ambient", "type": "number", "default": 0.25, "range": [0, 1], "meaning": "Share of the base colour lit without the light."}
+    ],
+    "uniforms": [
+      {"name": "uBaseColor", "type": "vec3", "option": "baseColor"},
+      {"name": "uRimColor", "type": "vec3", "option": "rimColor"},
+      {"name": "uPower", "type": "float", "option": "power"},
+      {"name": "uBias", "type": "float", "option": "bias"},
+      {"name": "uScale", "type": "float", "option": "scale"},
+      {"name": "uIntensity", "type": "float", "option": "intensity"},
+      {"name": "uTime", "type": "float", "option": null},
+      {"name": "uPulseSpeed", "type": "float", "option": "pulseSpeed"},
+      {"name": "uPulseDepth", "type": "float", "option": "pulseDepth"},
+      {"name": "uLightDirection", "type": "vec3", "option": "lightDirection"},
+      {"name": "uAmbient", "type": "float", "option": "ambient"},
+      {"name": "uAdditive", "type": "float", "option": "mode"}
+    ],
+    "examples": [
+      {"call": "fresnelRim", "args": [1, 2.5, 0.02, 1.4], "expect": 0.02, "tolerance": 1e-12},
+      {"call": "fresnelRim", "args": [0, 2.5, 0.02, 1.4], "expect": 1.42, "tolerance": 1e-12},
+      {"call": "fresnelRim", "args": [0.5, 2, 0, 1], "expect": 0.25, "tolerance": 1e-12},
+      {"call": "fresnelPulse", "args": [1, 3, 0.5], "expect": 0.5025018758498887, "tolerance": 1e-12},
+      {"call": "fresnelRim", "args": [0.5, 0, 0, 1], "throws": "RangeError"}
+    ],
+    "demo": {"file": "demo/scene.mjs", "export": "demo", "addons": []},
+    "tests": ["test_fresnel_rim_material.mjs"]
+  },
+  "limits": "An empirical Schlick-style curve for looks, not a physical Fresnel term: there is no index of refraction, reflection or energy conservation. Flat faces seen head-on get only the bias, so boxes glow at grazing angles alone. The base is lit by one direction uniform; three.js scene lights, shadows and fog are ignored, and skinned or morphed meshes are not deformed. The additive shell needs its own slightly larger mesh, and additive blending brightens whatever is behind it. Without a bloom pass the glow does not spread past the silhouette. Written for three.js r155 or later; only 0.186.1 was run, in headless Chrome on SwiftShader WebGL 2.",
+  "related": ["toon_band_material", "hologram_scanline_material", "gooch_shading_material"],
+  "technique_references": ["Schlick-style facing-ratio rim, bias + scale * (1 - N.V)^power", "Additive glow shell with SRC_ALPHA, ONE blending", "Cosine pulse modulation"],
+  "native_checks": ["module_contract_static", "node_tests_pass", "node_tests_catch_mutants", "three_runtime_pinned", "browser_page_clean", "three_shaders_compiled", "demo_checks_passed", "render_not_uniform", "render_differs_from_baseline"]
+}

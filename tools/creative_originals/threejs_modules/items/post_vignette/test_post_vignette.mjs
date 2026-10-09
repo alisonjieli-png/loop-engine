@@ -64,5 +64,6 @@ test('known wrong: invalid options are refused', () => {
   assert.throws(() => vignetteAmount(0, 0, {strength: 2}), RangeError);
   assert.throws(() => createVignetteShader({inner: 1, outer: 0.5}), RangeError);
   assert.throws(() => createVignetteShader({colour: [0, 0, 0]}), TypeError);
+  assert.throws(() => createVignetteShader({toString: 1}), TypeError, 'an inherited name is not an option');
   assert.throws(() => createVignetteShader({color: [0, 0]}), TypeError);
 });

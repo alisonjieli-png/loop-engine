@@ -1,0 +1,63 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "post_color_lut_strip",
+  "title": "3D LUT colour grading pass from a texture strip",
+  "purpose": "Grade a three.js frame through a 3D colour lookup table stored as a strip of N blue slices of N x N texels, with trilinear lookup, an sRGB or linear lookup domain and an intensity mix, plus helpers that bake strips from a function, sample them on the CPU exactly as the shader does and wrap them as DataTextures.",
+  "form": "library_module",
+  "asset_role": null,
+  "dimension": "2d",
+  "engine": {"name": "webgl2_browser", "minimum_version": "2.0", "notes": "three.js r155 or later passed in as THREE (the shader includes the colorspace_fragment chunk and an int uniform); only 0.186.1 was run."},
+  "tags": ["three.js", "post-processing", "color grading", "lut", "3d lut", "look", "shaderpass", "datatexture"],
+  "files": [
+    {"path": "README.md", "role": "other"},
+    {"path": "post_color_lut_strip.mjs", "role": "skill_asset"},
+    {"path": "test_post_color_lut_strip.mjs", "role": "executable_tool"},
+    {"path": "demo/scene.mjs", "role": "skill_asset"}
+  ],
+  "contract": {
+    "module": "post_color_lut_strip.mjs",
+    "category": "post_process_pass",
+    "language": "ECMAScript 2020 module; GLSL ES 3.00 through three.js ShaderMaterial",
+    "three": {"injected": true, "argument": "THREE", "tested_version": "0.186.1", "needed_by": ["createColorLutMaterial", "createLutStripTexture"]},
+    "input_texture_uniform": "tDiffuse",
+    "strip_layout": "width N * N, height N, RGBA8; texel (b * N + r, g) holds the colour for grid point (r, g, b) / (N - 1); rows from the bottom",
+    "exports": [
+      {"name": "createColorLutShader", "kind": "function", "signature": "createColorLutShader(options = {}) -> {name, uniforms, vertexShader, fragmentShader}", "summary": "A fresh shader definition with tDiffuse and tLut for three.js ShaderPass or ShaderMaterial."},
+      {"name": "createColorLutMaterial", "kind": "function", "signature": "createColorLutMaterial(THREE, options = {}) -> THREE.ShaderMaterial", "summary": "The definition as a full-screen ShaderMaterial without depth test or write."},
+      {"name": "createLutStripTexture", "kind": "function", "signature": "createLutStripTexture(THREE, data, size) -> THREE.DataTexture", "summary": "The strip as a linear-filtered, edge-clamped DataTexture without mipmaps."},
+      {"name": "identityLutStrip", "kind": "function", "signature": "identityLutStrip(size) -> Uint8Array", "summary": "The strip that returns its input."},
+      {"name": "lutStripFromFunction", "kind": "function", "signature": "lutStripFromFunction(size, fn) -> Uint8Array", "summary": "A strip baked from fn(r, g, b) -> [r, g, b] at every grid point."},
+      {"name": "sampleLutStripCpu", "kind": "function", "signature": "sampleLutStripCpu(data, size, r, g, b) -> [r, g, b]", "summary": "CPU mirror of the trilinear lookup."},
+      {"name": "gradeColorCpu", "kind": "function", "signature": "gradeColorCpu(data, size, rgb, options = {}) -> [r, g, b]", "summary": "CPU mirror of the whole pass for one colour: domain encode, lookup, decode, intensity mix."},
+      {"name": "COLOR_LUT_DOMAINS", "kind": "constant", "summary": "Frozen domain table: linear 0, srgb 1."},
+      {"name": "COLOR_LUT_DEFAULTS", "kind": "constant", "summary": "Frozen default options."},
+      {"name": "COLOR_LUT_VERTEX", "kind": "constant", "glsl": "vertex", "summary": "Full-screen vertex stage passing vUv."},
+      {"name": "COLOR_LUT_FRAGMENT", "kind": "constant", "glsl": "fragment", "summary": "Fragment stage: encode, trilinear strip lookup, decode, mix."}
+    ],
+    "options": [
+      {"name": "size", "type": "integer", "default": 16, "range": [2, 64], "meaning": "Grid points per axis of the strip in tLut."},
+      {"name": "intensity", "type": "number", "default": 1, "range": [0, 1], "meaning": "Mix between the input and the graded colour."},
+      {"name": "domain", "type": "string", "default": "srgb", "values": ["srgb", "linear"], "meaning": "srgb looks up sRGB-encoded values, as LUTs from grading tools expect; linear looks up the values as received."}
+    ],
+    "uniforms": [
+      {"name": "tDiffuse", "type": "sampler2D", "option": null},
+      {"name": "tLut", "type": "sampler2D", "option": null},
+      {"name": "uLutSize", "type": "float", "option": "size"},
+      {"name": "uIntensity", "type": "float", "option": "intensity"},
+      {"name": "uDomain", "type": "int", "option": "domain"}
+    ],
+    "examples": [
+      {"call": "identityLutStrip", "args": [2], "select": "length", "expect": 32},
+      {"call": "identityLutStrip", "args": [2], "expect": [0, 0, 0, 255, 255, 0, 0, 255, 0, 0, 255, 255, 255, 0, 255, 255, 0, 255, 0, 255, 255, 255, 0, 255, 0, 255, 255, 255, 255, 255, 255, 255]},
+      {"call": "sampleLutStripCpu", "args": [{"$typed": "Uint8Array", "values": [0, 0, 0, 255, 255, 0, 0, 255, 0, 0, 255, 255, 255, 0, 255, 255, 0, 255, 0, 255, 255, 255, 0, 255, 0, 255, 255, 255, 255, 255, 255, 255]}, 2, 0.25, 0.5, 0.75], "expect": [0.25, 0.5, 0.75], "tolerance": 1e-12},
+      {"call": "createColorLutShader", "args": [{"domain": "linear"}], "select": "uniforms.uDomain.value", "expect": 0},
+      {"call": "identityLutStrip", "args": [70], "throws": "RangeError"}
+    ],
+    "demo": {"file": "demo/scene.mjs", "export": "demo", "addons": []},
+    "tests": ["test_post_color_lut_strip.mjs"]
+  },
+  "limits": "Inputs are clamped to [0, 1] before the lookup, so HDR values above 1 grade as 1: tone map before this pass. Strips are 8 bits per channel, so smooth grades step by 1/255 and very small sizes band. The pass reads strips in this module's layout only (blue slices left to right, green up); other strip layouts and .cube files must be baked with lutStripFromFunction or converted first. The sRGB domain uses the exact piecewise sRGB curve, not three.js's colour space chunks. Output goes through three.js's output colour space conversion. Only three.js 0.186.1 was run, in headless Chrome on SwiftShader WebGL 2.",
+  "related": ["post_tonemap_curves", "post_vignette", "post_film_grain"],
+  "technique_references": ["3D lookup table unfolded into a 2D strip of blue slices", "Trilinear interpolation: hardware bilinear inside a slice, manual blend between slices", "Half-texel insets so a lookup never bleeds into the next slice", "Piecewise sRGB transfer function"],
+  "native_checks": ["module_contract_static", "node_tests_pass", "node_tests_catch_mutants", "three_runtime_pinned", "browser_page_clean", "three_shaders_compiled", "demo_checks_passed", "render_not_uniform", "render_differs_from_baseline"]
+}

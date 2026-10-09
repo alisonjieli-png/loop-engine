@@ -1,0 +1,242 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "normal_map_from_height",
+  "title": "Normal map from a height field",
+  "purpose": "Turn a Float32Array height field into tangent-space normals and an RGBA8 normal map by central differences, with a strength, wrapped or clamped edges and the OpenGL or DirectX green convention, and wrap it as a three.js DataTexture for normalMap. Use it to add relief to procedural surfaces without a baking tool.",
+  "form": "library_module",
+  "asset_role": null,
+  "dimension": "2d",
+  "engine": {
+    "name": "webgl2_browser",
+    "minimum_version": "2.0",
+    "notes": "normalsFromHeight and normalMapFromHeight need no three.js; createNormalMapTexture takes three.js r152 or later as THREE (colorSpace); only 0.186.1 was run."
+  },
+  "tags": [
+    "three.js",
+    "texture",
+    "normal map",
+    "height map",
+    "procedural",
+    "datatexture",
+    "tangent space",
+    "typed arrays"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "role": "other"
+    },
+    {
+      "path": "normal_map_from_height.mjs",
+      "role": "skill_asset"
+    },
+    {
+      "path": "test_normal_map_from_height.mjs",
+      "role": "executable_tool"
+    },
+    {
+      "path": "demo/scene.mjs",
+      "role": "skill_asset"
+    }
+  ],
+  "contract": {
+    "module": "normal_map_from_height.mjs",
+    "category": "procedural_texture",
+    "language": "ECMAScript 2020 module",
+    "three": {
+      "injected": true,
+      "argument": "THREE",
+      "tested_version": "0.186.1",
+      "needed_by": [
+        "createNormalMapTexture"
+      ]
+    },
+    "exports": [
+      {
+        "name": "normalsFromHeight",
+        "kind": "function",
+        "signature": "normalsFromHeight(heights, width, height, options = {}) -> Float32Array",
+        "summary": "Unit tangent-space normals, xyz per texel, row 0 at v = 0."
+      },
+      {
+        "name": "normalMapFromHeight",
+        "kind": "function",
+        "signature": "normalMapFromHeight(heights, width, height, options = {}) -> Uint8Array",
+        "summary": "The RGBA8 normal map of the same normals."
+      },
+      {
+        "name": "encodeNormal",
+        "kind": "function",
+        "signature": "encodeNormal(x, y, z, convention = 'opengl') -> [r, g, b, a]",
+        "summary": "Bytes of one unit normal: round((c / 2 + 0.5) * 255); DirectX flips green."
+      },
+      {
+        "name": "createNormalMapTexture",
+        "kind": "function",
+        "signature": "createNormalMapTexture(THREE, rgba, width, height, options = {}) -> THREE.DataTexture",
+        "summary": "Linear (NoColorSpace) DataTexture with repeat or clamp wrapping and mipmaps."
+      },
+      {
+        "name": "NORMAL_MAP_DEFAULTS",
+        "kind": "constant",
+        "summary": "Frozen default options: strength 1, edges wrap, convention opengl."
+      }
+    ],
+    "options": [
+      {
+        "name": "strength",
+        "type": "number",
+        "default": 1,
+        "range": [
+          0,
+          1000
+        ],
+        "meaning": "Multiplies the slopes (height units per texel) before normalizing."
+      },
+      {
+        "name": "edges",
+        "type": "string",
+        "default": "wrap",
+        "values": [
+          "wrap",
+          "clamp"
+        ],
+        "meaning": "How differences read past the border: tiling wraps, a single decal clamps."
+      },
+      {
+        "name": "convention",
+        "type": "string",
+        "default": "opengl",
+        "values": [
+          "opengl",
+          "directx"
+        ],
+        "meaning": "Green up (OpenGL, three.js, glTF) or green down (DirectX)."
+      }
+    ],
+    "examples": [
+      {
+        "call": "encodeNormal",
+        "args": [
+          0,
+          0,
+          1
+        ],
+        "expect": [
+          128,
+          128,
+          255,
+          255
+        ]
+      },
+      {
+        "call": "encodeNormal",
+        "args": [
+          0,
+          1,
+          0,
+          "directx"
+        ],
+        "expect": [
+          128,
+          0,
+          128,
+          255
+        ]
+      },
+      {
+        "call": "normalMapFromHeight",
+        "args": [
+          {
+            "$typed": "Float32Array",
+            "values": [
+              0,
+              1,
+              2,
+              3,
+              0,
+              1,
+              2,
+              3,
+              0,
+              1,
+              2,
+              3
+            ]
+          },
+          4,
+          3,
+          {
+            "edges": "clamp"
+          }
+        ],
+        "select": "4",
+        "expect": 37
+      },
+      {
+        "call": "normalsFromHeight",
+        "args": [
+          {
+            "$typed": "Float32Array",
+            "values": [
+              5,
+              5,
+              5,
+              5
+            ]
+          },
+          2,
+          2
+        ],
+        "select": "2",
+        "expect": 1
+      },
+      {
+        "call": "normalMapFromHeight",
+        "args": [
+          {
+            "$typed": "Float32Array",
+            "values": [
+              0,
+              0,
+              0
+            ]
+          },
+          2,
+          2
+        ],
+        "throws": "RangeError"
+      }
+    ],
+    "demo": {
+      "file": "demo/scene.mjs",
+      "export": "demo",
+      "addons": []
+    },
+    "tests": [
+      "test_normal_map_from_height.mjs"
+    ]
+  },
+  "limits": "Central differences over one texel: fine detail smaller than two texels is lost and steep steps alias; there is no Sobel or multi-scale filter and no height-to-world scale beyond strength. Normals are encoded in 8 bits, so each component is within about 0.004 of the exact value. The tangent frame is the texture's own (u right, v up); a mesh with mirrored or rotated UVs needs matching tangents. createNormalMapTexture builds an RGBA texture (no two-channel or compressed formats). Only three.js 0.186.1 was run, in headless Chrome on SwiftShader WebGL 2.",
+  "related": [
+    "tileable_noise_texture",
+    "gradient_ramp_texture",
+    "heightfield_terrain_geometry"
+  ],
+  "technique_references": [
+    "Central-difference height gradient",
+    "Tangent-space normal n = normalize(-s dh/du, -s dh/dv, 1)",
+    "OpenGL and DirectX green-channel conventions"
+  ],
+  "native_checks": [
+    "module_contract_static",
+    "node_tests_pass",
+    "node_tests_catch_mutants",
+    "three_runtime_pinned",
+    "browser_page_clean",
+    "three_shaders_compiled",
+    "demo_checks_passed",
+    "render_not_uniform",
+    "render_differs_from_baseline"
+  ]
+}

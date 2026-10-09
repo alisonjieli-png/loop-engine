@@ -1,0 +1,189 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "sun_position_solar",
+  "title": "Solar position and sun light placement",
+  "purpose": "Compute the sun's elevation, azimuth, declination, hour angle and equation of time for a UTC time and a latitude and longitude, with optional refraction, and turn them into a unit direction (+Y up, -Z north, +X east) that places a DirectionalLight. Use it for time-of-day lighting, shadow studies and sundial scenes.",
+  "form": "library_module",
+  "asset_role": null,
+  "dimension": "3d",
+  "engine": {
+    "name": "node",
+    "minimum_version": "18",
+    "notes": "Pure JavaScript; aimSunLight works with any light that has position.set and an optional target, such as a three.js DirectionalLight. The demo rendered shadows with three.js 0.186.1."
+  },
+  "tags": [
+    "three.js",
+    "lighting",
+    "sun position",
+    "astronomy",
+    "time of day",
+    "shadows",
+    "directional light",
+    "solar"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "role": "other"
+    },
+    {
+      "path": "sun_position_solar.mjs",
+      "role": "skill_asset"
+    },
+    {
+      "path": "test_sun_position_solar.mjs",
+      "role": "executable_tool"
+    },
+    {
+      "path": "demo/scene.mjs",
+      "role": "skill_asset"
+    }
+  ],
+  "contract": {
+    "module": "sun_position_solar.mjs",
+    "category": "lighting",
+    "language": "ECMAScript 2020 module",
+    "three": {
+      "injected": false,
+      "tested_version": "0.186.1",
+      "needed_by": []
+    },
+    "axes": "+Y up, -Z north, +X east (three.js default camera looks north); azimuth in degrees clockwise from north",
+    "exports": [
+      {
+        "name": "solarPosition",
+        "kind": "function",
+        "signature": "solarPosition(date, latitude, longitude, options = {}) -> {elevation, azimuth, zenith, declination, hourAngle, equationOfTime, julianDay}",
+        "summary": "The sun for a UTC instant and a place; angles in degrees, equation of time in minutes; longitude east positive."
+      },
+      {
+        "name": "sunDirection",
+        "kind": "function",
+        "signature": "sunDirection(date, latitude, longitude, options = {}) -> [x, y, z]",
+        "summary": "Unit vector toward the sun; y < 0 below the horizon."
+      },
+      {
+        "name": "directionFromAngles",
+        "kind": "function",
+        "signature": "directionFromAngles(azimuth, elevation) -> [x, y, z]",
+        "summary": "Unit vector for an azimuth (clockwise from north) and an elevation."
+      },
+      {
+        "name": "julianDay",
+        "kind": "function",
+        "signature": "julianDay(date) -> number",
+        "summary": "Julian day of a Date or epoch milliseconds."
+      },
+      {
+        "name": "aimSunLight",
+        "kind": "function",
+        "signature": "aimSunLight(light, direction, distance = 20) -> light",
+        "summary": "Set light.position to its target plus direction * distance."
+      },
+      {
+        "name": "SOLAR_DEFAULTS",
+        "kind": "constant",
+        "summary": "Frozen default options: refraction true."
+      }
+    ],
+    "options": [
+      {
+        "name": "refraction",
+        "type": "boolean",
+        "default": true,
+        "meaning": "Add atmospheric refraction to elevation (apparent position) or leave it geometric."
+      }
+    ],
+    "examples": [
+      {
+        "call": "julianDay",
+        "args": [
+          946728000000
+        ],
+        "expect": 2451545
+      },
+      {
+        "call": "julianDay",
+        "args": [
+          0
+        ],
+        "expect": 2440587.5
+      },
+      {
+        "call": "directionFromAngles",
+        "args": [
+          90,
+          0
+        ],
+        "expect": [
+          1,
+          0,
+          0
+        ],
+        "tolerance": 1e-12
+      },
+      {
+        "call": "directionFromAngles",
+        "args": [
+          0,
+          0
+        ],
+        "expect": [
+          0,
+          0,
+          -1
+        ],
+        "tolerance": 1e-12
+      },
+      {
+        "call": "solarPosition",
+        "args": [
+          1718916660000,
+          0,
+          0
+        ],
+        "select": "declination",
+        "expect": 23.44,
+        "tolerance": 0.02
+      },
+      {
+        "call": "solarPosition",
+        "args": [
+          0,
+          95,
+          0
+        ],
+        "throws": "RangeError"
+      }
+    ],
+    "demo": {
+      "file": "demo/scene.mjs",
+      "export": "demo",
+      "addons": []
+    },
+    "tests": [
+      "test_sun_position_solar.mjs"
+    ]
+  },
+  "limits": "Low-precision solar coordinates: positions agree with published values to about 0.01 to 0.05 degrees for dates within a few centuries of 2000, not to ephemeris accuracy. Refraction uses a standard-atmosphere fit and is approximate near the horizon; time is UTC with no time zone or daylight saving handling, and longitude is east positive. It gives the sun's direction only: no sunrise and sunset search, sky colour, irradiance or moon. The scene axes are a convention (+Y up, -Z north); rotate the result for a scene with another north. Checked against published solstice, equinox and equation-of-time values and hand calculation, not against an ephemeris. Only three.js 0.186.1 shadows in headless Chrome on SwiftShader WebGL 2 were rendered.",
+  "related": [
+    "spherical_harmonics_probe",
+    "gradient_ramp_texture"
+  ],
+  "technique_references": [
+    "Low-precision solar coordinates: mean anomaly, equation of centre, apparent longitude, obliquity",
+    "Equation of time and hour angle",
+    "Spherical astronomy: altitude and azimuth from hour angle, declination and latitude"
+  ],
+  "native_checks": [
+    "module_contract_static",
+    "node_tests_pass",
+    "node_tests_catch_mutants",
+    "three_runtime_pinned",
+    "browser_page_clean",
+    "three_shaders_compiled",
+    "demo_checks_passed",
+    "render_not_uniform",
+    "render_differs_from_baseline"
+  ]
+}

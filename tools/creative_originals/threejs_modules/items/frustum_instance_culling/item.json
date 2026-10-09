@@ -1,0 +1,50 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "frustum_instance_culling",
+  "title": "Frustum culling for instanced meshes",
+  "purpose": "Read the six frustum planes from a column-major view-projection matrix, classify spheres and boxes as outside, intersecting or inside, and compact the visible instance matrices of a three.js InstancedMesh so only they are drawn, with WebGL or WebGPU depth. Use it for large forests, crowds and city blocks.",
+  "form": "library_module",
+  "asset_role": null,
+  "dimension": "3d",
+  "engine": {"name": "node", "minimum_version": "18", "notes": "No three.js needed: matrices are plain or typed arrays (Matrix4.elements works). The demo was rendered with three.js 0.186.1 in headless Chrome."},
+  "tags": ["three.js", "culling", "frustum", "instancing", "performance", "instancedmesh", "visibility", "bounding sphere"],
+  "files": [
+    {"path": "README.md", "role": "other"},
+    {"path": "frustum_instance_culling.mjs", "role": "skill_asset"},
+    {"path": "test_frustum_instance_culling.mjs", "role": "executable_tool"},
+    {"path": "demo/scene.mjs", "role": "skill_asset"}
+  ],
+  "contract": {
+    "module": "frustum_instance_culling.mjs",
+    "category": "instancing_scatter",
+    "language": "ECMAScript 2020 module",
+    "three": {"injected": false, "tested_version": "0.186.1", "needed_by": []},
+    "exports": [
+      {"name": "frustumPlanes", "kind": "function", "signature": "frustumPlanes(matrix, options = {}) -> Float64Array(24)", "summary": "Normalized planes [a, b, c, d] left, right, bottom, top, near, far; inside where a x + b y + c z + d >= 0."},
+      {"name": "classifySphere", "kind": "function", "signature": "classifySphere(planes, x, y, z, radius) -> 0 | 1 | 2", "summary": "OUTSIDE, INTERSECTS or INSIDE for a sphere."},
+      {"name": "classifyBox", "kind": "function", "signature": "classifyBox(planes, min, max) -> 0 | 1 | 2", "summary": "OUTSIDE, INTERSECTS or INSIDE for an axis-aligned box (conservative near frustum corners)."},
+      {"name": "cullInstances", "kind": "function", "signature": "cullInstances(source, radius, planes, target, options = {}) -> count", "summary": "Copy the visible instance matrices to the front of target in order and return how many; in place allowed."},
+      {"name": "multiplyMatrices", "kind": "function", "signature": "multiplyMatrices(a, b) -> Float64Array(16)", "summary": "Column-major product a * b, for projection * view (* model)."},
+      {"name": "FRUSTUM_RESULT", "kind": "constant", "summary": "Frozen {OUTSIDE: 0, INTERSECTS: 1, INSIDE: 2}."},
+      {"name": "FRUSTUM_CULL_DEFAULTS", "kind": "constant", "summary": "Frozen default options: depthZeroToOne, center, indices."}
+    ],
+    "options": [
+      {"name": "depthZeroToOne", "type": "boolean", "default": false, "meaning": "frustumPlanes: clip z in [0, w] (WebGPU) instead of [-w, w] (WebGL)."},
+      {"name": "center", "type": "vector3", "default": [0, 0, 0], "meaning": "cullInstances: bounding sphere centre in the model's space."},
+      {"name": "indices", "type": "Uint32Array or null", "default": null, "meaning": "cullInstances: receives the kept instance numbers."}
+    ],
+    "examples": [
+      {"call": "frustumPlanes", "args": [[1, 0, 0, 0, 0, 1, 0, 0, 0, 0, -1.2222222222222223, -1, 0, 0, -2.2222222222222223, 0]], "expect": [0.7071067811865476, 0, -0.7071067811865476, 0, -0.7071067811865476, 0, -0.7071067811865476, 0, 0, 0.7071067811865476, -0.7071067811865476, 0, 0, -0.7071067811865476, -0.7071067811865476, 0, 0, 0, -1, -1, 0, 0, 1, 10], "tolerance": 1e-9},
+      {"call": "classifySphere", "args": [[0.7071067811865476, 0, -0.7071067811865476, 0, -0.7071067811865476, 0, -0.7071067811865476, 0, 0, 0.7071067811865476, -0.7071067811865476, 0, 0, -0.7071067811865476, -0.7071067811865476, 0, 0, 0, -1, -1, 0, 0, 1, 10], 0, 0, -5, 1], "expect": 2},
+      {"call": "classifySphere", "args": [[0.7071067811865476, 0, -0.7071067811865476, 0, -0.7071067811865476, 0, -0.7071067811865476, 0, 0, 0.7071067811865476, -0.7071067811865476, 0, 0, -0.7071067811865476, -0.7071067811865476, 0, 0, 0, -1, -1, 0, 0, 1, 10], 0, 0, 5, 1], "expect": 0},
+      {"call": "multiplyMatrices", "args": [[2, 0, 0, 0, 0, 2, 0, 0, 0, 0, 2, 0, 0, 0, 0, 1], [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 3, 4, 5, 1]], "expect": [2, 0, 0, 0, 0, 2, 0, 0, 0, 0, 2, 0, 6, 8, 10, 1]},
+      {"call": "frustumPlanes", "args": [[1, 2, 3]], "throws": "RangeError"}
+    ],
+    "demo": {"file": "demo/scene.mjs", "export": "demo", "addons": []},
+    "tests": ["test_frustum_instance_culling.mjs"]
+  },
+  "limits": "Bounding spheres only for instances: a long thin model gets a loose sphere and is kept more often than needed. Plane tests are conservative near frustum corners, where a box or sphere just outside two planes counts as intersecting. No occlusion culling and no level of detail. Culling runs on the CPU every time you call it, in O(instances); for very large counts a GPU pass or a spatial hierarchy is faster. Compacting in place loses the culled matrices, so keep a full copy to cull again next frame. Only three.js 0.186.1 was run for the demo, in headless Chrome on SwiftShader WebGL 2.",
+  "related": ["poisson_disk_scatter", "mesh_surface_scatter", "fit_camera_to_bounds"],
+  "technique_references": ["Gribb and Hartmann plane extraction from the view-projection matrix", "Signed distance of a bounding sphere to normalized planes", "Positive and negative vertex test for axis-aligned boxes"],
+  "native_checks": ["module_contract_static", "node_tests_pass", "node_tests_catch_mutants", "three_runtime_pinned", "browser_page_clean", "three_shaders_compiled", "demo_checks_passed", "render_not_uniform", "render_differs_from_baseline"]
+}

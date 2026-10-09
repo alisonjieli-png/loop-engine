@@ -1,0 +1,53 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "gpu_id_picking",
+  "title": "GPU id picking with a one-pixel render",
+  "purpose": "Pick objects and instances in a three.js scene by rendering 24-bit ids as colours with a picking ShaderMaterial for only the pixel under the pointer (a view offset into a 1 x 1 target), reading the id back and restoring every material, the background and the camera. Use it for selection in big scenes.",
+  "form": "library_module",
+  "asset_role": null,
+  "dimension": "3d",
+  "engine": {"name": "webgl2_browser", "minimum_version": "2.0", "notes": "three.js passed in as THREE; the shaders use flat varyings (GLSL ES 3.00, WebGL 2). Only 0.186.1 was run."},
+  "tags": ["three.js", "picking", "selection", "gpu", "instancing", "shadermaterial", "render target", "glsl"],
+  "files": [
+    {"path": "README.md", "role": "other"},
+    {"path": "gpu_id_picking.mjs", "role": "skill_asset"},
+    {"path": "test_gpu_id_picking.mjs", "role": "executable_tool"},
+    {"path": "demo/scene.mjs", "role": "skill_asset"}
+  ],
+  "contract": {
+    "module": "gpu_id_picking.mjs",
+    "category": "picking_interaction",
+    "language": "ECMAScript 2020 module; GLSL ES 3.00 through three.js ShaderMaterial",
+    "three": {"injected": true, "argument": "THREE", "tested_version": "0.186.1", "needed_by": ["createPickingMaterial", "setInstancePickIds", "createPicker"]},
+    "exports": [
+      {"name": "createPicker", "kind": "function", "signature": "createPicker(THREE, renderer) -> {pick(scene, camera, x, y) -> id, dispose()}", "summary": "Render the pixel under (x, y) with picking materials and return its id; restores all state."},
+      {"name": "createPickingMaterial", "kind": "function", "signature": "createPickingMaterial(THREE, options = {}) -> THREE.ShaderMaterial", "summary": "A material that writes uniforms.uPickId, or each instance's pickId attribute, as bytes."},
+      {"name": "setInstancePickIds", "kind": "function", "signature": "setInstancePickIds(THREE, instancedMesh, ids) -> instancedMesh", "summary": "Give each instance an id through a pickId InstancedBufferAttribute."},
+      {"name": "encodeId", "kind": "function", "signature": "encodeId(id) -> [red, green, blue]", "summary": "The bytes the shader writes, red the lowest."},
+      {"name": "decodeId", "kind": "function", "signature": "decodeId(red, green, blue) -> id", "summary": "The inverse of encodeId."},
+      {"name": "PICK_ID_LIMIT", "kind": "constant", "summary": "16777215, the largest id; 0 means nothing."},
+      {"name": "PICKING_DEFAULTS", "kind": "constant", "summary": "Frozen options of createPickingMaterial: id 0, instanced false."},
+      {"name": "PICKING_VERTEX", "kind": "constant", "glsl": "vertex", "summary": "Vertex stage, InstancedMesh aware, id from a uniform or the pickId attribute."},
+      {"name": "PICKING_FRAGMENT", "kind": "constant", "glsl": "fragment", "summary": "Fragment stage writing the id bytes."}
+    ],
+    "options": [
+      {"name": "id", "type": "integer", "default": 0, "range": [0, 16777215], "meaning": "createPickingMaterial: the id written by a non-instanced material."},
+      {"name": "instanced", "type": "boolean", "default": false, "meaning": "createPickingMaterial: read ids from the pickId instance attribute."}
+    ],
+    "uniforms": [
+      {"name": "uPickId", "type": "float", "option": "id"}
+    ],
+    "examples": [
+      {"call": "encodeId", "args": [65793], "expect": [1, 1, 1]},
+      {"call": "encodeId", "args": [70000], "expect": [112, 17, 1]},
+      {"call": "decodeId", "args": [255, 255, 255], "expect": 16777215},
+      {"call": "encodeId", "args": [16777216], "throws": "RangeError"}
+    ],
+    "demo": {"file": "demo/scene.mjs", "export": "demo", "addons": []},
+    "tests": ["test_gpu_id_picking.mjs"]
+  },
+  "limits": "Picking materials draw rest-pose geometry: skinned and morphed meshes are picked where their undeformed shape is. Transparent objects are picked as if opaque, alpha-tested cut-outs as full quads, and points, lines and sprites are hidden while picking. Each pick is one render of the scene (cheap per pixel but a full draw-call pass), so pick on pointer events, not every frame for many points. Ids above 16,777,215 do not fit. Multi-material meshes use the first material's side. Pixel coordinates are in renderer.getSize units. Only three.js 0.186.1 was run, in headless Chrome on SwiftShader WebGL 2.",
+  "related": ["triangle_bvh_raycast", "ray_plane_drag", "frustum_instance_culling"],
+  "technique_references": ["Colour-coded id buffer picking", "Projection window offset (camera.setViewOffset) to render a single pixel", "Flat varyings for exact integer ids", "Integer to bytes with floor and mod in float32"],
+  "native_checks": ["module_contract_static", "node_tests_pass", "node_tests_catch_mutants", "three_runtime_pinned", "browser_page_clean", "three_shaders_compiled", "demo_checks_passed", "render_not_uniform", "render_differs_from_baseline"]
+}

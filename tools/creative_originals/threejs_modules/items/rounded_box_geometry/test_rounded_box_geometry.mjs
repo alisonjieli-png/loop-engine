@@ -119,6 +119,7 @@ test('invalid options are refused', () => {
   assert.throws(() => roundedBoxData({bevelSegments: 0}), RangeError);
   assert.throws(() => roundedBoxData({width: -1}), RangeError);
   assert.throws(() => roundedBoxData({radious: 0.1}), TypeError);
+  assert.throws(() => roundedBoxData({toString: 0.1}), TypeError, 'an inherited name is not an option');
   assert.throws(() => roundedBoxVolume(1, 1, 1, 0.7), RangeError);
   assert.equal(ROUNDED_BOX_DEFAULTS.radius, 0.1);
 });

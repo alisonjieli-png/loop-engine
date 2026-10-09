@@ -1,0 +1,75 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "grid_floor_material",
+  "title": "Anti-aliased editor grid floor material",
+  "purpose": "Draw an editor ground grid in three.js: minor and major lines of a fixed pixel width anti-aliased from screen-space derivatives, red and blue axis lines, moire suppression and a distance fade, with exact CPU mirrors of the coverage. Use it for level editors, model viewers and debug views.",
+  "form": "library_module",
+  "asset_role": null,
+  "dimension": "3d",
+  "engine": {"name": "webgl2_browser", "minimum_version": "2.0", "notes": "three.js r155 or later passed in as THREE under WebGL 2 (fwidth and the colorspace_fragment chunk); only 0.186.1 was run."},
+  "tags": ["three.js", "shader", "grid", "editor", "anti-aliasing", "fwidth", "ground plane", "debug view"],
+  "files": [
+    {"path": "README.md", "role": "other"},
+    {"path": "grid_floor_material.mjs", "role": "skill_asset"},
+    {"path": "test_grid_floor_material.mjs", "role": "executable_tool"},
+    {"path": "demo/scene.mjs", "role": "skill_asset"}
+  ],
+  "contract": {
+    "module": "grid_floor_material.mjs",
+    "category": "shader_material",
+    "language": "ECMAScript 2020 module; GLSL ES 3.00 through three.js ShaderMaterial",
+    "three": {"injected": true, "argument": "THREE", "tested_version": "0.186.1", "needed_by": ["createGridFloorMaterial"]},
+    "exports": [
+      {"name": "createGridFloorMaterial", "kind": "function", "signature": "createGridFloorMaterial(THREE, options = {}) -> THREE.ShaderMaterial", "summary": "The transparent, double-sided grid for a horizontal plane; an unknown option throws TypeError."},
+      {"name": "gridLineCoverage", "kind": "function", "signature": "gridLineCoverage(coordinate, spacing, lineWidthPixels, pixelFootprint) -> number", "summary": "CPU mirror of the coverage of the nearest grid line, with the moire fade."},
+      {"name": "gridAxisCoverage", "kind": "function", "signature": "gridAxisCoverage(coordinate, lineWidthPixels, pixelFootprint) -> number", "summary": "CPU mirror of the coverage of the axis line through 0."},
+      {"name": "gridFade", "kind": "function", "signature": "gridFade(distanceToCamera, fadeStart, fadeEnd) -> number", "summary": "CPU mirror of the distance fade."},
+      {"name": "GRID_FLOOR_DEFAULTS", "kind": "constant", "summary": "Frozen default options."},
+      {"name": "GRID_FLOOR_GLSL", "kind": "constant", "glsl": "chunk", "summary": "GLSL gridLineCoverage, gridAxisCoverage and gridFade."},
+      {"name": "GRID_FLOOR_VERTEX", "kind": "constant", "glsl": "vertex", "summary": "Vertex stage: world position."},
+      {"name": "GRID_FLOOR_FRAGMENT", "kind": "constant", "glsl": "fragment", "summary": "Fragment stage: lines from fwidth of world x and z, axis colours and fade."}
+    ],
+    "options": [
+      {"name": "minorSpacing", "type": "number", "default": 1, "unit": "world units", "meaning": "Distance between minor lines."},
+      {"name": "majorSpacing", "type": "number", "default": 10, "unit": "world units", "meaning": "Distance between major lines."},
+      {"name": "minorLineWidth", "type": "number", "default": 1, "unit": "pixels", "range": [0.01, 64], "meaning": "Minor line width on screen."},
+      {"name": "majorLineWidth", "type": "number", "default": 1.6, "unit": "pixels", "range": [0.01, 64], "meaning": "Major line width on screen."},
+      {"name": "axisLineWidth", "type": "number", "default": 2.2, "unit": "pixels", "range": [0.01, 64], "meaning": "Axis line width on screen."},
+      {"name": "minorColor", "type": "colour", "default": [0.33, 0.35, 0.4], "meaning": "Minor line colour."},
+      {"name": "majorColor", "type": "colour", "default": [0.55, 0.58, 0.64], "meaning": "Major line colour."},
+      {"name": "xAxisColor", "type": "colour", "default": [0.85, 0.2, 0.2], "meaning": "Colour of the line along X (z = 0)."},
+      {"name": "zAxisColor", "type": "colour", "default": [0.2, 0.4, 0.95], "meaning": "Colour of the line along Z (x = 0)."},
+      {"name": "fadeStart", "type": "number", "default": 15, "unit": "world units", "meaning": "Camera distance where the fade starts."},
+      {"name": "fadeEnd", "type": "number", "default": 45, "unit": "world units", "meaning": "Camera distance where the grid is gone."},
+      {"name": "opacity", "type": "number", "default": 1, "range": [0, 1], "meaning": "Overall opacity."}
+    ],
+    "uniforms": [
+      {"name": "uMinorSpacing", "type": "float", "option": "minorSpacing"},
+      {"name": "uMajorSpacing", "type": "float", "option": "majorSpacing"},
+      {"name": "uMinorLineWidth", "type": "float", "option": "minorLineWidth"},
+      {"name": "uMajorLineWidth", "type": "float", "option": "majorLineWidth"},
+      {"name": "uAxisLineWidth", "type": "float", "option": "axisLineWidth"},
+      {"name": "uMinorColor", "type": "vec3", "option": "minorColor"},
+      {"name": "uMajorColor", "type": "vec3", "option": "majorColor"},
+      {"name": "uXAxisColor", "type": "vec3", "option": "xAxisColor"},
+      {"name": "uZAxisColor", "type": "vec3", "option": "zAxisColor"},
+      {"name": "uFadeStart", "type": "float", "option": "fadeStart"},
+      {"name": "uFadeEnd", "type": "float", "option": "fadeEnd"},
+      {"name": "uOpacity", "type": "float", "option": "opacity"}
+    ],
+    "examples": [
+      {"call": "gridLineCoverage", "args": [0, 1, 1.5, 0.05], "expect": 1, "tolerance": 1e-12},
+      {"call": "gridLineCoverage", "args": [0.02, 1, 1.5, 0.05], "expect": 0.9392499999999997, "tolerance": 1e-9},
+      {"call": "gridLineCoverage", "args": [0, 1, 1, 0.4], "expect": 0.3520000000000001, "tolerance": 1e-9},
+      {"call": "gridAxisCoverage", "args": [0.1, 2, 0.1], "expect": 0.5, "tolerance": 1e-12},
+      {"call": "gridFade", "args": [30, 15, 45], "expect": 0.5, "tolerance": 1e-12},
+      {"call": "gridLineCoverage", "args": [0, 0, 1, 0.1], "throws": "RangeError"}
+    ],
+    "demo": {"file": "demo/scene.mjs", "export": "demo", "addons": []},
+    "tests": ["test_grid_floor_material.mjs"]
+  },
+  "limits": "A flat plane in world x and z: the grid does not follow a curved or tilted mesh, and because it writes no depth it never hides objects below it; place it at the height you want. Line widths come from per-pixel derivatives of world coordinates, so at grazing angles lines blur and the moire fade removes dense lines early. There is no level-of-detail switch to coarser spacings as the camera rises, only the fade. Transparent sorting follows three.js object order. Written for three.js r155 or later; only 0.186.1 was run, in headless Chrome on SwiftShader WebGL 2.",
+  "related": ["gooch_shading_material", "gradient_sky_dome_material", "terrain_splat_material"],
+  "technique_references": ["Screen-space line width from fwidth of world coordinates", "Distance to the nearest grid line with fract", "Cells-per-pixel fade against moire", "Smoothstep distance fade from the camera"],
+  "native_checks": ["module_contract_static", "node_tests_pass", "node_tests_catch_mutants", "three_runtime_pinned", "browser_page_clean", "three_shaders_compiled", "demo_checks_passed", "render_not_uniform", "render_differs_from_baseline"]
+}

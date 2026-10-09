@@ -1,0 +1,76 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "gerstner_wave_water_material",
+  "title": "Gerstner wave water material with CPU buoyancy",
+  "purpose": "Animate a three.js water plane with up to four Gerstner waves, per-pixel analytic normals, deep and shallow colour by facing, sky reflection, sun glint and foam where the surface compresses, plus CPU mirrors of the waves, normal, compression and surface height for floating objects. Use it for seas, lakes and boats.",
+  "form": "library_module",
+  "asset_role": null,
+  "dimension": "3d",
+  "engine": {"name": "webgl2_browser", "minimum_version": "2.0", "notes": "three.js r155 or later passed in as THREE under WebGL 2 (array parameters in GLSL and the colorspace_fragment chunk); only 0.186.1 was run."},
+  "tags": ["three.js", "shader", "water", "gerstner waves", "ocean", "buoyancy", "vertex displacement", "glsl"],
+  "files": [
+    {"path": "README.md", "role": "other"},
+    {"path": "gerstner_wave_water_material.mjs", "role": "skill_asset"},
+    {"path": "test_gerstner_wave_water_material.mjs", "role": "executable_tool"},
+    {"path": "demo/scene.mjs", "role": "skill_asset"}
+  ],
+  "contract": {
+    "module": "gerstner_wave_water_material.mjs",
+    "category": "shader_material",
+    "language": "ECMAScript 2020 module; GLSL ES 3.00 through three.js ShaderMaterial",
+    "three": {"injected": true, "argument": "THREE", "tested_version": "0.186.1", "needed_by": ["createGerstnerWaterMaterial"]},
+    "exports": [
+      {"name": "createGerstnerWaterMaterial", "kind": "function", "signature": "createGerstnerWaterMaterial(THREE, options = {}) -> THREE.ShaderMaterial", "summary": "Water for a horizontal plane mesh; advance uniforms.uTime every frame; an unknown option throws TypeError."},
+      {"name": "packGerstnerWaves", "kind": "function", "signature": "packGerstnerWaves(waves) -> {waves: Float32Array(16), speeds, count, maxHeight}", "summary": "Validates up to four waves and packs them for the uniforms; refuses a steepness sum above 1."},
+      {"name": "gerstnerDisplacement", "kind": "function", "signature": "gerstnerDisplacement(waves, x, z, time) -> [dx, dy, dz]", "summary": "CPU mirror of the GLSL wave sum: the offset of the rest point (x, 0, z)."},
+      {"name": "gerstnerNormal", "kind": "function", "signature": "gerstnerNormal(waves, x, z, time) -> [nx, ny, nz]", "summary": "CPU mirror of the analytic unit normal at the displaced rest point."},
+      {"name": "gerstnerJacobian", "kind": "function", "signature": "gerstnerJacobian(waves, x, z, time) -> number", "summary": "CPU mirror of the compression of the surface: 1 when flat, smaller under bunched crests."},
+      {"name": "gerstnerSurfaceHeight", "kind": "function", "signature": "gerstnerSurfaceHeight(waves, x, z, time, iterations = 8) -> {height, rest, residual}", "summary": "Water height above a world point, by fixed-point search for the rest point that lands there."},
+      {"name": "GERSTNER_WATER_DEFAULTS", "kind": "constant", "summary": "Frozen default options, including four default waves."},
+      {"name": "GERSTNER_WATER_GLSL", "kind": "constant", "glsl": "chunk", "summary": "GLSL gerstnerOffset, gerstnerNormal and gerstnerJacobian."},
+      {"name": "GERSTNER_WATER_VERTEX", "kind": "constant", "glsl": "vertex", "summary": "Vertex stage: displaces the world position of the plane."},
+      {"name": "GERSTNER_WATER_FRAGMENT", "kind": "constant", "glsl": "fragment", "summary": "Fragment stage: analytic normal, body colour, reflection, glint and foam."}
+    ],
+    "options": [
+      {"name": "waves", "type": "array of 1 to 4 {direction: [x, z], wavelength, steepness, speed}", "default": "four waves, steepness sum 0.64", "meaning": "Wavelength in world units, steepness 0 to 1 (sum at most 1), phase speed in world units per second."},
+      {"name": "deepColor", "type": "colour", "default": [0.01, 0.07, 0.13], "meaning": "Body colour in the troughs."},
+      {"name": "shallowColor", "type": "colour", "default": [0.05, 0.32, 0.38], "meaning": "Body colour on the crests."},
+      {"name": "skyColor", "type": "colour", "default": [0.55, 0.7, 0.85], "meaning": "Colour reflected at grazing angles."},
+      {"name": "sunDirection", "type": "vector3", "default": [-0.4, 0.5, -0.75], "meaning": "Direction toward the sun; normalized."},
+      {"name": "sunColor", "type": "colour", "default": [1, 0.92, 0.75], "meaning": "Colour of the glint."},
+      {"name": "shininess", "type": "number", "default": 180, "range": [1, 4096], "meaning": "Blinn exponent of the glint."},
+      {"name": "foamColor", "type": "colour", "default": [0.92, 0.96, 1], "meaning": "Colour of the foam."},
+      {"name": "foamThreshold", "type": "number", "default": 0.45, "range": [-1, 2], "meaning": "Compression below which foam appears."},
+      {"name": "foamSoftness", "type": "number", "default": 0.15, "range": [0.001, 1], "meaning": "Half width of the foam fade."}
+    ],
+    "uniforms": [
+      {"name": "uWaves", "type": "vec4", "option": "waves"},
+      {"name": "uWaveSpeeds", "type": "vec4", "option": "waves"},
+      {"name": "uWaveCount", "type": "float", "option": "waves"},
+      {"name": "uTime", "type": "float", "option": null},
+      {"name": "uDeepColor", "type": "vec3", "option": "deepColor"},
+      {"name": "uShallowColor", "type": "vec3", "option": "shallowColor"},
+      {"name": "uSkyColor", "type": "vec3", "option": "skyColor"},
+      {"name": "uSunDirection", "type": "vec3", "option": "sunDirection"},
+      {"name": "uSunColor", "type": "vec3", "option": "sunColor"},
+      {"name": "uShininess", "type": "float", "option": "shininess"},
+      {"name": "uFoamColor", "type": "vec3", "option": "foamColor"},
+      {"name": "uFoamThreshold", "type": "float", "option": "foamThreshold"},
+      {"name": "uFoamSoftness", "type": "float", "option": "foamSoftness"},
+      {"name": "uMaxHeight", "type": "float", "option": "waves"}
+    ],
+    "examples": [
+      {"call": "gerstnerDisplacement", "args": [[{"direction": [1, 0], "wavelength": 6.283185307179586, "steepness": 0.5, "speed": 0}], 0, 0, 0], "expect": [0.5, 0, 0], "tolerance": 1e-12},
+      {"call": "gerstnerNormal", "args": [[{"direction": [1, 0], "wavelength": 6.283185307179586, "steepness": 0.5, "speed": 0}], 0, 0, 0], "expect": [-0.4472135954999579, 0.8944271909999159, 0], "tolerance": 1e-12},
+      {"call": "gerstnerJacobian", "args": [[{"direction": [1, 0], "wavelength": 6.283185307179586, "steepness": 0.5, "speed": 0}], 1.5707963267948966, 0, 0], "expect": 0.5, "tolerance": 1e-12},
+      {"call": "packGerstnerWaves", "args": [[{"direction": [0, 2], "wavelength": 3, "steepness": 0.3, "speed": 1}]], "select": "count", "expect": 1},
+      {"call": "packGerstnerWaves", "args": [[{"direction": [1, 0], "wavelength": 2, "steepness": 0.7, "speed": 1}, {"direction": [0, 1], "wavelength": 2, "steepness": 0.7, "speed": 1}]], "throws": "RangeError"}
+    ],
+    "demo": {"file": "demo/scene.mjs", "export": "demo", "addons": []},
+    "tests": ["test_gerstner_wave_water_material.mjs"]
+  },
+  "limits": "Stylized water, not a spectral or physically based ocean: four waves tile visibly at a distance, there is no refraction, depth colour, caustics, screen-space reflection or shoreline. Only displacement fine enough to follow the waves looks right, so use a densely subdivided plane, and the plane must be horizontal in world space (waves use world x and z). Foam is a per-pixel compression mask, not simulated foam that lingers. The surface height search converges slowly where crests are steep (its residual is returned). Skinned, morphed and instanced meshes are not supported. Written for three.js r155 or later; only 0.186.1 was run, in headless Chrome on SwiftShader WebGL 2.",
+  "related": ["gradient_sky_dome_material", "terrain_splat_material", "fresnel_rim_material"],
+  "technique_references": ["Gerstner (trochoidal) waves with amplitude steepness / k", "Analytic surface tangents and normal of a sum of Gerstner waves", "Jacobian determinant of the horizontal displacement as a foam mask", "Schlick Fresnel blend toward a sky colour", "Fixed-point inversion of the horizontal displacement for buoyancy"],
+  "native_checks": ["module_contract_static", "node_tests_pass", "node_tests_catch_mutants", "three_runtime_pinned", "browser_page_clean", "three_shaders_compiled", "demo_checks_passed", "render_not_uniform", "render_differs_from_baseline"]
+}

@@ -1,0 +1,69 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "post_depth_fog",
+  "title": "Depth-texture fog pass with linearized depth",
+  "purpose": "Fog a rendered three.js frame from its DepthTexture: turn depth values back into view distance for perspective or orthographic cameras and mix toward a fog colour with exponential squared fog after a start distance, as a ShaderPass definition or ShaderMaterial, with CPU mirrors of the depth mapping and the fog.",
+  "form": "library_module",
+  "asset_role": null,
+  "dimension": "3d",
+  "engine": {"name": "webgl2_browser", "minimum_version": "2.0", "notes": "three.js r155 or later passed in as THREE (DepthTexture on a render target, an int uniform and the colorspace_fragment chunk); only 0.186.1 was run."},
+  "tags": ["three.js", "post-processing", "fog", "depth texture", "atmosphere", "linear depth", "shaderpass", "glsl"],
+  "files": [
+    {"path": "README.md", "role": "other"},
+    {"path": "post_depth_fog.mjs", "role": "skill_asset"},
+    {"path": "test_post_depth_fog.mjs", "role": "executable_tool"},
+    {"path": "demo/scene.mjs", "role": "skill_asset"}
+  ],
+  "contract": {
+    "module": "post_depth_fog.mjs",
+    "category": "post_process_pass",
+    "language": "ECMAScript 2020 module; GLSL ES 3.00 through three.js ShaderMaterial",
+    "three": {"injected": true, "argument": "THREE", "tested_version": "0.186.1", "needed_by": ["createDepthFogMaterial"]},
+    "input_texture_uniform": "tDiffuse",
+    "depth_texture_uniform": "tDepth",
+    "exports": [
+      {"name": "createDepthFogShader", "kind": "function", "signature": "createDepthFogShader(options = {}) -> {name, uniforms, vertexShader, fragmentShader}", "summary": "A fresh shader definition with tDiffuse, tDepth, cameraNear and cameraFar for ShaderPass or ShaderMaterial."},
+      {"name": "createDepthFogMaterial", "kind": "function", "signature": "createDepthFogMaterial(THREE, options = {}) -> THREE.ShaderMaterial", "summary": "The definition as a full-screen ShaderMaterial without depth test or write."},
+      {"name": "linearizeDepth", "kind": "function", "signature": "linearizeDepth(depth, near, far, orthographic = false) -> number", "summary": "CPU mirror: view distance for a [0, 1] depth-buffer value."},
+      {"name": "depthFromDistance", "kind": "function", "signature": "depthFromDistance(distance, near, far, orthographic = false) -> number", "summary": "The inverse: the depth-buffer value at a view distance."},
+      {"name": "fogFactor", "kind": "function", "signature": "fogFactor(distance, options = {}) -> number", "summary": "CPU mirror of the fog amount, 1 - exp(-(density * max(distance - start, 0))^2)."},
+      {"name": "applyDepthFogCpu", "kind": "function", "signature": "applyDepthFogCpu(rgb, depth, options = {}) -> [r, g, b]", "summary": "CPU mirror of the whole pass for one pixel."},
+      {"name": "DEPTH_FOG_DEFAULTS", "kind": "constant", "summary": "Frozen default options."},
+      {"name": "DEPTH_FOG_GLSL", "kind": "constant", "glsl": "chunk", "summary": "GLSL chunk: fogViewDistance and fogAmount."},
+      {"name": "DEPTH_FOG_VERTEX", "kind": "constant", "glsl": "vertex", "summary": "Full-screen vertex stage passing vUv."},
+      {"name": "DEPTH_FOG_FRAGMENT", "kind": "constant", "glsl": "fragment", "summary": "Fragment stage: depth to distance, fog amount, mix."}
+    ],
+    "options": [
+      {"name": "color", "type": "linear RGB triple", "default": [0.62, 0.7, 0.8], "meaning": "Fog colour."},
+      {"name": "density", "type": "number", "default": 0.12, "range": [0, 10], "unit": "per scene unit", "meaning": "Exponential squared density."},
+      {"name": "start", "type": "number", "default": 0, "unit": "scene units", "meaning": "View distance where the fog begins."},
+      {"name": "near", "type": "number", "default": 0.1, "meaning": "The camera's near plane (cameraNear)."},
+      {"name": "far", "type": "number", "default": 100, "meaning": "The camera's far plane (cameraFar)."},
+      {"name": "orthographic", "type": "boolean", "default": false, "meaning": "The depth buffer comes from an orthographic camera (linear depth)."}
+    ],
+    "uniforms": [
+      {"name": "tDiffuse", "type": "sampler2D", "option": null},
+      {"name": "tDepth", "type": "sampler2D", "option": null},
+      {"name": "cameraNear", "type": "float", "option": "near"},
+      {"name": "cameraFar", "type": "float", "option": "far"},
+      {"name": "uOrthographic", "type": "int", "option": "orthographic"},
+      {"name": "uFogColor", "type": "vec3", "option": "color"},
+      {"name": "uDensity", "type": "float", "option": "density"},
+      {"name": "uStart", "type": "float", "option": "start"}
+    ],
+    "examples": [
+      {"call": "linearizeDepth", "args": [0.5, 0.1, 100], "expect": 0.1998001998001998, "tolerance": 1e-15},
+      {"call": "linearizeDepth", "args": [0.5, 1, 11, true], "expect": 6, "tolerance": 1e-12},
+      {"call": "depthFromDistance", "args": [6, 0.1, 50], "expect": 0.9853039412157649, "tolerance": 1e-15},
+      {"call": "fogFactor", "args": [10, {"density": 0.12, "start": 4}], "expect": 0.4045274577607302, "tolerance": 1e-15},
+      {"call": "createDepthFogShader", "args": [{"orthographic": true}], "select": "uniforms.uOrthographic.value", "expect": 1},
+      {"call": "linearizeDepth", "args": [0.5, 10, 1], "throws": "RangeError"}
+    ],
+    "demo": {"file": "demo/scene.mjs", "export": "demo", "addons": []},
+    "tests": ["test_post_depth_fog.mjs"]
+  },
+  "limits": "Fog is uniform in space and follows planar view depth (distance along the camera axis), as three.js's own fog does, not radial distance, height or noise; light does not scatter through it. The background (depth 1) is fogged as if it sat at the far plane. Assumes the WebGL default depth range: logarithmic depth buffers and reversed depth are not supported. cameraNear and cameraFar must match the camera that rendered the depth, and transparent objects that do not write depth are fogged by what lies behind them. Output goes through three.js's output colour space conversion. Only three.js 0.186.1 was run, in headless Chrome on SwiftShader WebGL 2.",
+  "related": ["post_gaussian_blur_separable", "post_tonemap_curves", "gradient_sky_dome_material"],
+  "technique_references": ["Inverting the perspective depth mapping: d = far (z - near) / (z (far - near))", "Exponential squared fog with a start distance", "Fog as a full-screen pass over a depth texture"],
+  "native_checks": ["module_contract_static", "node_tests_pass", "node_tests_catch_mutants", "three_runtime_pinned", "browser_page_clean", "three_shaders_compiled", "demo_checks_passed", "render_not_uniform", "render_differs_from_baseline"]
+}

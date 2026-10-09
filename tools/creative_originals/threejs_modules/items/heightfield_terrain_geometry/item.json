@@ -1,0 +1,53 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "heightfield_terrain_geometry",
+  "title": "Heightfield terrain with skirts and surface queries",
+  "purpose": "Turn a row-major array of heights into a three.js terrain mesh with exact central-difference normals, UVs, an LOD stride, skirts that hide gaps between tiles and an optional bottom that closes a diorama block, plus bilinear and on-mesh height queries for placing objects. Use it for terrain tiles, maps and dioramas.",
+  "form": "library_module",
+  "asset_role": null,
+  "dimension": "3d",
+  "engine": {"name": "webgl2_browser", "minimum_version": "2.0", "notes": "heightfieldTerrainData, sampleHeight and sampleSurfaceHeight need no three.js; createHeightfieldTerrainGeometry takes three.js as THREE; only 0.186.1 was run."},
+  "tags": ["three.js", "geometry", "terrain", "heightfield", "heightmap", "lod", "skirt", "typed arrays"],
+  "files": [
+    {"path": "README.md", "role": "other"},
+    {"path": "heightfield_terrain_geometry.mjs", "role": "skill_asset"},
+    {"path": "test_heightfield_terrain_geometry.mjs", "role": "executable_tool"},
+    {"path": "demo/scene.mjs", "role": "skill_asset"}
+  ],
+  "contract": {
+    "module": "heightfield_terrain_geometry.mjs",
+    "category": "geometry",
+    "language": "ECMAScript 2020 module",
+    "three": {"injected": true, "argument": "THREE", "tested_version": "0.186.1", "needed_by": ["createHeightfieldTerrainGeometry"]},
+    "exports": [
+      {"name": "heightfieldTerrainData", "kind": "function", "signature": "heightfieldTerrainData(heights, width, depth, options = {}) -> {positions, normals, uvs, indices, columns, rows}", "summary": "The terrain grid as typed arrays, with optional skirts and bottom."},
+      {"name": "createHeightfieldTerrainGeometry", "kind": "function", "signature": "createHeightfieldTerrainGeometry(THREE, heights, width, depth, options = {}) -> THREE.BufferGeometry", "summary": "The same data in a BufferGeometry with an index and computed bounds."},
+      {"name": "sampleHeight", "kind": "function", "signature": "sampleHeight(heights, width, depth, x, z) -> number", "summary": "Bilinear height at sample coordinates, clamped to the field."},
+      {"name": "sampleSurfaceHeight", "kind": "function", "signature": "sampleSurfaceHeight(heights, width, depth, x, z) -> number", "summary": "Height on the mesh triangles themselves (stride 1)."},
+      {"name": "HEIGHTFIELD_DEFAULTS", "kind": "constant", "summary": "Frozen default options."}
+    ],
+    "inputs": {"heights": "array or typed array of width * depth finite numbers, row-major: index = z * width + x", "width": "samples along x, 2 to 8193", "depth": "samples along z, 2 to 8193"},
+    "options": [
+      {"name": "cellSize", "type": "number", "default": 1, "unit": "scene units", "meaning": "Distance between neighbouring samples."},
+      {"name": "heightScale", "type": "number", "default": 1, "meaning": "World y = height * heightScale."},
+      {"name": "stride", "type": "integer", "default": 1, "meaning": "Use every stride-th sample (LOD); it must divide width - 1 and depth - 1."},
+      {"name": "skirt", "type": "boolean", "default": false, "meaning": "Add four outward walls down to the base height."},
+      {"name": "skirtBase", "type": "number or null", "default": null, "meaning": "World y of the skirt bottom; null is one cell size under the lowest point; it may not be above the lowest point."},
+      {"name": "closeBottom", "type": "boolean", "default": false, "meaning": "Add a bottom facing down so the block is closed (needs skirt)."},
+      {"name": "center", "type": "boolean", "default": true, "meaning": "Centre the grid on the origin; otherwise sample (0, 0) is at the origin."}
+    ],
+    "examples": [
+      {"call": "sampleHeight", "args": [[0, 1, 2, 3], 2, 2, 0.25, 0.75], "expect": 1.75, "tolerance": 1e-12},
+      {"call": "sampleSurfaceHeight", "args": [[0, 0, 0, 1], 2, 2, 0.75, 0.75], "expect": 0.5, "tolerance": 1e-12},
+      {"call": "heightfieldTerrainData", "args": [{"$typed": "Float32Array", "values": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]}, 4, 3, {}], "select": "indices.length", "expect": 36},
+      {"call": "heightfieldTerrainData", "args": [{"$typed": "Float32Array", "values": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]}, 5, 4, {"skirt": true}], "select": "positions.length", "expect": 168},
+      {"call": "heightfieldTerrainData", "args": [[0, 0, 0, 0], 2, 2, {"closeBottom": true}], "throws": "RangeError"}
+    ],
+    "demo": {"file": "demo/scene.mjs", "export": "demo", "addons": []},
+    "tests": ["test_heightfield_terrain_geometry.mjs"]
+  },
+  "limits": "A regular grid with one fixed diagonal per cell: no adaptive triangulation, no overhangs, caves or vertical cliffs, and the diagonal direction can show on steep ridges. Normals come from the full-resolution field even at a coarser stride, so lighting stays steady across LOD levels but does not match the coarse triangles exactly. Skirts hide cracks between tiles of different strides; they do not stitch them. sampleHeight is bilinear and differs from the mesh inside non-planar cells; sampleSurfaceHeight matches the mesh at stride 1 only. Grids above 65,535 vertices use 32-bit indices. Only three.js 0.186.1 was run, in headless Chrome on SwiftShader WebGL 2.",
+  "related": ["marching_tetrahedra_isosurface", "vertex_tangent_frames", "crease_normals_welding"],
+  "technique_references": ["Central-difference normals (-dh/dx, 1, -dh/dz) with one-sided differences at the borders", "Barycentric interpolation on the mesh's triangle split", "Skirt walls for level-of-detail terrain tiles"],
+  "native_checks": ["module_contract_static", "node_tests_pass", "node_tests_catch_mutants", "three_runtime_pinned", "browser_page_clean", "three_shaders_compiled", "demo_checks_passed", "render_not_uniform", "render_differs_from_baseline"]
+}

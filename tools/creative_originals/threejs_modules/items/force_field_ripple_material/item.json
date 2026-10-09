@@ -1,0 +1,73 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "force_field_ripple_material",
+  "title": "Force-field shield with impact ripples",
+  "purpose": "Give three.js meshes an energy-shield look: a faint additive shell with a Fresnel edge, plus up to eight impact rings that spread from hit points across the surface and fade, fed through a ring buffer of uniform arrays with addHit. Use it for shields, barriers, bubbles and hit feedback.",
+  "form": "library_module",
+  "asset_role": null,
+  "dimension": "3d",
+  "engine": {"name": "webgl2_browser", "minimum_version": "2.0", "notes": "three.js r155 or later passed in as THREE (the fragment stage includes the tonemapping_fragment and colorspace_fragment chunks); only 0.186.1 was run."},
+  "tags": ["three.js", "shader", "force field", "shield", "ripple", "fresnel", "vfx", "shadermaterial"],
+  "files": [
+    {"path": "README.md", "role": "other"},
+    {"path": "force_field_ripple_material.mjs", "role": "skill_asset"},
+    {"path": "test_force_field_ripple_material.mjs", "role": "executable_tool"},
+    {"path": "demo/scene.mjs", "role": "skill_asset"}
+  ],
+  "contract": {
+    "module": "force_field_ripple_material.mjs",
+    "category": "shader_material",
+    "language": "ECMAScript 2020 module; GLSL ES 3.00 through three.js ShaderMaterial",
+    "three": {"injected": true, "argument": "THREE", "tested_version": "0.186.1", "needed_by": ["createForceFieldMaterial"]},
+    "exports": [
+      {"name": "createForceFieldMaterial", "kind": "function", "signature": "createForceFieldMaterial(THREE, options = {}) -> THREE.ShaderMaterial", "summary": "The transparent additive shield material; set uniforms.uTime.value every frame."},
+      {"name": "addHit", "kind": "function", "signature": "addHit(material, point, time) -> slot", "summary": "Record a hit at a point in the mesh's own space at a time on the uTime clock; the oldest of eight slots is reused."},
+      {"name": "clearHits", "kind": "function", "signature": "clearHits(material) -> material", "summary": "Forget every hit."},
+      {"name": "rippleIntensity", "kind": "function", "signature": "rippleIntensity(distanceFromHit, age, options = {}) -> number", "summary": "CPU mirror of the ring: exp(-((d - speed * age) / width)^2) * (1 - age / lifetime)^2 * strength."},
+      {"name": "FORCE_FIELD_DEFAULTS", "kind": "constant", "summary": "Frozen default options."},
+      {"name": "FORCE_FIELD_MAX_HITS", "kind": "constant", "summary": "8, the number of hits the shader keeps."},
+      {"name": "FORCE_FIELD_GLSL", "kind": "constant", "glsl": "chunk", "summary": "GLSL function float rippleIntensity(float distanceFromHit, float age, float speed, float width, float lifetime, float strength)."},
+      {"name": "FORCE_FIELD_VERTEX", "kind": "constant", "glsl": "vertex", "summary": "Object-space position for ripples, world position and normal for the edge."},
+      {"name": "FORCE_FIELD_FRAGMENT", "kind": "constant", "glsl": "fragment", "summary": "Base glow, Fresnel edge and the ripple sum."}
+    ],
+    "options": [
+      {"name": "color", "type": "linear RGB triple", "default": [0.25, 0.62, 1.0], "meaning": "Shield colour."},
+      {"name": "hitColor", "type": "linear RGB triple", "default": [1.0, 0.82, 0.42], "meaning": "Colour the ripples shift toward."},
+      {"name": "baseAlpha", "type": "number", "default": 0.04, "range": [0, 1], "meaning": "Glow over the whole surface."},
+      {"name": "fresnelPower", "type": "number", "default": 3, "range": [0.1, 16], "meaning": "Exponent of the edge term; higher keeps the edge thinner."},
+      {"name": "fresnelStrength", "type": "number", "default": 0.85, "range": [0, 8], "meaning": "Edge brightness."},
+      {"name": "rippleSpeed", "type": "number", "default": 1.6, "range": [0, 1000], "unit": "mesh units per second", "meaning": "How fast a ring spreads."},
+      {"name": "rippleWidth", "type": "number", "default": 0.12, "range": [0.0001, 1000], "unit": "mesh units", "meaning": "Ring width."},
+      {"name": "rippleLifetime", "type": "number", "default": 1.4, "range": [0.001, 1000], "unit": "seconds", "meaning": "How long a ring lasts."},
+      {"name": "rippleStrength", "type": "number", "default": 1.4, "range": [0, 16], "meaning": "Ring brightness at the start."},
+      {"name": "doubleSided", "type": "boolean", "default": false, "meaning": "Also draw the far side of the shell."}
+    ],
+    "uniforms": [
+      {"name": "uColor", "type": "vec3", "option": "color"},
+      {"name": "uHitColor", "type": "vec3", "option": "hitColor"},
+      {"name": "uBaseAlpha", "type": "float", "option": "baseAlpha"},
+      {"name": "uFresnelPower", "type": "float", "option": "fresnelPower"},
+      {"name": "uFresnelStrength", "type": "float", "option": "fresnelStrength"},
+      {"name": "uRippleSpeed", "type": "float", "option": "rippleSpeed"},
+      {"name": "uRippleWidth", "type": "float", "option": "rippleWidth"},
+      {"name": "uRippleLifetime", "type": "float", "option": "rippleLifetime"},
+      {"name": "uRippleStrength", "type": "float", "option": "rippleStrength"},
+      {"name": "uTime", "type": "float", "option": null},
+      {"name": "uHitPoints", "type": "vec3", "option": null},
+      {"name": "uHitTimes", "type": "float", "option": null}
+    ],
+    "examples": [
+      {"call": "rippleIntensity", "args": [0.4, 0.25], "expect": 0.9446428571428569, "tolerance": 1e-12},
+      {"call": "rippleIntensity", "args": [0.52, 0.25], "expect": 0.3475146863923089, "tolerance": 1e-12},
+      {"call": "rippleIntensity", "args": [0, 0], "expect": 1.4, "tolerance": 1e-12},
+      {"call": "rippleIntensity", "args": [0.3, 1.5], "expect": 0},
+      {"call": "rippleIntensity", "args": [0.3, 0.5, {"rippleWidth": 0}], "throws": "RangeError"}
+    ],
+    "demo": {"file": "demo/scene.mjs", "export": "demo", "addons": []},
+    "tests": ["test_force_field_ripple_material.mjs"]
+  },
+  "limits": "Stylized, not a physical simulation. Ripple distance is the straight-line distance in the mesh's own space between the shaded point and the hit, which follows the surface only approximately (on a sphere of radius r the chord is shorter than the arc by about d^3 / 24r^2); rings jump across thin parts of concave meshes. Eight hits at most; a ninth replaces the oldest. Hits are stored in mesh space, so a scaled mesh scales its rings. Additive blending brightens whatever is behind; on a bright background the shield washes out. Only three.js 0.186.1 was run, in headless Chrome on SwiftShader WebGL 2.",
+  "related": ["fresnel_rim_material", "hologram_scanline_material", "stateless_gpu_particles"],
+  "technique_references": ["Fresnel-style facing-ratio edge", "Gaussian ring travelling at constant speed with a quadratic fade", "Ring buffer of uniform arrays for recent events"],
+  "native_checks": ["module_contract_static", "node_tests_pass", "node_tests_catch_mutants", "three_runtime_pinned", "browser_page_clean", "three_shaders_compiled", "demo_checks_passed", "render_not_uniform", "render_differs_from_baseline"]
+}

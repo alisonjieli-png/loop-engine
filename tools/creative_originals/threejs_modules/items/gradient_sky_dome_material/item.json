@@ -1,0 +1,71 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "gradient_sky_dome_material",
+  "title": "Gradient sky dome material with sun disc and halo",
+  "purpose": "Give a three.js scene a stylized sky: a back-faced dome shaded from ground through horizon to zenith colours, a sun disc of a set angular radius with a halo, a CPU mirror of the colour in any direction and a sun angle helper for matching lights and fog. Use it for outdoor scenes and games.",
+  "form": "library_module",
+  "asset_role": null,
+  "dimension": "3d",
+  "engine": {"name": "webgl2_browser", "minimum_version": "2.0", "notes": "three.js r155 or later passed in as THREE (the shader includes the colorspace_fragment chunk); only 0.186.1 was run."},
+  "tags": ["three.js", "shader", "sky", "sky dome", "gradient", "sun", "environment", "glsl"],
+  "files": [
+    {"path": "README.md", "role": "other"},
+    {"path": "gradient_sky_dome_material.mjs", "role": "skill_asset"},
+    {"path": "test_gradient_sky_dome_material.mjs", "role": "executable_tool"},
+    {"path": "demo/scene.mjs", "role": "skill_asset"}
+  ],
+  "contract": {
+    "module": "gradient_sky_dome_material.mjs",
+    "category": "shader_material",
+    "language": "ECMAScript 2020 module; GLSL ES 3.00 through three.js ShaderMaterial",
+    "three": {"injected": true, "argument": "THREE", "tested_version": "0.186.1", "needed_by": ["createSkyDomeMaterial"]},
+    "exports": [
+      {"name": "createSkyDomeMaterial", "kind": "function", "signature": "createSkyDomeMaterial(THREE, options = {}) -> THREE.ShaderMaterial", "summary": "The dome material: back faces, no depth write, no fog; an unknown option throws TypeError."},
+      {"name": "skyColor", "kind": "function", "signature": "skyColor(direction, options = {}) -> [r, g, b]", "summary": "CPU mirror: the linear sky colour seen in a direction, sun and halo included."},
+      {"name": "sunDirectionFromAngles", "kind": "function", "signature": "sunDirectionFromAngles(elevationDegrees, azimuthDegrees) -> [x, y, z]", "summary": "Unit direction for an elevation and an azimuth measured from -Z toward +X."},
+      {"name": "SKY_DOME_DEFAULTS", "kind": "constant", "summary": "Frozen default options; colours are linear RGB triples, angles in degrees."},
+      {"name": "SKY_DOME_GLSL", "kind": "constant", "glsl": "chunk", "summary": "GLSL skyGradient and skySun."},
+      {"name": "SKY_DOME_VERTEX", "kind": "constant", "glsl": "vertex", "summary": "Vertex stage: direction from the dome centre in world orientation."},
+      {"name": "SKY_DOME_FRAGMENT", "kind": "constant", "glsl": "fragment", "summary": "Fragment stage: gradient plus sun, tone mapping and output colour space."}
+    ],
+    "options": [
+      {"name": "zenithColor", "type": "linear RGB triple", "default": [0.12, 0.3, 0.68], "meaning": "Colour straight up."},
+      {"name": "horizonColor", "type": "linear RGB triple", "default": [0.62, 0.74, 0.86], "meaning": "Colour at the horizon."},
+      {"name": "groundColor", "type": "linear RGB triple", "default": [0.16, 0.15, 0.14], "meaning": "Colour straight down."},
+      {"name": "skyExponent", "type": "number", "default": 0.8, "range": [0.05, 16], "meaning": "Curve of the gradient above the horizon; below 1 keeps the horizon colour low."},
+      {"name": "groundExponent", "type": "number", "default": 0.6, "range": [0.05, 16], "meaning": "Curve of the gradient below the horizon."},
+      {"name": "horizonSoftness", "type": "number", "default": 0.04, "range": [0, 1], "meaning": "Half width of the sky-to-ground blend in sine of elevation."},
+      {"name": "sunDirection", "type": "vector3", "default": [0.35, 0.18, -0.92], "meaning": "Direction toward the sun; normalized."},
+      {"name": "sunColor", "type": "linear RGB triple", "default": [1, 0.86, 0.62], "meaning": "Colour of the disc and halo."},
+      {"name": "sunAngularRadius", "type": "number", "default": 1.2, "unit": "degrees", "range": [0, 45], "meaning": "Radius of the full-intensity disc."},
+      {"name": "sunEdgeSoftness", "type": "number", "default": 0.4, "unit": "degrees", "range": [0.01, 45], "meaning": "Width of the disc's soft edge."},
+      {"name": "sunIntensity", "type": "number", "default": 12, "range": [0, 1000], "meaning": "Brightness of the disc; values above 1 suit tone mapping and bloom."},
+      {"name": "haloSharpness", "type": "number", "default": 64, "range": [1, 4096], "meaning": "Exponent of the halo; higher is tighter."},
+      {"name": "haloStrength", "type": "number", "default": 0.35, "range": [0, 100], "meaning": "Brightness of the halo."}
+    ],
+    "uniforms": [
+      {"name": "uZenithColor", "type": "vec3", "option": "zenithColor"},
+      {"name": "uHorizonColor", "type": "vec3", "option": "horizonColor"},
+      {"name": "uGroundColor", "type": "vec3", "option": "groundColor"},
+      {"name": "uShape", "type": "vec3", "option": "skyExponent, groundExponent, horizonSoftness"},
+      {"name": "uSunDirection", "type": "vec3", "option": "sunDirection"},
+      {"name": "uSunColor", "type": "vec3", "option": "sunColor"},
+      {"name": "uSunDisc", "type": "vec4", "option": "sunAngularRadius, sunEdgeSoftness, sunIntensity, haloSharpness"},
+      {"name": "uHaloStrength", "type": "float", "option": "haloStrength"}
+    ],
+    "examples": [
+      {"call": "skyColor", "args": [[0, 1, 0]], "expect": [0.12, 0.3, 0.68], "tolerance": 1e-12},
+      {"call": "skyColor", "args": [[1, 0, 0]], "expect": [0.62, 0.74, 0.86], "tolerance": 1e-12},
+      {"call": "skyColor", "args": [[0, -1, 0]], "expect": [0.16, 0.15, 0.14], "tolerance": 1e-12},
+      {"call": "skyColor", "args": [[0, 0.3, -1], {"sunDirection": [0, 0.3, -1], "sunAngularRadius": 5, "sunEdgeSoftness": 2, "sunIntensity": 3, "haloStrength": 0}], "expect": [3.435627387756772, 3.1577521012259595, 2.653625859592438], "tolerance": 1e-9},
+      {"call": "sunDirectionFromAngles", "args": [30, 90], "expect": [0.8660254037844387, 0.5, 0], "tolerance": 1e-12},
+      {"call": "skyColor", "args": [[0, 0, 0]], "throws": "RangeError"}
+    ],
+    "demo": {"file": "demo/scene.mjs", "export": "demo", "addons": []},
+    "tests": ["test_gradient_sky_dome_material.mjs"]
+  },
+  "limits": "A stylized gradient, not atmospheric scattering: colours do not change with sun elevation by themselves, there are no clouds, stars or moon, and the halo is a cosine power, not Mie scattering. It does not light the scene: match a DirectionalLight to the sun direction and three.js fog or hemisphere light to the colours yourself. The dome is a mesh, so keep it inside the camera far plane and centred near the camera; it is not an environment map for reflections. Colours are linear RGB triples only. Written for three.js r155 or later; only 0.186.1 was run, in headless Chrome on SwiftShader WebGL 2.",
+  "related": ["gerstner_wave_water_material", "terrain_splat_material", "grid_floor_material"],
+  "technique_references": ["Power-curve gradient between horizon and zenith or ground colours", "Smoothstep horizon blend in sine of elevation", "Sun disc by smoothstep on the cosine of the angle to the sun", "Cosine-power halo"],
+  "native_checks": ["module_contract_static", "node_tests_pass", "node_tests_catch_mutants", "three_runtime_pinned", "browser_page_clean", "three_shaders_compiled", "demo_checks_passed", "render_not_uniform", "render_differs_from_baseline"]
+}

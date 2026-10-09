@@ -1,0 +1,321 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "gltf_scene_budget_report",
+  "title": "glTF scene budget report and checker",
+  "purpose": "Count what a glTF 2.0 scene will draw (triangles, lines and points by mode, vertices, draw calls over node instances), the materials, textures and estimated texture memory in use, node count and depth, and world bounds through node transforms, then check the counts against a budget. Use it to gate assets.",
+  "form": "library_module",
+  "asset_role": null,
+  "dimension": "3d",
+  "engine": {
+    "name": "node",
+    "minimum_version": "18",
+    "notes": "Pure JavaScript on the glTF JSON; also runs in browsers and workers. Counts compared with three.js 0.186.1 renderer.info in headless Chrome."
+  },
+  "tags": [
+    "three.js",
+    "gltf",
+    "performance budget",
+    "draw calls",
+    "triangle count",
+    "asset pipeline",
+    "bounds",
+    "quality gate"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "role": "other"
+    },
+    {
+      "path": "gltf_scene_budget_report.mjs",
+      "role": "skill_asset"
+    },
+    {
+      "path": "test_gltf_scene_budget_report.mjs",
+      "role": "executable_tool"
+    },
+    {
+      "path": "demo/scene.mjs",
+      "role": "skill_asset"
+    }
+  ],
+  "contract": {
+    "module": "gltf_scene_budget_report.mjs",
+    "category": "gltf_tool",
+    "language": "ECMAScript 2020 module",
+    "three": {
+      "injected": false,
+      "tested_version": "0.186.1",
+      "needed_by": []
+    },
+    "exports": [
+      {
+        "name": "sceneBudgetReport",
+        "kind": "function",
+        "signature": "sceneBudgetReport(gltf, options = {}) -> report",
+        "summary": "Walk one scene and count triangles, lines, points, vertices, draw calls, mesh instances, materials, textures, images, texture bytes, nodes, depth, bounds and extent."
+      },
+      {
+        "name": "checkBudget",
+        "kind": "function",
+        "signature": "checkBudget(report, budget) -> [{metric, value, limit, reason}]",
+        "summary": "Violations of a budget {metric: limit}; reason is over or unknown."
+      },
+      {
+        "name": "primitiveCounts",
+        "kind": "function",
+        "signature": "primitiveCounts(mode, count) -> {triangles, lines, points}",
+        "summary": "What one primitive of a mode (0 to 6) and element count draws."
+      },
+      {
+        "name": "BUDGET_METRICS",
+        "kind": "constant",
+        "summary": "The metric names a budget may use."
+      },
+      {
+        "name": "REPORT_DEFAULTS",
+        "kind": "constant",
+        "summary": "Frozen default options: scene, imageSizes, mipmaps."
+      }
+    ],
+    "options": [
+      {
+        "name": "scene",
+        "type": "integer or null",
+        "default": null,
+        "meaning": "Scene index; null uses the document's scene or 0."
+      },
+      {
+        "name": "imageSizes",
+        "type": "array of {width, height} or null",
+        "default": null,
+        "meaning": "Image sizes by image index for the texture memory estimate."
+      },
+      {
+        "name": "mipmaps",
+        "type": "boolean",
+        "default": true,
+        "meaning": "Add a third to each image for its mip chain."
+      }
+    ],
+    "examples": [
+      {
+        "call": "primitiveCounts",
+        "args": [
+          5,
+          5
+        ],
+        "expect": {
+          "triangles": 3,
+          "lines": 0,
+          "points": 0
+        }
+      },
+      {
+        "call": "primitiveCounts",
+        "args": [
+          1,
+          6
+        ],
+        "expect": {
+          "triangles": 0,
+          "lines": 3,
+          "points": 0
+        }
+      },
+      {
+        "call": "sceneBudgetReport",
+        "args": [
+          {
+            "asset": {
+              "version": "2.0"
+            },
+            "scene": 0,
+            "scenes": [
+              {
+                "nodes": [
+                  0
+                ]
+              }
+            ],
+            "nodes": [
+              {
+                "mesh": 0,
+                "translation": [
+                  0,
+                  1,
+                  0
+                ]
+              }
+            ],
+            "meshes": [
+              {
+                "primitives": [
+                  {
+                    "attributes": {
+                      "POSITION": 0
+                    },
+                    "indices": 1
+                  }
+                ]
+              }
+            ],
+            "accessors": [
+              {
+                "componentType": 5126,
+                "count": 3,
+                "type": "VEC3",
+                "min": [
+                  0,
+                  0,
+                  0
+                ],
+                "max": [
+                  1,
+                  1,
+                  0
+                ]
+              },
+              {
+                "componentType": 5123,
+                "count": 3,
+                "type": "SCALAR"
+              }
+            ]
+          }
+        ],
+        "select": "bounds",
+        "expect": {
+          "min": [
+            0,
+            1,
+            0
+          ],
+          "max": [
+            1,
+            2,
+            0
+          ]
+        }
+      },
+      {
+        "call": "sceneBudgetReport",
+        "args": [
+          {
+            "asset": {
+              "version": "2.0"
+            },
+            "scene": 0,
+            "scenes": [
+              {
+                "nodes": [
+                  0
+                ]
+              }
+            ],
+            "nodes": [
+              {
+                "mesh": 0,
+                "translation": [
+                  0,
+                  1,
+                  0
+                ]
+              }
+            ],
+            "meshes": [
+              {
+                "primitives": [
+                  {
+                    "attributes": {
+                      "POSITION": 0
+                    },
+                    "indices": 1
+                  }
+                ]
+              }
+            ],
+            "accessors": [
+              {
+                "componentType": 5126,
+                "count": 3,
+                "type": "VEC3",
+                "min": [
+                  0,
+                  0,
+                  0
+                ],
+                "max": [
+                  1,
+                  1,
+                  0
+                ]
+              },
+              {
+                "componentType": 5123,
+                "count": 3,
+                "type": "SCALAR"
+              }
+            ]
+          }
+        ],
+        "select": "triangles",
+        "expect": 1
+      },
+      {
+        "call": "checkBudget",
+        "args": [
+          {
+            "triangles": 5
+          },
+          {
+            "triangles": 4
+          }
+        ],
+        "select": "0.reason",
+        "expect": "over"
+      },
+      {
+        "call": "primitiveCounts",
+        "args": [
+          9,
+          3
+        ],
+        "throws": "RangeError"
+      }
+    ],
+    "demo": {
+      "file": "demo/scene.mjs",
+      "export": "demo",
+      "addons": [
+        "GLTFExporter",
+        "GLTFLoader"
+      ]
+    },
+    "tests": [
+      "test_gltf_scene_budget_report.mjs"
+    ]
+  },
+  "limits": "Counts follow the glTF primitive modes, not a renderer: a renderer that splits, merges, instances or culls objects draws something else. Texture memory is an estimate (4 bytes a texel, plus a third for mip chains), not GPU memory: compression, formats and padding are ignored, and it is unknown without image sizes. Bounds come from POSITION min and max, so morph targets, skins and animations are not included. Only one scene is walked, and extensions such as EXT_mesh_gpu_instancing are not counted. Only the Node 22 tests and three.js 0.186.1 in headless Chrome on SwiftShader WebGL 2 were run.",
+  "related": [
+    "gltf_document_validator",
+    "glb_container_codec",
+    "gltf_mesh_writer"
+  ],
+  "technique_references": [
+    "glTF 2.0 primitive modes and element counts",
+    "Node world matrices from TRS or matrix, column-major",
+    "Axis-aligned bounds of transformed accessor boxes"
+  ],
+  "native_checks": [
+    "module_contract_static",
+    "node_tests_pass",
+    "node_tests_catch_mutants",
+    "three_runtime_pinned",
+    "browser_page_clean",
+    "three_shaders_compiled",
+    "demo_checks_passed",
+    "render_not_uniform",
+    "render_differs_from_baseline"
+  ]
+}

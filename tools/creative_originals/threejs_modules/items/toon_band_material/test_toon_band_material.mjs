@@ -78,6 +78,7 @@ test('createToonBandMaterial wires every uniform from the options', () => {
 
 test('known wrong: misspelt options and out-of-range values are refused', () => {
   assert.throws(() => createToonBandMaterial(FakeThree, {band: 3}), TypeError);
+  assert.throws(() => createToonBandMaterial(FakeThree, {toString: 3}), TypeError, 'an inherited name is not an option');
   assert.throws(() => createToonBandMaterial(FakeThree, {bands: 40}), RangeError);
   assert.throws(() => createToonBandMaterial(FakeThree, {rimWidth: 2}), RangeError);
   assert.throws(() => createToonBandMaterial(FakeThree, {color: [1, 2]}), TypeError);

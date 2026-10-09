@@ -1,0 +1,73 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "post_ordered_dither_palette",
+  "title": "Ordered Bayer dither pass to levels or a palette",
+  "purpose": "Dither a three.js frame with a 2, 4, 8 or 16 wide Bayer matrix to a fixed number of levels per channel or to the nearest of up to 16 palette colours, in pixel blocks and in sRGB-encoded or linear values, as a ShaderPass definition or full-screen ShaderMaterial with an exact CPU mirror of every output pixel.",
+  "form": "library_module",
+  "asset_role": null,
+  "dimension": "2d",
+  "engine": {"name": "webgl2_browser", "minimum_version": "2.0", "notes": "three.js r155 or later passed in as THREE (integer bit operations of GLSL ES 3.00, int uniforms, a vec3 array uniform and the colorspace_fragment chunk); only 0.186.1 was run."},
+  "tags": ["three.js", "post-processing", "dither", "bayer matrix", "palette", "retro", "pixel art", "shaderpass"],
+  "files": [
+    {"path": "README.md", "role": "other"},
+    {"path": "post_ordered_dither_palette.mjs", "role": "skill_asset"},
+    {"path": "test_post_ordered_dither_palette.mjs", "role": "executable_tool"},
+    {"path": "demo/scene.mjs", "role": "skill_asset"}
+  ],
+  "contract": {
+    "module": "post_ordered_dither_palette.mjs",
+    "category": "post_process_pass",
+    "language": "ECMAScript 2020 module; GLSL ES 3.00 through three.js ShaderMaterial",
+    "three": {"injected": true, "argument": "THREE", "tested_version": "0.186.1", "needed_by": ["createOrderedDitherMaterial"]},
+    "input_texture_uniform": "tDiffuse",
+    "exports": [
+      {"name": "createOrderedDitherShader", "kind": "function", "signature": "createOrderedDitherShader(options = {}) -> {name, uniforms, vertexShader, fragmentShader}", "summary": "A fresh shader definition for three.js ShaderPass or ShaderMaterial; the palette is a flat array of 16 colours."},
+      {"name": "createOrderedDitherMaterial", "kind": "function", "signature": "createOrderedDitherMaterial(THREE, options = {}) -> THREE.ShaderMaterial", "summary": "The definition as a full-screen ShaderMaterial without depth test or write."},
+      {"name": "bayerMatrix", "kind": "function", "signature": "bayerMatrix(n) -> number[][]", "summary": "The n x n Bayer matrix (n = 2, 4, 8, 16) built recursively."},
+      {"name": "bayerThreshold", "kind": "function", "signature": "bayerThreshold(x, y, n) -> number", "summary": "CPU mirror of the shader threshold (M + 0.5) / n^2, computed bit by bit."},
+      {"name": "ditherSamplePixel", "kind": "function", "signature": "ditherSamplePixel(x, y, pixelSize = 1) -> [x, y]", "summary": "The pixel whose input colour a block reads."},
+      {"name": "ditherPixel", "kind": "function", "signature": "ditherPixel(rgb, x, y, options = {}) -> [r, g, b]", "summary": "CPU mirror of one output pixel."},
+      {"name": "DITHER_MODES", "kind": "constant", "summary": "Frozen mode table: levels 0, palette 1."},
+      {"name": "DITHER_DOMAINS", "kind": "constant", "summary": "Frozen domain table: linear 0, srgb 1."},
+      {"name": "ORDERED_DITHER_DEFAULTS", "kind": "constant", "summary": "Frozen default options."},
+      {"name": "ORDERED_DITHER_VERTEX", "kind": "constant", "glsl": "vertex", "summary": "Full-screen vertex stage passing vUv."},
+      {"name": "ORDERED_DITHER_FRAGMENT", "kind": "constant", "glsl": "fragment", "summary": "Fragment stage: block sample, threshold, levels or palette."}
+    ],
+    "options": [
+      {"name": "matrixSize", "type": "integer", "default": 4, "values": [2, 4, 8, 16], "meaning": "Bayer matrix width; larger gives finer gradients."},
+      {"name": "mode", "type": "string", "default": "levels", "values": ["levels", "palette"], "meaning": "Quantize each channel to levels, or pick the nearest palette colour."},
+      {"name": "levels", "type": "integer", "default": 4, "range": [2, 256], "meaning": "Levels per channel in levels mode."},
+      {"name": "palette", "type": "array of [r, g, b]", "default": "a 4-colour dusk palette", "meaning": "1 to 16 colours in the dithering domain (sRGB-encoded values in the srgb domain)."},
+      {"name": "spread", "type": "number", "default": 0.5, "range": [0, 2], "meaning": "Palette mode: how far the threshold moves the colour before the nearest-colour search."},
+      {"name": "pixelSize", "type": "integer", "default": 1, "range": [1, 64], "meaning": "Block size in output pixels; each block reads one input pixel and one threshold."},
+      {"name": "domain", "type": "string", "default": "srgb", "values": ["srgb", "linear"], "meaning": "Dither sRGB-encoded values (even perceptual steps) or the linear values received."},
+      {"name": "resolution", "type": "[width, height]", "default": [1024, 1024], "meaning": "Output size in pixels; update uResolution on resize."}
+    ],
+    "uniforms": [
+      {"name": "tDiffuse", "type": "sampler2D", "option": null},
+      {"name": "uResolution", "type": "vec2", "option": "resolution"},
+      {"name": "uPixelSize", "type": "float", "option": "pixelSize"},
+      {"name": "uMatrixBits", "type": "int", "option": "matrixSize"},
+      {"name": "uMode", "type": "int", "option": "mode"},
+      {"name": "uLevels", "type": "float", "option": "levels"},
+      {"name": "uPalette", "type": "vec3", "option": "palette"},
+      {"name": "uPaletteSize", "type": "int", "option": "palette"},
+      {"name": "uSpread", "type": "float", "option": "spread"},
+      {"name": "uDomain", "type": "int", "option": "domain"}
+    ],
+    "examples": [
+      {"call": "bayerMatrix", "args": [4], "expect": [[0, 8, 2, 10], [12, 4, 14, 6], [3, 11, 1, 9], [15, 7, 13, 5]]},
+      {"call": "bayerThreshold", "args": [2, 3, 4], "expect": 0.84375, "tolerance": 1e-15},
+      {"call": "ditherPixel", "args": [[0.4, 0.4, 0.4], 2, 3, {"levels": 4, "domain": "linear"}], "expect": [0.6666666666666666, 0.6666666666666666, 0.6666666666666666], "tolerance": 1e-12},
+      {"call": "ditherPixel", "args": [[0.6, 0.3, 0.2], 3, 0, {"mode": "palette", "palette": [[0, 0, 0], [1, 0, 0], [0, 1, 0], [1, 1, 1]], "domain": "linear"}], "expect": [1, 0, 0]},
+      {"call": "ditherSamplePixel", "args": [5, 2, 4], "expect": [6, 2]},
+      {"call": "bayerMatrix", "args": [6], "throws": "RangeError"}
+    ],
+    "demo": {"file": "demo/scene.mjs", "export": "demo", "addons": []},
+    "tests": ["test_post_ordered_dither_palette.mjs"]
+  },
+  "limits": "Ordered dithering only: no error diffusion, blue noise or temporal dithering, so the cross-hatch of the Bayer matrix shows. The palette search is a nearest colour by Euclidean distance in the dithering domain, not a perceptual colour difference, and ties keep the earlier colour. The pattern is tied to output pixels (gl_FragCoord), so it stays fixed on screen while the image moves. uResolution must match the output size, or blocks read the wrong input pixel. HDR inputs are clamped to [0, 1]. Output goes through three.js's output colour space conversion. Only three.js 0.186.1 was run, in headless Chrome on SwiftShader WebGL 2.",
+  "related": ["post_film_grain", "post_color_lut_strip", "post_sobel_edges"],
+  "technique_references": ["Bayer ordered dither matrix by the recursion M(2n) = [[4M, 4M + 2], [4M + 3, 4M + 1]]", "Bit-interleaved threshold computation from the most significant bit", "Threshold-offset rounding to levels and nearest-palette search", "Piecewise sRGB transfer function"],
+  "native_checks": ["module_contract_static", "node_tests_pass", "node_tests_catch_mutants", "three_runtime_pinned", "browser_page_clean", "three_shaders_compiled", "demo_checks_passed", "render_not_uniform", "render_differs_from_baseline"]
+}

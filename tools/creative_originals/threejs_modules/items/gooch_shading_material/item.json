@@ -1,0 +1,73 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "gooch_shading_material",
+  "title": "Gooch cool-to-warm illustration material",
+  "purpose": "Shade three.js meshes in the Gooch illustration style: hue shifts from a warm tone facing the light to a cool tone facing away instead of darkening, with a white highlight, a dark silhouette band and exact CPU mirrors. Use it for product diagrams, CAD previews and assembly guides.",
+  "form": "library_module",
+  "asset_role": null,
+  "dimension": "3d",
+  "engine": {"name": "webgl2_browser", "minimum_version": "2.0", "notes": "three.js r155 or later passed in as THREE (the shader includes the colorspace_fragment chunk); only 0.186.1 was run."},
+  "tags": ["three.js", "shader", "gooch", "npr", "technical illustration", "cool to warm", "glsl", "cad"],
+  "files": [
+    {"path": "README.md", "role": "other"},
+    {"path": "gooch_shading_material.mjs", "role": "skill_asset"},
+    {"path": "test_gooch_shading_material.mjs", "role": "executable_tool"},
+    {"path": "demo/scene.mjs", "role": "skill_asset"}
+  ],
+  "contract": {
+    "module": "gooch_shading_material.mjs",
+    "category": "shader_material",
+    "language": "ECMAScript 2020 module; GLSL ES 3.00 through three.js ShaderMaterial",
+    "three": {"injected": true, "argument": "THREE", "tested_version": "0.186.1", "needed_by": ["createGoochMaterial"]},
+    "exports": [
+      {"name": "createGoochMaterial", "kind": "function", "signature": "createGoochMaterial(THREE, options = {}) -> THREE.ShaderMaterial", "summary": "The Gooch material; an unknown option throws TypeError, a value out of range RangeError."},
+      {"name": "goochColor", "kind": "function", "signature": "goochColor(nDotL, base, cool, warm, alpha, beta) -> [r, g, b]", "summary": "CPU mirror of the tone: t (warm + beta base) + (1 - t)(cool + alpha base) with t = (1 + nDotL) / 2."},
+      {"name": "goochSilhouette", "kind": "function", "signature": "goochSilhouette(nDotV, width, softness) -> number", "summary": "CPU mirror of the outline band: 1 where |N.V| is below width, 0 past width + softness or when width is 0."},
+      {"name": "GOOCH_DEFAULTS", "kind": "constant", "summary": "Frozen default options."},
+      {"name": "GOOCH_GLSL", "kind": "constant", "glsl": "chunk", "summary": "GLSL goochColor and goochSilhouette."},
+      {"name": "GOOCH_VERTEX", "kind": "constant", "glsl": "vertex", "summary": "Vertex stage: world normal and position, InstancedMesh aware."},
+      {"name": "GOOCH_FRAGMENT", "kind": "constant", "glsl": "fragment", "summary": "Fragment stage: tone, highlight and silhouette."}
+    ],
+    "options": [
+      {"name": "baseColor", "type": "colour", "default": [0.75, 0.3, 0.2], "meaning": "Object colour mixed into both tones."},
+      {"name": "coolColor", "type": "colour", "default": [0, 0, 0.55], "meaning": "Cool tone facing away from the light."},
+      {"name": "warmColor", "type": "colour", "default": [0.3, 0.3, 0], "meaning": "Warm tone facing the light."},
+      {"name": "alpha", "type": "number", "default": 0.25, "range": [0, 1], "meaning": "Share of the base colour in the cool tone."},
+      {"name": "beta", "type": "number", "default": 0.5, "range": [0, 1], "meaning": "Share of the base colour in the warm tone."},
+      {"name": "highlightColor", "type": "colour", "default": [1, 1, 1], "meaning": "Colour of the highlight."},
+      {"name": "shininess", "type": "number", "default": 32, "range": [1, 1024], "meaning": "Phong exponent of the highlight."},
+      {"name": "highlightStrength", "type": "number", "default": 0.6, "range": [0, 4], "meaning": "Highlight strength; 0 turns it off."},
+      {"name": "silhouetteWidth", "type": "number", "default": 0.18, "range": [0, 1], "meaning": "Outline band width in |N.V| units; 0 turns it off."},
+      {"name": "silhouetteSoftness", "type": "number", "default": 0.06, "range": [0, 1], "meaning": "Fade width at the inside of the band."},
+      {"name": "silhouetteColor", "type": "colour", "default": [0.03, 0.03, 0.05], "meaning": "Outline colour."},
+      {"name": "lightDirection", "type": "vector3", "default": [0.5, 0.8, 0.4], "meaning": "Direction toward the light; normalized."}
+    ],
+    "uniforms": [
+      {"name": "uBaseColor", "type": "vec3", "option": "baseColor"},
+      {"name": "uCoolColor", "type": "vec3", "option": "coolColor"},
+      {"name": "uWarmColor", "type": "vec3", "option": "warmColor"},
+      {"name": "uAlpha", "type": "float", "option": "alpha"},
+      {"name": "uBeta", "type": "float", "option": "beta"},
+      {"name": "uHighlightColor", "type": "vec3", "option": "highlightColor"},
+      {"name": "uShininess", "type": "float", "option": "shininess"},
+      {"name": "uHighlightStrength", "type": "float", "option": "highlightStrength"},
+      {"name": "uSilhouetteWidth", "type": "float", "option": "silhouetteWidth"},
+      {"name": "uSilhouetteSoftness", "type": "float", "option": "silhouetteSoftness"},
+      {"name": "uSilhouetteColor", "type": "vec3", "option": "silhouetteColor"},
+      {"name": "uLightDirection", "type": "vec3", "option": "lightDirection"}
+    ],
+    "examples": [
+      {"call": "goochColor", "args": [1, [0.75, 0.3, 0.2], [0, 0, 0.55], [0.3, 0.3, 0], 0.25, 0.5], "expect": [0.675, 0.45, 0.1], "tolerance": 1e-12},
+      {"call": "goochColor", "args": [-1, [0.75, 0.3, 0.2], [0, 0, 0.55], [0.3, 0.3, 0], 0.25, 0.5], "expect": [0.1875, 0.075, 0.6], "tolerance": 1e-12},
+      {"call": "goochSilhouette", "args": [0.21, 0.18, 0.06], "expect": 0.5, "tolerance": 1e-12},
+      {"call": "goochSilhouette", "args": [0, 0, 0.06], "expect": 0},
+      {"call": "goochColor", "args": [2, [0.75, 0.3, 0.2], [0, 0, 0.55], [0.3, 0.3, 0], 0.25, 0.5], "throws": "RangeError"}
+    ],
+    "demo": {"file": "demo/scene.mjs", "export": "demo", "addons": []},
+    "tests": ["test_gooch_shading_material.mjs"]
+  },
+  "limits": "A non-photorealistic illustration model, not physically based. The silhouette is a band in N.V, so its screen width varies with curvature: thick on flat-ish areas seen edge-on, thin on tight curves, and absent on flat faces whose normal is not grazing. It is not a true outline pass, and creases are not drawn. One light given as a direction uniform; three.js scene lights, shadows and fog are ignored, and skinned or morphed meshes are not deformed. Tones are linear colours passed through three.js output conversion, so they look lighter than the 1998 values specified for display space. Written for three.js r155 or later; only 0.186.1 was run, in headless Chrome on SwiftShader WebGL 2.",
+  "related": ["toon_band_material", "fresnel_rim_material", "grid_floor_material"],
+  "technique_references": ["Gooch, Gooch, Shirley and Cohen 1998: cool-to-warm tone shading", "Phong reflection highlight", "Facing-ratio silhouette band"],
+  "native_checks": ["module_contract_static", "node_tests_pass", "node_tests_catch_mutants", "three_runtime_pinned", "browser_page_clean", "three_shaders_compiled", "demo_checks_passed", "render_not_uniform", "render_differs_from_baseline"]
+}

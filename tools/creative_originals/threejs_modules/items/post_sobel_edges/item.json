@@ -1,0 +1,68 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "post_sobel_edges",
+  "title": "Sobel edge outline pass",
+  "purpose": "Find edges in a three.js frame from the Sobel gradient of its luminance and draw them as soft ink outlines over the image or alone over a background colour, as a ShaderPass definition or full-screen ShaderMaterial, with a CPU mirror of the gradient and mask for luminance arrays.",
+  "form": "library_module",
+  "asset_role": null,
+  "dimension": "2d",
+  "engine": {"name": "webgl2_browser", "minimum_version": "2.0", "notes": "three.js r155 or later passed in as THREE (the shader includes the colorspace_fragment chunk and an int uniform); only 0.186.1 was run."},
+  "tags": ["three.js", "post-processing", "edge detection", "sobel", "outline", "ink", "npr", "shaderpass"],
+  "files": [
+    {"path": "README.md", "role": "other"},
+    {"path": "post_sobel_edges.mjs", "role": "skill_asset"},
+    {"path": "test_post_sobel_edges.mjs", "role": "executable_tool"},
+    {"path": "demo/scene.mjs", "role": "skill_asset"}
+  ],
+  "contract": {
+    "module": "post_sobel_edges.mjs",
+    "category": "post_process_pass",
+    "language": "ECMAScript 2020 module; GLSL ES 3.00 through three.js ShaderMaterial",
+    "three": {"injected": true, "argument": "THREE", "tested_version": "0.186.1", "needed_by": ["createSobelEdgesMaterial"]},
+    "input_texture_uniform": "tDiffuse",
+    "exports": [
+      {"name": "createSobelEdgesShader", "kind": "function", "signature": "createSobelEdgesShader(options = {}) -> {name, uniforms, vertexShader, fragmentShader}", "summary": "A fresh shader definition for three.js ShaderPass or ShaderMaterial."},
+      {"name": "createSobelEdgesMaterial", "kind": "function", "signature": "createSobelEdgesMaterial(THREE, options = {}) -> THREE.ShaderMaterial", "summary": "The definition as a full-screen ShaderMaterial without depth test or write."},
+      {"name": "sobelMagnitude", "kind": "function", "signature": "sobelMagnitude(luma, width, height, x, y) -> number", "summary": "CPU mirror of the gradient magnitude at one pixel, clamped borders."},
+      {"name": "sobelEdgeMask", "kind": "function", "signature": "sobelEdgeMask(luma, width, height, options = {}) -> Float32Array", "summary": "CPU mirror of the edge mask for every pixel."},
+      {"name": "luminance", "kind": "function", "signature": "luminance(r, g, b) -> number", "summary": "Rec. 709 luminance of a linear RGB value."},
+      {"name": "SOBEL_EDGE_MODES", "kind": "constant", "summary": "Frozen mode table: overlay 0, edges 1."},
+      {"name": "SOBEL_EDGES_DEFAULTS", "kind": "constant", "summary": "Frozen default options."},
+      {"name": "SOBEL_EDGES_VERTEX", "kind": "constant", "glsl": "vertex", "summary": "Full-screen vertex stage passing vUv."},
+      {"name": "SOBEL_EDGES_FRAGMENT", "kind": "constant", "glsl": "fragment", "summary": "Fragment stage: 3 x 3 Sobel on luminance and the mask."}
+    ],
+    "options": [
+      {"name": "threshold", "type": "number", "default": 0.2, "range": [0, 8], "meaning": "Gradient magnitude where the mask is half on."},
+      {"name": "softness", "type": "number", "default": 0.1, "range": [0, 4], "meaning": "Half width of the mask transition in magnitude units."},
+      {"name": "outlineColor", "type": "linear RGB triple", "default": [0.03, 0.025, 0.05], "meaning": "Colour of the edges."},
+      {"name": "backgroundColor", "type": "linear RGB triple", "default": [1, 1, 1], "meaning": "Colour behind the edges in edges mode."},
+      {"name": "mode", "type": "string", "default": "overlay", "values": ["overlay", "edges"], "meaning": "Outline over the image, or the edges alone."},
+      {"name": "opacity", "type": "number", "default": 1, "range": [0, 1], "meaning": "How strongly the edges are drawn."},
+      {"name": "resolution", "type": "[width, height]", "default": [1024, 1024], "meaning": "Input size in pixels; sets uTexelSize to its reciprocal."}
+    ],
+    "uniforms": [
+      {"name": "tDiffuse", "type": "sampler2D", "option": null},
+      {"name": "uTexelSize", "type": "vec2", "option": "resolution"},
+      {"name": "uThreshold", "type": "float", "option": "threshold"},
+      {"name": "uSoftness", "type": "float", "option": "softness"},
+      {"name": "uOutlineColor", "type": "vec3", "option": "outlineColor"},
+      {"name": "uBackgroundColor", "type": "vec3", "option": "backgroundColor"},
+      {"name": "uMode", "type": "int", "option": "mode"},
+      {"name": "uOpacity", "type": "float", "option": "opacity"}
+    ],
+    "examples": [
+      {"call": "sobelMagnitude", "args": [{"$typed": "Float32Array", "values": [0, 0, 1, 1, 0, 0, 1, 1, 0, 0, 1, 1, 0, 0, 1, 1]}, 4, 4, 1, 1], "expect": 4, "tolerance": 1e-12},
+      {"call": "sobelMagnitude", "args": [{"$typed": "Float32Array", "values": [0, 0, 0, 0, 1, 0, 0, 0, 0]}, 3, 3, 0, 0], "expect": 1.4142135623730951, "tolerance": 1e-12},
+      {"call": "sobelEdgeMask", "args": [{"$typed": "Float32Array", "values": [0, 0, 1, 1]}, 4, 1], "expect": [0, 1, 1, 0], "tolerance": 1e-7},
+      {"call": "luminance", "args": [0.5, 0.25, 1], "expect": 0.3573, "tolerance": 1e-12},
+      {"call": "createSobelEdgesShader", "args": [{"mode": "edges"}], "select": "uniforms.uMode.value", "expect": 1},
+      {"call": "createSobelEdgesShader", "args": [{"mode": "pencil"}], "throws": "TypeError"}
+    ],
+    "demo": {"file": "demo/scene.mjs", "export": "demo", "addons": []},
+    "tests": ["test_post_sobel_edges.mjs"]
+  },
+  "limits": "Edges come from luminance alone, so two colours of equal luminance give no edge, and texture detail and noise give edges too; depth and normal discontinuities are not used. Lines are one to two pixels wide at any distance and are not antialiased beyond the soft threshold. uTexelSize must match the input size, or lines thicken or break. Thresholds act on the values the pass receives (linear in three.js's pipeline). Output goes through three.js's output colour space conversion. Only three.js 0.186.1 was run, in headless Chrome on SwiftShader WebGL 2.",
+  "related": ["post_kuwahara_filter", "toon_band_material", "post_ordered_dither_palette"],
+  "technique_references": ["Sobel operator: 3 x 3 derivative kernels with centre weight 2", "Rec. 709 luminance", "Smoothstep threshold of the gradient magnitude"],
+  "native_checks": ["module_contract_static", "node_tests_pass", "node_tests_catch_mutants", "three_runtime_pinned", "browser_page_clean", "three_shaders_compiled", "demo_checks_passed", "render_not_uniform", "render_differs_from_baseline"]
+}

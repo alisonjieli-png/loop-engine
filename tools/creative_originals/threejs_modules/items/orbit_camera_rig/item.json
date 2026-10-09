@@ -1,0 +1,52 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "orbit_camera_rig",
+  "title": "Frame-rate independent orbit camera rig",
+  "purpose": "Orbit a three.js camera around a target with goals for radius, angles and target reached by exact exponential smoothing, so motion is identical at any frame rate, with radius and polar limits, pans in the view plane scaled by distance and pixel-exact pointer pans. Use it for viewers, editors and strategy cameras.",
+  "form": "library_module",
+  "asset_role": null,
+  "dimension": "3d",
+  "engine": {"name": "webgl2_browser", "minimum_version": "2.0", "notes": "The rig needs no three.js; applyTo sets position, up and lookAt on any three.js camera. Only 0.186.1 was run."},
+  "tags": ["three.js", "camera", "orbit", "controls", "smoothing", "spherical coordinates", "viewer", "kinematics"],
+  "files": [
+    {"path": "README.md", "role": "other"},
+    {"path": "orbit_camera_rig.mjs", "role": "skill_asset"},
+    {"path": "test_orbit_camera_rig.mjs", "role": "executable_tool"},
+    {"path": "demo/scene.mjs", "role": "skill_asset"}
+  ],
+  "contract": {
+    "module": "orbit_camera_rig.mjs",
+    "category": "camera_rig",
+    "language": "ECMAScript 2020 module",
+    "three": {"injected": false, "tested_version": "0.186.1", "needed_by": ["OrbitCameraRig.applyTo (takes a camera object)"]},
+    "exports": [
+      {"name": "OrbitCameraRig", "kind": "class", "signature": "new OrbitCameraRig(options); rotate(dAzimuth, dPolar); dolly(factor); pan(dx, dy); panPixels(dx, dy, fovDegrees, viewportHeight); setFromPosition(position, target); snap(); update(dt) -> moving; position() -> [x, y, z]; applyTo(camera); current; goal", "summary": "Orbit state with goals, exact exponential smoothing and limits."},
+      {"name": "orbitPosition", "kind": "function", "signature": "orbitPosition(target, radius, azimuth, polar) -> [x, y, z]", "summary": "Point on the sphere in three.js's spherical convention (polar from +Y, azimuth about +Y from +Z)."},
+      {"name": "orbitAngles", "kind": "function", "signature": "orbitAngles(position, target) -> {radius, azimuth, polar}", "summary": "The inverse of orbitPosition."},
+      {"name": "ORBIT_RIG_DEFAULTS", "kind": "constant", "summary": "Frozen default options."}
+    ],
+    "options": [
+      {"name": "target", "type": "vector3", "default": [0, 0, 0], "meaning": "Point the camera orbits and looks at."},
+      {"name": "radius", "type": "number", "default": 5, "meaning": "Distance from the target."},
+      {"name": "azimuth", "type": "number", "default": 0, "unit": "radians", "meaning": "Angle about +Y from +Z."},
+      {"name": "polar", "type": "number", "default": 1.0471975511965976, "unit": "radians", "meaning": "Angle from +Y."},
+      {"name": "minRadius", "type": "number", "default": 0.5, "meaning": "Closest dolly."},
+      {"name": "maxRadius", "type": "number", "default": 100, "meaning": "Farthest dolly."},
+      {"name": "minPolar", "type": "number", "default": 0.05, "meaning": "Highest view (keeps away from the pole)."},
+      {"name": "maxPolar", "type": "number", "default": 3.0915926535897933, "meaning": "Lowest view."},
+      {"name": "smoothTime", "type": "number", "default": 0.12, "unit": "seconds", "meaning": "Exponential time constant; 0 snaps."}
+    ],
+    "examples": [
+      {"call": "orbitPosition", "args": [[0, 0, 0], 5, 0, 1.5707963267948966], "expect": [0, 0, 5], "tolerance": 1e-12},
+      {"call": "orbitPosition", "args": [[1, 2, 3], 2, 0, 0], "expect": [1, 4, 3], "tolerance": 1e-12},
+      {"call": "orbitAngles", "args": [[3, 4, 0], [0, 0, 0]], "expect": {"radius": 5, "polar": 0.6435011087932843, "azimuth": 1.5707963267948966}, "tolerance": 1e-12},
+      {"call": "orbitAngles", "args": [[1, 1, 1], [1, 1, 1]], "throws": "RangeError"}
+    ],
+    "demo": {"file": "demo/scene.mjs", "export": "demo", "addons": []},
+    "tests": ["test_orbit_camera_rig.mjs"]
+  },
+  "limits": "No input handling: wire pointer, wheel and touch events to rotate, dolly and panPixels yourself. Smoothing is first order (exponential), so motion starts at full speed; for a spring with zero initial speed use the smooth damp item. Up is always +Y and the polar limits keep the camera off the poles; there is no free roll or quaternion trackball. Azimuth is unbounded (it never wraps) so smoothing never turns the long way. panPixels is exact at the target's depth only. Only three.js 0.186.1 was run for the demo, in headless Chrome on SwiftShader WebGL 2.",
+  "related": ["smooth_damp_spring", "fit_camera_to_bounds", "ray_plane_drag"],
+  "technique_references": ["Spherical coordinates with polar angle from +Y", "Exact exponential smoothing x = goal + (x - goal) e^(-dt / tau)", "View-plane basis from the orbit angles for panning", "Pixel to world scale 2 r tan(fov / 2) / height"],
+  "native_checks": ["module_contract_static", "node_tests_pass", "node_tests_catch_mutants", "three_runtime_pinned", "browser_page_clean", "three_shaders_compiled", "demo_checks_passed", "render_not_uniform", "render_differs_from_baseline"]
+}

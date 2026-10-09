@@ -145,7 +145,7 @@ function inRange(value, low, high, name) {
  */
 export function createToonBandMaterial(THREE, options = {}) {
   for (const key of Object.keys(options)) {
-    if (!(key in TOON_BAND_DEFAULTS)) throw new TypeError(`unknown toon band option ${key}`);
+    if (!Object.prototype.hasOwnProperty.call(TOON_BAND_DEFAULTS, key)) throw new TypeError(`unknown toon band option ${key}`);
   }
   const settings = {...TOON_BAND_DEFAULTS, ...options};
   checkBands(settings.bands);

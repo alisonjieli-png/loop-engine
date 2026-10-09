@@ -1,0 +1,236 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "tileable_noise_texture",
+  "title": "Seamless tileable fBm noise textures",
+  "purpose": "Generate gradient noise on a lattice that repeats every period cells, summed over octaves whose periods double, so one period of the field tiles without seams; sample it into Float32Array or RGBA8 grids and three.js repeat-wrapped DataTextures. Use it for terrain detail, clouds, stone, dissolve masks and shader noise.",
+  "form": "library_module",
+  "asset_role": null,
+  "dimension": "2d",
+  "engine": {
+    "name": "webgl2_browser",
+    "minimum_version": "2.0",
+    "notes": "The noise functions need no three.js; createNoiseTexture takes three.js r152 or later as THREE (colorSpace); only 0.186.1 was run."
+  },
+  "tags": [
+    "three.js",
+    "texture",
+    "noise",
+    "fbm",
+    "seamless",
+    "tileable",
+    "procedural",
+    "gradient noise"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "role": "other"
+    },
+    {
+      "path": "tileable_noise_texture.mjs",
+      "role": "skill_asset"
+    },
+    {
+      "path": "test_tileable_noise_texture.mjs",
+      "role": "executable_tool"
+    },
+    {
+      "path": "demo/scene.mjs",
+      "role": "skill_asset"
+    }
+  ],
+  "contract": {
+    "module": "tileable_noise_texture.mjs",
+    "category": "procedural_texture",
+    "language": "ECMAScript 2020 module",
+    "three": {
+      "injected": true,
+      "argument": "THREE",
+      "tested_version": "0.186.1",
+      "needed_by": [
+        "createNoiseTexture"
+      ]
+    },
+    "exports": [
+      {
+        "name": "periodicGradientNoise",
+        "kind": "function",
+        "signature": "periodicGradientNoise(x, y, period, seed = 1) -> number",
+        "summary": "Gradient noise in [-1, 1] whose lattice repeats every period cells; zero at lattice points."
+      },
+      {
+        "name": "fbmNoise",
+        "kind": "function",
+        "signature": "fbmNoise(x, y, options = {}) -> number",
+        "summary": "Octave sum with doubling frequency and lattice period, normalized to [-1, 1]; repeats every period."
+      },
+      {
+        "name": "noiseField",
+        "kind": "function",
+        "signature": "noiseField(width, height, options = {}) -> Float32Array",
+        "summary": "One period sampled at texel centres; tiles in both directions."
+      },
+      {
+        "name": "noiseTextureData",
+        "kind": "function",
+        "signature": "noiseTextureData(width, height, options = {}) -> Uint8Array",
+        "summary": "RGBA8 bytes: grey, or four independent fields with channels 'rgba'."
+      },
+      {
+        "name": "createNoiseTexture",
+        "kind": "function",
+        "signature": "createNoiseTexture(THREE, width, height, options = {}) -> THREE.DataTexture",
+        "summary": "Repeat-wrapped, mipmapped linear-data texture."
+      },
+      {
+        "name": "latticeHash",
+        "kind": "function",
+        "signature": "latticeHash(x, y, seed) -> number",
+        "summary": "32-bit unsigned hash of a lattice point and a seed (Math.imul arithmetic)."
+      },
+      {
+        "name": "NOISE_DEFAULTS",
+        "kind": "constant",
+        "summary": "Frozen default options: period 8, octaves 4, gain 0.5, seed 1, channels grey."
+      }
+    ],
+    "options": [
+      {
+        "name": "period",
+        "type": "integer",
+        "default": 8,
+        "range": [
+          1,
+          4096
+        ],
+        "meaning": "Lattice cells per tile along each axis at the base octave; more cells give finer features."
+      },
+      {
+        "name": "octaves",
+        "type": "integer",
+        "default": 4,
+        "range": [
+          1,
+          12
+        ],
+        "meaning": "Layers of noise; each doubles the frequency and the lattice period."
+      },
+      {
+        "name": "gain",
+        "type": "number",
+        "default": 0.5,
+        "range": "(0, 1]",
+        "meaning": "Amplitude ratio between successive octaves."
+      },
+      {
+        "name": "seed",
+        "type": "integer",
+        "default": 1,
+        "meaning": "Selects the gradients; octave k uses seed + k."
+      },
+      {
+        "name": "channels",
+        "type": "string",
+        "default": "grey",
+        "values": [
+          "grey",
+          "rgba"
+        ],
+        "meaning": "One field in RGB, or four independent fields."
+      }
+    ],
+    "examples": [
+      {
+        "call": "latticeHash",
+        "args": [
+          0,
+          0,
+          1
+        ],
+        "expect": 1351741842
+      },
+      {
+        "call": "periodicGradientNoise",
+        "args": [
+          0.375,
+          0.625,
+          8,
+          1
+        ],
+        "expect": 0.003495636566435772,
+        "tolerance": 1e-15
+      },
+      {
+        "call": "periodicGradientNoise",
+        "args": [
+          3,
+          2,
+          8,
+          1
+        ],
+        "expect": 0,
+        "tolerance": 0
+      },
+      {
+        "call": "fbmNoise",
+        "args": [
+          0.375,
+          0.625
+        ],
+        "expect": -0.01750364845125047,
+        "tolerance": 1e-15
+      },
+      {
+        "call": "noiseTextureData",
+        "args": [
+          16,
+          16
+        ],
+        "select": "0",
+        "expect": 169
+      },
+      {
+        "call": "fbmNoise",
+        "args": [
+          0,
+          0,
+          {
+            "octaves": 0
+          }
+        ],
+        "throws": "RangeError"
+      }
+    ],
+    "demo": {
+      "file": "demo/scene.mjs",
+      "export": "demo",
+      "addons": []
+    },
+    "tests": [
+      "test_tileable_noise_texture.mjs"
+    ]
+  },
+  "limits": "Classic gradient noise with eight gradient directions: it shows faint axis-aligned and diagonal structure and is not isotropic like simplex noise. The value range is [-1, 1] by construction but most values fall well inside it, so textures look mid-grey without contrast stretching. Periodicity is exact only for coordinates that are representable (texel centres of power-of-two sizes); elsewhere it holds within rounding. Computed on the CPU, about width * height * octaves noise evaluations, so large textures take time; there is no GPU version and no 3D or animated noise. Only three.js 0.186.1 was run, in headless Chrome on SwiftShader WebGL 2.",
+  "related": [
+    "normal_map_from_height",
+    "gradient_ramp_texture",
+    "noise_dissolve_material",
+    "terrain_splat_material"
+  ],
+  "technique_references": [
+    "Gradient noise with a quintic fade on a wrapped integer lattice",
+    "Fractal Brownian motion with doubling lattice periods",
+    "Integer avalanche hashing with Math.imul"
+  ],
+  "native_checks": [
+    "module_contract_static",
+    "node_tests_pass",
+    "node_tests_catch_mutants",
+    "three_runtime_pinned",
+    "browser_page_clean",
+    "three_shaders_compiled",
+    "demo_checks_passed",
+    "render_not_uniform",
+    "render_differs_from_baseline"
+  ]
+}

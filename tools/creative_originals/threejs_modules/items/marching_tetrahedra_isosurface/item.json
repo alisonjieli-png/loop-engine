@@ -1,0 +1,47 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "marching_tetrahedra_isosurface",
+  "title": "Marching tetrahedra isosurface mesher",
+  "purpose": "Turn a scalar field (signed distances, metaballs, noise, scans) into a welded, closed, outward-facing three.js mesh with gradient normals by marching tetrahedra, six per cell around the main diagonal, so neighbouring cells always agree and no lookup table is needed. Use it for blobs, caves, SDF models and volumes.",
+  "form": "library_module",
+  "asset_role": null,
+  "dimension": "3d",
+  "engine": {"name": "webgl2_browser", "minimum_version": "2.0", "notes": "sampleScalarField and marchingTetrahedraData need no three.js; createIsosurfaceGeometry takes three.js as THREE; only 0.186.1 was run."},
+  "tags": ["three.js", "geometry", "isosurface", "marching tetrahedra", "signed distance field", "metaballs", "voxels", "typed arrays"],
+  "files": [
+    {"path": "README.md", "role": "other"},
+    {"path": "marching_tetrahedra_isosurface.mjs", "role": "skill_asset"},
+    {"path": "test_marching_tetrahedra_isosurface.mjs", "role": "executable_tool"},
+    {"path": "demo/scene.mjs", "role": "skill_asset"}
+  ],
+  "contract": {
+    "module": "marching_tetrahedra_isosurface.mjs",
+    "category": "geometry",
+    "language": "ECMAScript 2020 module",
+    "three": {"injected": true, "argument": "THREE", "tested_version": "0.186.1", "needed_by": ["createIsosurfaceGeometry"]},
+    "exports": [
+      {"name": "sampleScalarField", "kind": "function", "signature": "sampleScalarField(fn, options = {}) -> {values, size, min, max}", "summary": "Sample fn(x, y, z) on a box grid; values are stored x-fastest."},
+      {"name": "marchingTetrahedraData", "kind": "function", "signature": "marchingTetrahedraData(field, options = {}) -> {positions, normals, indices}", "summary": "The welded isosurface as typed arrays, outward triangles and gradient normals."},
+      {"name": "createIsosurfaceGeometry", "kind": "function", "signature": "createIsosurfaceGeometry(THREE, field, options = {}) -> THREE.BufferGeometry", "summary": "The same data in a BufferGeometry with an index and computed bounds."},
+      {"name": "MARCHING_TETRAHEDRA_DEFAULTS", "kind": "constant", "summary": "Frozen default options."}
+    ],
+    "inputs": {"field": "{values, size: [nx, ny, nz], min: [x, y, z], max: [x, y, z]} with values[x + nx * (y + ny * z)]; 2 to 1024 samples per axis"},
+    "options": [
+      {"name": "isoLevel", "type": "number", "default": 0, "meaning": "The level the surface follows."},
+      {"name": "insideBelow", "type": "boolean", "default": true, "meaning": "true: values below the level are inside (signed distances); false: values above are inside (densities, metaballs)."},
+      {"name": "maxVertices", "type": "integer", "default": 4000000, "meaning": "Refuse a surface that needs more vertices."}
+    ],
+    "examples": [
+      {"call": "marchingTetrahedraData", "args": [{"values": [-1, 1, 1, 1, 1, 1, 1, 1], "size": [2, 2, 2], "min": [0, 0, 0], "max": [1, 1, 1]}], "select": "indices.length", "expect": 18},
+      {"call": "marchingTetrahedraData", "args": [{"values": [-1, 1, 1, 1, 1, 1, 1, 1], "size": [2, 2, 2], "min": [0, 0, 0], "max": [1, 1, 1]}], "select": "positions.length", "expect": 21},
+      {"call": "marchingTetrahedraData", "args": [{"values": [1, 1, 1, 1, 1, 1, 1, 1], "size": [2, 2, 2], "min": [0, 0, 0], "max": [1, 1, 1]}], "select": "indices.length", "expect": 0},
+      {"call": "marchingTetrahedraData", "args": [{"values": [1], "size": [2, 2, 2], "min": [0, 0, 0], "max": [1, 1, 1]}], "throws": "RangeError"}
+    ],
+    "demo": {"file": "demo/scene.mjs", "export": "demo", "addons": []},
+    "tests": ["test_marching_tetrahedra_isosurface.mjs"]
+  },
+  "limits": "Linear interpolation along grid edges: features smaller than a cell vanish or merge, sharp edges and corners are rounded off, and vertices sit near but not exactly on the level set (the sphere test stays within 0.01 at 33 samples). Six tetrahedra per cell make about twice the triangles of marching cubes and some thin slivers; no decimation or remeshing is done. The surface stays open where it leaves the sampled box: pad the field. The whole field is held in memory and polygonized on one thread. Only three.js 0.186.1 was run, in headless Chrome on SwiftShader WebGL 2.",
+  "related": ["heightfield_terrain_geometry", "superellipsoid_geometry", "crease_normals_welding"],
+  "technique_references": ["Marching tetrahedra on the six-tetrahedron (Kuhn) split of each cube", "Edge-keyed vertex cache for a welded surface", "Gradient normals from central differences, interpolated along each edge", "Orientation from the inside to the outside corners of each tetrahedron"],
+  "native_checks": ["module_contract_static", "node_tests_pass", "node_tests_catch_mutants", "three_runtime_pinned", "browser_page_clean", "three_shaders_compiled", "demo_checks_passed", "render_not_uniform", "render_differs_from_baseline"]
+}

@@ -1,0 +1,55 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "lsystem_tree_geometry",
+  "title": "L-system tree builder with a 3D turtle",
+  "purpose": "Grow trees and plants for three.js from L-system grammars: rewrite with deterministic or seeded stochastic rules, walk the string with a 3D turtle (turn, pitch, roll, branch, taper) and build tapered branch cylinders in one mesh, with leaf anchors for instanced foliage. Use it for forests, bushes, coral and vines.",
+  "form": "library_module",
+  "asset_role": null,
+  "dimension": "3d",
+  "engine": {"name": "webgl2_browser", "minimum_version": "2.0", "notes": "rewriteLSystem, interpretTurtle and lsystemTreeData need no three.js; createLsystemTreeGeometry takes three.js as THREE; only 0.186.1 was run."},
+  "tags": ["three.js", "geometry", "l-system", "tree", "procedural", "turtle graphics", "vegetation", "stochastic"],
+  "files": [
+    {"path": "README.md", "role": "other"},
+    {"path": "lsystem_tree_geometry.mjs", "role": "skill_asset"},
+    {"path": "test_lsystem_tree_geometry.mjs", "role": "executable_tool"},
+    {"path": "demo/scene.mjs", "role": "skill_asset"}
+  ],
+  "contract": {
+    "module": "lsystem_tree_geometry.mjs",
+    "category": "geometry",
+    "language": "ECMAScript 2020 module",
+    "three": {"injected": true, "argument": "THREE", "tested_version": "0.186.1", "needed_by": ["createLsystemTreeGeometry"]},
+    "exports": [
+      {"name": "rewriteLSystem", "kind": "function", "signature": "rewriteLSystem(axiom, rules, iterations, seed = 1, maxLength = 1000000) -> string", "summary": "Parallel rewriting; a rule is a successor string or {successor, weight} choices picked by the seeded generator."},
+      {"name": "interpretTurtle", "kind": "function", "signature": "interpretTurtle(commands, options = {}) -> {segments, leaves}", "summary": "3D turtle walk: segments {start, end, startRadius, endRadius, left, up} and leaves {position, heading}."},
+      {"name": "lsystemTreeData", "kind": "function", "signature": "lsystemTreeData(commands, options = {}) -> {positions, normals, uvs, indices, segmentCount, leafPositions, leafDirections}", "summary": "One open tapered cylinder per F, merged into typed arrays, with leaf anchors."},
+      {"name": "createLsystemTreeGeometry", "kind": "function", "signature": "createLsystemTreeGeometry(THREE, commands, options = {}) -> THREE.BufferGeometry", "summary": "The branches in a BufferGeometry; leaf anchors in userData.leafPositions and userData.leafDirections."},
+      {"name": "LSYSTEM_TREE_DEFAULTS", "kind": "constant", "summary": "Frozen default turtle and mesh options."}
+    ],
+    "commands": {"F": "forward, drawing a branch", "f": "forward without drawing", "+": "turn left", "-": "turn right", "&": "pitch down", "^": "pitch up", "backslash": "roll left", "/": "roll right", "|": "turn around", "[": "push the turtle state", "]": "pop it", "!": "radius times taper", "double quote": "step length times lengthScale", "L": "leaf anchor", "other": "a variable that draws nothing"},
+    "options": [
+      {"name": "angle", "type": "number", "default": 25, "unit": "degrees", "meaning": "Turn, pitch and roll step."},
+      {"name": "length", "type": "number", "default": 1, "meaning": "First step length."},
+      {"name": "lengthScale", "type": "number", "default": 0.8, "meaning": "Step multiplier for the double quote command."},
+      {"name": "radius", "type": "number", "default": 0.1, "meaning": "First branch radius."},
+      {"name": "taper", "type": "number", "default": 0.7, "meaning": "Radius multiplier for the ! command."},
+      {"name": "segmentTaper", "type": "number", "default": 1, "meaning": "Radius multiplier along every F, so branches narrow as they grow."},
+      {"name": "radialSegments", "type": "integer", "default": 6, "range": [3, 64], "meaning": "Sides of each branch cylinder."},
+      {"name": "maxSegments", "type": "integer", "default": 200000, "meaning": "Refuse strings that would draw more branches than this."}
+    ],
+    "examples": [
+      {"call": "rewriteLSystem", "args": ["A", {"A": "AB", "B": "A"}, 4], "expect": "ABAABABA"},
+      {"call": "rewriteLSystem", "args": ["A", {"A": "AB", "B": "A"}, 7], "select": "length", "expect": 34},
+      {"call": "interpretTurtle", "args": ["F+F", {"angle": 90}], "select": "segments.1.end", "expect": [-1, 1, 0], "tolerance": 1e-12},
+      {"call": "lsystemTreeData", "args": ["F", {"radialSegments": 8}], "select": "indices.length", "expect": 48},
+      {"call": "interpretTurtle", "args": ["F]"], "throws": "RangeError"},
+      {"call": "rewriteLSystem", "args": ["A", {"AB": "A"}, 1], "throws": "TypeError"}
+    ],
+    "demo": {"file": "demo/scene.mjs", "export": "demo", "addons": []},
+    "tests": ["test_lsystem_tree_geometry.mjs"]
+  },
+  "limits": "Context-free, non-parametric L-systems only: no context-sensitive or parametric rules, tropism, collision or self-shadowing pruning. Each F is a separate open cylinder; joints overlap instead of welding, branch ends are open, and very thin branches stay as many small cylinders (instance or merge them for large forests). Leaves are anchor points with a heading; drawing them is up to you. Strings grow exponentially; maxLength and maxSegments refuse runaway grammars. Rotation errors accumulate in very long walks. Only three.js 0.186.1 was run, in headless Chrome on SwiftShader WebGL 2.",
+  "related": ["tube_rmf_geometry", "lathe_profile_geometry", "polyline_ribbon_geometry"],
+  "technique_references": ["Parallel rewriting of bracketed L-systems (Lindenmayer)", "3D turtle interpretation with heading, left and up vectors (Prusinkiewicz and Lindenmayer)", "Weighted stochastic productions with a seeded Weyl-sequence generator", "Rodrigues rotation"],
+  "native_checks": ["module_contract_static", "node_tests_pass", "node_tests_catch_mutants", "three_runtime_pinned", "browser_page_clean", "three_shaders_compiled", "demo_checks_passed", "render_not_uniform", "render_differs_from_baseline"]
+}

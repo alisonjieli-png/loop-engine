@@ -1,0 +1,281 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "spherical_harmonics_probe",
+  "title": "Spherical harmonics light probe from radiance",
+  "purpose": "Project a radiance function or an equirectangular image onto nine RGB spherical harmonic coefficients with exact solid-angle weights, evaluate the diffuse irradiance they give, and build a three.js LightProbe from them. Use it for cheap ambient lighting from a procedural sky or an environment image without baking.",
+  "form": "library_module",
+  "asset_role": null,
+  "dimension": "3d",
+  "engine": {
+    "name": "webgl2_browser",
+    "minimum_version": "2.0",
+    "notes": "The projection and evaluation need no three.js; toLightProbe takes three.js as THREE (SphericalHarmonics3, LightProbe); only 0.186.1 was run."
+  },
+  "tags": [
+    "three.js",
+    "lighting",
+    "spherical harmonics",
+    "light probe",
+    "irradiance",
+    "environment",
+    "ambient",
+    "ibl"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "role": "other"
+    },
+    {
+      "path": "spherical_harmonics_probe.mjs",
+      "role": "skill_asset"
+    },
+    {
+      "path": "test_spherical_harmonics_probe.mjs",
+      "role": "executable_tool"
+    },
+    {
+      "path": "demo/scene.mjs",
+      "role": "skill_asset"
+    }
+  ],
+  "contract": {
+    "module": "spherical_harmonics_probe.mjs",
+    "category": "lighting",
+    "language": "ECMAScript 2020 module",
+    "three": {
+      "injected": true,
+      "argument": "THREE",
+      "tested_version": "0.186.1",
+      "needed_by": [
+        "toLightProbe"
+      ]
+    },
+    "coefficient_layout": "Float64Array of 27: coefficient by coefficient (c0 r, c0 g, c0 b, c1 r, ...) in three.js SphericalHarmonics3 order 1, y, z, x, xy, yz, 3z^2 - 1, xz, x^2 - y^2; radiance projections, not pre-convolved",
+    "exports": [
+      {
+        "name": "projectRadiance",
+        "kind": "function",
+        "signature": "projectRadiance(radiance, options = {}) -> Float64Array(27)",
+        "summary": "Project radiance(direction) -> [r, g, b] over a latitude-longitude grid with exact cell solid angles."
+      },
+      {
+        "name": "projectEquirect",
+        "kind": "function",
+        "signature": "projectEquirect(pixels, width, height, channels = 4) -> Float64Array(27)",
+        "summary": "Project a float equirectangular image, rows from +Y to -Y, columns in three.js's mapping."
+      },
+      {
+        "name": "evaluateIrradiance",
+        "kind": "function",
+        "signature": "evaluateIrradiance(coefficients, normal) -> [r, g, b]",
+        "summary": "Irradiance at a normal with the cosine-lobe factors pi, 2 pi / 3, pi / 4."
+      },
+      {
+        "name": "evaluateRadiance",
+        "kind": "function",
+        "signature": "evaluateRadiance(coefficients, direction) -> [r, g, b]",
+        "summary": "The band-limited radiance the coefficients reconstruct."
+      },
+      {
+        "name": "shBasis",
+        "kind": "function",
+        "signature": "shBasis(direction) -> number[9]",
+        "summary": "The nine basis values for a unit direction."
+      },
+      {
+        "name": "toLightProbe",
+        "kind": "function",
+        "signature": "toLightProbe(THREE, coefficients, intensity = 1) -> THREE.LightProbe",
+        "summary": "A LightProbe whose SphericalHarmonics3 holds the coefficients."
+      },
+      {
+        "name": "SH_BASIS",
+        "kind": "constant",
+        "summary": "The nine normalization constants."
+      },
+      {
+        "name": "SH_COSINE_LOBE",
+        "kind": "constant",
+        "summary": "Convolution factors per band: pi, 2 pi / 3, pi / 4."
+      },
+      {
+        "name": "SH_DEFAULTS",
+        "kind": "constant",
+        "summary": "Frozen default options: 64 latitude by 128 longitude samples."
+      }
+    ],
+    "options": [
+      {
+        "name": "latitudeSamples",
+        "type": "integer",
+        "default": 64,
+        "range": [
+          4,
+          4096
+        ],
+        "meaning": "Rows of the integration grid."
+      },
+      {
+        "name": "longitudeSamples",
+        "type": "integer",
+        "default": 128,
+        "range": [
+          4,
+          4096
+        ],
+        "meaning": "Columns of the integration grid."
+      }
+    ],
+    "examples": [
+      {
+        "call": "shBasis",
+        "args": [
+          [
+            0,
+            1,
+            0
+          ]
+        ],
+        "select": "1",
+        "expect": 0.4886025119029199,
+        "tolerance": 1e-15
+      },
+      {
+        "call": "projectRadiance",
+        "args": [],
+        "throws": "TypeError"
+      },
+      {
+        "call": "evaluateIrradiance",
+        "args": [
+          [
+            3.5449077018110318,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            1
+          ]
+        ],
+        "select": "0",
+        "expect": 3.141592653589793,
+        "tolerance": 1e-12
+      },
+      {
+        "call": "evaluateRadiance",
+        "args": [
+          [
+            3.5449077018110318,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            1,
+            0,
+            0
+          ]
+        ],
+        "select": "0",
+        "expect": 1,
+        "tolerance": 1e-12
+      },
+      {
+        "call": "evaluateIrradiance",
+        "args": [
+          [
+            1,
+            2,
+            3
+          ],
+          [
+            0,
+            1,
+            0
+          ]
+        ],
+        "throws": "TypeError"
+      }
+    ],
+    "demo": {
+      "file": "demo/scene.mjs",
+      "export": "demo",
+      "addons": []
+    },
+    "tests": [
+      "test_spherical_harmonics_probe.mjs"
+    ]
+  },
+  "limits": "Nine coefficients hold only low-frequency light: sharp suns, shadows and occlusion are lost, and the band-limited result rings, so irradiance can dip slightly below zero opposite a strong light (about -0.016 for a top light). Diffuse only; it gives no specular reflections. The projection is a midpoint sum over a latitude-longitude grid with exact cell solid angles: a constant integrates exactly, other functions within about 1e-3 at the default 64 x 128 grid, and a light smaller than a grid cell is undersampled. Equirectangular rows must run from +Y to -Y. Only three.js 0.186.1 was run, in headless Chrome on SwiftShader WebGL 2.",
+  "related": [
+    "sun_position_solar",
+    "gradient_ramp_texture",
+    "toon_band_material"
+  ],
+  "technique_references": [
+    "Real spherical harmonics of bands 0 to 2",
+    "Irradiance from the cosine-lobe convolution (Ramamoorthi and Hanrahan)",
+    "Latitude-longitude quadrature with exact solid angles"
+  ],
+  "native_checks": [
+    "module_contract_static",
+    "node_tests_pass",
+    "node_tests_catch_mutants",
+    "three_runtime_pinned",
+    "browser_page_clean",
+    "three_shaders_compiled",
+    "demo_checks_passed",
+    "render_not_uniform",
+    "render_differs_from_baseline"
+  ]
+}

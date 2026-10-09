@@ -1,0 +1,49 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "fit_camera_to_bounds",
+  "title": "Fit a camera to a sphere or box",
+  "purpose": "Frame a bounding sphere or box with a three.js camera: the sphere distance for the narrower field of view, a tight perspective box fit from any direction with a margin and near and far planes around the box, an orthographic fit, and a helper that applies it. Use it for viewers, thumbnails and focus on selection.",
+  "form": "library_module",
+  "asset_role": null,
+  "dimension": "3d",
+  "engine": {"name": "webgl2_browser", "minimum_version": "2.0", "notes": "The fits need no three.js; applyFit sets fields of a three.js PerspectiveCamera or OrthographicCamera (any recent release). Only 0.186.1 was run."},
+  "tags": ["three.js", "camera", "framing", "zoom to fit", "bounding box", "orthographic", "perspective", "viewer"],
+  "files": [
+    {"path": "README.md", "role": "other"},
+    {"path": "fit_camera_to_bounds.mjs", "role": "skill_asset"},
+    {"path": "test_fit_camera_to_bounds.mjs", "role": "executable_tool"},
+    {"path": "demo/scene.mjs", "role": "skill_asset"}
+  ],
+  "contract": {
+    "module": "fit_camera_to_bounds.mjs",
+    "category": "camera_rig",
+    "language": "ECMAScript 2020 module",
+    "three": {"injected": false, "tested_version": "0.186.1", "needed_by": ["applyFit (takes a camera object)"]},
+    "exports": [
+      {"name": "fitSphereDistance", "kind": "function", "signature": "fitSphereDistance(radius, fovDegrees, aspect = 1) -> distance", "summary": "radius / sin(half), half the narrower of the vertical and horizontal half-angles."},
+      {"name": "fitBoxPerspective", "kind": "function", "signature": "fitBoxPerspective(min, max, fovDegrees, aspect, options = {}) -> {position, target, up, distance, near, far}", "summary": "Tight perspective fit of a box from a view direction; one corner touches the frame shrunk by margin."},
+      {"name": "fitBoxOrthographic", "kind": "function", "signature": "fitBoxOrthographic(min, max, aspect, options = {}) -> {position, target, up, left, right, top, bottom, near, far}", "summary": "Orthographic fit of a box with the given aspect."},
+      {"name": "applyFit", "kind": "function", "signature": "applyFit(camera, fit) -> camera", "summary": "Set position, up, look-at, near, far, orthographic extents and zoom 1, then updateProjectionMatrix."},
+      {"name": "FIT_CAMERA_DEFAULTS", "kind": "constant", "summary": "Frozen default options: direction, up, margin, depthPadding."}
+    ],
+    "options": [
+      {"name": "direction", "type": "vector3", "default": [0, 0, -1], "meaning": "Where the camera looks, from the camera toward the box."},
+      {"name": "up", "type": "vector3", "default": [0, 1, 0], "meaning": "Up hint; replaced when parallel to the direction."},
+      {"name": "margin", "type": "number", "default": 1, "meaning": "At least 1; the box fills 1 / margin of the frame."},
+      {"name": "depthPadding", "type": "number", "default": 1.05, "meaning": "At least 1; widens near and far around the box."}
+    ],
+    "examples": [
+      {"call": "fitSphereDistance", "args": [1, 90, 1], "expect": 1.4142135623730951, "tolerance": 1e-12},
+      {"call": "fitSphereDistance", "args": [1, 90, 0.5], "expect": 2.23606797749979, "tolerance": 1e-12},
+      {"call": "fitSphereDistance", "args": [1, 60, 2], "expect": 2, "tolerance": 1e-12},
+      {"call": "fitBoxOrthographic", "args": [[-1, -1, -1], [1, 1, 1], 2], "select": "right", "expect": 2, "tolerance": 1e-12},
+      {"call": "fitSphereDistance", "args": [1, 0, 1], "throws": "RangeError"}
+    ],
+    "demo": {"file": "demo/scene.mjs", "export": "demo", "addons": []},
+    "tests": ["test_fit_camera_to_bounds.mjs"]
+  },
+  "limits": "The camera always looks at the box centre: the fit is tight for that aim, not the smallest frame over every possible aim. Boxes are axis-aligned in world space; a rotated object gets the loose box of its rotated bounds. The sphere distance ignores where the sphere sits off-axis. applyFit resets zoom to 1 and sets up, so a camera with roll or zoom changes. No animation: pair it with a spring to move smoothly. Only three.js 0.186.1 was run for the demo, in headless Chrome on SwiftShader WebGL 2.",
+  "related": ["orbit_camera_rig", "frustum_instance_culling", "smooth_damp_spring"],
+  "technique_references": ["Sphere tangent to the narrower half field of view, d = r / sin(half)", "Per-corner distance bound |x| / tan(half) - z in the camera basis", "Orthographic extents widened to the viewport aspect"],
+  "native_checks": ["module_contract_static", "node_tests_pass", "node_tests_catch_mutants", "three_runtime_pinned", "browser_page_clean", "three_shaders_compiled", "demo_checks_passed", "render_not_uniform", "render_differs_from_baseline"]
+}

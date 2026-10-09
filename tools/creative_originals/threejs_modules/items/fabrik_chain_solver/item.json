@@ -1,0 +1,47 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "fabrik_chain_solver",
+  "title": "FABRIK solver for chains of any length",
+  "purpose": "Reach a target with a chain of any number of joints and a fixed root by forward and backward reaching (FABRIK): segment lengths stay exact, a reachable target is met within tolerance, an unreachable one straightens the chain toward it, and applyFabrikChain poses a three.js bone or Object3D chain.",
+  "form": "library_module",
+  "asset_role": null,
+  "dimension": "3d",
+  "engine": {"name": "webgl2_browser", "minimum_version": "2.0", "notes": "solveFabrik, chainLengths and chainReach are pure ES2020; applyFabrikChain takes three.js as THREE (Object3D, Vector3, Quaternion). Only three.js 0.186.1 was run."},
+  "tags": ["three.js", "inverse kinematics", "ik", "fabrik", "chain", "tentacle", "animation", "procedural animation"],
+  "files": [
+    {"path": "README.md", "role": "other"},
+    {"path": "fabrik_chain_solver.mjs", "role": "skill_asset"},
+    {"path": "test_fabrik_chain_solver.mjs", "role": "executable_tool"},
+    {"path": "demo/scene.mjs", "role": "skill_asset"}
+  ],
+  "contract": {
+    "module": "fabrik_chain_solver.mjs",
+    "category": "kinematics",
+    "language": "ECMAScript 2020 module",
+    "three": {"injected": true, "argument": "THREE", "tested_version": "0.186.1", "needed_by": ["applyFabrikChain"]},
+    "exports": [
+      {"name": "solveFabrik", "kind": "function", "signature": "solveFabrik(joints, target, options = {}) -> {joints, iterations, error, reached, reachable}", "summary": "Solve from the given pose with the root fixed; error is the end's remaining distance from the target."},
+      {"name": "applyFabrikChain", "kind": "function", "signature": "applyFabrikChain(THREE, objects, target, options = {}) -> solution", "summary": "Rotate a three.js chain (each object a descendant of the previous) so its last object reaches the target."},
+      {"name": "chainLengths", "kind": "function", "signature": "chainLengths(joints) -> number[]", "summary": "Segment lengths; a zero-length segment is refused."},
+      {"name": "chainReach", "kind": "function", "signature": "chainReach(joints) -> {shortest, longest}", "summary": "The end's reachable distances from the root: max(0, longest segment - the others) to the sum of all."},
+      {"name": "FABRIK_DEFAULTS", "kind": "constant", "summary": "Frozen default options."}
+    ],
+    "options": [
+      {"name": "tolerance", "type": "number", "default": 0.0001, "range": "above 0", "unit": "scene units", "meaning": "End-to-target distance that counts as reached."},
+      {"name": "maxIterations", "type": "integer", "default": 32, "range": [1, 10000], "meaning": "Cap on forward and backward passes."}
+    ],
+    "examples": [
+      {"call": "solveFabrik", "args": [[[0, 0, 0], [1, 0, 0], [2, 0, 0]], [0, 2, 0]], "select": "joints.2", "expect": [0, 2, 0], "tolerance": 1e-12},
+      {"call": "solveFabrik", "args": [[[1, 1, 1], [1, 2, 1], [1, 3, 1], [1, 4, 1]], [1, 1, 11]], "select": "error", "expect": 7, "tolerance": 1e-12},
+      {"call": "chainLengths", "args": [[[0, 0, 0], [3, 4, 0], [3, 4, 2]]], "expect": [5, 2], "tolerance": 1e-12},
+      {"call": "chainReach", "args": [[[0, 0, 0], [0, 3, 0], [0, 4, 0]]], "expect": {"shortest": 2, "longest": 4}, "tolerance": 1e-12},
+      {"call": "chainLengths", "args": [[[0, 0, 0], [0, 0, 0]]], "throws": "RangeError"}
+    ],
+    "demo": {"file": "demo/scene.mjs", "export": "demo", "addons": []},
+    "tests": ["test_fabrik_chain_solver.mjs"]
+  },
+  "limits": "Positions only: no joint angle limits, no twist or roll control, no preferred bend direction, so the solved pose depends on the starting pose. Convergence slows near both ends of the reach: on 300 seeded random chains with targets kept a tenth of the range from either end, the median was 4 passes, 95 percent needed 17 or fewer, the slowest 80, and 3 were not within 1e-4 after the default 32. A target closer to the root than the chain can fold is reported unreachable and the chain folds toward it. applyFabrikChain rotates each object about its own origin by a shortest arc and assumes uniform scale. Only three.js 0.186.1 was run, in headless Chrome on SwiftShader WebGL 2.",
+  "related": ["two_bone_ik_solver", "look_at_damped_tracker", "polyline_ribbon_geometry"],
+  "technique_references": ["FABRIK: forward and backward reaching inverse kinematics", "Reachable distance interval of a polygonal chain", "Shortest-arc quaternion per segment, applied from the root outward"],
+  "native_checks": ["module_contract_static", "node_tests_pass", "node_tests_catch_mutants", "three_runtime_pinned", "browser_page_clean", "three_shaders_compiled", "demo_checks_passed", "render_not_uniform", "render_differs_from_baseline"]
+}

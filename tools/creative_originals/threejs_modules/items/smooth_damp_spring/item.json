@@ -1,0 +1,48 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "smooth_damp_spring",
+  "title": "Frame-rate independent smooth damp spring",
+  "purpose": "Move numbers, vectors and angles toward targets with a critically damped spring stepped by its exact solution, so motion is the same at any frame rate and never overshoots from rest, with an optional speed limit and a stateful follower. Use it for camera follow, UI motion, aim smoothing and value easing.",
+  "form": "library_module",
+  "asset_role": null,
+  "dimension": "none",
+  "engine": {"name": "node", "minimum_version": "18", "notes": "No three.js needed; plain numbers and arrays in any ES2020 runtime. The demo was rendered with three.js 0.186.1 in headless Chrome."},
+  "tags": ["three.js", "animation", "spring", "smooth damp", "easing", "camera follow", "critically damped", "kinematics"],
+  "files": [
+    {"path": "README.md", "role": "other"},
+    {"path": "smooth_damp_spring.mjs", "role": "skill_asset"},
+    {"path": "test_smooth_damp_spring.mjs", "role": "executable_tool"},
+    {"path": "demo/scene.mjs", "role": "skill_asset"}
+  ],
+  "contract": {
+    "module": "smooth_damp_spring.mjs",
+    "category": "kinematics",
+    "language": "ECMAScript 2020 module",
+    "three": {"injected": false, "tested_version": "0.186.1", "needed_by": []},
+    "exports": [
+      {"name": "smoothDamp", "kind": "function", "signature": "smoothDamp(current, target, velocity, smoothTime, dt, maxSpeed = Infinity) -> {value, velocity}", "summary": "One exact critically damped step for a number."},
+      {"name": "smoothDampVector", "kind": "function", "signature": "smoothDampVector(current, target, velocity, smoothTime, dt, maxSpeed = Infinity) -> {value, velocity}", "summary": "The same step for arrays of equal length; maxSpeed limits the vector speed. Returns new arrays."},
+      {"name": "smoothDampAngle", "kind": "function", "signature": "smoothDampAngle(current, target, velocity, smoothTime, dt, maxSpeed = Infinity) -> {value, velocity}", "summary": "The step for an angle in radians along the shorter arc; the value is not wrapped."},
+      {"name": "shortestAngle", "kind": "function", "signature": "shortestAngle(from, to) -> radians in (-pi, pi]", "summary": "Signed difference along the shorter arc."},
+      {"name": "SpringFollower", "kind": "class", "signature": "new SpringFollower(size, options = {}); reset(value, velocity = null); update(target, dt) -> Float64Array", "summary": "Spring state for a vector, updated in place."},
+      {"name": "SMOOTH_DAMP_DEFAULTS", "kind": "constant", "summary": "Frozen default options of SpringFollower."}
+    ],
+    "options": [
+      {"name": "smoothTime", "type": "number", "default": 0.25, "unit": "seconds", "meaning": "Spring time scale; w = 2 / smoothTime, so the value is 59 percent of the way after one smoothTime from rest."},
+      {"name": "maxSpeed", "type": "number", "default": "Infinity", "unit": "units per second", "meaning": "Speed a far target is approached at; Infinity for no limit."}
+    ],
+    "examples": [
+      {"call": "smoothDamp", "args": [3, 1, -1, 0.5, 0.3], "select": "value", "expect": 2.2348962688400285, "tolerance": 1e-12},
+      {"call": "smoothDamp", "args": [0, 10, 0, 1.0, 0.5], "select": "velocity", "expect": 7.357588823428847, "tolerance": 1e-12},
+      {"call": "smoothDampVector", "args": [[0, 0], [3, 4], [0, 0], 1, 1], "select": "value", "expect": [1.7819824508704856, 2.3759766011606476], "tolerance": 1e-12},
+      {"call": "shortestAngle", "args": [3, -3], "expect": 0.28318530717958623, "tolerance": 1e-12},
+      {"call": "smoothDamp", "args": [0, 1, 0, 0, 0.1], "throws": "RangeError"}
+    ],
+    "demo": {"file": "demo/scene.mjs", "export": "demo", "addons": []},
+    "tests": ["test_smooth_damp_spring.mjs"]
+  },
+  "limits": "A critically damped spring only: no under-damped bounce or over-damped settings. The step is exact for a target held still during the step, so a target that moves every frame is followed one frame late, as with any per-frame update. With maxSpeed the target is pulled closer before the step; from rest the motion stays under the limit only while dt is at most smoothTime / 2, and a value that already moves faster than the limit slows down over the following steps rather than at once. Angles are radians and are not wrapped on output. Numbers are float64; the demo was rendered with three.js 0.186.1 in headless Chrome on SwiftShader WebGL 2.",
+  "related": ["orbit_camera_rig", "camera_shake_trauma", "look_at_damped_tracker"],
+  "technique_references": ["Critically damped harmonic oscillator, exact solution x(t) = target + (y0 + (v0 + w y0) t) e^(-w t)", "Steady-state target distance solved so each step covers maxSpeed * dt", "Shortest-arc angle difference"],
+  "native_checks": ["module_contract_static", "node_tests_pass", "node_tests_catch_mutants", "three_runtime_pinned", "browser_page_clean", "three_shaders_compiled", "demo_checks_passed", "render_not_uniform", "render_differs_from_baseline"]
+}

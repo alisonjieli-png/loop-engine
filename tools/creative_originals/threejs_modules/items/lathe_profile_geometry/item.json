@@ -1,0 +1,52 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "lathe_profile_geometry",
+  "title": "Lathe geometry with creases, caps and exact volume",
+  "purpose": "Revolve a 2D profile around Y into a three.js mesh with smooth normals that split where the profile turns sharply, flat caps on open ends, closed-loop profiles for rings and arc-length UVs, plus the exact volume and area of the revolved shape. Use it for vases, bottles, chess pieces, lamps and turned props.",
+  "form": "library_module",
+  "asset_role": null,
+  "dimension": "3d",
+  "engine": {"name": "webgl2_browser", "minimum_version": "2.0", "notes": "latheProfileData, latheProfileVolume and latheProfileArea need no three.js; createLatheProfileGeometry takes three.js as THREE; only 0.186.1 was run."},
+  "tags": ["three.js", "geometry", "lathe", "surface of revolution", "profile", "buffergeometry", "typed arrays", "props"],
+  "files": [
+    {"path": "README.md", "role": "other"},
+    {"path": "lathe_profile_geometry.mjs", "role": "skill_asset"},
+    {"path": "test_lathe_profile_geometry.mjs", "role": "executable_tool"},
+    {"path": "demo/scene.mjs", "role": "skill_asset"}
+  ],
+  "contract": {
+    "module": "lathe_profile_geometry.mjs",
+    "category": "geometry",
+    "language": "ECMAScript 2020 module",
+    "three": {"injected": true, "argument": "THREE", "tested_version": "0.186.1", "needed_by": ["createLatheProfileGeometry"]},
+    "exports": [
+      {"name": "latheProfileData", "kind": "function", "signature": "latheProfileData(profile, options = {}) -> {positions, normals, uvs, indices}", "summary": "The revolved profile as typed arrays; the outside is to the right of the profile direction."},
+      {"name": "createLatheProfileGeometry", "kind": "function", "signature": "createLatheProfileGeometry(THREE, profile, options = {}) -> THREE.BufferGeometry", "summary": "The same data in a BufferGeometry with an index and computed bounds."},
+      {"name": "latheProfileVolume", "kind": "function", "signature": "latheProfileVolume(profile, closed = false) -> number", "summary": "Signed volume of the full-turn solid: sum of pi / 3 (r0^2 + r0 r1 + r1^2) (y1 - y0)."},
+      {"name": "latheProfileArea", "kind": "function", "signature": "latheProfileArea(profile, closed = false) -> number", "summary": "Area of the full-turn surface without caps: sum of pi (r0 + r1) times segment length."},
+      {"name": "LATHE_PROFILE_DEFAULTS", "kind": "constant", "summary": "Frozen default options."}
+    ],
+    "inputs": {"profile": "array of [r, y] points with r >= 0, consecutive points distinct; drawn bottom to top on the outside"},
+    "options": [
+      {"name": "segments", "type": "integer", "default": 48, "range": [3, 4096], "meaning": "Divisions around Y."},
+      {"name": "phiStart", "type": "number", "default": 0, "unit": "radians", "meaning": "Angle of the first column (x = r sin phi, z = r cos phi)."},
+      {"name": "phiLength", "type": "number", "default": 6.283185307179586, "unit": "radians", "range": "(0, 2 pi]", "meaning": "Swept angle; less than a full turn leaves the sides open."},
+      {"name": "creaseAngle", "type": "number", "default": 30, "unit": "degrees", "range": [0, 180], "meaning": "A profile vertex turning by more than this gets two rings with their own normals."},
+      {"name": "caps", "type": "boolean", "default": true, "meaning": "Close open profile ends that are off the axis with flat caps."},
+      {"name": "closed", "type": "boolean", "default": false, "meaning": "The profile is a loop (last point joins the first), for rings and tori."}
+    ],
+    "examples": [
+      {"call": "latheProfileVolume", "args": [[[1, 0], [1, 2]]], "expect": 6.283185307179586, "tolerance": 1e-12},
+      {"call": "latheProfileVolume", "args": [[[1, 0], [2, 0], [2, 1], [1, 1]], true], "expect": 9.42477796076938, "tolerance": 1e-12},
+      {"call": "latheProfileArea", "args": [[[1, 0], [0, 2]]], "expect": 7.024814731040727, "tolerance": 1e-12},
+      {"call": "latheProfileData", "args": [[[1, 0], [1, 2]], {}], "select": "indices.length", "expect": 576},
+      {"call": "latheProfileData", "args": [[[1, 0]]], "throws": "RangeError"}
+    ],
+    "demo": {"file": "demo/scene.mjs", "export": "demo", "addons": []},
+    "tests": ["test_lathe_profile_geometry.mjs"]
+  },
+  "limits": "The profile is a polyline: smooth curves need enough points (sample your spline first). The outside is the right-hand side of the profile direction, so a profile drawn top to bottom comes out inside out. Caps are flat discs at the end heights and assume the profile ends off the axis; a partial sweep (phiLength under a full turn) leaves its two cut faces open. Vertices on the axis repeat once per column, as in LatheGeometry. latheProfileVolume and latheProfileArea describe the smooth surface of revolution; the mesh with N segments has the volume times (N / 2 pi) sin(2 pi / N). Self-intersecting profiles are not detected. Only three.js 0.186.1 was run, in headless Chrome on SwiftShader WebGL 2.",
+  "related": ["tube_rmf_geometry", "superellipsoid_geometry", "crease_normals_welding"],
+  "technique_references": ["Surface of revolution with per-vertex profile normals", "Crease splitting by the turning angle between profile segments", "Frustum volume pi h / 3 (r0^2 + r0 r1 + r1^2) and Pappus's theorems"],
+  "native_checks": ["module_contract_static", "node_tests_pass", "node_tests_catch_mutants", "three_runtime_pinned", "browser_page_clean", "three_shaders_compiled", "demo_checks_passed", "render_not_uniform", "render_differs_from_baseline"]
+}
