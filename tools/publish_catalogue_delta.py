@@ -65,6 +65,11 @@ MACHINE = "83733ea7779068"
 APP = "baltor-pilot"
 #: The service user, as every catalogue write runs. An upload above it is an ordinary file write.
 AS_SERVICE = "setpriv --reuid=65534 --regid=65534 --clear-groups"
+#: The numeric owner every staged object carries. The Machine extracts each archive as root, and a root tar
+#: restores the owner a member names, so a member keeps the workstation's owner unless the archive names the
+#: service user. On October 9, 2026 publication 83 failed this way: 151,841 staged objects kept UID 1000 and
+#: mode 0600, and the native publisher, running as UID 65534, stopped with PermissionError 13 before activation.
+SERVICE_UID = SERVICE_GID = 65534
 #: How long one Fly call waits. A listing of tens of thousands of digests is well inside this.
 EXEC_TIMEOUT = 600
 #: How many bytes one sftp put carries. One put per blob is 1,500 round trips; one put for the whole
@@ -224,13 +229,24 @@ def segmented_uploads(base, candidate) -> list[str]:
                      if item.version not in held_versions))
 
 
+def service_owned(member: tarfile.TarInfo) -> tarfile.TarInfo:
+    """Name the service user as the owner of one staged member; its mode and bytes are unchanged.
+
+    The empty user and group names leave only the numeric owner for the extracting tar to restore."""
+    member.uid, member.gid = SERVICE_UID, SERVICE_GID
+    member.uname = member.gname = ""
+    return member
+
+
 def extract_archive(archive: str, digest: str, destination: str) -> None:
-    """Verify one trusted archive, start extraction once and poll its bounded receipt."""
+    """Verify one trusted archive, start extraction once and poll its bounded receipt.
+
+    Extraction restores the numeric owner each member names, which `service_owned` set to the service user."""
     measured = machine_exec(f"sha256sum {archive}").split()
     if not measured or measured[0] != digest:
         raise RuntimeError("uploaded archive digest differs; extraction was not started")
     status, log = archive + ".status", archive + ".log"
-    command = f"tar -xf {archive} -C {destination} > {log} 2>&1; printf '%s' $? > {status}"
+    command = f"tar --numeric-owner -xf {archive} -C {destination} > {log} 2>&1; printf '%s' $? > {status}"
     machine_exec(f"nohup sh -c {shlex.quote(command)} </dev/null >/dev/null 2>&1 &")
     deadline = time.monotonic() + EXEC_TIMEOUT
     while time.monotonic() < deadline:
@@ -309,7 +325,7 @@ def upload_missing(bundle: Path, missing: list[str], remote: str, extra_paths=()
             with tarfile.open(archive, "w:gz" if compress else "w", **options) as stream:
                 for name in group:
                     relative = name if "/" in name else blob_path(name)
-                    stream.add(stage / relative, arcname=relative, recursive=False)
+                    stream.add(stage / relative, arcname=relative, recursive=False, filter=service_owned)
             remote_archive = f"{REMOTE_ROOT}/{remote}/{archive.name}"
             archive_digest = hashlib.sha256(archive.read_bytes()).hexdigest()
             put_archive(archive, remote_archive, archive_digest)
@@ -603,8 +619,10 @@ def publish(name: str, bundle: Path, digest: str, *, base_bundle: Path | None = 
                         "receipt": kept_receipt, "bundle_digest": digest,
                         "content_digest": proof["result_content_digest"], **plan}
         try:
+            # service_cli_error is the native command's typed failure record (publication 83 ended with one
+            # while this loop, which matched only the older words, kept polling for nineteen minutes).
             refused = machine_exec(
-                f"grep -q '\\\"refused\\\": true\\|Error\\|Traceback' {result_path} "
+                f"grep -q '\\\"refused\\\": true\\|Error\\|Traceback\\|service_cli_error' {result_path} "
                 f"&& head -c 1200 {result_path}", timeout=60)
         except RuntimeError:
             refused = ""

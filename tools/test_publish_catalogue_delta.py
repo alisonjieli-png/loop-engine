@@ -20,8 +20,10 @@ from __future__ import annotations
 from contextlib import redirect_stdout
 import hashlib
 import json
+import os
 from io import BytesIO, StringIO
 import subprocess
+import tarfile
 import tempfile
 import unittest
 from pathlib import Path
@@ -237,6 +239,50 @@ class DeltaUploadGuarantees(unittest.TestCase):
                 delta.remote_digests()
 
 
+class StagedOwnership(unittest.TestCase):
+    """Every staged object reaches the Machine owned by the service user that publishes it.
+
+    On October 9, 2026 publication 83 stopped before activation: the root extraction kept the workstation owner
+    (UID 1000, mode 0600) on 151,841 staged objects, and the native publisher, running as UID 65534, could not
+    read them. Removing `service_owned` from the archive puts that behaviour back and fails the first check.
+    """
+
+    def test_staged_archive_names_the_service_user_and_keeps_private_modes(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            bundle = _bundle(Path(tmp), {"a" * 64: 4, "b" * 64: 4})
+            for path in (bundle / "blobs").rglob("*"):
+                if path.is_file():
+                    path.chmod(0o600)
+            missing = ["a" * 64, "b" * 64]
+            members = []
+
+            def capture(archive, remote_archive, digest):
+                with tarfile.open(archive) as stream:
+                    members.extend(stream.getmembers())
+
+            def fake_exec(command, **kwargs):
+                return "\n".join(missing) if "find" in command else ""
+
+            # The publication operators run with umask 077, so each staged copy is private (0600), as in October 9.
+            previous = os.umask(0o077)
+            try:
+                with mock.patch.object(delta, "machine_exec", side_effect=fake_exec), \
+                        mock.patch.object(delta, "extract_archive"), \
+                        mock.patch.object(delta, "put_archive", side_effect=capture):
+                    delta.upload_missing(bundle, missing, "delta-test", compress=True)
+            finally:
+                os.umask(previous)
+            self.assertEqual(sorted(member.name for member in members), sorted(delta.blob_path(d) for d in missing))
+            for member in members:
+                self.assertEqual((member.uid, member.gid, member.uname, member.gname), (65534, 65534, "", ""))
+                self.assertEqual(member.mode & 0o777, 0o600)
+
+    def test_extraction_restores_the_numeric_owner_the_archive_names(self):
+        with mock.patch.object(delta, "machine_exec", side_effect=["a" * 64 + " archive", "", "0"]) as remote:
+            delta.extract_archive("/data/incoming/probe.tar", "a" * 64, "/data/incoming/probe")
+        self.assertIn("tar --numeric-owner -xf /data/incoming/probe.tar", remote.call_args_list[1].args[0])
+
+
 class DeltaPublishOrder(unittest.TestCase):
     """Current-base publication, exercised through real local bundle/proof readers."""
 
@@ -279,6 +325,26 @@ class DeltaPublishOrder(unittest.TestCase):
             stack.enter_context(mock.patch.object(delta,'POINTER_WAIT_SECONDS',1))
             answer=delta.publish('slot',self.output,self.digest,**self.kwargs)
             return answer,upload
+
+    def test_a_typed_native_error_ends_the_wait_as_a_refusal(self):
+        # Publication 83's native command wrote service_cli_error/v1; the wait matched only older words and
+        # polled for nineteen minutes. The fake applies the loop's own grep pattern to that receipt.
+        receipt = json.dumps({'record_type': 'service_cli_error/v1', 'code': 'service_configuration_or_io_failure',
+                              'effect_commitment': 'not_asserted', 'automatic_retry': False})
+
+        def execute(command, **kwargs):
+            self.commands.append(command)
+            if 'tail -c' in command:
+                return receipt
+            if 'grep -q' in command:
+                pattern = command.split("grep -q '", 1)[1].split("'", 1)[0]
+                words = [word.replace('\\"', '"') for word in pattern.split('\\|')]
+                return receipt if any(word in receipt for word in words) else ''
+            return ''
+        self.execute = execute
+        with self.assertRaisesRegex(RuntimeError, 'publish refused'):
+            self.simulate([self.before, self.before, self.before])
+        self.assertFalse(any('rm -r' in command for command in self.commands))
 
     def test_exact_result_and_live_content_confirm_only_our_release(self):
         answer,upload=self.simulate()
