@@ -242,6 +242,39 @@ class ReadingTest(unittest.TestCase):
             with self.assertRaises(urllib.error.HTTPError):
                 handler.redirect_request(None, None, 302, "Found", {}, "http://example.org/file")
 
+    def test_a_line_names_its_software_in_every_read_and_streamed_download(self):
+        from supply_lines import creative_assets
+        from supply_lines.reading import DIGEST_USER_AGENT, FactReader
+
+        class _Answer(io.BytesIO):
+            status, headers = 200, {}
+
+            def geturl(self):
+                return "https://example.org/file"
+
+        def agents(user_agent):
+            """The User-Agent of one API read and one streamed download, each sent to a recording stand-in."""
+            sent = []
+
+            def answer(request, timeout=None):
+                sent.append(request.get_header("User-agent"))
+                return _Answer(b"{}")
+
+            with tempfile.TemporaryDirectory() as folder:
+                reader = FactReader(folder, ("example.org",), github=False, sleep=lambda _s: None,
+                                    user_agent=user_agent)
+                reader.https._opener.open = answer
+                reader._open = answer
+                reader.get("https://example.org/api/assets")
+                reader.digest("https://example.org/file.zip")
+            return sent
+
+        self.assertEqual(agents(creative_assets.USER_AGENT), [creative_assets.USER_AGENT] * 2)
+        self.assertTrue(creative_assets.USER_AGENT.startswith("Baltor-creative-assets/"))
+        # Known wrong: a reader that names no software sends the shared reader's own two names, which Poly Haven's
+        # terms (2.4) do not accept as one application's requests tracked together.
+        self.assertEqual(agents(None), ["loop-engine library-ingestion (read-only)", DIGEST_USER_AGENT])
+
 
 class StoreTest(unittest.TestCase):
     def test_supplied_candidates_live_in_their_own_namespace_with_versions_and_withdrawals(self):

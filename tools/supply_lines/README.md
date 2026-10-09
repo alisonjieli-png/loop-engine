@@ -226,8 +226,11 @@ source (`terms_not_confirmed`) when a clause below is gone. Read on October 5,
 
 - Poly Haven's API terms (`Poly-Haven/Public-API`, ToS.md): the API is free for
   any purpose including commercial use (2.1); users may obtain its data and
-  assets and build on that data in their own products (2.2); calls carry a unique
-  user agent (2.4); live use of the API must make clear to users that the content
+  assets and build on that data in their own products (2.2); all API calls carry a
+  unique user agent that matches the software's name (2.4), so every read and
+  streamed download of the line sends `creative_assets.USER_AGENT`
+  (`Baltor-creative-assets/1.0` with Baltor's address, from October 9, 2026);
+  live use of the API must make clear to users that the content
   comes from Poly Haven, without implying endorsement (2.5). Its licence page:
   all assets are CC0. Its site terms forbid scraping the website and protect
   renders and copy, so the line reads only the API, copies no description and

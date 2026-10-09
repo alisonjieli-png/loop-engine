@@ -78,12 +78,16 @@ class HttpsGetTransport:
     transport = HTTPS_TRANSPORT
 
     def __init__(self, hosts, budget: RequestBudget, log: RequestLog, *, timeout_seconds: float = 30.0,
-                 maximum_bytes: int = 8 * 1024 * 1024, accept: str = "application/json") -> None:
+                 maximum_bytes: int = 8 * 1024 * 1024, accept: str = "application/json",
+                 user_agent: str = _USER_AGENT) -> None:
         self.hosts = frozenset(hosts)
         self.budget, self.log = budget, log
         self.timeout_seconds, self.maximum_bytes = timeout_seconds, maximum_bytes
         # The media type asked for; an Atom or XML interface refuses a request that accepts only JSON.
         self.accept = accept
+        # A source whose terms ask every call to name the software making it (Poly Haven's API terms, 2.4) is read
+        # with that name; every other caller keeps the component's own.
+        self.user_agent = user_agent
         self._opener = urllib.request.build_opener(_NoRedirect)
 
     def get(self, host: str, path: str, query: "dict | None" = None, *,
@@ -106,7 +110,7 @@ class HttpsGetTransport:
         self.budget.admit()
         started, clock = now_utc(), time.monotonic()
         request = urllib.request.Request(target, method="GET", headers={
-            "User-Agent": _USER_AGENT, "Accept": self.accept, **(conditions or {})})
+            "User-Agent": self.user_agent, "Accept": self.accept, **(conditions or {})})
         status, body, retry, error_class, headers = None, None, None, "", None
         try:
             with self._opener.open(request, timeout=self.timeout_seconds) as answer:

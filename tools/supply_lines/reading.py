@@ -160,8 +160,11 @@ class FactReader:
 
     def __init__(self, run_folder, hosts, *, maximum_requests: int = 5000, pause_seconds: float = 0.25,
                  maximum_bytes: int = 64 * 1024 * 1024, github: bool = True, sleep=time.sleep,
-                 clock=time.monotonic, digest_cache=None) -> None:
+                 clock=time.monotonic, digest_cache=None, user_agent: "str | None" = None) -> None:
         self.folder = Path(run_folder)
+        # A line whose source asks every call to name its software (Poly Haven's API terms, 2.4) gives one name for
+        # its reads and its streamed downloads alike; without one, each keeps the shared reader's own.
+        self.user_agent = user_agent
         self.cache = self.folder / "cache"
         self.cache.mkdir(parents=True, exist_ok=True)
         # Digests of pinned downloads may live in a folder shared by several runs: a file is downloaded again only
@@ -170,7 +173,8 @@ class FactReader:
         self.digest_log = self.folder / "requests-digest.jsonl"
         self.https = HttpsGetTransport(hosts, RequestBudget(maximum_requests, 1800.0),
                                        RequestLog(self.folder / "requests-https.jsonl"), timeout_seconds=90.0,
-                                       maximum_bytes=maximum_bytes)
+                                       maximum_bytes=maximum_bytes,
+                                       **({"user_agent": user_agent} if user_agent else {}))
         self.rest = GhCliReader(RequestBudget(maximum_requests, 3700.0), RequestLog(self.folder / "requests-gh.jsonl"),
                                 maximum_bytes=maximum_bytes) if github else None
         self.graphql_budget = RequestBudget(maximum_requests, 3700.0)
@@ -344,7 +348,7 @@ class FactReader:
         error = ""
         request = urllib.request.Request(urllib.parse.urlunsplit((parts.scheme, parts.netloc, urllib.parse.quote(
             parts.path or "/", safe=PATH_SAFE), parts.query, "")), method="GET",
-            headers={"User-Agent": DIGEST_USER_AGENT, "Accept": "*/*"})
+            headers={"User-Agent": self.user_agent or DIGEST_USER_AGENT, "Accept": "*/*"})
         try:
             with self._open(request, 120.0) as answer:
                 status, final = answer.status, answer.geturl()

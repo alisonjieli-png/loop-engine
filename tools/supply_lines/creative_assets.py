@@ -86,6 +86,9 @@ LICENCE_TEXT_ADDRESSES = {
     "CC-BY-4.0": https_address("creativecommons.org", "licenses/by/4.0/legalcode.txt"),
     "Apache-2.0": https_address("www.apache.org", "licenses/LICENSE-2.0.txt")}
 LICENCE_HOSTS = ("creativecommons.org", "www.apache.org")
+#: The name every read and streamed download of the line carries. Poly Haven's API terms (2.4) ask that all API
+#: calls carry a unique user agent that matches the software's name, so its requests can be tracked together.
+USER_AGENT = "Baltor-creative-assets/1.0 (+https://baltor.ai; read-only reader for pinned CC0 asset recipes)"
 
 # -- Poly Haven -------------------------------------------------------------------------------------------------
 POLYHAVEN_API = "api.polyhaven.com"

@@ -476,7 +476,7 @@ def creative_assets(args) -> dict:
     if line.GODOT_DEMO_PROJECTS in sources:
         hosts |= set(godot_demos.HOSTS)
     reader = FactReader(run_folder, sorted(hosts), maximum_requests=args.maximum_requests,
-                        pause_seconds=args.pause_seconds, digest_cache=args.digest_cache)
+                        pause_seconds=args.pause_seconds, digest_cache=args.digest_cache, user_agent=line.USER_AGENT)
     resolutions = tuple(dict.fromkeys(args.resolution or line.DEFAULT_RESOLUTIONS))
     godot = args.godot or shutil.which("godot") or shutil.which("godot4")
     only = tuple(args.asset or ())
