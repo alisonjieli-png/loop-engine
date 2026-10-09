@@ -1,0 +1,107 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "potential_field",
+  "title": "Artificial potential field navigation",
+  "purpose": "Navigate in 2D with an artificial potential field: goals attract with constant force, obstacles repel inside an influence radius, forces are analytic gradients, and a walker reports whether it reached the goal or stalled in a local minimum.",
+  "form": "library_module",
+  "dimension": "2d",
+  "engine": {
+    "name": "godot",
+    "minimum_version": "4.3"
+  },
+  "tags": [
+    "potential field",
+    "navigation",
+    "ai",
+    "robotics",
+    "steering",
+    "gradient descent"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "role": "other"
+    },
+    {
+      "path": "potential_field.gd",
+      "role": "skill_asset"
+    },
+    {
+      "path": "tests/test_potential_field.gd",
+      "role": "skill_asset"
+    }
+  ],
+  "contract": {
+    "class_name": "BaltorPotentialField",
+    "extends": "RefCounted",
+    "signals": [],
+    "exports": [],
+    "methods": [
+      {
+        "name": "add_attractor",
+        "arguments": [
+          "point: Vector2",
+          "strength: float = 1.0"
+        ],
+        "returns": "void"
+      },
+      {
+        "name": "add_repulsor",
+        "arguments": [
+          "point: Vector2",
+          "strength: float",
+          "influence_radius: float"
+        ],
+        "returns": "void"
+      },
+      {
+        "name": "clear",
+        "arguments": [],
+        "returns": "void"
+      },
+      {
+        "name": "potential_at",
+        "arguments": [
+          "point: Vector2"
+        ],
+        "returns": "float"
+      },
+      {
+        "name": "force_at",
+        "arguments": [
+          "point: Vector2"
+        ],
+        "returns": "Vector2"
+      },
+      {
+        "name": "follow",
+        "arguments": [
+          "start: Vector2",
+          "step_length: float",
+          "max_steps: int = 500",
+          "goal_radius: float = 1.0",
+          "min_force: float = 0.001"
+        ],
+        "returns": "Dictionary"
+      }
+    ],
+    "placement": "res://baltor/godot_components/potential_field/",
+    "depends_on": []
+  },
+  "limits": "Local method: it can stall in local minima, for example when an obstacle sits exactly between agent and goal; follow() reports that instead of hiding it. Point obstacles with a radius only. Verified with Godot 4.7.2 headless; written against the Godot 4.3 API.",
+  "related": [],
+  "technique_references": [
+    "artificial potential fields",
+    "conic attractive potential",
+    "inverse-distance repulsive potential within an influence radius",
+    "gradient descent"
+  ],
+  "native_checks": [
+    "godot_parse_check_only",
+    "godot_gdscript_tests",
+    "godot_tests_reject_gutted_component",
+    "godot_editor_import",
+    "godot_contract_reflection",
+    "godot_readme_usage_compiles"
+  ]
+}

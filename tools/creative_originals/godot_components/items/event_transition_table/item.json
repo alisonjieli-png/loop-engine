@@ -1,0 +1,129 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "event_transition_table",
+  "title": "Data-driven state machine from a JSON transition table",
+  "purpose": "Load states and event transitions from a Dictionary or JSON file, with wildcard rows, named guards and named actions registered in code, validation that refuses malformed tables, and signals for taken and ignored events.",
+  "form": "library_module",
+  "dimension": "none",
+  "engine": {
+    "name": "godot",
+    "minimum_version": "4.3"
+  },
+  "tags": [
+    "state machine",
+    "data driven",
+    "json",
+    "transition table",
+    "events",
+    "gameplay"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "role": "other"
+    },
+    {
+      "path": "door_table.json",
+      "role": "skill_asset"
+    },
+    {
+      "path": "event_transition_table.gd",
+      "role": "skill_asset"
+    },
+    {
+      "path": "tests/test_event_transition_table.gd",
+      "role": "skill_asset"
+    }
+  ],
+  "contract": {
+    "class_name": "BaltorTransitionTable",
+    "extends": "RefCounted",
+    "signals": [
+      {
+        "name": "transitioned",
+        "arguments": [
+          "from_state: StringName",
+          "to_state: StringName",
+          "event: StringName"
+        ]
+      },
+      {
+        "name": "event_ignored",
+        "arguments": [
+          "state: StringName",
+          "event: StringName"
+        ]
+      }
+    ],
+    "exports": [],
+    "methods": [
+      {
+        "name": "register_guard",
+        "arguments": [
+          "guard_name: StringName",
+          "guard: Callable"
+        ],
+        "returns": "void"
+      },
+      {
+        "name": "register_action",
+        "arguments": [
+          "action_name: StringName",
+          "action: Callable"
+        ],
+        "returns": "void"
+      },
+      {
+        "name": "load_table",
+        "arguments": [
+          "table: Dictionary"
+        ],
+        "returns": "bool"
+      },
+      {
+        "name": "get_errors",
+        "arguments": [],
+        "returns": "PackedStringArray"
+      },
+      {
+        "name": "fire",
+        "arguments": [
+          "event: StringName",
+          "payload: Dictionary = {}"
+        ],
+        "returns": "bool"
+      },
+      {
+        "name": "get_state",
+        "arguments": [],
+        "returns": "StringName"
+      },
+      {
+        "name": "reset",
+        "arguments": [],
+        "returns": "void"
+      },
+      {
+        "name": "available_events",
+        "arguments": [],
+        "returns": "PackedStringArray"
+      }
+    ],
+    "placement": "res://baltor/godot_components/event_transition_table/",
+    "depends_on": []
+  },
+  "limits": "Flat states only. Guards and actions must be registered before load_table(). The first matching row wins; there are no priorities beyond table order and exact-before-wildcard. door_table.json is sample data. Verified with Godot 4.7.2 headless; written against the Godot 4.3 API.",
+  "related": [],
+  "technique_references": [
+    "table-driven finite state machine",
+    "event-condition-action rules"
+  ],
+  "native_checks": [
+    "godot_parse_check_only",
+    "godot_gdscript_tests",
+    "godot_tests_reject_gutted_component",
+    "godot_editor_import",
+    "godot_contract_reflection",
+    "godot_readme_usage_compiles"
+  ]
+}

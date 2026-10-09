@@ -1,0 +1,161 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "trauma_screen_shake_2d",
+  "title": "Trauma screen shake for Camera2D",
+  "purpose": "Shake a Camera2D from a decaying trauma value: the shake is trauma to a power, and smooth seeded noise moves the offset and roll within set limits. The camera returns to its original offset and rotation when the shake ends.",
+  "form": "library_module",
+  "dimension": "2d",
+  "engine": {
+    "name": "godot",
+    "minimum_version": "4.3"
+  },
+  "tags": [
+    "camera",
+    "screen shake",
+    "trauma",
+    "noise",
+    "juice",
+    "camera2d",
+    "feedback"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "role": "other"
+    },
+    {
+      "path": "example.tscn",
+      "role": "skill_asset"
+    },
+    {
+      "path": "tests/test_trauma_screen_shake_2d.gd",
+      "role": "skill_asset"
+    },
+    {
+      "path": "trauma_screen_shake_2d.gd",
+      "role": "skill_asset"
+    }
+  ],
+  "contract": {
+    "class_name": "BaltorTraumaShake2D",
+    "extends": "Node",
+    "signals": [
+      {
+        "name": "shake_started",
+        "arguments": []
+      },
+      {
+        "name": "shake_finished",
+        "arguments": []
+      }
+    ],
+    "exports": [
+      {
+        "name": "target_path",
+        "type": "NodePath",
+        "default": "NodePath(\"..\")"
+      },
+      {
+        "name": "max_offset",
+        "type": "Vector2",
+        "default": "Vector2(24, 16)"
+      },
+      {
+        "name": "max_roll_degrees",
+        "type": "float",
+        "default": 4.0
+      },
+      {
+        "name": "decay_per_second",
+        "type": "float",
+        "default": 0.9
+      },
+      {
+        "name": "exponent",
+        "type": "float",
+        "default": 2.0,
+        "annotation": "@export_range(1.0, 4.0)"
+      },
+      {
+        "name": "frequency",
+        "type": "float",
+        "default": 18.0
+      },
+      {
+        "name": "noise_seed",
+        "type": "int",
+        "default": 7
+      }
+    ],
+    "methods": [
+      {
+        "name": "add_trauma",
+        "arguments": [
+          "amount: float"
+        ],
+        "returns": "void"
+      },
+      {
+        "name": "set_trauma",
+        "arguments": [
+          "value: float"
+        ],
+        "returns": "void"
+      },
+      {
+        "name": "get_trauma",
+        "arguments": [],
+        "returns": "float"
+      },
+      {
+        "name": "get_shake",
+        "arguments": [],
+        "returns": "float"
+      },
+      {
+        "name": "offset_at",
+        "arguments": [
+          "time: float"
+        ],
+        "returns": "Vector2"
+      },
+      {
+        "name": "roll_at",
+        "arguments": [
+          "time: float"
+        ],
+        "returns": "float"
+      },
+      {
+        "name": "get_target_camera",
+        "arguments": [],
+        "returns": "Camera2D"
+      },
+      {
+        "name": "advance",
+        "arguments": [
+          "delta: float"
+        ],
+        "returns": "void"
+      }
+    ],
+    "placement": "res://baltor/godot_components/trauma_screen_shake_2d/",
+    "depends_on": []
+  },
+  "limits": "2D cameras only; it writes Camera2D.offset and rotation, so another script writing them at the same time fights it. Noise values are clamped to -1..1; FastNoiseLite simplex output rarely reaches the ends, so the full offset is seldom reached. The motion repeats for a seed on this engine build; the noise library may differ between engine versions. Verified with Godot 4.7.2 headless; written against the Godot 4.3 API.",
+  "related": [],
+  "technique_references": [
+    "trauma-based screen shake",
+    "simplex noise sampling",
+    "linear decay"
+  ],
+  "native_checks": [
+    "godot_parse_check_only",
+    "godot_gdscript_tests",
+    "godot_tests_reject_gutted_component",
+    "godot_editor_import",
+    "godot_contract_reflection",
+    "godot_example_scene",
+    "godot_readme_usage_compiles"
+  ]
+}

@@ -1,0 +1,21 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Script" path="top_down_movement_2d.gd" id="1_mover"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_mover"]
+radius = 10.0
+
+[node name="Example" type="Node2D"]
+
+[node name="Player" type="CharacterBody2D" parent="."]
+position = Vector2(320, 180)
+motion_mode = 1
+script = ExtResource("1_mover")
+snap_eight_directions = true
+
+[node name="Shape" type="CollisionShape2D" parent="Player"]
+shape = SubResource("CircleShape2D_mover")
+
+[node name="Look" type="Polygon2D" parent="Player"]
+color = Color(0.3, 0.75, 0.45, 1)
+polygon = PackedVector2Array(12, 0, -8, -9, -8, 9)

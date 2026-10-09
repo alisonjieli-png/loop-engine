@@ -1,0 +1,154 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "buoyancy_probes_3d",
+  "title": "Probe buoyancy and water drag for RigidBody3D",
+  "purpose": "Float a RigidBody3D on water from probe points: depth-proportional upward force per probe, travelling sine waves for the surface height, water drag and signals for entering and leaving the water.",
+  "form": "library_module",
+  "dimension": "3d",
+  "engine": {
+    "name": "godot",
+    "minimum_version": "4.3"
+  },
+  "tags": [
+    "buoyancy",
+    "water",
+    "boat",
+    "physics",
+    "rigidbody3d",
+    "waves",
+    "floating"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "role": "other"
+    },
+    {
+      "path": "buoyancy_probes_3d.gd",
+      "role": "skill_asset"
+    },
+    {
+      "path": "tests/test_buoyancy_probes_3d.gd",
+      "role": "skill_asset"
+    }
+  ],
+  "contract": {
+    "class_name": "BaltorBuoyancy3D",
+    "extends": "Node",
+    "signals": [
+      {
+        "name": "entered_water",
+        "arguments": []
+      },
+      {
+        "name": "left_water",
+        "arguments": []
+      }
+    ],
+    "exports": [
+      {
+        "name": "water_height",
+        "type": "float",
+        "default": 0.0
+      },
+      {
+        "name": "waves",
+        "type": "PackedVector4Array",
+        "default": "PackedVector4Array()"
+      },
+      {
+        "name": "probes",
+        "type": "PackedVector3Array",
+        "default": "PackedVector3Array([Vector3(-0.5, 0, -0.5), Vector3(0.5, 0, -0.5), Vector3(-0.5, 0, 0.5), Vector3(0.5, 0, 0.5)])"
+      },
+      {
+        "name": "probe_depth",
+        "type": "float",
+        "default": 0.5
+      },
+      {
+        "name": "buoyancy",
+        "type": "float",
+        "default": 2.0
+      },
+      {
+        "name": "gravity",
+        "type": "float",
+        "default": 9.8
+      },
+      {
+        "name": "water_drag",
+        "type": "float",
+        "default": 1.5
+      },
+      {
+        "name": "water_angular_drag",
+        "type": "float",
+        "default": 1.5
+      }
+    ],
+    "methods": [
+      {
+        "name": "wave_height_at",
+        "arguments": [
+          "point: Vector2",
+          "time: float",
+          "base_height: float",
+          "wave_list: PackedVector4Array"
+        ],
+        "returns": "float",
+        "static": true
+      },
+      {
+        "name": "surface_height",
+        "arguments": [
+          "world_position: Vector3"
+        ],
+        "returns": "float"
+      },
+      {
+        "name": "probe_force",
+        "arguments": [
+          "depth: float",
+          "mass_share: float"
+        ],
+        "returns": "float"
+      },
+      {
+        "name": "get_submerged_ratio",
+        "arguments": [],
+        "returns": "float"
+      },
+      {
+        "name": "get_time",
+        "arguments": [],
+        "returns": "float"
+      },
+      {
+        "name": "apply_forces",
+        "arguments": [
+          "body: RigidBody3D",
+          "delta: float"
+        ],
+        "returns": "void"
+      }
+    ],
+    "placement": "res://baltor/godot_components/buoyancy_probes_3d/",
+    "depends_on": []
+  },
+  "limits": "Not a fluid simulation: probes ignore hull shape and displaced volume, and waves are sums of sines without Gerstner sideways motion. Light default drag lets bodies bob for a while. The surface function must match any water shader you pair it with. Verified with Godot 4.7.2 headless; written against the Godot 4.3 API.",
+  "related": [],
+  "technique_references": [
+    "probe-based buoyancy",
+    "sum of travelling sine waves",
+    "linear and angular water drag"
+  ],
+  "native_checks": [
+    "godot_parse_check_only",
+    "godot_gdscript_tests",
+    "godot_tests_reject_gutted_component",
+    "godot_editor_import",
+    "godot_contract_reflection",
+    "godot_readme_usage_compiles"
+  ]
+}

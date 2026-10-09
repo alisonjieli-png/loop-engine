@@ -1,0 +1,131 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "wall_slide_jump_2d",
+  "title": "Wall slide and wall jump helper for platformers",
+  "purpose": "Cap the fall speed while a character presses into a wall, jump away from walls with a push, allow a short wall coyote time and lock input toward the wall briefly after the jump.",
+  "form": "library_module",
+  "dimension": "2d",
+  "engine": {
+    "name": "godot",
+    "minimum_version": "4.3"
+  },
+  "tags": [
+    "platformer",
+    "wall jump",
+    "wall slide",
+    "movement",
+    "characterbody2d",
+    "coyote time"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "role": "other"
+    },
+    {
+      "path": "tests/test_wall_slide_jump_2d.gd",
+      "role": "skill_asset"
+    },
+    {
+      "path": "wall_slide_jump_2d.gd",
+      "role": "skill_asset"
+    }
+  ],
+  "contract": {
+    "class_name": "BaltorWallJump2D",
+    "extends": "Node",
+    "signals": [
+      {
+        "name": "wall_slide_started",
+        "arguments": []
+      },
+      {
+        "name": "wall_slide_ended",
+        "arguments": []
+      },
+      {
+        "name": "wall_jumped",
+        "arguments": [
+          "direction: float"
+        ]
+      }
+    ],
+    "exports": [
+      {
+        "name": "slide_speed",
+        "type": "float",
+        "default": 120.0
+      },
+      {
+        "name": "jump_push",
+        "type": "float",
+        "default": 260.0
+      },
+      {
+        "name": "jump_up",
+        "type": "float",
+        "default": 380.0
+      },
+      {
+        "name": "wall_coyote_time",
+        "type": "float",
+        "default": 0.1
+      },
+      {
+        "name": "control_lock_time",
+        "type": "float",
+        "default": 0.18
+      }
+    ],
+    "methods": [
+      {
+        "name": "apply",
+        "arguments": [
+          "velocity: Vector2",
+          "on_wall: bool",
+          "on_floor: bool",
+          "wall_normal: Vector2",
+          "input_x: float",
+          "jump_pressed: bool",
+          "delta: float"
+        ],
+        "returns": "Vector2"
+      },
+      {
+        "name": "filter_input",
+        "arguments": [
+          "input_x: float"
+        ],
+        "returns": "float"
+      },
+      {
+        "name": "is_sliding",
+        "arguments": [],
+        "returns": "bool"
+      },
+      {
+        "name": "get_lock_time_left",
+        "arguments": [],
+        "returns": "float"
+      }
+    ],
+    "placement": "res://baltor/godot_components/wall_slide_jump_2d/",
+    "depends_on": []
+  },
+  "limits": "A helper called from your controller; it does not move the body or read input itself. Uses the wall normal's horizontal sign only, so sloped walls count as vertical. Verified with Godot 4.7.2 headless; written against the Godot 4.3 API.",
+  "related": [],
+  "technique_references": [
+    "wall slide speed cap",
+    "wall jump impulse from the wall normal",
+    "coyote time",
+    "post-jump input lock"
+  ],
+  "native_checks": [
+    "godot_parse_check_only",
+    "godot_gdscript_tests",
+    "godot_tests_reject_gutted_component",
+    "godot_editor_import",
+    "godot_contract_reflection",
+    "godot_readme_usage_compiles"
+  ]
+}

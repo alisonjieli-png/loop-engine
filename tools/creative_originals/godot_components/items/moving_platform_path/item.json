@@ -1,0 +1,134 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "moving_platform_path",
+  "title": "Waypoint moving platform that carries riders",
+  "purpose": "Move an AnimatableBody2D through waypoint offsets at an exact speed, wait at each point, loop or ping-pong, and carry CharacterBody2D riders through the physics engine's platform sync.",
+  "form": "library_module",
+  "dimension": "2d",
+  "engine": {
+    "name": "godot",
+    "minimum_version": "4.3"
+  },
+  "tags": [
+    "moving platform",
+    "waypoints",
+    "platformer",
+    "animatablebody2d",
+    "path",
+    "level design"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "role": "other"
+    },
+    {
+      "path": "example.tscn",
+      "role": "skill_asset"
+    },
+    {
+      "path": "moving_platform_path.gd",
+      "role": "skill_asset"
+    },
+    {
+      "path": "tests/test_moving_platform_path.gd",
+      "role": "skill_asset"
+    }
+  ],
+  "contract": {
+    "class_name": "BaltorWaypointMover",
+    "extends": "AnimatableBody2D",
+    "signals": [
+      {
+        "name": "waypoint_reached",
+        "arguments": [
+          "index: int"
+        ]
+      }
+    ],
+    "exports": [
+      {
+        "name": "waypoints",
+        "type": "PackedVector2Array",
+        "default": "PackedVector2Array([Vector2.ZERO, Vector2(128, 0)])"
+      },
+      {
+        "name": "speed",
+        "type": "float",
+        "default": 80.0
+      },
+      {
+        "name": "wait_time",
+        "type": "float",
+        "default": 0.5
+      },
+      {
+        "name": "ping_pong",
+        "type": "bool",
+        "default": true
+      },
+      {
+        "name": "auto_advance",
+        "type": "bool",
+        "default": true
+      }
+    ],
+    "methods": [
+      {
+        "name": "advance",
+        "arguments": [
+          "delta: float"
+        ],
+        "returns": "Vector2"
+      },
+      {
+        "name": "get_current_point",
+        "arguments": [],
+        "returns": "Vector2"
+      },
+      {
+        "name": "get_target_index",
+        "arguments": [],
+        "returns": "int"
+      },
+      {
+        "name": "is_waiting",
+        "arguments": [],
+        "returns": "bool"
+      },
+      {
+        "name": "pause",
+        "arguments": [],
+        "returns": "void"
+      },
+      {
+        "name": "resume",
+        "arguments": [],
+        "returns": "void"
+      },
+      {
+        "name": "get_path_points",
+        "arguments": [],
+        "returns": "PackedVector2Array"
+      }
+    ],
+    "placement": "res://baltor/godot_components/moving_platform_path/",
+    "depends_on": []
+  },
+  "limits": "Straight segments only (no curves or easing). With sync_to_physics on, the shown position follows the physics step, so read get_current_point() for the logical position between frames. Verified with Godot 4.7.2 headless; written against the Godot 4.3 API.",
+  "related": [],
+  "technique_references": [
+    "constant-speed waypoint traversal with carry-over",
+    "ping-pong and loop ordering",
+    "kinematic platform sync"
+  ],
+  "native_checks": [
+    "godot_parse_check_only",
+    "godot_gdscript_tests",
+    "godot_tests_reject_gutted_component",
+    "godot_editor_import",
+    "godot_contract_reflection",
+    "godot_example_scene",
+    "godot_readme_usage_compiles"
+  ]
+}

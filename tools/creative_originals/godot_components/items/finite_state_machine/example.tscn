@@ -1,0 +1,17 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="finite_state_machine.gd" id="1_machine"]
+
+[node name="Example" type="Node"]
+
+[node name="StateMachine" type="Node" parent="."]
+script = ExtResource("1_machine")
+initial_state = &"Idle"
+allowed_transitions = {
+"Idle": ["Walk"],
+"Walk": ["Idle"]
+}
+
+[node name="Idle" type="Node" parent="StateMachine"]
+
+[node name="Walk" type="Node" parent="StateMachine"]

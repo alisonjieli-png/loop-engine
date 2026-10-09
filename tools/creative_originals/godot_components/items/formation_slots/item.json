@@ -1,0 +1,109 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "formation_slots",
+  "title": "Formation slots with short-travel assignment",
+  "purpose": "Lay out slots for line, column, wedge, circle and grid formations, rotate them to a leader's position and facing, and assign members to slots so that paths are short and do not cross.",
+  "form": "library_module",
+  "dimension": "2d",
+  "engine": {
+    "name": "godot",
+    "minimum_version": "4.3"
+  },
+  "tags": [
+    "formation",
+    "squad",
+    "rts",
+    "group movement",
+    "assignment",
+    "ai"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "role": "other"
+    },
+    {
+      "path": "formation_slots.gd",
+      "role": "skill_asset"
+    },
+    {
+      "path": "tests/test_formation_slots.gd",
+      "role": "skill_asset"
+    }
+  ],
+  "contract": {
+    "class_name": "BaltorFormation",
+    "extends": "RefCounted",
+    "signals": [],
+    "exports": [],
+    "methods": [
+      {
+        "name": "slot_offsets",
+        "arguments": [
+          "shape: Shape",
+          "count: int",
+          "spacing: float"
+        ],
+        "returns": "PackedVector2Array",
+        "static": true
+      },
+      {
+        "name": "world_slots",
+        "arguments": [
+          "offsets: PackedVector2Array",
+          "anchor: Vector2",
+          "facing_angle: float"
+        ],
+        "returns": "PackedVector2Array",
+        "static": true
+      },
+      {
+        "name": "assign",
+        "arguments": [
+          "members: PackedVector2Array",
+          "slots: PackedVector2Array"
+        ],
+        "returns": "PackedInt32Array",
+        "static": true
+      },
+      {
+        "name": "total_distance",
+        "arguments": [
+          "members: PackedVector2Array",
+          "slots: PackedVector2Array",
+          "assignment: PackedInt32Array"
+        ],
+        "returns": "float",
+        "static": true
+      }
+    ],
+    "placement": "res://baltor/godot_components/formation_slots/",
+    "depends_on": [],
+    "enums": [
+      {
+        "name": "Shape",
+        "values": [
+          "LINE",
+          "COLUMN",
+          "WEDGE",
+          "CIRCLE",
+          "GRID"
+        ]
+      }
+    ]
+  },
+  "limits": "2D layouts facing +x. The assignment is greedy plus pairwise swaps, not an optimal Hungarian assignment; it is quadratic to cubic in the member count and meant for squads, not crowds. Verified with Godot 4.7.2 headless; written against the Godot 4.3 API.",
+  "related": [],
+  "technique_references": [
+    "formation slot offsets",
+    "greedy assignment with 2-opt style pair swaps"
+  ],
+  "native_checks": [
+    "godot_parse_check_only",
+    "godot_gdscript_tests",
+    "godot_tests_reject_gutted_component",
+    "godot_editor_import",
+    "godot_contract_reflection",
+    "godot_readme_usage_compiles"
+  ]
+}

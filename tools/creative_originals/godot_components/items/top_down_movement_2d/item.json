@@ -1,0 +1,154 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "top_down_movement_2d",
+  "title": "Top-down eight-way movement with acceleration and friction",
+  "purpose": "Move a CharacterBody2D in eight directions with acceleration, friction, a reversal boost, optional d-pad snapping and a facing sector index for animation.",
+  "form": "library_module",
+  "dimension": "2d",
+  "engine": {
+    "name": "godot",
+    "minimum_version": "4.3"
+  },
+  "tags": [
+    "top down",
+    "movement",
+    "characterbody2d",
+    "eight way",
+    "acceleration",
+    "rpg",
+    "twin stick"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "role": "other"
+    },
+    {
+      "path": "example.tscn",
+      "role": "skill_asset"
+    },
+    {
+      "path": "tests/test_top_down_movement_2d.gd",
+      "role": "skill_asset"
+    },
+    {
+      "path": "top_down_movement_2d.gd",
+      "role": "skill_asset"
+    }
+  ],
+  "contract": {
+    "class_name": "BaltorTopDownMover2D",
+    "extends": "CharacterBody2D",
+    "signals": [
+      {
+        "name": "facing_changed",
+        "arguments": [
+          "direction: Vector2"
+        ]
+      }
+    ],
+    "exports": [
+      {
+        "name": "max_speed",
+        "type": "float",
+        "default": 200.0
+      },
+      {
+        "name": "acceleration",
+        "type": "float",
+        "default": 1400.0
+      },
+      {
+        "name": "friction",
+        "type": "float",
+        "default": 1600.0
+      },
+      {
+        "name": "turn_boost",
+        "type": "float",
+        "default": 2.0
+      },
+      {
+        "name": "snap_eight_directions",
+        "type": "bool",
+        "default": false
+      },
+      {
+        "name": "use_input_actions",
+        "type": "bool",
+        "default": true
+      },
+      {
+        "name": "action_left",
+        "type": "StringName",
+        "default": "&\"ui_left\""
+      },
+      {
+        "name": "action_right",
+        "type": "StringName",
+        "default": "&\"ui_right\""
+      },
+      {
+        "name": "action_up",
+        "type": "StringName",
+        "default": "&\"ui_up\""
+      },
+      {
+        "name": "action_down",
+        "type": "StringName",
+        "default": "&\"ui_down\""
+      }
+    ],
+    "methods": [
+      {
+        "name": "set_input",
+        "arguments": [
+          "direction: Vector2"
+        ],
+        "returns": "void"
+      },
+      {
+        "name": "get_input",
+        "arguments": [],
+        "returns": "Vector2"
+      },
+      {
+        "name": "get_facing",
+        "arguments": [],
+        "returns": "Vector2"
+      },
+      {
+        "name": "get_facing_index",
+        "arguments": [
+          "sectors: int = 8"
+        ],
+        "returns": "int"
+      },
+      {
+        "name": "step",
+        "arguments": [
+          "delta: float"
+        ],
+        "returns": "Vector2"
+      }
+    ],
+    "placement": "res://baltor/godot_components/top_down_movement_2d/",
+    "depends_on": []
+  },
+  "limits": "Set the body's motion_mode to Floating for top-down games (the example scene does). No dodge, knockback or terrain speed modifiers; combine with the dash and knockback components. Verified with Godot 4.7.2 headless; written against the Godot 4.3 API.",
+  "related": [],
+  "technique_references": [
+    "acceleration and friction velocity model",
+    "input vector clamping",
+    "angle sector snapping"
+  ],
+  "native_checks": [
+    "godot_parse_check_only",
+    "godot_gdscript_tests",
+    "godot_tests_reject_gutted_component",
+    "godot_editor_import",
+    "godot_contract_reflection",
+    "godot_example_scene",
+    "godot_readme_usage_compiles"
+  ]
+}

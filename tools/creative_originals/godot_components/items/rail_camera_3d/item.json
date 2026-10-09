@@ -1,0 +1,122 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "rail_camera_3d",
+  "title": "Rail camera that rides a Path3D",
+  "purpose": "Move a Camera3D along a Path3D rail to the point closest to its target, with an optional lead, clamping at the rail ends, smooth travel and a constant look at the target.",
+  "form": "library_module",
+  "dimension": "3d",
+  "engine": {
+    "name": "godot",
+    "minimum_version": "4.3"
+  },
+  "tags": [
+    "camera",
+    "camera3d",
+    "rail camera",
+    "path3d",
+    "dolly",
+    "cinematic",
+    "2.5d"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "role": "other"
+    },
+    {
+      "path": "example.tscn",
+      "role": "skill_asset"
+    },
+    {
+      "path": "rail_camera_3d.gd",
+      "role": "skill_asset"
+    },
+    {
+      "path": "tests/test_rail_camera_3d.gd",
+      "role": "skill_asset"
+    }
+  ],
+  "contract": {
+    "class_name": "BaltorRailCamera3D",
+    "extends": "Camera3D",
+    "signals": [],
+    "exports": [
+      {
+        "name": "path_node",
+        "type": "NodePath",
+        "default": "NodePath(\"\")"
+      },
+      {
+        "name": "target_path",
+        "type": "NodePath",
+        "default": "NodePath(\"\")"
+      },
+      {
+        "name": "lead_distance",
+        "type": "float",
+        "default": 0.0
+      },
+      {
+        "name": "follow_speed",
+        "type": "float",
+        "default": 5.0
+      },
+      {
+        "name": "look_offset",
+        "type": "Vector3",
+        "default": "Vector3(0, 1, 0)"
+      }
+    ],
+    "methods": [
+      {
+        "name": "get_rail",
+        "arguments": [],
+        "returns": "Path3D"
+      },
+      {
+        "name": "rail_offset_for",
+        "arguments": [
+          "world_point: Vector3"
+        ],
+        "returns": "float"
+      },
+      {
+        "name": "rail_point",
+        "arguments": [
+          "offset: float"
+        ],
+        "returns": "Vector3"
+      },
+      {
+        "name": "get_rail_offset",
+        "arguments": [],
+        "returns": "float"
+      },
+      {
+        "name": "update_camera",
+        "arguments": [
+          "target_position: Vector3",
+          "delta: float"
+        ],
+        "returns": "void"
+      }
+    ],
+    "placement": "res://baltor/godot_components/rail_camera_3d/",
+    "depends_on": []
+  },
+  "limits": "Closest-point projection can jump when a rail folds back near itself; keep rails gently curved. The camera does not avoid geometry between it and the target. Verified with Godot 4.7.2 headless; written against the Godot 4.3 API.",
+  "related": [],
+  "technique_references": [
+    "closest offset on a baked curve",
+    "exponential smoothing along an arc length"
+  ],
+  "native_checks": [
+    "godot_parse_check_only",
+    "godot_gdscript_tests",
+    "godot_tests_reject_gutted_component",
+    "godot_editor_import",
+    "godot_contract_reflection",
+    "godot_example_scene",
+    "godot_readme_usage_compiles"
+  ]
+}

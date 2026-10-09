@@ -1,0 +1,152 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "grid_step_mover",
+  "title": "Grid step movement with eased tweening and input buffer",
+  "purpose": "Move a Node2D one grid cell at a time with an eased step, one buffered move, an optional blocked-cell check and signals for start, finish and bump. Use it for roguelikes, puzzles and classic tile RPGs.",
+  "form": "library_module",
+  "dimension": "2d",
+  "engine": {
+    "name": "godot",
+    "minimum_version": "4.3"
+  },
+  "tags": [
+    "grid movement",
+    "tile",
+    "roguelike",
+    "puzzle",
+    "tween",
+    "input buffer",
+    "rpg"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "role": "other"
+    },
+    {
+      "path": "grid_step_mover.gd",
+      "role": "skill_asset"
+    },
+    {
+      "path": "tests/test_grid_step_mover.gd",
+      "role": "skill_asset"
+    }
+  ],
+  "contract": {
+    "class_name": "BaltorGridMover",
+    "extends": "Node2D",
+    "signals": [
+      {
+        "name": "step_started",
+        "arguments": [
+          "from_cell: Vector2i",
+          "to_cell: Vector2i"
+        ]
+      },
+      {
+        "name": "step_finished",
+        "arguments": [
+          "cell: Vector2i"
+        ]
+      },
+      {
+        "name": "bumped",
+        "arguments": [
+          "cell: Vector2i"
+        ]
+      }
+    ],
+    "exports": [
+      {
+        "name": "cell_size",
+        "type": "Vector2",
+        "default": "Vector2(16, 16)"
+      },
+      {
+        "name": "grid_origin",
+        "type": "Vector2",
+        "default": "Vector2(8, 8)"
+      },
+      {
+        "name": "step_time",
+        "type": "float",
+        "default": 0.15
+      },
+      {
+        "name": "allow_diagonal",
+        "type": "bool",
+        "default": false
+      }
+    ],
+    "methods": [
+      {
+        "name": "cell_to_position",
+        "arguments": [
+          "cell: Vector2i"
+        ],
+        "returns": "Vector2"
+      },
+      {
+        "name": "position_to_cell",
+        "arguments": [
+          "point: Vector2"
+        ],
+        "returns": "Vector2i"
+      },
+      {
+        "name": "get_cell",
+        "arguments": [],
+        "returns": "Vector2i"
+      },
+      {
+        "name": "set_cell",
+        "arguments": [
+          "cell: Vector2i"
+        ],
+        "returns": "void"
+      },
+      {
+        "name": "is_moving",
+        "arguments": [],
+        "returns": "bool"
+      },
+      {
+        "name": "try_move",
+        "arguments": [
+          "direction: Vector2i"
+        ],
+        "returns": "bool"
+      },
+      {
+        "name": "advance",
+        "arguments": [
+          "delta: float"
+        ],
+        "returns": "void"
+      }
+    ],
+    "placement": "res://baltor/godot_components/grid_step_mover/",
+    "depends_on": [],
+    "properties": [
+      {
+        "name": "blocked_check",
+        "type": "Callable"
+      }
+    ]
+  },
+  "limits": "Moves only to neighbor cells; no path following (combine with a pathfinder). The blocked check runs when a step starts, not during it. Uses smoothstep easing only. Verified with Godot 4.7.2 headless; written against the Godot 4.3 API.",
+  "related": [],
+  "technique_references": [
+    "grid-locked movement",
+    "smoothstep interpolation",
+    "single-slot input buffer"
+  ],
+  "native_checks": [
+    "godot_parse_check_only",
+    "godot_gdscript_tests",
+    "godot_tests_reject_gutted_component",
+    "godot_editor_import",
+    "godot_contract_reflection",
+    "godot_readme_usage_compiles"
+  ]
+}

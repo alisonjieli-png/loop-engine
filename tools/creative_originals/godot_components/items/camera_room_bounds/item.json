@@ -1,0 +1,131 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "camera_room_bounds",
+  "title": "Room-bounded 2D camera with eased transitions",
+  "purpose": "Keep a 2D camera inside the room that contains the target, center it in rooms smaller than the view, and ease across with smoothstep when the target enters another room.",
+  "form": "library_module",
+  "dimension": "2d",
+  "engine": {
+    "name": "godot",
+    "minimum_version": "4.3"
+  },
+  "tags": [
+    "camera",
+    "camera2d",
+    "metroidvania",
+    "rooms",
+    "camera limits",
+    "transitions"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "role": "other"
+    },
+    {
+      "path": "camera_room_bounds.gd",
+      "role": "skill_asset"
+    },
+    {
+      "path": "tests/test_camera_room_bounds.gd",
+      "role": "skill_asset"
+    }
+  ],
+  "contract": {
+    "class_name": "BaltorRoomCamera2D",
+    "extends": "Node",
+    "signals": [
+      {
+        "name": "room_changed",
+        "arguments": [
+          "previous: int",
+          "current: int"
+        ]
+      }
+    ],
+    "exports": [
+      {
+        "name": "camera_path",
+        "type": "NodePath",
+        "default": "NodePath(\"..\")"
+      },
+      {
+        "name": "target_path",
+        "type": "NodePath",
+        "default": "NodePath(\"\")"
+      },
+      {
+        "name": "rooms",
+        "type": "Array[Rect2]",
+        "default": "[]"
+      },
+      {
+        "name": "transition_time",
+        "type": "float",
+        "default": 0.4
+      }
+    ],
+    "methods": [
+      {
+        "name": "add_room",
+        "arguments": [
+          "area: Rect2"
+        ],
+        "returns": "int"
+      },
+      {
+        "name": "room_at",
+        "arguments": [
+          "point: Vector2"
+        ],
+        "returns": "int"
+      },
+      {
+        "name": "clamp_center",
+        "arguments": [
+          "center: Vector2",
+          "view_size: Vector2",
+          "area: Rect2"
+        ],
+        "returns": "Vector2",
+        "static": true
+      },
+      {
+        "name": "update_center",
+        "arguments": [
+          "camera_center: Vector2",
+          "target: Vector2",
+          "view_size: Vector2",
+          "delta: float"
+        ],
+        "returns": "Vector2"
+      },
+      {
+        "name": "get_current_room",
+        "arguments": [],
+        "returns": "int"
+      },
+      {
+        "name": "is_transitioning",
+        "arguments": [],
+        "returns": "bool"
+      }
+    ],
+    "placement": "res://baltor/godot_components/camera_room_bounds/",
+    "depends_on": []
+  },
+  "limits": "Axis-aligned rectangular rooms only. Overlapping rooms keep the current room until the target leaves it. The view size comes from the viewport and the camera zoom. Verified with Godot 4.7.2 headless; written against the Godot 4.3 API.",
+  "related": [],
+  "technique_references": [
+    "camera clamping to rectangles",
+    "smoothstep transition between rooms"
+  ],
+  "native_checks": [
+    "godot_parse_check_only",
+    "godot_gdscript_tests",
+    "godot_tests_reject_gutted_component",
+    "godot_editor_import",
+    "godot_contract_reflection",
+    "godot_readme_usage_compiles"
+  ]
+}

@@ -1,0 +1,270 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "fps_controller_3d",
+  "title": "First-person controller with crouch, sprint and head bob",
+  "purpose": "Drive a CharacterBody3D first-person player: mouse look with a pitch limit, walk, sprint and crouch speeds, jumping, head bob, and a crouch that refuses to stand up under a ceiling.",
+  "form": "library_module",
+  "dimension": "3d",
+  "engine": {
+    "name": "godot",
+    "minimum_version": "4.3"
+  },
+  "tags": [
+    "fps",
+    "first person",
+    "character controller",
+    "characterbody3d",
+    "crouch",
+    "head bob",
+    "mouse look"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "role": "other"
+    },
+    {
+      "path": "example.tscn",
+      "role": "skill_asset"
+    },
+    {
+      "path": "fps_controller_3d.gd",
+      "role": "skill_asset"
+    },
+    {
+      "path": "tests/test_fps_controller_3d.gd",
+      "role": "skill_asset"
+    }
+  ],
+  "contract": {
+    "class_name": "BaltorFirstPersonController",
+    "extends": "CharacterBody3D",
+    "signals": [
+      {
+        "name": "jumped",
+        "arguments": []
+      },
+      {
+        "name": "landed",
+        "arguments": [
+          "impact_speed: float"
+        ]
+      },
+      {
+        "name": "crouch_changed",
+        "arguments": [
+          "crouching: bool"
+        ]
+      }
+    ],
+    "exports": [
+      {
+        "name": "mouse_sensitivity",
+        "type": "float",
+        "default": 0.15
+      },
+      {
+        "name": "pitch_limit_degrees",
+        "type": "float",
+        "default": 85.0
+      },
+      {
+        "name": "walk_speed",
+        "type": "float",
+        "default": 4.5
+      },
+      {
+        "name": "sprint_speed",
+        "type": "float",
+        "default": 7.5
+      },
+      {
+        "name": "crouch_speed",
+        "type": "float",
+        "default": 2.0
+      },
+      {
+        "name": "ground_acceleration",
+        "type": "float",
+        "default": 40.0
+      },
+      {
+        "name": "air_acceleration",
+        "type": "float",
+        "default": 8.0
+      },
+      {
+        "name": "jump_velocity",
+        "type": "float",
+        "default": 4.8
+      },
+      {
+        "name": "gravity",
+        "type": "float",
+        "default": 9.8
+      },
+      {
+        "name": "stand_head_height",
+        "type": "float",
+        "default": 1.6
+      },
+      {
+        "name": "crouch_head_height",
+        "type": "float",
+        "default": 0.9
+      },
+      {
+        "name": "crouch_transition_speed",
+        "type": "float",
+        "default": 6.0
+      },
+      {
+        "name": "bob_amplitude",
+        "type": "float",
+        "default": 0.05
+      },
+      {
+        "name": "bob_frequency",
+        "type": "float",
+        "default": 0.6
+      },
+      {
+        "name": "head_path",
+        "type": "NodePath",
+        "default": "NodePath(\"Head\")"
+      },
+      {
+        "name": "use_input_actions",
+        "type": "bool",
+        "default": true
+      },
+      {
+        "name": "action_forward",
+        "type": "StringName",
+        "default": "&\"ui_up\""
+      },
+      {
+        "name": "action_back",
+        "type": "StringName",
+        "default": "&\"ui_down\""
+      },
+      {
+        "name": "action_left",
+        "type": "StringName",
+        "default": "&\"ui_left\""
+      },
+      {
+        "name": "action_right",
+        "type": "StringName",
+        "default": "&\"ui_right\""
+      },
+      {
+        "name": "action_jump",
+        "type": "StringName",
+        "default": "&\"ui_accept\""
+      }
+    ],
+    "methods": [
+      {
+        "name": "look",
+        "arguments": [
+          "relative: Vector2"
+        ],
+        "returns": "void"
+      },
+      {
+        "name": "get_pitch",
+        "arguments": [],
+        "returns": "float"
+      },
+      {
+        "name": "get_head",
+        "arguments": [],
+        "returns": "Node3D"
+      },
+      {
+        "name": "set_move_input",
+        "arguments": [
+          "input: Vector2"
+        ],
+        "returns": "void"
+      },
+      {
+        "name": "set_sprinting",
+        "arguments": [
+          "sprinting: bool"
+        ],
+        "returns": "void"
+      },
+      {
+        "name": "set_crouching",
+        "arguments": [
+          "crouching: bool"
+        ],
+        "returns": "bool"
+      },
+      {
+        "name": "is_crouching",
+        "arguments": [],
+        "returns": "bool"
+      },
+      {
+        "name": "press_jump",
+        "arguments": [],
+        "returns": "void"
+      },
+      {
+        "name": "can_stand_up",
+        "arguments": [],
+        "returns": "bool"
+      },
+      {
+        "name": "wish_direction",
+        "arguments": [],
+        "returns": "Vector3"
+      },
+      {
+        "name": "current_speed",
+        "arguments": [],
+        "returns": "float"
+      },
+      {
+        "name": "get_head_height",
+        "arguments": [],
+        "returns": "float"
+      },
+      {
+        "name": "get_bob_offset",
+        "arguments": [],
+        "returns": "Vector3"
+      },
+      {
+        "name": "step",
+        "arguments": [
+          "delta: float",
+          "on_floor: bool"
+        ],
+        "returns": "Vector3"
+      }
+    ],
+    "placement": "res://baltor/godot_components/fps_controller_3d/",
+    "depends_on": []
+  },
+  "limits": "No ladders, swimming, slopes speed changes or stairs stepping. The collision shape is not resized when crouching; only the head moves, and the stand-up test checks the space above the current shape. Mouse look runs only while the mouse is captured. Verified with Godot 4.7.2 headless; written against the Godot 4.3 API.",
+  "related": [],
+  "technique_references": [
+    "yaw on body and pitch on head",
+    "acceleration toward a wish velocity",
+    "sine head bob tied to distance walked",
+    "test_move ceiling check"
+  ],
+  "native_checks": [
+    "godot_parse_check_only",
+    "godot_gdscript_tests",
+    "godot_tests_reject_gutted_component",
+    "godot_editor_import",
+    "godot_contract_reflection",
+    "godot_example_scene",
+    "godot_readme_usage_compiles"
+  ]
+}

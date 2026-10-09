@@ -1,0 +1,136 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "knockback_receiver",
+  "title": "Knockback with weight, exponential decay and stun",
+  "purpose": "Add knockback from hits divided by weight, fade it with exponential friction, and stun in proportion to the hit strength with a cap, so heavy enemies barely move and light ones fly.",
+  "form": "library_module",
+  "dimension": "2d",
+  "engine": {
+    "name": "godot",
+    "minimum_version": "4.3"
+  },
+  "tags": [
+    "knockback",
+    "combat",
+    "stun",
+    "hit reaction",
+    "physics",
+    "action"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "role": "other"
+    },
+    {
+      "path": "knockback_receiver.gd",
+      "role": "skill_asset"
+    },
+    {
+      "path": "tests/test_knockback_receiver.gd",
+      "role": "skill_asset"
+    }
+  ],
+  "contract": {
+    "class_name": "BaltorKnockback",
+    "extends": "Node",
+    "signals": [
+      {
+        "name": "knocked",
+        "arguments": [
+          "velocity: Vector2"
+        ]
+      },
+      {
+        "name": "stun_ended",
+        "arguments": []
+      }
+    ],
+    "exports": [
+      {
+        "name": "weight",
+        "type": "float",
+        "default": 1.0
+      },
+      {
+        "name": "friction",
+        "type": "float",
+        "default": 8.0
+      },
+      {
+        "name": "min_speed",
+        "type": "float",
+        "default": 5.0
+      },
+      {
+        "name": "stun_per_unit",
+        "type": "float",
+        "default": 0.002
+      },
+      {
+        "name": "max_stun",
+        "type": "float",
+        "default": 0.6
+      },
+      {
+        "name": "auto_advance",
+        "type": "bool",
+        "default": true
+      }
+    ],
+    "methods": [
+      {
+        "name": "apply_knockback",
+        "arguments": [
+          "direction: Vector2",
+          "strength: float"
+        ],
+        "returns": "void"
+      },
+      {
+        "name": "advance",
+        "arguments": [
+          "delta: float"
+        ],
+        "returns": "Vector2"
+      },
+      {
+        "name": "get_velocity",
+        "arguments": [],
+        "returns": "Vector2"
+      },
+      {
+        "name": "is_stunned",
+        "arguments": [],
+        "returns": "bool"
+      },
+      {
+        "name": "get_stun_left",
+        "arguments": [],
+        "returns": "float"
+      },
+      {
+        "name": "clear",
+        "arguments": [],
+        "returns": "void"
+      }
+    ],
+    "placement": "res://baltor/godot_components/knockback_receiver/",
+    "depends_on": []
+  },
+  "limits": "Owner-driven: it computes a velocity to add and does not move anything. 2D vectors. The stun is a timer only; animations and AI pauses are up to the owner. Verified with Godot 4.7.2 headless; written against the Godot 4.3 API.",
+  "related": [],
+  "technique_references": [
+    "impulse accumulation",
+    "exponential velocity decay",
+    "strength-proportional stun"
+  ],
+  "native_checks": [
+    "godot_parse_check_only",
+    "godot_gdscript_tests",
+    "godot_tests_reject_gutted_component",
+    "godot_editor_import",
+    "godot_contract_reflection",
+    "godot_readme_usage_compiles"
+  ]
+}

@@ -1,0 +1,198 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "raycast_vehicle_3d",
+  "title": "Raycast suspension vehicle for arcade driving",
+  "purpose": "Drive a RigidBody3D on raycast wheels: spring-damper suspension per wheel, drive force on driven wheels, steering on front wheels, lateral grip and rolling resistance, with a ride height independent of mass.",
+  "form": "library_module",
+  "dimension": "3d",
+  "engine": {
+    "name": "godot",
+    "minimum_version": "4.3"
+  },
+  "tags": [
+    "vehicle",
+    "car",
+    "suspension",
+    "raycast",
+    "rigidbody3d",
+    "arcade racing",
+    "physics"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "role": "other"
+    },
+    {
+      "path": "example.tscn",
+      "role": "skill_asset"
+    },
+    {
+      "path": "raycast_vehicle_3d.gd",
+      "role": "skill_asset"
+    },
+    {
+      "path": "tests/test_raycast_vehicle_3d.gd",
+      "role": "skill_asset"
+    }
+  ],
+  "contract": {
+    "class_name": "BaltorRaycastVehicle",
+    "extends": "RigidBody3D",
+    "signals": [
+      {
+        "name": "airborne_changed",
+        "arguments": [
+          "airborne: bool"
+        ]
+      }
+    ],
+    "exports": [
+      {
+        "name": "wheel_points",
+        "type": "PackedVector3Array",
+        "default": "PackedVector3Array([Vector3(-0.8, 0, -1.2), Vector3(0.8, 0, -1.2), Vector3(-0.8, 0, 1.2), Vector3(0.8, 0, 1.2)])"
+      },
+      {
+        "name": "steering_wheel_count",
+        "type": "int",
+        "default": 2
+      },
+      {
+        "name": "driven_wheels",
+        "type": "PackedInt32Array",
+        "default": "PackedInt32Array([2, 3])"
+      },
+      {
+        "name": "rest_length",
+        "type": "float",
+        "default": 0.5
+      },
+      {
+        "name": "wheel_radius",
+        "type": "float",
+        "default": 0.35
+      },
+      {
+        "name": "spring_stiffness",
+        "type": "float",
+        "default": 30.0
+      },
+      {
+        "name": "spring_damping",
+        "type": "float",
+        "default": 4.0
+      },
+      {
+        "name": "engine_acceleration",
+        "type": "float",
+        "default": 12.0
+      },
+      {
+        "name": "max_steer_degrees",
+        "type": "float",
+        "default": 30.0
+      },
+      {
+        "name": "lateral_grip",
+        "type": "float",
+        "default": 8.0
+      },
+      {
+        "name": "rolling_resistance",
+        "type": "float",
+        "default": 0.3
+      },
+      {
+        "name": "ground_mask",
+        "type": "int",
+        "default": 1,
+        "annotation": "@export_flags_3d_physics"
+      },
+      {
+        "name": "use_input_actions",
+        "type": "bool",
+        "default": true
+      }
+    ],
+    "methods": [
+      {
+        "name": "suspension_force",
+        "arguments": [
+          "compression: float",
+          "compression_speed: float",
+          "stiffness: float",
+          "damping: float",
+          "mass_share: float"
+        ],
+        "returns": "float",
+        "static": true
+      },
+      {
+        "name": "lateral_force",
+        "arguments": [
+          "side_speed: float",
+          "grip: float",
+          "mass_share: float"
+        ],
+        "returns": "float",
+        "static": true
+      },
+      {
+        "name": "set_controls",
+        "arguments": [
+          "throttle: float",
+          "steer: float"
+        ],
+        "returns": "void"
+      },
+      {
+        "name": "get_wheel_count",
+        "arguments": [],
+        "returns": "int"
+      },
+      {
+        "name": "is_wheel_grounded",
+        "arguments": [
+          "index: int"
+        ],
+        "returns": "bool"
+      },
+      {
+        "name": "get_wheel_compression",
+        "arguments": [
+          "index: int"
+        ],
+        "returns": "float"
+      },
+      {
+        "name": "grounded_wheel_count",
+        "arguments": [],
+        "returns": "int"
+      },
+      {
+        "name": "get_forward_speed",
+        "arguments": [],
+        "returns": "float"
+      }
+    ],
+    "placement": "res://baltor/godot_components/raycast_vehicle_3d/",
+    "depends_on": []
+  },
+  "limits": "Arcade model: no engine torque curve, gears, tire slip curves or differential; wheel meshes are not moved. Grip is linear in sideways speed. The chassis collision shape must sit above the wheel points. Tested on flat ground in headless Godot physics. Verified with Godot 4.7.2 headless; written against the Godot 4.3 API.",
+  "related": [],
+  "technique_references": [
+    "raycast suspension",
+    "Hooke spring with viscous damping",
+    "lateral friction impulse model"
+  ],
+  "native_checks": [
+    "godot_parse_check_only",
+    "godot_gdscript_tests",
+    "godot_tests_reject_gutted_component",
+    "godot_editor_import",
+    "godot_contract_reflection",
+    "godot_example_scene",
+    "godot_readme_usage_compiles"
+  ]
+}

@@ -1,0 +1,184 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "ledge_grab_2d",
+  "title": "Ledge grab, hang and climb for 2D platformers",
+  "purpose": "Find grabbable ledges with chest and head rays plus a downward ray for the top, hang from the corner, climb up along an up-then-forward path over a set time, or drop with a regrab cooldown.",
+  "form": "library_module",
+  "dimension": "2d",
+  "engine": {
+    "name": "godot",
+    "minimum_version": "4.3"
+  },
+  "tags": [
+    "platformer",
+    "ledge grab",
+    "climbing",
+    "movement",
+    "raycast",
+    "state machine"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "role": "other"
+    },
+    {
+      "path": "ledge_grab_2d.gd",
+      "role": "skill_asset"
+    },
+    {
+      "path": "tests/test_ledge_grab_2d.gd",
+      "role": "skill_asset"
+    }
+  ],
+  "contract": {
+    "class_name": "BaltorLedgeGrab2D",
+    "extends": "Node",
+    "signals": [
+      {
+        "name": "grabbed",
+        "arguments": [
+          "corner: Vector2"
+        ]
+      },
+      {
+        "name": "climbed",
+        "arguments": [
+          "position: Vector2"
+        ]
+      },
+      {
+        "name": "dropped",
+        "arguments": []
+      }
+    ],
+    "exports": [
+      {
+        "name": "hang_offset",
+        "type": "Vector2",
+        "default": "Vector2(-10, 14)"
+      },
+      {
+        "name": "climb_offset",
+        "type": "Vector2",
+        "default": "Vector2(10, -16)"
+      },
+      {
+        "name": "climb_time",
+        "type": "float",
+        "default": 0.25
+      },
+      {
+        "name": "regrab_cooldown",
+        "type": "float",
+        "default": 0.3
+      },
+      {
+        "name": "chest_height",
+        "type": "float",
+        "default": -4.0
+      },
+      {
+        "name": "head_height",
+        "type": "float",
+        "default": -20.0
+      },
+      {
+        "name": "reach",
+        "type": "float",
+        "default": 14.0
+      }
+    ],
+    "methods": [
+      {
+        "name": "detect",
+        "arguments": [
+          "chest_hit: bool",
+          "head_hit: bool",
+          "falling: bool"
+        ],
+        "returns": "bool",
+        "static": true
+      },
+      {
+        "name": "probe_ledge",
+        "arguments": [
+          "space: PhysicsDirectSpaceState2D",
+          "origin: Vector2",
+          "facing: float",
+          "exclude: Array[RID] = []",
+          "mask: int = 1"
+        ],
+        "returns": "Dictionary"
+      },
+      {
+        "name": "try_grab",
+        "arguments": [
+          "corner: Vector2",
+          "facing: float",
+          "falling: bool"
+        ],
+        "returns": "bool"
+      },
+      {
+        "name": "climb",
+        "arguments": [],
+        "returns": "bool"
+      },
+      {
+        "name": "drop",
+        "arguments": [],
+        "returns": "bool"
+      },
+      {
+        "name": "advance",
+        "arguments": [
+          "delta: float"
+        ],
+        "returns": "Vector2"
+      },
+      {
+        "name": "get_state",
+        "arguments": [],
+        "returns": "State"
+      },
+      {
+        "name": "get_hang_position",
+        "arguments": [],
+        "returns": "Vector2"
+      },
+      {
+        "name": "get_stand_position",
+        "arguments": [],
+        "returns": "Vector2"
+      }
+    ],
+    "placement": "res://baltor/godot_components/ledge_grab_2d/",
+    "depends_on": [],
+    "enums": [
+      {
+        "name": "State",
+        "values": [
+          "FREE",
+          "HANGING",
+          "CLIMBING"
+        ]
+      }
+    ]
+  },
+  "limits": "Axis-aligned ledges; the corner uses the chest hit x and the top surface y. The owner moves the body to the returned positions and disables its own gravity while hanging or climbing. Verified with Godot 4.7.2 headless; written against the Godot 4.3 API.",
+  "related": [],
+  "technique_references": [
+    "two-ray ledge detection",
+    "three-state hang and climb machine",
+    "piecewise linear climb path"
+  ],
+  "native_checks": [
+    "godot_parse_check_only",
+    "godot_gdscript_tests",
+    "godot_tests_reject_gutted_component",
+    "godot_editor_import",
+    "godot_contract_reflection",
+    "godot_readme_usage_compiles"
+  ]
+}

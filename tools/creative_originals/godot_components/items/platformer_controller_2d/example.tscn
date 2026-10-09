@@ -1,0 +1,31 @@
+[gd_scene load_steps=4 format=3]
+
+[ext_resource type="Script" path="platformer_controller_2d.gd" id="1_body"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_body"]
+size = Vector2(16, 24)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_floor"]
+size = Vector2(640, 32)
+
+[node name="Example" type="Node2D"]
+
+[node name="Player" type="CharacterBody2D" parent="."]
+position = Vector2(160, 40)
+script = ExtResource("1_body")
+
+[node name="Shape" type="CollisionShape2D" parent="Player"]
+shape = SubResource("RectangleShape2D_body")
+
+[node name="Look" type="Polygon2D" parent="Player"]
+color = Color(0.25, 0.55, 0.9, 1)
+polygon = PackedVector2Array(-8, -12, 8, -12, 8, 12, -8, 12)
+
+[node name="Floor" type="StaticBody2D" parent="."]
+position = Vector2(320, 200)
+
+[node name="Shape" type="CollisionShape2D" parent="Floor"]
+shape = SubResource("RectangleShape2D_floor")
+
+[node name="Camera" type="Camera2D" parent="."]
+position = Vector2(320, 120)

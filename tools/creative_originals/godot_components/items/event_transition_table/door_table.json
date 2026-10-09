@@ -1,0 +1,12 @@
+{
+  "initial": "closed",
+  "states": ["closed", "open", "locked", "broken"],
+  "transitions": [
+    {"from": "closed", "event": "open", "to": "open", "guard": "not_blocked", "actions": ["play_creak"]},
+    {"from": "open", "event": "close", "to": "closed"},
+    {"from": "closed", "event": "lock", "to": "locked", "guard": "has_key"},
+    {"from": "locked", "event": "unlock", "to": "closed", "guard": "has_key"},
+    {"from": "*", "event": "smash", "to": "broken", "actions": ["spawn_debris"]},
+    {"from": "broken", "event": "smash", "to": "broken"}
+  ]
+}

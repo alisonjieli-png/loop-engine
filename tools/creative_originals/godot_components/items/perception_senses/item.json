@@ -1,0 +1,177 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "perception_senses",
+  "title": "AI perception with view cone, hearing and memory",
+  "purpose": "Decide what a 2D agent sees (range, view cone, peripheral sense, optional occlusion check) and hears (radius times loudness), and remember targets with last known positions until a memory time runs out.",
+  "form": "library_module",
+  "dimension": "2d",
+  "engine": {
+    "name": "godot",
+    "minimum_version": "4.3"
+  },
+  "tags": [
+    "ai",
+    "perception",
+    "vision cone",
+    "hearing",
+    "stealth",
+    "memory"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "role": "other"
+    },
+    {
+      "path": "perception_senses.gd",
+      "role": "skill_asset"
+    },
+    {
+      "path": "tests/test_perception_senses.gd",
+      "role": "skill_asset"
+    }
+  ],
+  "contract": {
+    "class_name": "BaltorPerception",
+    "extends": "RefCounted",
+    "signals": [
+      {
+        "name": "target_spotted",
+        "arguments": [
+          "target_id: StringName",
+          "at: Vector2"
+        ]
+      },
+      {
+        "name": "target_lost",
+        "arguments": [
+          "target_id: StringName",
+          "last_known: Vector2"
+        ]
+      },
+      {
+        "name": "noise_heard",
+        "arguments": [
+          "at: Vector2",
+          "loudness: float"
+        ]
+      }
+    ],
+    "exports": [],
+    "methods": [
+      {
+        "name": "can_see",
+        "arguments": [
+          "observer: Vector2",
+          "facing: Vector2",
+          "target: Vector2",
+          "occluded: Callable = Callable()"
+        ],
+        "returns": "bool"
+      },
+      {
+        "name": "can_hear",
+        "arguments": [
+          "listener: Vector2",
+          "source: Vector2",
+          "loudness: float = 1.0"
+        ],
+        "returns": "bool"
+      },
+      {
+        "name": "observe",
+        "arguments": [
+          "delta: float",
+          "observer: Vector2",
+          "facing: Vector2",
+          "targets: Dictionary",
+          "occluded: Callable = Callable()"
+        ],
+        "returns": "void"
+      },
+      {
+        "name": "report_noise",
+        "arguments": [
+          "listener: Vector2",
+          "source: Vector2",
+          "loudness: float = 1.0"
+        ],
+        "returns": "bool"
+      },
+      {
+        "name": "get_known_targets",
+        "arguments": [],
+        "returns": "Array[StringName]"
+      },
+      {
+        "name": "is_visible",
+        "arguments": [
+          "target_id: StringName"
+        ],
+        "returns": "bool"
+      },
+      {
+        "name": "get_last_known_position",
+        "arguments": [
+          "target_id: StringName"
+        ],
+        "returns": "Vector2"
+      },
+      {
+        "name": "get_time_since_seen",
+        "arguments": [
+          "target_id: StringName"
+        ],
+        "returns": "float"
+      },
+      {
+        "name": "get_last_noise",
+        "arguments": [],
+        "returns": "Dictionary"
+      },
+      {
+        "name": "forget_all",
+        "arguments": [],
+        "returns": "void"
+      }
+    ],
+    "placement": "res://baltor/godot_components/perception_senses/",
+    "depends_on": [],
+    "properties": [
+      {
+        "name": "view_distance",
+        "type": "float"
+      },
+      {
+        "name": "view_angle_degrees",
+        "type": "float"
+      },
+      {
+        "name": "peripheral_distance",
+        "type": "float"
+      },
+      {
+        "name": "hearing_radius",
+        "type": "float"
+      },
+      {
+        "name": "memory_seconds",
+        "type": "float"
+      }
+    ]
+  },
+  "limits": "2D only, with the view cone measured from a facing vector. Occlusion is whatever the Callable reports, such as a physics ray; nothing is cast by default. Hearing ignores walls. Target ids are StringNames. Verified with Godot 4.7.2 headless; written against the Godot 4.3 API.",
+  "related": [],
+  "technique_references": [
+    "field of view cone test",
+    "sensory memory with decay"
+  ],
+  "native_checks": [
+    "godot_parse_check_only",
+    "godot_gdscript_tests",
+    "godot_tests_reject_gutted_component",
+    "godot_editor_import",
+    "godot_contract_reflection",
+    "godot_readme_usage_compiles"
+  ]
+}

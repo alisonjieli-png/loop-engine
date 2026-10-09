@@ -1,0 +1,22 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Script" path="moving_platform_path.gd" id="1_platform"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_platform"]
+size = Vector2(96, 16)
+
+[node name="Example" type="Node2D"]
+
+[node name="Platform" type="AnimatableBody2D" parent="."]
+position = Vector2(160, 200)
+script = ExtResource("1_platform")
+waypoints = PackedVector2Array(0, 0, 160, 0, 160, -96)
+speed = 90.0
+wait_time = 0.4
+
+[node name="Shape" type="CollisionShape2D" parent="Platform"]
+shape = SubResource("RectangleShape2D_platform")
+
+[node name="Look" type="Polygon2D" parent="Platform"]
+color = Color(0.55, 0.45, 0.35, 1)
+polygon = PackedVector2Array(-48, -8, 48, -8, 48, 8, -48, 8)

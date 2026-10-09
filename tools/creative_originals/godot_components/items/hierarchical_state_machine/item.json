@@ -1,0 +1,172 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "hierarchical_state_machine",
+  "title": "Hierarchical state machine with event bubbling and history",
+  "purpose": "Define nested states in code with event transitions that bubble from the leaf to its ancestors, guards, entry and exit in hierarchy order and shallow history, so shared behavior lives in parent states.",
+  "form": "library_module",
+  "dimension": "none",
+  "engine": {
+    "name": "godot",
+    "minimum_version": "4.3"
+  },
+  "tags": [
+    "state machine",
+    "hsm",
+    "statechart",
+    "ai",
+    "hierarchy",
+    "events"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "role": "other"
+    },
+    {
+      "path": "hierarchical_state_machine.gd",
+      "role": "skill_asset"
+    },
+    {
+      "path": "tests/test_hierarchical_state_machine.gd",
+      "role": "skill_asset"
+    }
+  ],
+  "contract": {
+    "class_name": "BaltorHierarchicalStateMachine",
+    "extends": "RefCounted",
+    "signals": [
+      {
+        "name": "state_entered",
+        "arguments": [
+          "state_name: StringName"
+        ]
+      },
+      {
+        "name": "state_exited",
+        "arguments": [
+          "state_name: StringName"
+        ]
+      },
+      {
+        "name": "transitioned",
+        "arguments": [
+          "from_leaf: StringName",
+          "to_leaf: StringName",
+          "event: StringName"
+        ]
+      }
+    ],
+    "exports": [],
+    "methods": [
+      {
+        "name": "add_state",
+        "arguments": [
+          "state_name: StringName",
+          "parent_name: StringName = &\"\"",
+          "on_enter: Callable = Callable()",
+          "on_exit: Callable = Callable()",
+          "on_update: Callable = Callable()"
+        ],
+        "returns": "bool"
+      },
+      {
+        "name": "set_initial",
+        "arguments": [
+          "parent_name: StringName",
+          "child_name: StringName"
+        ],
+        "returns": "bool"
+      },
+      {
+        "name": "set_history",
+        "arguments": [
+          "state_name: StringName",
+          "enabled: bool"
+        ],
+        "returns": "bool"
+      },
+      {
+        "name": "add_transition",
+        "arguments": [
+          "from_state: StringName",
+          "event: StringName",
+          "to_state: StringName",
+          "guard: Callable = Callable()"
+        ],
+        "returns": "bool"
+      },
+      {
+        "name": "start",
+        "arguments": [],
+        "returns": "bool"
+      },
+      {
+        "name": "stop",
+        "arguments": [],
+        "returns": "void"
+      },
+      {
+        "name": "send",
+        "arguments": [
+          "event: StringName",
+          "data: Dictionary = {}"
+        ],
+        "returns": "bool"
+      },
+      {
+        "name": "update",
+        "arguments": [
+          "delta: float"
+        ],
+        "returns": "void"
+      },
+      {
+        "name": "get_leaf",
+        "arguments": [],
+        "returns": "StringName"
+      },
+      {
+        "name": "get_active_path",
+        "arguments": [],
+        "returns": "Array[StringName]"
+      },
+      {
+        "name": "is_in",
+        "arguments": [
+          "state_name: StringName"
+        ],
+        "returns": "bool"
+      },
+      {
+        "name": "has_state",
+        "arguments": [
+          "state_name: StringName"
+        ],
+        "returns": "bool"
+      },
+      {
+        "name": "is_running",
+        "arguments": [],
+        "returns": "bool"
+      }
+    ],
+    "placement": "res://baltor/godot_components/hierarchical_state_machine/",
+    "depends_on": []
+  },
+  "limits": "A subset of statecharts: no orthogonal (parallel) regions, no deep history, no internal transitions and no delayed events. Callbacks run synchronously; sending an event from inside a callback is not queued and runs immediately. Verified with Godot 4.7.2 headless; written against the Godot 4.3 API.",
+  "related": [],
+  "technique_references": [
+    "hierarchical finite state machine",
+    "lowest common ancestor exit and entry",
+    "event bubbling",
+    "shallow history"
+  ],
+  "native_checks": [
+    "godot_parse_check_only",
+    "godot_gdscript_tests",
+    "godot_tests_reject_gutted_component",
+    "godot_editor_import",
+    "godot_contract_reflection",
+    "godot_readme_usage_compiles"
+  ]
+}

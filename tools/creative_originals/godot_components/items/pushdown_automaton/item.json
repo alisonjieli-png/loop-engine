@@ -1,0 +1,146 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "pushdown_automaton",
+  "title": "Pushdown state stack for screens and modal states",
+  "purpose": "Keep a stack of state objects where only the top runs: pushing pauses the state below, popping resumes it, replace swaps the top, and pop_to unwinds several levels. Use it for pause menus and nested screens.",
+  "form": "library_module",
+  "dimension": "none",
+  "engine": {
+    "name": "godot",
+    "minimum_version": "4.3"
+  },
+  "tags": [
+    "state machine",
+    "pushdown automaton",
+    "stack",
+    "menus",
+    "game flow"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "role": "other"
+    },
+    {
+      "path": "pushdown_automaton.gd",
+      "role": "skill_asset"
+    },
+    {
+      "path": "tests/test_pushdown_automaton.gd",
+      "role": "skill_asset"
+    }
+  ],
+  "contract": {
+    "class_name": "BaltorStateStack",
+    "extends": "Node",
+    "signals": [
+      {
+        "name": "pushed",
+        "arguments": [
+          "state: Object"
+        ]
+      },
+      {
+        "name": "popped",
+        "arguments": [
+          "state: Object"
+        ]
+      },
+      {
+        "name": "top_changed",
+        "arguments": [
+          "previous: Object",
+          "current: Object"
+        ]
+      }
+    ],
+    "exports": [
+      {
+        "name": "max_depth",
+        "type": "int",
+        "default": 16,
+        "annotation": "@export_range(1, 256)"
+      },
+      {
+        "name": "update_all",
+        "type": "bool",
+        "default": false
+      }
+    ],
+    "methods": [
+      {
+        "name": "push",
+        "arguments": [
+          "state: Object",
+          "data: Dictionary = {}"
+        ],
+        "returns": "bool"
+      },
+      {
+        "name": "pop",
+        "arguments": [],
+        "returns": "Object"
+      },
+      {
+        "name": "replace",
+        "arguments": [
+          "state: Object",
+          "data: Dictionary = {}"
+        ],
+        "returns": "bool"
+      },
+      {
+        "name": "pop_to",
+        "arguments": [
+          "state: Object"
+        ],
+        "returns": "bool"
+      },
+      {
+        "name": "clear",
+        "arguments": [],
+        "returns": "void"
+      },
+      {
+        "name": "peek",
+        "arguments": [],
+        "returns": "Object"
+      },
+      {
+        "name": "depth",
+        "arguments": [],
+        "returns": "int"
+      },
+      {
+        "name": "contains",
+        "arguments": [
+          "state: Object"
+        ],
+        "returns": "bool"
+      },
+      {
+        "name": "update",
+        "arguments": [
+          "delta: float"
+        ],
+        "returns": "void"
+      }
+    ],
+    "placement": "res://baltor/godot_components/pushdown_automaton/",
+    "depends_on": []
+  },
+  "limits": "States are plain objects found by the methods they define; the stack holds references and does not free them. Callbacks run synchronously in push and pop order. Verified with Godot 4.7.2 headless; written against the Godot 4.3 API.",
+  "related": [],
+  "technique_references": [
+    "pushdown automaton",
+    "stack-based state management"
+  ],
+  "native_checks": [
+    "godot_parse_check_only",
+    "godot_gdscript_tests",
+    "godot_tests_reject_gutted_component",
+    "godot_editor_import",
+    "godot_contract_reflection",
+    "godot_readme_usage_compiles"
+  ]
+}

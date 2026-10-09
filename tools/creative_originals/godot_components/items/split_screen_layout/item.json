@@ -1,0 +1,80 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "split_screen_layout",
+  "title": "Split-screen layouts for local multiplayer",
+  "purpose": "Compute view rectangles for one to many local players (halves, one wide plus two, grids with full-width last rows), with gaps between views, and place Control nodes such as SubViewportContainers on them.",
+  "form": "library_module",
+  "dimension": "none",
+  "engine": {
+    "name": "godot",
+    "minimum_version": "4.3"
+  },
+  "tags": [
+    "split screen",
+    "multiplayer",
+    "local coop",
+    "layout",
+    "viewport",
+    "ui"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "role": "other"
+    },
+    {
+      "path": "split_screen_layout.gd",
+      "role": "skill_asset"
+    },
+    {
+      "path": "tests/test_split_screen_layout.gd",
+      "role": "skill_asset"
+    }
+  ],
+  "contract": {
+    "class_name": "BaltorSplitScreen",
+    "extends": "RefCounted",
+    "signals": [],
+    "exports": [],
+    "methods": [
+      {
+        "name": "layout",
+        "arguments": [
+          "count: int",
+          "screen: Rect2",
+          "stacked: bool = false",
+          "gap: float = 0.0"
+        ],
+        "returns": "Array[Rect2]",
+        "static": true
+      },
+      {
+        "name": "arrange",
+        "arguments": [
+          "controls: Array",
+          "screen: Rect2",
+          "stacked: bool = false",
+          "gap: float = 0.0"
+        ],
+        "returns": "int",
+        "static": true
+      }
+    ],
+    "placement": "res://baltor/godot_components/split_screen_layout/",
+    "depends_on": []
+  },
+  "limits": "Rectangles only; creating SubViewports, cameras and input routing per player is up to you. Views in a grid differ in size when the last row is short. Verified with Godot 4.7.2 headless; written against the Godot 4.3 API.",
+  "related": [],
+  "technique_references": [
+    "screen partitioning",
+    "grid layout with gaps"
+  ],
+  "native_checks": [
+    "godot_parse_check_only",
+    "godot_gdscript_tests",
+    "godot_tests_reject_gutted_component",
+    "godot_editor_import",
+    "godot_contract_reflection",
+    "godot_readme_usage_compiles"
+  ]
+}

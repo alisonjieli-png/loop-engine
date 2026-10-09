@@ -1,0 +1,130 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "camera_follow_deadzone",
+  "title": "2D follow camera with dead zone and look-ahead",
+  "purpose": "Follow a target with a Camera2D that ignores motion inside a dead zone, leads in the direction of travel by up to a set distance and eases toward its goal with exponential smoothing.",
+  "form": "library_module",
+  "dimension": "2d",
+  "engine": {
+    "name": "godot",
+    "minimum_version": "4.3"
+  },
+  "tags": [
+    "camera",
+    "camera2d",
+    "dead zone",
+    "look ahead",
+    "follow camera",
+    "platformer"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "role": "other"
+    },
+    {
+      "path": "camera_follow_deadzone.gd",
+      "role": "skill_asset"
+    },
+    {
+      "path": "example.tscn",
+      "role": "skill_asset"
+    },
+    {
+      "path": "tests/test_camera_follow_deadzone.gd",
+      "role": "skill_asset"
+    }
+  ],
+  "contract": {
+    "class_name": "BaltorFollowCamera2D",
+    "extends": "Camera2D",
+    "signals": [],
+    "exports": [
+      {
+        "name": "target_path",
+        "type": "NodePath",
+        "default": "NodePath(\"\")"
+      },
+      {
+        "name": "dead_zone",
+        "type": "Vector2",
+        "default": "Vector2(64, 48)"
+      },
+      {
+        "name": "look_ahead_distance",
+        "type": "float",
+        "default": 80.0
+      },
+      {
+        "name": "look_ahead_full_speed",
+        "type": "float",
+        "default": 300.0
+      },
+      {
+        "name": "look_ahead_speed",
+        "type": "float",
+        "default": 3.0
+      },
+      {
+        "name": "follow_speed",
+        "type": "float",
+        "default": 8.0
+      }
+    ],
+    "methods": [
+      {
+        "name": "deadzone_follow",
+        "arguments": [
+          "focus: Vector2",
+          "target: Vector2",
+          "size: Vector2"
+        ],
+        "returns": "Vector2",
+        "static": true
+      },
+      {
+        "name": "update_camera",
+        "arguments": [
+          "target_position: Vector2",
+          "delta: float"
+        ],
+        "returns": "void"
+      },
+      {
+        "name": "snap_to",
+        "arguments": [
+          "target_position: Vector2"
+        ],
+        "returns": "void"
+      },
+      {
+        "name": "get_focus",
+        "arguments": [],
+        "returns": "Vector2"
+      },
+      {
+        "name": "get_look_ahead",
+        "arguments": [],
+        "returns": "Vector2"
+      }
+    ],
+    "placement": "res://baltor/godot_components/camera_follow_deadzone/",
+    "depends_on": []
+  },
+  "limits": "Velocity comes from frame-to-frame position changes, so teleports produce a look-ahead spike; call snap_to() after teleporting. No room limits (see the room camera) and no shake. Verified with Godot 4.7.2 headless; written against the Godot 4.3 API.",
+  "related": [],
+  "technique_references": [
+    "camera dead zone",
+    "velocity look-ahead",
+    "exponential smoothing"
+  ],
+  "native_checks": [
+    "godot_parse_check_only",
+    "godot_gdscript_tests",
+    "godot_tests_reject_gutted_component",
+    "godot_editor_import",
+    "godot_contract_reflection",
+    "godot_example_scene",
+    "godot_readme_usage_compiles"
+  ]
+}

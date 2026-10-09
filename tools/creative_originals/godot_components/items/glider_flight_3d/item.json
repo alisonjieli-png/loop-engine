@@ -1,0 +1,193 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "glider_flight_3d",
+  "title": "Arcade glider flight model with stall",
+  "purpose": "Fly a Node3D like a glider: a sink-rate polar with a best glide speed, speed traded against height, banked turns at the coordinated-turn rate, auto-levelling wings and a stall with nose drop and recovery.",
+  "form": "library_module",
+  "dimension": "3d",
+  "engine": {
+    "name": "godot",
+    "minimum_version": "4.3"
+  },
+  "tags": [
+    "flight",
+    "glider",
+    "flight model",
+    "aircraft",
+    "stall",
+    "arcade"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "role": "other"
+    },
+    {
+      "path": "glider_flight_3d.gd",
+      "role": "skill_asset"
+    },
+    {
+      "path": "tests/test_glider_flight_3d.gd",
+      "role": "skill_asset"
+    }
+  ],
+  "contract": {
+    "class_name": "BaltorGlider",
+    "extends": "Node3D",
+    "signals": [
+      {
+        "name": "stalled",
+        "arguments": []
+      },
+      {
+        "name": "recovered",
+        "arguments": []
+      }
+    ],
+    "exports": [
+      {
+        "name": "start_speed",
+        "type": "float",
+        "default": 12.0
+      },
+      {
+        "name": "best_glide_speed",
+        "type": "float",
+        "default": 12.0
+      },
+      {
+        "name": "min_sink_rate",
+        "type": "float",
+        "default": 1.0
+      },
+      {
+        "name": "drag",
+        "type": "float",
+        "default": 0.004
+      },
+      {
+        "name": "stall_speed",
+        "type": "float",
+        "default": 7.0
+      },
+      {
+        "name": "stall_dive_degrees",
+        "type": "float",
+        "default": 35.0
+      },
+      {
+        "name": "pitch_rate_degrees",
+        "type": "float",
+        "default": 60.0
+      },
+      {
+        "name": "roll_rate_degrees",
+        "type": "float",
+        "default": 90.0
+      },
+      {
+        "name": "max_pitch_degrees",
+        "type": "float",
+        "default": 45.0
+      },
+      {
+        "name": "max_roll_degrees",
+        "type": "float",
+        "default": 60.0
+      },
+      {
+        "name": "level_rate_degrees",
+        "type": "float",
+        "default": 45.0
+      },
+      {
+        "name": "gravity",
+        "type": "float",
+        "default": 9.8
+      },
+      {
+        "name": "use_input_actions",
+        "type": "bool",
+        "default": true
+      }
+    ],
+    "methods": [
+      {
+        "name": "set_controls",
+        "arguments": [
+          "pitch_input: float",
+          "roll_input: float"
+        ],
+        "returns": "void"
+      },
+      {
+        "name": "sink_rate",
+        "arguments": [
+          "speed: float"
+        ],
+        "returns": "float"
+      },
+      {
+        "name": "get_speed",
+        "arguments": [],
+        "returns": "float"
+      },
+      {
+        "name": "set_speed",
+        "arguments": [
+          "speed: float"
+        ],
+        "returns": "void"
+      },
+      {
+        "name": "get_heading_degrees",
+        "arguments": [],
+        "returns": "float"
+      },
+      {
+        "name": "get_pitch_degrees",
+        "arguments": [],
+        "returns": "float"
+      },
+      {
+        "name": "get_roll_degrees",
+        "arguments": [],
+        "returns": "float"
+      },
+      {
+        "name": "is_stalled",
+        "arguments": [],
+        "returns": "bool"
+      },
+      {
+        "name": "get_glide_ratio",
+        "arguments": [],
+        "returns": "float"
+      },
+      {
+        "name": "step",
+        "arguments": [
+          "delta: float"
+        ],
+        "returns": "Vector3"
+      }
+    ],
+    "placement": "res://baltor/godot_components/glider_flight_3d/",
+    "depends_on": []
+  },
+  "limits": "Arcade model, not physically based aerodynamics: no wind, thermals, collisions, angle of attack or side slip. Moves the node directly (not a physics body). Verified with Godot 4.7.2 headless; written against the Godot 4.3 API.",
+  "related": [],
+  "technique_references": [
+    "glider sink polar",
+    "energy trade between speed and height",
+    "coordinated turn rate g tan(bank) / v"
+  ],
+  "native_checks": [
+    "godot_parse_check_only",
+    "godot_gdscript_tests",
+    "godot_tests_reject_gutted_component",
+    "godot_editor_import",
+    "godot_contract_reflection",
+    "godot_readme_usage_compiles"
+  ]
+}

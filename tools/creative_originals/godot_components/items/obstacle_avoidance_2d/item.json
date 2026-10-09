@@ -1,0 +1,93 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "obstacle_avoidance_2d",
+  "title": "Obstacle avoidance steering among circle obstacles",
+  "purpose": "Steer a 2D agent around circle obstacles with a detection corridor ahead of it: find the closest threat, push sideways away from it and brake, harder when closer, with a repeatable choice for dead-ahead obstacles.",
+  "form": "library_module",
+  "dimension": "2d",
+  "engine": {
+    "name": "godot",
+    "minimum_version": "4.3"
+  },
+  "tags": [
+    "steering",
+    "obstacle avoidance",
+    "ai",
+    "collision avoidance",
+    "agents"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "role": "other"
+    },
+    {
+      "path": "obstacle_avoidance_2d.gd",
+      "role": "skill_asset"
+    },
+    {
+      "path": "tests/test_obstacle_avoidance_2d.gd",
+      "role": "skill_asset"
+    }
+  ],
+  "contract": {
+    "class_name": "BaltorObstacleAvoidance",
+    "extends": "RefCounted",
+    "signals": [],
+    "exports": [],
+    "methods": [
+      {
+        "name": "ray_circle",
+        "arguments": [
+          "origin: Vector2",
+          "direction: Vector2",
+          "center: Vector2",
+          "radius: float"
+        ],
+        "returns": "float",
+        "static": true
+      },
+      {
+        "name": "find_threat",
+        "arguments": [
+          "position: Vector2",
+          "velocity: Vector2",
+          "obstacles: PackedVector3Array",
+          "agent_radius: float",
+          "look_ahead: float"
+        ],
+        "returns": "int",
+        "static": true
+      },
+      {
+        "name": "avoid",
+        "arguments": [
+          "position: Vector2",
+          "velocity: Vector2",
+          "obstacles: PackedVector3Array",
+          "agent_radius: float",
+          "look_ahead: float",
+          "max_force: float"
+        ],
+        "returns": "Vector2",
+        "static": true
+      }
+    ],
+    "placement": "res://baltor/godot_components/obstacle_avoidance_2d/",
+    "depends_on": []
+  },
+  "limits": "Circle obstacles only, given as Vector3(x, y, radius); walls and polygons need another method. Avoids one obstacle at a time, so dense clusters can still trap an agent. Verified with Godot 4.7.2 headless; written against the Godot 4.3 API.",
+  "related": [],
+  "technique_references": [
+    "detection corridor obstacle avoidance",
+    "ray-circle intersection"
+  ],
+  "native_checks": [
+    "godot_parse_check_only",
+    "godot_gdscript_tests",
+    "godot_tests_reject_gutted_component",
+    "godot_editor_import",
+    "godot_contract_reflection",
+    "godot_readme_usage_compiles"
+  ]
+}

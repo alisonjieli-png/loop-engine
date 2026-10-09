@@ -1,0 +1,220 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "slot_inventory",
+  "title": "Slot inventory with stacks and a weight limit",
+  "purpose": "Store items in a fixed number of slots with per-item stack limits and an optional total weight limit. Add returns what did not fit; remove, move, merge, swap, split and save to JSON-friendly data with validation.",
+  "form": "library_module",
+  "dimension": "none",
+  "engine": {
+    "name": "godot",
+    "minimum_version": "4.3"
+  },
+  "tags": [
+    "inventory",
+    "items",
+    "stacks",
+    "weight",
+    "rpg",
+    "save data",
+    "gameplay"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "role": "other"
+    },
+    {
+      "path": "slot_inventory.gd",
+      "role": "skill_asset"
+    },
+    {
+      "path": "tests/test_slot_inventory.gd",
+      "role": "skill_asset"
+    }
+  ],
+  "contract": {
+    "class_name": "BaltorSlotInventory",
+    "extends": "RefCounted",
+    "signals": [
+      {
+        "name": "slot_changed",
+        "arguments": [
+          "index: int"
+        ]
+      },
+      {
+        "name": "item_added",
+        "arguments": [
+          "item_id: StringName",
+          "amount: int"
+        ]
+      },
+      {
+        "name": "item_removed",
+        "arguments": [
+          "item_id: StringName",
+          "amount: int"
+        ]
+      }
+    ],
+    "exports": [],
+    "methods": [
+      {
+        "name": "get_slot_count",
+        "arguments": [],
+        "returns": "int"
+      },
+      {
+        "name": "resize",
+        "arguments": [
+          "new_count: int"
+        ],
+        "returns": "bool"
+      },
+      {
+        "name": "max_stack_of",
+        "arguments": [
+          "item_id: StringName"
+        ],
+        "returns": "int"
+      },
+      {
+        "name": "weight_of",
+        "arguments": [
+          "item_id: StringName"
+        ],
+        "returns": "float"
+      },
+      {
+        "name": "total_weight",
+        "arguments": [],
+        "returns": "float"
+      },
+      {
+        "name": "get_slot",
+        "arguments": [
+          "index: int"
+        ],
+        "returns": "Dictionary"
+      },
+      {
+        "name": "is_slot_empty",
+        "arguments": [
+          "index: int"
+        ],
+        "returns": "bool"
+      },
+      {
+        "name": "first_empty_slot",
+        "arguments": [],
+        "returns": "int"
+      },
+      {
+        "name": "set_slot",
+        "arguments": [
+          "index: int",
+          "item_id: StringName",
+          "count: int"
+        ],
+        "returns": "bool"
+      },
+      {
+        "name": "add_item",
+        "arguments": [
+          "item_id: StringName",
+          "amount: int"
+        ],
+        "returns": "int"
+      },
+      {
+        "name": "remove_item",
+        "arguments": [
+          "item_id: StringName",
+          "amount: int",
+          "require_all: bool = false"
+        ],
+        "returns": "int"
+      },
+      {
+        "name": "count_item",
+        "arguments": [
+          "item_id: StringName"
+        ],
+        "returns": "int"
+      },
+      {
+        "name": "has_item",
+        "arguments": [
+          "item_id: StringName",
+          "amount: int = 1"
+        ],
+        "returns": "bool"
+      },
+      {
+        "name": "move_slot",
+        "arguments": [
+          "from_index: int",
+          "to_index: int"
+        ],
+        "returns": "bool"
+      },
+      {
+        "name": "split_slot",
+        "arguments": [
+          "index: int",
+          "amount: int",
+          "to_index: int = -1"
+        ],
+        "returns": "bool"
+      },
+      {
+        "name": "clear",
+        "arguments": [],
+        "returns": "void"
+      },
+      {
+        "name": "to_dict",
+        "arguments": [],
+        "returns": "Dictionary"
+      },
+      {
+        "name": "from_dict",
+        "arguments": [
+          "data: Dictionary"
+        ],
+        "returns": "bool"
+      }
+    ],
+    "placement": "res://baltor/godot_components/slot_inventory/",
+    "depends_on": [],
+    "properties": [
+      {
+        "name": "max_weight",
+        "type": "float"
+      },
+      {
+        "name": "default_max_stack",
+        "type": "int"
+      },
+      {
+        "name": "item_definitions",
+        "type": "Dictionary"
+      }
+    ]
+  },
+  "limits": "Item definitions are plain dictionaries keyed by id, with a stack limit and unit weight only; no item instances with unique data (durability, enchantments). Slots are a flat list without shapes (see a grid inventory for that). Weight comparisons use a 1e-6 tolerance. Verified with Godot 4.7.2 headless; written against the Godot 4.3 API.",
+  "related": [],
+  "technique_references": [
+    "first-fit stacking",
+    "weight capacity check",
+    "validated deserialization"
+  ],
+  "native_checks": [
+    "godot_parse_check_only",
+    "godot_gdscript_tests",
+    "godot_tests_reject_gutted_component",
+    "godot_editor_import",
+    "godot_contract_reflection",
+    "godot_readme_usage_compiles"
+  ]
+}

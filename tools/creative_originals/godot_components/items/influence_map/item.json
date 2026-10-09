@@ -1,0 +1,176 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "influence_map",
+  "title": "Grid influence map for tactical AI",
+  "purpose": "Stamp influence with distance falloff onto a grid, spread it around walls with decay and momentum, combine maps (friend minus foe) and query the strongest or weakest cell near a point.",
+  "form": "library_module",
+  "dimension": "2d",
+  "engine": {
+    "name": "godot",
+    "minimum_version": "4.3"
+  },
+  "tags": [
+    "influence map",
+    "tactical ai",
+    "grid",
+    "strategy",
+    "propagation",
+    "ai"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "role": "other"
+    },
+    {
+      "path": "influence_map.gd",
+      "role": "skill_asset"
+    },
+    {
+      "path": "tests/test_influence_map.gd",
+      "role": "skill_asset"
+    }
+  ],
+  "contract": {
+    "class_name": "BaltorInfluenceMap",
+    "extends": "RefCounted",
+    "signals": [],
+    "exports": [],
+    "methods": [
+      {
+        "name": "get_width",
+        "arguments": [],
+        "returns": "int"
+      },
+      {
+        "name": "get_height",
+        "arguments": [],
+        "returns": "int"
+      },
+      {
+        "name": "has_cell",
+        "arguments": [
+          "cell: Vector2i"
+        ],
+        "returns": "bool"
+      },
+      {
+        "name": "set_blocked",
+        "arguments": [
+          "cell: Vector2i",
+          "blocked: bool"
+        ],
+        "returns": "bool"
+      },
+      {
+        "name": "is_blocked",
+        "arguments": [
+          "cell: Vector2i"
+        ],
+        "returns": "bool"
+      },
+      {
+        "name": "get_value",
+        "arguments": [
+          "cell: Vector2i"
+        ],
+        "returns": "float"
+      },
+      {
+        "name": "set_value",
+        "arguments": [
+          "cell: Vector2i",
+          "value: float"
+        ],
+        "returns": "bool"
+      },
+      {
+        "name": "clear",
+        "arguments": [],
+        "returns": "void"
+      },
+      {
+        "name": "stamp",
+        "arguments": [
+          "center: Vector2i",
+          "strength: float",
+          "radius: int",
+          "falloff: Falloff = Falloff.LINEAR"
+        ],
+        "returns": "void"
+      },
+      {
+        "name": "propagate",
+        "arguments": [
+          "decay: float",
+          "momentum: float",
+          "iterations: int = 1"
+        ],
+        "returns": "void"
+      },
+      {
+        "name": "combine",
+        "arguments": [
+          "other: BaltorInfluenceMap",
+          "factor: float = 1.0"
+        ],
+        "returns": "bool"
+      },
+      {
+        "name": "best_cell",
+        "arguments": [
+          "center: Vector2i",
+          "radius: int",
+          "highest: bool = true"
+        ],
+        "returns": "Vector2i"
+      },
+      {
+        "name": "world_to_cell",
+        "arguments": [
+          "point: Vector2"
+        ],
+        "returns": "Vector2i"
+      },
+      {
+        "name": "cell_to_world",
+        "arguments": [
+          "cell: Vector2i"
+        ],
+        "returns": "Vector2"
+      },
+      {
+        "name": "get_values",
+        "arguments": [],
+        "returns": "PackedFloat32Array"
+      }
+    ],
+    "placement": "res://baltor/godot_components/influence_map/",
+    "depends_on": [],
+    "enums": [
+      {
+        "name": "Falloff",
+        "values": [
+          "LINEAR",
+          "QUADRATIC",
+          "CONSTANT"
+        ]
+      }
+    ]
+  },
+  "limits": "Uniform grid in one layer per map; propagation is O(cells x iterations) in GDScript, so large maps should update over several frames or at a coarse resolution. Diagonal spread is blocked when either adjacent straight cell is a wall. Verified with Godot 4.7.2 headless; written against the Godot 4.3 API.",
+  "related": [],
+  "technique_references": [
+    "influence maps",
+    "exponential decay propagation",
+    "map combination"
+  ],
+  "native_checks": [
+    "godot_parse_check_only",
+    "godot_gdscript_tests",
+    "godot_tests_reject_gutted_component",
+    "godot_editor_import",
+    "godot_contract_reflection",
+    "godot_readme_usage_compiles"
+  ]
+}

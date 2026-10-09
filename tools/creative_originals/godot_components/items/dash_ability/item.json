@@ -1,0 +1,164 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "dash_ability",
+  "title": "Dash ability with charges and invulnerability frames",
+  "purpose": "Dash at a fixed speed for a set time in a locked direction, spend and recharge charges one at a time, keep a fraction of the speed on exit and stay invulnerable for a window that can outlast the dash.",
+  "form": "library_module",
+  "dimension": "2d",
+  "engine": {
+    "name": "godot",
+    "minimum_version": "4.3"
+  },
+  "tags": [
+    "dash",
+    "ability",
+    "invulnerability",
+    "i-frames",
+    "movement",
+    "cooldown",
+    "action"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "role": "other"
+    },
+    {
+      "path": "dash_ability.gd",
+      "role": "skill_asset"
+    },
+    {
+      "path": "tests/test_dash_ability.gd",
+      "role": "skill_asset"
+    }
+  ],
+  "contract": {
+    "class_name": "BaltorDash",
+    "extends": "Node",
+    "signals": [
+      {
+        "name": "dash_started",
+        "arguments": [
+          "direction: Vector2"
+        ]
+      },
+      {
+        "name": "dash_ended",
+        "arguments": []
+      },
+      {
+        "name": "charges_changed",
+        "arguments": [
+          "charges: int"
+        ]
+      }
+    ],
+    "exports": [
+      {
+        "name": "dash_speed",
+        "type": "float",
+        "default": 600.0
+      },
+      {
+        "name": "dash_time",
+        "type": "float",
+        "default": 0.15
+      },
+      {
+        "name": "max_charges",
+        "type": "int",
+        "default": 1,
+        "annotation": "@export_range(1, 8)"
+      },
+      {
+        "name": "recharge_time",
+        "type": "float",
+        "default": 0.6
+      },
+      {
+        "name": "invulnerability_time",
+        "type": "float",
+        "default": 0.25
+      },
+      {
+        "name": "end_speed_factor",
+        "type": "float",
+        "default": 0.3,
+        "annotation": "@export_range(0.0, 1.0)"
+      },
+      {
+        "name": "auto_advance",
+        "type": "bool",
+        "default": true
+      }
+    ],
+    "methods": [
+      {
+        "name": "try_dash",
+        "arguments": [
+          "direction: Vector2"
+        ],
+        "returns": "bool"
+      },
+      {
+        "name": "advance",
+        "arguments": [
+          "delta: float"
+        ],
+        "returns": "void"
+      },
+      {
+        "name": "cancel",
+        "arguments": [],
+        "returns": "void"
+      },
+      {
+        "name": "is_dashing",
+        "arguments": [],
+        "returns": "bool"
+      },
+      {
+        "name": "is_invulnerable",
+        "arguments": [],
+        "returns": "bool"
+      },
+      {
+        "name": "get_dash_velocity",
+        "arguments": [],
+        "returns": "Vector2"
+      },
+      {
+        "name": "get_exit_velocity",
+        "arguments": [],
+        "returns": "Vector2"
+      },
+      {
+        "name": "get_charges",
+        "arguments": [],
+        "returns": "int"
+      },
+      {
+        "name": "get_recharge_progress",
+        "arguments": [],
+        "returns": "float"
+      }
+    ],
+    "placement": "res://baltor/godot_components/dash_ability/",
+    "depends_on": []
+  },
+  "limits": "Keeps time and velocity only; the owner applies the velocity and checks is_invulnerable() when taking damage. 2D vectors. The dash does not stop at walls by itself; call cancel() on a collision if needed. Verified with Godot 4.7.2 headless; written against the Godot 4.3 API.",
+  "related": [],
+  "technique_references": [
+    "timed dash state",
+    "charge and recharge timer",
+    "invulnerability window"
+  ],
+  "native_checks": [
+    "godot_parse_check_only",
+    "godot_gdscript_tests",
+    "godot_tests_reject_gutted_component",
+    "godot_editor_import",
+    "godot_contract_reflection",
+    "godot_readme_usage_compiles"
+  ]
+}

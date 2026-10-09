@@ -1,0 +1,133 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "goap_planner",
+  "title": "GOAP planner with A* over world states",
+  "purpose": "Plan the cheapest sequence of actions from preconditions, effects and costs to reach a goal world state, with optional procedural checks and a bound on expanded states.",
+  "form": "library_module",
+  "dimension": "none",
+  "engine": {
+    "name": "godot",
+    "minimum_version": "4.3"
+  },
+  "tags": [
+    "goap",
+    "planning",
+    "ai",
+    "a star",
+    "agents",
+    "world state"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "role": "other"
+    },
+    {
+      "path": "goap_planner.gd",
+      "role": "skill_asset"
+    },
+    {
+      "path": "tests/test_goap_planner.gd",
+      "role": "skill_asset"
+    }
+  ],
+  "contract": {
+    "class_name": "BaltorGoapPlanner",
+    "extends": "RefCounted",
+    "signals": [],
+    "exports": [],
+    "methods": [
+      {
+        "name": "add_action",
+        "arguments": [
+          "action_name: StringName",
+          "preconditions: Dictionary",
+          "effects: Dictionary",
+          "cost: float = 1.0",
+          "check: Callable = Callable()"
+        ],
+        "returns": "bool"
+      },
+      {
+        "name": "remove_action",
+        "arguments": [
+          "action_name: StringName"
+        ],
+        "returns": "bool"
+      },
+      {
+        "name": "has_action",
+        "arguments": [
+          "action_name: StringName"
+        ],
+        "returns": "bool"
+      },
+      {
+        "name": "satisfies",
+        "arguments": [
+          "state: Dictionary",
+          "conditions: Dictionary"
+        ],
+        "returns": "bool",
+        "static": true
+      },
+      {
+        "name": "apply",
+        "arguments": [
+          "state: Dictionary",
+          "action_name: StringName"
+        ],
+        "returns": "Dictionary"
+      },
+      {
+        "name": "is_applicable",
+        "arguments": [
+          "state: Dictionary",
+          "action_name: StringName"
+        ],
+        "returns": "bool"
+      },
+      {
+        "name": "plan",
+        "arguments": [
+          "state: Dictionary",
+          "goal: Dictionary",
+          "max_nodes: int = 2048"
+        ],
+        "returns": "Array[StringName]"
+      },
+      {
+        "name": "get_last_cost",
+        "arguments": [],
+        "returns": "float"
+      },
+      {
+        "name": "is_last_plan_found",
+        "arguments": [],
+        "returns": "bool"
+      },
+      {
+        "name": "get_last_expanded",
+        "arguments": [],
+        "returns": "int"
+      }
+    ],
+    "placement": "res://baltor/godot_components/goap_planner/",
+    "depends_on": []
+  },
+  "limits": "Forward search over Dictionary world states; facts are compared with ==. The heuristic counts unmet goal facts, so the plan is the cheapest only when every action costs at least 1 and sets at most one goal fact. Large action sets need the max_nodes bound. Verified with Godot 4.7.2 headless; written against the Godot 4.3 API.",
+  "related": [],
+  "technique_references": [
+    "goal-oriented action planning",
+    "A* search",
+    "unsatisfied-goal heuristic"
+  ],
+  "native_checks": [
+    "godot_parse_check_only",
+    "godot_gdscript_tests",
+    "godot_tests_reject_gutted_component",
+    "godot_editor_import",
+    "godot_contract_reflection",
+    "godot_readme_usage_compiles"
+  ]
+}

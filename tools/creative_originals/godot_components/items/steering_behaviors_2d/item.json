@@ -1,0 +1,172 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "steering_behaviors_2d",
+  "title": "Steering behaviors: seek, flee, arrive, pursue, evade, wander",
+  "purpose": "Compute Reynolds-style steering forces for 2D agents (seek, flee with a panic distance, arrive with a slowing radius, pursue and evade with prediction, seeded wander) and integrate a point mass with force and speed limits.",
+  "form": "library_module",
+  "dimension": "2d",
+  "engine": {
+    "name": "godot",
+    "minimum_version": "4.3"
+  },
+  "tags": [
+    "steering",
+    "ai",
+    "seek",
+    "arrive",
+    "wander",
+    "pursuit",
+    "movement"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "role": "other"
+    },
+    {
+      "path": "steering_behaviors_2d.gd",
+      "role": "skill_asset"
+    },
+    {
+      "path": "tests/test_steering_behaviors_2d.gd",
+      "role": "skill_asset"
+    }
+  ],
+  "contract": {
+    "class_name": "BaltorSteering",
+    "extends": "RefCounted",
+    "signals": [],
+    "exports": [],
+    "methods": [
+      {
+        "name": "seek",
+        "arguments": [
+          "position: Vector2",
+          "velocity: Vector2",
+          "target: Vector2",
+          "max_speed: float"
+        ],
+        "returns": "Vector2",
+        "static": true
+      },
+      {
+        "name": "flee",
+        "arguments": [
+          "position: Vector2",
+          "velocity: Vector2",
+          "threat: Vector2",
+          "max_speed: float",
+          "panic_distance: float = INF"
+        ],
+        "returns": "Vector2",
+        "static": true
+      },
+      {
+        "name": "arrive",
+        "arguments": [
+          "position: Vector2",
+          "velocity: Vector2",
+          "target: Vector2",
+          "max_speed: float",
+          "slowing_radius: float"
+        ],
+        "returns": "Vector2",
+        "static": true
+      },
+      {
+        "name": "pursue",
+        "arguments": [
+          "position: Vector2",
+          "velocity: Vector2",
+          "target_position: Vector2",
+          "target_velocity: Vector2",
+          "max_speed: float",
+          "max_prediction: float = 1.0"
+        ],
+        "returns": "Vector2",
+        "static": true
+      },
+      {
+        "name": "evade",
+        "arguments": [
+          "position: Vector2",
+          "velocity: Vector2",
+          "threat_position: Vector2",
+          "threat_velocity: Vector2",
+          "max_speed: float",
+          "max_prediction: float = 1.0"
+        ],
+        "returns": "Vector2",
+        "static": true
+      },
+      {
+        "name": "truncate",
+        "arguments": [
+          "force: Vector2",
+          "max_length: float"
+        ],
+        "returns": "Vector2",
+        "static": true
+      },
+      {
+        "name": "integrate",
+        "arguments": [
+          "position: Vector2",
+          "velocity: Vector2",
+          "steering: Vector2",
+          "max_force: float",
+          "max_speed: float",
+          "mass: float",
+          "delta: float"
+        ],
+        "returns": "Dictionary",
+        "static": true
+      },
+      {
+        "name": "wander",
+        "arguments": [
+          "velocity: Vector2",
+          "max_speed: float"
+        ],
+        "returns": "Vector2"
+      },
+      {
+        "name": "get_wander_angle",
+        "arguments": [],
+        "returns": "float"
+      }
+    ],
+    "placement": "res://baltor/godot_components/steering_behaviors_2d/",
+    "depends_on": [],
+    "properties": [
+      {
+        "name": "wander_distance",
+        "type": "float"
+      },
+      {
+        "name": "wander_radius",
+        "type": "float"
+      },
+      {
+        "name": "wander_jitter",
+        "type": "float"
+      }
+    ]
+  },
+  "limits": "Point-mass model in 2D; no obstacle handling (see obstacle avoidance) and no orientation smoothing. Arrive is an underdamped approach and can overshoot slightly before settling. Verified with Godot 4.7.2 headless; written against the Godot 4.3 API.",
+  "related": [],
+  "technique_references": [
+    "Reynolds steering behaviors",
+    "linear prediction for pursuit and evasion",
+    "wander circle with jitter",
+    "truncated point-mass integration"
+  ],
+  "native_checks": [
+    "godot_parse_check_only",
+    "godot_gdscript_tests",
+    "godot_tests_reject_gutted_component",
+    "godot_editor_import",
+    "godot_contract_reflection",
+    "godot_readme_usage_compiles"
+  ]
+}

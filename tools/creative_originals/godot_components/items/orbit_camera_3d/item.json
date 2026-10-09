@@ -1,0 +1,188 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "orbit_camera_3d",
+  "title": "Third-person orbit camera with collision pull-in",
+  "purpose": "Orbit a Camera3D around a target with yaw, pitch and zoom limits, smooth distance changes and a ray that pulls the camera in front of walls so the target stays visible.",
+  "form": "library_module",
+  "dimension": "3d",
+  "engine": {
+    "name": "godot",
+    "minimum_version": "4.3"
+  },
+  "tags": [
+    "camera",
+    "third person",
+    "orbit",
+    "camera3d",
+    "collision",
+    "zoom"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "role": "other"
+    },
+    {
+      "path": "orbit_camera_3d.gd",
+      "role": "skill_asset"
+    },
+    {
+      "path": "tests/test_orbit_camera_3d.gd",
+      "role": "skill_asset"
+    }
+  ],
+  "contract": {
+    "class_name": "BaltorOrbitCamera3D",
+    "extends": "Camera3D",
+    "signals": [],
+    "exports": [
+      {
+        "name": "target_path",
+        "type": "NodePath",
+        "default": "NodePath(\"\")"
+      },
+      {
+        "name": "target_offset",
+        "type": "Vector3",
+        "default": "Vector3(0, 1.5, 0)"
+      },
+      {
+        "name": "yaw_degrees",
+        "type": "float",
+        "default": 0.0
+      },
+      {
+        "name": "pitch_degrees",
+        "type": "float",
+        "default": 20.0
+      },
+      {
+        "name": "distance",
+        "type": "float",
+        "default": 5.0
+      },
+      {
+        "name": "min_distance",
+        "type": "float",
+        "default": 1.5
+      },
+      {
+        "name": "max_distance",
+        "type": "float",
+        "default": 12.0
+      },
+      {
+        "name": "min_pitch_degrees",
+        "type": "float",
+        "default": -60.0
+      },
+      {
+        "name": "max_pitch_degrees",
+        "type": "float",
+        "default": 75.0
+      },
+      {
+        "name": "sensitivity",
+        "type": "float",
+        "default": 0.25
+      },
+      {
+        "name": "zoom_step",
+        "type": "float",
+        "default": 0.5
+      },
+      {
+        "name": "smoothing",
+        "type": "float",
+        "default": 12.0
+      },
+      {
+        "name": "collide",
+        "type": "bool",
+        "default": true
+      },
+      {
+        "name": "collision_mask",
+        "type": "int",
+        "default": 1,
+        "annotation": "@export_flags_3d_physics"
+      },
+      {
+        "name": "collision_margin",
+        "type": "float",
+        "default": 0.2
+      },
+      {
+        "name": "use_mouse",
+        "type": "bool",
+        "default": true
+      }
+    ],
+    "methods": [
+      {
+        "name": "orbit_offset",
+        "arguments": [
+          "yaw: float",
+          "pitch: float",
+          "length: float"
+        ],
+        "returns": "Vector3",
+        "static": true
+      },
+      {
+        "name": "orbit",
+        "arguments": [
+          "delta_yaw_degrees: float",
+          "delta_pitch_degrees: float"
+        ],
+        "returns": "void"
+      },
+      {
+        "name": "zoom",
+        "arguments": [
+          "amount: float"
+        ],
+        "returns": "void"
+      },
+      {
+        "name": "get_target",
+        "arguments": [],
+        "returns": "Node3D"
+      },
+      {
+        "name": "get_pivot",
+        "arguments": [],
+        "returns": "Vector3"
+      },
+      {
+        "name": "get_current_distance",
+        "arguments": [],
+        "returns": "float"
+      },
+      {
+        "name": "update_camera",
+        "arguments": [
+          "delta: float"
+        ],
+        "returns": "void"
+      }
+    ],
+    "placement": "res://baltor/godot_components/orbit_camera_3d/",
+    "depends_on": []
+  },
+  "limits": "One ray from the pivot; thin gaps can still let the near plane clip into walls, so keep collision_margin above the camera's near distance. No auto-rotation behind the target and no lock-on. Verified with Godot 4.7.2 headless; written against the Godot 4.3 API.",
+  "related": [],
+  "technique_references": [
+    "spherical orbit coordinates",
+    "exponential smoothing",
+    "raycast camera collision"
+  ],
+  "native_checks": [
+    "godot_parse_check_only",
+    "godot_gdscript_tests",
+    "godot_tests_reject_gutted_component",
+    "godot_editor_import",
+    "godot_contract_reflection",
+    "godot_readme_usage_compiles"
+  ]
+}

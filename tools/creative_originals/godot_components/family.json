@@ -1,0 +1,16 @@
+{
+  "record_type": "creative_original_family/v1",
+  "family": "godot_components",
+  "title": "Original GDScript components for Godot 4",
+  "description": "Reusable GDScript components for Godot 4: state machines and AI planners, movement controllers, steering, cameras, gameplay systems, inventories and dialogue, procedural generators, mesh builders, physics helpers, UI widgets, audio tools and debug aids for 2D, 2.5D and 3D games. Each package holds one component script with a global class_name, its GDScript tests, an optional example scene and a README. Its contract lists the class, base class, signals, exported properties, public properties, methods and enums, with the placement res://baltor/godot_components/<identity>/. Shared files: a headless test runner and test base, a standard-library declaration reader and a Python test module that checks the script against the contract. The native verifier runs Godot 4 headless: strict parse checks, the GDScript tests, the same tests against a gutted copy of the component (they must fail), the editor import, engine reflection against the contract, example scenes and the README usage snippet.",
+  "engine": {"name": "godot", "minimum_version": "4.3", "notes": "Verified headless with Godot 4.7.2; written against the Godot 4.3 API"},
+  "shared_files": [
+    {"path": "run_tests.gd", "role": "skill_asset"},
+    {"path": "baltor_test.gd", "role": "skill_asset"},
+    {"path": "inspect_gdscript.py", "role": "executable_tool"},
+    {"path": "test_package.py", "role": "executable_tool"}
+  ],
+  "native_verifier": "native.py",
+  "generator_version": "1.0.0",
+  "default_dimension": "none"
+}

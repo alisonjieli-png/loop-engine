@@ -1,0 +1,197 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "platformer_controller_2d",
+  "title": "2D platformer controller with coyote time and jump buffer",
+  "purpose": "Move a CharacterBody2D like a platformer hero: jump height and time to apex set gravity, early release cuts the jump, coyote time and a jump buffer forgive late and early presses, and ground and air acceleration differ.",
+  "form": "library_module",
+  "dimension": "2d",
+  "engine": {
+    "name": "godot",
+    "minimum_version": "4.3"
+  },
+  "tags": [
+    "platformer",
+    "character controller",
+    "movement",
+    "jump",
+    "coyote time",
+    "jump buffer",
+    "characterbody2d"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "role": "other"
+    },
+    {
+      "path": "example.tscn",
+      "role": "skill_asset"
+    },
+    {
+      "path": "platformer_controller_2d.gd",
+      "role": "skill_asset"
+    },
+    {
+      "path": "tests/test_platformer_controller_2d.gd",
+      "role": "skill_asset"
+    }
+  ],
+  "contract": {
+    "class_name": "BaltorPlatformerController2D",
+    "extends": "CharacterBody2D",
+    "signals": [
+      {
+        "name": "jumped",
+        "arguments": []
+      },
+      {
+        "name": "landed",
+        "arguments": [
+          "impact_speed: float"
+        ]
+      }
+    ],
+    "exports": [
+      {
+        "name": "move_speed",
+        "type": "float",
+        "default": 220.0
+      },
+      {
+        "name": "ground_acceleration",
+        "type": "float",
+        "default": 1800.0
+      },
+      {
+        "name": "ground_deceleration",
+        "type": "float",
+        "default": 2200.0
+      },
+      {
+        "name": "air_acceleration",
+        "type": "float",
+        "default": 1100.0
+      },
+      {
+        "name": "jump_height",
+        "type": "float",
+        "default": 72.0
+      },
+      {
+        "name": "time_to_apex",
+        "type": "float",
+        "default": 0.36
+      },
+      {
+        "name": "fall_gravity_multiplier",
+        "type": "float",
+        "default": 1.6
+      },
+      {
+        "name": "jump_cut_multiplier",
+        "type": "float",
+        "default": 0.45,
+        "annotation": "@export_range(0.0, 1.0)"
+      },
+      {
+        "name": "max_fall_speed",
+        "type": "float",
+        "default": 900.0
+      },
+      {
+        "name": "coyote_time",
+        "type": "float",
+        "default": 0.1
+      },
+      {
+        "name": "jump_buffer_time",
+        "type": "float",
+        "default": 0.12
+      },
+      {
+        "name": "use_input_actions",
+        "type": "bool",
+        "default": true
+      },
+      {
+        "name": "action_left",
+        "type": "StringName",
+        "default": "&\"ui_left\""
+      },
+      {
+        "name": "action_right",
+        "type": "StringName",
+        "default": "&\"ui_right\""
+      },
+      {
+        "name": "action_jump",
+        "type": "StringName",
+        "default": "&\"ui_accept\""
+      }
+    ],
+    "methods": [
+      {
+        "name": "jump_velocity",
+        "arguments": [],
+        "returns": "float"
+      },
+      {
+        "name": "rise_gravity",
+        "arguments": [],
+        "returns": "float"
+      },
+      {
+        "name": "set_move_axis",
+        "arguments": [
+          "axis: float"
+        ],
+        "returns": "void"
+      },
+      {
+        "name": "press_jump",
+        "arguments": [],
+        "returns": "void"
+      },
+      {
+        "name": "release_jump",
+        "arguments": [],
+        "returns": "void"
+      },
+      {
+        "name": "can_jump",
+        "arguments": [
+          "on_floor: bool"
+        ],
+        "returns": "bool"
+      },
+      {
+        "name": "step",
+        "arguments": [
+          "delta: float",
+          "on_floor: bool"
+        ],
+        "returns": "Vector2"
+      }
+    ],
+    "placement": "res://baltor/godot_components/platformer_controller_2d/",
+    "depends_on": []
+  },
+  "limits": "Side view with up as -y only; no slopes tuning, wall jumps, ladders or one-way platform drop-through. Gravity comes from the jump settings and ignores the project gravity setting. The apex height matches the design value up to the integration error of the physics step (about 2 percent at 120 Hz in the tests). Verified with Godot 4.7.2 headless; written against the Godot 4.3 API.",
+  "related": [],
+  "technique_references": [
+    "kinematic jump from apex height and time (g = 2h/t^2, v = 2h/t)",
+    "coyote time",
+    "jump input buffering",
+    "variable jump height by velocity cut",
+    "semi-implicit Euler integration"
+  ],
+  "native_checks": [
+    "godot_parse_check_only",
+    "godot_gdscript_tests",
+    "godot_tests_reject_gutted_component",
+    "godot_editor_import",
+    "godot_contract_reflection",
+    "godot_example_scene",
+    "godot_readme_usage_compiles"
+  ]
+}

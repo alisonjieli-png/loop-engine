@@ -1,0 +1,15 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="camera_follow_deadzone.gd" id="1_camera"]
+
+[node name="Example" type="Node2D"]
+
+[node name="Player" type="Polygon2D" parent="."]
+position = Vector2(200, 120)
+color = Color(0.85, 0.55, 0.2, 1)
+polygon = PackedVector2Array(-10, -10, 10, -10, 10, 10, -10, 10)
+
+[node name="Camera" type="Camera2D" parent="."]
+script = ExtResource("1_camera")
+target_path = NodePath("../Player")
+dead_zone = Vector2(96, 64)
