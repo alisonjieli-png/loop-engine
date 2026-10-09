@@ -131,6 +131,30 @@ class FeedSpecimenTests(unittest.TestCase):
         self.assertIn("/assets/feed-specimen.js", web_pages.CACHEABLE_WEB_ASSETS)
         self.assertLess(ASSET.stat().st_size, 16384)
 
+    def assert_three_offerings(self, source):
+        for wording in ("Compare the three offerings", "Agent Feeds", "Harness Files", "Overnight / AFK Work",
+                        "Preview", "Your worker and model access", "No extra charge with Harness Files",
+                        "$4.99 a month.", "$29 a month", "Free through December 31, 2026 (Eastern)",
+                        "No automatic charge; a paid subscription requires your explicit opt-in."):
+            self.assertTrue(wording in source, "Missing feed offering text: " + wording)
+        self.assertIn('href="/overnight"', source)
+        self.assertNotIn("Compare the two offerings", source)
+        self.assertNotIn("$49.99", source)
+        self.assertNotIn("$29.99", source)
+
+    def test_feeds_page_names_three_available_offerings_without_changing_prices(self):
+        body, _media = feed.rendered_page("/feeds", "GET", "Baltor")
+        self.assert_three_offerings(body.decode())
+
+    def test_feed_offering_check_detects_old_count_missing_preview_and_unactivated_prices(self):
+        source = feed.page_body()
+        for wrong in (source.replace("Compare the three offerings", "Compare the two offerings"),
+                      source.replace("Overnight / AFK Work", "Other work"),
+                      source.replace("Preview", ""), source.replace("$29 a month", "$49.99 a month"),
+                      source.replace("No extra charge with Harness Files", "")):
+            with self.assertRaises(AssertionError):
+                self.assert_three_offerings(wrong)
+
     def test_research_example_names_assumptions_missing_measurements_provisional_choice_and_trigger(self):
         body = feed.decision_specimen_body()
         for label in ("curated example", "Example assumptions", "Publisher documentation", "What is not measured here",

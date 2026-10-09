@@ -2,7 +2,7 @@
 
 Kind: product architecture with measured local implementation and proposed hosting.
 Date: 2026-09-19. The [current deployment](#current-deployment) section was
-added on 2026-09-20 and last checked on 2026-10-08, after Fly release 82.
+added on 2026-09-20 and last checked on 2026-10-09, after Fly release 83.
 
 The hosted product manages accounts, subscriptions, and access to intelligence.
 The customer runs Loop Engine and the selected harnesses. A hosted intelligence
@@ -48,24 +48,29 @@ section. Update this section in the same change that records a new release.
 Public registration is enabled. The site offers the existing monthly plan;
 these deployment checks alone do not establish a fully qualified paid service.
 
-The running image is Fly release 82, from
-`22b8f1463dcb05a3be6ac487437ac9ea74cd61d2`, image
-`sha256:6869edf6c244f5c1c0caa75017c9dcde5f8b6eaaf536c41c54e61d0bb1fffebc`.
-Exact CI `37849904645` and guarded deployment `37851063100` passed; the gate
-is closed. The full local browser rerun passed 976 checks and all 197 mutants.
-Live Terms checks passed 108 assertions across all ten hosts and two additional
-phone/theme views. The live offering/legal layout matrix passed 457 checks.
-The final all-host pulse passed fifty reads with no slow response. The prior
-release-81 full route map passed 67 pages, 277 views and 416 links; that broader
-audit is retained as prior evidence, not relabelled as a release-82 run.
+The running image is Fly release 83, from
+`4a1f087966c4584f5a0fd490c87a97049ba285a2`, image
+`sha256:d765fa8be32b654c44c0c9262383a4abfd57e9a2976f7bda11a1967b661f36e4`.
+Exact CI `37881941313` and guarded deployment `37882543337` passed; the gate
+is closed. The full local browser rerun passed 977 checks and all 197 mutants.
+The live offering/layout matrix passed 483 checks. Independent read-only
+review passed 426 checks across 68 desktop/phone views on all ten hosts,
+including twenty unchanged Terms comparisons. The all-host pulse passed fifty
+reads, with one 23.9-second capabilities response retained as a latency
+finding. A fresh full public route audit passed 67 pages, 277 views and 436
+links. It checks rendering and navigation, not every authenticated journey or
+marketing claim; the separate overnight copy review remains follow-up work.
 
 All nine product hostnames now serve public assets through Cloudflare and
 forward dynamic requests to Fly. The technical Fly hostname remains a direct
-fallback. Export `7092e0ff098a...` contains 2,544 files, all verified on
+fallback. Export `9ed7e6ba5a3f...` contains 2,544 files, all verified on
 `baltor.ai` against their exact bodies and required headers. Disable proxying on the saved DNS
 records to recover the direct paths; do not delete the routes or resources.
 
-The hero and library use files-first language. Agent Feeds still shows the earlier
+The homepage and pricing page show three distinct cards: Agent Feeds,
+Harness Files and Overnight / AFK Work. Pricing sits in its own section
+outside the introductory hero. The hero and library use files-first language.
+Agent Feeds shows the latest owner-selected
 $4.99 monthly standard price, free through December 31, 2026 Eastern, with
 explicit future opt-in and no automatic charge. No new provider price or
 subscription was created; the existing full-library plan remains $29.
@@ -77,10 +82,10 @@ Thirteen curated decision-source
 collections and a live catalogue specimen are available. Local per-agent
 reading profiles are implemented; hosted saved preferences, agent assignments
 and personalized research delivery remain unfinished. The proposed Supervised
-Runs tier is not active. The [release record](../../artifacts/architecture-audit-2026-09-19/pilot-release-82.json)
+Runs tier is not active. The [release record](../../artifacts/architecture-audit-2026-09-19/pilot-release-83.json)
 binds the application, public export, live checks and separate follow-ups.
-Release 81 is the compatible image rollback, at
-`sha256:825861e0044a016a8c9585f685de409411e24ddf2b6736c7a3df1a5f1fb5f5cb`.
+Release 82 is the compatible image rollback, at
+`sha256:6869edf6c244f5c1c0caa75017c9dcde5f8b6eaaf536c41c54e61d0bb1fffebc`.
 This source includes the model-directory refresh, repaired private supply
 journals, isolated constraint-case generation, bounded overnight operator and
 account handoff. Available local overnight tools are labelled Preview, with
@@ -93,11 +98,15 @@ The earlier two retired-model failures remain recorded. Release-82 attempts
 retain the first browser check's stale-date failures and the initial private
 probe's incorrect health path. The corrected full browser and live checks pass.
 
-The owner's subsequent three-product prices are $14.99, $29.99 and $49.99
-monthly. The private three-card design is prepared, not deployed. The current
-checkout still uses $29. The flexible price clause is published; reconcile a new-signup Price
-without changing existing subscriptions or grants. Hosted Overnight / AFK
-Work needs actual coordination, isolation, recovery and checkout before sale.
+The latest repeated owner direction keeps Feeds at $4.99 rather than the
+earlier $14.99 proposal. New-signup targets for the library and hosted upper
+tier remain $29.99 and $49.99 monthly; checkout still uses $29. The separate
+Overnight / AFK Work card states the local Preview is included without extra
+charge with Harness Files and requires the customer's own worker and models.
+It is not a third paid hosted plan. The flexible price clause is published;
+reconcile a new-signup Price without changing existing subscriptions or grants.
+Hosted Overnight / AFK Work needs actual coordination, isolation, recovery
+and checkout before sale.
 The separate October 8 catalogue addition now serves 218,151 entries and
 1,353,029 distinct files, release `1694fb4a5b35...`. It adds 24 independently
 reviewed SDG tools and 192 distinct files, preserving every previous version.

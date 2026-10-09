@@ -103,6 +103,13 @@ def frame_time(frame, rate):
     return frame / rate
 
 
+def frame_progress(frame, frame_count):
+    """Map a discrete frame to [0, 1], including both endpoints; a one-frame shot returns zero."""
+    if type(frame) is not int or type(frame_count) is not int or frame_count < 1 or not 0 <= frame < frame_count:
+        raise ValueError("frame and frame count must be valid integers")
+    return frame / (frame_count - 1) if frame_count > 1 else 0
+
+
 def beat_time(beat, bpm):
     """Map a nonnegative beat position to seconds at constant tempo."""
     _finite(beat)
@@ -133,6 +140,56 @@ def cover_frame(width, height, frame_width, frame_height):
     scale = max(frame_width / width, frame_height / height)
     w, h = width * scale, height * scale
     return [(frame_width - w) / 2, (frame_height - h) / 2, w, h]
+
+
+def _bounded_product_ratio(value, numerator, denominator, bound):
+    """Return min(bound, value * numerator / denominator) without an overflowing intermediate."""
+    value_mantissa, value_exponent = math.frexp(value)
+    numerator_mantissa, numerator_exponent = math.frexp(numerator)
+    denominator_mantissa, denominator_exponent = math.frexp(denominator)
+    try:
+        result = math.ldexp(value_mantissa * (numerator_mantissa / denominator_mantissa),
+                            value_exponent + numerator_exponent - denominator_exponent)
+    except OverflowError:
+        return bound
+    return min(bound, result)
+
+
+def focal_crop(width, height, frame_width, frame_height, zoom, focus_x, focus_y):
+    """Return in-image [x, y, width, height]; normalized focus, zoom >= 1, y down; refuse aspect error above 1e-12 relative."""
+    _positive(width, height, frame_width, frame_height, zoom)
+    _unit(focus_x)
+    _unit(focus_y)
+    if zoom < 1:
+        raise ValueError("zoom must be at least one")
+    w = _bounded_product_ratio(height, frame_width, frame_height, width) / zoom
+    h = _bounded_product_ratio(width, frame_height, frame_width, height) / zoom
+    _positive(w, h)
+    wm, we = math.frexp(w)
+    hm, he = math.frexp(h)
+    fm, fe = math.frexp(frame_width)
+    gm, ge = math.frexp(frame_height)
+    aspect_ratio = math.ldexp((wm / hm) * (gm / fm), we - he + ge - fe)
+    if not math.isclose(aspect_ratio, 1, rel_tol=1e-12, abs_tol=0):
+        raise ValueError("crop aspect cannot be represented")
+    return [max(0, min(width - w, focus_x * width - w / 2)),
+            max(0, min(height - h, focus_y * height - h / 2)), w, h]
+
+
+def subject_safe_axis(image_extent, crop_extent, subject_start, subject_end, focus):
+    """Return [origin, minimum, maximum] for a whole positive-length subject interval; focus lies in [0, 1]."""
+    _positive(image_extent, crop_extent)
+    _finite(subject_start, subject_end)
+    _unit(focus)
+    if crop_extent > image_extent or not 0 <= subject_start < subject_end <= image_extent:
+        raise ValueError("crop and subject must be inside the image axis")
+    if subject_end - subject_start > crop_extent:
+        raise ValueError("subject cannot fit inside this crop")
+    lower = max(0, subject_end - crop_extent)
+    upper = min(subject_start, image_extent - crop_extent)
+    if lower > upper:
+        raise ValueError("subject cannot fit inside this crop")
+    return [max(lower, min(upper, focus * image_extent - crop_extent / 2)), lower, upper]
 
 
 def rotate_point(x, y, angle):

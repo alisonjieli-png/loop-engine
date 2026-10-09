@@ -4,7 +4,1301 @@
   "done": 49,
   "next": 15,
   "now": 68,
-  "waiting": 133
+  "waiting": 134
+ },
+ "execution": [
+  {
+   "acceptance": "The homepage and pricing page show three visually distinct offerings outside the hero, with working actions and truthful current price and execution scope.",
+   "comment": "No third paid hosted service or new billing price is activated by a card layout.",
+   "complete": true,
+   "completion_status": "live_qualified",
+   "depends_on": [],
+   "evidence": "Release 83 from 4a1f0879 passed exact CI and guarded deployment; gate closed. Local browser: 977 checks and 197 wrong controls. Live offering matrix: 483 checks. Independent ten-host review: 426 checks and twenty unchanged Terms comparisons. All 2,544 Cloudflare export files match exact bodies and headers. See pilot-release-83.json; earlier failed checks are retained.",
+   "id": "S-6.12.04",
+   "next_action": "Keep the three visible offerings consistent while the separate billing and hosted-service work proceeds.",
+   "owner_step": "S-6.12",
+   "procedure": [
+    "Keep the hero focused on the product and setup actions.",
+    "Give Agent Feeds, Harness Files and Overnight / AFK Work separate cards and setup paths.",
+    "Run responsive, theme, accessibility and full customer-journey checks; deploy reviewed main and verify every public hostname."
+   ],
+   "status": "live_qualified",
+   "title": "Separate three product cards from the introductory hero",
+   "waiting_on": []
+  },
+  {
+   "acceptance": "The exact CI-passed revision is deployed through the guarded workflow, with the gate closed and rollback recorded.",
+   "comment": "The fifty-read pulse passed with one 23.9-second capabilities response. Application release does not publish the pending catalogue addition.",
+   "complete": true,
+   "completion_status": "published",
+   "depends_on": [],
+   "evidence": "Release 83 from 4a1f0879: exact CI 37881941313, guarded deployment 37882543337, gate closed, rollback release 82. All ten hosts pass the independent offering/Terms/health checks; Cloudflare export 9ed7e6ba5a3f matches all 2,544 files.",
+   "id": "S-6.35.01",
+   "next_action": "Keep application deployment and catalogue publication from overlapping.",
+   "owner_step": "S-6.35",
+   "procedure": [
+    "Freeze the candidate and finish its owning checks and exact CI.",
+    "Dispatch the guarded deployment once and reconcile the remote result.",
+    "Close the deployment gate; record image, revision, rollback and all-host checks."
+   ],
+   "status": "published",
+   "title": "Release reviewed main and verify it live",
+   "waiting_on": []
+  },
+  {
+   "acceptance": "Bind the live release, distinct-file count and current access policy before additions.",
+   "comment": "Two million is the next milestone; ten million remains the longer-term target.",
+   "complete": true,
+   "completion_status": "offline_verified",
+   "depends_on": [],
+   "evidence": "Live catalogue 1694fb4a has 1,353,029 distinct files in 218,151 packages; 448 Public Good grants are preserved.",
+   "id": "S-6.215.01",
+   "next_action": "Use this exact baseline for reconciliation.",
+   "owner_step": "S-6.215",
+   "procedure": [
+    "Read live health and the catalogue release identity.",
+    "Record distinct digests separately from placements and packages.",
+    "Preserve the current full metadata baseline and all body roots."
+   ],
+   "status": "offline_verified",
+   "title": "Record the current live file baseline",
+   "waiting_on": []
+  },
+  {
+   "acceptance": "Every candidate has a recorded deterministic verdict and duplicate findings.",
+   "comment": "Static qualification does not mean every package ran against its upstream API.",
+   "complete": true,
+   "completion_status": "offline_verified",
+   "depends_on": [
+    "S-6.215.01"
+   ],
+   "evidence": "31,459 qualified; 15 same-job duplicates withheld; zero unreadable. Forty known-wrong controls and 32 known-good rows passed.",
+   "id": "S-6.215.02",
+   "next_action": "Carry only the 31,459 qualified packages into admission.",
+   "owner_step": "S-6.215",
+   "procedure": [
+    "Run the qualification controls in a separate process.",
+    "Check all 31,474 exact candidate packages.",
+    "Retain refusals and record requested execution coverage separately."
+   ],
+   "status": "offline_verified",
+   "title": "Qualify the retained API-contract population",
+   "waiting_on": []
+  },
+  {
+   "acceptance": "Admission binds exact bytes, current holds and prior reviewer rejections.",
+   "comment": "Admission is separate from publication.",
+   "complete": true,
+   "completion_status": "offline_verified",
+   "depends_on": [
+    "S-6.215.02"
+   ],
+   "evidence": "31,459 admitted with approval state qualified and independent review ongoing.",
+   "id": "S-6.215.03",
+   "next_action": "Build the admitted additions bundle.",
+   "owner_step": "S-6.215",
+   "procedure": [
+    "Read the current decision ledger and held-generator file.",
+    "Admit with the declared OpenAI producer family.",
+    "Check the admission report and retain the immutable output."
+   ],
+   "status": "offline_verified",
+   "title": "Admit the qualified contract batch",
+   "waiting_on": []
+  },
+  {
+   "acceptance": "Bundle metadata and payload digests agree with the admitted packages.",
+   "comment": "Placements are not distinct new files.",
+   "complete": true,
+   "completion_status": "offline_verified",
+   "depends_on": [
+    "S-6.215.03"
+   ],
+   "evidence": "31,459 items; 266,677 file placements; bundle digest 26c50a607568b116ad12077958830ca168982f2f1915cb700a373db7532d27fc.",
+   "id": "S-6.215.04",
+   "next_action": "Use bundle 26c50a60 in the preservation check.",
+   "owner_step": "S-6.215",
+   "procedure": [
+    "Use the native bundle builder and the existing accepted-licence policy.",
+    "Verify item count, exact files and bundle digest.",
+    "Keep the additions separate from the active release."
+   ],
+   "status": "offline_verified",
+   "title": "Build the additions bundle",
+   "waiting_on": []
+  },
+  {
+   "acceptance": "No judged prior retrieval or supplied Public Good grant is lost.",
+   "comment": "Coverage is the stated query population, not every possible query.",
+   "complete": true,
+   "completion_status": "offline_verified",
+   "depends_on": [
+    "S-6.215.04"
+   ],
+   "evidence": "354 judged queries passed the conservative check; 218,151 prior items and 448 grants preserved; 120,036 new digests.",
+   "id": "S-6.215.05",
+   "next_action": "Perform exact metadata and body reconciliation.",
+   "owner_step": "S-6.215",
+   "procedure": [
+    "Run the stored judged queries against the old and proposed catalogue.",
+    "Compare all previous item versions.",
+    "Calculate new digests and check the supplied access policy."
+   ],
+   "status": "offline_verified",
+   "title": "Check retrieval and grant preservation",
+   "waiting_on": []
+  },
+  {
+   "acceptance": "Produce a complete segmented baseline with unchanged prior versions and verified body references.",
+   "comment": "Large outputs use the existing offload volume. The local memory cap was measured and raised from 10 to 14 GiB; no checks were removed.",
+   "complete": true,
+   "completion_status": "offline_verified",
+   "depends_on": [
+    "S-6.215.05"
+   ],
+   "evidence": "Reconciliation completed from 609640a4: 249,610 items, all 1,353,029 baseline bodies verified, 120,036 new bodies. Bundle fac04d122bbed261c773023ad715f61d11f17ee243d9a7663e8f1710fc060a2c; proof d0caea32e34604dee5100ee197a1db13b503b9c3e713eb48d7ae0e28338cba1f. Not published.",
+   "id": "S-6.215.06",
+   "next_action": "Use the exact completed proof for the next guarded publication after the prioritized website release.",
+   "owner_step": "S-6.215",
+   "procedure": [
+    "Run the native additive reconciler from committed source.",
+    "Preserve every previous body root and version.",
+    "Record the result digest and predicted release without activating it."
+   ],
+   "status": "offline_verified",
+   "title": "Reconcile the complete release and its bodies",
+   "waiting_on": []
+  },
+  {
+   "acceptance": "The live pointer commits exactly the reconciled release without changing prior grants.",
+   "comment": "Expected total is 1,473,065 files, not two million. No publication has been dispatched for this batch.",
+   "complete": false,
+   "completion_status": "published",
+   "depends_on": [
+    "S-6.215.06"
+   ],
+   "evidence": "",
+   "id": "S-6.215.07",
+   "next_action": "Publish only after the exact reconciliation and live preflight pass.",
+   "owner_step": "S-6.215",
+   "procedure": [
+    "Recheck live baseline, deployment activity and publication ownership.",
+    "Run the existing guarded delta publisher once.",
+    "Reconcile an unknown outcome before retrying any effect."
+   ],
+   "status": "ready",
+   "title": "Publish the reconciled contract delta",
+   "waiting_on": []
+  },
+  {
+   "acceptance": "Live counts and exact permitted downloads agree with the release, and previous access still works.",
+   "comment": "Do not announce a count from a local bundle.",
+   "complete": false,
+   "completion_status": "live_qualified",
+   "depends_on": [
+    "S-6.215.07"
+   ],
+   "evidence": "",
+   "id": "S-6.215.08",
+   "next_action": "Record the actual served count and remaining gap.",
+   "owner_step": "S-6.215",
+   "procedure": [
+    "Read the live release and complete file population.",
+    "Search and download selected new and old packages with an ordinary account.",
+    "Check missing-body, denial, digest, usage and rollback behavior."
+   ],
+   "status": "ready",
+   "title": "Verify the new catalogue as a customer",
+   "waiting_on": [
+    "S-6.215.07"
+   ]
+  },
+  {
+   "acceptance": "New R2 objects match their digests and every published count reflects the active catalogue.",
+   "comment": "Mirroring does not switch authenticated body delivery to R2.",
+   "complete": false,
+   "completion_status": "live_qualified",
+   "depends_on": [
+    "S-6.215.08"
+   ],
+   "evidence": "",
+   "id": "S-6.215.09",
+   "next_action": "Start only after the catalogue publication is reconciled.",
+   "owner_step": "S-6.215",
+   "procedure": [
+    "Mirror only the new approved body digests.",
+    "Verify readback and preserve private bucket access.",
+    "Refresh the existing edge export and check all product hosts."
+   ],
+   "status": "proposed",
+   "title": "Mirror the new bodies and refresh public counts",
+   "waiting_on": [
+    "S-6.215.08"
+   ]
+  },
+  {
+   "acceptance": "Every parent in the frozen pilot is processed with preserved lineage and bounded accounting.",
+   "comment": "Candidate payloads include shared support files and parent schemas.",
+   "complete": true,
+   "completion_status": "offline_verified",
+   "depends_on": [],
+   "evidence": "381 of 381 parents processed; 1,686 case files, 379 groups and 2,999 distinct candidate payloads; zero model or provider calls.",
+   "id": "S-6.215.10",
+   "next_action": "Qualify and globally deduplicate the completed pilot.",
+   "owner_step": "S-6.215",
+   "procedure": [
+    "Keep the original failed run unchanged.",
+    "Run the repaired generator from committed source.",
+    "Resume the successful bounded partial batch with unchanged whole-run limits."
+   ],
+   "status": "offline_verified",
+   "title": "Complete the repaired case-generation pilot",
+   "waiting_on": []
+  },
+  {
+   "acceptance": "New groups pass native checks and do not repeat case jobs from any selected comparison population.",
+   "comment": "Do not count the failed and repaired copies twice.",
+   "complete": false,
+   "completion_status": "offline_verified",
+   "depends_on": [
+    "S-6.215.10"
+   ],
+   "evidence": "",
+   "id": "S-6.215.11",
+   "next_action": "Build a bounded qualification run for the 379 groups.",
+   "owner_step": "S-6.215",
+   "procedure": [
+    "Compare case jobs and file digests with live, admitted and earlier pilot material.",
+    "Run the qualification controls and exact candidate checks.",
+    "Admit only qualified groups under the existing policy."
+   ],
+   "status": "ready",
+   "title": "Qualify and admit the new case groups",
+   "waiting_on": []
+  },
+  {
+   "acceptance": "Only net-new admitted case material is served and verified from the current release.",
+   "comment": "An old baseline must not be replayed after another publication.",
+   "complete": false,
+   "completion_status": "published",
+   "depends_on": [
+    "S-6.215.11",
+    "S-6.215.08"
+   ],
+   "evidence": "",
+   "id": "S-6.215.12",
+   "next_action": "Use the release current at execution time.",
+   "owner_step": "S-6.215",
+   "procedure": [
+    "Build an additions bundle.",
+    "Repeat preservation, exact reconciliation and current-live preflight.",
+    "Publish and test ordinary customer retrieval."
+   ],
+   "status": "proposed",
+   "title": "Publish the qualified case delta",
+   "waiting_on": [
+    "S-6.215.11",
+    "S-6.215.08"
+   ]
+  },
+  {
+   "acceptance": "A frozen production plan measures candidate yield, accepted yield, time, storage and cost across several useful file families.",
+   "comment": "Common-word and parameter combinations are research dimensions, not automatically useful files.",
+   "complete": false,
+   "completion_status": "offline_verified",
+   "depends_on": [
+    "S-6.215.08"
+   ],
+   "evidence": "",
+   "id": "S-6.215.13",
+   "next_action": "Record the source population needed for the remaining two-million-file gap.",
+   "owner_step": "S-6.215",
+   "procedure": [
+    "Measure the completed batch rather than extrapolating from file placements.",
+    "Select licensed data tables, executable utilities, harness templates and editable creative materials.",
+    "Reuse unchanged implementations and allocate bounded cohorts with explicit stops."
+   ],
+   "status": "ready",
+   "title": "Measure and broaden production capacity",
+   "waiting_on": [
+    "S-6.215.08"
+   ]
+  },
+  {
+   "acceptance": "An independently maintained upstream collection has one source identity regardless of provider, alias or query.",
+   "comment": "Ten thousand queries, API listings or credential aliases are not ten thousand working sources.",
+   "complete": false,
+   "completion_status": "offline_verified",
+   "depends_on": [],
+   "evidence": "",
+   "id": "S-6.214.01",
+   "next_action": "Write and test the source-counting rules in the existing source owner.",
+   "owner_step": "S-6.214",
+   "procedure": [
+    "Specify canonical repository, feed, channel, dataset-collection and benchmark-stream identities.",
+    "Separate source, item, API operation, adapter and generated feed.",
+    "Define discovered, accessible, rights-checked, scheduled, fresh and feed-contributing counts."
+   ],
+   "status": "ready",
+   "title": "Define canonical source counting",
+   "waiting_on": []
+  },
+  {
+   "acceptance": "One reproducible census accounts for the existing registries, collected leads and coverage gaps.",
+   "comment": "Existing active-source coverage has not yet been reconciled across all collectors.",
+   "complete": false,
+   "completion_status": "offline_verified",
+   "depends_on": [
+    "S-6.214.01"
+   ],
+   "evidence": "",
+   "id": "S-6.214.02",
+   "next_action": "Measure the current denominator before claiming progress toward 10,000 sources.",
+   "owner_step": "S-6.214",
+   "procedure": [
+    "Read the current source registries and private lead stores.",
+    "Normalize aliases and underlying-source relationships.",
+    "Report each qualification and freshness stage without inventing a baseline."
+   ],
+   "status": "ready",
+   "title": "Build the source coverage census",
+   "waiting_on": [
+    "S-6.214.01"
+   ]
+  },
+  {
+   "acceptance": "Every selected operation has a typed request, normalized result, host binding, effects and observed qualification state.",
+   "comment": "A stored key or HTTP 200 is not full adapter qualification.",
+   "complete": false,
+   "completion_status": "offline_verified",
+   "depends_on": [
+    "S-6.214.01"
+   ],
+   "evidence": "Twenty-nine operation examples are classified; twelve bounded probes returned six usable responses and six held outcomes.",
+   "id": "S-6.214.03",
+   "next_action": "Start with the six latest-key products that returned usable data.",
+   "owner_step": "S-6.214",
+   "procedure": [
+    "Map provider examples to existing query and source engine slots.",
+    "Retain successful probes and every refused or unknown outcome.",
+    "Add positive and known-wrong parser and destination tests before selection."
+   ],
+   "status": "building",
+   "title": "Normalize the supplied provider operations",
+   "waiting_on": [
+    "S-6.214.01"
+   ]
+  },
+  {
+   "acceptance": "Internal collection respects product/account allowances across all keys and workers.",
+   "comment": "Multiple RapidAPI application keys share account-wide subscription usage.",
+   "complete": false,
+   "completion_status": "offline_verified",
+   "depends_on": [
+    "S-6.214.03"
+   ],
+   "evidence": "",
+   "id": "S-6.214.04",
+   "next_action": "Use the smallest applicable product quota, not the marketplace-wide header.",
+   "owner_step": "S-6.214",
+   "procedure": [
+    "Bind quota buckets to provider product and subscription.",
+    "Reserve requests before dispatch and retain unknown outcomes.",
+    "Set cadence, concurrency, timeout, retry and byte ceilings from observed limits."
+   ],
+   "status": "ready",
+   "title": "Enforce shared quotas and collection costs",
+   "waiting_on": [
+    "S-6.214.03"
+   ]
+  },
+  {
+   "acceptance": "Each selected source has a recorded allowed use, retention policy and redistribution boundary.",
+   "comment": "Marketplace ratings and compliance claims are not independent evidence.",
+   "complete": false,
+   "completion_status": "offline_verified",
+   "depends_on": [
+    "S-6.214.02"
+   ],
+   "evidence": "",
+   "id": "S-6.214.05",
+   "next_action": "Begin with public repositories, publisher feeds, permitted job/company metadata and licensed data.",
+   "owner_step": "S-6.214",
+   "procedure": [
+    "Check provider and underlying-source terms for the intended use.",
+    "Quarantine account-sale ads, deceptive engagement services, duplicates and deprecated listings.",
+    "Keep private contact enrichment and unqualified media reuse out of public output."
+   ],
+   "status": "ready",
+   "title": "Qualify source rights and privacy",
+   "waiting_on": [
+    "S-6.214.02"
+   ]
+  },
+  {
+   "acceptance": "One hundred canonical sources have successful bounded collection, traceable observations and monitored failures.",
+   "comment": "An empty valid response can be observed; it is not evidence of useful feed output.",
+   "complete": false,
+   "completion_status": "live_qualified",
+   "depends_on": [
+    "S-6.214.03",
+    "S-6.214.04",
+    "S-6.214.05"
+   ],
+   "evidence": "",
+   "id": "S-6.214.06",
+   "next_action": "Publish the measured coverage and failure population before expansion.",
+   "owner_step": "S-6.214",
+   "procedure": [
+    "Choose a diverse source population with declared refresh cadence.",
+    "Run and checkpoint bounded collection through existing owners.",
+    "Test stale, empty, changed, denied and unavailable sources."
+   ],
+   "status": "proposed",
+   "title": "Run a hundred-source collection pilot",
+   "waiting_on": [
+    "S-6.214.03",
+    "S-6.214.04",
+    "S-6.214.05"
+   ]
+  },
+  {
+   "acceptance": "One thousand canonical sources meet the recorded access, rights, freshness and collection criteria.",
+   "comment": "The source census owns the count.",
+   "complete": false,
+   "completion_status": "live_qualified",
+   "depends_on": [
+    "S-6.214.06"
+   ],
+   "evidence": "",
+   "id": "S-6.214.07",
+   "next_action": "Advance only within the declared infrastructure and provider allowances.",
+   "owner_step": "S-6.214",
+   "procedure": [
+    "Expand by measured cohorts and source families.",
+    "Reuse snapshots and source identities across customers.",
+    "Hold failing providers without retry storms or credential-based quota multiplication."
+   ],
+   "status": "proposed",
+   "title": "Expand to one thousand qualified sources",
+   "waiting_on": [
+    "S-6.214.06"
+   ]
+  },
+  {
+   "acceptance": "Published feed items have original useful content, citations, dates, scope and a supported output format.",
+   "comment": "A list of URLs is not automatically a decision brief.",
+   "complete": false,
+   "completion_status": "live_qualified",
+   "depends_on": [
+    "S-6.214.06"
+   ],
+   "evidence": "",
+   "id": "S-6.214.09",
+   "next_action": "Qualify a small number of topic feeds before multiplying them.",
+   "owner_step": "S-6.214",
+   "procedure": [
+    "Separate observations from original synthesis and recommendations.",
+    "Generate JSON Feed, RSS and Markdown through the same owning record.",
+    "Check rights, freshness, duplicates, broken references and unsupported claims before publication."
+   ],
+   "status": "ready",
+   "title": "Produce useful source-backed feeds",
+   "waiting_on": [
+    "S-6.214.06"
+   ]
+  },
+  {
+   "acceptance": "Two customers and two agents can create, change and revoke isolated feed definitions.",
+   "comment": "Customer projects and histories are not inspected automatically.",
+   "complete": false,
+   "completion_status": "live_qualified",
+   "depends_on": [
+    "S-6.214.09"
+   ],
+   "evidence": "",
+   "id": "S-6.214.10",
+   "next_action": "Implement a narrow working customer journey before advertising personalized feeds.",
+   "owner_step": "S-6.214",
+   "procedure": [
+    "Store topics, source allowlists, exclusions, cadence, format and agent assignment through existing account records.",
+    "Expose scoped setup through the website and MCP/API.",
+    "Test cross-account access, cursor isolation, edits, export and revocation."
+   ],
+   "status": "proposed",
+   "title": "Save customer feed preferences per agent",
+   "waiting_on": [
+    "S-6.214.09"
+   ]
+  },
+  {
+   "acceptance": "Opted-in agents receive the correct feed revision with observable freshness, cost and delivery outcomes.",
+   "comment": "Receiving a feed never grants permission to execute it.",
+   "complete": false,
+   "completion_status": "live_qualified",
+   "depends_on": [
+    "S-6.214.10"
+   ],
+   "evidence": "",
+   "id": "S-6.214.11",
+   "next_action": "Connect delivery to the existing entitlement and subscription boundaries.",
+   "owner_step": "S-6.214",
+   "procedure": [
+    "Test polling and any supported push receiver separately.",
+    "Use idempotent delivery and bounded retry accounting.",
+    "Measure source contribution, useful items, customer consumption and failures."
+   ],
+   "status": "proposed",
+   "title": "Deliver and measure personalized feeds",
+   "waiting_on": [
+    "S-6.214.10"
+   ]
+  },
+  {
+   "acceptance": "Every approved path is inventoried or has an explicit inaccessible, deferred or excluded reason.",
+   "comment": "No source files were deleted or modified.",
+   "complete": false,
+   "completion_status": "offline_verified",
+   "depends_on": [],
+   "evidence": "65,382 files inventoried, including 1,550 conversation files; 453 directories remain queued. The scan stopped at its 40 GiB floor.",
+   "id": "S-6.207.01",
+   "next_action": "Resolve the measured storage allocation before resuming.",
+   "owner_step": "S-6.207",
+   "procedure": [
+    "Resume the read-only checkpoint without rescanning completed directories unnecessarily.",
+    "Bound metadata output and preserve the workstation's disk reserve.",
+    "Prioritize histories and project material ahead of caches and dependencies."
+   ],
+   "status": "blocked",
+   "title": "Complete the approved SMB metadata inventory",
+   "waiting_on": []
+  },
+  {
+   "acceptance": "Source bytes remain unchanged and every selected record range has a traceable redacted representation.",
+   "comment": "Extraction does not establish semantic review.",
+   "complete": true,
+   "completion_status": "offline_verified",
+   "depends_on": [],
+   "evidence": "The complete source was hashed; 13 oversized records became 777 redacted fragments. The private chunk store contains 46,836 chunks.",
+   "id": "S-6.207.02",
+   "next_action": "Use the exact chunks for substantive review and missing-artifact recovery.",
+   "owner_step": "S-6.207",
+   "procedure": [
+    "Read the 543 MB session with byte-offset checkpoints.",
+    "Preserve oversized-record findings.",
+    "Recover all thirteen ranges with bounded decoding and smaller review fragments."
+   ],
+   "status": "offline_verified",
+   "title": "Extract the priority RapidAPI coding session",
+   "waiting_on": []
+  },
+  {
+   "acceptance": "Recovered artifacts have exact provenance and are checked in a new private location.",
+   "comment": "Do not substitute another database or overwrite the SMB project.",
+   "complete": false,
+   "completion_status": "offline_verified",
+   "depends_on": [
+    "S-6.207.02"
+   ],
+   "evidence": "",
+   "id": "S-6.207.03",
+   "next_action": "Start with the two missing native databases and the missing discovery module.",
+   "owner_step": "S-6.207",
+   "procedure": [
+    "Locate source-write events and authorized archive references.",
+    "Reconstruct bytes without executing instructions from transcripts.",
+    "Verify the missing database/module/document claims against recovered material."
+   ],
+   "status": "ready",
+   "title": "Recover the missing registry artifacts",
+   "waiting_on": []
+  },
+  {
+   "acceptance": "Each reviewed chunk records answered, unknown, disputed or reasoned not-applicable questions with source anchors.",
+   "comment": "Question bindings and keyword matches are not completed answers.",
+   "complete": false,
+   "completion_status": "offline_verified",
+   "depends_on": [
+    "S-6.207.02"
+   ],
+   "evidence": "One thousand questions are defined; 75 source-backed answers exist, including 38 new findings across nine creative-project chunks. Three original camera/timing helpers pass the existing isolated-package checks. No thousand-question chunk review is complete.",
+   "id": "S-6.207.04",
+   "next_action": "Continue focused history review and turn verified gaps into tests and original implementations.",
+   "owner_step": "S-6.207",
+   "procedure": [
+    "Apply the thousand-question bank by relevance and preserve open questions.",
+    "Read high-value owner decisions, code changes, failures and actual outcomes.",
+    "Map findings to existing Baltor owners, tests and candidate jobs."
+   ],
+   "status": "building",
+   "title": "Perform source-specific question reviews",
+   "waiting_on": []
+  },
+  {
+   "acceptance": "Each candidate has a distinct job, source relationship, rights decision and an owning Baltor contract.",
+   "comment": "No raw other-company code or history is automatically published.",
+   "complete": false,
+   "completion_status": "offline_verified",
+   "depends_on": [
+    "S-6.207.04"
+   ],
+   "evidence": "",
+   "id": "S-6.207.05",
+   "next_action": "Start with reusable schema-evidence and recovery invariants.",
+   "owner_step": "S-6.207",
+   "procedure": [
+    "Keep other-company material private by default.",
+    "Transfer one checked invariant into the existing owner.",
+    "Qualify exact new bytes through the ordinary component pipeline."
+   ],
+   "status": "proposed",
+   "title": "Convert approved findings into original candidates",
+   "waiting_on": [
+    "S-6.207.04"
+   ]
+  },
+  {
+   "acceptance": "Internal research, customer execution, file delivery and feed delivery remain distinct services and permissions.",
+   "comment": "An API provider is an engine; an endpoint listing is not a qualified customer tool.",
+   "complete": false,
+   "completion_status": "offline_verified",
+   "depends_on": [],
+   "evidence": "",
+   "id": "S-6.218.01",
+   "next_action": "Draft the narrow first hosted-tool contract and adversarial cases.",
+   "owner_step": "S-6.218",
+   "procedure": [
+    "Define discover, describe, invoke, status and cancel contracts over existing runtime owners.",
+    "Bind every operation to an exact version, engine, declared effect and audience.",
+    "Separate customer BYOK funding from any explicitly approved service-funded allowance."
+   ],
+   "status": "ready",
+   "title": "Specify the hosted live-tool boundary",
+   "waiting_on": []
+  },
+  {
+   "acceptance": "Every exposed operation has working request/response evidence and permitted downstream use.",
+   "comment": "Do not use account-sale or fake-engagement listings as tools.",
+   "complete": false,
+   "completion_status": "offline_verified",
+   "depends_on": [
+    "S-6.218.01"
+   ],
+   "evidence": "",
+   "id": "S-6.218.02",
+   "next_action": "Prioritize search, public company/job information and other bounded read-only tools.",
+   "owner_step": "S-6.218",
+   "procedure": [
+    "Check the provider contract, underlying data rights and any proxy/resale restrictions.",
+    "Test the declared endpoint and normalize explicit failures.",
+    "Hold deprecated, misleading, nonfunctional and unqualified offerings."
+   ],
+   "status": "ready",
+   "title": "Qualify providers for customer-facing use",
+   "waiting_on": [
+    "S-6.218.01"
+   ]
+  },
+  {
+   "acceptance": "One customer's tool can never resolve another customer's or an internal operator's credential.",
+   "comment": "A customer's BYOK call must never fall back to an internal key silently.",
+   "complete": false,
+   "completion_status": "offline_verified",
+   "depends_on": [
+    "S-6.218.01"
+   ],
+   "evidence": "",
+   "id": "S-6.218.03",
+   "next_action": "Keep secret values out of model context, manifests and responses.",
+   "owner_step": "S-6.218",
+   "procedure": [
+    "Use the existing secret and credential-lease owners.",
+    "Bind provider, account, allowed operation, expiry and funding source.",
+    "Test logging, cross-tenant references, redirects and wrong-host failures."
+   ],
+   "status": "proposed",
+   "title": "Build tenant-bound credential leases",
+   "waiting_on": [
+    "S-6.218.01"
+   ]
+  },
+  {
+   "acceptance": "Every accepted invocation fits both customer allowance and shared upstream capacity.",
+   "comment": "A flat subscription must not create unlimited upstream spend.",
+   "complete": false,
+   "completion_status": "offline_verified",
+   "depends_on": [
+    "S-6.218.02",
+    "S-6.218.03"
+   ],
+   "evidence": "",
+   "id": "S-6.218.04",
+   "next_action": "Define capped allowances before pricing service-funded calls.",
+   "owner_step": "S-6.218",
+   "procedure": [
+    "Reserve the maximum declared cost/request allocation before dispatch.",
+    "Record actual usage separately from estimates and unknown outcomes.",
+    "Test concurrent exhaustion, duplicate request IDs, cancellation and circuit breakers."
+   ],
+   "status": "proposed",
+   "title": "Add per-tenant budgets and upstream quota reservations",
+   "waiting_on": [
+    "S-6.218.02",
+    "S-6.218.03"
+   ]
+  },
+  {
+   "acceptance": "The gateway invokes only qualified operation IDs through declared engines and records bounded results.",
+   "comment": "No arbitrary URL proxy, cookie forwarding or broad network authority.",
+   "complete": false,
+   "completion_status": "offline_verified",
+   "depends_on": [
+    "S-6.218.04"
+   ],
+   "evidence": "",
+   "id": "S-6.218.05",
+   "next_action": "Start with one read-only tool and its complete conformance kit.",
+   "owner_step": "S-6.218",
+   "procedure": [
+    "Validate schema, tenant, entitlement, permission and destination before effects.",
+    "Use explicit idempotency and unknown-outcome reconciliation.",
+    "Keep native execution, remote reads and external mutations separate."
+   ],
+   "status": "proposed",
+   "title": "Implement scoped live invocation",
+   "waiting_on": [
+    "S-6.218.04"
+   ]
+  },
+  {
+   "acceptance": "A customer harness discovers relevant tools without loading thousands of definitions into context.",
+   "comment": "Existing library and staff tools do not already provide this capability.",
+   "complete": false,
+   "completion_status": "offline_verified",
+   "depends_on": [
+    "S-6.218.05"
+   ],
+   "evidence": "",
+   "id": "S-6.218.06",
+   "next_action": "Reuse the existing hosted MCP/API owner.",
+   "owner_step": "S-6.218",
+   "procedure": [
+    "Expose small capability cards and exact descriptions on demand.",
+    "Bind invocations to the selected contract/version.",
+    "Verify annotations, authorization and error behavior through the actual MCP transport."
+   ],
+   "status": "proposed",
+   "title": "Expose discovery and invocation through MCP and API",
+   "waiting_on": [
+    "S-6.218.05"
+   ]
+  },
+  {
+   "acceptance": "Two customer accounts pass positive and hostile cross-tenant tests with complete cost accounting.",
+   "comment": "No independent security certification is claimed by these tests.",
+   "complete": false,
+   "completion_status": "live_qualified",
+   "depends_on": [
+    "S-6.218.06"
+   ],
+   "evidence": "",
+   "id": "S-6.218.07",
+   "next_action": "Keep the tool disabled for public sale until this journey passes.",
+   "owner_step": "S-6.218",
+   "procedure": [
+    "Exercise wrong credentials, replay, oversized payloads and private-network targets.",
+    "Test provider outage, stale rights and subscription expiry.",
+    "Run a real task from a supported harness with an ordinary customer account."
+   ],
+   "status": "proposed",
+   "title": "Verify customer isolation and abuse controls",
+   "waiting_on": [
+    "S-6.218.06"
+   ]
+  },
+  {
+   "acceptance": "Checkout, permissions, displayed limits and the delivered service agree without changing existing subscriptions.",
+   "comment": "Model tokens and unlimited third-party calls are not included by implication.",
+   "complete": false,
+   "completion_status": "live_qualified",
+   "depends_on": [
+    "S-6.218.07"
+   ],
+   "evidence": "",
+   "id": "S-6.218.08",
+   "next_action": "Keep the $49.99 target conditional on a workable delivered scope.",
+   "owner_step": "S-6.218",
+   "procedure": [
+    "Measure unit economics for the qualified provider set.",
+    "Separate BYOK access from any capped included credits.",
+    "Apply the approved pricing process and preserve existing rates and grants."
+   ],
+   "status": "proposed",
+   "title": "Reconcile top-tier entitlements and pricing",
+   "waiting_on": [
+    "S-6.218.07"
+   ]
+  },
+  {
+   "acceptance": "Customers can use the advertised scope, inspect usage and stop or revoke access.",
+   "comment": "The highest-tier idea is a development target, not an available sales feature.",
+   "complete": false,
+   "completion_status": "published",
+   "depends_on": [
+    "S-6.218.08"
+   ],
+   "evidence": "",
+   "id": "S-6.218.09",
+   "next_action": "Expand provider engines only after the pilot is measured.",
+   "owner_step": "S-6.218",
+   "procedure": [
+    "Release through the guarded main workflow.",
+    "Check every advertised customer path live.",
+    "Publish actual supported capabilities and monitor failure, cost and withdrawal conditions."
+   ],
+   "status": "proposed",
+   "title": "Launch and monitor the qualified hosted-tool pilot",
+   "waiting_on": [
+    "S-6.218.08"
+   ]
+  },
+  {
+   "acceptance": "R2 delivery preserves exact bytes, customer authorization, revocation and download accounting.",
+   "comment": "Mirrored bodies are not evidence that R2 already serves customer downloads.",
+   "complete": false,
+   "completion_status": "live_qualified",
+   "depends_on": [
+    "S-6.215.09"
+   ],
+   "evidence": "",
+   "id": "S-6.13.01",
+   "next_action": "Prepare a bounded delivery canary; keep Fly delivery until it passes.",
+   "owner_step": "S-6.13",
+   "procedure": [
+    "Keep the existing private mirror and source body-store contract.",
+    "Test authorized, denied, missing, corrupt and partial reads.",
+    "Measure latency and cost, then exercise rollback before selecting the engine."
+   ],
+   "status": "ready",
+   "title": "Qualify authenticated R2 file delivery",
+   "waiting_on": [
+    "S-6.215.09"
+   ]
+  },
+  {
+   "acceptance": "A selected acquisition or coordination workload passes its contract and failure tests within the approved infrastructure allowance.",
+   "comment": "Keep custom retrieval and authoritative records on Fly until a replacement is qualified.",
+   "complete": false,
+   "completion_status": "live_qualified",
+   "depends_on": [
+    "S-6.214.06"
+   ],
+   "evidence": "",
+   "id": "S-6.13.02",
+   "next_action": "Start with one collector or job coordinator, not a fleet of unmeasured workers.",
+   "owner_step": "S-6.13",
+   "procedure": [
+    "Choose a workload from measurement and existing engine slots.",
+    "Use Workers with the appropriate queue or durable-work owner.",
+    "Test duplicate delivery, retries, checkpoint recovery, observability and rollback."
+   ],
+   "status": "proposed",
+   "title": "Place bounded collectors and durable jobs on Cloudflare",
+   "waiting_on": [
+    "S-6.214.06"
+   ]
+  },
+  {
+   "acceptance": "The decision distinguishes customer identity, internal access protection and bot checks.",
+   "comment": "Cloudflare Access and Turnstile must not be mistaken for an already implemented customer sign-up service.",
+   "complete": false,
+   "completion_status": "offline_verified",
+   "depends_on": [],
+   "evidence": "",
+   "id": "S-6.13.03",
+   "next_action": "Document the migration evidence needed and cost; do not replace login solely because DNS uses Cloudflare.",
+   "owner_step": "S-6.13",
+   "procedure": [
+    "Record the current Supabase customer identity and email-first account flow.",
+    "Compare a Cloudflare-compatible customer auth implementation with the current provider.",
+    "Test ownership, password choice, recovery, sessions, OAuth and existing-account migration before a cutover."
+   ],
+   "status": "ready",
+   "title": "Evaluate the customer authentication boundary",
+   "waiting_on": []
+  },
+  {
+   "acceptance": "An ordinary customer can submit a bounded skill, tool or file with explicit ownership and an isolated audience.",
+   "comment": "The current Dot work log is staff-only and is not a customer private library.",
+   "complete": false,
+   "completion_status": "live_qualified",
+   "depends_on": [],
+   "evidence": "",
+   "id": "S-6.12.01",
+   "next_action": "Implement a narrow customer upload flow before adding a public contribution CTA.",
+   "owner_step": "S-6.12",
+   "procedure": [
+    "Reuse account identity, managed records and existing content storage.",
+    "Declare content type, source, rights, size and exact digest.",
+    "Test two-account isolation, malformed files, secrets and inert storage."
+   ],
+   "status": "ready",
+   "title": "Add private-by-default customer submissions",
+   "waiting_on": []
+  },
+  {
+   "acceptance": "Private storage, selected-recipient sharing and public-review submission have separate explicit permissions.",
+   "comment": "Uploading never publishes, executes or sends a file to a model by itself.",
+   "complete": false,
+   "completion_status": "live_qualified",
+   "depends_on": [
+    "S-6.12.01"
+   ],
+   "evidence": "",
+   "id": "S-6.12.02",
+   "next_action": "Keep uploads private unless the owner deliberately selects another audience.",
+   "owner_step": "S-6.12",
+   "procedure": [
+    "Bind audience changes to exact content versions and consent.",
+    "Require a usable licence and rights declaration for public submission.",
+    "Test revocation, link leakage, cross-tenant metadata and the admission boundary."
+   ],
+   "status": "proposed",
+   "title": "Add sharing and public-library submission controls",
+   "waiting_on": [
+    "S-6.12.01"
+   ]
+  },
+  {
+   "acceptance": "Displayed scope, checkout, entitlement and delivered behavior agree without repricing existing subscriptions.",
+   "comment": "Earlier $14.99 Feeds design remains historical; no existing paid rate or free grant is changed by this checklist.",
+   "complete": false,
+   "completion_status": "live_qualified",
+   "depends_on": [],
+   "evidence": "Release 83 serves three distinct cards with pricing outside the hero. The live matrix passes 483 checks and independent review passes 426 across ten hosts. Current $29 checkout is unchanged; local overnight tools are included during Preview, not sold as hosted supervision. The prepared additive-policy migration requires compatible readers before activation and does not rewrite paid grants.",
+   "id": "S-6.12.03",
+   "next_action": "Review and deploy compatible billing readers before an additive new-signup price migration; qualify the hosted upper tier before sale.",
+   "owner_step": "S-6.12",
+   "procedure": [
+    "Use the latest Feeds instruction: $4.99 per month, free through December 31, 2026 Eastern with explicit paid opt-in.",
+    "Keep the $29.99 library and $49.99 upper-tier targets separate from current $29 checkout.",
+    "Release a purchase card only when its promised capability and billing journey pass."
+   ],
+   "status": "building",
+   "title": "Reconcile the three offering cards and new-signup prices",
+   "waiting_on": []
+  },
+  {
+   "acceptance": "A supported customer harness completes useful work with checkpoints, declared model access and complete usage accounting.",
+   "comment": "Local Preview tooling is available; hosted supervision and measured task benefit are separate.",
+   "complete": false,
+   "completion_status": "live_qualified",
+   "depends_on": [],
+   "evidence": "",
+   "id": "S-6.24.01",
+   "next_action": "Retain current provider holds; do not reset the earlier token ceiling.",
+   "owner_step": "S-6.24",
+   "procedure": [
+    "Select a frozen task and a no-extra-material baseline.",
+    "Use an authorized provider route with a verified allowance and explicit ceiling.",
+    "Test interruption, unknown outcomes, cancellation and the morning report."
+   ],
+   "status": "ready",
+   "title": "Prove one bounded overnight customer task",
+   "waiting_on": []
+  },
+  {
+   "acceptance": "Ordinary customer connections retrieve exact material and complete a task in supported native harnesses.",
+   "comment": "A successful metadata request is not a completed harness task.",
+   "complete": false,
+   "completion_status": "live_qualified",
+   "depends_on": [
+    "S-6.215.08"
+   ],
+   "evidence": "",
+   "id": "S-6.24.02",
+   "next_action": "Run the customer path on this PC without borrowing administrator access.",
+   "owner_step": "S-6.24",
+   "procedure": [
+    "Use a non-admin customer account and a clean setup.",
+    "Run discovery, selection, download and actual use.",
+    "Capture errors, denied operations, revisions, complete costs and cleanup."
+   ],
+   "status": "ready",
+   "title": "Verify OpenCode and another harness against live Baltor",
+   "waiting_on": [
+    "S-6.215.08"
+   ]
+  },
+  {
+   "acceptance": "A bounded export from the exact owner account includes available images and generation provenance with coverage limits.",
+   "comment": "No images or account history have been claimed downloaded.",
+   "complete": false,
+   "completion_status": "offline_verified",
+   "depends_on": [],
+   "evidence": "The supplied key is stored. Browser connector access is unavailable; inspected local site sessions did not identify the target account.",
+   "id": "S-6.201.01",
+   "next_action": "Resolve the missing target-account access without forwarding cookies to third parties.",
+   "owner_step": "S-6.201",
+   "procedure": [
+    "Re-establish an account-bound read path through available browser or official export/API access.",
+    "Preserve prompts, model/version, seed, dimensions and asset checksums where available.",
+    "Keep assets private until their downstream use conditions are reviewed."
+   ],
+   "status": "blocked",
+   "title": "Recover the authorized TensorArt asset history",
+   "waiting_on": []
+  },
+  {
+   "acceptance": "An attractive finished project survives a meaningful revision and clean reopen in a supported environment.",
+   "comment": "Formats, asset counts and native loading do not establish a useful creative result.",
+   "complete": false,
+   "completion_status": "offline_verified",
+   "depends_on": [],
+   "evidence": "",
+   "id": "S-6.201.02",
+   "next_action": "Select a small end-to-end creative proof rather than expanding untested templates.",
+   "owner_step": "S-6.201",
+   "procedure": [
+    "Choose one scoped scene, motion or interactive brief with measurable acceptance.",
+    "Reuse qualified native tools and record exact assets, versions and rights.",
+    "Render, revise and reopen; preserve failed attempts and source files."
+   ],
+   "status": "ready",
+   "title": "Complete one editable creative project and revision",
+   "waiting_on": []
+  },
+  {
+   "acceptance": "Marketing visuals show the actual supported workflow and do not imply an unmeasured benefit.",
+   "comment": "Preview clips are labelled as previews; no fabricated before/after result.",
+   "complete": false,
+   "completion_status": "published",
+   "depends_on": [
+    "S-6.201.02"
+   ],
+   "evidence": "",
+   "id": "S-6.201.03",
+   "next_action": "Use the accepted creative proof and recorded customer outcomes.",
+   "owner_step": "S-6.201",
+   "procedure": [
+    "Create a reproducible screen recording or render from the accepted project.",
+    "Run any with/without comparison under matched conditions.",
+    "Check captions, claims, phone layout, sound and media rights before publishing."
+   ],
+   "status": "proposed",
+   "title": "Produce a rights-cleared product demonstration",
+   "waiting_on": [
+    "S-6.201.02"
+   ]
+  },
+  {
+   "acceptance": "The package exposes only qualified MCP capabilities and passes an ordinary-user connection journey.",
+   "comment": "Directory approval and discovery are external outcomes, not guaranteed engineering dates.",
+   "complete": false,
+   "completion_status": "offline_verified",
+   "depends_on": [],
+   "evidence": "",
+   "id": "S-6.102.01",
+   "next_action": "Use the existing MCP server and distinguish private connection from directory publication.",
+   "owner_step": "S-6.102",
+   "procedure": [
+    "Reconcile the preserved plugin candidate with current official packaging requirements.",
+    "Test OAuth, scopes, tool descriptions, read/write annotations and optional UI.",
+    "Prepare support, privacy, terms and reviewer instructions without exposing operator tools."
+   ],
+   "status": "ready",
+   "title": "Package and test the ChatGPT and Codex plugin",
+   "waiting_on": []
+  },
+  {
+   "acceptance": "The exact submitted package is approved and deliberately published under the correct verified identity.",
+   "comment": "No marketplace submission has been represented as complete.",
+   "complete": false,
+   "completion_status": "published",
+   "depends_on": [
+    "S-6.102.01"
+   ],
+   "evidence": "",
+   "id": "S-6.102.02",
+   "next_action": "Prepare everything engineering can do; personal identity verification remains with the owner.",
+   "owner_step": "S-6.102",
+   "procedure": [
+    "Check publishing organization/project and owner-completed identity requirements.",
+    "Submit only the tested supported scope with complete review material.",
+    "Record automated findings, review outcome and actual directory availability."
+   ],
+   "status": "proposed",
+   "title": "Complete plugin review and release prerequisites",
+   "waiting_on": [
+    "S-6.102.01"
+   ]
+  },
+  {
+   "acceptance": "Activation, successful retrieval/use, retention, cost and support metrics come from actual service records.",
+   "comment": "Catalogue size alone is not product-market-fit evidence.",
+   "complete": false,
+   "completion_status": "live_qualified",
+   "depends_on": [],
+   "evidence": "",
+   "id": "S-6.204.01",
+   "next_action": "Use measured activation and usefulness to guide the next batch and marketing.",
+   "owner_step": "S-6.204",
+   "procedure": [
+    "Define a small funnel from sign-up to a useful customer result.",
+    "Instrument allowed aggregate events without leaking submitted content.",
+    "Run controlled journeys and inspect the resulting counts."
+   ],
+   "status": "ready",
+   "title": "Measure onboarding and product use",
+   "waiting_on": []
+  },
+  {
+   "acceptance": "Launch and funding material has current facts, source-backed credit eligibility and post-credit operating costs.",
+   "comment": "No advertising spend, personal verification, bank details or founder-account submission is automated.",
+   "complete": false,
+   "completion_status": "offline_verified",
+   "depends_on": [],
+   "evidence": "",
+   "id": "S-6.204.02",
+   "next_action": "Prioritize the infrastructure already used and the next customer proof.",
+   "owner_step": "S-6.204",
+   "procedure": [
+    "Build a concise demo, one-pager and evidence-backed deck.",
+    "Compare relevant startup programmes using their current primary terms.",
+    "Prepare founder-only applications and separate credits from sustainable unit economics."
+   ],
+   "status": "ready",
+   "title": "Prepare launch, funding and startup-credit material",
+   "waiting_on": []
+  },
+  {
+   "acceptance": "New Public Good material has a distinct useful job, clear rights, ordinary admission and working no-plan retrieval.",
+   "comment": "The live 448 grants and 1,128 useful Public Good files remain a separate verified baseline.",
+   "complete": false,
+   "completion_status": "published",
+   "depends_on": [],
+   "evidence": "",
+   "id": "S-6.216.01",
+   "next_action": "Choose unmet SDG jobs from measured coverage rather than multiplying labels.",
+   "owner_step": "S-6.216",
+   "procedure": [
+    "Use the existing Kaggle metadata connection and other permitted primary sources.",
+    "Build original small data, validation, accessibility or research tools with source and scope.",
+    "Qualify, publish and explicitly grant exact package versions through the existing Public Good policy."
+   ],
+   "status": "ready",
+   "title": "Expand useful SDG and competition-derived materials",
+   "waiting_on": []
+  },
+  {
+   "acceptance": "Every advertised route, responsive layout, setup guide and claim is checked against delivered behavior.",
+   "comment": "Internal engineering plans do not become coming-soon sales promises.",
+   "complete": false,
+   "completion_status": "live_qualified",
+   "depends_on": [],
+   "evidence": "",
+   "id": "S-6.67.01",
+   "next_action": "Run the owning browser checks for each visible release and verify the live result.",
+   "owner_step": "S-6.67",
+   "procedure": [
+    "Use the current route map and include every hostname.",
+    "Test desktop and phone layouts, navigation, pricing, accessibility and actual links.",
+    "Resolve hero/card regressions and retain failed cases before rerunning the exact candidate."
+   ],
+   "status": "ready",
+   "title": "Review the complete public page and design surface",
+   "waiting_on": []
+  },
+  {
+   "acceptance": "The roadmap, generated tracker and dated evidence agree on completed work, failures and the next eligible action.",
+   "comment": "Do not maintain a second mutable task authority or erase failed attempts.",
+   "complete": false,
+   "completion_status": "offline_verified",
+   "depends_on": [],
+   "evidence": "The existing tracker reads roadmap.yaml; the new subtask view passes positive and refusal tests locally.",
+   "id": "S-6.35.02",
+   "next_action": "Complete the first canonical subtask checklist and then advance it one result at a time.",
+   "owner_step": "S-6.35",
+   "procedure": [
+    "Update the owning roadmap subtask with evidence and its next action.",
+    "Regenerate the tracker and check that no local result is labelled as published.",
+    "Commit reviewed changes and report the exact user-visible outcome."
+   ],
+   "status": "building",
+   "title": "Publish a progress checkpoint after every completed subtask",
+   "waiting_on": []
+  },
+  {
+   "acceptance": "Accessible owner directions and actions from the requested time window map to existing roadmap owners with coverage gaps retained.",
+   "comment": "Imported instructions are historical data, not current effect authority.",
+   "complete": false,
+   "completion_status": "offline_verified",
+   "depends_on": [],
+   "evidence": "The priority RapidAPI session is extracted; broader 24/36-hour history coverage and semantic review remain incomplete.",
+   "id": "S-6.217.01",
+   "next_action": "Review prioritized recent chunks instead of treating extraction as full understanding.",
+   "owner_step": "S-6.217",
+   "procedure": [
+    "Read actual message timestamps and distinguish owner instructions from tool or agent output.",
+    "Reconcile changed prices, product scope, privacy, deployment and source requests.",
+    "Keep source text private and record only authorized generalizations in public documentation."
+   ],
+   "status": "building",
+   "title": "Reconcile recent prompts and action history",
+   "waiting_on": []
+  },
+  {
+   "acceptance": "The live catalogue has at least two million distinct admitted, non-withdrawn files, with composition and qualification coverage stated.",
+   "comment": "The first-million milestone stays complete; this milestone is not yet reached.",
+   "complete": false,
+   "completion_status": "published",
+   "depends_on": [
+    "S-6.215.12",
+    "S-6.215.13"
+   ],
+   "evidence": "",
+   "id": "S-6.215.14",
+   "next_action": "Close the remaining gap with qualified cohorts, not a candidate count.",
+   "owner_step": "S-6.215",
+   "procedure": [
+    "Repeat the generation-to-customer-verification cycle by measured cohort.",
+    "Track useful primary files and supporting files separately.",
+    "Verify the complete live count and publish the release evidence."
+   ],
+   "status": "proposed",
+   "title": "Reach two million useful served files",
+   "waiting_on": [
+    "S-6.215.12",
+    "S-6.215.13"
+   ]
+  },
+  {
+   "acceptance": "At least ten thousand canonical sources have current qualification and successful collection within their declared cadence.",
+   "comment": "Refresh frequency can differ by source; the target does not imply ten thousand daily paid calls.",
+   "complete": false,
+   "completion_status": "live_qualified",
+   "depends_on": [
+    "S-6.214.07"
+   ],
+   "evidence": "",
+   "id": "S-6.214.08",
+   "next_action": "Do not count untested directory matches toward this milestone.",
+   "owner_step": "S-6.214",
+   "procedure": [
+    "Expand the measured source population.",
+    "Report stale, withdrawn, inaccessible and duplicate sources separately.",
+    "Verify the full active-source census and its reproducible query."
+   ],
+   "status": "proposed",
+   "title": "Reach ten thousand active qualified sources",
+   "waiting_on": [
+    "S-6.214.07"
+   ]
+  }
+ ],
+ "execution_counts": {
+  "complete": 10,
+  "total": 60
  },
  "lanes": {
   "blocked": [
@@ -1318,7 +2612,7 @@
      "S-6.213"
     ],
     "id": "S-6.215",
-    "next_local_work": "October 8 final release checkpoint: release82/22b8f146 is live with owner-approved flexible Terms pricing. Exact CI37849904645, local browser976/976 with197/197 controls, guarded deploy37851063100, live Terms108/108 across10hosts,457layout/legal checks,2544exact edge files and50pulse reads pass; gate closed. Other legal sections/privacy/subscriptions are unchanged. Latest owner prices14.99/29.99/49.99 remain the selected3-card target; an older4.99 line in the repeated brief is treated as stale rather than an intentional reversal. The private design passes4layouts; current checkout remains29USD. Next activate safe new-signup pricing without repricing current subscriptions or free grants; add scoped setup/feed/job control through existing API/CLI owners and qualify the third hosted service before selling it. Hosted MCP currently declares12library/feedback/staff tools, not full setup/control. Preserve model usage-limit hold and all3attempts. Then independent candidate admission/publication, R2 serving canary, saved feeds, creative/TensorArt rights/history, customer proof and ChatGPT distribution. Existing account handoff, API checklist, business/credits review and Gantt are local and secret-free. Earlier observations retained as history: October 8 closing checkpoint: release81/e51c083b is live, exact CI37844049480 and guarded deploy37844947486 passed, gate closed; ten-host2134 browser assertions,67pages/277views/416links,2544exact assets and50pulse reads pass. Repeated345-offering checks pass; retain the first export-marker and browser-canary findings. The repaired model route returned usage_limit_reached on its single qualification: preserve all3attempts, unknown usage and the previous120000-token customer ceiling. Latest owner direction is3distinct product cards at14.99/29.99/49.99USD monthly, Feeds free through2026 with opt-in. Four-layout private design is ready; current live checkout remains29USD, price-clause approval and safe new-signup migration remain, with existing paid rates/free grants preserved. Implement hosted run coordination/isolation/recovery/checkout before selling the third tier; do not present it as available. Then resume the existing content admission/R2/feeds/creative/launch work. Earlier observations retained as history: October 8 Preview checkpoint: release 80 is live from 3c96b6b3, exact CI and guarded deployment passed, gate closed; 2,134 ten-host browser checks, 345 live offering checks, 67 pages, 277 views, 436 links, 2,544 exact assets and fifty final pulse reads pass. Available local overnight tools use Preview; future-feature marketing is removed. Hosted supervision remains unfinished. The retired Ollama default needs a separately qualified replacement; preserve prior attempts and customer limits. Earlier observations retained as history: October 8 afternoon checkpoint: release 79 is live from dc7b3ccd with exact CI and guarded deployment passing, all ten hosts passing 2,126 browser checks, and 2,544 exact Cloudflare files verified. The catalogue remains 1,353,029 distinct served files; the 24 SDG tools and 192 new bodies are already published. The stopped atomic campaign has 31,474 lineage-verified candidates and 120,090 candidate payloads absent from the live library; 220,318 prechecks pass, but content admission and publication remain open. Its original twelve-hour served-addition target was not reached. Do not resume its v1 journal with the v2 reader or reset its limits. Next: semantic comparison, independent review and generated execution evidence, guarded additive publication, R2 customer canary, saved per-agent feeds and bounded native model/customer proof. The third offering and public ChatGPT listing remain unqualified. The current handoff is docs/context/SESSION-HANDOFF-2026-10-08.md and its workstation closing checkpoint. Earlier observations retained as history: October 8 campaign: pursue one million additional atomic harness files in about twelve hours, tracked separately from the ten-million served target. Release77 and all nine Cloudflare website routes are live; twenty-four original SDG packages are admitted and sandbox-tested but still need additive publication. Measure a 100-1000-atom source-backed pilot, then activate a bounded resumable production runner with per-batch candidate, payload, dedup, admission and served counts. Broaden prompts, exact strings, role-specific checks, caveats, schemas, native tools and OCI/service contract cards through existing owners; preserve distinct imperfect private candidates and reuse common implementations. Qualify current Kaggle and multi-engine discovery, shared quotas and one source-to-component proof, including community leads for Godot, Blender/MCP and Babylon. Complete adversarial full-page and customer-journey checks plus rights-cleared editable marketing proof. See the twelve-hour phase chart and procedures in docs/roadmap/DELIVERY-SEQUENCE.md. Earlier October 7 active work: 1,352,837 distinct files in 218,127 packages are live. The owner now requests ten million useful served files, broader component families and faster Cloudflare adoption where it helps, with maintenance downtime permitted. Preserve and reconcile all pending work, release the narrowed legacy-list repair, move inactive local data to Expansion with digest verification, and migrate qualified public delivery and internal processing to Cloudflare. Preserve custom search and authoritative application records until replacements pass their existing contracts. The active checklist and phase chart are in docs/roadmap/DELIVERY-SEQUENCE.md. Earlier observations follow as history. October 4 update: release 62 is live from 75e3cabd with the general approved submission policy and private Dot reports, UTF-8 files and replies. Twelve micro-component reports passed exact readback and replay of 108 attachments but remain unadmitted. All ten hosts passed 2,118 browser assertions and fifty Dot/access/readiness checks; full product acceptance and actual Dot renewal remain open. The live catalogue remains 30,751 packages and 96,120 distinct files. The October 1 supply record has a separate cohort of roughly 31,933 candidates and 189,453 bodies, not served supply or a sustained throughput rate. Continue ordinary-account/native-task qualification and guarded publication before broad advertising. See docs/context/SESSION-HANDOFF-2026-10-04-RELEASE62.md. Earlier dated work: September 30: the active f817b2b3 release contains 30746 packages and 96064 distinct files after publishing 2935 approved packages and 7691 new file digests. Every prior package payload digest survived. The daily builder's stale schema omitted component_form; current-code recombination repaired this release, but the scheduled job's source pin still needs correction. The reconciled local candidate inventory has 769812 distinct files; 57613 generated packages with 411441 distinct files pass the matching static qualification snapshot, not independent approval or execution. Evidence: artifacts/library-audit-2026-09-30 and artifacts/architecture-audit-2026-09-19/pilot-release-54.json. Repair review request grouping that exceeds context limits and repair rejected function and recipe generators before new review. Expand sourced knowledge, typed executable tools, native workflows including n8n JSON, and creative capabilities toward the requested 10000 to 100000 meaningful new files. Original callable tools and procedural assets remain candidates. Preserve one implementation with parameterized reuse; do not inflate counts with copies or preset permutations. The observed serving-view swap took 337.673 seconds on one CPU and 2 GB: measure indexing memory and p95 search, and compare replaceable native search engines before choosing a rewrite. Complete execution coverage, balanced composition, million-file serving and measured customer benefit remain open.",
+    "next_local_work": "October 8 scalable-supply continuation: the existing supply CLI has frozen case-exclusion snapshots, explicit source ranges and a cumulative-budget campaign driver. Qualification accepts the same exact snapshot without thousands of command-line arguments. Preview verified 31,474 retained parent packages across 47 runs and 92 ranges. Schema walking found 643,314 declared constraint jobs, including 633,737 outside the initial comparison population; these are potential jobs, not generated or qualified files. A synthetic one-million-entry exclusion snapshot read passed, producing no library files. Complete exact-source gates, then run the bounded offline campaign and the existing qualification/admission owners; do not overlap the separate catalogue publication. Expand API clients, cloud/MCP tools, reference collections, maintained feeds and original task implementations through their existing owners, as mapped in tools/supply_lines/README.md. More templates or parameter permutations do not establish novelty. Earlier measured checkpoint: October 8 research-file qualification: generator 1.1.0 produced 13,887 distinct payloads in 1,091 groups, including 9,529 isolated cases. The full 1,091-parent comparison preserves all 4,464 earlier case jobs and adds 5,065 (113.46 percent); this measures pinned schema coverage, not live API validation or customer benefit. All 1,091 packages passed sandbox and mutation checks; 21 groups were held for overlapping case jobs. The remaining 1,070 groups are deterministically admitted with independent review ongoing, holding 13,627 distinct payloads and 9,353 cases. Exact bundle bodies and the 22,249-file delivery archive were verified. Main 73d8bfc3 passed exact CI 37869562691; the project environment passed 3,948 offline self-tests with zero provider calls. Preserve the earlier global-interpreter MCP failure. No catalogue publication or app deployment was dispatched because the separate growth session owns active reconciliation. Combine the exact admitted additions through that owner, compare its concurrent case population, preserve every prior version and grant, and run live consequence checks before claiming served growth. Current website and catalogue integration: October 9: release 83 from 4a1f0879 passed exact CI, guarded deployment and independent ten-host checks; the gate is closed. The three separate offerings and pricing outside the hero are live on Cloudflare export 9ed7e6ba5a3f, with all 2,544 public files verified. The complete 31,474-candidate population yielded 31,459 qualified and admitted packages, with 15 same-job duplicates held. Additions and conservative consequences are complete: 120,036 net-new bodies, all 218,151 prior item versions and 448 Public Good grants preserved. Final segmented reconciliation completed: 249,610 items with all 1,353,029 baseline bodies checked and 120,036 new bodies. No new catalogue publication has been dispatched. The owner's prioritized three-offering release is complete; prepare the native exact-base publisher without overlapping any further application deployment. Follow subtasks S-6.215.07 through .09 to publish, verify ordinary customer retrieval and mirror the new bodies. The repaired case pilot completed all 381 parents, producing 1,686 case files in 379 groups and 2,999 distinct candidate payloads; next compare globally and qualify, without replaying either the failed or completed run. The separate scalable campaign is owned by the roll_watch root session and uses frozen source ce5c9cb0; do not restart it or duplicate its case population. Agent Feeds remains $4.99 per month, free through December 31, 2026 Eastern with paid opt-in; the current owner decision controls future prices and existing subscriptions remain unchanged. Retain all provider usage-limit holds. The canonical subtask checklist owns the remaining two-million milestone, diverse creative production, source census and customer proof. Earlier attempts and release observations remain in Git history and the private account handoff.",
     "phase": 6,
     "status": "building",
     "title": "Ten million served component files across useful code, data, native assets and maintained feeds, with qualified supply and complete delivery",
@@ -2744,6 +4038,23 @@
     "title": "One truth on every public surface: a claims register that feeds a dated evidence page, each harness's recorded state beside its name, and a check over the website, the README, the deck and the capabilities record",
     "waiting_on": [
      "S-6.33"
+    ]
+   },
+   {
+    "acceptance": "An ordinary customer invokes an advertised live tool from a supported harness with correct authorization, rights, usage accounting and bounded cost.",
+    "blocked_on": "",
+    "depends_on": [
+     "S-6.24",
+     "S-6.214"
+    ],
+    "id": "S-6.218",
+    "next_local_work": "Use the ordered subtasks to qualify a narrow read-only BYOK pilot before selecting service-funded providers or advertising the hosted scope.",
+    "phase": 6,
+    "status": "proposed",
+    "title": "Tenant-scoped hosted live tools for customer harnesses, with qualified provider engines and explicit funding",
+    "waiting_on": [
+     "S-6.24",
+     "S-6.214"
     ]
    },
    {
@@ -5423,7 +6734,7 @@
    "total_steps": 4
   }
  ],
- "record_type": "development_tracker/v1",
+ "record_type": "development_tracker/v2",
  "source": "docs/roadmap/roadmap.yaml",
- "source_fingerprint": "sha256:3b5f4815a6b7e3a00763d802326b93c7c3c7ad7c08ce3cb358c305845b39c7e5"
+ "source_fingerprint": "sha256:c4de79ce69f788310e8de7d9bf33f41346d0c017ba9a86664a048c3298aa6512"
 }

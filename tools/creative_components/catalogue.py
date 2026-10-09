@@ -18,10 +18,22 @@ CASES = {
     "quadratic_bezier": ("geometry", [([0, 2, 4, 0.5], 2), ([1, 2, 7, 0], 1)], [[1, 2, 3, 2]]),
     "cubic_bezier": ("geometry", [([0, 0, 8, 8, 0.5], 4), ([1, 2, 3, 4, 1], 4)], [[1, 2, 3, 4, -1]]),
     "frame_time": ("timeline", [([30, 30], 1), ([1001, 30000], 0.03336666666666667)], [[1.5, 30], [-1, 30], [1, 0]]),
+    "frame_progress": ("timeline", [([0, 1], 0), ([0, 30], 0), ([29, 30], 1), ([1, 3], 0.5)],
+                       [[-1, 30], [30, 30], [0, 0], [0, 2.5]]),
     "beat_time": ("audio", [([4, 120], 2), ([0, 60], 0)], [[-1, 120], [1, 0]]),
     "segment_progress": ("timeline", [([1, 2, 4], 0), ([4, 2, 4], 0.5), ([9, 2, 4], 1)], [[0, 0, 0]]),
     "fit_inside": ("layout", [([1920, 1080, 1000, 1000], [0, 218.75, 1000, 562.5])], [[0, 1, 1, 1]]),
     "cover_frame": ("layout", [([100, 50, 200, 200], [-100, 0, 400, 200])], [[1, -1, 1, 1]]),
+    "focal_crop": ("camera", [([400, 200, 1, 1, 1, 0.5, 0.5], [100, 0, 200, 200]),
+                               ([400, 200, 1, 1, 2, 1, 0], [300, 0, 100, 100]),
+                               ([1e308, 1e308, 1e-308, 1e-308, 1, 0.5, 0.5], [0, 0, 1e308, 1e308]),
+                               ([1e-308, 1e-308, 1e308, 1e308, 1, 0.5, 0.5], [0, 0, 1e-308, 1e-308])],
+                   [[400, 200, 1, 1, 0.5, 0.5, 0.5], [400, 200, 1, 1, 1, -1, 0.5],
+                    [5e-324, 5e-324, 2, 3, 1, 0, 0]]),
+    "subject_safe_axis": ("camera", [([400, 200, 180, 300, 0], [100, 100, 180]),
+                                      ([400, 200, 180, 300, 1], [180, 100, 180])],
+                          [[400, 100, 180, 300, 0.5], [400, 500, 0, 400, 0.5], [400, 200, 20, 10, 0.5],
+                           [1e7, 1e-10, 1e6, 1000000.0000000001, 0.5]]),
     "rotate_point": ("geometry", [([1, 0, 1.5707963267948966], [0, 1]), ([2, 3, 0], [2, 3])], []),
     "orbit_point": ("camera", [([2, 0, 3], [2, 3, 0]), ([1, 3.141592653589793, 0], [-1, 0, 0])], [[0, 0, 0]]),
     "circle_distance": ("geometry", [([3, 4, 2], 3), ([0, 0, 2], -2)], [[0, 0, 0]]),
@@ -52,16 +64,18 @@ UNITS = {
     "db": "amplitude_decibels", "pan": "normalized_pan", "amplitude": "linear_amplitude",
     "t": "normalized_progress", "channel": "normalized_channel", "light": "relative_luminance",
     "dark": "relative_luminance", "foreground": "alpha_coverage", "background": "alpha_coverage",
+    "frame_count": "frame_count", "zoom": "zoom_ratio", "focus": "normalized_axis_position",
+    "focus_x": "normalized_horizontal_position", "focus_y": "normalized_vertical_position",
 }
 
-UNIT_INTERVAL = {"t", "channel", "light", "dark", "foreground", "background"}
+UNIT_INTERVAL = {"t", "channel", "light", "dark", "foreground", "background", "focus", "focus_x", "focus_y"}
 POSITIVE = {"rate", "duration", "bpm", "radius", "width", "height", "frame_width", "frame_height",
-            "gravity", "omega", "amplitude"}
+            "gravity", "omega", "amplitude", "image_extent", "crop_extent"}
 
 
 def input_property(component, name):
     """JSON Schema for one numeric port, plus its non-inferred unit."""
-    value = {"type": "integer" if name == "frame" else "number",
+    value = {"type": "integer" if name in ("frame", "frame_count") else "number",
              "description": UNITS.get(name, "shared_coordinate_unit")}
     if name in UNIT_INTERVAL:
         value.update(minimum=0, maximum=1)
@@ -76,4 +90,8 @@ def input_property(component, name):
         value.update(minimum=-600, maximum=600)
     if name == "pan":
         value.update(minimum=-1, maximum=1)
+    if name in ("zoom", "frame_count"):
+        value.update(minimum=1)
+    if name in ("subject_start", "subject_end"):
+        value.update(minimum=0)
     return value

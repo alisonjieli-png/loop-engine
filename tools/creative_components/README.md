@@ -6,10 +6,28 @@ approval process or publication route. Its helper operations execute inside
 their owning Loop; the runtime classification is the one in
 [the supply-line guide](../supply_lines/README.md#runtime-classification).
 
-The seed contains 35 numeric operations: easing, curve evaluation, frame and
+The seed contains 38 numeric operations: easing, curve evaluation, frame and
 beat timing, layout, vector math, orbit positions, signed distances, simple
 physics, amplitude conversion, panning, alpha coverage and color conversion.
 These operations are building blocks, not complete games, scenes or videos.
+
+Camera planning includes an aspect-preserving focal crop, a subject-safe crop
+interval and discrete frame progress that reaches both endpoints. Compose the
+two axis constraints with the crop dimensions and an easing operation for a
+bounded pan/zoom path. Subject coordinates must be supplied; no face detection,
+automatic layer extraction or aesthetic acceptance is implied.
+
+The focal crop computes bounded dimensions without requiring an intermediate
+scale to be representable. A crop whose width or height underflows to zero,
+or whose aspect cannot be represented within 1e-12 relative tolerance, is
+refused. The subject interval must have positive length and fit completely
+inside the crop. Frame progress accepts integer indices from zero through
+`frame_count - 1`; a one-frame shot returns zero.
+
+The existing fit and cover helpers were reused as design references. The
+[FFmpeg filter documentation](https://ffmpeg.org/ffmpeg-filters.html#zoompan)
+provides a renderer alternative. These original mathematical planners stay
+renderer-independent; no FFmpeg code or private project source was copied.
 
 Each package contains eight files. Common launchers, checks, provenance and
 licenses have repeated digests and count only once when measuring distinct
@@ -48,7 +66,9 @@ PYTHONPATH=src:tools .venv/bin/python -m unittest tools.test_creative_components
 Each temporary package runs known-answer cases, malformed-input checks and a
 constant-zero broken-implementation control. Additional checks cover source
 closure, native metadata, shared-file deduplication, color round trips and
-panning power. The test subprocesses run trusted first-party source in temporary
+panning power. Camera checks exercise extreme finite dimensions, whole-subject
+feasibility, both progress endpoints and mechanism-specific wrong controls.
+The test subprocesses run trusted first-party source in temporary
 directories. They are not evidence of a security sandbox for third-party code.
 
 The JSON launcher rejects non-finite output and bounds request bytes. Numeric

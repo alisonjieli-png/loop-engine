@@ -5,12 +5,14 @@ import base64
 import hashlib
 import inspect
 import json
+import math
 import subprocess
 import sys
 import tempfile
 import unittest
 from pathlib import Path
 from types import SimpleNamespace
+from unittest.mock import patch
 
 from tools import native_harness_candidates as native
 from tools import prepare_harness_candidates as factory
@@ -106,6 +108,197 @@ class CreativeComponentTests(unittest.TestCase):
             self.assertAlmostEqual(sum(gain * gain for gain in gains), 1)
         direction = primitives.normalize_three(1.7e308, 1.7e308, 1.7e308)
         self.assertAlmostEqual(sum(value * value for value in direction), 1)
+
+    def test_image_crop_preserves_aspect_and_never_reveals_empty_edges(self):
+        for width, height in ((400, 200), (200, 400), (301, 199)):
+            for frame_width, frame_height in ((16, 9), (9, 16), (1, 1)):
+                for focus_x, focus_y in ((0, 0), (0.5, 0.5), (1, 1)):
+                    for zoom in (1, 1.2, 3):
+                        x, y, w, h = primitives.focal_crop(width, height, frame_width, frame_height,
+                                                            zoom, focus_x, focus_y)
+                        self.assertGreaterEqual(x, 0)
+                        self.assertGreaterEqual(y, 0)
+                        self.assertLessEqual(x + w, width + 1e-9)
+                        self.assertLessEqual(y + h, height + 1e-9)
+                        self.assertAlmostEqual(w / h, frame_width / frame_height)
+        self.assertEqual(primitives.focal_crop(400, 200, 1, 1, 2, 1, 0), [300, 0, 100, 100])
+
+    def test_subject_safe_axis_refuses_an_impossible_crop(self):
+        for focus in (0, 0.5, 1):
+            origin, lower, upper = primitives.subject_safe_axis(400, 200, 180, 300, focus)
+            self.assertEqual((lower, upper), (100, 180))
+            self.assertLessEqual(origin, 180)
+            self.assertGreaterEqual(origin + 200, 300)
+        with self.assertRaises(ValueError):
+            primitives.subject_safe_axis(400, 100, 180, 300, 0.5)
+
+    def test_focal_crop_avoids_unrepresentable_intermediate_scale(self):
+        for extent, frame in ((1e308, 1e-308), (1e-308, 1e308)):
+            with self.subTest(extent=extent, frame=frame):
+                result = primitives.focal_crop(extent, extent, frame, frame, 1, 0.5, 0.5)
+                self.assertEqual(result, [0, 0, extent, extent])
+        self.assertEqual(primitives.focal_crop(8e307, 4e307, 2e-308, 1e-308, 2, 0, 0),
+                         [0, 0, 4e307, 2e307])
+
+    def test_subject_safe_axis_refuses_a_wider_subject_despite_origin_rounding(self):
+        start = 1e6
+        end = math.nextafter(start, math.inf)
+        self.assertGreater(end - start, 1e-10)
+        with self.assertRaisesRegex(ValueError, "subject cannot fit"):
+            primitives.subject_safe_axis(1e7, 1e-10, start, end, 0.5)
+
+    def test_crop_extreme_binary_scales_preserve_relative_aspect_and_bounds(self):
+        for image_exponent in (-1022, -900, 0, 900, 1023):
+            for frame_exponent in (-1022, -900, 0, 900, 1022):
+                extent = math.ldexp(1.0, image_exponent)
+                frame = math.ldexp(1.0, frame_exponent)
+                for frame_ratio in (0.5, 1, 2):
+                    for zoom in (1, 2, 4):
+                        for focus in (0, 0.5, 1):
+                            with self.subTest(image=image_exponent, frame=frame_exponent,
+                                              aspect=frame_ratio, zoom=zoom, focus=focus):
+                                x, y, width, height = primitives.focal_crop(
+                                    extent, extent, frame * frame_ratio, frame, zoom, focus, 1 - focus)
+                                self.assertTrue(all(math.isfinite(v) for v in (x, y, width, height)))
+                                self.assertGreater(width, 0)
+                                self.assertGreater(height, 0)
+                                self.assertGreaterEqual(x, 0)
+                                self.assertGreaterEqual(y, 0)
+                                self.assertLessEqual(x + width, extent)
+                                self.assertLessEqual(y + height, extent)
+                                self.assertEqual(width / height, frame_ratio)
+        with self.assertRaises(ValueError):
+            primitives.focal_crop(math.ulp(0.0), math.ulp(0.0), 1, 1, 2, 0, 0)
+
+    def test_subject_interval_is_feasible_exactly_when_the_whole_subject_fits(self):
+        for image in range(1, 9):
+            for crop in range(1, image + 1):
+                for start in range(image):
+                    for end in range(start + 1, image + 1):
+                        for focus in (0, 0.3, 0.5, 1):
+                            with self.subTest(image=image, crop=crop, start=start, end=end, focus=focus):
+                                if end - start > crop:
+                                    with self.assertRaises(ValueError):
+                                        primitives.subject_safe_axis(image, crop, start, end, focus)
+                                    continue
+                                origin, lower, upper = primitives.subject_safe_axis(image, crop, start, end, focus)
+                                self.assertEqual(lower, max(0, end - crop))
+                                self.assertEqual(upper, min(start, image - crop))
+                                self.assertLessEqual(lower, origin)
+                                self.assertLessEqual(origin, upper)
+                                self.assertGreaterEqual(origin, 0)
+                                self.assertLessEqual(origin + crop, image)
+                                self.assertLessEqual(origin, start)
+                                self.assertGreaterEqual(origin + crop, end)
+
+    def test_focal_crop_refuses_unrepresentable_aspect_not_a_distorted_rectangle(self):
+        extent = math.ulp(0.0)
+        with self.assertRaisesRegex(ValueError, "aspect"):
+            primitives.focal_crop(extent, extent, 2, 3, 1, 0, 0)
+
+    def test_new_helpers_reject_boolean_shape_and_nonfinite_arguments(self):
+        examples = {"focal_crop": [400, 200, 1, 1, 2, 0.5, 0.5],
+                    "subject_safe_axis": [400, 200, 180, 300, 0.5],
+                    "frame_progress": [1, 30]}
+        for name, arguments in examples.items():
+            operation = getattr(primitives, name)
+            for port in range(len(arguments)):
+                for invalid in (True, False, None, "1", [], {}, math.inf, -math.inf, math.nan):
+                    trial = list(arguments)
+                    trial[port] = invalid
+                    with self.subTest(name=name, port=port, invalid=invalid), self.assertRaises((ValueError, TypeError)):
+                        operation(*trial)
+            for trial in (arguments[:-1], arguments + [1]):
+                with self.subTest(name=name, arity=len(trial)), self.assertRaises(TypeError):
+                    operation(*trial)
+
+    def test_frame_progress_large_integers_remain_bounded_and_endpoint_inclusive(self):
+        for count in (2, 3, 30, 30000, 2 ** 53 + 1, 10 ** 400):
+            frames = sorted({0, 1, (count - 1) // 2, count - 2, count - 1})
+            progress = [primitives.frame_progress(frame, count) for frame in frames]
+            self.assertEqual(progress[0], 0)
+            self.assertEqual(progress[-1], 1)
+            self.assertEqual(progress, sorted(progress))
+            self.assertTrue(all(0 <= value <= 1 and math.isfinite(value) for value in progress))
+
+    def test_camera_regressions_reject_mechanism_specific_wrong_controls(self):
+        def overflowing_crop(width, height, frame_width, frame_height, zoom, focus_x, focus_y):
+            scale = min(width / frame_width, height / frame_height) / zoom
+            width, height = frame_width * scale, frame_height * scale
+            return [0, 0, width, height]
+
+        def rounded_interval(image_extent, crop_extent, subject_start, subject_end, focus):
+            lower = max(0, subject_end - crop_extent)
+            upper = min(subject_start, image_extent - crop_extent)
+            if lower > upper:
+                raise ValueError("subject cannot fit inside this crop")
+            return [max(lower, min(upper, focus * image_extent - crop_extent / 2)), lower, upper]
+
+        controls = (
+            ("focal_crop", overflowing_crop, "test_focal_crop_avoids_unrepresentable_intermediate_scale"),
+            ("subject_safe_axis", rounded_interval,
+             "test_subject_safe_axis_refuses_a_wider_subject_despite_origin_rounding"),
+            ("frame_progress", lambda frame, frame_count: frame / frame_count,
+             "test_discrete_frame_progress_reaches_both_endpoints"),
+        )
+        for name, operation, check in controls:
+            result = unittest.TestResult()
+            with self.subTest(component=name), patch.object(primitives, name, operation):
+                type(self)(check).run(result)
+                self.assertGreater(len(result.failures) + len(result.errors), 0)
+
+    def test_discrete_frame_progress_reaches_both_endpoints(self):
+        self.assertEqual(primitives.frame_progress(0, 1), 0)
+        self.assertEqual(primitives.frame_progress(0, 30), 0)
+        self.assertEqual(primitives.frame_progress(29, 30), 1)
+        with self.assertRaises(ValueError):
+            primitives.frame_progress(30, 30)
+        with self.assertRaises(ValueError):
+            primitives.frame_progress(0, 2.5)
+
+    def test_camera_contract_names_frame_counts_and_normalized_focus(self):
+        from tools.creative_components.catalogue import input_property
+        self.assertEqual(input_property("frame_progress", "frame_count")["type"], "integer")
+        self.assertEqual(input_property("focal_crop", "focus_x")["maximum"], 1)
+        self.assertEqual(input_property("focal_crop", "zoom")["minimum"], 1)
+
+    def test_camera_packages_keep_typed_shapes_and_refuse_bad_launcher_requests(self):
+        from jsonschema import Draft202012Validator
+
+        with tempfile.TemporaryDirectory() as temporary:
+            for name in ("focal_crop", "subject_safe_axis", "frame_progress"):
+                folder = Path(temporary) / name
+                folder.mkdir()
+                for row in package_files(name, b"fixture license", "a" * 40, {}):
+                    target = folder / row["path"]
+                    target.parent.mkdir(parents=True, exist_ok=True)
+                    target.write_bytes(base64.b64decode(row["content_base64"]))
+                contract = json.loads((folder / "contracts/operation.json").read_text())
+                fixtures = json.loads((folder / "verification/fixtures.json").read_text())
+                input_validator = Draft202012Validator(contract["input"])
+                output_validator = Draft202012Validator(contract["output"])
+                for row in fixtures["accepted"]:
+                    with self.subTest(component=name, arguments=row["arguments"]):
+                        input_validator.validate(row["arguments"])
+                        result = subprocess.run([sys.executable, "-B", "run.py"], cwd=folder,
+                                                input=json.dumps(row["arguments"]), capture_output=True,
+                                                text=True, timeout=10, check=False,
+                                                env={"PATH": str(Path(sys.executable).parent)})
+                        self.assertEqual(result.returncode, 0, result.stderr)
+                        output_validator.validate(json.loads(result.stdout))
+                arguments = fixtures["accepted"][0]["arguments"]
+                first = next(iter(arguments))
+                for wrong in ([], {**arguments, first: True}, {**arguments, "unknown": 1},
+                              {key: value for key, value in arguments.items() if key != first}):
+                    with self.subTest(component=name, wrong=wrong):
+                        self.assertFalse(input_validator.is_valid(wrong))
+                        result = subprocess.run([sys.executable, "-B", "run.py"], cwd=folder,
+                                                input=json.dumps(wrong), capture_output=True, text=True,
+                                                timeout=10, check=False,
+                                                env={"PATH": str(Path(sys.executable).parent)})
+                        self.assertNotEqual(result.returncode, 0)
+                        self.assertEqual(result.stdout, "")
+                self.assertFalse(output_validator.is_valid({"result": [0] if name != "frame_progress" else []}))
 
     def test_real_factory_materializes_only_pinned_source_and_counts_shared_files_once(self):
         from tools.build_creative_components import build

@@ -5,6 +5,18 @@
   "releases": [
    {
     "kind": "service",
+    "number": 83,
+    "at": "2026-10-09T04:12:23Z",
+    "lines": [
+     "Separate Agent Feeds, Harness Files and Overnight / AFK Work into three visually distinct cards on the homepage and pricing page.",
+     "Move prices out of the introductory hero into a dedicated offering section; preserve setup and access routes.",
+     "State the actual local Overnight / AFK Preview scope, included without extra charge with Harness Files; no hosted service or new paid tier is activated."
+    ],
+    "seen_after_release": "",
+    "not_shown": 1
+   },
+   {
+    "kind": "service",
     "number": 82,
     "at": "2026-10-08T22:07:22Z",
     "lines": [
@@ -1907,11 +1919,11 @@
   ]
  },
  "todo": {
-  "steps": 269,
+  "steps": 270,
   "live": 4,
   "checked": 35,
-  "open": 230,
-  "listed": 198,
+  "open": 231,
+  "listed": 199,
   "groups": [
    {
     "title": "Ship the September 22 review: one main line, live checks and launch readiness",
@@ -2530,6 +2542,11 @@
       "step": "S-6.178",
       "title": "Two other model families review the first catalogue, whose September 21 approvals do not show them",
       "status": "Waiting on the owner"
+     },
+     {
+      "step": "S-6.218",
+      "title": "Tenant-scoped hosted live tools for customer harnesses, with qualified provider engines and explicit funding",
+      "status": "Named, not scheduled yet"
      },
      {
       "step": "S-6.91",

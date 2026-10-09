@@ -1,9 +1,108 @@
 # Baltor delivery and business plan
 
-Kind: current execution order. Updated October 8, 2026. The
+Kind: current execution order. Updated October 9, 2026. The
 [roadmap](roadmap.yaml) owns task status, the [north star](../architecture/NORTH-STAR.md)
 owns product direction, and [AGENTS.md](../../AGENTS.md#commit-push-and-release-authority)
 owns authority. This page orders that work and states what each stage must prove.
+
+## Current ordered checklist
+
+Use the [generated task checklist](DEVELOPMENT-TRACKER.md#ordered-task-checklist)
+for the execution order and its detailed procedures. The subtasks live under
+their existing owners in `roadmap.yaml`. Each names dependencies, acceptance,
+evidence, a comment, a next action and the exact completion scope. The tracker
+refuses a completed task with an unfinished prerequisite. Publishing an
+artifact does not substitute for testing its live behavior.
+
+Current milestone: two million useful served harness component files, then
+the longer-term ten-million target. The last live observation is 1,353,029
+distinct files. The admitted contract batch has 120,036 net-new digests and
+passed preservation checks over 354 judged queries and 448 Public Good grants.
+Its final reconciliation is complete; it is not yet published. The expected
+post-publication count is 1,473,065, leaving 526,935 to the next milestone.
+
+Release 83 completes the owner's three-offering presentation priority.
+Pricing sits outside the hero in its own section, with
+separate Agent Feeds, Harness Files and Overnight / AFK Work cards on both the
+homepage and pricing page. Current checkout remains $29 while new billing and
+hosted execution are qualified. Usable local overnight tools have their own
+Preview card and setup route; they do not imply an active paid hosted service.
+The live layout matrix passed 483 checks and independent ten-host review
+passed 426. All 2,544 edge-export files match exact bytes and headers.
+The next catalogue publication must preserve the current baseline and remain
+separate from any further application deployment.
+
+The repaired case pilot processed all 381 parents and produced 1,686 case
+files in 379 groups, with 2,999 distinct candidate payloads. These counts
+include reusable parents and support files; global comparison, qualification,
+admission and publication remain separate tasks.
+
+### Ten thousand source goal
+
+The next feed target is at least 10,000 active qualified upstream sources.
+The combined current denominator has not yet been measured. A source is an
+independently maintained upstream collection, such as a repository, publisher
+feed, channel, dataset collection or benchmark stream. Provider aliases,
+query permutations, individual returned items and multiple credentials do not
+create extra sources. Different proxies for the same collection share one
+source identity.
+
+Track these stages separately: discovered, accessible, rights-checked,
+connector-qualified, scheduled, successfully collected within the declared
+cadence, and contributing to published feeds. A source can move out of the
+active count when it expires or becomes unavailable. A provider-marketplace
+search count is not an active-source count, and a thousand sources need not
+produce a thousand separate customer feeds.
+
+### Work windows and completion gates
+
+These windows express order, not promised calendar completion dates.
+
+| Workstream | Current window | Next window | Expansion window | Completion gate |
+|---|---|---|---|---|
+| Served files | Reconciliation complete; prepare exact-base publication | Publish and verify customer downloads | Qualify broader measured cohorts | Two million distinct admitted, served, non-withdrawn files |
+| Feeds | Define source identity and measure the census | Qualify a 100-source pilot and useful topic feeds | 1,000, then 10,000 active sources | Reproducible coverage and successful bounded collection |
+| Customer feeds | Record scope and existing boundaries | Save per-agent topics, sources, cadence and formats | Qualify isolated delivery and revocation | Two-account, two-agent live journey |
+| Hosted live tools | Provider and funding qualification | One read-only BYOK tool through MCP/API | Capped, rights-qualified provider engines | Real customer invocation with isolation and cost controls |
+| Private research | Preserve inventory and recovered chunks | Source-specific review and missing-artifact recovery | Original qualified components | Evidence-backed findings, not just extracted bytes |
+| Delivery and launch | Preserve the running service | R2 canary, native customer proof and creative revision | Qualified migration, marketing and distribution | Live acceptance evidence for each advertised feature |
+
+### Internal research and hosted customer tools
+
+S-6.218 owns the proposed hosted live-tool service. It is separate from source
+collection, downloadable files and feed delivery. A customer discovers a small
+capability card, inspects its contract and invokes only a qualified operation
+through the existing MCP/API and runtime owners. Do not load thousands of tool
+definitions into every prompt or expose a general-purpose URL proxy.
+
+Customer BYOK leases and any explicitly permitted service-funded allowance
+have separate credential, quota and entitlement bindings. Internal operator
+keys are not an unrestricted customer pool. Check downstream use and resale
+conditions per provider; a successful call does not establish those rights.
+The pasted marketplace results contain useful API leads, duplicates,
+deprecated listings and account-selling advertisements. Preserve findings,
+but do not admit an offering from its listing, popularity score or compliance
+claim alone.
+
+The latest repeated owner instruction selects Agent Feeds at $4.99 per month,
+free through December 31, 2026 Eastern with explicit paid opt-in. This replaces
+the earlier $14.99 target for Feeds. The library and upper-tier targets remain
+$29.99 and $49.99; existing subscriptions and free grants are preserved.
+Current checkout is still $29. Hosted tools and supervision are not sold until
+their delivered scope, costs, entitlements and customer journey are qualified.
+
+### Procedure after each subtask
+
+1. Work the first eligible subtask and keep any inherited background job within
+   its recorded scope. Reconcile an existing dispatch before restarting it.
+2. Save the result with its source identity, checks, failures and limits. A
+   refusal stays visible; it does not become a successful count.
+3. Update the owning subtask in `roadmap.yaml`, then regenerate and check both
+   the development tracker and continuation status.
+4. Commit and push reviewed changes. Deploy or publish only through the owning
+   guarded procedure, then verify the actual customer path.
+5. Report the completed task ID, observable result, remaining blocker and next
+   task. Keep raw private sources and credential values out of public records.
 
 ## Active execution plan, October 7
 

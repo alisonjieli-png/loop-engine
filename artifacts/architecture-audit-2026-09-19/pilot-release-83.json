@@ -1,0 +1,79 @@
+{
+  "record_type": "pilot_release_record/v1",
+  "release": 83,
+  "app": "baltor-pilot",
+  "source_revision": "4a1f087966c4584f5a0fd490c87a97049ba285a2",
+  "image": "registry.fly.io/baltor-pilot@sha256:d765fa8be32b654c44c0c9262383a4abfd57e9a2976f7bda11a1967b661f36e4",
+  "rollback_release": 82,
+  "rollback_image": "registry.fly.io/baltor-pilot@sha256:6869edf6c244f5c1c0caa75017c9dcde5f8b6eaaf536c41c54e61d0bb1fffebc",
+  "owner_local_date": "2026-10-09",
+  "deployed_at": "2026-10-09T04:12:23Z",
+  "ci_run": 37881941313,
+  "ci_conclusion": "success",
+  "deploy_run": 37882543337,
+  "deploy_workflow_conclusion": "success",
+  "deployment_gate_after": false,
+  "catalogue": {
+    "release_id": "1694fb4a5b355fb2db15f4b815ccc8d34fc74e0f09707aa58804b3bcac4f3403",
+    "packages": 218151,
+    "distinct_files": 1353029,
+    "distinct_file_bytes": 7939862307,
+    "changed_by_this_application_release": false
+  },
+  "changes": [
+    "Separate Agent Feeds, Harness Files and Overnight / AFK Work into three visually distinct cards on the homepage and pricing page.",
+    "Move prices out of the introductory hero into a dedicated offering section; preserve setup and access routes.",
+    "State the actual local Overnight / AFK Preview scope, included without extra charge with Harness Files; no hosted service or new paid tier is activated.",
+    "Preserve the $4.99 standard Feeds price, free through December 31, 2026 Eastern with explicit paid opt-in, and existing $29 library checkout."
+  ],
+  "cloudflare": {
+    "worker": "baltor-web-edge",
+    "export_id": "9ed7e6ba5a3f5e64e9ab2ff1b5ebd8304a92cc9c5d2e453740a15b40e91d118a",
+    "worker_deployment": "63f2165009414f149ef734b7edfc56b1",
+    "deployed_at": "2026-10-09T04:26:14Z",
+    "static_files": 2544,
+    "static_bytes": 75914843,
+    "production_hostnames": ["baltor.ai", "www.baltor.ai", "app.baltor.ai", "docs.baltor.ai", "status.baltor.ai", "examples.baltor.ai", "demo.baltor.ai", "deck.baltor.ai", "redteam.baltor.ai"],
+    "direct_fallback_hostname": "baltor-pilot.fly.dev",
+    "origin_tls": "strict",
+    "customer_identity": "Supabase",
+    "custom_search": "sqlite_disk_index",
+    "body_storage_selected": "Fly volume",
+    "production_routes_changed": false,
+    "rollback_export_id": "7092e0ff098a66d009c08566e59a53984a6c463d26f18291cbc50d222904db10",
+    "rollback_worker_deployment": "d0e294543fd348aa977babca7310f2e6"
+  },
+  "checks": {
+    "focused": 65,
+    "service_smoke": {"passed": 766, "total": 766},
+    "conformance": "All 32 gates pass on the exact UI tree.",
+    "local_browser": {"passed": 977, "total": 977, "mutants_detected": 197, "mutants_total": 197, "evidence_sha256": "50357882652e325c8b5c1090957ea2cb53e1aca158550d29c890cd7571edeb64"},
+    "live_offering_matrix": {"passed": 483, "total": 483, "evidence_sha256": "96967a86a917e7f624e9c1d77e8a2bc5565d189ba3d6040512dd195872e876dc"},
+    "independent_live_checks": {"passed": 426, "total": 426, "hostnames": 10, "views": 68, "unchanged_terms_comparisons": 20, "browser_errors": 0, "evidence_sha256": "1510145e0e9bdf3e972c8dd8001096a622f810ac64a5860baa266afa664ff9f8"},
+    "edge_readback": {"passed": 2544, "total": 2544, "scope": "exact bodies, required headers and export marker on baltor.ai", "evidence_sha256": "21e97258e65559a89b3747ed7033414a120260344b8eb8c5db8263e8e180932a"},
+    "pulse": {"reads": 50, "problems": 0, "slow": 1, "latency_finding": "docs.baltor.ai/api/v1/capabilities took 23.9 seconds; its response was successful."},
+    "live_full_public_route_map": {"pages": 67, "views": 277, "links_checked": 436, "automated_problems": 0, "scope": "Desktop/phone, actual light/dark appearance and subdomain roots; read-only requests, no sign-ins or form submissions."},
+    "provider_readback": {"release_status": "complete", "machine_state": "started", "machine_health": "passing", "evidence_sha256": "847c4c62665737e7abf84a2f817abec4420e3ab19e92b23350c9f43d7c4095cd"}
+  },
+  "retained_attempts": [
+    "Local full browser attempts 01 through 03 found obsolete selectors, whitespace, caption contrast and ambiguous locators; corrected final attempt04 passed all checks and wrong controls.",
+    "The first edge operator invocation failed on an incompatible MCP client import before effects. The next prepared an export but lacked SecretStorage before credential access or provider writes. A wrapper used the existing compatible MCP environment and appended installed pure-Python keyring dependencies; no package was installed.",
+    "The first independent host preflight had one transient demo.baltor.ai edge-status transport failure; page and CSS bytes were already current. The complete second attempt passed."
+  ],
+  "limits": [
+    "Three visible offerings are not three active paid plans. New-signup $29.99 and a $49.99 hosted offering remain unfinished; existing prices, subscriptions and grants are unchanged.",
+    "No candidate files or feeds were published, provider products activated, models called, identity migrated or body-storage engine changed by this release.",
+    "Checks use headless Chromium and emulated viewports, not a physical-device or owner's browser-session test.",
+    "The 67-page audit checks public rendering and navigation, not every authenticated journey or the truth of every marketing sentence. A separate copy review found overstated overnight outcomes; corrections are a follow-up, not part of this image."
+  ],
+  "private_evidence": [
+    "continuation-20261008/release83-deployment.json",
+    "continuation-20261008/release83-provider-readback.json",
+    "continuation-20261008/release83-offering-live-01/report.json",
+    "continuation-20261008/release83-pulse-01.json",
+    "cloudflare-site-release83-02/events.jsonl",
+    "release83-edge-readback-01.json",
+    "release83-independent-readonly-20261009/attempt-02/report.json",
+    "release83-full-page-audit-20261009/attempt-01/report.json"
+  ]
+}

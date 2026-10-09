@@ -14,6 +14,25 @@ Kind: current decision route with retained dated decisions. The owner's current 
 
 ## Feeds and Components offerings, October 6, 2026
 
+### Latest checklist and hosted-tool direction
+
+In the subsequent repeated checklist the owner explicitly states that Agent
+Feeds should be $4.99 and free until 2027. This is the current Feeds direction,
+replacing the earlier $14.99 target below. Display the free period through
+December 31, 2026 Eastern and retain explicit paid opt-in. The three-offering
+separation, $29.99 library target and $49.99 upper-tier target remain; existing
+paid subscriptions and free grants are unchanged. Current live checkout is
+still $29. The earlier design and its checks remain historical evidence.
+
+The owner then proposes hosted live API tools in the highest offering, supplied
+from thousands of selected provider endpoints. S-6.218 owns qualification and
+delivery. Internal research access, customer BYOK access and any explicitly
+permitted service-funded calls have separate credential and budget bindings.
+No provider subscription is presumed to grant resale or unrestricted customer
+use. Sell only the scope that passes rights, cost, isolation and real customer
+execution checks. Marketplace duplicates, deprecated APIs and account-selling
+advertisements are not qualified tools or distinct working feed sources.
+
 ### Three-product presentation, October 8 continuation
 
 The owner subsequently requests "3 clear product offerings, with different

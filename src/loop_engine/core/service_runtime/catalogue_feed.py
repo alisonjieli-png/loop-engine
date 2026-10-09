@@ -225,10 +225,11 @@ def page_body():
             '<p class="md-reading feed-offer-price"><strong>$4.99 a month.</strong> Free through December 31, 2026 (Eastern). '
             'No automatic charge; a paid subscription requires your explicit opt-in.</p>'
             '<p class="md-reading">Agent Feeds helps your agents decide what to do and why. Harness Files helps them carry it out. '
+            'Overnight / AFK Work adds local task queues, checkpoints and morning reports with your own worker and model access. '
             'Use model releases, GitHub projects, benchmarks and services to compare options for a real decision. '
             'Start with a source collection for your agent and the live catalogue feed below. '
             'Choose Agent Feeds + Harness Files when you also need reusable code, tools and working files.</p>'
-            '<div class="md-actions"><a class="button secondary" href="/pricing">Compare the two offerings</a>'
+            '<div class="md-actions"><a class="button secondary" href="/pricing">Compare the three offerings</a>'
             '<a class="button secondary" href="#live-catalogue">Read a live feed item</a>'
             '<a class="button secondary" href="#source-collections">Choose a source collection</a>'
             '<a class="button secondary" href="/library">Explore Harness Files</a></div></section>'
@@ -241,7 +242,7 @@ def page_body():
             '<p class="md-reading">The collections include a decision question, a research task, comparison fields and '
             'a suggested trigger for reviewing the decision again. '
             'Your harness owns scheduling and source access.</p></section>'
-            '<section class="md-band"><h2>Agent Feeds + Harness Files</h2><p class="md-reading">'
+            '<section class="md-band"><h2>Harness Files</h2><p class="md-reading">'
             'Agent Feeds supplies public source collections and the live catalogue feed. '
             'Agent Feeds + Harness Files also gives you the reusable library through the existing paid plan. '
             'The full-library plan is $29 a month.</p><p class="md-reading">Harness Files are reusable components: '
@@ -250,7 +251,13 @@ def page_body():
             '<p class="md-reading">A feed notice never installs or runs its contents. Downloaded files still require their normal '
             'authorization, source and licence checks.</p><div class="md-actions">'
             '<a class="button secondary" href="/library">Explore Harness Files</a>'
-            '<a class="button secondary" href="/public-good">Public Good</a></div></section>')
+            '<a class="button secondary" href="/public-good">Public Good</a></div></section>'
+            '<section class="md-band"><h2>Overnight / AFK Work · Preview</h2>'
+            '<p class="md-reading">Run local task queues with call limits, task checkpoints and morning reports. '
+            'Your worker and model access stay under your control.</p>'
+            '<p class="md-reading">No extra charge with Harness Files. The local tools are free and open source.</p>'
+            '<div class="md-actions"><a class="button secondary" href="/overnight">Set up overnight work</a>'
+            '<a class="button secondary" href="/pricing">Compare the three offerings</a></div></section>')
 
 
 def rendered_page(path, method, display_name, host=None):

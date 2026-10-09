@@ -53,6 +53,7 @@ TOPIC_DIMENSIONS = ("sdg_goal", "sdg_target", "onet_occupation", "onet_task", "i
 OK, EMPTY, PARTIAL, FAILED, REFUSED, RATE_LIMITED = "ok", "empty", "partial", "failed", "refused", "rate_limited"
 _REPOSITORY = re.compile(r"[A-Za-z0-9](?:[A-Za-z0-9-]{0,38})/[A-Za-z0-9._-]{1,100}\Z")
 MAXIMUM_TEXT = 300
+WEB_KEY_PREFIX = "web:"
 
 
 @dataclass
@@ -123,7 +124,7 @@ def candidate_key(url: str) -> "tuple[str, str] | None":
     match = _DOI_PAGE.match(canonical)
     if match:
         return "doi:" + match.group(1).lower(), "paper"
-    return "web:" + canonical, "web_page"
+    return WEB_KEY_PREFIX + canonical, "web_page"
 
 
 class Executor:

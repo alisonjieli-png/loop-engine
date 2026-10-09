@@ -24,7 +24,7 @@ ROOT = Path(__file__).resolve().parents[1]
 ROADMAP = ROOT / "docs/roadmap/roadmap.yaml"
 MARKDOWN = ROOT / "docs/roadmap/DEVELOPMENT-TRACKER.md"
 DATA = ROOT / "docs/roadmap/development-tracker.json"
-RECORD_TYPE = "development_tracker/v1"
+RECORD_TYPE = "development_tracker/v2"
 
 #: The lanes follow the roadmap's own status vocabulary. What counts as done is
 #: read from the roadmap (`continuation.eligible_dependency_states`), the same
@@ -89,6 +89,63 @@ def _lane(step: dict, by_id: dict, done: tuple) -> str:
     raise TrackerError(f"step {step['id']} has a status the tracker does not place: {status}")
 
 
+def _execution(roadmap, by_id):
+    """Read ordered subtasks from their owning roadmap steps, without inferring completion."""
+    fields = {"id", "title", "status", "completion_status", "depends_on", "acceptance", "procedure",
+              "next_action", "evidence", "comment"}
+    verified = {"offline_verified", "live_qualified", "published"}
+    known = set(roadmap["statuses"])
+    rows = {}
+    for parent in by_id.values():
+        children = parent.get("subtasks", [])
+        if not isinstance(children, list):
+            raise TrackerError("subtasks must be a list in the owning roadmap step")
+        for child in children:
+            if not isinstance(child, dict) or set(child) != fields:
+                raise TrackerError("a subtask must name its status, procedure, evidence, next action and completion scope")
+            if any(not isinstance(child[key], str) for key in fields - {"depends_on", "procedure"}):
+                raise TrackerError("subtask text fields must be strings")
+            name = child["id"]
+            if not name.startswith(parent["id"] + ".") or name in rows or any(c.isspace() for c in name):
+                raise TrackerError("a subtask has a unique identifier beneath its owner step")
+            if child["status"] not in known or child["completion_status"] not in verified:
+                raise TrackerError("subtask status or completion scope is unknown")
+            if not child["title"].strip() or not child["acceptance"].strip() or not child["next_action"].strip():
+                raise TrackerError("subtask title, acceptance and next action are required")
+            if child["status"] in verified and not child["evidence"].strip():
+                raise TrackerError("a locally verified or live subtask needs recorded evidence")
+            if (not isinstance(child["depends_on"], list) or not all(isinstance(x, str) for x in child["depends_on"])
+                    or len(set(child["depends_on"])) != len(child["depends_on"])):
+                raise TrackerError("subtask dependencies must be unique identifiers")
+            if (not isinstance(child["procedure"], list) or not child["procedure"]
+                    or not all(isinstance(x, str) and x.strip() for x in child["procedure"])):
+                raise TrackerError("a subtask needs ordered procedure steps")
+            rows[name] = {**child, "owner_step": parent["id"],
+                          "complete": child["status"] == child["completion_status"]}
+    order = roadmap.get("continuation", {}).get("execution_order", list(rows))
+    if (not isinstance(order, list) or not all(isinstance(x, str) for x in order)
+            or len(order) != len(rows) or set(order) != set(rows)):
+        raise TrackerError("execution_order must name every subtask exactly once")
+    visited, active = set(), set()
+    def visit(name):
+        if name in active:
+            raise TrackerError("subtask dependency cycle")
+        if name in visited:
+            return
+        active.add(name)
+        for dependency in rows[name]["depends_on"]:
+            if dependency not in rows:
+                raise TrackerError("subtask dependency is unknown")
+            visit(dependency)
+        active.remove(name); visited.add(name)
+    for name in order:
+        visit(name)
+        rows[name]["waiting_on"] = [x for x in rows[name]["depends_on"] if not rows[x]["complete"]]
+        if rows[name]["complete"] and rows[name]["waiting_on"]:
+            raise TrackerError("a completed subtask cannot have an unfinished required dependency")
+    return [rows[name] for name in order]
+
+
 def build(raw: bytes) -> dict:
     roadmap = yaml.safe_load(raw)
     if not isinstance(roadmap, dict):
@@ -145,6 +202,8 @@ def build(raw: bytes) -> dict:
               "instructions": list(action.get("instructions") or ()), "completion": action.get("completion", "")}
              for action in continuation.get("owner_actions") or ()]
 
+    execution = _execution(roadmap, by_id)
+
     return {
         "record_type": RECORD_TYPE,
         "source": "docs/roadmap/roadmap.yaml",
@@ -155,6 +214,8 @@ def build(raw: bytes) -> dict:
         "launch_gates": gates,
         "packages": packages,
         "owner_actions": owner,
+        "execution": execution,
+        "execution_counts": {"total": len(execution), "complete": sum(row["complete"] for row in execution)},
     }
 
 
@@ -178,6 +239,29 @@ def render(tracker: dict) -> str:
     ]
     for key, title in LANES:
         lines.append(f"| {title} | {tracker['counts'][key]} |")
+    if tracker["execution"]:
+        tasks = tracker["execution"]
+        next_task = next((row for row in tasks if not row["complete"] and not row["waiting_on"]
+                          and row["status"] not in BLOCKED + RETIRED), None)
+        lines += ["", "## Ordered task checklist", "",
+            "Each subtask lives in its owning step in roadmap.yaml. A local check does not complete a task that requires publication.", "",
+            f"Completed within their stated scope: {tracker['execution_counts']['complete']} of {tracker['execution_counts']['total']} subtasks.", "",
+            ("Next eligible subtask: " + next_task["id"] + ": " + _cell(next_task["title"])) if next_task else "No eligible subtask is recorded.", "",
+            "| Order | Task | State | Completion required | Next action or dependency |", "|---:|---|---|---|---|"]
+        for number, task in enumerate(tasks, 1):
+            note = "Waiting on " + ", ".join(task["waiting_on"]) if task["waiting_on"] else task["next_action"]
+            mark = "[x]" if task["complete"] else "[ ]"
+            lines.append(f"| {number} | {mark} {task['id']}: {_cell(task['title'])} | {task['status']} | "
+                         f"{task['completion_status']} | {_cell(note)} |")
+        lines += ["", "## Subtask procedures and evidence", ""]
+        for task in tasks:
+            lines += [f"### {task['id']} {_cell(task['title'])}", "",
+                f"Owner step: {task['owner_step']}. State: {task['status']}. Completion requires: {task['completion_status']}.", "",
+                "Acceptance: " + _cell(task["acceptance"]), ""]
+            lines += [f"{number}. {_cell(action)}" for number, action in enumerate(task["procedure"], 1)]
+            lines += ["", "Evidence: " + (_cell(task["evidence"]) or "Not yet recorded."),
+                "", "Next: " + _cell(task["next_action"]), "", "Comment: " + _cell(task["comment"]), ""]
+        lines.pop()
     for key, title in LANES[:4]:
         rows = tracker["lanes"][key]
         lines += ["", f"## {title}", ""]

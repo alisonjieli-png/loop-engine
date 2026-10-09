@@ -64,10 +64,10 @@ Baltor never asks for a provider key and never calls a model on your behalf.
 
 The library brings together material scattered across skill sites, plugin
 directories and repositories. Each item must pass its admission policy before
-it is served. That policy may use an independent per-item screen or automated
-checks with independent sampled review of a generated batch. Package details
-distinguish those checks from execution tests. Retrieval gives each step the
-material it chose.
+it is served. The current route uses deterministic qualification before
+publication and an independent sampled audit afterwards. Package details
+distinguish qualification, completed review and execution tests. Retrieval
+gives each step the material it chose.
 
 ## Who it is for
 
@@ -149,8 +149,11 @@ lists what is being built now, next and later, generated from the
 
 ## How the library grows
 
-Every item starts as a candidate, and a candidate is served only after an
-independent review approves it:
+Every item starts as a candidate. The current
+[admission policy](docs/architecture/OWNER-DECISIONS.md) requires deterministic
+qualification before publication. Independent review continues after publication
+and withdraws material it rejects. Qualification does not claim a completed
+model review or successful execution:
 
 ```text
 Library item
@@ -159,24 +162,24 @@ Library item
 │   ├── generation lanes on Ollama Cloud models and a Gemma 4 model server
 │   └── outside projects, used only as inspiration unless their licence
 │       allows copying
-├── Deterministic pre-checks: layout, digests, licences, secrets, effects
-│   and duplicates; each record names the checks that actually ran
-├── Independent review: the applicable per-item or generator-batch policy,
-│   with calibrated reviewers from a family other than the producer's
-├── Optional execution qualification: imports, tests and mutation checks
-│   in a confined environment, recorded separately from static checks
-└── Catalogue release: published to the running service without a redeploy,
-    with the previous release kept for rollback
+├── Deterministic qualification: layout, digests, licences, provenance,
+│   secrets, declared effects, parse/schema checks and duplicates
+├── Execution qualification where required by the material or its claim:
+│   imports, tests and mutation checks in a confined environment
+├── Admission and catalogue release: exact qualified bytes published
+│   without a redeploy; held generators and rejected items remain excluded
+└── Independent audit after publication: calibrated sampled review by a
+    family other than the producer's, with recorded withdrawals and holds
 ```
 
 The candidate pool holds material across skills, instruction
 files, subagents, commands, hooks, rules, plugin manifests, protocol server
-configurations, permission settings, step packets and verifiers. None of them
-is served until the review approves it. The current library target is more than
-one million distinct served component files, with original code, tools,
-assets, contracts and workflows as well as skills. Distinct packages and
-distinct payload files are different measurements; this is a target, not the
-current served count.
+configurations, permission settings, step packets and verifiers. A candidate
+that fails admission is not served. The next library milestone is two million
+distinct served component files, toward ten million, with original code, tools,
+assets, contracts and workflows as well as skills. Distinct packages, file
+placements and distinct file digests are different measurements. These targets
+are not the current served count.
 
 ## Connect your harness
 
@@ -238,8 +241,9 @@ run.
 Material is also organized by family, which says what it is built to follow:
 harness intelligence (files a standard harness already reads, served first),
 Loop-native intelligence and Open Knowledge Format intelligence. Imported and
-generated material stays a candidate until an independent process approves
-it. Nothing is promoted because it was retrieved, executed or scored well. The
+generated material stays a candidate until its admission checks pass. A
+qualified admission is distinct from a completed independent review. Nothing
+is promoted because it was retrieved, executed or scored well. The
 [harness-first decision](docs/architecture/ADR-HARNESS-FIRST-SERVING-AND-EXECUTION.md)
 explains what the main line serves today.
 

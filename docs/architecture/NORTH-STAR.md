@@ -4,6 +4,21 @@ Kind: current product direction. Updated October 8, 2026 under the owner's reque
 
 ## Current direction
 
+The owner's subsequent direction adds a target of feeds supported by more than
+10,000 qualified upstream sources and an explicit task-by-task progress record.
+Count canonical maintained collections, not API aliases, keys, query
+permutations or returned items. Distinguish discovery, permitted access,
+qualification, scheduling, current successful collection and actual feed
+contribution. The existing roadmap owns the ordered subtasks and their evidence.
+
+The owner also proposes qualified live API tools in the highest offering.
+Customers invoke scoped capabilities from their own harnesses through Baltor;
+internal research keys, customer BYOK credentials and any approved funded
+allowance stay separate. Provider rights, tenant isolation, budgets and real
+customer execution precede public availability. Downloadable files, feeds and
+live tool execution remain different product capabilities with existing typed
+runtime and engine boundaries.
+
 The owner's later October 8 direction sets two million distinct served harness
 component files as the next milestone toward the ten-million target. Prioritize
 qualification and additive publication of retained useful candidates alongside

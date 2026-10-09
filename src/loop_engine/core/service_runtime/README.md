@@ -1827,6 +1827,15 @@ page) reads the index in pages, so the memory a disk view holds does not grow
 with the library; those walks still take time, and their answers memory, in
 proportion to it.
 
+The builder flushes each closed index file and `BUILT.json`, then the partial
+directory and any newly created parent entries. It atomically renames the
+partial directory and flushes the target parent before reporting success.
+It does not flush unrelated filesystems. A flush failure refuses completion
+and retains the built bytes for reconciliation; a failure after rename leaves
+the target present without claiming durable completion. The owning checks in
+`tools/test_catalogue_index_durability.py` cover ordering, each injected flush
+failure, rename failure, invalid file types and missing-flush controls.
+
 **The state marker.** The first catalogue write creates `catalogue_state/v1`
 with state version 1; a release with a community item raises it to 2 and the
 first version 2 release to 3. An image refuses to start on a state version it does not

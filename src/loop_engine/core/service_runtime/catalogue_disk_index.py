@@ -42,11 +42,9 @@ host that selects this engine without them is refused at start, before any reque
 from __future__ import annotations
 
 import datetime
-import hashlib
 import heapq
 import json
 import math
-import os
 from pathlib import Path
 import re
 import secrets
@@ -57,6 +55,7 @@ import threading
 from ..retrieval import hash_vector
 from .catalogue_schema import DATE, EMPTY_SCHEMA, KEYWORD_LIST, NUMBER
 from .records import ServiceRuntimeError
+from .catalogue_index_files import build_parent_chain, commit_index_files, file_digest as _file_digest
 
 ENGINE_ID = "sqlite_disk_index"
 ENGINE_VERSION = "1.0.0"
@@ -114,14 +113,6 @@ def availability():
     except sqlite3.Error:
         return {"available": False, "reason": "sqlite_without_fts5"}
     return {"available": True, "reason": "", "sqlite_version": sqlite3.sqlite_version}
-
-
-def _file_digest(path):
-    digest = hashlib.sha256()
-    with open(path, "rb") as stream:
-        for block in iter(lambda: stream.read(1 << 20), b""):
-            digest.update(block)
-    return digest.hexdigest()
 
 
 def _date_number(value):
@@ -210,10 +201,14 @@ def build_disk_index(folder, entries, schema=EMPTY_SCHEMA, *, count=None, releas
     vector file can be sized before the first entry is read and the build never holds the entries. The folder
     appears only when the build is complete: everything is written to a sibling partial folder that is renamed
     at the end. `workers` above one computes the vectors in that many processes; the files are the same.
+
+    Closed data files and the marker are flushed before their directory, newly created ancestor entries and
+    the atomic rename. The target parent is flushed again before success. A durability failure keeps completed
+    bytes in the partial folder, or the renamed target if the final parent flush failed, for reconciliation.
     """
     numpy = _numpy()
     target = Path(folder)
-    if not target.is_absolute() or target.exists():
+    if not target.is_absolute() or target.exists() or target.is_symlink():
         _refuse("search_index_folder_invalid", "a disk index is written into a new absolute folder")
     if count is None:
         entries = tuple(entries)
@@ -221,7 +216,9 @@ def build_disk_index(folder, entries, schema=EMPTY_SCHEMA, *, count=None, releas
     if type(count) is not int or count < 0:
         _refuse("search_index_folder_invalid", "an index names how many entries it holds")
     partial = target.with_name(f".{target.name}.partial-{secrets.token_hex(6)}")
+    parents_to_flush = build_parent_chain(target)
     partial.mkdir(parents=True)
+    retain_partial = False
     try:
         connection = sqlite3.connect(str(partial / DATABASE_FILE))
         connection.execute("PRAGMA journal_mode=OFF")
@@ -353,14 +350,18 @@ def build_disk_index(folder, entries, schema=EMPTY_SCHEMA, *, count=None, releas
         connection.commit()
         connection.execute("PRAGMA journal_mode=DELETE")
         connection.close()
+        retain_partial = True
         digests = {path.name: _file_digest(path) for path in sorted(partial.iterdir()) if path.is_file()}
         (partial / MARKER_FILE).write_text(json.dumps({**meta, "files": digests}, sort_keys=True, indent=1))
-        os.sync()
-        os.rename(partial, target)
-    except BaseException:
+        commit_index_files(partial, target, digests, MARKER_FILE, parents_to_flush)
+    except BaseException as error:
         if "vectors" in locals() and getattr(vectors, "pool", None) is not None:
             vectors.pool.shutdown(cancel_futures=True)
-        shutil.rmtree(partial, ignore_errors=True)
+        if not retain_partial:
+            shutil.rmtree(partial, ignore_errors=True)
+        elif isinstance(error, OSError):
+            raise ServiceRuntimeError("search_index_unavailable",
+                                      "index durability failed; partial or renamed files are retained for reconciliation") from error
         raise
     return target
 

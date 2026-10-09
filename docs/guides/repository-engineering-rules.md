@@ -274,9 +274,14 @@ Searching, selecting, materializing, framing, invoking, replaying, and
 interpreting intelligence are Loop operations. Search returns small typed
 references. Load a large body only after selection and permission checks.
 
-Imported and self-generated intelligence remains candidate-only until an
-independent process approves it. Never infer promotion from retrieval,
-execution, a good score, or model confidence.
+Imported and self-generated intelligence remains candidate-only until its
+admission checks pass. Under the current
+[owner decision](../architecture/OWNER-DECISIONS.md), deterministic
+qualification gates publication and independent review continues after
+publication. Preserve held generator versions and rejected-package exclusions.
+A qualified admission is not a completed independent model review. A producer
+never reviews its own work. Never infer promotion from retrieval, execution,
+a good score, or model confidence.
 
 Code Intelligence must include an immutable source identity, provenance,
 license state, version, dependency information, typed contract, effects,

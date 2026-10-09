@@ -91,6 +91,75 @@ class DevelopmentTrackerTests(unittest.TestCase):
         counts = sum(len(rows) for rows in tracker["lanes"].values())
         self.assertEqual(counts, sum(tracker["counts"].values()))
 
+    def subtask_plan(self):
+        data = copy.deepcopy(self.data)
+        for step in data["steps"]:
+            step.pop("subtasks", None)
+        parent = data["steps"][0]
+        identifier = parent["id"] + ".test"
+        parent["subtasks"] = [{"id": identifier, "title": "Publish the qualified files", "status": "offline_verified",
+            "completion_status": "published", "depends_on": [], "acceptance": "Exact files are served to a permitted customer.",
+            "procedure": ["Check exact bytes.", "Publish the approved delta.", "Read the files back."],
+            "next_action": "Publish after the live preflight.", "evidence": "Local qualification passed; publication has not run.",
+            "comment": "Local checks do not establish a live release."}]
+        data["continuation"]["execution_order"] = [identifier]
+        return data, parent, identifier
+
+    def test_local_subtask_does_not_complete_a_publication_goal(self):
+        data, parent, identifier = self.subtask_plan()
+        tracker = tool.build(dump(data))
+        self.assertEqual(tracker["record_type"], "development_tracker/v2")
+        task = tracker["execution"][0]
+        self.assertEqual(task["id"], identifier)
+        self.assertFalse(task["complete"])
+        self.assertEqual(task["owner_step"], parent["id"])
+        self.assertIn("Publish after the live preflight.", tool.render(tracker))
+        parent["subtasks"][0]["status"] = "published"
+        self.assertTrue(tool.build(dump(data))["execution"][0]["complete"])
+
+    def test_subtask_evidence_unknown_dependency_and_cycle_are_refused(self):
+        for change in ("evidence", "dependency", "cycle", "duplicate", "status", "order"):
+            data, parent, identifier = self.subtask_plan()
+            row = parent["subtasks"][0]
+            if change == "evidence": row["evidence"] = ""
+            elif change == "dependency": row["depends_on"] = ["missing"]
+            elif change == "cycle": row["depends_on"] = [identifier]
+            elif change == "duplicate": parent["subtasks"].append(copy.deepcopy(row))
+            elif change == "status": row["status"] = "mostly_done"
+            elif change == "order": data["continuation"]["execution_order"] = ["missing"]
+            with self.subTest(change=change), self.assertRaises(tool.TrackerError):
+                tool.build(dump(data))
+
+    def test_dependency_waits_for_its_declared_completion_scope(self):
+        data, parent, identifier = self.subtask_plan()
+        second = copy.deepcopy(parent["subtasks"][0])
+        second.update(id=parent["id"]+".next", title="Measure the served release", status="ready", depends_on=[identifier],
+                      evidence="", completion_status="live_qualified")
+        parent["subtasks"].append(second)
+        data["continuation"]["execution_order"].append(second["id"])
+        tracker = tool.build(dump(data))
+        self.assertEqual(tracker["execution"][1]["waiting_on"], [identifier])
+        parent["subtasks"][0]["status"] = "published"
+        self.assertEqual(tool.build(dump(data))["execution"][1]["waiting_on"], [])
+
+    def test_publication_does_not_stand_in_for_live_qualification(self):
+        data, parent, _identifier = self.subtask_plan()
+        parent["subtasks"][0].update(status="published", completion_status="live_qualified")
+        self.assertFalse(tool.build(dump(data))["execution"][0]["complete"])
+
+    def test_subtask_sections_have_single_blank_separators(self):
+        data, _parent, _identifier = self.subtask_plan()
+        self.assertNotIn("\n\n\n", tool.render(tool.build(dump(data))))
+
+    def test_completed_subtask_with_unfinished_dependency_is_refused(self):
+        data, parent, identifier = self.subtask_plan()
+        other = copy.deepcopy(parent["subtasks"][0])
+        other.update(id=parent["id"]+".other", status="published", depends_on=[identifier])
+        parent["subtasks"].append(other)
+        data["continuation"]["execution_order"].append(other["id"])
+        with self.assertRaises(tool.TrackerError):
+            tool.build(dump(data))
+
 
 if __name__ == "__main__":
     unittest.main()

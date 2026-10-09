@@ -30,5 +30,13 @@ page. Both are generated from `roadmap.yaml` by
 `python tools/build_development_tracker.py`; `--check` detects a stale view.
 Never edit either by hand, and never keep task state anywhere else.
 
+The tracker also renders the ordered subtask checklist from each owning step's
+`subtasks` and `continuation.execution_order`. Every subtask names its procedure,
+dependencies, acceptance, evidence, comment and next action. Its completion
+status is explicit: an offline check, a publication and live qualification do
+not substitute for each other. Missing evidence, dependency cycles and a
+completed subtask with an unfinished prerequisite fail generation. The JSON
+view uses `development_tracker/v2`; no separate task database owns this state.
+
 The [fabric roadmap](FABRIC-ROADMAP-2026-09-18.md) preserves the earlier
 requirements and status history.

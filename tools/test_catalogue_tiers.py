@@ -26,6 +26,13 @@ def label_findings(row, labels):
     return [label for label in labels if f"**{label}**" not in row]
 
 
+def admission_guidance_findings(text):
+    """Current guidance identifies both admission and the subsequent audit, not a completed model review."""
+    normalized = " ".join(text.split()).casefold()
+    required = ("deterministic qualification", "after publication", "owner-decisions.md")
+    return [term for term in required if term not in normalized]
+
+
 FIRST_CATALOGUE_REVIEW = ROOT / "examples" / "29_intelligence_service" / "starter-catalogue" / "reviews.json"
 FIRST_CATALOGUE_PANEL = ROOT / "examples" / "29_intelligence_service" / "starter-catalogue" / "reviews-panel-2026-09-22.json"
 
@@ -90,6 +97,19 @@ class LibraryTierContractTests(unittest.TestCase):
                     "model family that did not produce the generator. In that route, not every item receives a "
                     "model review.")
         self.assertEqual(len(findings(previous)), len(required))
+
+    def test_current_library_guidance_preserves_the_post_publication_policy(self):
+        for relative in ("README.md", "docs/guides/repository-engineering-rules.md"):
+            with self.subTest(path=relative):
+                text = (ROOT / relative).read_text(encoding="utf-8")
+                self.assertEqual(admission_guidance_findings(text), [])
+        previous = "A candidate is served only after an independent review approves it."
+        self.assertTrue(admission_guidance_findings(previous))
+        valid = "Deterministic qualification gates admission; independent review continues after publication. OWNER-DECISIONS.md"
+        self.assertEqual(admission_guidance_findings(valid), [])
+        for term in ("Deterministic qualification", "after publication", "OWNER-DECISIONS.md"):
+            with self.subTest(missing=term):
+                self.assertTrue(admission_guidance_findings(valid.replace(term, "")))
 
     def test_the_meaning_of_verified_states_the_first_catalogue_exception(self):
         record = json.loads(FIRST_CATALOGUE_REVIEW.read_text(encoding="utf-8"))
