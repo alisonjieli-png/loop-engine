@@ -34,6 +34,15 @@ class CampaignEventKind(str, Enum):
     HELD = "held"
 
 
+EVENT_FIELDS = {"record_type", "sequence", "previous_sha256", "kind", "at", "shard"}
+EVENT_DETAILS = {
+    CampaignEventKind.DISPATCH: {"invocation", "case_budget", "byte_budget", "exclusions"},
+    CampaignEventKind.RESULT: {"invocation", "report_sha256"},
+    CampaignEventKind.CHECKPOINT: {"exclusions"},
+    CampaignEventKind.HELD: {"failure_class"},
+}
+
+
 @contextmanager
 def batch_deadline(seconds):
     """A POSIX main-process deadline; never replace an already active timer."""
@@ -118,10 +127,14 @@ def events(path):
             if len(raw) > MAXIMUM_RECORD_BYTES or not raw.endswith(b"\n"):
                 raise ValueError("campaign_journal_incomplete")
             row = strict_json(raw, "campaign_event_json")
-            if (row.get("record_type") != EVENT_TYPE or row.get("sequence") != len(rows)
+            if (type(row) is not dict or row.get("record_type") != EVENT_TYPE
+                    or type(row.get("sequence")) is not int or row.get("sequence") != len(rows)
                     or row.get("previous_sha256") != (runtime.fingerprint(rows[-1]) if rows else "")
                     or row.get("kind") not in tuple(CampaignEventKind)):
                 raise ValueError("campaign_journal_chain")
+            runtime._shape(row, EVENT_FIELDS | EVENT_DETAILS[CampaignEventKind(row["kind"])], "campaign_event_fields")
+            if datetime.fromisoformat(row["at"]).tzinfo is None:
+                raise ValueError("campaign_event_time_missing_zone")
             rows.append(row)
     return rows
 
@@ -161,6 +174,17 @@ def state(root, rows, source_plan, verified_snapshots=None):
             report = read_record(path)
             if runtime.fingerprint(report) != row.get("report_sha256"):
                 raise ValueError("campaign_receipt_changed")
+            selected = source_plan["shards"][shard]
+            source = source_plan["sources"][selected["source"]]
+            expected_selection = {"population": source["parents"], "population_sha256": source["population_sha256"],
+                                  "offset": selected["offset"], "limit": selected["parents"]}
+            if (report.get("parent_selection") != expected_selection or report.get("source_contracts") != selected["parents"]
+                    or any(type(report.get(key)) is not int or report[key] < 0 for key in
+                           ("case_jobs", "groups", "retained_and_candidate_bytes", "next_cursor", "parents_this_invocation"))
+                    or report["next_cursor"] > selected["parents"]
+                    or type(report.get("complete")) is not bool
+                    or report["complete"] != (report["next_cursor"] == selected["parents"])):
+                raise ValueError("campaign_receipt_population_invalid")
             if (report["case_jobs"] > pending["case_budget"] or report["retained_and_candidate_bytes"] > pending["byte_budget"]
                     or report["approved"] or report["published"] or report["model_calls"] or report["network_calls"]
                     or report["loop_execution"]["failed"]):

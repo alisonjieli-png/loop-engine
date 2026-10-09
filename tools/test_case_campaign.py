@@ -158,6 +158,28 @@ class CampaignTests(unittest.TestCase):
         finally:
             signal.setitimer(signal.ITIMER_REAL, 0)
 
+    def test_unknown_fields_in_the_last_event_are_refused(self):
+        self.run_campaign()
+        journal = self.args.run_folder / "campaign-events.jsonl"
+        rows = campaign.events(journal)
+        rows[-1]["unexpected"] = True
+        journal.write_bytes(b"".join(runtime.encode(row).replace(b"\n", b"") + b"\n" for row in rows))
+        with self.assertRaisesRegex(ValueError, "event_fields"):
+            self.run_campaign()
+
+    def test_wrong_population_receipt_refuses_even_with_matching_digest(self):
+        self.run_campaign()
+        root = self.args.run_folder
+        path = root / "receipts/00000001.json"
+        report = campaign.read_record(path)
+        report["source_contracts"] += 1
+        path.write_bytes(runtime.encode(report))
+        rows = campaign.events(root / "campaign-events.jsonl")
+        rows[1]["report_sha256"] = runtime.fingerprint(report)
+        plan = campaign.read_record(root / "campaign.json")["plan"]
+        with self.assertRaisesRegex(ValueError, "population_invalid"):
+            campaign.state(root, rows[:2], plan)
+
 
 if __name__ == "__main__":
     unittest.main()
