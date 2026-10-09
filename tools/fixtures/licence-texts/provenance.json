@@ -18,9 +18,58 @@
       "source_path": "LICENSE",
       "sha256": "c71d239df91726fc519c6eb72d318ec65820627232b2f796219e87dcf35d0ab4",
       "licence": "Apache-2.0 licence text"
+    },
+    {
+      "path": "isc-canonical.txt",
+      "repository": "github/choosealicense.com",
+      "revision": "58267f8f2c5c0099810849cfd7677f52ae0c0eb3",
+      "source_path": "_licenses/isc.txt",
+      "sha256": "8ea92c9e801b11e1303173c3ce3fc566bbe1ede96190aaffbc5a0c97712146c8",
+      "licence": "ISC licence text with the source repository's catalogue frontmatter; source repository MIT"
+    },
+    {
+      "path": "cc-by-4.0-canonical.txt",
+      "repository": "github/choosealicense.com",
+      "revision": "58267f8f2c5c0099810849cfd7677f52ae0c0eb3",
+      "source_path": "_licenses/cc-by-4.0.txt",
+      "sha256": "736763bf08829e36266b8a3bebcc041ac68575424e976490671a7e6b43a525cf",
+      "licence": "CC-BY-4.0 licence text with the source repository's catalogue frontmatter; source repository MIT"
+    },
+    {
+      "path": "cc-by-sa-4.0-canonical.txt",
+      "repository": "github/choosealicense.com",
+      "revision": "58267f8f2c5c0099810849cfd7677f52ae0c0eb3",
+      "source_path": "_licenses/cc-by-sa-4.0.txt",
+      "sha256": "8f85091fc554652d297119db8a092d8fc3d942ef3d768bd674decf48067a151f",
+      "licence": "CC-BY-SA-4.0 licence text with the source repository's catalogue frontmatter; source repository MIT"
+    },
+    {
+      "path": "gpl-2.0-canonical.txt",
+      "repository": "github/choosealicense.com",
+      "revision": "58267f8f2c5c0099810849cfd7677f52ae0c0eb3",
+      "source_path": "_licenses/gpl-2.0.txt",
+      "sha256": "b7c21f2a2d0a1558458adbd90b9380d2514cebf970d12f26f84f862571c30ee2",
+      "licence": "GPL-2.0 licence text with the source repository's catalogue frontmatter; source repository MIT"
+    },
+    {
+      "path": "gpl-3.0-canonical.txt",
+      "repository": "github/choosealicense.com",
+      "revision": "58267f8f2c5c0099810849cfd7677f52ae0c0eb3",
+      "source_path": "_licenses/gpl-3.0.txt",
+      "sha256": "e9c13804a52b8aea2e30033764d1b19f98369bae58028d9d1eb6b84e42b888bc",
+      "licence": "GPL-3.0 licence text with the source repository's catalogue frontmatter; source repository MIT"
+    },
+    {
+      "path": "agpl-3.0-canonical.txt",
+      "repository": "github/choosealicense.com",
+      "revision": "58267f8f2c5c0099810849cfd7677f52ae0c0eb3",
+      "source_path": "_licenses/agpl-3.0.txt",
+      "sha256": "2a1fda78234b71502e2cf8035021b5592f5eba7e8107228aca4d95bba645e397",
+      "licence": "AGPL-3.0 licence text with the source repository's catalogue frontmatter; source repository MIT"
     }
   ],
   "comparison": "Removing only the canonical file's YAML frontmatter and normalizing whitespace yields identical 1581-token sequences. No licence obligation differs.",
   "defect": "The stored Apache template wordset predates the normalizer's preservation of legal copyright clauses. It omits attached, included and prepare, although all three occur in the pinned canonical text.",
-  "repair": "Regenerate those three Apache template words; no similarity threshold, added-condition check, allowed licence or GitHub-agreement requirement changes."
+  "repair": "Regenerate those three Apache template words; no similarity threshold, added-condition check, allowed licence or GitHub-agreement requirement changes.",
+  "repair_2026_10_09": "Six more stored word sets predated the current normalizer: ISC lacked appear, copies, copyright and notice; CC-BY-4.0 and CC-BY-SA-4.0 lacked regulated; GPL-2.0 lacked intact and keep; GPL-3.0 and AGPL-3.0 lacked 30, cure and irrevocable. Each was rebuilt from its pinned canonical text, read again over the network on October 9 with the stored SHA-256 confirmed; words were only added, none removed."
 }

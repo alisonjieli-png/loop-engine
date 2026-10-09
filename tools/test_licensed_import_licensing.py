@@ -55,6 +55,30 @@ class LicenceRuleChecks(unittest.TestCase):
             self.assertEqual(_decide({"skills/demo/SKILL.md": support.skill("demo")},
                                     {"LICENSE": raw.decode()}, github="Apache-2.0").decision, VERBATIM)
 
+    def test_every_pinned_canonical_text_reproduces_its_template_words(self):
+        # October 9, 2026: six stored word sets predated the normalizer, so an unmodified ISC or CC-BY licence file
+        # added words the template lacked and was refused (ISC lacked "copyright notice ... appear in all copies").
+        root = Path(__file__).with_name("fixtures") / "licence-texts"
+        templates = load_templates()
+        pinned = {"Apache-2.0": "apache-2.0", "ISC": "isc", "CC-BY-4.0": "cc-by-4.0", "CC-BY-SA-4.0": "cc-by-sa-4.0",
+                  "GPL-2.0": "gpl-2.0", "GPL-3.0": "gpl-3.0", "AGPL-3.0": "agpl-3.0"}
+        for spdx, stem in pinned.items():
+            raw = (root / f"{stem}-canonical.txt").read_bytes()
+            self.assertEqual(hashlib.sha256(raw).hexdigest(), templates[spdx].source_sha256, spdx)
+            self.assertEqual(licence_words(raw.decode()), templates[spdx].words, spdx)
+            self.assertEqual(match_licence(raw.decode()).spdx, spdx)
+
+    def test_a_typical_isc_licence_file_is_recognized_and_an_altered_one_is_not(self):
+        canonical = (Path(__file__).with_name("fixtures") / "licence-texts/isc-canonical.txt").read_text()
+        body = re.sub(r"\A---\n.*?\n---\n", "", canonical, flags=re.S)
+        typical = re.sub(r"\[year\]\s+\[fullname\]", "2026 Example Maintainer", body)
+        self.assertEqual(match_licence(typical).spdx, "ISC")
+        self.assertEqual(_decide({"skills/demo/SKILL.md": support.skill("demo")}, {"LICENSE": typical},
+                                 github="ISC").decision, VERBATIM)
+        # Known wrong: an added restriction is still refused.
+        restricted = typical + "\nThe software may not be used for commercial purposes.\n"
+        self.assertIsNone(match_licence(restricted).spdx)
+
     def test_real_apache_with_altered_obligations_remains_refused(self):
         text = (Path(__file__).with_name("fixtures") / "licence-texts/google-api-client-LICENSE.txt").read_text()
         self.assertIn("perpetual", text)
