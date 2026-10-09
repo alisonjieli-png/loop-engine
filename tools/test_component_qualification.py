@@ -1,6 +1,7 @@
 """Checks for the qualification of generated components, its controls, the review adapter and admission."""
 from __future__ import annotations
 
+import dataclasses
 import json
 import os
 from pathlib import Path
@@ -152,6 +153,15 @@ class SelfTestTests(unittest.TestCase):
         self.assertTrue(record["passed"])
         self.assertGreaterEqual(len(record["known_wrong"]), 30)
 
+    def test_without_a_javascript_runtime_the_javascript_controls_are_skipped_not_passed(self):
+        context = _context(self.work)
+        context.sandbox_settings = dataclasses.replace(context.sandbox_settings, node="/nonexistent/node")
+        record = controls.self_test(context, REVISION)
+        self.assertTrue(record["passed"])
+        self.assertEqual({row["control_id"] for row in record["skipped"]}, set(controls.JAVASCRIPT_CONTROLS))
+        self.assertTrue({row["reason"] for row in record["skipped"]} == {"node_unavailable"})
+        self.assertFalse(set(controls.JAVASCRIPT_CONTROLS) & {row["control_id"] for row in record["known_wrong"]})
+
     def test_a_check_that_never_refuses_fails_the_self_test(self):
         check = next(check for check in checks.CHECKS if check.check_id == "effects")
         with mock.patch.object(type(check), "run", lambda self, component, context: checks.CheckResult(
@@ -266,6 +276,18 @@ class NewRuleTests(unittest.TestCase):
         self.assertIn("qualification mutant", text)
         self.assertIn("class ApiError", text)
         self.assertIsNone(checks.mutant(controls.configuration_fixture(REVISION), self.policy))
+
+    def test_the_javascript_runtime_is_found_where_the_machine_installed_it(self):
+        from tools.component_qualification import sandbox
+        installed = {"/usr/local/bin/node"}
+        with mock.patch.object(sandbox.shutil, "which", lambda path: path if path in installed else None):
+            self.assertEqual(sandbox.default_node(), "/usr/local/bin/node")
+            self.assertEqual(sandbox.SandboxSettings().node, "/usr/local/bin/node")
+        with mock.patch.object(sandbox.shutil, "which", lambda path: None):
+            # Known wrong: no runtime anywhere answers the documented default, which then reports unavailable.
+            settings = sandbox.SandboxSettings()
+            self.assertEqual(settings.node, sandbox.NODE_CANDIDATES[0])
+            self.assertFalse(settings.node_available())
 
     def test_javascript_mutant_keeps_every_export_name_and_drops_the_body(self):
         source = ("import { helper } from './helper.mjs';\n"

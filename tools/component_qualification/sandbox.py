@@ -23,7 +23,7 @@ run is one observation, recorded with the interpreter, limits and engine that pr
 """
 from __future__ import annotations
 
-from dataclasses import asdict, dataclass
+from dataclasses import asdict, dataclass, field
 import json
 import os
 from pathlib import Path, PurePosixPath
@@ -103,6 +103,16 @@ class SandboxLimits:
         return asdict(self)
 
 
+#: Where a JavaScript runtime is looked for, in order: the distribution's node, then a locally installed one (a CI
+#: runner links its node there). Both stay visible inside the sandbox, which hides only HIDDEN_PATHS.
+NODE_CANDIDATES = ("/usr/bin/node", "/usr/local/bin/node")
+
+
+def default_node() -> str:
+    """The first runtime in NODE_CANDIDATES that exists, else the first candidate (then reported as unavailable)."""
+    return next((path for path in NODE_CANDIDATES if shutil.which(path)), NODE_CANDIDATES[0])
+
+
 @dataclass(frozen=True)
 class SandboxSettings:
     engine: str = "bwrap_rlimits"
@@ -110,7 +120,7 @@ class SandboxSettings:
     bwrap: str = "bwrap"
     limits: SandboxLimits = SandboxLimits()
     #: The JavaScript runtime for root test_*.mjs files (node --test); needed only by packages that hold them.
-    node: str = "/usr/bin/node"
+    node: str = field(default_factory=default_node)
 
     def __post_init__(self):
         if self.engine not in ENGINES:

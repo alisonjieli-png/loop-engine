@@ -541,6 +541,8 @@ CONTROLS = (
 )
 DUPLICATE_CONTROLS = ("exact_copy_under_new_identity", "near_copy_one_word_changed", "same_job_reworded")
 CONTROL_LIMITS = SandboxLimits(wall_seconds=40.0, import_seconds=5.0, test_seconds=4.0, cpu_seconds=10)
+#: Controls that hold node tests; they run only where the sandbox finds a JavaScript runtime.
+JAVASCRIPT_CONTROLS = frozenset({"javascript_tests_pass", "javascript_test_fails", "javascript_tests_accept_anything"})
 
 
 class SelfTestFailed(RuntimeError):
@@ -591,8 +593,16 @@ def self_test(context, revision: str) -> dict:
     control_settings = None
     if context.sandbox_settings is not None:
         control_settings = SandboxSettings(context.sandbox_settings.engine, context.sandbox_settings.python,
-                                           context.sandbox_settings.bwrap, CONTROL_LIMITS)
+                                           context.sandbox_settings.bwrap, CONTROL_LIMITS,
+                                           node=context.sandbox_settings.node)
+    skipped = []
     for control in CONTROLS:
+        if (control.control_id in JAVASCRIPT_CONTROLS and control_settings is not None
+                and not control_settings.node_available()):
+            # Without a JavaScript runtime the sandbox refuses every package with node tests (fail closed), so
+            # these controls cannot show the runner works; they are recorded as skipped, not passed.
+            skipped.append({"control_id": control.control_id, "reason": "node_unavailable"})
+            continue
         component = control.build(fixtures[control.base])
         saved = context.sandbox_settings
         if control.check_id in ("sandbox", "mutation") and control_settings is not None:
@@ -629,7 +639,7 @@ def self_test(context, revision: str) -> dict:
             failures.append(f"{check.check_id} has no known-wrong control")
     context.duplicates = {}
     record = {"record_type": SELF_TEST_RECORD, "revision": revision, "known_good": good, "known_wrong": wrong,
-              "passed": not failures, "failures": failures}
+              "skipped": skipped, "passed": not failures, "failures": failures}
     record["sha256"] = hashlib.sha256(json.dumps(record, sort_keys=True).encode()).hexdigest()
     if failures:
         raise SelfTestFailed("; ".join(failures[:6]))
