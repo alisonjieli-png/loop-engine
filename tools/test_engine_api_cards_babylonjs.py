@@ -12,6 +12,7 @@ package whose licence field disagrees are each stopped by name.
 from __future__ import annotations
 
 import base64
+import gzip
 import hashlib
 import io
 import json
@@ -202,8 +203,10 @@ class DeclarationReaderTests(unittest.TestCase):
 
 
 def tarball(files) -> bytes:
+    """The package as npm would serve it, the same bytes every time (no gzip time stamp)."""
     buffer = io.BytesIO()
-    with tarfile.open(fileobj=buffer, mode="w:gz") as archive:
+    with gzip.GzipFile(fileobj=buffer, mode="wb", mtime=0) as compressed, \
+            tarfile.open(fileobj=compressed, mode="w") as archive:
         for name, data in sorted(files.items()):
             info = tarfile.TarInfo(f"package/{name}")
             info.size = len(data)
@@ -311,11 +314,16 @@ class ReaderAndLineTests(unittest.TestCase):
         self.assertEqual(sources.summary["declared_properties"], 1)
         module_file = self.root / "workspace" / line.PACKAGE_FOLDER / line.BABYLONJS_MODULE
         engine = node_native.locate(line.BABYLONJS_MODULE, hashlib.sha256(module_file.read_bytes()).hexdigest())
-        built, refusals, _facts, _summary = line.generate(
+        built, refusals, facts, _summary = line.generate(
             sources, verifier=lambda prepared: line.node_evidence(engine, module_file, prepared, self.root / "verify"),
             code_revision=REVISION, licence_text=(ROOT / "LICENSE").read_bytes(), generated_on="2026-10-09",
             staging=self.root / "staging", workers=2)
         self.assertEqual(refusals, [])
+        # The store keeps the bytes of the licence, the notice and the registry record the packages name; the
+        # tarball is named by digest and size only.
+        record = FakeReader(self.root).record
+        self.assertEqual(set(facts), {hashlib.sha256(data).hexdigest() for data in (APACHE, NOTICE, record)})
+        self.assertTrue(all(hashlib.sha256(data).hexdigest() == digest for digest, data in facts.items()))
         files = {payload["repository"]["class"]: {entry["path"]: bodies[entry["digest"]]
                                                   for entry in payload["package"]["files"]}
                  for payload, bodies in built}

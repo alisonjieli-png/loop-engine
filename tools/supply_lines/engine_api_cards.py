@@ -813,8 +813,12 @@ def package(prepared: dict, evidence: dict, sources: EngineSources, *, code_revi
 
 
 def facts_of(sources: EngineSources) -> dict:
-    """{SHA-256: bytes} of every pinned fact the packages name and the run kept, for the store's quarantine."""
-    return {row["sha256"]: row["bytes"] for row in sources.pinned.values() if row.get("bytes")}
+    """{SHA-256: bytes} of every fact the packages name whose bytes the run holds, for the store's quarantine: the
+    pinned files, the licence and copyright files, the renames map, the notice files and the registry record. A
+    release asset or package tarball is named by its digest and size; its bytes are not kept."""
+    rows = [*sources.pinned.values(), sources.licence, sources.copyright, sources.renames_map, sources.metadata,
+            *sources.notices]
+    return {row["sha256"]: row["bytes"] for row in rows if isinstance(row, dict) and row.get("bytes")}
 
 
 def generate(sources: EngineSources, *, verifier, code_revision: str, licence_text: bytes, generated_on: str,
