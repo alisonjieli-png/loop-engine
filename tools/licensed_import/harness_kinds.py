@@ -94,7 +94,12 @@ _MEDIA_TYPES = {".md": "text/markdown", ".mdc": "text/markdown", ".markdown": "t
                 ".svg": "image/svg+xml", ".png": "image/png", ".jpg": "image/jpeg", ".jpeg": "image/jpeg",
                 ".gif": "image/gif", ".webp": "image/webp", ".pdf": "application/pdf",
                 ".ipynb": "application/x-ipynb+json", ".sql": "application/sql", ".ini": "text/plain",
-                ".cfg": "text/plain", ".env": "text/plain", ".tmpl": "text/plain", ".j2": "text/plain"}
+                ".cfg": "text/plain", ".env": "text/plain", ".tmpl": "text/plain", ".j2": "text/plain",
+                # Text formats of 3D, 2D and game engine work (tools/creative_originals/media.py uses the same types).
+                ".gltf": "model/gltf+json", ".obj": "model/obj", ".mtl": "model/mtl", ".gd": "text/x-gdscript",
+                ".gdshader": "text/x-gdshader", ".gdshaderinc": "text/x-gdshader", ".tscn": "text/x-godot-scene",
+                ".tres": "text/x-godot-resource", ".godot": "text/x-godot-project", ".glsl": "text/x-glsl",
+                ".wgsl": "text/x-wgsl", ".gpl": "text/x-gimp-palette", ".scad": "text/x-openscad", ".osl": "text/x-osl"}
 _STEM_SUFFIXES = (".instructions.md", ".agent.md", ".chatmode.md", ".prompt.md", ".schema.json", ".md", ".mdc",
                   ".toml", ".json")
 

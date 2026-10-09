@@ -364,6 +364,24 @@ def _add_file(component, path, text, role="executable_tool") -> GeneratedCompone
     return changed
 
 
+def _add_bytes(component, path, data: bytes) -> GeneratedComponent:
+    """A binary file added beside the package's files; its media type comes from its suffix."""
+    return _rebind(component, dict(component.payloads) | {path: data})
+
+
+def _png(corrupt: bool = False) -> bytes:
+    """A small verified PNG, or the same image with one byte of its pixel stream changed so its CRC fails."""
+    from tools.creative_originals.pngio import encode
+    data = bytearray(encode(4, 4, bytes((index * 29) % 256 for index in range(48)), 3))
+    if corrupt:
+        data[len(data) - 20] ^= 0xFF
+    return bytes(data)
+
+
+_SVG_ENTITY = ('<?xml version="1.0"?>\n<!DOCTYPE svg [<!ENTITY word "expanded">]>\n'
+               '<svg xmlns="http://www.w3.org/2000/svg" width="8" height="8"><title>&word;</title></svg>\n')
+
+
 def _secret_value() -> str:
     return "github" + "_pat_" + "Q" * 30
 
@@ -426,6 +444,13 @@ CONTROLS = (
             lambda c: _edit(c, "greeting_table.py", lambda text: text + "\ndef broken(:\n    pass\n")),
     Control("json_trailing_comma", "parse", "configuration", "document_does_not_parse",
             lambda c: _edit(c, "opencode.json", lambda text: text.rstrip().rstrip("}") + ",}\n")),
+    Control("png_corrupted", "parse", "code", "binary_does_not_decode",
+            lambda c: _add_bytes(c, "preview.png", _png(corrupt=True))),
+    Control("png_verified", "parse", "code", "", lambda c: _add_bytes(c, "preview.png", _png())),
+    Control("svg_entity_declaration", "parse", "code", "markup_declaration_refused",
+            lambda c: _add_bytes(c, "drawing.svg", _SVG_ENTITY.encode())),
+    Control("gltf_repeated_key", "parse", "code", "document_does_not_parse",
+            lambda c: _add_bytes(c, "model.gltf", b'{"asset": {"version": "2.0"}, "asset": {"version": "2.0"}}\n')),
     Control("schema_type_invalid", "schema", "code", "schema_invalid",
             lambda c: _edit(c, "schema.json", lambda text: json.dumps({"type": 12}))),
     Control("harness_files_disagree", "schema", "configuration", "harness_configurations_disagree",

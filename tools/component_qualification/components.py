@@ -112,8 +112,8 @@ class GeneratedComponent:
 def _media_type(path: str) -> str:
     suffix = Path(path).suffix.lower()
     return {".py": "text/x-python", ".json": "application/json", ".md": "text/markdown", ".toml": "application/toml",
-            ".txt": "text/plain", ".csv": "text/csv", ".sh": "application/x-sh", ".js": "text/javascript"}.get(
-                suffix, "text/plain")
+            ".txt": "text/plain", ".csv": "text/csv", ".sh": "application/x-sh", ".js": "text/javascript",
+            ".png": "image/png", ".svg": "image/svg+xml", ".gltf": "model/gltf+json"}.get(suffix, "text/plain")
 
 
 def _component(identity: str, version: str, payload: dict, read) -> GeneratedComponent:

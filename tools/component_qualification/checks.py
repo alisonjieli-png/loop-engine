@@ -64,7 +64,12 @@ SOURCE_IDENTITY, IMPLEMENTATION, COMPATIBILITY, PUBLICATION = (
 POLICY_PATH = Path(__file__).resolve().parent / "resources" / "qualification-policy.json"
 TEXT_MEDIA_PREFIXES = ("text/",)
 TEXT_MEDIA = frozenset({"application/json", "application/schema+json", "application/toml", "application/yaml",
-                        "application/x-sh", "application/xml", "application/sql", "application/x-python"})
+                        "application/x-sh", "application/xml", "application/sql", "application/x-python",
+                        "model/gltf+json", "model/obj", "model/mtl", "image/svg+xml"})
+#: Binary media a strict decoder can verify end to end; every other binary file stays binary_file_unverified.
+VERIFIED_BINARY_MEDIA = ("image/png",)
+#: Markup a document may not carry: an entity or document type declaration can expand without bound or reach a file.
+_XML_DECLARATIONS = re.compile(r"<!(?:DOCTYPE|ENTITY)", re.IGNORECASE)
 _HEX40 = re.compile(r"[0-9a-f]{40}")
 _HEX64 = re.compile(r"[0-9a-f]{64}")
 _SEMVER = re.compile(r"\d+\.\d+\.\d+(?:[-+][0-9A-Za-z.-]+)?")
@@ -434,6 +439,34 @@ def _strict_json(text: str):
     return json.loads(text, object_pairs_hook=pairs, parse_constant=constant)
 
 
+def _binary_findings(entry, data) -> list:
+    """A binary file passes only when its media type has a strict decoder and its bytes decode under it.
+
+    A PNG must carry the PNG suffix and media type and pass tools/creative_originals/pngio.decode: signature, every
+    chunk CRC, chunk order, the exact inflated length and every row filter. Any other binary stays unverified."""
+    if entry.media_type not in VERIFIED_BINARY_MEDIA or PurePosixPath(entry.path).suffix.lower() != ".png" \
+            or not isinstance(data, (bytes, bytearray)):
+        return [("binary_file_unverified", entry.path)]
+    from tools.creative_originals.pngio import PngError, decode
+    try:
+        decode(bytes(data))
+    except PngError as error:
+        return [("binary_does_not_decode", f"{entry.path}: {error.reason}")]
+    return []
+
+
+def _markup_findings(path: str, text: str) -> list:
+    """An SVG is well-formed XML without document type or entity declarations."""
+    import xml.etree.ElementTree as element_tree
+    if _XML_DECLARATIONS.search(text):
+        return [("markup_declaration_refused", path)]
+    try:
+        element_tree.fromstring(text)
+    except element_tree.ParseError as error:
+        return [("document_does_not_parse", f"{path}: ParseError {str(error)[:80]}")]
+    return []
+
+
 class ParseCheck:
     check_id, kind, dimension = "parse", "format", IMPLEMENTATION
 
@@ -441,7 +474,7 @@ class ParseCheck:
         findings = []
         for entry in component.package.files:
             if not is_text(entry):
-                findings.append(("binary_file_unverified", entry.path))
+                findings += _binary_findings(entry, component.payloads.get(entry.path))
                 continue
             text = component.text(entry.path)
             if text is None:
@@ -451,8 +484,10 @@ class ParseCheck:
             try:
                 if suffix == ".py":
                     ast.parse(text, filename=entry.path)
-                elif suffix == ".json":
+                elif suffix in (".json", ".gltf"):
                     _strict_json(text)
+                elif suffix == ".svg":
+                    findings += _markup_findings(entry.path, text)
                 elif suffix == ".toml":
                     tomllib.loads(text)
                 elif suffix == ".csv":
