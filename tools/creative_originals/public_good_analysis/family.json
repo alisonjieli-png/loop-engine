@@ -1,0 +1,14 @@
+{
+  "record_type": "creative_original_family/v1",
+  "family": "public_good_analysis",
+  "title": "Public good analysis functions from Kaggle datasets",
+  "description": "Each item is one small analysis step for public-good data, a standard-library Python function of typed JSON input and output (JSON Schema in the contract) that refuses bad input with a reason code. Items 1 to 6 (paired arm lift, judge agreement, labelled score summary, split leakage check, redistribution rights filter, shard manifest audit) were built for the owner's DueCare datasets from the Kaggle Gemma 4 Good Hackathon, which the owner published under CC BY 4.0: model answers to labour-exploitation and trafficking prompts graded by a judge panel, and the training corpora derived from them. Items 7 to 10 (rate per 100,000, service request resolution times, migration deaths and missing, building energy use intensity) were built for dataset shapes the October 6, 2026 inventory of the owner's Kaggle download holds (incident counts, city 311 requests, migration incident records, building energy benchmarking); no row of those datasets is copied. Each item names the dataset shape it was built for and an SDG association that is a proposal for reviewers, never a grant. The shared kit_schema.py validates a JSON Schema subset; the shared test_package.py runs the known-good example, every known answer and the known-wrong example, checks the files against component.json and the SDG proposal's form, and fails when the item's public functions are replaced by ones that raise. There is no native engine check: the Python runs in the qualification sandbox.",
+  "engine": {"name": "python", "minimum_version": "3.10", "notes": "Standard library only; pure functions of JSON input; no network, file or process effects"},
+  "shared_files": [
+    {"path": "kit_schema.py", "role": "executable_tool"},
+    {"path": "test_package.py", "role": "executable_tool"}
+  ],
+  "native_verifier": null,
+  "generator_version": "1.0.0",
+  "default_dimension": "none"
+}

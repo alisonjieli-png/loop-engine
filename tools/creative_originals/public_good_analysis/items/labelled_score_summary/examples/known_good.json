@@ -1,0 +1,33 @@
+{
+ "description": "Scores of two arms broken down by prompt category. debt_bondage holds P-1 and P-2: baseline 40 and 50 (mean 45), harness_core 80 and 70 (mean 75). fee_splitting holds P-3 with one baseline score of 30. P-4 has scores but no label row, and P-5 has a label row but no score; both are counted and listed.",
+ "input": {
+  "label_field": "category",
+  "scores": [
+   {"item": "P-1", "arm": "baseline", "score": 40},
+   {"item": "P-1", "arm": "harness_core", "score": 80},
+   {"item": "P-2", "arm": "baseline", "score": 50},
+   {"item": "P-2", "arm": "harness_core", "score": 70},
+   {"item": "P-3", "arm": "baseline", "score": 30},
+   {"item": "P-4", "arm": "harness_core", "score": 90}
+  ],
+  "labels": [
+   {"item": "P-1", "category": "debt_bondage", "corridor": "Nepal->Qatar"},
+   {"item": "P-2", "category": "debt_bondage", "corridor": "various"},
+   {"item": "P-3", "category": "fee_splitting", "corridor": "various"},
+   {"item": "P-5", "category": "fee_splitting", "corridor": "various"}
+  ]
+ },
+ "expected_output": {
+  "label_field": "category",
+  "groups": [
+   {"value": "debt_bondage", "arm": "baseline", "count": 2, "mean": 45, "median": 45, "minimum": 40, "maximum": 50},
+   {"value": "debt_bondage", "arm": "harness_core", "count": 2, "mean": 75, "median": 75, "minimum": 70, "maximum": 80},
+   {"value": "fee_splitting", "arm": "baseline", "count": 1, "mean": 30, "median": 30, "minimum": 30, "maximum": 30}
+  ],
+  "scores_used": 5,
+  "items_without_label": 1,
+  "items_without_label_examples": ["P-4"],
+  "labels_without_scores": 1,
+  "labels_without_scores_examples": ["P-5"]
+ }
+}

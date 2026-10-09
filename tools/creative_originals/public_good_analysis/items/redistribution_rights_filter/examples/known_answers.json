@@ -1,0 +1,61 @@
+[
+ {
+  "description": "With the defaults, redistribution is required and training use is not: x is kept without a training flag, y's null redistribution flag is not true, and z's empty licence counts as missing.",
+  "input": {
+   "allowed_licences": ["MIT"],
+   "rows": [
+    {"id": "x", "license": "MIT", "allow_public_redistribution": true},
+    {"id": "y", "license": "MIT", "allow_public_redistribution": null},
+    {"id": "z", "license": "", "allow_public_redistribution": true}
+   ]
+  },
+  "expected_output": {
+   "kept": ["x"],
+   "excluded": [{"id": "y", "reason": "redistribution_not_allowed"}, {"id": "z", "reason": "missing_licence"}],
+   "counts": {"kept": 1, "missing_licence": 1, "licence_not_allowed": 0, "redistribution_not_allowed": 1,
+              "training_not_allowed": 0}
+  }
+ },
+ {
+  "description": "With neither flag required only the licence decides; the comparison is exact, so lower-case cc-by-4.0 is not CC-BY-4.0.",
+  "input": {
+   "allowed_licences": ["CC-BY-4.0"],
+   "require_redistribution": false,
+   "require_training_use": false,
+   "rows": [
+    {"id": "p", "license": "CC-BY-4.0", "allow_public_redistribution": false, "allow_training_use": false},
+    {"id": "q", "license": "CC-BY-4.0"},
+    {"id": "r", "license": "cc-by-4.0"}
+   ]
+  },
+  "expected_output": {
+   "kept": ["p", "q"],
+   "excluded": [{"id": "r", "reason": "licence_not_allowed"}],
+   "counts": {"kept": 2, "missing_licence": 0, "licence_not_allowed": 1, "redistribution_not_allowed": 0,
+              "training_not_allowed": 0}
+  }
+ },
+ {
+  "description": "Only the first failing reason is reported: s lacks a licence and every permission but counts as missing_licence only; t's GPL licence fails before its flags; u fails on redistribution before training.",
+  "input": {
+   "allowed_licences": ["CC0-1.0"],
+   "require_redistribution": true,
+   "require_training_use": true,
+   "rows": [
+    {"id": "s", "license": null, "allow_public_redistribution": false, "allow_training_use": false},
+    {"id": "t", "license": "GPL-3.0", "allow_public_redistribution": false, "allow_training_use": false},
+    {"id": "u", "license": "CC0-1.0", "allow_public_redistribution": false, "allow_training_use": false}
+   ]
+  },
+  "expected_output": {
+   "kept": [],
+   "excluded": [
+    {"id": "s", "reason": "missing_licence"},
+    {"id": "t", "reason": "licence_not_allowed"},
+    {"id": "u", "reason": "redistribution_not_allowed"}
+   ],
+   "counts": {"kept": 0, "missing_licence": 1, "licence_not_allowed": 1, "redistribution_not_allowed": 1,
+              "training_not_allowed": 0}
+  }
+ }
+]

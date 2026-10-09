@@ -1,0 +1,28 @@
+{
+ "description": "Six corpus rows, CC BY 4.0 and CC0 allowed, redistribution and training use both required. a passes every check. b names no licence, c is CC BY-SA, d forbids redistribution, e leaves training use null and f forbids it; f's licence has spaces around it, which are trimmed before comparing.",
+ "input": {
+  "allowed_licences": ["CC-BY-4.0", "CC0-1.0"],
+  "require_redistribution": true,
+  "require_training_use": true,
+  "rows": [
+   {"id": "a", "license": "CC-BY-4.0", "allow_public_redistribution": true, "allow_training_use": true},
+   {"id": "b", "allow_public_redistribution": true, "allow_training_use": true},
+   {"id": "c", "license": "CC-BY-SA-4.0", "allow_public_redistribution": true, "allow_training_use": true},
+   {"id": "d", "license": "CC0-1.0", "allow_public_redistribution": false, "allow_training_use": true},
+   {"id": "e", "license": "CC-BY-4.0", "allow_public_redistribution": true, "allow_training_use": null},
+   {"id": "f", "license": " CC-BY-4.0 ", "allow_public_redistribution": true, "allow_training_use": false}
+  ]
+ },
+ "expected_output": {
+  "kept": ["a"],
+  "excluded": [
+   {"id": "b", "reason": "missing_licence"},
+   {"id": "c", "reason": "licence_not_allowed"},
+   {"id": "d", "reason": "redistribution_not_allowed"},
+   {"id": "e", "reason": "training_not_allowed"},
+   {"id": "f", "reason": "training_not_allowed"}
+  ],
+  "counts": {"kept": 1, "missing_licence": 1, "licence_not_allowed": 1, "redistribution_not_allowed": 1,
+             "training_not_allowed": 2}
+ }
+}

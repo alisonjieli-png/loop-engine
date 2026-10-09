@@ -1,0 +1,27 @@
+{
+ "description": "The observed list names data/a.jsonl twice with different digests, so it cannot say which file is on disk; the audit refuses it.",
+ "input": {
+  "declared": [
+   {
+    "path": "data/a.jsonl",
+    "sha256": "1111111111111111111111111111111111111111111111111111111111111111",
+    "rows": 10
+   }
+  ],
+  "observed": [
+   {
+    "path": "data/a.jsonl",
+    "sha256": "1111111111111111111111111111111111111111111111111111111111111111",
+    "rows": 10
+   },
+   {
+    "path": "data/a.jsonl",
+    "sha256": "9999999999999999999999999999999999999999999999999999999999999999",
+    "rows": 10
+   }
+  ]
+ },
+ "expected_refusal": {
+  "reason": "duplicate_path"
+ }
+}

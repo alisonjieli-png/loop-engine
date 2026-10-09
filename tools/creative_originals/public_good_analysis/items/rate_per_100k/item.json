@@ -1,0 +1,189 @@
+{
+ "record_type": "creative_original_item/v1",
+ "identity": "rate_per_100k",
+ "title": "Event rates per 100,000 population",
+ "purpose": "Turn counts of events into rates per 100,000 people (or another base), per group and period and pooled per period: the computation behind SDG indicators such as road traffic deaths (3.6.1), homicide victims (16.1.1), trafficking victims (16.2.2) and people affected by disasters (11.5.1).",
+ "form": "function",
+ "asset_role": null,
+ "dimension": "none",
+ "engine": {
+  "name": "python",
+  "minimum_version": "3.10"
+ },
+ "tags": [
+  "sdg indicators",
+  "rates",
+  "public health",
+  "public safety",
+  "population",
+  "statistics"
+ ],
+ "files": [
+  {
+   "path": "README.md",
+   "role": "other"
+  },
+  {
+   "path": "rate_per_100k.py",
+   "role": "executable_tool"
+  },
+  {
+   "path": "examples/known_good.json",
+   "role": "other"
+  },
+  {
+   "path": "examples/known_wrong.json",
+   "role": "other"
+  },
+  {
+   "path": "examples/known_answers.json",
+   "role": "other"
+  }
+ ],
+ "contract": {
+  "entry_points": {
+   "module": "rate_per_100k",
+   "function": "run",
+   "command": "python3 rate_per_100k.py < input.json",
+   "command_exit_codes": {
+    "0": "result",
+    "2": "refusal"
+   }
+  },
+  "input_schema": {
+   "type": "object",
+   "required": [
+    "rows"
+   ],
+   "additionalProperties": false,
+   "properties": {
+    "rows": {
+     "type": "array",
+     "minItems": 1,
+     "maxItems": 200000,
+     "description": "one count of events for one group in one period, with its population",
+     "items": {
+      "type": "object",
+      "required": [
+       "group",
+       "period",
+       "count",
+       "population"
+      ],
+      "additionalProperties": false,
+      "properties": {
+       "group": {
+        "type": "string",
+        "minLength": 1
+       },
+       "period": {
+        "type": "string",
+        "minLength": 1
+       },
+       "count": {
+        "type": "number"
+       },
+       "population": {
+        "type": "number"
+       }
+      }
+     }
+    },
+    "per": {
+     "type": "number",
+     "exclusiveMinimum": 0,
+     "description": "the population base of the rate (default 100000)"
+    }
+   }
+  },
+  "output_schema": {
+   "type": "object",
+   "required": [
+    "per",
+    "rows",
+    "periods"
+   ],
+   "properties": {
+    "per": {
+     "type": "number"
+    },
+    "rows": {
+     "type": "array",
+     "description": "each input row with its rate, by period then group",
+     "items": {
+      "type": "object",
+      "required": [
+       "group",
+       "period",
+       "count",
+       "population",
+       "rate"
+      ]
+     }
+    },
+    "periods": {
+     "type": "array",
+     "description": "per period: groups, total count, total population, pooled rate",
+     "items": {
+      "type": "object",
+      "required": [
+       "period",
+       "groups",
+       "count",
+       "population",
+       "rate"
+      ]
+     }
+    }
+   }
+  },
+  "refusal_reasons": [
+   "input_invalid",
+   "input_not_json",
+   "population_not_positive",
+   "negative_count",
+   "duplicate_group_period"
+  ],
+  "examples": {
+   "known_good": "examples/known_good.json",
+   "known_wrong": "examples/known_wrong.json",
+   "known_answers": "examples/known_answers.json"
+  },
+  "effects": "none: a pure function of its JSON input; the command reads standard input and writes standard output",
+  "sdg": {
+   "goals": [
+    3,
+    11,
+    16
+   ],
+   "targets": [
+    "3.6",
+    "11.5",
+    "16.1",
+    "16.2"
+   ],
+   "indicators": [
+    "3.6.1",
+    "11.5.1",
+    "16.1.1",
+    "16.2.2"
+   ],
+   "basis": "These indicators are counts per 100,000 population, and this function computes that step from counts and populations the caller supplies.",
+   "status": "proposal"
+  },
+  "derived_from": {
+   "kaggle_datasets": [],
+   "shape": "incident counts with a population denominator: road deaths, homicides, overdose deaths, trafficking victims"
+  }
+ },
+ "limits": "The rate is crude: it is not age-standardized, and the population is taken as given for the whole period. The counts and population of a group have to describe the same area and time, which the function cannot check. Small populations give unstable rates and no interval is reported. Periods and groups sort as text.",
+ "related": [
+  "migration_deaths_and_missing",
+  "service_request_resolution_times"
+ ],
+ "technique_references": [
+  "Crude rate per 100,000",
+  "Pooled rate"
+ ],
+ "native_checks": []
+}

@@ -1,0 +1,255 @@
+{
+ "record_type": "creative_original_item/v1",
+ "identity": "labelled_score_summary",
+ "title": "Scores of each arm broken down by an item label",
+ "purpose": "Join score rows with label rows on the item and summarize each arm per value of one chosen label (category, corridor, difficulty): count, mean, median, minimum and maximum, with scored items that have no label and labels that have no score counted and listed.",
+ "form": "function",
+ "asset_role": null,
+ "dimension": "none",
+ "engine": {
+  "name": "python",
+  "minimum_version": "3.10"
+ },
+ "tags": [
+  "evaluation",
+  "group summary",
+  "join",
+  "breakdown",
+  "descriptive statistics"
+ ],
+ "files": [
+  {
+   "path": "README.md",
+   "role": "other"
+  },
+  {
+   "path": "labelled_score_summary.py",
+   "role": "executable_tool"
+  },
+  {
+   "path": "examples/known_good.json",
+   "role": "other"
+  },
+  {
+   "path": "examples/known_wrong.json",
+   "role": "other"
+  },
+  {
+   "path": "examples/known_answers.json",
+   "role": "other"
+  }
+ ],
+ "contract": {
+  "entry_points": {
+   "module": "labelled_score_summary",
+   "function": "run",
+   "command": "python3 labelled_score_summary.py < input.json",
+   "command_exit_codes": {
+    "0": "result",
+    "2": "refusal"
+   }
+  },
+  "input_schema": {
+   "type": "object",
+   "required": [
+    "scores",
+    "labels",
+    "label_field"
+   ],
+   "additionalProperties": false,
+   "properties": {
+    "scores": {
+     "type": "array",
+     "minItems": 1,
+     "maxItems": 500000,
+     "description": "one score of one item under one arm",
+     "items": {
+      "type": "object",
+      "required": [
+       "item",
+       "arm",
+       "score"
+      ],
+      "additionalProperties": false,
+      "properties": {
+       "item": {
+        "type": "string",
+        "minLength": 1
+       },
+       "arm": {
+        "type": "string",
+        "minLength": 1
+       },
+       "score": {
+        "type": "number"
+       }
+      }
+     }
+    },
+    "labels": {
+     "type": "array",
+     "minItems": 1,
+     "maxItems": 500000,
+     "description": "one row per item: the item and its label fields",
+     "items": {
+      "type": "object",
+      "required": [
+       "item"
+      ],
+      "properties": {
+       "item": {
+        "type": "string",
+        "minLength": 1
+       }
+      },
+      "additionalProperties": {
+       "type": [
+        "string",
+        "number",
+        "boolean",
+        "null"
+       ]
+      }
+     }
+    },
+    "label_field": {
+     "type": "string",
+     "minLength": 1,
+     "description": "the label the scores are broken down by"
+    }
+   }
+  },
+  "output_schema": {
+   "type": "object",
+   "required": [
+    "label_field",
+    "groups",
+    "scores_used",
+    "items_without_label",
+    "items_without_label_examples",
+    "labels_without_scores",
+    "labels_without_scores_examples"
+   ],
+   "properties": {
+    "label_field": {
+     "type": "string"
+    },
+    "groups": {
+     "type": "array",
+     "description": "one row per label value and arm, null value first",
+     "items": {
+      "type": "object",
+      "required": [
+       "value",
+       "arm",
+       "count",
+       "mean",
+       "median",
+       "minimum",
+       "maximum"
+      ],
+      "properties": {
+       "value": {
+        "type": [
+         "string",
+         "number",
+         "boolean",
+         "null"
+        ]
+       },
+       "arm": {
+        "type": "string"
+       },
+       "count": {
+        "type": "integer",
+        "minimum": 1
+       },
+       "mean": {
+        "type": "number"
+       },
+       "median": {
+        "type": "number"
+       },
+       "minimum": {
+        "type": "number"
+       },
+       "maximum": {
+        "type": "number"
+       }
+      }
+     }
+    },
+    "scores_used": {
+     "type": "integer",
+     "minimum": 0
+    },
+    "items_without_label": {
+     "type": "integer",
+     "minimum": 0,
+     "description": "distinct scored items with no label row"
+    },
+    "items_without_label_examples": {
+     "type": "array",
+     "items": {
+      "type": "string"
+     }
+    },
+    "labels_without_scores": {
+     "type": "integer",
+     "minimum": 0,
+     "description": "label rows no score row uses"
+    },
+    "labels_without_scores_examples": {
+     "type": "array",
+     "items": {
+      "type": "string"
+     }
+    }
+   }
+  },
+  "refusal_reasons": [
+   "input_invalid",
+   "input_not_json",
+   "duplicate_label",
+   "label_field_missing"
+  ],
+  "examples": {
+   "known_good": "examples/known_good.json",
+   "known_wrong": "examples/known_wrong.json",
+   "known_answers": "examples/known_answers.json"
+  },
+  "effects": "none: a pure function of its JSON input; the command reads standard input and writes standard output",
+  "sdg": {
+   "goals": [
+    5,
+    8,
+    16
+   ],
+   "targets": [
+    "5.2",
+    "8.7",
+    "16.2"
+   ],
+   "indicators": [],
+   "basis": "Inherited from the dataset it was built for, whose prompt labels name forms of labour exploitation and migration corridors (targets 8.7, 16.2 and 5.2). The function itself is a general summary step.",
+   "status": "proposal"
+  },
+  "derived_from": {
+   "kaggle_datasets": [
+    "taylorsamarel/duecare-harness-benchmark-grades"
+   ],
+   "shape": "prompt_metadata.csv: prompt_id, category, corridor, difficulty, source, joined to panel_grades.csv on prompt_id"
+  }
+ },
+ "limits": "One label field per call; a breakdown by two fields needs a combined label. Items without a label row are left out of every group, so a group's count can be lower than the item count. Label values compare as JSON values: the text 1 and the number 1 are two values. Up to 20 unmatched items are listed by name and the counts cover all of them.",
+ "related": [
+  "paired_arm_lift",
+  "judge_agreement",
+  "column_profile"
+ ],
+ "technique_references": [
+  "Inner join on an item key",
+  "Grouped descriptive statistics"
+ ],
+ "native_checks": []
+}

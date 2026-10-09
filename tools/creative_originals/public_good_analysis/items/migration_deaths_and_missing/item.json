@@ -1,0 +1,197 @@
+{
+ "record_type": "creative_original_item/v1",
+ "identity": "migration_deaths_and_missing",
+ "title": "Deaths and disappearances during migration by year and region",
+ "purpose": "Total the people who died or went missing in the process of migration from incident records with dead and missing counts, per year and region, per year and overall, with unreported counts kept visible: the count behind SDG indicator 10.7.3.",
+ "form": "function",
+ "asset_role": null,
+ "dimension": "none",
+ "engine": {
+  "name": "python",
+  "minimum_version": "3.10"
+ },
+ "tags": [
+  "migration",
+  "sdg indicators",
+  "humanitarian data",
+  "incidents",
+  "safe migration"
+ ],
+ "files": [
+  {
+   "path": "README.md",
+   "role": "other"
+  },
+  {
+   "path": "migration_deaths_and_missing.py",
+   "role": "executable_tool"
+  },
+  {
+   "path": "examples/known_good.json",
+   "role": "other"
+  },
+  {
+   "path": "examples/known_wrong.json",
+   "role": "other"
+  },
+  {
+   "path": "examples/known_answers.json",
+   "role": "other"
+  }
+ ],
+ "contract": {
+  "entry_points": {
+   "module": "migration_deaths_and_missing",
+   "function": "run",
+   "command": "python3 migration_deaths_and_missing.py < input.json",
+   "command_exit_codes": {
+    "0": "result",
+    "2": "refusal"
+   }
+  },
+  "input_schema": {
+   "type": "object",
+   "required": [
+    "rows"
+   ],
+   "additionalProperties": false,
+   "properties": {
+    "rows": {
+     "type": "array",
+     "minItems": 1,
+     "maxItems": 500000,
+     "description": "one incident: its id, year, region and counts of dead and missing people",
+     "items": {
+      "type": "object",
+      "required": [
+       "incident_id",
+       "year",
+       "region",
+       "dead",
+       "missing"
+      ],
+      "additionalProperties": false,
+      "properties": {
+       "incident_id": {
+        "type": "string",
+        "minLength": 1
+       },
+       "year": {
+        "type": "integer",
+        "minimum": 1900,
+        "maximum": 2200
+       },
+       "region": {
+        "type": "string",
+        "minLength": 1
+       },
+       "dead": {
+        "type": [
+         "integer",
+         "null"
+        ]
+       },
+       "missing": {
+        "type": [
+         "integer",
+         "null"
+        ]
+       }
+      }
+     }
+    }
+   }
+  },
+  "output_schema": {
+   "type": "object",
+   "required": [
+    "by_year_region",
+    "by_year",
+    "total"
+   ],
+   "properties": {
+    "by_year_region": {
+     "type": "array",
+     "description": "totals per year and region, by year then region",
+     "items": {
+      "type": "object",
+      "required": [
+       "year",
+       "region",
+       "incidents",
+       "dead",
+       "missing",
+       "dead_and_missing",
+       "unreported_dead",
+       "unreported_missing"
+      ]
+     }
+    },
+    "by_year": {
+     "type": "array",
+     "description": "totals per year",
+     "items": {
+      "type": "object",
+      "required": [
+       "year",
+       "incidents",
+       "dead",
+       "missing",
+       "dead_and_missing",
+       "unreported_dead",
+       "unreported_missing"
+      ]
+     }
+    },
+    "total": {
+     "type": "object",
+     "required": [
+      "incidents",
+      "dead",
+      "missing",
+      "dead_and_missing",
+      "unreported_dead",
+      "unreported_missing"
+     ]
+    }
+   }
+  },
+  "refusal_reasons": [
+   "input_invalid",
+   "input_not_json",
+   "negative_count",
+   "duplicate_incident"
+  ],
+  "examples": {
+   "known_good": "examples/known_good.json",
+   "known_wrong": "examples/known_wrong.json",
+   "known_answers": "examples/known_answers.json"
+  },
+  "effects": "none: a pure function of its JSON input; the command reads standard input and writes standard output",
+  "sdg": {
+   "goals": [
+    10
+   ],
+   "targets": [
+    "10.7"
+   ],
+   "indicators": [
+    "10.7.3"
+   ],
+   "basis": "Indicator 10.7.3 counts people who died or disappeared in the process of migration towards an international destination.",
+   "status": "proposal"
+  },
+  "derived_from": {
+   "kaggle_datasets": [],
+   "shape": "migration incident records with dead and missing counts, as the IOM Missing Migrants Project publishes"
+  }
+ },
+ "limits": "The totals are as complete as the incident records: incidents never recorded, and bodies never found or identified, are absent. An unreported count adds zero and is counted separately rather than estimated. Regions and years are taken as given; the function does not assign incidents to routes.",
+ "related": [
+  "rate_per_100k"
+ ],
+ "technique_references": [
+  "Grouped totals with explicit missing-value counts"
+ ],
+ "native_checks": []
+}

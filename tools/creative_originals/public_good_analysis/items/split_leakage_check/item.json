@@ -1,0 +1,203 @@
+{
+ "record_type": "creative_original_item/v1",
+ "identity": "split_leakage_check",
+ "title": "Leakage of related rows across dataset splits",
+ "purpose": "Find groups of related rows (a prompt cluster, a lineage family, a source document) whose rows fall in more than one of the train, validation and test splits, with the splits and row counts of each leaking group, so held-out scores are not inflated by near-copies.",
+ "form": "function",
+ "asset_role": null,
+ "dimension": "none",
+ "engine": {
+  "name": "python",
+  "minimum_version": "3.10"
+ },
+ "tags": [
+  "data quality",
+  "train test split",
+  "leakage",
+  "machine learning",
+  "dataset audit"
+ ],
+ "files": [
+  {
+   "path": "README.md",
+   "role": "other"
+  },
+  {
+   "path": "split_leakage_check.py",
+   "role": "executable_tool"
+  },
+  {
+   "path": "examples/known_good.json",
+   "role": "other"
+  },
+  {
+   "path": "examples/known_wrong.json",
+   "role": "other"
+  },
+  {
+   "path": "examples/known_answers.json",
+   "role": "other"
+  }
+ ],
+ "contract": {
+  "entry_points": {
+   "module": "split_leakage_check",
+   "function": "run",
+   "command": "python3 split_leakage_check.py < input.json",
+   "command_exit_codes": {
+    "0": "result",
+    "2": "refusal"
+   }
+  },
+  "input_schema": {
+   "type": "object",
+   "required": [
+    "rows",
+    "group_fields"
+   ],
+   "additionalProperties": false,
+   "properties": {
+    "rows": {
+     "type": "array",
+     "minItems": 1,
+     "maxItems": 500000,
+     "description": "one row per example: its id, its split and its grouping fields",
+     "items": {
+      "type": "object",
+      "required": [
+       "id",
+       "split"
+      ],
+      "properties": {
+       "id": {
+        "type": "string",
+        "minLength": 1
+       },
+       "split": {
+        "type": "string",
+        "minLength": 1
+       }
+      },
+      "additionalProperties": {
+       "type": [
+        "string",
+        "number",
+        "boolean",
+        "null"
+       ]
+      }
+     }
+    },
+    "group_fields": {
+     "type": "array",
+     "minItems": 1,
+     "maxItems": 20,
+     "uniqueItems": true,
+     "items": {
+      "type": "string",
+      "minLength": 1
+     },
+     "description": "the fields whose values must stay inside one split"
+    }
+   }
+  },
+  "output_schema": {
+   "type": "object",
+   "required": [
+    "leaking",
+    "rows",
+    "splits",
+    "fields"
+   ],
+   "properties": {
+    "leaking": {
+     "type": "boolean"
+    },
+    "rows": {
+     "type": "integer",
+     "minimum": 0
+    },
+    "splits": {
+     "type": "object",
+     "description": "rows per split",
+     "additionalProperties": {
+      "type": "integer",
+      "minimum": 0
+     }
+    },
+    "fields": {
+     "type": "array",
+     "description": "one row per grouping field, in input order",
+     "items": {
+      "type": "object",
+      "required": [
+       "field",
+       "values",
+       "leaking_values",
+       "rows_in_leaking_values",
+       "rows_without_value",
+       "leaks",
+       "leaks_truncated"
+      ],
+      "properties": {
+       "leaks": {
+        "type": "array",
+        "items": {
+         "type": "object",
+         "required": [
+          "value",
+          "splits"
+         ]
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "refusal_reasons": [
+   "input_invalid",
+   "input_not_json",
+   "duplicate_id",
+   "group_field_missing"
+  ],
+  "examples": {
+   "known_good": "examples/known_good.json",
+   "known_wrong": "examples/known_wrong.json",
+   "known_answers": "examples/known_answers.json"
+  },
+  "effects": "none: a pure function of its JSON input; the command reads standard input and writes standard output",
+  "sdg": {
+   "goals": [
+    5,
+    8,
+    16
+   ],
+   "targets": [
+    "5.2",
+    "8.7",
+    "16.2"
+   ],
+   "indicators": [],
+   "basis": "Inherited from the dataset it was built for, a training corpus of graded answers to labour-exploitation and trafficking prompts (targets 8.7, 16.2 and 5.2). The function itself is a general data-quality step.",
+   "status": "proposal"
+  },
+  "derived_from": {
+   "kaggle_datasets": [
+    "taylorsamarel/duecare-measured-response-training-corpus"
+   ],
+   "shape": "the corpus's training lanes: id, split, prompt_cluster_id, lineage_family_id"
+  }
+ },
+ "limits": "Only the grouping fields named are checked; near-duplicates that share no field value are not found (duplicate_record_finder compares content). Values compare exactly, so two spellings of one group id are two groups. Up to 100 leaking values are listed per field and the counts cover all of them.",
+ "related": [
+  "mechanism_heldout_split",
+  "redistribution_rights_filter",
+  "shard_manifest_audit"
+ ],
+ "technique_references": [
+  "Group-disjoint data splits",
+  "Contamination audit by group key"
+ ],
+ "native_checks": []
+}

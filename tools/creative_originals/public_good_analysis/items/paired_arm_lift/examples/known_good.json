@@ -1,0 +1,36 @@
+{
+ "description": "Two models, two judges, three arms. model-a: item P-1 has two judges per arm (baseline 40 and 50, mean 45; harness_core 80 and 90, mean 85, lift 40), P-2 lifts 70 to 60 (-10), P-3 stays 55, P-4 has only a baseline score. model-b: P-1 lifts 20 to 50 (30). One harness_full row is ignored and counted. model-a: means 170/3 and 200/3, mean lift 10, median lift 0, one pair each improved, worsened and unchanged. Overall over four pairs: means 47.5 and 62.5, mean and median lift 15, half improved.",
+ "input": {
+  "baseline_arm": "baseline",
+  "treatment_arm": "harness_core",
+  "rows": [
+   {"model": "model-a", "arm": "baseline", "item": "P-1", "judge": "judge-1", "score": 40},
+   {"model": "model-a", "arm": "baseline", "item": "P-1", "judge": "judge-2", "score": 50},
+   {"model": "model-a", "arm": "harness_core", "item": "P-1", "judge": "judge-1", "score": 80},
+   {"model": "model-a", "arm": "harness_core", "item": "P-1", "judge": "judge-2", "score": 90},
+   {"model": "model-a", "arm": "baseline", "item": "P-2", "judge": "judge-1", "score": 70},
+   {"model": "model-a", "arm": "harness_core", "item": "P-2", "judge": "judge-1", "score": 60},
+   {"model": "model-a", "arm": "baseline", "item": "P-3", "judge": "judge-1", "score": 55},
+   {"model": "model-a", "arm": "harness_core", "item": "P-3", "judge": "judge-1", "score": 55},
+   {"model": "model-a", "arm": "baseline", "item": "P-4", "judge": "judge-1", "score": 30},
+   {"model": "model-b", "arm": "baseline", "item": "P-1", "judge": "judge-1", "score": 20},
+   {"model": "model-b", "arm": "harness_core", "item": "P-1", "judge": "judge-1", "score": 50},
+   {"model": "model-b", "arm": "harness_full", "item": "P-1", "judge": "judge-1", "score": 99}
+  ]
+ },
+ "expected_output": {
+  "baseline_arm": "baseline",
+  "treatment_arm": "harness_core",
+  "models": [
+   {"model": "model-a", "paired_items": 3, "baseline_mean": 56.666667, "treatment_mean": 66.666667, "mean_lift": 10,
+    "median_lift": 0, "improved": 1, "worsened": 1, "unchanged": 1, "share_improved": 0.333333,
+    "unpaired_baseline_items": 1, "unpaired_treatment_items": 0},
+   {"model": "model-b", "paired_items": 1, "baseline_mean": 20, "treatment_mean": 50, "mean_lift": 30,
+    "median_lift": 30, "improved": 1, "worsened": 0, "unchanged": 0, "share_improved": 1,
+    "unpaired_baseline_items": 0, "unpaired_treatment_items": 0}
+  ],
+  "overall": {"paired_items": 4, "baseline_mean": 47.5, "treatment_mean": 62.5, "mean_lift": 15, "median_lift": 15,
+              "improved": 2, "worsened": 1, "unchanged": 1, "share_improved": 0.5},
+  "other_arm_rows": 1
+ }
+}

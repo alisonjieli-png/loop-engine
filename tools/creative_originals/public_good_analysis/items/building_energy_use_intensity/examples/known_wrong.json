@@ -1,0 +1,16 @@
+{
+ "description": "B1 reports a floor area of 0, so its energy use intensity would divide by zero; the input is refused.",
+ "input": {
+  "rows": [
+   {
+    "building_id": "B1",
+    "property_type": "Office",
+    "floor_area": 0,
+    "site_energy": 50000
+   }
+  ]
+ },
+ "expected_refusal": {
+  "reason": "floor_area_not_positive"
+ }
+}

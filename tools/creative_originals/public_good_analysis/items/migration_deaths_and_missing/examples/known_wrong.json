@@ -1,0 +1,17 @@
+{
+ "description": "Incident i1 reports -1 dead, which cannot be a count of people; the input is refused.",
+ "input": {
+  "rows": [
+   {
+    "incident_id": "i1",
+    "year": 2023,
+    "region": "Mediterranean",
+    "dead": -1,
+    "missing": 0
+   }
+  ]
+ },
+ "expected_refusal": {
+  "reason": "negative_count"
+ }
+}

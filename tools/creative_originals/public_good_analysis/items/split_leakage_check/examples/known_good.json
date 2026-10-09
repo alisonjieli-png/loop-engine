@@ -1,0 +1,26 @@
+{
+ "description": "Six rows in three splits. Prompt cluster c1 is in train (r1) and test (r3), so it leaks; r6 has no cluster. Lineage family f1 is in train (r1, r2) and validation (r5), so it leaks with three rows. Both fields have four values.",
+ "input": {
+  "group_fields": ["prompt_cluster_id", "lineage_family_id"],
+  "rows": [
+   {"id": "r1", "split": "train", "prompt_cluster_id": "c1", "lineage_family_id": "f1"},
+   {"id": "r2", "split": "train", "prompt_cluster_id": "c2", "lineage_family_id": "f1"},
+   {"id": "r3", "split": "test", "prompt_cluster_id": "c1", "lineage_family_id": "f2"},
+   {"id": "r4", "split": "test", "prompt_cluster_id": "c3", "lineage_family_id": "f3"},
+   {"id": "r5", "split": "validation", "prompt_cluster_id": "c4", "lineage_family_id": "f1"},
+   {"id": "r6", "split": "validation", "prompt_cluster_id": null, "lineage_family_id": "f4"}
+  ]
+ },
+ "expected_output": {
+  "leaking": true,
+  "rows": 6,
+  "splits": {"test": 2, "train": 2, "validation": 2},
+  "fields": [
+   {"field": "prompt_cluster_id", "values": 4, "leaking_values": 1, "rows_in_leaking_values": 2,
+    "rows_without_value": 1, "leaks": [{"value": "c1", "splits": {"test": 1, "train": 1}}], "leaks_truncated": false},
+   {"field": "lineage_family_id", "values": 4, "leaking_values": 1, "rows_in_leaking_values": 3,
+    "rows_without_value": 0, "leaks": [{"value": "f1", "splits": {"train": 2, "validation": 1}}],
+    "leaks_truncated": false}
+  ]
+ }
+}

@@ -1,0 +1,30 @@
+{
+ "description": "Three judges of one model's baseline answers. judge-2 always gives 2 x judge-1 + 1, so the pair differs by 11, 21, 31 and 41 (mean 26, none within 10) and correlates perfectly (1). judge-3 scored three items in reverse order of judge-1: differences 20, 0 and 20 (mean 13.333333, one of three within 10) and correlation -1; against judge-2 the differences are 9, 21 and 51 (mean 27) and the correlation is also -1.",
+ "input": {
+  "rows": [
+   {"model": "model-a", "arm": "baseline", "item": "P-1", "judge": "judge-1", "score": 10},
+   {"model": "model-a", "arm": "baseline", "item": "P-2", "judge": "judge-1", "score": 20},
+   {"model": "model-a", "arm": "baseline", "item": "P-3", "judge": "judge-1", "score": 30},
+   {"model": "model-a", "arm": "baseline", "item": "P-4", "judge": "judge-1", "score": 40},
+   {"model": "model-a", "arm": "baseline", "item": "P-1", "judge": "judge-2", "score": 21},
+   {"model": "model-a", "arm": "baseline", "item": "P-2", "judge": "judge-2", "score": 41},
+   {"model": "model-a", "arm": "baseline", "item": "P-3", "judge": "judge-2", "score": 61},
+   {"model": "model-a", "arm": "baseline", "item": "P-4", "judge": "judge-2", "score": 81},
+   {"model": "model-a", "arm": "baseline", "item": "P-1", "judge": "judge-3", "score": 30},
+   {"model": "model-a", "arm": "baseline", "item": "P-2", "judge": "judge-3", "score": 20},
+   {"model": "model-a", "arm": "baseline", "item": "P-3", "judge": "judge-3", "score": 10}
+  ]
+ },
+ "expected_output": {
+  "tolerance": 10,
+  "judges": [{"judge": "judge-1", "units": 4}, {"judge": "judge-2", "units": 4}, {"judge": "judge-3", "units": 3}],
+  "pairs": [
+   {"judge_a": "judge-1", "judge_b": "judge-2", "shared_units": 4, "mean_absolute_difference": 26,
+    "share_within_tolerance": 0, "pearson_correlation": 1},
+   {"judge_a": "judge-1", "judge_b": "judge-3", "shared_units": 3, "mean_absolute_difference": 13.333333,
+    "share_within_tolerance": 0.333333, "pearson_correlation": -1},
+   {"judge_a": "judge-2", "judge_b": "judge-3", "shared_units": 3, "mean_absolute_difference": 27,
+    "share_within_tolerance": 0.333333, "pearson_correlation": -1}
+  ]
+ }
+}

@@ -1,0 +1,186 @@
+[
+ {
+  "description": "An incident with neither count reported is still an incident: it adds nobody and both gaps are counted.",
+  "input": {
+   "rows": [
+    {
+     "incident_id": "s1",
+     "year": 2022,
+     "region": "Sahara Desert",
+     "dead": null,
+     "missing": null
+    }
+   ]
+  },
+  "expected_output": {
+   "by_year_region": [
+    {
+     "year": 2022,
+     "region": "Sahara Desert",
+     "incidents": 1,
+     "dead": 0,
+     "missing": 0,
+     "dead_and_missing": 0,
+     "unreported_dead": 1,
+     "unreported_missing": 1
+    }
+   ],
+   "by_year": [
+    {
+     "year": 2022,
+     "incidents": 1,
+     "dead": 0,
+     "missing": 0,
+     "dead_and_missing": 0,
+     "unreported_dead": 1,
+     "unreported_missing": 1
+    }
+   ],
+   "total": {
+    "incidents": 1,
+    "dead": 0,
+    "missing": 0,
+    "dead_and_missing": 0,
+    "unreported_dead": 1,
+    "unreported_missing": 1
+   }
+  }
+ },
+ {
+  "description": "Years sort as numbers and regions by name: 2019 Caribbean comes first, then 2021 Central Mediterranean (5 dead, 10 missing) and 2021 Western Africa (2 dead).",
+  "input": {
+   "rows": [
+    {
+     "incident_id": "a",
+     "year": 2021,
+     "region": "Western Africa",
+     "dead": 2,
+     "missing": 0
+    },
+    {
+     "incident_id": "b",
+     "year": 2019,
+     "region": "Caribbean",
+     "dead": 0,
+     "missing": 1
+    },
+    {
+     "incident_id": "c",
+     "year": 2021,
+     "region": "Central Mediterranean",
+     "dead": 5,
+     "missing": 10
+    }
+   ]
+  },
+  "expected_output": {
+   "by_year_region": [
+    {
+     "year": 2019,
+     "region": "Caribbean",
+     "incidents": 1,
+     "dead": 0,
+     "missing": 1,
+     "dead_and_missing": 1,
+     "unreported_dead": 0,
+     "unreported_missing": 0
+    },
+    {
+     "year": 2021,
+     "region": "Central Mediterranean",
+     "incidents": 1,
+     "dead": 5,
+     "missing": 10,
+     "dead_and_missing": 15,
+     "unreported_dead": 0,
+     "unreported_missing": 0
+    },
+    {
+     "year": 2021,
+     "region": "Western Africa",
+     "incidents": 1,
+     "dead": 2,
+     "missing": 0,
+     "dead_and_missing": 2,
+     "unreported_dead": 0,
+     "unreported_missing": 0
+    }
+   ],
+   "by_year": [
+    {
+     "year": 2019,
+     "incidents": 1,
+     "dead": 0,
+     "missing": 1,
+     "dead_and_missing": 1,
+     "unreported_dead": 0,
+     "unreported_missing": 0
+    },
+    {
+     "year": 2021,
+     "incidents": 2,
+     "dead": 7,
+     "missing": 10,
+     "dead_and_missing": 17,
+     "unreported_dead": 0,
+     "unreported_missing": 0
+    }
+   ],
+   "total": {
+    "incidents": 3,
+    "dead": 7,
+    "missing": 11,
+    "dead_and_missing": 18,
+    "unreported_dead": 0,
+    "unreported_missing": 0
+   }
+  }
+ },
+ {
+  "description": "Zero is a reported count, not a gap: an incident with 0 dead and 0 missing has no unreported counts.",
+  "input": {
+   "rows": [
+    {
+     "incident_id": "z",
+     "year": 2020,
+     "region": "Americas",
+     "dead": 0,
+     "missing": 0
+    }
+   ]
+  },
+  "expected_output": {
+   "by_year_region": [
+    {
+     "year": 2020,
+     "region": "Americas",
+     "incidents": 1,
+     "dead": 0,
+     "missing": 0,
+     "dead_and_missing": 0,
+     "unreported_dead": 0,
+     "unreported_missing": 0
+    }
+   ],
+   "by_year": [
+    {
+     "year": 2020,
+     "incidents": 1,
+     "dead": 0,
+     "missing": 0,
+     "dead_and_missing": 0,
+     "unreported_dead": 0,
+     "unreported_missing": 0
+    }
+   ],
+   "total": {
+    "incidents": 1,
+    "dead": 0,
+    "missing": 0,
+    "dead_and_missing": 0,
+    "unreported_dead": 0,
+    "unreported_missing": 0
+   }
+  }
+ }
+]

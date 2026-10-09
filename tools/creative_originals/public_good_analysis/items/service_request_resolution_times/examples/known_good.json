@@ -1,0 +1,78 @@
+{
+ "description": "Six requests in two categories, target 72 hours. Noise: 6 hours, 12 hours (US style AM to PM) and one still open; median 9, nearest-rank 90th percentile 12, both within the target. Sanitation: 96 and 24 hours (median 60, percentile 96, half within the target) and one closed before it was opened, which is left out and counted. Overall four closed: 6, 12, 24, 96, median 18, percentile 96, three of four within the target.",
+ "input": {
+  "target_hours": 72,
+  "rows": [
+   {
+    "id": "r1",
+    "category": "Noise",
+    "opened": "2025-01-01T00:00:00",
+    "closed": "2025-01-01T06:00:00"
+   },
+   {
+    "id": "r2",
+    "category": "Noise",
+    "opened": "01/02/2025 08:00:00 AM",
+    "closed": "01/02/2025 08:00:00 PM"
+   },
+   {
+    "id": "r3",
+    "category": "Noise",
+    "opened": "2025-01-03T00:00:00Z",
+    "closed": null
+   },
+   {
+    "id": "r4",
+    "category": "Sanitation",
+    "opened": "2025-01-01T00:00:00",
+    "closed": "2025-01-05T00:00:00"
+   },
+   {
+    "id": "r5",
+    "category": "Sanitation",
+    "opened": "2025-01-02 00:00:00",
+    "closed": "2025-01-03T00:00:00"
+   },
+   {
+    "id": "r6",
+    "category": "Sanitation",
+    "opened": "2025-01-04T00:00:00",
+    "closed": "2025-01-03T00:00:00"
+   }
+  ]
+ },
+ "expected_output": {
+  "target_hours": 72,
+  "categories": [
+   {
+    "category": "Noise",
+    "requests": 3,
+    "closed": 2,
+    "still_open": 1,
+    "closed_before_opened": 0,
+    "median_hours": 9,
+    "p90_hours": 12,
+    "share_closed_within_target": 1
+   },
+   {
+    "category": "Sanitation",
+    "requests": 3,
+    "closed": 2,
+    "still_open": 0,
+    "closed_before_opened": 1,
+    "median_hours": 60,
+    "p90_hours": 96,
+    "share_closed_within_target": 0.5
+   }
+  ],
+  "overall": {
+   "requests": 6,
+   "closed": 4,
+   "still_open": 1,
+   "closed_before_opened": 1,
+   "median_hours": 18,
+   "p90_hours": 96,
+   "share_closed_within_target": 0.75
+  }
+ }
+}

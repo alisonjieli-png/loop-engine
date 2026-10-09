@@ -1,0 +1,104 @@
+[
+ {
+  "description": "Half-point scores stay exact: judges 7.5 and 8 average to 7.75 on I-1 (treatment 9, lift 1.25); I-2 goes 10 to 9.5 (lift -0.5). Means 8.875 and 9.25, mean and median lift 0.375, one improved and one worsened.",
+  "input": {
+   "baseline_arm": "base",
+   "treatment_arm": "treat",
+   "rows": [
+    {"model": "m", "arm": "base", "item": "I-1", "judge": "j1", "score": 7.5},
+    {"model": "m", "arm": "base", "item": "I-1", "judge": "j2", "score": 8},
+    {"model": "m", "arm": "treat", "item": "I-1", "judge": "j1", "score": 9},
+    {"model": "m", "arm": "base", "item": "I-2", "judge": "j1", "score": 10},
+    {"model": "m", "arm": "treat", "item": "I-2", "judge": "j1", "score": 9.5}
+   ]
+  },
+  "expected_output": {
+   "baseline_arm": "base",
+   "treatment_arm": "treat",
+   "models": [
+    {"model": "m", "paired_items": 2, "baseline_mean": 8.875, "treatment_mean": 9.25, "mean_lift": 0.375,
+     "median_lift": 0.375, "improved": 1, "worsened": 1, "unchanged": 0, "share_improved": 0.5,
+     "unpaired_baseline_items": 0, "unpaired_treatment_items": 0}
+   ],
+   "overall": {"paired_items": 2, "baseline_mean": 8.875, "treatment_mean": 9.25, "mean_lift": 0.375,
+               "median_lift": 0.375, "improved": 1, "worsened": 1, "unchanged": 0, "share_improved": 0.5},
+   "other_arm_rows": 0
+  }
+ },
+ {
+  "description": "Model mB answered I-2 only under the baseline and I-3 only under the treatment, so it has no pair: its statistics are null and both unpaired counts are 1. Model mA's single pair lifts 50 to 60.",
+  "input": {
+   "baseline_arm": "base",
+   "treatment_arm": "treat",
+   "rows": [
+    {"model": "mA", "arm": "base", "item": "I-1", "judge": "j1", "score": 50},
+    {"model": "mA", "arm": "treat", "item": "I-1", "judge": "j1", "score": 60},
+    {"model": "mB", "arm": "base", "item": "I-2", "judge": "j1", "score": 40},
+    {"model": "mB", "arm": "treat", "item": "I-3", "judge": "j1", "score": 70}
+   ]
+  },
+  "expected_output": {
+   "baseline_arm": "base",
+   "treatment_arm": "treat",
+   "models": [
+    {"model": "mA", "paired_items": 1, "baseline_mean": 50, "treatment_mean": 60, "mean_lift": 10,
+     "median_lift": 10, "improved": 1, "worsened": 0, "unchanged": 0, "share_improved": 1,
+     "unpaired_baseline_items": 0, "unpaired_treatment_items": 0},
+    {"model": "mB", "paired_items": 0, "baseline_mean": null, "treatment_mean": null, "mean_lift": null,
+     "median_lift": null, "improved": 0, "worsened": 0, "unchanged": 0, "share_improved": null,
+     "unpaired_baseline_items": 1, "unpaired_treatment_items": 1}
+   ],
+   "overall": {"paired_items": 1, "baseline_mean": 50, "treatment_mean": 60, "mean_lift": 10, "median_lift": 10,
+               "improved": 1, "worsened": 0, "unchanged": 0, "share_improved": 1},
+   "other_arm_rows": 0
+  }
+ },
+ {
+  "description": "Swapping the arms negates the lift: with treat as the baseline, I-1 goes from 70 to 30, a lift of -40 and no improvement.",
+  "input": {
+   "baseline_arm": "treat",
+   "treatment_arm": "base",
+   "rows": [
+    {"model": "mA", "arm": "base", "item": "I-1", "judge": "j1", "score": 30},
+    {"model": "mA", "arm": "treat", "item": "I-1", "judge": "j1", "score": 70}
+   ]
+  },
+  "expected_output": {
+   "baseline_arm": "treat",
+   "treatment_arm": "base",
+   "models": [
+    {"model": "mA", "paired_items": 1, "baseline_mean": 70, "treatment_mean": 30, "mean_lift": -40,
+     "median_lift": -40, "improved": 0, "worsened": 1, "unchanged": 0, "share_improved": 0,
+     "unpaired_baseline_items": 0, "unpaired_treatment_items": 0}
+   ],
+   "overall": {"paired_items": 1, "baseline_mean": 70, "treatment_mean": 30, "mean_lift": -40, "median_lift": -40,
+               "improved": 0, "worsened": 1, "unchanged": 0, "share_improved": 0},
+   "other_arm_rows": 0
+  }
+ },
+ {
+  "description": "Two rows of a third arm are ignored and counted; the one pair is unchanged (10 and 10), so the lift is 0 and the improved share is 0.",
+  "input": {
+   "baseline_arm": "base",
+   "treatment_arm": "treat",
+   "rows": [
+    {"model": "mA", "arm": "base", "item": "I-1", "judge": "j1", "score": 10},
+    {"model": "mA", "arm": "treat", "item": "I-1", "judge": "j1", "score": 10},
+    {"model": "mA", "arm": "full", "item": "I-1", "judge": "j1", "score": 99},
+    {"model": "mA", "arm": "full", "item": "I-2", "judge": "j1", "score": 99}
+   ]
+  },
+  "expected_output": {
+   "baseline_arm": "base",
+   "treatment_arm": "treat",
+   "models": [
+    {"model": "mA", "paired_items": 1, "baseline_mean": 10, "treatment_mean": 10, "mean_lift": 0,
+     "median_lift": 0, "improved": 0, "worsened": 0, "unchanged": 1, "share_improved": 0,
+     "unpaired_baseline_items": 0, "unpaired_treatment_items": 0}
+   ],
+   "overall": {"paired_items": 1, "baseline_mean": 10, "treatment_mean": 10, "mean_lift": 0, "median_lift": 0,
+               "improved": 0, "worsened": 0, "unchanged": 1, "share_improved": 0},
+   "other_arm_rows": 2
+  }
+ }
+]

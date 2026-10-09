@@ -1,0 +1,111 @@
+[
+ {
+  "description": "B's label row lacks the field and C's holds null, so both go under the value null, which sorts first: 20 and 30 average 25. A is hard with 10.",
+  "input": {
+   "label_field": "difficulty",
+   "scores": [
+    {"item": "A", "arm": "base", "score": 10},
+    {"item": "B", "arm": "base", "score": 20},
+    {"item": "C", "arm": "base", "score": 30}
+   ],
+   "labels": [
+    {"item": "A", "difficulty": "hard"},
+    {"item": "B"},
+    {"item": "C", "difficulty": null}
+   ]
+  },
+  "expected_output": {
+   "label_field": "difficulty",
+   "groups": [
+    {"value": null, "arm": "base", "count": 2, "mean": 25, "median": 25, "minimum": 20, "maximum": 30},
+    {"value": "hard", "arm": "base", "count": 1, "mean": 10, "median": 10, "minimum": 10, "maximum": 10}
+   ],
+   "scores_used": 3,
+   "items_without_label": 0,
+   "items_without_label_examples": [],
+   "labels_without_scores": 0,
+   "labels_without_scores_examples": []
+  }
+ },
+ {
+  "description": "The label values true and 1 are equal in Python but are two values here: true holds B (2); 1 holds A and C (1 and 4, mean and median 2.5). Booleans sort before integers by type name.",
+  "input": {
+   "label_field": "level",
+   "scores": [
+    {"item": "A", "arm": "x", "score": 1},
+    {"item": "B", "arm": "x", "score": 2},
+    {"item": "C", "arm": "x", "score": 4}
+   ],
+   "labels": [
+    {"item": "A", "level": 1},
+    {"item": "B", "level": true},
+    {"item": "C", "level": 1}
+   ]
+  },
+  "expected_output": {
+   "label_field": "level",
+   "groups": [
+    {"value": true, "arm": "x", "count": 1, "mean": 2, "median": 2, "minimum": 2, "maximum": 2},
+    {"value": 1, "arm": "x", "count": 2, "mean": 2.5, "median": 2.5, "minimum": 1, "maximum": 4}
+   ],
+   "scores_used": 3,
+   "items_without_label": 0,
+   "items_without_label_examples": [],
+   "labels_without_scores": 0,
+   "labels_without_scores_examples": []
+  }
+ },
+ {
+  "description": "Three decimal scores in one group: mean 14/3 = 4.666667, median the middle value 2.5.",
+  "input": {
+   "label_field": "region",
+   "scores": [
+    {"item": "A", "arm": "arm1", "score": 1.5},
+    {"item": "B", "arm": "arm1", "score": 2.5},
+    {"item": "C", "arm": "arm1", "score": 10}
+   ],
+   "labels": [
+    {"item": "A", "region": "north"},
+    {"item": "B", "region": "north"},
+    {"item": "C", "region": "north"}
+   ]
+  },
+  "expected_output": {
+   "label_field": "region",
+   "groups": [
+    {"value": "north", "arm": "arm1", "count": 3, "mean": 4.666667, "median": 2.5, "minimum": 1.5, "maximum": 10}
+   ],
+   "scores_used": 3,
+   "items_without_label": 0,
+   "items_without_label_examples": [],
+   "labels_without_scores": 0,
+   "labels_without_scores_examples": []
+  }
+ },
+ {
+  "description": "Z and Y have scores but no label row: both are counted and listed in name order, and only A's score is used. Q's label row has no score.",
+  "input": {
+   "label_field": "g",
+   "scores": [
+    {"item": "A", "arm": "a", "score": 5},
+    {"item": "Z", "arm": "a", "score": 7},
+    {"item": "Y", "arm": "a", "score": 9}
+   ],
+   "labels": [
+    {"item": "A", "g": "x"},
+    {"item": "Q", "g": "y"}
+   ]
+  },
+  "expected_output": {
+   "label_field": "g",
+   "groups": [
+    {"value": "x", "arm": "a", "count": 1, "mean": 5, "median": 5, "minimum": 5, "maximum": 5}
+   ],
+   "scores_used": 1,
+   "items_without_label": 2,
+   "items_without_label_examples": ["Y", "Z"],
+   "labels_without_scores": 1,
+   "labels_without_scores_examples": ["Q"]
+  }
+ }
+]

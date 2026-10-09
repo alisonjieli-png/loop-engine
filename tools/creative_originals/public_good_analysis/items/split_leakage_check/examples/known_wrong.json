@@ -1,0 +1,11 @@
+{
+ "description": "Two rows share the id r1, so the rows cannot be told apart and the check refuses them.",
+ "input": {
+  "group_fields": ["prompt_cluster_id"],
+  "rows": [
+   {"id": "r1", "split": "train", "prompt_cluster_id": "c1"},
+   {"id": "r1", "split": "test", "prompt_cluster_id": "c1"}
+  ]
+ },
+ "expected_refusal": {"reason": "duplicate_id"}
+}

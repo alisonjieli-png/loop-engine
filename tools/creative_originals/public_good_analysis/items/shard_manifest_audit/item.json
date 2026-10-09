@@ -1,0 +1,216 @@
+{
+ "record_type": "creative_original_item/v1",
+ "identity": "shard_manifest_audit",
+ "title": "Audit of a sharded dataset against its manifest",
+ "purpose": "Compare the shards a release manifest or shard index declares with the shards found (SHA-256 and row counts computed from their bytes): missing, unexpected, digest mismatches and row count mismatches, and whether the release is complete.",
+ "form": "function",
+ "asset_role": null,
+ "dimension": "none",
+ "engine": {
+  "name": "python",
+  "minimum_version": "3.10"
+ },
+ "tags": [
+  "data integrity",
+  "checksums",
+  "dataset release",
+  "manifest",
+  "audit"
+ ],
+ "files": [
+  {
+   "path": "README.md",
+   "role": "other"
+  },
+  {
+   "path": "shard_manifest_audit.py",
+   "role": "executable_tool"
+  },
+  {
+   "path": "examples/known_good.json",
+   "role": "other"
+  },
+  {
+   "path": "examples/known_wrong.json",
+   "role": "other"
+  },
+  {
+   "path": "examples/known_answers.json",
+   "role": "other"
+  }
+ ],
+ "contract": {
+  "entry_points": {
+   "module": "shard_manifest_audit",
+   "function": "run",
+   "command": "python3 shard_manifest_audit.py < input.json",
+   "command_exit_codes": {
+    "0": "result",
+    "2": "refusal"
+   }
+  },
+  "input_schema": {
+   "type": "object",
+   "required": [
+    "declared",
+    "observed"
+   ],
+   "additionalProperties": false,
+   "properties": {
+    "declared": {
+     "type": "array",
+     "maxItems": 100000,
+     "items": {
+      "type": "object",
+      "required": [
+       "path",
+       "sha256"
+      ],
+      "additionalProperties": false,
+      "properties": {
+       "path": {
+        "type": "string",
+        "minLength": 1
+       },
+       "sha256": {
+        "type": "string",
+        "pattern": "^[0-9a-f]{64}$"
+       },
+       "rows": {
+        "type": [
+         "integer",
+         "null"
+        ],
+        "minimum": 0
+       }
+      }
+     },
+     "description": "the shards the index or manifest declares"
+    },
+    "observed": {
+     "type": "array",
+     "maxItems": 100000,
+     "items": {
+      "type": "object",
+      "required": [
+       "path",
+       "sha256"
+      ],
+      "additionalProperties": false,
+      "properties": {
+       "path": {
+        "type": "string",
+        "minLength": 1
+       },
+       "sha256": {
+        "type": "string",
+        "pattern": "^[0-9a-f]{64}$"
+       },
+       "rows": {
+        "type": [
+         "integer",
+         "null"
+        ],
+        "minimum": 0
+       }
+      }
+     },
+     "description": "the shards found, with the SHA-256 and rows computed from their bytes"
+    }
+   }
+  },
+  "output_schema": {
+   "type": "object",
+   "required": [
+    "complete",
+    "matched",
+    "missing",
+    "unexpected",
+    "digest_mismatch",
+    "row_count_mismatch"
+   ],
+   "properties": {
+    "complete": {
+     "type": "boolean"
+    },
+    "matched": {
+     "type": "integer",
+     "minimum": 0
+    },
+    "missing": {
+     "type": "array",
+     "items": {
+      "type": "string"
+     },
+     "description": "declared paths not observed"
+    },
+    "unexpected": {
+     "type": "array",
+     "items": {
+      "type": "string"
+     },
+     "description": "observed paths not declared"
+    },
+    "digest_mismatch": {
+     "type": "array",
+     "items": {
+      "type": "object",
+      "required": [
+       "path",
+       "declared",
+       "observed"
+      ]
+     },
+     "description": "declared and observed SHA-256"
+    },
+    "row_count_mismatch": {
+     "type": "array",
+     "items": {
+      "type": "object",
+      "required": [
+       "path",
+       "declared",
+       "observed"
+      ]
+     },
+     "description": "declared and observed rows"
+    }
+   }
+  },
+  "refusal_reasons": [
+   "input_invalid",
+   "input_not_json",
+   "duplicate_path"
+  ],
+  "examples": {
+   "known_good": "examples/known_good.json",
+   "known_wrong": "examples/known_wrong.json",
+   "known_answers": "examples/known_answers.json"
+  },
+  "effects": "none: a pure function of its JSON input; the command reads standard input and writes standard output",
+  "sdg": {
+   "goals": [],
+   "targets": [],
+   "indicators": [],
+   "basis": "A data-integrity step with no SDG target of its own; it was built for the DueCare corpora, whose release files are listed with their SHA-256 in shard-index.json and release-manifest.json.",
+   "status": "proposal"
+  },
+  "derived_from": {
+   "kaggle_datasets": [
+    "taylorsamarel/duecare-measured-review-curriculum-200k",
+    "taylorsamarel/duecare-measured-response-training-corpus"
+   ],
+   "shape": "shard-index.json and release-manifest.json entries: path, sha256, rows"
+  }
+ },
+ "limits": "The function compares the facts it is given; computing each found file's SHA-256 and row count is the caller's step. Paths compare exactly, so a renamed shard is one missing and one unexpected path. Row counts are compared only where both sides state one.",
+ "related": [
+  "redistribution_rights_filter",
+  "split_leakage_check"
+ ],
+ "technique_references": [
+  "Set difference of declared and observed files",
+  "SHA-256 content identity"
+ ],
+ "native_checks": []
+}

@@ -1,0 +1,11 @@
+{
+ "description": "Two rows share the id a, so a kept id could name either row; the filter refuses the input.",
+ "input": {
+  "allowed_licences": ["CC-BY-4.0"],
+  "rows": [
+   {"id": "a", "license": "CC-BY-4.0", "allow_public_redistribution": true},
+   {"id": "a", "license": "CC-BY-SA-4.0", "allow_public_redistribution": true}
+  ]
+ },
+ "expected_refusal": {"reason": "duplicate_id"}
+}

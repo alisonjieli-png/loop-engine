@@ -1,0 +1,211 @@
+[
+ {
+  "description": "An offset is converted to UTC: 10:00 at +02:00 is 08:00 UTC, so closing at 09:30Z takes 1.5 hours, which misses a one-hour target.",
+  "input": {
+   "target_hours": 1,
+   "rows": [
+    {
+     "id": "s1",
+     "category": "Streets",
+     "opened": "2025-03-01T10:00:00+02:00",
+     "closed": "2025-03-01T09:30:00Z"
+    }
+   ]
+  },
+  "expected_output": {
+   "target_hours": 1,
+   "categories": [
+    {
+     "category": "Streets",
+     "requests": 1,
+     "closed": 1,
+     "still_open": 0,
+     "closed_before_opened": 0,
+     "median_hours": 1.5,
+     "p90_hours": 1.5,
+     "share_closed_within_target": 0
+    }
+   ],
+   "overall": {
+    "requests": 1,
+    "closed": 1,
+    "still_open": 0,
+    "closed_before_opened": 0,
+    "median_hours": 1.5,
+    "p90_hours": 1.5,
+    "share_closed_within_target": 0
+   }
+  }
+ },
+ {
+  "description": "12 AM is midnight and 12 PM is noon, so the first request takes 12 hours; a date alone is midnight, so the second runs from 2025-03-11 00:00 to 2025-03-12 00:30, 24.5 hours. Median 18.25, percentile 24.5.",
+  "input": {
+   "rows": [
+    {
+     "id": "p1",
+     "category": "Parks",
+     "opened": "03/10/2025 12:00 AM",
+     "closed": "03/10/2025 12:00 PM"
+    },
+    {
+     "id": "p2",
+     "category": "Parks",
+     "opened": "2025-03-11",
+     "closed": "03/12/2025 12:30:00 AM"
+    }
+   ]
+  },
+  "expected_output": {
+   "target_hours": 72,
+   "categories": [
+    {
+     "category": "Parks",
+     "requests": 2,
+     "closed": 2,
+     "still_open": 0,
+     "closed_before_opened": 0,
+     "median_hours": 18.25,
+     "p90_hours": 24.5,
+     "share_closed_within_target": 1
+    }
+   ],
+   "overall": {
+    "requests": 2,
+    "closed": 2,
+    "still_open": 0,
+    "closed_before_opened": 0,
+    "median_hours": 18.25,
+    "p90_hours": 24.5,
+    "share_closed_within_target": 1
+   }
+  }
+ },
+ {
+  "description": "Ten requests closing after 1 to 10 hours: the median is 5.5 and the nearest-rank 90th percentile is the 9th value, 9 (rank ceil(0.9 x 10) = 9, computed exactly).",
+  "input": {
+   "rows": [
+    {
+     "id": "l1",
+     "category": "Lights",
+     "opened": "2025-01-01T00:00:00",
+     "closed": "2025-01-01T01:00:00"
+    },
+    {
+     "id": "l2",
+     "category": "Lights",
+     "opened": "2025-01-01T00:00:00",
+     "closed": "2025-01-01T02:00:00"
+    },
+    {
+     "id": "l3",
+     "category": "Lights",
+     "opened": "2025-01-01T00:00:00",
+     "closed": "2025-01-01T03:00:00"
+    },
+    {
+     "id": "l4",
+     "category": "Lights",
+     "opened": "2025-01-01T00:00:00",
+     "closed": "2025-01-01T04:00:00"
+    },
+    {
+     "id": "l5",
+     "category": "Lights",
+     "opened": "2025-01-01T00:00:00",
+     "closed": "2025-01-01T05:00:00"
+    },
+    {
+     "id": "l6",
+     "category": "Lights",
+     "opened": "2025-01-01T00:00:00",
+     "closed": "2025-01-01T06:00:00"
+    },
+    {
+     "id": "l7",
+     "category": "Lights",
+     "opened": "2025-01-01T00:00:00",
+     "closed": "2025-01-01T07:00:00"
+    },
+    {
+     "id": "l8",
+     "category": "Lights",
+     "opened": "2025-01-01T00:00:00",
+     "closed": "2025-01-01T08:00:00"
+    },
+    {
+     "id": "l9",
+     "category": "Lights",
+     "opened": "2025-01-01T00:00:00",
+     "closed": "2025-01-01T09:00:00"
+    },
+    {
+     "id": "l10",
+     "category": "Lights",
+     "opened": "2025-01-01T00:00:00",
+     "closed": "2025-01-01T10:00:00"
+    }
+   ]
+  },
+  "expected_output": {
+   "target_hours": 72,
+   "categories": [
+    {
+     "category": "Lights",
+     "requests": 10,
+     "closed": 10,
+     "still_open": 0,
+     "closed_before_opened": 0,
+     "median_hours": 5.5,
+     "p90_hours": 9,
+     "share_closed_within_target": 1
+    }
+   ],
+   "overall": {
+    "requests": 10,
+    "closed": 10,
+    "still_open": 0,
+    "closed_before_opened": 0,
+    "median_hours": 5.5,
+    "p90_hours": 9,
+    "share_closed_within_target": 1
+   }
+  }
+ },
+ {
+  "description": "A category whose only request is still open has no durations: its median, percentile and share are null.",
+  "input": {
+   "rows": [
+    {
+     "id": "g1",
+     "category": "Graffiti",
+     "opened": "2025-01-01T00:00:00",
+     "closed": null
+    }
+   ]
+  },
+  "expected_output": {
+   "target_hours": 72,
+   "categories": [
+    {
+     "category": "Graffiti",
+     "requests": 1,
+     "closed": 0,
+     "still_open": 1,
+     "closed_before_opened": 0,
+     "median_hours": null,
+     "p90_hours": null,
+     "share_closed_within_target": null
+    }
+   ],
+   "overall": {
+    "requests": 1,
+    "closed": 0,
+    "still_open": 1,
+    "closed_before_opened": 0,
+    "median_hours": null,
+    "p90_hours": null,
+    "share_closed_within_target": null
+   }
+  }
+ }
+]

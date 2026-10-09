@@ -1,0 +1,118 @@
+[
+ {
+  "description": "Per 1,000 people: X has no events (rate 0), Y has 3 in 1,500 (rate 2); together 3 in 6,500 (rate 0.461538).",
+  "input": {
+   "per": 1000,
+   "rows": [
+    {
+     "group": "X",
+     "period": "2020",
+     "count": 0,
+     "population": 5000
+    },
+    {
+     "group": "Y",
+     "period": "2020",
+     "count": 3,
+     "population": 1500
+    }
+   ]
+  },
+  "expected_output": {
+   "per": 1000,
+   "rows": [
+    {
+     "group": "X",
+     "period": "2020",
+     "count": 0,
+     "population": 5000,
+     "rate": 0
+    },
+    {
+     "group": "Y",
+     "period": "2020",
+     "count": 3,
+     "population": 1500,
+     "rate": 2
+    }
+   ],
+   "periods": [
+    {
+     "period": "2020",
+     "groups": 2,
+     "count": 3,
+     "population": 6500,
+     "rate": 0.461538
+    }
+   ]
+  }
+ },
+ {
+  "description": "An estimated count of 2.5 in 50,000 people is a rate of 5 per 100,000.",
+  "input": {
+   "rows": [
+    {
+     "group": "Z",
+     "period": "2021",
+     "count": 2.5,
+     "population": 50000
+    }
+   ]
+  },
+  "expected_output": {
+   "per": 100000,
+   "rows": [
+    {
+     "group": "Z",
+     "period": "2021",
+     "count": 2.5,
+     "population": 50000,
+     "rate": 5
+    }
+   ],
+   "periods": [
+    {
+     "period": "2021",
+     "groups": 1,
+     "count": 2.5,
+     "population": 50000,
+     "rate": 5
+    }
+   ]
+  }
+ },
+ {
+  "description": "One event among three people is 100,000/3 = 33333.333333 per 100,000 after rounding to six decimals.",
+  "input": {
+   "rows": [
+    {
+     "group": "W",
+     "period": "2022",
+     "count": 1,
+     "population": 3
+    }
+   ]
+  },
+  "expected_output": {
+   "per": 100000,
+   "rows": [
+    {
+     "group": "W",
+     "period": "2022",
+     "count": 1,
+     "population": 3,
+     "rate": 33333.333333
+    }
+   ],
+   "periods": [
+    {
+     "period": "2022",
+     "groups": 1,
+     "count": 1,
+     "population": 3,
+     "rate": 33333.333333
+    }
+   ]
+  }
+ }
+]

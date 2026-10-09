@@ -1,0 +1,126 @@
+[
+ {
+  "description": "One shard declared and found with the same SHA-256 and rows: matched and complete.",
+  "input": {
+   "declared": [
+    {
+     "path": "x.jsonl",
+     "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "rows": 3
+    }
+   ],
+   "observed": [
+    {
+     "path": "x.jsonl",
+     "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "rows": 3
+    }
+   ]
+  },
+  "expected_output": {
+   "complete": true,
+   "matched": 1,
+   "missing": [],
+   "unexpected": [],
+   "digest_mismatch": [],
+   "row_count_mismatch": []
+  }
+ },
+ {
+  "description": "A row count stated on one side only is not compared: y's declared rows are null and z's observed rows are absent, so both match on their digests alone.",
+  "input": {
+   "declared": [
+    {
+     "path": "y.jsonl",
+     "sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+     "rows": null
+    },
+    {
+     "path": "z.jsonl",
+     "sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+     "rows": 4
+    }
+   ],
+   "observed": [
+    {
+     "path": "y.jsonl",
+     "sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+     "rows": 7
+    },
+    {
+     "path": "z.jsonl",
+     "sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+    }
+   ]
+  },
+  "expected_output": {
+   "complete": true,
+   "matched": 2,
+   "missing": [],
+   "unexpected": [],
+   "digest_mismatch": [],
+   "row_count_mismatch": []
+  }
+ },
+ {
+  "description": "p differs in both SHA-256 and rows, so it is listed under both mismatches and is not matched; q was declared and never found.",
+  "input": {
+   "declared": [
+    {
+     "path": "p.jsonl",
+     "sha256": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+     "rows": 1
+    },
+    {
+     "path": "q.jsonl",
+     "sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+     "rows": 2
+    }
+   ],
+   "observed": [
+    {
+     "path": "p.jsonl",
+     "sha256": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+     "rows": 9
+    }
+   ]
+  },
+  "expected_output": {
+   "complete": false,
+   "matched": 0,
+   "missing": [
+    "q.jsonl"
+   ],
+   "unexpected": [],
+   "digest_mismatch": [
+    {
+     "path": "p.jsonl",
+     "declared": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+     "observed": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+    }
+   ],
+   "row_count_mismatch": [
+    {
+     "path": "p.jsonl",
+     "declared": 1,
+     "observed": 9
+    }
+   ]
+  }
+ },
+ {
+  "description": "Nothing declared and nothing found is trivially complete, with no shard matched.",
+  "input": {
+   "declared": [],
+   "observed": []
+  },
+  "expected_output": {
+   "complete": true,
+   "matched": 0,
+   "missing": [],
+   "unexpected": [],
+   "digest_mismatch": [],
+   "row_count_mismatch": []
+  }
+ }
+]

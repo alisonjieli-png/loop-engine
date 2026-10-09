@@ -1,0 +1,188 @@
+[
+ {
+  "description": "In kWh per square metre: 600,000 kWh over 2,000 square metres is 300. One building is its own median and quartiles, and 300 is not above a fence of 300.",
+  "input": {
+   "area_unit": "square_metres",
+   "energy_unit": "kwh",
+   "rows": [
+    {
+     "building_id": "H1",
+     "property_type": "Hospital",
+     "floor_area": 2000,
+     "site_energy": 600000
+    }
+   ]
+  },
+  "expected_output": {
+   "energy_unit": "kwh",
+   "area_unit": "square_metres",
+   "buildings": [
+    {
+     "building_id": "H1",
+     "property_type": "Hospital",
+     "eui": 300
+    }
+   ],
+   "property_types": [
+    {
+     "property_type": "Hospital",
+     "buildings": 1,
+     "median": 300,
+     "p25": 300,
+     "p75": 300,
+     "high_fence": 300,
+     "high_outliers": []
+    }
+   ]
+  }
+ },
+ {
+  "description": "Zero energy is allowed. EUIs 1/3, 0 and 1: quartiles 1/6, 1/3 and 2/3 (positions 0.5, 1 and 1.5), fence 2/3 + 3 x 1/2 = 13/6, each rounded to six decimals.",
+  "input": {
+   "rows": [
+    {
+     "building_id": "W1",
+     "property_type": "Warehouse",
+     "floor_area": 3,
+     "site_energy": 1
+    },
+    {
+     "building_id": "W2",
+     "property_type": "Warehouse",
+     "floor_area": 4,
+     "site_energy": 0
+    },
+    {
+     "building_id": "W3",
+     "property_type": "Warehouse",
+     "floor_area": 1,
+     "site_energy": 1
+    }
+   ]
+  },
+  "expected_output": {
+   "energy_unit": "kbtu",
+   "area_unit": "square_feet",
+   "buildings": [
+    {
+     "building_id": "W1",
+     "property_type": "Warehouse",
+     "eui": 0.333333
+    },
+    {
+     "building_id": "W2",
+     "property_type": "Warehouse",
+     "eui": 0
+    },
+    {
+     "building_id": "W3",
+     "property_type": "Warehouse",
+     "eui": 1
+    }
+   ],
+   "property_types": [
+    {
+     "property_type": "Warehouse",
+     "buildings": 3,
+     "median": 0.333333,
+     "p25": 0.166667,
+     "p75": 0.666667,
+     "high_fence": 2.166667,
+     "high_outliers": []
+    }
+   ]
+  }
+ },
+ {
+  "description": "Six shops with EUIs 10 to 14 and 100: quartiles 11.25, 12.5 and 13.75 (positions 1.25, 2.5 and 3.75), fence 13.75 + 3 x 2.5 = 21.25, so R6 is the one high outlier.",
+  "input": {
+   "rows": [
+    {
+     "building_id": "R1",
+     "property_type": "Retail",
+     "floor_area": 100,
+     "site_energy": 1000
+    },
+    {
+     "building_id": "R2",
+     "property_type": "Retail",
+     "floor_area": 100,
+     "site_energy": 1100
+    },
+    {
+     "building_id": "R3",
+     "property_type": "Retail",
+     "floor_area": 100,
+     "site_energy": 1200
+    },
+    {
+     "building_id": "R4",
+     "property_type": "Retail",
+     "floor_area": 100,
+     "site_energy": 1300
+    },
+    {
+     "building_id": "R5",
+     "property_type": "Retail",
+     "floor_area": 100,
+     "site_energy": 1400
+    },
+    {
+     "building_id": "R6",
+     "property_type": "Retail",
+     "floor_area": 100,
+     "site_energy": 10000
+    }
+   ]
+  },
+  "expected_output": {
+   "energy_unit": "kbtu",
+   "area_unit": "square_feet",
+   "buildings": [
+    {
+     "building_id": "R1",
+     "property_type": "Retail",
+     "eui": 10
+    },
+    {
+     "building_id": "R2",
+     "property_type": "Retail",
+     "eui": 11
+    },
+    {
+     "building_id": "R3",
+     "property_type": "Retail",
+     "eui": 12
+    },
+    {
+     "building_id": "R4",
+     "property_type": "Retail",
+     "eui": 13
+    },
+    {
+     "building_id": "R5",
+     "property_type": "Retail",
+     "eui": 14
+    },
+    {
+     "building_id": "R6",
+     "property_type": "Retail",
+     "eui": 100
+    }
+   ],
+   "property_types": [
+    {
+     "property_type": "Retail",
+     "buildings": 6,
+     "median": 12.5,
+     "p25": 11.25,
+     "p75": 13.75,
+     "high_fence": 21.25,
+     "high_outliers": [
+      "R6"
+     ]
+    }
+   ]
+  }
+ }
+]

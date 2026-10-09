@@ -1,0 +1,61 @@
+[
+ {
+  "description": "Group g1 stays in train and g2 in test: no value crosses a split, so nothing leaks.",
+  "input": {
+   "group_fields": ["g"],
+   "rows": [
+    {"id": "a", "split": "train", "g": "g1"},
+    {"id": "b", "split": "train", "g": "g1"},
+    {"id": "c", "split": "test", "g": "g2"}
+   ]
+  },
+  "expected_output": {
+   "leaking": false,
+   "rows": 3,
+   "splits": {"test": 1, "train": 2},
+   "fields": [{"field": "g", "values": 2, "leaking_values": 0, "rows_in_leaking_values": 0, "rows_without_value": 0,
+               "leaks": [], "leaks_truncated": false}]
+  }
+ },
+ {
+  "description": "The number 7 appears in all three splits (one row each), and d has no k at all: one leaking value holding three rows, one row without a value.",
+  "input": {
+   "group_fields": ["k"],
+   "rows": [
+    {"id": "a", "split": "train", "k": 7},
+    {"id": "b", "split": "valid", "k": 7},
+    {"id": "c", "split": "test", "k": 7},
+    {"id": "d", "split": "test"}
+   ]
+  },
+  "expected_output": {
+   "leaking": true,
+   "rows": 4,
+   "splits": {"test": 2, "train": 1, "valid": 1},
+   "fields": [{"field": "k", "values": 1, "leaking_values": 1, "rows_in_leaking_values": 3, "rows_without_value": 1,
+               "leaks": [{"value": 7, "splits": {"test": 1, "train": 1, "valid": 1}}], "leaks_truncated": false}]
+  }
+ },
+ {
+  "description": "Field x keeps p in train and q in test, so it is clean; field y puts m in train and test, so the dataset leaks through y only.",
+  "input": {
+   "group_fields": ["x", "y"],
+   "rows": [
+    {"id": "a", "split": "train", "x": "p", "y": "m"},
+    {"id": "b", "split": "test", "x": "q", "y": "m"},
+    {"id": "c", "split": "test", "x": "q", "y": "n"}
+   ]
+  },
+  "expected_output": {
+   "leaking": true,
+   "rows": 3,
+   "splits": {"test": 2, "train": 1},
+   "fields": [
+    {"field": "x", "values": 2, "leaking_values": 0, "rows_in_leaking_values": 0, "rows_without_value": 0,
+     "leaks": [], "leaks_truncated": false},
+    {"field": "y", "values": 2, "leaking_values": 1, "rows_in_leaking_values": 2, "rows_without_value": 0,
+     "leaks": [{"value": "m", "splits": {"test": 1, "train": 1}}], "leaks_truncated": false}
+   ]
+  }
+ }
+]

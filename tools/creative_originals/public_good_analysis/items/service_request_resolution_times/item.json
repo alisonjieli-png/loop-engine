@@ -1,0 +1,204 @@
+{
+ "record_type": "creative_original_item/v1",
+ "identity": "service_request_resolution_times",
+ "title": "Resolution times of city service requests",
+ "purpose": "Measure how long a city takes to close 311 service requests, per category and overall: requests, closed, still open, closed before opened, the median and 90th percentile hours to close and the share closed within a target, from ISO or US style timestamps.",
+ "form": "function",
+ "asset_role": null,
+ "dimension": "none",
+ "engine": {
+  "name": "python",
+  "minimum_version": "3.10"
+ },
+ "tags": [
+  "311",
+  "city services",
+  "service levels",
+  "durations",
+  "public administration"
+ ],
+ "files": [
+  {
+   "path": "README.md",
+   "role": "other"
+  },
+  {
+   "path": "service_request_resolution_times.py",
+   "role": "executable_tool"
+  },
+  {
+   "path": "examples/known_good.json",
+   "role": "other"
+  },
+  {
+   "path": "examples/known_wrong.json",
+   "role": "other"
+  },
+  {
+   "path": "examples/known_answers.json",
+   "role": "other"
+  }
+ ],
+ "contract": {
+  "entry_points": {
+   "module": "service_request_resolution_times",
+   "function": "run",
+   "command": "python3 service_request_resolution_times.py < input.json",
+   "command_exit_codes": {
+    "0": "result",
+    "2": "refusal"
+   }
+  },
+  "input_schema": {
+   "type": "object",
+   "required": [
+    "rows"
+   ],
+   "additionalProperties": false,
+   "properties": {
+    "rows": {
+     "type": "array",
+     "minItems": 1,
+     "maxItems": 500000,
+     "description": "one service request: its id, category, opened time and closed time or null",
+     "items": {
+      "type": "object",
+      "required": [
+       "id",
+       "category",
+       "opened",
+       "closed"
+      ],
+      "additionalProperties": false,
+      "properties": {
+       "id": {
+        "type": "string",
+        "minLength": 1
+       },
+       "category": {
+        "type": "string",
+        "minLength": 1
+       },
+       "opened": {
+        "type": "string",
+        "minLength": 1
+       },
+       "closed": {
+        "type": [
+         "string",
+         "null"
+        ]
+       }
+      }
+     }
+    },
+    "target_hours": {
+     "type": "number",
+     "exclusiveMinimum": 0,
+     "description": "hours within which a request counts as closed on time (default 72)"
+    }
+   }
+  },
+  "output_schema": {
+   "type": "object",
+   "required": [
+    "target_hours",
+    "categories",
+    "overall"
+   ],
+   "properties": {
+    "target_hours": {
+     "type": "number"
+    },
+    "categories": {
+     "type": "array",
+     "description": "one summary per category, in category order",
+     "items": {
+      "type": "object",
+      "required": [
+       "category",
+       "requests",
+       "closed",
+       "still_open",
+       "closed_before_opened",
+       "median_hours",
+       "p90_hours",
+       "share_closed_within_target"
+      ]
+     }
+    },
+    "overall": {
+     "type": "object",
+     "required": [
+      "requests",
+      "closed",
+      "still_open",
+      "closed_before_opened",
+      "median_hours",
+      "p90_hours",
+      "share_closed_within_target"
+     ],
+     "properties": {
+      "median_hours": {
+       "type": [
+        "number",
+        "null"
+       ]
+      },
+      "p90_hours": {
+       "type": [
+        "number",
+        "null"
+       ]
+      },
+      "share_closed_within_target": {
+       "type": [
+        "number",
+        "null"
+       ]
+      }
+     }
+    }
+   }
+  },
+  "refusal_reasons": [
+   "input_invalid",
+   "input_not_json",
+   "timestamp_unreadable",
+   "duplicate_id"
+  ],
+  "examples": {
+   "known_good": "examples/known_good.json",
+   "known_wrong": "examples/known_wrong.json",
+   "known_answers": "examples/known_answers.json"
+  },
+  "effects": "none: a pure function of its JSON input; the command reads standard input and writes standard output",
+  "sdg": {
+   "goals": [
+    11,
+    16
+   ],
+   "targets": [
+    "11.6",
+    "16.6"
+   ],
+   "indicators": [],
+   "basis": "Resolution time informs how responsive city services are (target 16.6) for requests about waste and the urban environment (target 11.6); it is not indicator 16.6.2, which is a survey of satisfaction with public services.",
+   "status": "proposal"
+  },
+  "derived_from": {
+   "kaggle_datasets": [],
+   "shape": "municipal 311 service request tables with opened and closed timestamps"
+  }
+ },
+ "limits": "Timestamps without an offset are taken as written, so a table mixing local and UTC times needs one convention first; daylight saving changes are not applied. Requests closed before they were opened are counted and left out. Durations count calendar hours, not business hours. Resolution speed is not satisfaction: indicator 16.6.2 is a survey of people's experience.",
+ "related": [
+  "rate_per_100k",
+  "column_profile"
+ ],
+ "technique_references": [
+  "Nearest-rank percentile",
+  "Median of durations"
+ ],
+ "native_checks": []
+}

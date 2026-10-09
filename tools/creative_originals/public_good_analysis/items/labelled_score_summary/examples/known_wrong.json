@@ -1,0 +1,12 @@
+{
+ "description": "Two label rows name P-1 with different categories, so its scores could belong to either; the input is refused rather than picking one.",
+ "input": {
+  "label_field": "category",
+  "scores": [{"item": "P-1", "arm": "baseline", "score": 40}],
+  "labels": [
+   {"item": "P-1", "category": "debt_bondage"},
+   {"item": "P-1", "category": "fee_splitting"}
+  ]
+ },
+ "expected_refusal": {"reason": "duplicate_label"}
+}

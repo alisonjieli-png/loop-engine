@@ -1,0 +1,10 @@
+{
+ "description": "Every row comes from one judge, so there is no pair whose agreement could be measured.",
+ "input": {
+  "rows": [
+   {"model": "model-a", "arm": "baseline", "item": "P-1", "judge": "judge-1", "score": 10},
+   {"model": "model-a", "arm": "baseline", "item": "P-2", "judge": "judge-1", "score": 20}
+  ]
+ },
+ "expected_refusal": {"reason": "fewer_than_two_judges"}
+}

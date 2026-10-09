@@ -1,0 +1,80 @@
+{
+ "description": "Road deaths in two districts over two years, given out of order. A: 12 in 400,000 (rate 3) and 9 in 450,000 (rate 2); B: 5 in 250,000 (rate 2) and 7 in 200,000 (rate 3.5). Each year pools 650,000 people: 17 deaths in 2024 (rate 2.615385) and 16 in 2025 (rate 2.461538). Rows come back sorted by period, then group.",
+ "input": {
+  "rows": [
+   {
+    "group": "district-B",
+    "period": "2025",
+    "count": 7,
+    "population": 200000
+   },
+   {
+    "group": "district-A",
+    "period": "2024",
+    "count": 12,
+    "population": 400000
+   },
+   {
+    "group": "district-B",
+    "period": "2024",
+    "count": 5,
+    "population": 250000
+   },
+   {
+    "group": "district-A",
+    "period": "2025",
+    "count": 9,
+    "population": 450000
+   }
+  ]
+ },
+ "expected_output": {
+  "per": 100000,
+  "rows": [
+   {
+    "group": "district-A",
+    "period": "2024",
+    "count": 12,
+    "population": 400000,
+    "rate": 3
+   },
+   {
+    "group": "district-B",
+    "period": "2024",
+    "count": 5,
+    "population": 250000,
+    "rate": 2
+   },
+   {
+    "group": "district-A",
+    "period": "2025",
+    "count": 9,
+    "population": 450000,
+    "rate": 2
+   },
+   {
+    "group": "district-B",
+    "period": "2025",
+    "count": 7,
+    "population": 200000,
+    "rate": 3.5
+   }
+  ],
+  "periods": [
+   {
+    "period": "2024",
+    "groups": 2,
+    "count": 17,
+    "population": 650000,
+    "rate": 2.615385
+   },
+   {
+    "period": "2025",
+    "groups": 2,
+    "count": 16,
+    "population": 650000,
+    "rate": 2.461538
+   }
+  ]
+ }
+}

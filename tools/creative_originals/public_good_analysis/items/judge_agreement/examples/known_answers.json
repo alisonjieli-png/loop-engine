@@ -1,0 +1,75 @@
+[
+ {
+  "description": "Two shared units with tolerance 5: differences 2 and 10, mean 6, one within the tolerance; with fewer than three units the correlation is null.",
+  "input": {
+   "tolerance": 5,
+   "rows": [
+    {"model": "m", "arm": "a", "item": "u1", "judge": "j1", "score": 50},
+    {"model": "m", "arm": "a", "item": "u2", "judge": "j1", "score": 60},
+    {"model": "m", "arm": "a", "item": "u1", "judge": "j2", "score": 52},
+    {"model": "m", "arm": "a", "item": "u2", "judge": "j2", "score": 70}
+   ]
+  },
+  "expected_output": {
+   "tolerance": 5,
+   "judges": [{"judge": "j1", "units": 2}, {"judge": "j2", "units": 2}],
+   "pairs": [{"judge_a": "j1", "judge_b": "j2", "shared_units": 2, "mean_absolute_difference": 6,
+              "share_within_tolerance": 0.5, "pearson_correlation": null}]
+  }
+ },
+ {
+  "description": "j1 gives every unit 50, so its scores have no spread and the correlation is null; differences 10, 0 and 10 average 6.666667 and all lie within the default tolerance of 10.",
+  "input": {
+   "rows": [
+    {"model": "m", "arm": "a", "item": "u1", "judge": "j1", "score": 50},
+    {"model": "m", "arm": "a", "item": "u2", "judge": "j1", "score": 50},
+    {"model": "m", "arm": "a", "item": "u3", "judge": "j1", "score": 50},
+    {"model": "m", "arm": "a", "item": "u1", "judge": "j2", "score": 40},
+    {"model": "m", "arm": "a", "item": "u2", "judge": "j2", "score": 50},
+    {"model": "m", "arm": "a", "item": "u3", "judge": "j2", "score": 60}
+   ]
+  },
+  "expected_output": {
+   "tolerance": 10,
+   "judges": [{"judge": "j1", "units": 3}, {"judge": "j2", "units": 3}],
+   "pairs": [{"judge_a": "j1", "judge_b": "j2", "shared_units": 3, "mean_absolute_difference": 6.666667,
+              "share_within_tolerance": 1, "pearson_correlation": null}]
+  }
+ },
+ {
+  "description": "Judges who scored different units share none: every statistic of the pair is null.",
+  "input": {
+   "rows": [
+    {"model": "m", "arm": "a", "item": "u1", "judge": "j1", "score": 10},
+    {"model": "m", "arm": "a", "item": "u2", "judge": "j2", "score": 20}
+   ]
+  },
+  "expected_output": {
+   "tolerance": 10,
+   "judges": [{"judge": "j1", "units": 1}, {"judge": "j2", "units": 1}],
+   "pairs": [{"judge_a": "j1", "judge_b": "j2", "shared_units": 0, "mean_absolute_difference": null,
+              "share_within_tolerance": null, "pearson_correlation": null}]
+  }
+ },
+ {
+  "description": "The arm is part of the unit, and tolerance 0 counts exact matches only: j1 gives 5, 7, 9 and j2 gives 5, 8, 9 on three shared units (j2's extra arm-a2 item i3 is not shared). Differences 0, 1, 0: mean 1/3, two of three exact. Correlation 8 / sqrt(8 x 26/3) = 0.960769.",
+  "input": {
+   "tolerance": 0,
+   "rows": [
+    {"model": "m", "arm": "a1", "item": "i1", "judge": "j1", "score": 5},
+    {"model": "m", "arm": "a2", "item": "i1", "judge": "j1", "score": 7},
+    {"model": "m", "arm": "a2", "item": "i2", "judge": "j1", "score": 9},
+    {"model": "m", "arm": "a1", "item": "i1", "judge": "j2", "score": 5},
+    {"model": "m", "arm": "a2", "item": "i1", "judge": "j2", "score": 8},
+    {"model": "m", "arm": "a2", "item": "i2", "judge": "j2", "score": 9},
+    {"model": "m", "arm": "a2", "item": "i3", "judge": "j2", "score": 4}
+   ]
+  },
+  "expected_output": {
+   "tolerance": 0,
+   "judges": [{"judge": "j1", "units": 3}, {"judge": "j2", "units": 4}],
+   "pairs": [{"judge_a": "j1", "judge_b": "j2", "shared_units": 3, "mean_absolute_difference": 0.333333,
+              "share_within_tolerance": 0.666667, "pearson_correlation": 0.960769}]
+  }
+ }
+]

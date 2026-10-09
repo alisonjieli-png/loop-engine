@@ -1,0 +1,112 @@
+{
+ "description": "Five offices and two schools in kBtu per square foot. Office EUIs 50, 60, 70, 80 and 400: quartiles 60, 70 and 80 (positions 1, 2 and 3 of 0 to 4), high fence 80 + 3 x 20 = 140, so B5 is a high outlier. School EUIs 40 and 50: quartiles 42.5, 45 and 47.5 by interpolation, fence 62.5, no outlier.",
+ "input": {
+  "rows": [
+   {
+    "building_id": "B1",
+    "property_type": "Office",
+    "floor_area": 1000,
+    "site_energy": 50000
+   },
+   {
+    "building_id": "B2",
+    "property_type": "Office",
+    "floor_area": 1000,
+    "site_energy": 60000
+   },
+   {
+    "building_id": "B3",
+    "property_type": "Office",
+    "floor_area": 2000,
+    "site_energy": 140000
+   },
+   {
+    "building_id": "B4",
+    "property_type": "Office",
+    "floor_area": 500,
+    "site_energy": 40000
+   },
+   {
+    "building_id": "B5",
+    "property_type": "Office",
+    "floor_area": 1000,
+    "site_energy": 400000
+   },
+   {
+    "building_id": "S1",
+    "property_type": "School",
+    "floor_area": 2000,
+    "site_energy": 100000
+   },
+   {
+    "building_id": "S2",
+    "property_type": "School",
+    "floor_area": 3000,
+    "site_energy": 120000
+   }
+  ]
+ },
+ "expected_output": {
+  "energy_unit": "kbtu",
+  "area_unit": "square_feet",
+  "buildings": [
+   {
+    "building_id": "B1",
+    "property_type": "Office",
+    "eui": 50
+   },
+   {
+    "building_id": "B2",
+    "property_type": "Office",
+    "eui": 60
+   },
+   {
+    "building_id": "B3",
+    "property_type": "Office",
+    "eui": 70
+   },
+   {
+    "building_id": "B4",
+    "property_type": "Office",
+    "eui": 80
+   },
+   {
+    "building_id": "B5",
+    "property_type": "Office",
+    "eui": 400
+   },
+   {
+    "building_id": "S1",
+    "property_type": "School",
+    "eui": 50
+   },
+   {
+    "building_id": "S2",
+    "property_type": "School",
+    "eui": 40
+   }
+  ],
+  "property_types": [
+   {
+    "property_type": "Office",
+    "buildings": 5,
+    "median": 70,
+    "p25": 60,
+    "p75": 80,
+    "high_fence": 140,
+    "high_outliers": [
+     "B5"
+    ]
+   },
+   {
+    "property_type": "School",
+    "buildings": 2,
+    "median": 45,
+    "p25": 42.5,
+    "p75": 47.5,
+    "high_fence": 62.5,
+    "high_outliers": []
+   }
+  ]
+ }
+}

@@ -1,0 +1,73 @@
+{
+ "description": "The index declares four shards and four files were found: a matches; b's SHA-256 differs; c holds 31 rows where the index says 30; d was found but not declared; e is declared but was not found. One shard matches and the dataset is not complete.",
+ "input": {
+  "declared": [
+   {
+    "path": "data/a.jsonl",
+    "sha256": "1111111111111111111111111111111111111111111111111111111111111111",
+    "rows": 10
+   },
+   {
+    "path": "data/b.jsonl",
+    "sha256": "2222222222222222222222222222222222222222222222222222222222222222",
+    "rows": 20
+   },
+   {
+    "path": "data/c.jsonl",
+    "sha256": "3333333333333333333333333333333333333333333333333333333333333333",
+    "rows": 30
+   },
+   {
+    "path": "data/e.jsonl",
+    "sha256": "5555555555555555555555555555555555555555555555555555555555555555",
+    "rows": 50
+   }
+  ],
+  "observed": [
+   {
+    "path": "data/a.jsonl",
+    "sha256": "1111111111111111111111111111111111111111111111111111111111111111",
+    "rows": 10
+   },
+   {
+    "path": "data/b.jsonl",
+    "sha256": "222222222222222222222222222222222222222222222222222222222222222f",
+    "rows": 20
+   },
+   {
+    "path": "data/c.jsonl",
+    "sha256": "3333333333333333333333333333333333333333333333333333333333333333",
+    "rows": 31
+   },
+   {
+    "path": "data/d.jsonl",
+    "sha256": "4444444444444444444444444444444444444444444444444444444444444444",
+    "rows": 5
+   }
+  ]
+ },
+ "expected_output": {
+  "complete": false,
+  "matched": 1,
+  "missing": [
+   "data/e.jsonl"
+  ],
+  "unexpected": [
+   "data/d.jsonl"
+  ],
+  "digest_mismatch": [
+   {
+    "path": "data/b.jsonl",
+    "declared": "2222222222222222222222222222222222222222222222222222222222222222",
+    "observed": "222222222222222222222222222222222222222222222222222222222222222f"
+   }
+  ],
+  "row_count_mismatch": [
+   {
+    "path": "data/c.jsonl",
+    "declared": 30,
+    "observed": 31
+   }
+  ]
+ }
+}

@@ -1,0 +1,16 @@
+{
+ "description": "district-A reports a population of 0, so its rate would divide by zero; the input is refused.",
+ "input": {
+  "rows": [
+   {
+    "group": "district-A",
+    "period": "2024",
+    "count": 3,
+    "population": 0
+   }
+  ]
+ },
+ "expected_refusal": {
+  "reason": "population_not_positive"
+ }
+}

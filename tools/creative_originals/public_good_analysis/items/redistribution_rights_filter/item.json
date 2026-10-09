@@ -1,0 +1,211 @@
+{
+ "record_type": "creative_original_item/v1",
+ "identity": "redistribution_rights_filter",
+ "title": "Rows whose own rights fields allow redistribution or training",
+ "purpose": "Keep the rows of a corpus whose own licence is on an allowed list and whose permission flags allow public redistribution and, when asked, training use; every other row is excluded with its first failing reason, so a derived release carries only rows it may carry.",
+ "form": "function",
+ "asset_role": null,
+ "dimension": "none",
+ "engine": {
+  "name": "python",
+  "minimum_version": "3.10"
+ },
+ "tags": [
+  "licensing",
+  "data rights",
+  "dataset release",
+  "filter",
+  "compliance"
+ ],
+ "files": [
+  {
+   "path": "README.md",
+   "role": "other"
+  },
+  {
+   "path": "redistribution_rights_filter.py",
+   "role": "executable_tool"
+  },
+  {
+   "path": "examples/known_good.json",
+   "role": "other"
+  },
+  {
+   "path": "examples/known_wrong.json",
+   "role": "other"
+  },
+  {
+   "path": "examples/known_answers.json",
+   "role": "other"
+  }
+ ],
+ "contract": {
+  "entry_points": {
+   "module": "redistribution_rights_filter",
+   "function": "run",
+   "command": "python3 redistribution_rights_filter.py < input.json",
+   "command_exit_codes": {
+    "0": "result",
+    "2": "refusal"
+   }
+  },
+  "input_schema": {
+   "type": "object",
+   "required": [
+    "rows",
+    "allowed_licences"
+   ],
+   "additionalProperties": false,
+   "properties": {
+    "rows": {
+     "type": "array",
+     "minItems": 1,
+     "maxItems": 500000,
+     "description": "one row per record with its own licence and permission flags",
+     "items": {
+      "type": "object",
+      "required": [
+       "id"
+      ],
+      "properties": {
+       "id": {
+        "type": "string",
+        "minLength": 1
+       },
+       "license": {
+        "type": [
+         "string",
+         "null"
+        ]
+       },
+       "allow_public_redistribution": {
+        "type": [
+         "boolean",
+         "null"
+        ]
+       },
+       "allow_training_use": {
+        "type": [
+         "boolean",
+         "null"
+        ]
+       }
+      }
+     }
+    },
+    "allowed_licences": {
+     "type": "array",
+     "minItems": 1,
+     "maxItems": 50,
+     "uniqueItems": true,
+     "items": {
+      "type": "string",
+      "minLength": 1
+     },
+     "description": "licence identifiers a kept row may carry, such as CC-BY-4.0"
+    },
+    "require_redistribution": {
+     "type": "boolean",
+     "description": "keep only rows allowing public redistribution (default true)"
+    },
+    "require_training_use": {
+     "type": "boolean",
+     "description": "keep only rows allowing training use (default false)"
+    }
+   }
+  },
+  "output_schema": {
+   "type": "object",
+   "required": [
+    "kept",
+    "excluded",
+    "counts"
+   ],
+   "properties": {
+    "kept": {
+     "type": "array",
+     "items": {
+      "type": "string"
+     },
+     "description": "ids of kept rows, in input order"
+    },
+    "excluded": {
+     "type": "array",
+     "description": "excluded rows in input order, each with its first failing reason",
+     "items": {
+      "type": "object",
+      "required": [
+       "id",
+       "reason"
+      ],
+      "properties": {
+       "reason": {
+        "enum": [
+         "missing_licence",
+         "licence_not_allowed",
+         "redistribution_not_allowed",
+         "training_not_allowed"
+        ]
+       }
+      }
+     }
+    },
+    "counts": {
+     "type": "object",
+     "required": [
+      "kept",
+      "missing_licence",
+      "licence_not_allowed",
+      "redistribution_not_allowed",
+      "training_not_allowed"
+     ],
+     "additionalProperties": {
+      "type": "integer",
+      "minimum": 0
+     }
+    }
+   }
+  },
+  "refusal_reasons": [
+   "input_invalid",
+   "input_not_json",
+   "duplicate_id"
+  ],
+  "examples": {
+   "known_good": "examples/known_good.json",
+   "known_wrong": "examples/known_wrong.json",
+   "known_answers": "examples/known_answers.json"
+  },
+  "effects": "none: a pure function of its JSON input; the command reads standard input and writes standard output",
+  "sdg": {
+   "goals": [
+    5,
+    8,
+    16
+   ],
+   "targets": [
+    "5.2",
+    "8.7",
+    "16.2"
+   ],
+   "indicators": [],
+   "basis": "Inherited from the dataset it was built for, a corpus about labour exploitation and trafficking whose rows carry their own licence and permission flags (targets 8.7, 16.2 and 5.2). The function itself is a general release step.",
+   "status": "proposal"
+  },
+  "derived_from": {
+   "kaggle_datasets": [
+    "taylorsamarel/duecare-measured-response-training-corpus"
+   ],
+   "shape": "the corpus rows: id, license, allow_public_redistribution, allow_training_use, rights_basis"
+  }
+ },
+ "limits": "The filter trusts each row's own licence and flags; it does not verify them against the original source or decide what a licence allows. Licence identifiers compare exactly after trimming, so CC-BY-4.0 and CC BY 4.0 differ. A missing or null flag is never true. Legal review of the allowed list stays with the person releasing the data.",
+ "related": [
+  "split_leakage_check",
+  "shard_manifest_audit"
+ ],
+ "technique_references": [
+  "Ordered rule evaluation with first-failure reporting"
+ ],
+ "native_checks": []
+}

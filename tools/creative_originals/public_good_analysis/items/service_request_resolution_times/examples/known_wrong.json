@@ -1,0 +1,16 @@
+{
+ "description": "The opened time 'yesterday' is neither ISO 8601 nor a US style timestamp, so no duration can be computed; the input is refused rather than skipping the row.",
+ "input": {
+  "rows": [
+   {
+    "id": "r1",
+    "category": "Noise",
+    "opened": "yesterday",
+    "closed": "2025-01-01T06:00:00"
+   }
+  ]
+ },
+ "expected_refusal": {
+  "reason": "timestamp_unreadable"
+ }
+}

@@ -1,0 +1,265 @@
+{
+ "record_type": "creative_original_item/v1",
+ "identity": "paired_arm_lift",
+ "title": "Paired arm lift of an evaluation",
+ "purpose": "Measure how much a treatment arm changes scores against a baseline arm, item by item: judges averaged per answer, items paired per model, then per model and overall the arm means, the mean and median lift, and counts of pairs improved, worsened and unchanged.",
+ "form": "function",
+ "asset_role": null,
+ "dimension": "none",
+ "engine": {
+  "name": "python",
+  "minimum_version": "3.10"
+ },
+ "tags": [
+  "evaluation",
+  "a/b comparison",
+  "paired difference",
+  "llm judges",
+  "harness lift",
+  "model evaluation"
+ ],
+ "files": [
+  {
+   "path": "README.md",
+   "role": "other"
+  },
+  {
+   "path": "paired_arm_lift.py",
+   "role": "executable_tool"
+  },
+  {
+   "path": "examples/known_good.json",
+   "role": "other"
+  },
+  {
+   "path": "examples/known_wrong.json",
+   "role": "other"
+  },
+  {
+   "path": "examples/known_answers.json",
+   "role": "other"
+  }
+ ],
+ "contract": {
+  "entry_points": {
+   "module": "paired_arm_lift",
+   "function": "run",
+   "command": "python3 paired_arm_lift.py < input.json",
+   "command_exit_codes": {
+    "0": "result",
+    "2": "refusal"
+   }
+  },
+  "input_schema": {
+   "type": "object",
+   "required": [
+    "rows",
+    "baseline_arm",
+    "treatment_arm"
+   ],
+   "additionalProperties": false,
+   "properties": {
+    "rows": {
+     "type": "array",
+     "minItems": 1,
+     "maxItems": 500000,
+     "description": "one judge's score of one model's answer to one item under one arm",
+     "items": {
+      "type": "object",
+      "required": [
+       "model",
+       "arm",
+       "item",
+       "judge",
+       "score"
+      ],
+      "additionalProperties": false,
+      "properties": {
+       "model": {
+        "type": "string",
+        "minLength": 1
+       },
+       "arm": {
+        "type": "string",
+        "minLength": 1
+       },
+       "item": {
+        "type": "string",
+        "minLength": 1
+       },
+       "judge": {
+        "type": "string",
+        "minLength": 1
+       },
+       "score": {
+        "type": "number"
+       }
+      }
+     }
+    },
+    "baseline_arm": {
+     "type": "string",
+     "minLength": 1,
+     "description": "the arm the lift is measured from"
+    },
+    "treatment_arm": {
+     "type": "string",
+     "minLength": 1,
+     "description": "the arm the lift is measured to"
+    }
+   }
+  },
+  "output_schema": {
+   "type": "object",
+   "required": [
+    "baseline_arm",
+    "treatment_arm",
+    "models",
+    "overall",
+    "other_arm_rows"
+   ],
+   "properties": {
+    "baseline_arm": {
+     "type": "string"
+    },
+    "treatment_arm": {
+     "type": "string"
+    },
+    "models": {
+     "type": "array",
+     "description": "one summary per model, in model name order",
+     "items": {
+      "type": "object",
+      "required": [
+       "model",
+       "paired_items",
+       "baseline_mean",
+       "treatment_mean",
+       "mean_lift",
+       "median_lift",
+       "improved",
+       "worsened",
+       "unchanged",
+       "share_improved",
+       "unpaired_baseline_items",
+       "unpaired_treatment_items"
+      ]
+     }
+    },
+    "overall": {
+     "type": "object",
+     "required": [
+      "paired_items",
+      "baseline_mean",
+      "treatment_mean",
+      "mean_lift",
+      "median_lift",
+      "improved",
+      "worsened",
+      "unchanged",
+      "share_improved"
+     ],
+     "properties": {
+      "paired_items": {
+       "type": "integer",
+       "minimum": 0
+      },
+      "baseline_mean": {
+       "type": [
+        "number",
+        "null"
+       ]
+      },
+      "treatment_mean": {
+       "type": [
+        "number",
+        "null"
+       ]
+      },
+      "mean_lift": {
+       "type": [
+        "number",
+        "null"
+       ]
+      },
+      "median_lift": {
+       "type": [
+        "number",
+        "null"
+       ]
+      },
+      "improved": {
+       "type": "integer",
+       "minimum": 0
+      },
+      "worsened": {
+       "type": "integer",
+       "minimum": 0
+      },
+      "unchanged": {
+       "type": "integer",
+       "minimum": 0
+      },
+      "share_improved": {
+       "type": [
+        "number",
+        "null"
+       ]
+      }
+     },
+     "description": "every (model, item) pair of every model together"
+    },
+    "other_arm_rows": {
+     "type": "integer",
+     "minimum": 0,
+     "description": "rows of arms other than the two compared"
+    }
+   }
+  },
+  "refusal_reasons": [
+   "input_invalid",
+   "input_not_json",
+   "same_arm",
+   "arm_not_found",
+   "duplicate_grade"
+  ],
+  "examples": {
+   "known_good": "examples/known_good.json",
+   "known_wrong": "examples/known_wrong.json",
+   "known_answers": "examples/known_answers.json"
+  },
+  "effects": "none: a pure function of its JSON input; the command reads standard input and writes standard output",
+  "sdg": {
+   "goals": [
+    5,
+    8,
+    16
+   ],
+   "targets": [
+    "5.2",
+    "8.7",
+    "16.2"
+   ],
+   "indicators": [],
+   "basis": "Inherited from the dataset it was built for, which grades model answers to labour-exploitation and trafficking prompts (targets 8.7, 16.2 and 5.2). The function itself is a general evaluation step.",
+   "status": "proposal"
+  },
+  "derived_from": {
+   "kaggle_datasets": [
+    "taylorsamarel/duecare-harness-benchmark-grades"
+   ],
+   "shape": "panel_grades.csv: model, arm, prompt_id, judge, score_0_100 (prompt_id is the item and score_0_100 the score)"
+  }
+ },
+ "limits": "The lift is a plain paired difference of judge means; it carries no confidence interval or significance test, and every judge counts equally whatever its reliability (judge_agreement measures that). Items a model answered under one arm only are counted but not used. Scores are taken on one scale, so mixing rubrics in one input makes the means meaningless. Arm, model, item and judge names compare exactly.",
+ "related": [
+  "judge_agreement",
+  "labelled_score_summary",
+  "equal_cohort_comparison"
+ ],
+ "technique_references": [
+  "Paired difference of means",
+  "Exact rational arithmetic before rounding"
+ ],
+ "native_checks": []
+}

@@ -1,0 +1,97 @@
+{
+ "description": "Four incidents. 2023 Mediterranean: 3 dead and 2 missing, then an incident whose dead count was not reported (taken as 0, counted as unreported) with 5 missing: 3 dead, 7 missing, 10 together. 2023 Americas: 1 dead. 2024 Mediterranean: 4 dead, missing not reported. In all: 8 dead and 7 missing, 15 people, with one unreported dead count and one unreported missing count.",
+ "input": {
+  "rows": [
+   {
+    "incident_id": "i1",
+    "year": 2023,
+    "region": "Mediterranean",
+    "dead": 3,
+    "missing": 2
+   },
+   {
+    "incident_id": "i2",
+    "year": 2023,
+    "region": "Mediterranean",
+    "dead": null,
+    "missing": 5
+   },
+   {
+    "incident_id": "i3",
+    "year": 2023,
+    "region": "Americas",
+    "dead": 1,
+    "missing": 0
+   },
+   {
+    "incident_id": "i4",
+    "year": 2024,
+    "region": "Mediterranean",
+    "dead": 4,
+    "missing": null
+   }
+  ]
+ },
+ "expected_output": {
+  "by_year_region": [
+   {
+    "year": 2023,
+    "region": "Americas",
+    "incidents": 1,
+    "dead": 1,
+    "missing": 0,
+    "dead_and_missing": 1,
+    "unreported_dead": 0,
+    "unreported_missing": 0
+   },
+   {
+    "year": 2023,
+    "region": "Mediterranean",
+    "incidents": 2,
+    "dead": 3,
+    "missing": 7,
+    "dead_and_missing": 10,
+    "unreported_dead": 1,
+    "unreported_missing": 0
+   },
+   {
+    "year": 2024,
+    "region": "Mediterranean",
+    "incidents": 1,
+    "dead": 4,
+    "missing": 0,
+    "dead_and_missing": 4,
+    "unreported_dead": 0,
+    "unreported_missing": 1
+   }
+  ],
+  "by_year": [
+   {
+    "year": 2023,
+    "incidents": 3,
+    "dead": 4,
+    "missing": 7,
+    "dead_and_missing": 11,
+    "unreported_dead": 1,
+    "unreported_missing": 0
+   },
+   {
+    "year": 2024,
+    "incidents": 1,
+    "dead": 4,
+    "missing": 0,
+    "dead_and_missing": 4,
+    "unreported_dead": 0,
+    "unreported_missing": 1
+   }
+  ],
+  "total": {
+   "incidents": 4,
+   "dead": 8,
+   "missing": 7,
+   "dead_and_missing": 15,
+   "unreported_dead": 1,
+   "unreported_missing": 1
+  }
+ }
+}

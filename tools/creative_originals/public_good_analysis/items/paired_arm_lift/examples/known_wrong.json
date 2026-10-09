@@ -1,0 +1,13 @@
+{
+ "description": "judge-1 scored model-a's baseline answer to P-1 twice (40 and 45), so the item's mean would depend on which row is kept; the input is refused instead of guessing.",
+ "input": {
+  "baseline_arm": "baseline",
+  "treatment_arm": "harness_core",
+  "rows": [
+   {"model": "model-a", "arm": "baseline", "item": "P-1", "judge": "judge-1", "score": 40},
+   {"model": "model-a", "arm": "baseline", "item": "P-1", "judge": "judge-1", "score": 45},
+   {"model": "model-a", "arm": "harness_core", "item": "P-1", "judge": "judge-1", "score": 80}
+  ]
+ },
+ "expected_refusal": {"reason": "duplicate_grade"}
+}

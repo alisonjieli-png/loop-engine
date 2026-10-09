@@ -1,0 +1,202 @@
+{
+ "record_type": "creative_original_item/v1",
+ "identity": "building_energy_use_intensity",
+ "title": "Building energy use intensity by property type",
+ "purpose": "Compute each building's site energy use intensity (energy per unit of floor area) and, per property type, the median and quartiles and the buildings above a Q3 + 3 x IQR fence, from benchmarking tables of floor area and annual site energy.",
+ "form": "function",
+ "asset_role": null,
+ "dimension": "none",
+ "engine": {
+  "name": "python",
+  "minimum_version": "3.10"
+ },
+ "tags": [
+  "energy efficiency",
+  "buildings",
+  "benchmarking",
+  "sdg indicators",
+  "outliers"
+ ],
+ "files": [
+  {
+   "path": "README.md",
+   "role": "other"
+  },
+  {
+   "path": "building_energy_use_intensity.py",
+   "role": "executable_tool"
+  },
+  {
+   "path": "examples/known_good.json",
+   "role": "other"
+  },
+  {
+   "path": "examples/known_wrong.json",
+   "role": "other"
+  },
+  {
+   "path": "examples/known_answers.json",
+   "role": "other"
+  }
+ ],
+ "contract": {
+  "entry_points": {
+   "module": "building_energy_use_intensity",
+   "function": "run",
+   "command": "python3 building_energy_use_intensity.py < input.json",
+   "command_exit_codes": {
+    "0": "result",
+    "2": "refusal"
+   }
+  },
+  "input_schema": {
+   "type": "object",
+   "required": [
+    "rows"
+   ],
+   "additionalProperties": false,
+   "properties": {
+    "rows": {
+     "type": "array",
+     "minItems": 1,
+     "maxItems": 200000,
+     "description": "one building: its id, property type, gross floor area and annual site energy use",
+     "items": {
+      "type": "object",
+      "required": [
+       "building_id",
+       "property_type",
+       "floor_area",
+       "site_energy"
+      ],
+      "additionalProperties": false,
+      "properties": {
+       "building_id": {
+        "type": "string",
+        "minLength": 1
+       },
+       "property_type": {
+        "type": "string",
+        "minLength": 1
+       },
+       "floor_area": {
+        "type": "number"
+       },
+       "site_energy": {
+        "type": "number"
+       }
+      }
+     }
+    },
+    "area_unit": {
+     "enum": [
+      "square_feet",
+      "square_metres"
+     ],
+     "description": "unit of floor_area (default square_feet)"
+    },
+    "energy_unit": {
+     "enum": [
+      "kbtu",
+      "kwh"
+     ],
+     "description": "unit of site_energy (default kbtu)"
+    }
+   }
+  },
+  "output_schema": {
+   "type": "object",
+   "required": [
+    "energy_unit",
+    "area_unit",
+    "buildings",
+    "property_types"
+   ],
+   "properties": {
+    "energy_unit": {
+     "type": "string"
+    },
+    "area_unit": {
+     "type": "string"
+    },
+    "buildings": {
+     "type": "array",
+     "description": "each building's EUI, in building id order",
+     "items": {
+      "type": "object",
+      "required": [
+       "building_id",
+       "property_type",
+       "eui"
+      ]
+     }
+    },
+    "property_types": {
+     "type": "array",
+     "description": "one summary per property type, in name order",
+     "items": {
+      "type": "object",
+      "required": [
+       "property_type",
+       "buildings",
+       "median",
+       "p25",
+       "p75",
+       "high_fence",
+       "high_outliers"
+      ],
+      "properties": {
+       "high_outliers": {
+        "type": "array",
+        "items": {
+         "type": "string"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "refusal_reasons": [
+   "input_invalid",
+   "input_not_json",
+   "floor_area_not_positive",
+   "negative_energy",
+   "duplicate_building"
+  ],
+  "examples": {
+   "known_good": "examples/known_good.json",
+   "known_wrong": "examples/known_wrong.json",
+   "known_answers": "examples/known_answers.json"
+  },
+  "effects": "none: a pure function of its JSON input; the command reads standard input and writes standard output",
+  "sdg": {
+   "goals": [
+    7
+   ],
+   "targets": [
+    "7.3"
+   ],
+   "indicators": [
+    "7.3.1"
+   ],
+   "basis": "Energy use per unit of floor area is the building-scale form of the energy intensity that target 7.3 tracks (indicator 7.3.1 measures it per unit of GDP).",
+   "status": "proposal"
+  },
+  "derived_from": {
+   "kaggle_datasets": [],
+   "shape": "building energy benchmarking tables with floor area and site energy use"
+  }
+ },
+ "limits": "Site energy only: source energy, weather normalization and occupancy are not applied, so buildings in different climates compare roughly. Units are labels; the function does not convert kBtu to kWh or square feet to square metres. A fence over few buildings flags little, and a high value can be real or a data error.",
+ "related": [
+  "column_profile",
+  "rate_per_100k"
+ ],
+ "technique_references": [
+  "Energy use intensity",
+  "Linear interpolation quartiles",
+  "Interquartile range fence"
+ ],
+ "native_checks": []
+}
