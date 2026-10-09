@@ -175,7 +175,11 @@ class ProfileSelection(unittest.TestCase):
         for uris in ([], ["http://127.0.0.1:43111/oauth/callback"], [CHATGPT_REDIRECT, "http://127.0.0.1:1/callback"],
                      ["http://chatgpt.com/connector_platform_oauth_redirect"], ["https://chatgpt.com.evil.example/cb"],
                      ["https://notopenai.com/cb"], ["https://user:pass@chatgpt.com/cb"], ["https://chatgpt.com:8443/cb"],
-                     ["https://evil.example/https://chatgpt.com/"]):
+                     ["https://evil.example/https://chatgpt.com/"],
+                     # The other hosted clients the redirect rules admit read the harness presentation.
+                     ["https://claude.ai/api/mcp/auth_callback"], ["https://www.cursor.com/agents/mcp/oauth/callback"],
+                     ["https://insiders.vscode.dev/redirect", "https://vscode.dev/redirect", "http://127.0.0.1/"],
+                     ["http://127.0.0.1:53682/callback/F9ZByiiojchq"]):
             self.assertEqual(chatgpt_app.profile_for_client(uris), "", uris)
 
     def test_the_header_names_one_known_presentation(self):

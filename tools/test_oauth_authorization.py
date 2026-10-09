@@ -7,6 +7,7 @@ from dataclasses import replace
 import hashlib
 import json
 from pathlib import Path
+import re
 import tempfile
 import threading
 import time
@@ -28,8 +29,8 @@ from loop_engine.core.service_runtime import account_origin
 from loop_engine.core.service_runtime.browser_identity import VerifiedIdentity
 from loop_engine.core.service_runtime.http_auth import AuthenticatedHttpRequest, BROWSER_IDENTITY_AUTHENTICATION
 from loop_engine.core.service_runtime.oauth_authorization import (
-    ACCESS, CLIENT, CODE, GRANT, LIMITS, OPENAI_CALLBACK_PREFIX, REFRESH, REQUEST, OAuthAuthorizationPolicy,
-    OAuthAuthorizationProvider,
+    ACCESS, CLIENT, CODE, GRANT, HOSTED_CLIENT_REDIRECTS, LIMITS, OPENAI_CALLBACK_PREFIX, REFRESH, REQUEST,
+    OAuthAuthorizationPolicy, OAuthAuthorizationProvider, same_redirect,
 )
 from loop_engine.core.service_runtime.records import (
     DEFAULT_SCOPES, ServiceCommitUnknown, ServiceRuntimeConfig, ServiceRuntimeError, SubjectBindingRequest, TenantRegistration,
@@ -177,11 +178,128 @@ class OAuthAuthorizationTests(unittest.IsolatedAsyncioTestCase):
             with self.assertRaises(ServiceRuntimeError):
                 replace(policy, native_loopback_paths=(path,))
 
+    async def test_documented_hosted_callbacks_are_exact_addresses(self):
+        """Each hosted client's callback, as its own documentation names it on October 9, 2026, and nothing near it."""
+        from loop_engine.core.service_runtime.oauth_http import client_redirect_policy
+        policy = replace(self.policy, **client_redirect_policy())
+        self.assertEqual([row[1] for row in HOSTED_CLIENT_REDIRECTS], [
+            "https://chatgpt.com/connector_platform_oauth_redirect", "https://claude.ai/api/mcp/auth_callback",
+            "https://www.cursor.com/agents/mcp/oauth/callback", "https://vscode.dev/redirect",
+            "https://insiders.vscode.dev/redirect"])
+        self.assertEqual(policy.redirect_uri_prefixes, (OPENAI_CALLBACK_PREFIX,), "no hosted callback is a prefix")
+        # Every row cites a source the guide lists with its address and the digest of the bytes read.
+        guide = (Path(__file__).resolve().parents[1] / "docs/guides/chatgpt-app.md").read_text(encoding="utf-8")
+        sources = dict(re.findall(r"^\| (S\d+) \| [^|]+ \| <https://[^>\s]+> \| ([0-9a-f]{16}) \|$", guide, re.MULTILINE))
+        for client, address, source in HOSTED_CLIENT_REDIRECTS:
+            self.assertIn(source, sources, client)
+            self.assertTrue(policy.permits_redirect(address), address)
+            host, path = urlsplit(address).hostname, urlsplit(address).path
+            for wrong in ("http://" + host + path,                                           # http, not https
+                          f"https://{host}.evil.example{path}", f"https://evil{host}{path}",  # lookalike hosts
+                          f"https://evil.{host}{path}", f"https://evil.example{path}",        # hosts not named
+                          f"https://evil.example/{host}{path}", f"https://{host.upper()}{path}",
+                          f"https://user@{host}{path}", f"https://{host}@evil.example{path}",  # userinfo tricks
+                          f"https://{host}:8443{path}", f"https://{host}:443{path}",           # port tricks
+                          f"https://{host}{path}/", f"https://{host}{path}/next", f"https://{host}{path}x",  # paths
+                          f"https://{host}{path.rsplit('/', 1)[0]}", f"https://{host}/x/..{path}",
+                          f"https://{host}{path}?next=https://evil.example", f"https://{host}{path}#x"):
+                self.assertFalse(policy.permits_redirect(wrong), wrong)
+        # A further exact OpenAI address from the host file joins the list; it never becomes a prefix either.
+        extended = replace(self.policy, **client_redirect_policy(("https://platform.openai.com/apps-manage/oauth",)))
+        self.assertTrue(extended.permits_redirect("https://platform.openai.com/apps-manage/oauth"))
+        self.assertFalse(extended.permits_redirect("https://platform.openai.com/apps-manage/oauth/x"))
+        with self.assertRaises(ServiceRuntimeError, msg="an exact address may not bring a query of its own"):
+            replace(self.policy, redirect_uris=("https://claude.ai/api/mcp/auth_callback?iss=x",))
+
+    async def test_loopback_root_path_and_codex_callback_identifier(self):
+        from loop_engine.core.service_runtime.oauth_http import client_redirect_policy
+        policy = replace(self.policy, **client_redirect_policy())
+        # Codex's rule: URL-safe Base64 of the first nine bytes of the SHA-256 of the server address, no padding.
+        codex = base64.urlsafe_b64encode(hashlib.sha256(b"https://baltor.ai/mcp").digest()[:9]).decode().rstrip("=")
+        self.assertEqual(codex, "F9ZByiiojchq")
+        for uri in ("http://127.0.0.1/", "http://127.0.0.1:33418/", "http://127.0.0.1:33418", "http://[::1]:5000/",
+                    "http://localhost:5000/", "http://localhost:3118/callback", "http://localhost:8787/callback",
+                    "http://127.0.0.1:19876/mcp/oauth/callback", "http://127.0.0.1:53682/callback",
+                    "http://127.0.0.1:53682/callback/" + codex, "http://127.0.0.1/callback/" + codex):
+            self.assertTrue(policy.permits_redirect(uri), uri)
+        for uri in ("http://127.0.0.1:33418//", "http://127.0.0.1:33418/?", "http://127.0.0.1:33418/?x=1",
+                    "http://127.0.0.1:33418/#", "https://127.0.0.1:33418/", "http://127.0.0.2:33418/",
+                    "http://user@127.0.0.1:33418/", "http://127.0.0.1@evil.example/", "http://127.0.0.1:0/",
+                    "http://127.0.0.1:65536/", "http://127.0.0.1.evil.example/", "http://localhost.evil.example:5000/",
+                    "http://127.0.0.1:53682/callback/" + codex[:-1], "http://127.0.0.1:53682/callback/" + codex + "X",
+                    "http://127.0.0.1:53682/callback/F9ZByiio$chq", "http://127.0.0.1:53682/callback/" + codex + "/",
+                    "http://127.0.0.1:53682/callback/" + codex + "/x", "http://127.0.0.1:53682/callbacks/" + codex,
+                    "http://127.0.0.1:53682/oauth/callback/" + codex, "http://127.0.0.1:53682/x/callback/" + codex,
+                    "http://127.0.0.1:53682/" + codex, "http://127.0.0.1:53682/callback/" + codex + "?x=1",
+                    "http://127.0.0.1:53682/callback/" + codex + "#x", "https://127.0.0.1:53682/callback/" + codex,
+                    "http://evil.example/callback/" + codex, "http://127.0.0.1:53682/callback%2F" + codex,
+                    "http://127.0.0.1:53682/callback/%2e%2e%2fabcdef", "http://127.0.0.1:53682//callback/" + codex):
+            self.assertFalse(policy.permits_redirect(uri), uri)
+        # Known wrong: the rules main served before October 9 refused VS Code's root, Codex's identifier and Claude.
+        before = replace(self.policy, native_loopback_paths=("/callback", "/oauth/callback", "/auth/callback",
+                                                             "/mcp/oauth/callback"))
+        for uri in ("http://127.0.0.1:33418/", "http://127.0.0.1:53682/callback/" + codex,
+                    "https://claude.ai/api/mcp/auth_callback"):
+            self.assertFalse(before.permits_redirect(uri), uri)
+        for paths in (("/",), ("/callback/",), ("callback",), ("/a/../callback",), ("/a//callback",), ("",)):
+            with self.assertRaises(ServiceRuntimeError, msg=str(paths)):
+                replace(policy, native_loopback_callback_id_paths=paths)
+
+    async def test_a_loopback_redirect_matches_on_any_port_and_on_nothing_else(self):
+        from mcp.shared.auth import InvalidRedirectUriError
+        from pydantic import AnyUrl
+        from loop_engine.core.service_runtime.oauth_http import client_redirect_policy
+        for requested, registered in (("http://127.0.0.1:51004/", "http://127.0.0.1/"),
+                                      ("http://127.0.0.1:51004/", "http://127.0.0.1:33418/"),
+                                      ("http://127.0.0.1:51004/", "http://127.0.0.1:33418"),
+                                      ("http://localhost:4000/callback", "http://localhost:3118/callback"),
+                                      ("http://[::1]:4000/callback", "http://[::1]/callback"),
+                                      (AnyUrl("http://127.0.0.1:51004/"), AnyUrl("http://127.0.0.1/")),
+                                      ("https://claude.ai/api/mcp/auth_callback", "https://claude.ai/api/mcp/auth_callback")):
+            self.assertTrue(same_redirect(requested, registered), requested)
+        for requested, registered in (("http://127.0.0.1:51004/other", "http://127.0.0.1/"),
+                                      ("http://localhost:51004/", "http://127.0.0.1/"),
+                                      ("http://[::1]:51004/", "http://127.0.0.1/"),
+                                      ("http://127.0.0.2:51004/", "http://127.0.0.2/"),
+                                      ("https://127.0.0.1:51004/", "https://127.0.0.1/"),
+                                      ("https://vscode.dev:8443/redirect", "https://vscode.dev/redirect"),
+                                      ("https://claude.ai:443/api/mcp/auth_callback", "https://claude.ai/api/mcp/auth_callback"),
+                                      ("http://127.0.0.1:51004/?x=1", "http://127.0.0.1/"),
+                                      ("http://user@127.0.0.1:51004/", "http://127.0.0.1/"),
+                                      ("http://127.0.0.1:0/", "http://127.0.0.1/"),
+                                      ("http://127.0.0.1:51004/callback/" + "A" * 12, "http://127.0.0.1/callback/" + "B" * 12)):
+            self.assertFalse(same_redirect(requested, registered), requested)
+        # A client registered the way VS Code registers is authorized on the port its listener took.
+        provider = OAuthAuthorizationProvider(self.runtime, replace(self.policy, **client_redirect_policy()))
+        vscode = self.client.model_copy(update={"client_id": "vscode-client", "client_name": "Visual Studio Code",
+            "redirect_uris": ["https://insiders.vscode.dev/redirect", "https://vscode.dev/redirect", "http://127.0.0.1/",
+                              "http://127.0.0.1:33418/"]})
+        await provider.register_client(vscode)
+        held = await provider.get_client("vscode-client")
+        listening = AnyUrl("http://127.0.0.1:51004/")
+        self.assertEqual(held.validate_redirect_uri(listening), listening)
+        with self.assertRaises(InvalidRedirectUriError, msg="known wrong: the SDK's exact comparison refuses the port"):
+            OAuthClientInformationFull.validate_redirect_uri(held, listening)
+        for wrong in ("http://127.0.0.1:51004/other", "http://localhost:51004/", "https://vscode.dev:8443/redirect"):
+            with self.assertRaises(InvalidRedirectUriError, msg=wrong):
+                held.validate_redirect_uri(AnyUrl(wrong))
+        url = await provider.authorize(held, AuthorizationParams(state="synthetic-state", scopes=list(DEFAULT_SCOPES),
+            code_challenge=self.challenge, redirect_uri=listening, redirect_uri_provided_explicitly=True,
+            resource=self.policy.resource_url))
+        redirect = await provider.approve_consent(parse_qs(urlsplit(url).query)["authorization_id"][0], self.authentication)
+        self.assertTrue(redirect.startswith("http://127.0.0.1:51004/?"), redirect)
+        self.assertEqual(parse_qs(urlsplit(redirect).query)["iss"], [self.policy.issuer_url])
+        with self.assertRaises(AuthorizeError, msg="a path the client did not register"):
+            await provider.authorize(held, AuthorizationParams(state="synthetic-state", scopes=list(DEFAULT_SCOPES),
+                code_challenge=self.challenge, redirect_uri=AnyUrl("http://127.0.0.1:51004/other"),
+                redirect_uri_provided_explicitly=True, resource=self.policy.resource_url))
+
     async def test_consent_is_explicit_single_use_and_denial_mints_no_code(self):
         pending = await self.pending()
         before = len(self.rows(CODE))
         redirect = await self.provider.deny_consent(pending, self.authentication)
         self.assertEqual(parse_qs(urlsplit(redirect).query)["error"], ["access_denied"])
+        self.assertEqual(parse_qs(urlsplit(redirect).query)["iss"], [self.policy.issuer_url])
         self.assertEqual(len(self.rows(CODE)), before)
         with self.assertRaises(AuthorizeError):
             await self.provider.approve_consent(pending, self.authentication)

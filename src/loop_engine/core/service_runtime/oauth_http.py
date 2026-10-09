@@ -11,7 +11,7 @@ import math
 import threading
 import time
 from collections import OrderedDict
-from urllib.parse import parse_qsl, urlencode, urlsplit
+from urllib.parse import parse_qsl, urlencode, urlsplit, urlunsplit
 
 from mcp.server.auth.handlers.authorize import AuthorizationHandler
 from mcp.server.auth.handlers.register import RegistrationHandler
@@ -24,7 +24,7 @@ from mcp.server.auth.settings import ClientRegistrationOptions, RevocationOption
 from pydantic import AnyHttpUrl
 from starlette.datastructures import FormData
 from starlette.requests import Request
-from starlette.responses import JSONResponse
+from starlette.responses import JSONResponse, RedirectResponse
 
 from .records import ServiceRuntimeError
 
@@ -59,18 +59,27 @@ def default_provider(runtime, browser_identity, configuration):
     credential or policy record is created during startup. Other hosts may
     explicitly inject a qualified provider through the application constructor.
     """
-    from .oauth_authorization import OPENAI_CALLBACK_PREFIX, OAuthAuthorizationPolicy, OAuthAuthorizationProvider
+    from .oauth_authorization import OAuthAuthorizationPolicy, OAuthAuthorizationProvider
     if (browser_identity is None or runtime.config.writes_authorized is not True
             or urlsplit(configuration.public_base_url).scheme != "https"
             or urlsplit(browser_identity.configuration.project_url).scheme != "https"):
         return None
     origin = configuration.public_base_url
     policy = OAuthAuthorizationPolicy(origin, origin + "/mcp", browser_identity.configuration.project_url + "/auth/v1",
-        origin + CONSENT_PATH, redirect_uris=("https://chatgpt.com/connector_platform_oauth_redirect",
-                                              *getattr(configuration, "openai_oauth_redirect_uris", ())),
-        redirect_uri_prefixes=(OPENAI_CALLBACK_PREFIX,),
-        native_loopback_paths=("/callback", "/oauth/callback", "/auth/callback", "/mcp/oauth/callback"))
+        origin + CONSENT_PATH, **client_redirect_policy(getattr(configuration, "openai_oauth_redirect_uris", ())))
     return OAuthAuthorizationProvider(runtime, policy)
+
+
+def client_redirect_policy(openai_redirect_uris=()):
+    """The redirect addresses this service's OAuth clients may register: the documented hosted callbacks
+    (`HOSTED_CLIENT_REDIRECTS`), any further exact OpenAI address the host file names, ChatGPT's callback-specific
+    family, and loopback addresses on the native clients' paths on any port."""
+    from .oauth_authorization import (HOSTED_CLIENT_REDIRECTS, NATIVE_LOOPBACK_CALLBACK_ID_PATHS, NATIVE_LOOPBACK_PATHS,
+                                      OPENAI_CALLBACK_PREFIX)
+    return {"redirect_uris": tuple(dict.fromkeys((*(row[1] for row in HOSTED_CLIENT_REDIRECTS), *openai_redirect_uris))),
+            "redirect_uri_prefixes": (OPENAI_CALLBACK_PREFIX,),
+            "native_loopback_paths": NATIVE_LOOPBACK_PATHS,
+            "native_loopback_callback_id_paths": NATIVE_LOOPBACK_CALLBACK_ID_PATHS}
 
 
 def _unique(pairs):
@@ -156,8 +165,41 @@ class OAuthHttp:
         # SDK supports public clients but omits this method from its default metadata.
         record["token_endpoint_auth_methods_supported"] = ["none"]
         record["revocation_endpoint_auth_methods_supported"] = ["none"]
-        # No CIMD, ID token/UserInfo or issuer-response claim is advertised.
+        # RFC 9207 issuer identification: every authorization response to a client names this issuer as `iss`, the
+        # consent decision's (OAuthAuthorizationProvider._decide) and every refusal the SDK sends back to the client
+        # (_identified). ChatGPT and Codex then use their stable callbacks, and MCP 2026-07-28 requires a server that
+        # sends `iss` to say so. No CIMD or ID token/UserInfo is advertised.
+        record["authorization_response_iss_parameter_supported"] = True
         return record
+
+    def _identified(self, result):
+        """An answer to an authorization request, with `iss` on every authorization response it carries.
+
+        The pinned SDK answers with one of two redirects: to this service's consent page, which is not yet an
+        authorization response, or back to the client's redirect address with a refusal, which it sends without
+        `iss`. That refusal is sent again with its stable error code, the client's `state` and `iss`; the SDK's
+        description is left out because it may repeat submitted values. Anything else is refused here rather than
+        sent to a client without the issuer the metadata promises."""
+        location = result.headers.get("location", "") if result.status_code == 302 else ""
+        if not location:
+            return refusal("server_error", 500)
+        target = urlsplit(location)
+        consent = urlsplit(self.provider.policy.consent_url)
+        if (target.scheme, target.netloc, target.path) == (consent.scheme, consent.netloc, consent.path):
+            return result
+        try:
+            fields = _unique(parse_qsl(target.query, keep_blank_values=True, strict_parsing=True, max_num_fields=8))
+        except ValueError:
+            return refusal("server_error", 500)
+        if (target.fragment or "error" not in fields or set(fields) - {"error", "error_description", "state"}
+                or not self.provider.policy.permits_redirect(urlunsplit(target._replace(query="")))):
+            return refusal("server_error", 500)
+        answer = [("error", fields["error"] if fields["error"] in OAUTH_ERRORS else "server_error")]
+        if "state" in fields:
+            answer.append(("state", fields["state"]))
+        answer.append(("iss", self.provider.policy.issuer_url))
+        return RedirectResponse(urlunsplit(target._replace(query=urlencode(answer))), status_code=302,
+                                headers={"Cache-Control": "no-store"})
 
     async def handle(self, request, body=b""):
         path = request.url.path
@@ -214,6 +256,8 @@ class OAuthHttp:
                 except (ValueError, AttributeError):
                     error = "server_error"
                 return refusal(error, result.status_code)
+            if path == AUTHORIZE_PATH:
+                return self._identified(result)
             return result
         except (TokenError, AuthorizeError, RegistrationError) as error:
             return refusal(error.error)

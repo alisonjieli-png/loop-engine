@@ -1401,12 +1401,6 @@ entries:
   rationale: 'Reviewed September 30 against official OpenAI authentication documentation: exact approved ChatGPT connector callback prefix, bounded to one safe identifier by the typed OAuth policy. It is a redirect admission rule, not an outbound provider call. Negative policy tests refuse other domains, traversal, query strings and prefix lookalikes.'
   created_on: '2026-09-30'
   expires_on: '2026-12-31'
-- finding_id: hardcoding.c55e2ec16856fb9d8ae7566e
-  owner: loop_engine.core.service_runtime.oauth_http:default_provider
-  classification: STRATEGY_OR_PROVIDER_BINDING
-  rationale: 'Reviewed September 30: exact documented ChatGPT stable redirect admitted by the default host-owned OAuth policy. It is not requested over the network by Baltor and no arbitrary remote callback is inferred from it. The policy is typed and explicit; clients without the documented issuer response use the separately admitted connector callback prefix.'
-  created_on: '2026-09-30'
-  expires_on: '2026-12-31'
 - finding_id: hardcoding.0b11ec6804b30a4f9f3d5521
   owner: loop_engine.core.service_runtime.public_good_page:body
   classification: RESOURCE_OR_TEMPLATE
@@ -13926,6 +13920,36 @@ entries:
   rationale: "Reviewed October 5 for the ChatGPT app: the loopback redirect address a native OAuth client registers, on the /callback path the service's policy permits. The consent helper answers it inside the browser, so nothing listens on the port and no request leaves the machine. No source or file-wide exemption."
   created_on: '2026-10-05'
   expires_on: '2027-01-05'
+- finding_id: hardcoding.200bb875a2bca0319efcdca5
+  owner: "loop_engine.core.service_runtime.oauth_authorization"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed October 9, 2026: ChatGPT's stable OAuth redirect, which ChatGPT uses once the metadata advertises issuer identification (developers.openai.com/plugins/build/auth.md, read again October 9, unchanged since September 30). It moved here from oauth_http.default_provider into the one table of hosted callbacks. It is a redirect admission rule compared as one exact string, not an outbound call: Baltor never requests it, and no prefix, port, path or other host near it is admitted. tools/test_oauth_authorization.py holds it to eighteen known-wrong forms of it. Expires in three months so the address is read again from the client's documentation."
+  created_on: '2026-10-09'
+  expires_on: '2027-01-09'
+- finding_id: hardcoding.d3eb5b7ebfb525fbb2c3c232
+  owner: "loop_engine.core.service_runtime.oauth_authorization"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed October 9, 2026: the redirect Claude on the web, Claude Desktop, Claude mobile and Cowork register (claude.com/docs/connectors/building/authentication.md, read October 9). It is a redirect admission rule compared as one exact string, not an outbound call: Baltor never requests it, and no prefix, port, path or other host near it is admitted. tools/test_oauth_authorization.py holds it to eighteen known-wrong forms of it. Expires in three months so the address is read again from the client's documentation."
+  created_on: '2026-10-09'
+  expires_on: '2027-01-09'
+- finding_id: hardcoding.e0b4ae1006aaabb60440cb26
+  owner: "loop_engine.core.service_runtime.oauth_authorization"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed October 9, 2026: the redirect Cursor on the web and Cursor Agents use (cursor.com/docs/mcp.md, read October 9). It is a redirect admission rule compared as one exact string, not an outbound call: Baltor never requests it, and no prefix, port, path or other host near it is admitted. tools/test_oauth_authorization.py holds it to eighteen known-wrong forms of it. Expires in three months so the address is read again from the client's documentation."
+  created_on: '2026-10-09'
+  expires_on: '2027-01-09'
+- finding_id: hardcoding.ca8f543a898ee06fff239acf
+  owner: "loop_engine.core.service_runtime.oauth_authorization"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed October 9, 2026: VS Code's vscode.dev redirect page (code.visualstudio.com/api/extension-guides/ai/mcp, read October 9). It is a redirect admission rule compared as one exact string, not an outbound call: Baltor never requests it, and no prefix, port, path or other host near it is admitted. tools/test_oauth_authorization.py holds it to eighteen known-wrong forms of it. Expires in three months so the address is read again from the client's documentation."
+  created_on: '2026-10-09'
+  expires_on: '2027-01-09'
+- finding_id: hardcoding.1538543188359cb49af6b899
+  owner: "loop_engine.core.service_runtime.oauth_authorization"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed October 9, 2026: the VS Code Insiders redirect that every VS Code dynamic registration names beside vscode.dev (fetchDynamicRegistration in microsoft/vscode src/vs/base/common/oauth.ts at dd036a1c, read October 9); without it VS Code's registration is refused whole. It is a redirect admission rule compared as one exact string, not an outbound call: Baltor never requests it, and no prefix, port, path or other host near it is admitted. tools/test_oauth_authorization.py holds it to eighteen known-wrong forms of it. Expires in three months so the address is read again from the client's documentation."
+  created_on: '2026-10-09'
+  expires_on: '2027-01-09'
 excluded_paths:
 - path: src/loop_engine/core/service_runtime/web_assets/creative-arena/arena.js
   owner: examples.32_creative_arena

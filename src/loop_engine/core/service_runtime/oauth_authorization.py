@@ -74,6 +74,32 @@ FIELDS = {
 TOKEN_PATTERN = re.compile(r"(?:boar|boac|boat|bort)_[A-Za-z0-9_-]{43}\Z")
 CLIENT_PATTERN = re.compile(r"[A-Za-z0-9_.:-]{1,128}\Z")
 OPENAI_CALLBACK_PREFIX = "https://chatgpt.com/connector/oauth/"
+#: The redirect addresses of the hosted MCP clients this service accepts, each exactly as the client's own
+#: documentation or source names it, read on October 9, 2026: (client, address, source). The source is an id in the
+#: source tables of `docs/guides/chatgpt-app.md`, which give its address, the date it was read and the SHA-256 prefix
+#: of the bytes read; tools/test_oauth_authorization.py holds every id to that table. A registration may name one of
+#: these exactly; never a prefix of one, a path below one, another port or another host.
+HOSTED_CLIENT_REDIRECTS = (
+    ("ChatGPT, stable redirect with issuer identification",
+     "https://chatgpt.com/connector_platform_oauth_redirect", "S5"),
+    ("Claude on the web, Claude Desktop, Claude mobile and Cowork", "https://claude.ai/api/mcp/auth_callback", "S19"),
+    ("Cursor on the web and Cursor Agents", "https://www.cursor.com/agents/mcp/oauth/callback", "S20"),
+    ("VS Code, through its vscode.dev redirect page", "https://vscode.dev/redirect", "S21"),
+    ("VS Code Insiders, registered beside vscode.dev by every VS Code registration",
+     "https://insiders.vscode.dev/redirect", "S22"),
+)
+#: The hosts a native client listens on for its redirect (RFC 8252 sections 7.3 and 8.3).
+LOOPBACK_HOSTS = ("localhost", "127.0.0.1", "::1")
+#: The loopback paths a native client may redirect to on any port. "/" is the root path, written with or without its
+#: slash: VS Code registers `http://127.0.0.1/` and `http://127.0.0.1:33418/` (its `fetchDynamicRegistration`,
+#: source S22). "/callback" is Claude Code's, Codex's and Cursor's desktop app's, "/mcp/oauth/callback" OpenCode's.
+NATIVE_LOOPBACK_PATHS = ("/", "/callback", "/oauth/callback", "/auth/callback", "/mcp/oauth/callback")
+#: Loopback paths after which one server-specific callback identifier may follow: Codex appends one to
+#: `/callback` when an authorization server does not advertise issuer identification (source S24).
+NATIVE_LOOPBACK_CALLBACK_ID_PATHS = ("/callback",)
+#: That identifier: the URL-safe Base64 of the first nine bytes of a SHA-256 without padding, so exactly twelve
+#: characters (`callback_id_from_server_url` in Codex's codex-rs/rmcp-client/src/oauth_callback.rs, source S25).
+CALLBACK_ID_PATTERN = re.compile(r"[A-Za-z0-9_-]{12}\Z")
 #: A write that would pass a storage ceiling removes at most this many rows no request can use any more.
 RECLAIM_LIMIT = 10_000
 #: Looking for those rows reads every OAuth row of the policy, about 60 microseconds a row (1.2 seconds at 20,000).
@@ -93,9 +119,38 @@ def _url(value, *, loopback=False):
         raise ServiceRuntimeError("invalid_oauth_policy") from None
     if (parsed.username is not None or parsed.password is not None or "#" in value or not parsed.hostname
             or (parsed.scheme != "https" and not (loopback and parsed.scheme == "http"
-                and parsed.hostname in ("localhost", "127.0.0.1", "::1")))):
+                and parsed.hostname in LOOPBACK_HOSTS))):
         raise ServiceRuntimeError("invalid_oauth_policy")
     return value
+
+
+def _loopback_redirect(value):
+    """The host and path of an `http` loopback redirect with a valid or absent port, no credentials, query or fragment,
+    else None. The empty path is the root path."""
+    if not isinstance(value, str) or len(value) > 2048 or any(ord(c) < 33 for c in value) or "\\" in value:
+        return None
+    try:
+        parsed = urlsplit(value)
+        port = parsed.port
+    except ValueError:
+        return None
+    if (parsed.scheme != "http" or parsed.hostname not in LOOPBACK_HOSTS or parsed.username is not None
+            or parsed.password is not None or "?" in value or "#" in value or not (port is None or 1 <= port <= 65535)):
+        return None
+    return parsed.hostname, parsed.path or "/"
+
+
+def same_redirect(requested, registered) -> bool:
+    """True when a request's redirect address is the registered one: exactly, except that a loopback redirect may
+    name any port when it is used, because a native client takes a free port from the system each time (RFC 8252
+    section 7.3, "The authorization server MUST allow any port to be specified at the time of the request for
+    loopback IP redirect URIs"; Claude's connector documentation asks the same of `localhost`, which Claude Code
+    uses). Scheme, host and path still match exactly, so `localhost` never stands for `127.0.0.1`."""
+    requested, registered = str(requested), str(registered)
+    if requested == registered:
+        return True
+    loopback = _loopback_redirect(requested)
+    return loopback is not None and loopback == _loopback_redirect(registered)
 
 
 @dataclass(frozen=True)
@@ -107,6 +162,8 @@ class OAuthAuthorizationPolicy:
     redirect_uris: tuple[str, ...] = ()
     redirect_uri_prefixes: tuple[str, ...] = ()
     native_loopback_paths: tuple[str, ...] = ()
+    #: Loopback paths after which exactly one callback identifier (CALLBACK_ID_PATTERN) may follow.
+    native_loopback_callback_id_paths: tuple[str, ...] = ()
     allowed_scopes: tuple[str, ...] = DEFAULT_SCOPES
     authorization_lifetime_seconds: int = 600
     code_lifetime_seconds: int = 120
@@ -122,7 +179,8 @@ class OAuthAuthorizationPolicy:
             raise ServiceRuntimeError("unsupported_oauth_policy_version")
         if type(self.allow_loopback_http) is not bool:
             raise ServiceRuntimeError("invalid_oauth_policy")
-        for name in ("redirect_uris", "redirect_uri_prefixes", "native_loopback_paths", "allowed_scopes"):
+        for name in ("redirect_uris", "redirect_uri_prefixes", "native_loopback_paths",
+                     "native_loopback_callback_id_paths", "allowed_scopes"):
             value = getattr(self, name)
             if not isinstance(value, (list, tuple)) or any(type(item) is not str for item in value):
                 raise ServiceRuntimeError("invalid_oauth_policy")
@@ -135,10 +193,18 @@ class OAuthAuthorizationPolicy:
             raise ServiceRuntimeError("invalid_oauth_policy")
         for value in self.redirect_uris:
             _url(value, loopback=True)
+            # An authorization response adds its fields to the address's query; an exact address that brings a
+            # query of its own could carry a second `iss` or `state`, so none may.
+            if "?" in value:
+                raise ServiceRuntimeError("invalid_oauth_redirect_policy")
         if set(self.redirect_uri_prefixes) - {OPENAI_CALLBACK_PREFIX}:
             raise ServiceRuntimeError("invalid_oauth_redirect_policy")
         if any(not re.fullmatch(r"/[A-Za-z0-9._~/-]*", path) or "//" in path
                or any(part in (".", "..") for part in path.split("/")) for path in self.native_loopback_paths):
+            raise ServiceRuntimeError("invalid_oauth_redirect_policy")
+        # A callback identifier follows a named path, never the root path and never a path that ends in a slash.
+        if any(not re.fullmatch(r"(?:/[A-Za-z0-9._~-]+)+", path)
+               or any(part in (".", "..") for part in path.split("/")) for path in self.native_loopback_callback_id_paths):
             raise ServiceRuntimeError("invalid_oauth_redirect_policy")
         if not self.redirect_uris and not self.redirect_uri_prefixes and not self.native_loopback_paths:
             raise ServiceRuntimeError("oauth_redirect_policy_required")
@@ -154,24 +220,37 @@ class OAuthAuthorizationPolicy:
             raise ServiceRuntimeError("invalid_oauth_policy")
 
     def permits_redirect(self, value):
+        """True for an exact listed address, a listed prefix followed by one literal segment, or an `http` loopback
+        address on a listed path (or a listed callback path and one callback identifier) on any port."""
         if not isinstance(value, str) or len(value) > 2048 or any(ord(c) < 33 for c in value) or "\\" in value:
             return False
         if value in self.redirect_uris:
             return True
-        try:
-            parsed = urlsplit(value)
-            port = parsed.port
-        except ValueError:
-            return False
-        if (parsed.scheme == "http" and parsed.hostname in ("localhost", "127.0.0.1", "::1")
-                and parsed.username is None and parsed.password is None and "?" not in value and "#" not in value
-                and parsed.path in self.native_loopback_paths and (port is None or 1 <= port <= 65535)):
-            return True
+        loopback = _loopback_redirect(value)
+        if loopback is not None:
+            path = loopback[1]
+            if path in self.native_loopback_paths:
+                return True
+            base, _, identifier = path.rpartition("/")
+            return base in self.native_loopback_callback_id_paths and CALLBACK_ID_PATTERN.fullmatch(identifier) is not None
         return any(value.startswith(prefix) and re.fullmatch(r"[A-Za-z0-9_-]{1,128}", value[len(prefix):])
                    for prefix in self.redirect_uri_prefixes)
 
     def to_dict(self):
         return asdict(self)
+
+
+class RegisteredOAuthClient(OAuthClientInformationFull):
+    """A stored client as the pinned SDK's authorization handler reads it, with `same_redirect` as its redirect rule.
+
+    SDK 2.2.0 compares a requested redirect with the registered ones exactly, so a native client that registered
+    `http://127.0.0.1/` and then listens on a port the system chose would be refused. Every other check is the SDK's.
+    """
+
+    def validate_redirect_uri(self, redirect_uri):
+        if redirect_uri is not None and any(same_redirect(redirect_uri, uri) for uri in self.redirect_uris or ()):
+            return redirect_uri
+        return super().validate_redirect_uri(redirect_uri)
 
 
 @dataclass(frozen=True)
@@ -331,7 +410,7 @@ class OAuthAuthorizationProvider:
         row, value = self._read(store, CLIENT, client_id)
         if value is None or value["enabled"] is not True:
             return None, None
-        client = OAuthClientInformationFull.model_validate(value["client"])
+        client = RegisteredOAuthClient.model_validate(value["client"])
         if (client.client_id != client_id or client.token_endpoint_auth_method != "none" or client.client_secret
                 or not client.redirect_uris or not all(self.policy.permits_redirect(str(uri)) for uri in client.redirect_uris)):
             return None, None
@@ -391,7 +470,7 @@ class OAuthAuthorizationProvider:
                 raise AuthorizeError("invalid_request", "state and a valid S256 challenge are required")
             with self.catalog.store(write=True) as store:
                 client_row, held = self._client(store, client.client_id)
-                if held is None or str(params.redirect_uri) not in [str(uri) for uri in held.redirect_uris]:
+                if held is None or not any(same_redirect(params.redirect_uri, uri) for uri in held.redirect_uris):
                     raise AuthorizeError("unauthorized_client", "client or redirect unavailable")
                 try:
                     scopes = self._scopes(params.scopes if params.scopes is not None else held.scope.split())

@@ -12,7 +12,7 @@ import tempfile
 import time
 import unittest
 from unittest import mock
-from urllib.parse import parse_qs, urlsplit
+from urllib.parse import parse_qs, urlencode, urlsplit
 
 import httpx
 import jwt
@@ -25,6 +25,7 @@ from loop_engine.core.service_runtime.browser_identity import BrowserIdentityAda
 from loop_engine.core.service_runtime.http import ServiceHttpApplication
 from loop_engine.core.service_runtime.http_test_fixtures import HttpDomainFixture, running_http, running_key_set
 from loop_engine.core.service_runtime.oauth_authorization import CODE, GRANT, OAuthAuthorizationPolicy, OAuthAuthorizationProvider
+from loop_engine.core.service_runtime.oauth_http import client_redirect_policy
 from loop_engine.core.service_runtime.observability import ServiceObservabilityPolicy
 from loop_engine.core.service_runtime.protocol_checks import _protocol_client
 from loop_engine.core.service_runtime.records import ServiceCommitUnknown
@@ -81,9 +82,10 @@ class HttpOAuthIntegration(unittest.TestCase):
         access = ServiceAccessAdministration(self.fixture.runtime, ServiceClientAccessPolicy(writes_authorized=True))
         self.callback = 'http://127.0.0.1:43111/oauth/callback'
         def application(config):
+            # The deployment's own redirect rules (client_redirect_policy), so these checks hold what the service runs.
             policy = OAuthAuthorizationPolicy(config.public_base_url, config.public_base_url + '/mcp',
                 identity_base + '/auth/v1', config.public_base_url + '/oauth/consent',
-                native_loopback_paths=('/oauth/callback',), allow_loopback_http=True)
+                **client_redirect_policy(), allow_loopback_http=True)
             self.provider = OAuthAuthorizationProvider(self.fixture.runtime, policy)
             return ServiceHttpApplication(self.fixture.runtime, self.fixture.provisioning, config,
                 browser_identity=browser, client_access=access, access_administration=access,
@@ -175,7 +177,7 @@ class HttpOAuthIntegration(unittest.TestCase):
         self.assertEqual(metadata['token_endpoint_auth_methods_supported'], ['none'])
         self.assertEqual(metadata['revocation_endpoint_auth_methods_supported'], ['none'])
         self.assertIn('S256', metadata['code_challenge_methods_supported'])
-        self.assertFalse(metadata.get('authorization_response_iss_parameter_supported', False))
+        self.assertIs(metadata['authorization_response_iss_parameter_supported'], True)
         challenge = self.client.post('/mcp', json={'jsonrpc': '2.0', 'id': 1, 'method': 'initialize', 'params': {}})
         self.expect(challenge, 401, 'unauthenticated_mcp_challenge')
         self.assertIn('/.well-known/oauth-protected-resource/mcp', challenge.headers.get('www-authenticate', ''))
@@ -343,6 +345,106 @@ class HttpOAuthIntegration(unittest.TestCase):
         principal = self.provider.resolve_access(token).principal
         self.assertEqual(principal.entitlement, 'metadata')
         self.assertEqual(self.fixture.runtime.usage_for(principal)['records'], 0)
+
+    def test_every_authorization_response_names_the_issuer(self):
+        """RFC 9207, as the metadata advertises it: the approval, the denial and every refusal the pinned SDK sends back
+        to the client's redirect address carry `iss` equal to the metadata issuer and keep the client's state."""
+        issuer = self.expect(self.client.get('/.well-known/oauth-authorization-server'), 200, 'metadata').json()['issuer']
+        self.assertEqual(issuer, self.base)
+        approved = self.client.post('/api/v1/oauth/consent', headers=self.browser_headers, json=self.decision_body(self.pending()))
+        denied = self.client.post('/api/v1/oauth/consent', headers=self.browser_headers,
+                                  json=self.decision_body(self.pending(), 'deny'))
+        for label, answer, names in (('approval', approved, {'code', 'state', 'iss'}), ('denial', denied, {'error', 'state', 'iss'})):
+            self.expect(answer, 200, label)
+            fields = parse_qs(urlsplit(answer.json()['result']['redirect_uri']).query)
+            self.assertEqual((set(fields), fields['iss'], fields['state']), (names, [issuer], ['synthetic-state']), label)
+        for label, change, error, keeps_state in (
+                ('unregistered_scope', {'scope': 'provisioning:metadata access:manage'}, 'invalid_scope', True),
+                ('other_resource', {'resource': 'http://127.0.0.1:1/other'}, 'invalid_target', True),
+                ('no_state', {'state': None}, 'invalid_request', False),
+                ('malformed_challenge', {'code_challenge': 'short'}, 'invalid_request', True),
+                ('implicit_response_type', {'response_type': 'token'}, 'unsupported_response_type', True),
+                ('no_challenge', {'code_challenge': None}, 'invalid_request', True)):
+            fields = {key: value for key, value in self.authorization_fields(**change).items() if value is not None}
+            response = self.expect(self.client.get('/authorize', params=fields), 302, 'refusal_sent_back_' + label)
+            target = urlsplit(response.headers['location'])
+            values = parse_qs(target.query)
+            self.assertEqual(target.scheme + '://' + target.netloc + target.path, self.callback, label)
+            self.assertEqual(values, {'error': [error], 'iss': [issuer], **({'state': ['synthetic-state']} if keeps_state else {})},
+                             label)
+            self.assertEqual(response.headers.get('cache-control'), 'no-store', label)
+        # A request whose client or redirect address is unknown is answered here and never sent to an address, so it is
+        # not an authorization response.
+        for label, change in (('unknown_client', {'client_id': 'no-such-client'}),
+                              ('unregistered_redirect', {'redirect_uri': 'http://127.0.0.1:43111/other'})):
+            response = self.expect(self.client.get('/authorize', params=self.authorization_fields(**change)), 400, label)
+            self.assertNotIn('location', response.headers)
+        self.assertEqual(len(self.rows(CODE)), 1, 'only the approval minted a code')
+
+    def test_known_wrong_the_sdk_alone_sends_a_refusal_without_the_issuer(self):
+        """Without the adapter's step (oauth_http.OAuthHttp._identified), the pinned SDK sends the refusal back to the
+        client with no `iss` and with its description, so the metadata could not promise issuer identification."""
+        from mcp.server.auth.handlers.authorize import AuthorizationHandler
+        from starlette.requests import Request
+        from loop_engine.core.service_runtime import oauth_http
+        fields = self.authorization_fields(scope='provisioning:metadata access:manage')
+        request = Request({'type': 'http', 'method': 'GET', 'path': '/authorize', 'headers': [], 'scheme': 'http',
+                           'query_string': urlencode(fields).encode(), 'server': ('127.0.0.1', 80)})
+        bare = asyncio.run(AuthorizationHandler(self.provider).handle(request))
+        values = parse_qs(urlsplit(bare.headers['location']).query)
+        self.assertEqual((bare.status_code, values['error']), (302, ['invalid_scope']))
+        self.assertNotIn('iss', values)
+        self.assertIn('error_description', values)
+        with mock.patch.object(oauth_http.OAuthHttp, '_identified', lambda _self, result: result):
+            served = self.expect(self.client.get('/authorize', params=fields), 302, 'adapter_step_removed')
+        self.assertNotIn('iss', parse_qs(urlsplit(served.headers['location']).query))
+
+    def test_documented_clients_register_and_lookalikes_do_not(self):
+        """Each hosted callback and the native ones register; one lookalike refuses the whole registration."""
+        from loop_engine.core.service_runtime.oauth_authorization import HOSTED_CLIENT_REDIRECTS
+        claude, cursor = HOSTED_CLIENT_REDIRECTS[1][1], HOSTED_CLIENT_REDIRECTS[2][1]
+        vscode = ['https://insiders.vscode.dev/redirect', 'https://vscode.dev/redirect', 'http://127.0.0.1/',
+                  'http://127.0.0.1:33418/']
+        for label, redirects, status in (
+                ('claude', [claude], 201), ('cursor_web', [cursor], 201),
+                ('codex_callback_identifier', ['http://127.0.0.1:53682/callback/F9ZByiiojchq'], 201),
+                ('claude_lookalike', ['https://claude.ai.evil.example/api/mcp/auth_callback'], 400),
+                ('codex_short_identifier', ['http://127.0.0.1:53682/callback/F9ZByiiojch'], 400),
+                ('vscode_and_one_unlisted', [*vscode, 'https://evil.vscode.dev/redirect'], 400)):
+            response = self.client.post('/register', json={'client_name': 'Documented client ' + label, 'redirect_uris': redirects})
+            self.expect(response, status, 'registration_' + label)
+            if status == 201:
+                self.assertEqual(response.json()['redirect_uris'], redirects)
+            else:
+                self.assertEqual(safe_error(response), 'invalid_redirect_uri')
+        # VS Code's own registration body (fetchDynamicRegistration): four addresses, the grants the metadata lists.
+        registered = self.client.post('/register', json={'client_name': 'Visual Studio Code',
+            'client_uri': 'https://code.visualstudio.com', 'grant_types': ['authorization_code', 'refresh_token'],
+            'response_types': ['code'], 'redirect_uris': vscode, 'token_endpoint_auth_method': 'none',
+            'application_type': 'native'})
+        self.expect(registered, 201, 'vscode_registration')
+        self.client_id = registered.json()['client_id']
+        # Its listener took port 51004: the request names that port, the consent sends the code there, and the token
+        # exchange names the same address.
+        listening = 'http://127.0.0.1:51004/'
+        response = self.expect(self.client.get('/authorize', params=self.authorization_fields(redirect_uri=listening)),
+                               302, 'vscode_authorize_on_its_port')
+        pending = parse_qs(urlsplit(response.headers['location']).query)['authorization_id'][0]
+        decided = self.expect(self.client.post('/api/v1/oauth/consent', headers=self.browser_headers,
+                                               json=self.decision_body(pending)), 200, 'vscode_consent')
+        redirect = decided.json()['result']['redirect_uri']
+        self.assertTrue(redirect.startswith(listening + '?'), redirect)
+        code = parse_qs(urlsplit(redirect).query)['code'][0]
+        self.credentials_seen.append(code)
+        tokens = self.expect(self.client.post('/token', data=self.token_fields(code, redirect_uri=listening)), 200,
+                             'vscode_code_exchange').json()
+        self.credentials_seen.extend([tokens['access_token'], tokens['refresh_token']])
+        # Known wrong: the port is the only part that may differ.
+        for label, address in (('other_path', 'http://127.0.0.1:51004/other'), ('other_loopback_host', 'http://localhost:51004/'),
+                               ('hosted_port', 'https://vscode.dev:8443/redirect')):
+            response = self.expect(self.client.get('/authorize', params=self.authorization_fields(redirect_uri=address)),
+                                   400, 'vscode_' + label)
+            self.assertNotIn('location', response.headers)
 
 
 class OAuthRequestBudgets(unittest.TestCase):

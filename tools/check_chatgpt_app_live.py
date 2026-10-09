@@ -144,6 +144,7 @@ async def connect(run, origin, account_path, evidence):
     async def callback():
         query = parse_qs(urlsplit(held["consent"]["callback_url"]).query)
         held["callback_parameters"] = sorted(query)
+        held["callback_iss"] = query.get("iss", [None])[0]
         return AuthorizationCodeResult(code=query["code"][0], state=query.get("state", [None])[0],
                                        iss=query.get("iss", [None])[0])
 
@@ -293,7 +294,7 @@ async def main_async(arguments):
     evidence = Path(arguments.evidence).expanduser().resolve()
     evidence.mkdir(parents=True, exist_ok=True)
     os.chmod(evidence, 0o700)
-    discovery(run, origin)
+    metadata = discovery(run, origin)
     store, held, http = await connect(run, origin, account, evidence)
     raw, screens, served = {}, [], False
     try:
@@ -307,6 +308,10 @@ async def main_async(arguments):
                       held["authorization"]["code_challenge_method"] == "S256"
                       and held["authorization"]["resource"] == origin + "/mcp",
                       callback_parameters=held.get("callback_parameters"))
+            # RFC 9207: once the metadata advertises issuer identification, the response must name that issuer.
+            advertised = metadata.get("authorization_response_iss_parameter_supported", False) is True
+            run.check("the_authorization_response_named_the_advertised_issuer",
+                      held.get("callback_iss") == metadata.get("issuer") or not advertised, advertised=advertised)
             tools = await client.list_tools()
             names = [tool.name for tool in tools.tools]
             served = names == [tool.name for tool in chatgpt_app.TOOLS]
