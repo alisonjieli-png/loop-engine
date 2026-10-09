@@ -66,6 +66,14 @@
       "source_path": "_licenses/agpl-3.0.txt",
       "sha256": "2a1fda78234b71502e2cf8035021b5592f5eba7e8107228aca4d95bba645e397",
       "licence": "AGPL-3.0 licence text with the source repository's catalogue frontmatter; source repository MIT"
+    },
+    {
+      "path": "docker-library-official-images-LICENSE.txt",
+      "repository": "docker-library/official-images",
+      "revision": "e45c28e390e9952b44c6bee310c6bf5ecf8feca9",
+      "source_path": "LICENSE",
+      "sha256": "552a739c3b25792263f731542238b92f6f8d07e9a488eae27e6c4690038a8243",
+      "licence": "Apache-2.0 licence text followed by the licence's own application notice (no appendix heading); git blob 27448585ad49c79581d0b3dcb76da380fb6df4b7, the same blob as docker-library/repo-info's LICENSE"
     }
   ],
   "comparison": "Removing only the canonical file's YAML frontmatter and normalizing whitespace yields identical 1581-token sequences. No licence obligation differs.",

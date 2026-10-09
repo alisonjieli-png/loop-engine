@@ -64,6 +64,17 @@ _OPTIONAL_SECTIONS = (
     r"creative commons is not a party to its public licen[cs]es.*\Z",
     r"statement of purpose",
 )
+#: The notice the Apache License's appendix tells a work to carry, word for word. Many repositories put it
+#: right after the terms with no appendix heading (docker-library/official-images' LICENSE, October 9, 2026),
+#: and its words then read as added to the template. Only the exact words, in their order, are set aside, so a
+#: notice that adds or changes a condition still adds words.
+_APACHE_NOTICE_WORDS = ("licensed under the apache licen[cs]e version 2 0 the licen[cs]e you may not use this file "
+                        "except in compliance with the licen[cs]e you may obtain a copy of the licen[cs]e at unless "
+                        "required by applicable law or agreed to in writing software distributed under the "
+                        "licen[cs]e is distributed on an as is basis without warranties or conditions of any kind "
+                        "either express or implied see the licen[cs]e for the specific language governing "
+                        "permissions and limitations under the licen[cs]e")
+_APPLIED_NOTICES = (re.compile(r"\b" + r"\W+".join(_APACHE_NOTICE_WORDS.split()) + r"\b\W*"),)
 #: The two optional sections above that run to the end of a text end, in the canonical text, at
 #: a fixed sentence. Text written after that sentence is not part of the licence the text resembles.
 _TRAILING_SECTIONS = ((r"appendix: how to apply the apache license", r"limitations under the licen[cs]e"),
@@ -195,6 +206,8 @@ def _set_aside(text: str) -> tuple:
             trailing.append(joined[start.end() + end.end():] if end else joined[start.end():])
     for section in _OPTIONAL_SECTIONS:
         joined = re.sub(section.replace(" ", r"\s+"), " ", joined, flags=re.S)
+    for notice in _APPLIED_NOTICES:
+        joined = notice.sub(" ", joined)
     placeholders = _PLACEHOLDER.findall(joined)
     return _PLACEHOLDER.sub(" ", joined), tuple(notices), tuple(placeholders), tuple(trailing)
 
