@@ -171,7 +171,7 @@ REFUSAL_REASONS = {
     # documentation folder, a licence the line cannot use, a registry that did not give a document by its digest (or
     # gave other bytes), a document the card format cannot describe, a credential-shaped value outside an
     # environment value, a run's request ceiling, registry evidence that does not hold for the card's bytes, a failed
-    # smoke run, a failing package test, and the shared packaging refusals.
+    # smoke run, a card the writer could not write, a failing package test, and the shared packaging refusals.
     CONTAINER_IMAGE_CARDS: ("source_unreadable", "licence_not_on_allowlist", "licence_signals_disagree",
                             "licence_unknown", "library_entry_invalid", "tag_not_found", "registry_unreadable",
                             "registry_unauthorized", "registry_rate_limited", "registry_redirect_undeclared",
@@ -179,8 +179,9 @@ REFUSAL_REASONS = {
                             "digest_unsupported", "manifest_unsupported", "config_unreadable", "no_platform",
                             "platform_mismatch", "credential_shaped_value_in_image", "request_ceiling_reached",
                             "native_evidence_missing", "native_evidence_stale", "native_evidence_invalid",
-                            "native_check_failed", "smoke_check_failed", "generated_test_failed",
-                            "blocked_by_static_check", "package_above_review_bound", "package_path_invalid"),
+                            "native_check_failed", "smoke_check_failed", "card_not_written",
+                            "generated_test_failed", "blocked_by_static_check", "package_above_review_bound",
+                            "package_path_invalid"),
 }
 #: The forms each line may declare, and the harness kind it serves them as.
 LINE_FORMS = {MCP_REGISTRY: {"mcp_server": "protocol_server_configuration"},

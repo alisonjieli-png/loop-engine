@@ -67,6 +67,8 @@ NOTES = {
     "architectures_declared_not_published": "The library declares architectures whose images the index does not "
                                             "list; they are named under Compatibility.",
 }
+#: The note of an image that sets neither an entrypoint nor a default command.
+NO_DEFAULT_COMMAND = "no_default_command"
 #: What the outputs section says the registry facts mean.
 LOGS = "standard_output_and_standard_error"
 EXIT_STATUS = "main_process_exit_status"
@@ -303,9 +305,20 @@ def shell_line(argv) -> str:
     return " ".join(shlex.quote(str(part)) for part in argv)
 
 
+#: The argument README.md's command shows where the image sets no command and the caller must give one.
+COMMAND_PLACEHOLDER = "COMMAND"
+
+
+def needs_command(contract: dict) -> bool:
+    """Whether the image sets neither an entrypoint nor a default command on any platform."""
+    return NO_DEFAULT_COMMAND in contract["compatibility"]["notes"]
+
+
 def default_run(contract: dict) -> list:
-    """The command README.md shows: the default platform, every exposed port published to a free host port."""
-    return render_run(contract, publish_all=bool(contract["inputs"]["ports"]))
+    """The command README.md shows: the default platform, every exposed port published to a free host port, and
+    COMMAND where the image sets none."""
+    return render_run(contract, publish_all=bool(contract["inputs"]["ports"]),
+                      command=[COMMAND_PLACEHOLDER] if needs_command(contract) else None)
 
 
 # -- the README lines a card checks ----------------------------------------------------------------------------------

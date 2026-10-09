@@ -39,7 +39,8 @@ MIT = (ROOT / "LICENSE").read_bytes()
 APACHE = (ROOT / "tools/fixtures/licence-texts/docker-library-official-images-LICENSE.txt").read_bytes()
 EXTRA_LIBRARY = (f"GitRepo: https://github.com/example/docker-other.git\n\nTags: 3.0, latest\nArchitectures: amd64\n"
                  f"GitCommit: {COMMIT}\nDirectory: 3\n\nTags: 3.0-missing\nArchitectures: amd64\nGitCommit: {COMMIT}\n"
-                 f"Directory: missing\n\nTags: 3.0-leaky\nArchitectures: amd64\nGitCommit: {COMMIT}\nDirectory: leaky\n")
+                 f"Directory: missing\n\nTags: 3.0-leaky\nArchitectures: amd64\nGitCommit: {COMMIT}\nDirectory: leaky\n\n"
+                 f"Tags: 3.0-bare\nArchitectures: amd64\nGitCommit: {COMMIT}\nDirectory: bare\n")
 
 
 def pinned(repository: str, path: str, data: bytes, spdx: "str | None" = None) -> dict:
@@ -71,6 +72,7 @@ def hub():
         dict(ANNOTATIONS))])
     value.image("other", "3.0-leaky", [("linux", "amd64", None, config("amd64", label_extra={"note": SECRET_VALUE}),
                                         {})])
+    value.image("other", "3.0-bare", [("linux", "amd64", None, config("amd64", cmd=(), entrypoint=()), {})])
     return value
 
 
@@ -102,11 +104,16 @@ class LineTests(unittest.TestCase):
     def test_every_family_held_by_the_registry_is_packaged_and_the_rest_refused_by_name(self):
         built, refusals, facts, summary = self.generate(registry_workers=3)
         names = sorted(payload["repository"]["resolved_tag"] for payload, _bodies in built)
-        self.assertEqual(names, ["1.9.9", "2.4.1", "2.4.1-alpine", "3.0"])
+        self.assertEqual(names, ["1.9.9", "2.4.1", "2.4.1-alpine", "3.0", "3.0-bare"])
         self.assertEqual(sorted((row["reason"], row["subject"]) for row in refusals),
                          [("credential_shaped_value_in_image", "other:3.0-leaky"), ("tag_not_found", "other:3.0-missing")])
         self.assertTrue(set(row["reason"] for row in refusals) <= set(REFUSAL_REASONS[CONTAINER_IMAGE_CARDS]))
-        self.assertEqual((summary["packaged"], summary["platform_images"]), (4, 5))
+        self.assertEqual((summary["packaged"], summary["platform_images"]), (5, 6))
+        # An image that sets no command is carded with COMMAND where the caller gives one, and its tests pass.
+        bare = next(row for row in built if row[0]["repository"]["resolved_tag"] == "3.0-bare")
+        readme = next(bare[1][entry["digest"]] for entry in bare[0]["package"]["files"] if entry["path"] == "README.md")
+        self.assertIn(b" COMMAND\n```", readme)
+        self.assertIn(b"sets neither an entrypoint nor a default command", readme)
         payload, bodies = next(row for row in built if row[0]["repository"]["resolved_tag"] == "2.4.1")
         self.assertEqual((payload["line"], payload["kind"], payload["component_form"]["form"]),
                          (CONTAINER_IMAGE_CARDS, "contract_schema", "schema"))
@@ -140,6 +147,18 @@ class LineTests(unittest.TestCase):
         self.assertIn(line.REQUEST_CEILING, reasons)
         self.assertTrue(set(line.UNREAD_REASONS) & reasons)
 
+    def test_known_wrong_a_card_the_writer_cannot_write_is_refused_by_name_and_the_run_goes_on(self):
+        registry = reader(hub(), self.root / "registry")
+        families, _refusals = line.read_families(collection(), registry, line.secret_patterns())
+        broken = line.FamilyFacts(families[0].family.__class__(**{**families[0].family.__dict__, "platforms": ()}),
+                                  families[0].documents)
+        refusals = []
+        prepared = line.prepare([broken] + families[1:], collection(), MIT, refusals)
+        self.assertEqual([row["reason"] for row in refusals], [line.CARD_NOT_WRITTEN])
+        self.assertEqual(len(prepared), len(families) - 1)
+        with self.assertRaises(Exception):
+            line.prepare([broken], collection(), MIT)
+
     def test_missing_stale_and_failed_evidence_and_a_failed_smoke_run_are_refused_by_name(self):
         source = hub()
         registry = reader(source, self.root / "registry")
@@ -155,7 +174,8 @@ class LineTests(unittest.TestCase):
         smoke = {identities[3]: json.dumps({"state": "failed", "checks": []}).encode()}
         built, refusals = line.package(prepared, evidence, smoke, collection(), code_revision=REVISION,
                                        generated_on="2026-10-09", staging=self.root / "staging", workers=2)
-        self.assertEqual(built, [])
+        # Only the one card whose evidence was left alone is packaged.
+        self.assertEqual(len(built), len(prepared) - 4)
         self.assertEqual(sorted(row["reason"] for row in refusals),
                          ["native_check_failed", "native_evidence_missing", "native_evidence_stale",
                           "smoke_check_failed"])

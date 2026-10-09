@@ -64,8 +64,9 @@ class ContractTests(unittest.TestCase):
         self.assertIn(image_contract.shell_line(argv), self.readme.split("\n"))
 
     def test_every_platform_renders_and_an_unknown_one_is_refused(self):
+        command = [image_contract.COMMAND_PLACEHOLDER] if image_contract.needs_command(self.contract) else None
         for name in image_contract.platforms(self.contract):
-            argv = image_contract.render_run(self.contract, platform=name)
+            argv = image_contract.render_run(self.contract, platform=name, command=command)
             self.assertEqual(argv[argv.index("--platform") + 1], name)
             runtime = image_contract.platform_runtime(self.contract, name)
             self.assertTrue(set(runtime) >= {"entrypoint", "command", "environment", "ports", "volumes"})
@@ -131,12 +132,14 @@ class ContractTests(unittest.TestCase):
             self.assertTrue(image_contract.problems(self.contract, **case), case)
             with self.assertRaises(image_contract.InputError):
                 image_contract.render_run(self.contract, **case)
-        self.assertEqual(image_contract.problems(self.contract, environment={"DB_PASSWORD": None}), [])
+        self.assertEqual(image_contract.problems(self.contract, environment={"DB_PASSWORD": None},
+                                                 command=["true"]), [])
 
     def test_the_command_line_prints_the_command_or_the_problems(self):
         output, errors = io.StringIO(), io.StringIO()
+        command = ["--", image_contract.COMMAND_PLACEHOLDER] if image_contract.needs_command(self.contract) else []
         with contextlib.redirect_stdout(output), contextlib.redirect_stderr(errors):
-            status = image_contract.main(["--contract", str(HERE / "contract.json")])
+            status = image_contract.main(["--contract", str(HERE / "contract.json")] + command)
         self.assertEqual(status, 0)
         self.assertIn(self.contract["image"]["reference"], output.getvalue())
         with contextlib.redirect_stdout(io.StringIO()), contextlib.redirect_stderr(errors):

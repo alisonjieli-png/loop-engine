@@ -81,6 +81,8 @@ REQUEST_CEILING = "request_ceiling_reached"
 ADDRESS_WITH_PASSWORD = re.compile(r"[A-Za-z][A-Za-z0-9+.-]*://[^/@\s:]+:[^/@\s]+@")
 PLATFORM_MISMATCH, CREDENTIAL_IN_IMAGE = "platform_mismatch", "credential_shaped_value_in_image"
 SMOKE_FAILED = "smoke_check_failed"
+#: A family whose card the writer could not write (an error it did not foresee), refused by name with the error.
+CARD_NOT_WRITTEN = "card_not_written"
 _RAN = re.compile(r"^Ran (\d+) tests? in ", re.MULTILINE)
 _SLUG = re.compile(r"[^A-Za-z0-9._-]+")
 PASSED = native.PASSED
@@ -305,14 +307,25 @@ def file_stem(identity: str) -> str:
     return f"{_SLUG.sub('_', repository)}-{hashlib.sha256(identity.encode('utf-8')).hexdigest()[:16]}"
 
 
-def prepare(families: list, collection: CollectionSources, licence_text: bytes) -> dict:
-    """{identity: PreparedCard} of every family read."""
+def prepare(families: list, collection: CollectionSources, licence_text: bytes, refusals: "list | None" = None
+            ) -> dict:
+    """{identity: PreparedCard} of every family read. A family the writer fails on is refused by name
+    (card_not_written, with the error), so one unexpected document never stops the run; ``refusals`` collects
+    them."""
     prepared = {}
     notice = copyright_line(collection.docs_licence["bytes"])
     for facts in families:
-        record = cards.contract(facts.family)
-        files = cards.card_files(record, licence_text=licence_text, upstream_licence=collection.docs_licence["bytes"],
-                                 copyright_line=notice)
+        subject = f"{facts.family.entry.repository}:{facts.family.entry.resolved_tag}"
+        try:
+            record = cards.contract(facts.family)
+            files = cards.card_files(record, licence_text=licence_text,
+                                     upstream_licence=collection.docs_licence["bytes"], copyright_line=notice)
+        except Exception as error:  # noqa: BLE001 - a writer defect is reported by name, never a stopped run
+            if refusals is None:
+                raise
+            refusals.append(refusal(CONTAINER_IMAGE_CARDS, CARD_NOT_WRITTEN, subject,
+                                    f"{type(error).__name__}: {error}"))
+            continue
         identity = family_identity(facts.family)
         prepared[identity] = PreparedCard(identity, facts, record, files, cards.card_digest(files))
     return prepared
@@ -330,6 +343,8 @@ def registry_evidence(prepared: dict, registry, folder: "Path | None" = None, *,
         try:
             data = native.evidence_bytes(native.verify(card.contract, card.digest, registry, module))
         except RequestCeilingReached:
+            return identity, None
+        except Exception:  # noqa: BLE001 - a check that cannot finish leaves no evidence: the card is refused
             return identity, None
         if folder is not None:
             target = Path(folder) / "registry" / f"{file_stem(identity)}.json"
@@ -520,7 +535,7 @@ def generate(collection: CollectionSources, registry, *, code_revision: str, lic
     holds."""
     families, refusals = read_families(collection, registry, secret, maximum_families=maximum_families,
                                        workers=registry_workers, progress=progress)
-    prepared = prepare(families, collection, licence_text)
+    prepared = prepare(families, collection, licence_text, refusals)
     evidence = registry_evidence(prepared, registry, evidence_folder, workers=registry_workers,
                                  progress=progress) if prepared else {}
     smoke = {}
@@ -529,7 +544,10 @@ def generate(collection: CollectionSources, registry, *, code_revision: str, lic
             continue
         if json.loads(evidence[identity]).get("state") != PASSED:
             continue
-        smoke[identity] = smoke_runner(card)
+        try:
+            smoke[identity] = smoke_runner(card)
+        except Exception as error:  # noqa: BLE001 - a smoke run that breaks is a failed smoke run, by name
+            smoke[identity] = json.dumps({"state": native.FAILED, "error": type(error).__name__}).encode()
         if evidence_folder is not None:
             target = Path(evidence_folder) / "smoke" / f"{file_stem(identity)}.json"
             target.parent.mkdir(parents=True, exist_ok=True)

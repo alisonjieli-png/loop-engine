@@ -92,13 +92,15 @@ def document(value) -> bytes:
     return json.dumps(value, indent=2).encode()
 
 
-def config(architecture: str, *, variant=None, env_extra=(), label_extra=None, user="", cmd=("demo", "serve")):
+def config(architecture: str, *, variant=None, env_extra=(), label_extra=None, user="", cmd=("demo", "serve"),
+           entrypoint=("docker-entrypoint.sh",)):
     labels = {"maintainer": "Example Maintainers"}
     labels.update(label_extra or {})
     value = {"architecture": architecture, "os": "linux",
              "config": {"Env": ["PATH=/usr/local/bin:/usr/bin:/bin", "DEMO_VERSION=2.4.1", "DEMO_ADMIN_PASSWORD=x1",
                                 f"DEMO_ARCH={architecture}", *env_extra],
-                        "Entrypoint": ["docker-entrypoint.sh"], "Cmd": list(cmd), "WorkingDir": "/srv",
+                        "Entrypoint": list(entrypoint) if entrypoint else None, "Cmd": list(cmd) if cmd else None,
+                        "WorkingDir": "/srv",
                         "User": user, "ExposedPorts": {"8080/tcp": {}, "53/udp": {}},
                         "Volumes": {"/var/lib/demo": {}}, "StopSignal": "SIGQUIT", "Labels": labels,
                         "Healthcheck": {"Test": ["CMD", "demo", "health"], "Interval": 30000000000,
