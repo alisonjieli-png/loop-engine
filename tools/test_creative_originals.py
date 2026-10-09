@@ -14,6 +14,7 @@ import unittest
 import zlib
 from contextlib import redirect_stdout
 from pathlib import Path
+from unittest import mock
 
 from tools.creative_originals import assemble, check, media, pngio, records, verify
 
@@ -295,6 +296,53 @@ class AssemblyTests(unittest.TestCase):
         self.assertEqual(self.run_verify(), 1)
         record = json.loads((self.evidence / "demo_family" / "square_item.json").read_text())
         self.assertEqual(record["checks"][0]["name"], "verifier_error")
+
+
+
+NODE = assemble.sandbox_node()
+NODE_TEST = """import test from 'node:test';
+import assert from 'node:assert/strict';
+import {double} from './double.mjs';
+
+test('doubles', () => { assert.equal(double(2), 4); });
+"""
+
+
+class NodePackageTestTests(unittest.TestCase):
+    """Root test_*.mjs files run with node --test like the sandbox runs them; a failure fails the package."""
+
+    def setUp(self):
+        self.root = Path(tempfile.mkdtemp())
+
+    def tearDown(self):
+        shutil.rmtree(self.root)
+
+    @unittest.skipUnless(NODE, "node is not installed where the sandbox looks for it")
+    def test_node_tests_pass_and_a_broken_module_fails(self):
+        (self.root / "double.mjs").write_text("export function double(value) { return 2 * value; }\n")
+        (self.root / "test_double.mjs").write_text(NODE_TEST)
+        result = assemble.run_package_tests(self.root)
+        self.assertEqual(result["state"], "passed", result)
+        self.assertEqual((result["node_counts"]["pass"], result["node_counts"]["fail"]), (1, 0))
+        (self.root / "double.mjs").write_text("export function double(value) { return 3 * value; }\n")
+        self.assertEqual(assemble.run_package_tests(self.root)["state"], "failed")
+
+    @unittest.skipUnless(NODE, "node is not installed where the sandbox looks for it")
+    def test_a_test_file_that_does_not_load_fails(self):
+        # node --test counts a file that declares no test as one passing test, as the sandbox sees it; the mutation
+        # check is what refuses such a package. A file that does not load fails here.
+        (self.root / "double.mjs").write_text("export function double(value) { return 2 * value; }\n")
+        (self.root / "test_double.mjs").write_text(NODE_TEST.replace("test('doubles'", "test('doubles' ("))
+        self.assertEqual(assemble.run_package_tests(self.root)["state"], "failed")
+
+    def test_missing_node_is_reported(self):
+        (self.root / "test_double.mjs").write_text(NODE_TEST)
+        with mock.patch.object(assemble, "sandbox_node", return_value=None):
+            result = assemble.run_package_tests(self.root)
+        self.assertEqual((result["state"], result["reason"]), ("failed", "node_unavailable"))
+
+    def test_no_test_file_at_all_is_reported(self):
+        self.assertEqual(assemble.run_package_tests(self.root)["reason"], "no_root_test_modules")
 
 
 if __name__ == "__main__":
