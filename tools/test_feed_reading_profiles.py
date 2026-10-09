@@ -15,7 +15,7 @@ from knowledge_radar import feed_profiles as profiles
 from knowledge_radar.feed_profile_files import GUIDE_FILE, PROFILE_FILE, check_folder, compile_files, write_new
 from tools.build_feed_reading_profile import main
 
-TODAY = "2026-10-08"
+TODAY = "2026-10-09"
 
 
 def request(**changes):
@@ -98,14 +98,14 @@ class ProfileTests(unittest.TestCase):
             profiles.validate(profile, as_of=TODAY, directory=data)
 
     def test_age_boundary_future_date_stale_hold_and_unknown_upstream_freshness(self):
-        profile = profiles.build(request(as_of="2026-10-15"))
+        profile = profiles.build(request(as_of="2026-10-16"))
         self.assertEqual(profile["freshness"]["source_documentation_age_days"], 7)
         self.assertEqual(profile["freshness"]["upstream_item_freshness"], "not_observed")
         self.assertFalse(profile["coverage"]["live_research_items"])
-        for changed in (request(as_of="2026-10-16"), request(as_of="2026-10-07")):
+        for changed in (request(as_of="2026-10-17"), request(as_of="2026-10-08")):
             with self.assertRaises(profiles.FeedProfileError):profiles.build(changed)
         held = profiles.build(request(on_stale="hold"))
-        report = profiles.validate(held, as_of="2026-10-16")
+        report = profiles.validate(held, as_of="2026-10-17")
         self.assertEqual(report["status"], "needs_source_docs_recheck")
         self.assertEqual(held["freshness"]["source_documentation_age_days"], 0, "validation must not silently renew a profile")
 
@@ -138,7 +138,7 @@ class ProfileTests(unittest.TestCase):
         with self.assertRaises(profiles.FeedProfileError):profiles.validate(changed, as_of=TODAY)
 
     def test_known_wrong_removed_age_policy_would_accept_the_stale_input(self):
-        stale = request(as_of="2026-10-16")
+        stale = request(as_of="2026-10-17")
         with self.assertRaises(profiles.FeedProfileError):profiles.build(stale)
         with patch("knowledge_radar.feed_profiles.freshness", return_value={"source_documentation_status": "incorrectly_current"}):
             self.assertEqual(profiles.build(stale)["freshness"]["source_documentation_status"], "incorrectly_current")

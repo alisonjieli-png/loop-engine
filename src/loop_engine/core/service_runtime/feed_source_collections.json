@@ -1,6 +1,6 @@
 {
   "record_type": "agent_feed_source_directory/v1",
-  "source_docs_checked_on": "2026-10-08",
+  "source_docs_checked_on": "2026-10-09",
   "refresh_mode": "release_curated",
   "data_scope": "source_descriptions_only",
   "limitations": [
@@ -261,6 +261,294 @@
       "description": "Economic series, releases and vintage information for macroeconomic context.",
       "access": "The API requires its documented account credentials and terms. No credential is included here.",
       "reuse": "Retain units, seasonal adjustment, observation date, release date and vintage. Some series have third-party restrictions."
+    },
+    {
+      "id": "anthropic-models",
+      "name": "Claude models overview",
+      "url": "https://platform.claude.com/docs/en/models/overview",
+      "kind": "provider_documentation",
+      "description": "Current Claude models with API identifiers, context windows, output limits, knowledge cutoffs and retirement commitments.",
+      "access": "Public documentation. Cloud platforms that offer the same models can use other identifiers and set their own lifecycle dates.",
+      "reuse": "Listed limits and cutoffs are the provider's statements. Confirm the identifier your account can call before changing a configuration."
+    },
+    {
+      "id": "anthropic-deprecations",
+      "name": "Claude model deprecations",
+      "url": "https://platform.claude.com/docs/en/about-claude/model-deprecations",
+      "kind": "publisher_updates",
+      "description": "Lifecycle status, retirement dates and recommended replacements for Claude models and deprecated request parameters.",
+      "access": "Public documentation. Its dates apply to Anthropic-operated platforms; partner platforms set their own schedules.",
+      "reuse": "Requests to a retired model fail. Test the recommended replacement on your own workload before the retirement date."
+    },
+    {
+      "id": "openai-pricing",
+      "name": "OpenAI API pricing",
+      "url": "https://developers.openai.com/api/docs/pricing",
+      "kind": "provider_documentation",
+      "description": "Provider prices by model and processing mode, including cached input, built-in tools, audio and image generation.",
+      "access": "Public pricing documentation. No paid model call is made by this collection.",
+      "reuse": "A calculated estimate is not an invoice. Recheck the exact model, processing mode, region and effective date."
+    },
+    {
+      "id": "openai-deprecations",
+      "name": "OpenAI API deprecations",
+      "url": "https://developers.openai.com/api/docs/deprecations",
+      "kind": "publisher_updates",
+      "description": "Announced retirements of OpenAI models and endpoints, with shutdown dates and recommended replacements.",
+      "access": "Public documentation. Notice periods differ by model type, and preview models can be retired with much shorter notice.",
+      "reuse": "A recommended replacement is the provider's suggestion, not a measured equivalent. Test it on your own task before the shutdown date."
+    },
+    {
+      "id": "gemini-pricing",
+      "name": "Gemini API pricing",
+      "url": "https://ai.google.dev/gemini-api/docs/pricing",
+      "kind": "provider_documentation",
+      "description": "Free and paid tier prices for Gemini API models, including context caching, batch processing and search grounding.",
+      "access": "Public pricing documentation. An automated reader that does not keep cookies may be sent to a sign-in page instead.",
+      "reuse": "The page says free-tier content is used to improve Google products and paid-tier content is not. Confirm the tier and its data terms before sending private material."
+    },
+    {
+      "id": "gemini-deprecations",
+      "name": "Gemini API deprecations",
+      "url": "https://ai.google.dev/gemini-api/docs/deprecations",
+      "kind": "publisher_updates",
+      "description": "Gemini API models with release dates, shutdown dates and recommended replacements.",
+      "access": "Public documentation for the Gemini API. Check the schedule of any other Google platform you use separately.",
+      "reuse": "A replacement model can differ in price, limits and behavior. Measure it on the same test set before the shutdown date."
+    },
+    {
+      "id": "openrouter-models",
+      "name": "OpenRouter models API",
+      "url": "https://openrouter.ai/docs/api/api-reference/models/list-all-models-and-their-properties",
+      "kind": "api_documentation",
+      "description": "An endpoint listing models available through OpenRouter with per-token prices, context length, supported parameters and modalities.",
+      "access": "Follow the documented authentication and request limits. A listing shows routing availability, not access through your own provider accounts.",
+      "reuse": "One model can be served by several providers at different prices and limits. Record the provider, price basis and retrieval date with any figure."
+    },
+    {
+      "id": "mcp-spec-changelog",
+      "name": "MCP specification changelog",
+      "url": "https://modelcontextprotocol.io/specification/latest/changelog",
+      "kind": "publisher_updates",
+      "description": "Changes in the current Model Context Protocol revision compared with the previous one, including breaking changes and deprecations.",
+      "access": "Public documentation. This address follows the latest revision; each revision also has its own dated page.",
+      "reuse": "The project is moving from the MIT licence to Apache-2.0; read its licence file before copying specification text. A published revision does not mean your SDK or host supports it yet."
+    },
+    {
+      "id": "mcp-python-sdk",
+      "name": "MCP Python SDK releases",
+      "url": "https://github.com/modelcontextprotocol/python-sdk/releases",
+      "kind": "publisher_updates",
+      "description": "Tagged releases and change notes for the official MCP Python SDK.",
+      "access": "Read the release notes on GitHub, or use the GitHub Releases API with its request limits.",
+      "reuse": "MIT-licensed. Pin the version and run server and client tests before upgrading, especially across a major version."
+    },
+    {
+      "id": "mcp-typescript-sdk",
+      "name": "MCP TypeScript SDK releases",
+      "url": "https://github.com/modelcontextprotocol/typescript-sdk/releases",
+      "kind": "publisher_updates",
+      "description": "Tagged releases and change notes for the official MCP TypeScript SDK.",
+      "access": "Read the release notes on GitHub, or use the GitHub Releases API with its request limits.",
+      "reuse": "The repository licence file describes a move from MIT to Apache-2.0. Pin the package version and run an integration test before upgrading."
+    },
+    {
+      "id": "openai-agents-sdk",
+      "name": "OpenAI Agents SDK releases",
+      "url": "https://github.com/openai/openai-agents-python/releases",
+      "kind": "publisher_updates",
+      "description": "Tagged releases and change notes for OpenAI's Agents SDK for Python.",
+      "access": "Read the release notes on GitHub, or use the GitHub Releases API with its request limits.",
+      "reuse": "MIT-licensed. The project is still before version 1.0, so read each release note for breaking changes before upgrading."
+    },
+    {
+      "id": "claude-agent-sdk",
+      "name": "Claude Agent SDK for Python releases",
+      "url": "https://github.com/anthropics/claude-agent-sdk-python/releases",
+      "kind": "publisher_updates",
+      "description": "Tagged releases and change notes for Anthropic's Claude Agent SDK for Python.",
+      "access": "Read the release notes on GitHub, or use the GitHub Releases API with its request limits.",
+      "reuse": "The SDK code is MIT-licensed; using Claude through it is governed by Anthropic's terms. Releases are frequent, so pin a version and test before upgrading."
+    },
+    {
+      "id": "langgraph",
+      "name": "LangGraph releases",
+      "url": "https://github.com/langchain-ai/langgraph/releases",
+      "kind": "publisher_updates",
+      "description": "Tagged releases for LangGraph and related packages, including its CLI, SDK and checkpoint libraries.",
+      "access": "Read the release notes on GitHub. One releases page covers several packages, so match the package name in each tag.",
+      "reuse": "MIT-licensed. Pin each package version separately and test saved checkpoints before upgrading."
+    },
+    {
+      "id": "pydantic-ai",
+      "name": "Pydantic AI releases",
+      "url": "https://github.com/pydantic/pydantic-ai/releases",
+      "kind": "publisher_updates",
+      "description": "Tagged releases and change notes for the Pydantic AI agent framework.",
+      "access": "Read the release notes on GitHub. Pre-releases and fixes for an older major version appear beside current stable releases.",
+      "reuse": "MIT-licensed. Use a stable release for production and test structured outputs and tool calls before upgrading."
+    },
+    {
+      "id": "claude-code-changelog",
+      "name": "Claude Code changelog",
+      "url": "https://code.claude.com/docs/en/changelog",
+      "kind": "publisher_updates",
+      "description": "Version-by-version changes to Claude Code, generated from the changelog in its public repository.",
+      "access": "Public documentation. The page is long; read only the entries between the pinned and target versions.",
+      "reuse": "Claude Code is proprietary. Its repository states that use is subject to Anthropic's Commercial Terms of Service."
+    },
+    {
+      "id": "codex-releases",
+      "name": "OpenAI Codex CLI releases",
+      "url": "https://github.com/openai/codex/releases",
+      "kind": "publisher_updates",
+      "description": "Tagged releases of OpenAI's open-source Codex command-line coding agent.",
+      "access": "Read the release notes on GitHub. Alpha pre-releases appear beside stable releases.",
+      "reuse": "Apache-2.0 licensed. Using OpenAI models through it is governed by OpenAI's terms."
+    },
+    {
+      "id": "opencode-releases",
+      "name": "OpenCode releases",
+      "url": "https://github.com/anomalyco/opencode/releases",
+      "kind": "publisher_updates",
+      "description": "Tagged releases of the open-source OpenCode coding agent.",
+      "access": "Read the release notes on GitHub. Older links under the sst organization redirect to this repository.",
+      "reuse": "MIT-licensed. Model access is configured separately and governed by each provider's terms."
+    },
+    {
+      "id": "gemini-cli-releases",
+      "name": "Gemini CLI release notes",
+      "url": "https://geminicli.com/docs/changelogs/",
+      "kind": "publisher_updates",
+      "description": "Release notes for Google's open-source Gemini CLI across its stable, preview and nightly channels.",
+      "access": "Public documentation on the site that the project's GitHub repository lists as its homepage. The project recommends the stable channel for general use.",
+      "reuse": "Apache-2.0 licensed. Using Gemini models through it is governed by Google's terms."
+    },
+    {
+      "id": "cursor-changelog",
+      "name": "Cursor changelog",
+      "url": "https://cursor.com/changelog",
+      "kind": "publisher_updates",
+      "description": "Dated release notes for the Cursor editor and its agent features.",
+      "access": "Public page. This collection does not install, configure or sign in to the editor.",
+      "reuse": "Cursor is proprietary software. Check its terms and data settings before standardizing a team on a version."
+    },
+    {
+      "id": "aider-history",
+      "name": "Aider release history",
+      "url": "https://aider.chat/HISTORY.html",
+      "kind": "publisher_updates",
+      "description": "Release history of the open-source aider terminal coding assistant, including unreleased changes on its main branch.",
+      "access": "Public page. Check the date of the newest release before assuming active maintenance.",
+      "reuse": "Apache-2.0 licensed. Model access is configured separately and governed by each provider's terms."
+    },
+    {
+      "id": "osv-api",
+      "name": "OSV API",
+      "url": "https://google.github.io/osv.dev/api/",
+      "kind": "api_documentation",
+      "description": "Queries for known open-source vulnerabilities by package version, commit or advisory identifier, with a batch endpoint.",
+      "access": "Public API documentation. Its FAQ says the API currently has no rate limits; use batch queries for long dependency lists.",
+      "reuse": "OSV aggregates records from many source databases, each with its own licence listed on the OSV data page. Keep the advisory ID and fixed version with each finding."
+    },
+    {
+      "id": "github-advisories",
+      "name": "GitHub global security advisories API",
+      "url": "https://docs.github.com/en/rest/security-advisories/global-advisories",
+      "kind": "api_documentation",
+      "description": "Endpoints for listing and reading GitHub Advisory Database entries, filtered by ecosystem, affected package and advisory type.",
+      "access": "Use the documented API with its authentication and request limits. Malware advisories are excluded unless requested.",
+      "reuse": "GitHub publishes the advisory data under CC BY 4.0 in a public repository. Distinguish reviewed advisories from unreviewed ones in any report."
+    },
+    {
+      "id": "cisa-kev",
+      "name": "CISA Known Exploited Vulnerabilities catalog",
+      "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog",
+      "kind": "directory",
+      "description": "Vulnerabilities that CISA lists as known to be exploited, with dates added, remediation due dates, required actions and ransomware-use flags.",
+      "access": "Public catalog with CSV and JSON downloads and a JSON schema. Its due dates apply to US federal civilian agencies, not to other organizations.",
+      "reuse": "Absence from the catalog does not make a vulnerability safe to ignore. Match the exact product and version before acting on an entry."
+    },
+    {
+      "id": "godot-docs",
+      "name": "Godot Engine documentation",
+      "url": "https://docs.godotengine.org/en/stable/",
+      "kind": "provider_documentation",
+      "description": "The official manual and class reference for the Godot 2D and 3D game engine, including scripting and export guides.",
+      "access": "Public documentation. The stable and latest branches can differ; select the one that matches the engine version in use.",
+      "reuse": "The engine is MIT-licensed and the documentation is CC BY 3.0. Plugins, assets and templates keep their own licences."
+    },
+    {
+      "id": "godot-releases",
+      "name": "Godot download archive",
+      "url": "https://godotengine.org/download/archive/",
+      "kind": "publisher_updates",
+      "description": "Every official Godot release, including development, pre-release and release-candidate builds, with links to release news and changelogs.",
+      "access": "Read the news and changelog for the exact build. This collection downloads nothing.",
+      "reuse": "Treat development and pre-release builds as test material. Back up a project before opening it in a newer engine version."
+    },
+    {
+      "id": "blender-release-notes",
+      "name": "Blender release notes",
+      "url": "https://www.blender.org/download/releases/",
+      "kind": "publisher_updates",
+      "description": "Release notes for each Blender version, including long-term support releases, with links to detailed notes such as Python API changes.",
+      "access": "Public pages. The detailed notes and the Python API reference are on Blender's developer and documentation sites, which can show a browser check to automated readers.",
+      "reuse": "Blender is GPL software, and Blender states that published scripts using its Python API must use a GPL-compatible licence."
+    },
+    {
+      "id": "babylon-docs",
+      "name": "Babylon.js documentation",
+      "url": "https://doc.babylonjs.com/",
+      "kind": "provider_documentation",
+      "description": "Guides, API reference, what's new and breaking changes for the Babylon.js web rendering engine.",
+      "access": "Public documentation. Read the breaking changes page before moving a project to a new major version.",
+      "reuse": "The documentation states that its code samples are Apache 2.0 unless otherwise stated. Check the terms of models and textures separately."
+    },
+    {
+      "id": "babylon-releases",
+      "name": "Babylon.js releases",
+      "url": "https://github.com/BabylonJS/Babylon.js/releases",
+      "kind": "publisher_updates",
+      "description": "Tagged Babylon.js releases with change notes from the official repository.",
+      "access": "Read the release notes on GitHub, or use the GitHub Releases API with its request limits.",
+      "reuse": "Apache-2.0 licensed. Pin the package version and compare rendered output before upgrading a published scene."
+    },
+    {
+      "id": "blender-lab-mcp",
+      "name": "Blender Lab MCP Server",
+      "url": "https://www.blender.org/lab/mcp-server/",
+      "kind": "provider_documentation",
+      "description": "Blender Lab's MCP server and add-on, which give an MCP client a natural-language interface to a Blender session through Blender's Python API.",
+      "access": "Requires Blender 5.1 or newer, the add-on, an MCP client and the server. Blender warns that it runs model-generated code without guards and recommends a virtual machine or a system without sensitive data.",
+      "reuse": "An official origin does not make generated code safe. Keep private files and credentials out of reach of the Blender session."
+    },
+    {
+      "id": "mcp-for-blender",
+      "name": "MCP for Blender (community project)",
+      "url": "https://github.com/ahujasid/mcp-for-blender",
+      "kind": "provider_documentation",
+      "description": "A widely used community MCP server and Blender add-on, not affiliated with the Blender Foundation. Its tools run arbitrary Python in Blender and fetch assets from external services.",
+      "access": "Third-party code that Baltor has not reviewed. Its README says a minimal anonymous usage record is sent by default and documents how to turn telemetry off.",
+      "reuse": "MIT-licensed code. Fetched assets keep their providers' terms, and several services need their own API keys or a paid plan."
+    },
+    {
+      "id": "godot-mcp",
+      "name": "Godot MCP (community project)",
+      "url": "https://github.com/Coding-Solo/godot-mcp",
+      "kind": "provider_documentation",
+      "description": "A widely used community MCP server for Godot, published outside the Godot project, that launches the editor, runs projects, captures debug output and edits scenes.",
+      "access": "Third-party code that Baltor has not reviewed. Its example client setup pre-approves tools that run projects and save scenes; review that list before use.",
+      "reuse": "MIT-licensed. Check recent repository activity and test against the Godot version in use before relying on it."
+    },
+    {
+      "id": "mcp-security",
+      "name": "MCP security best practices",
+      "url": "https://modelcontextprotocol.io/docs/tutorials/security/security_best_practices",
+      "kind": "provider_documentation",
+      "description": "The protocol project's guidance on attacks and mitigations for MCP clients and servers, including local server compromise, token passthrough and server-side request forgery.",
+      "access": "Public documentation. This address follows the latest specification revision; earlier revisions have dated pages.",
+      "reuse": "Guidance is not an audit. Apply it to the exact server, transport and client configuration in use."
     }
   ],
   "collections": [
@@ -367,6 +655,33 @@
       "review_trigger": "Before choosing hardware or deploying a model, and after model, context, concurrency or runtime changes."
     },
     {
+      "id": "model-switch",
+      "title": "Track model prices and retirements",
+      "group": "Compare models",
+      "purpose": "Catch price changes, new models and retirement dates before they force a rushed model switch.",
+      "source_ids": [
+        "claude-pricing",
+        "anthropic-models",
+        "anthropic-deprecations",
+        "openai-pricing",
+        "openai-deprecations",
+        "gemini-pricing",
+        "gemini-deprecations",
+        "openrouter-models",
+        "artificial-analysis"
+      ],
+      "compare_fields": [
+        "provider, model identifier and platform",
+        "price basis and effective date",
+        "announced retirement or shutdown date",
+        "recommended replacement and its limits",
+        "quality and cost measured on our own test set"
+      ],
+      "agent_task": "Check the named providers for price changes, new models and retirement notices that affect the current configuration. Cite each provider page with the date it was read, keep listed prices separate from observed invoices, and propose a side-by-side test before any switch.",
+      "decision_question": "Should we keep, re-price or replace the current model after a price change, release or retirement notice?",
+      "review_trigger": "When a provider announces a price change, model release or retirement, and before each budget review."
+    },
+    {
       "id": "model-releases",
       "title": "Assess a model release",
       "group": "Build and operate",
@@ -469,6 +784,123 @@
       "agent_task": "Review only the named dependencies and services. Separate a release announcement from a verified installation, and produce a change list with source links, applicability and a test or rollback step.",
       "decision_question": "Which announced changes require action in this stack, and which can wait?",
       "review_trigger": "When a tracked dependency releases or deprecates a feature, and before a scheduled maintenance window."
+    },
+    {
+      "id": "agent-framework-releases",
+      "title": "Upgrade an agent framework",
+      "group": "Build and operate",
+      "purpose": "Find breaking changes in agent frameworks, SDKs and the MCP specification before upgrading a working system.",
+      "source_ids": [
+        "mcp-spec-changelog",
+        "mcp-python-sdk",
+        "mcp-typescript-sdk",
+        "openai-agents-sdk",
+        "claude-agent-sdk",
+        "langgraph",
+        "pydantic-ai",
+        "github-releases"
+      ],
+      "compare_fields": [
+        "package, repository and pinned version",
+        "target release and publication date",
+        "breaking changes and deprecations",
+        "protocol revision supported",
+        "integration test result and rollback version"
+      ],
+      "agent_task": "Compare the pinned version with the target release for each named package. Link the relevant release notes, separate stable releases from pre-releases, and list the integration tests to run before upgrading. Do not install or upgrade anything.",
+      "decision_question": "Is this framework or SDK upgrade worth an integration test now, or can it wait?",
+      "review_trigger": "When a pinned framework, SDK or MCP revision publishes a release, and before you update dependencies."
+    },
+    {
+      "id": "coding-agent-releases",
+      "title": "Standardize a coding agent version",
+      "group": "Build and operate",
+      "purpose": "Choose which coding agent and version a team should run, and see what changed since the pinned one.",
+      "source_ids": [
+        "claude-code-changelog",
+        "codex-releases",
+        "opencode-releases",
+        "gemini-cli-releases",
+        "cursor-changelog",
+        "aider-history"
+      ],
+      "compare_fields": [
+        "harness and pinned version",
+        "release channel and date",
+        "changed defaults, permissions and tools",
+        "supported models and providers",
+        "licence and data terms"
+      ],
+      "agent_task": "Summarize changes between the team's pinned version and the newest stable release of each named harness. Flag changes to defaults, permission prompts, sandboxing and supported models, then propose a short trial on a real repository task before standardizing.",
+      "decision_question": "Which harness and version should the team standardize on, and what changed since the pinned one?",
+      "review_trigger": "When a harness the team uses publishes a stable release, and before changing the team's standard setup."
+    },
+    {
+      "id": "security-advisories",
+      "title": "Check dependencies for advisories",
+      "group": "Build and operate",
+      "purpose": "Find published vulnerabilities that affect the packages, tools and MCP servers an agent setup depends on.",
+      "source_ids": [
+        "osv-api",
+        "github-advisories",
+        "cisa-kev"
+      ],
+      "compare_fields": [
+        "package, ecosystem and installed version",
+        "advisory identifier and aliases",
+        "affected and fixed version ranges",
+        "evidence of known exploitation",
+        "fix, mitigation and verification step"
+      ],
+      "agent_task": "Check the supplied dependency list against the advisory sources. Report exact matches with advisory links and fixed versions, mark uncertain matches, and propose the smallest safe update with a test. Do not change dependencies.",
+      "decision_question": "Does a published advisory affect a dependency we run, and how soon must we act?",
+      "review_trigger": "Before a release, after adding a dependency or MCP server, and when an advisory source publishes a matching entry."
+    },
+    {
+      "id": "creative-engines",
+      "title": "Choose a 3D or game engine",
+      "group": "Creative and 3D",
+      "purpose": "Compare engines and 3D tools a creative agent can build on, using their own documentation and release notes.",
+      "source_ids": [
+        "godot-docs",
+        "godot-releases",
+        "blender-release-notes",
+        "babylon-docs",
+        "babylon-releases"
+      ],
+      "compare_fields": [
+        "project type and target platforms",
+        "engine version and release channel",
+        "scripting and automation interface",
+        "import, export and asset pipeline",
+        "licence for engine, scripts and assets"
+      ],
+      "agent_task": "Compare the named engines for the supplied project. Cite official documentation for scripting, export and platform support, note version-specific limits, and propose a small prototype that tests the riskiest requirement. Do not install or download anything.",
+      "decision_question": "Which engine or tool should a creative agent build this project on?",
+      "review_trigger": "At project start, before a major engine upgrade, and when a required platform or export format changes."
+    },
+    {
+      "id": "creative-mcp-servers",
+      "title": "Connect creative tools through MCP",
+      "group": "Creative and 3D",
+      "purpose": "Decide which MCP connection to a 3D tool is acceptable to enable, and under what isolation.",
+      "source_ids": [
+        "blender-lab-mcp",
+        "mcp-for-blender",
+        "godot-mcp",
+        "mcp-security",
+        "mcp-registry"
+      ],
+      "compare_fields": [
+        "publisher and official or community status",
+        "code execution and file access",
+        "external services and telemetry",
+        "maintenance activity and supported versions",
+        "isolation required before first use"
+      ],
+      "agent_task": "Compare the named servers for the creative task. Show which tools can run code, write files or reach external services, and recommend an isolated setup such as a virtual machine. Do not install, connect or pre-approve tools.",
+      "decision_question": "Which MCP connection to this creative tool is acceptable to enable, and with what isolation?",
+      "review_trigger": "Before enabling a server, after a server or protocol update, and before the project handles private files."
     },
     {
       "id": "product-discovery",

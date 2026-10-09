@@ -26,9 +26,9 @@ class FeedSourceCollectionsTests(unittest.TestCase):
 
     def test_complete_directory_is_immutable_has_exact_references_and_useful_jobs(self):
         directory = sources.directory()
-        self.assertEqual(len(directory.collections), 13)
-        self.assertEqual(len(directory.sources), 28)
-        self.assertEqual(directory.source_docs_checked_on, "2026-10-08")
+        self.assertEqual(len(directory.collections), 19)
+        self.assertEqual(len(directory.sources), 60)
+        self.assertEqual(directory.source_docs_checked_on, "2026-10-09")
         self.assertEqual(directory.digest, hashlib.sha256(Path(sources.__file__).with_suffix(".json").read_bytes()).hexdigest())
         self.assertTrue(all(len(collection.compare_fields) >= 4 and collection.agent_task
                             and collection.decision_question and collection.review_trigger for collection in directory.collections))

@@ -1,5 +1,197 @@
 schema: hardcoding_allowlist/v1
 entries:
+- finding_id: hardcoding.12bfb212a1fd99c79a00c83b
+  owner: "loop_engine.core.service_runtime.feed_source_collections.json:sources[28].url"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed October 9, 2026: this exact primary-source URL is a reference in the versioned, digest-bound public source directory, not a selected execution provider or a network dispatch destination. The directory loader and HTML/JSON Feed/Markdown renderers make no upstream request. The source record documents its purpose, access and reuse limits; the URL was opened and its description checked on October 9, 2026, and malformed-link and exact-selection tests cover the boundary. Future URL changes remain new findings."
+  created_on: '2026-10-09'
+  expires_on: '2027-01-09'
+- finding_id: hardcoding.7a58a78c3cdbcde315c089f3
+  owner: "loop_engine.core.service_runtime.feed_source_collections.json:sources[29].url"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed October 9, 2026: this exact primary-source URL is a reference in the versioned, digest-bound public source directory, not a selected execution provider or a network dispatch destination. The directory loader and HTML/JSON Feed/Markdown renderers make no upstream request. The source record documents its purpose, access and reuse limits; the URL was opened and its description checked on October 9, 2026, and malformed-link and exact-selection tests cover the boundary. Future URL changes remain new findings."
+  created_on: '2026-10-09'
+  expires_on: '2027-01-09'
+- finding_id: hardcoding.9598e1c94e4e3c305daa3a3f
+  owner: "loop_engine.core.service_runtime.feed_source_collections.json:sources[30].url"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed October 9, 2026: this exact primary-source URL is a reference in the versioned, digest-bound public source directory, not a selected execution provider or a network dispatch destination. The directory loader and HTML/JSON Feed/Markdown renderers make no upstream request. The source record documents its purpose, access and reuse limits; the URL was opened and its description checked on October 9, 2026, and malformed-link and exact-selection tests cover the boundary. Future URL changes remain new findings."
+  created_on: '2026-10-09'
+  expires_on: '2027-01-09'
+- finding_id: hardcoding.ad8f3d943dbfcdad3909e6f2
+  owner: "loop_engine.core.service_runtime.feed_source_collections.json:sources[31].url"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed October 9, 2026: this exact primary-source URL is a reference in the versioned, digest-bound public source directory, not a selected execution provider or a network dispatch destination. The directory loader and HTML/JSON Feed/Markdown renderers make no upstream request. The source record documents its purpose, access and reuse limits; the URL was opened and its description checked on October 9, 2026, and malformed-link and exact-selection tests cover the boundary. Future URL changes remain new findings."
+  created_on: '2026-10-09'
+  expires_on: '2027-01-09'
+- finding_id: hardcoding.4097ffe2b04f6b7f1ab35d63
+  owner: "loop_engine.core.service_runtime.feed_source_collections.json:sources[32].url"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed October 9, 2026: this exact primary-source URL is a reference in the versioned, digest-bound public source directory, not a selected execution provider or a network dispatch destination. The directory loader and HTML/JSON Feed/Markdown renderers make no upstream request. The source record documents its purpose, access and reuse limits; the URL was opened and its description checked on October 9, 2026, and malformed-link and exact-selection tests cover the boundary. Future URL changes remain new findings."
+  created_on: '2026-10-09'
+  expires_on: '2027-01-09'
+- finding_id: hardcoding.37dacd1b61fd24b247ce5409
+  owner: "loop_engine.core.service_runtime.feed_source_collections.json:sources[33].url"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed October 9, 2026: this exact primary-source URL is a reference in the versioned, digest-bound public source directory, not a selected execution provider or a network dispatch destination. The directory loader and HTML/JSON Feed/Markdown renderers make no upstream request. The source record documents its purpose, access and reuse limits; the URL was opened and its description checked on October 9, 2026, and malformed-link and exact-selection tests cover the boundary. Future URL changes remain new findings."
+  created_on: '2026-10-09'
+  expires_on: '2027-01-09'
+- finding_id: hardcoding.62c77697c284a04a0b0caa23
+  owner: "loop_engine.core.service_runtime.feed_source_collections.json:sources[34].url"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed October 9, 2026: this exact primary-source URL is a reference in the versioned, digest-bound public source directory, not a selected execution provider or a network dispatch destination. The directory loader and HTML/JSON Feed/Markdown renderers make no upstream request. The source record documents its purpose, access and reuse limits; the URL was opened and its description checked on October 9, 2026, and malformed-link and exact-selection tests cover the boundary. Future URL changes remain new findings."
+  created_on: '2026-10-09'
+  expires_on: '2027-01-09'
+- finding_id: hardcoding.ec83815a6a03026cecd39be0
+  owner: "loop_engine.core.service_runtime.feed_source_collections.json:sources[35].url"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed October 9, 2026: this exact primary-source URL is a reference in the versioned, digest-bound public source directory, not a selected execution provider or a network dispatch destination. The directory loader and HTML/JSON Feed/Markdown renderers make no upstream request. The source record documents its purpose, access and reuse limits; the URL was opened and its description checked on October 9, 2026, and malformed-link and exact-selection tests cover the boundary. Future URL changes remain new findings."
+  created_on: '2026-10-09'
+  expires_on: '2027-01-09'
+- finding_id: hardcoding.8ecd31f59f01b10d8f15a937
+  owner: "loop_engine.core.service_runtime.feed_source_collections.json:sources[36].url"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed October 9, 2026: this exact primary-source URL is a reference in the versioned, digest-bound public source directory, not a selected execution provider or a network dispatch destination. The directory loader and HTML/JSON Feed/Markdown renderers make no upstream request. The source record documents its purpose, access and reuse limits; the URL was opened and its description checked on October 9, 2026, and malformed-link and exact-selection tests cover the boundary. Future URL changes remain new findings."
+  created_on: '2026-10-09'
+  expires_on: '2027-01-09'
+- finding_id: hardcoding.dafa64ac86ec7f4af5cc3d87
+  owner: "loop_engine.core.service_runtime.feed_source_collections.json:sources[37].url"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed October 9, 2026: this exact primary-source URL is a reference in the versioned, digest-bound public source directory, not a selected execution provider or a network dispatch destination. The directory loader and HTML/JSON Feed/Markdown renderers make no upstream request. The source record documents its purpose, access and reuse limits; the URL was opened and its description checked on October 9, 2026, and malformed-link and exact-selection tests cover the boundary. Future URL changes remain new findings."
+  created_on: '2026-10-09'
+  expires_on: '2027-01-09'
+- finding_id: hardcoding.d1a77fbfc571be3a8050d821
+  owner: "loop_engine.core.service_runtime.feed_source_collections.json:sources[38].url"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed October 9, 2026: this exact primary-source URL is a reference in the versioned, digest-bound public source directory, not a selected execution provider or a network dispatch destination. The directory loader and HTML/JSON Feed/Markdown renderers make no upstream request. The source record documents its purpose, access and reuse limits; the URL was opened and its description checked on October 9, 2026, and malformed-link and exact-selection tests cover the boundary. Future URL changes remain new findings."
+  created_on: '2026-10-09'
+  expires_on: '2027-01-09'
+- finding_id: hardcoding.a081ead371bc5d93ddf9da19
+  owner: "loop_engine.core.service_runtime.feed_source_collections.json:sources[39].url"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed October 9, 2026: this exact primary-source URL is a reference in the versioned, digest-bound public source directory, not a selected execution provider or a network dispatch destination. The directory loader and HTML/JSON Feed/Markdown renderers make no upstream request. The source record documents its purpose, access and reuse limits; the URL was opened and its description checked on October 9, 2026, and malformed-link and exact-selection tests cover the boundary. Future URL changes remain new findings."
+  created_on: '2026-10-09'
+  expires_on: '2027-01-09'
+- finding_id: hardcoding.7f867f6e3f437dd72e148550
+  owner: "loop_engine.core.service_runtime.feed_source_collections.json:sources[40].url"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed October 9, 2026: this exact primary-source URL is a reference in the versioned, digest-bound public source directory, not a selected execution provider or a network dispatch destination. The directory loader and HTML/JSON Feed/Markdown renderers make no upstream request. The source record documents its purpose, access and reuse limits; the URL was opened and its description checked on October 9, 2026, and malformed-link and exact-selection tests cover the boundary. Future URL changes remain new findings."
+  created_on: '2026-10-09'
+  expires_on: '2027-01-09'
+- finding_id: hardcoding.f1ffb3c749b6826e738b2514
+  owner: "loop_engine.core.service_runtime.feed_source_collections.json:sources[41].url"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed October 9, 2026: this exact primary-source URL is a reference in the versioned, digest-bound public source directory, not a selected execution provider or a network dispatch destination. The directory loader and HTML/JSON Feed/Markdown renderers make no upstream request. The source record documents its purpose, access and reuse limits; the URL was opened and its description checked on October 9, 2026, and malformed-link and exact-selection tests cover the boundary. Future URL changes remain new findings."
+  created_on: '2026-10-09'
+  expires_on: '2027-01-09'
+- finding_id: hardcoding.8c89f88f66ae6eb73c3059e0
+  owner: "loop_engine.core.service_runtime.feed_source_collections.json:sources[42].url"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed October 9, 2026: this exact primary-source URL is a reference in the versioned, digest-bound public source directory, not a selected execution provider or a network dispatch destination. The directory loader and HTML/JSON Feed/Markdown renderers make no upstream request. The source record documents its purpose, access and reuse limits; the URL was opened and its description checked on October 9, 2026, and malformed-link and exact-selection tests cover the boundary. Future URL changes remain new findings."
+  created_on: '2026-10-09'
+  expires_on: '2027-01-09'
+- finding_id: hardcoding.bb9bb2691fe2dac5de4295bc
+  owner: "loop_engine.core.service_runtime.feed_source_collections.json:sources[43].url"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed October 9, 2026: this exact primary-source URL is a reference in the versioned, digest-bound public source directory, not a selected execution provider or a network dispatch destination. The directory loader and HTML/JSON Feed/Markdown renderers make no upstream request. The source record documents its purpose, access and reuse limits; the URL was opened and its description checked on October 9, 2026, and malformed-link and exact-selection tests cover the boundary. Future URL changes remain new findings."
+  created_on: '2026-10-09'
+  expires_on: '2027-01-09'
+- finding_id: hardcoding.cc97f9e493ee780fa46f77dc
+  owner: "loop_engine.core.service_runtime.feed_source_collections.json:sources[44].url"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed October 9, 2026: this exact primary-source URL is a reference in the versioned, digest-bound public source directory, not a selected execution provider or a network dispatch destination. The directory loader and HTML/JSON Feed/Markdown renderers make no upstream request. The source record documents its purpose, access and reuse limits; the URL was opened and its description checked on October 9, 2026, and malformed-link and exact-selection tests cover the boundary. Future URL changes remain new findings."
+  created_on: '2026-10-09'
+  expires_on: '2027-01-09'
+- finding_id: hardcoding.0e44dc879b258473aac06ec1
+  owner: "loop_engine.core.service_runtime.feed_source_collections.json:sources[45].url"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed October 9, 2026: this exact primary-source URL is a reference in the versioned, digest-bound public source directory, not a selected execution provider or a network dispatch destination. The directory loader and HTML/JSON Feed/Markdown renderers make no upstream request. The source record documents its purpose, access and reuse limits; the URL was opened and its description checked on October 9, 2026, and malformed-link and exact-selection tests cover the boundary. Future URL changes remain new findings."
+  created_on: '2026-10-09'
+  expires_on: '2027-01-09'
+- finding_id: hardcoding.0728abc7f44b586d2fa27992
+  owner: "loop_engine.core.service_runtime.feed_source_collections.json:sources[46].url"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed October 9, 2026: this exact primary-source URL is a reference in the versioned, digest-bound public source directory, not a selected execution provider or a network dispatch destination. The directory loader and HTML/JSON Feed/Markdown renderers make no upstream request. The source record documents its purpose, access and reuse limits; the URL was opened and its description checked on October 9, 2026, and malformed-link and exact-selection tests cover the boundary. Future URL changes remain new findings."
+  created_on: '2026-10-09'
+  expires_on: '2027-01-09'
+- finding_id: hardcoding.1b70211480605971751a3953
+  owner: "loop_engine.core.service_runtime.feed_source_collections.json:sources[47].url"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed October 9, 2026: this exact primary-source URL is a reference in the versioned, digest-bound public source directory, not a selected execution provider or a network dispatch destination. The directory loader and HTML/JSON Feed/Markdown renderers make no upstream request. The source record documents its purpose, access and reuse limits; the URL was opened and its description checked on October 9, 2026, and malformed-link and exact-selection tests cover the boundary. Future URL changes remain new findings."
+  created_on: '2026-10-09'
+  expires_on: '2027-01-09'
+- finding_id: hardcoding.aa06f5a4e6fa5c8c54abd8c5
+  owner: "loop_engine.core.service_runtime.feed_source_collections.json:sources[48].url"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed October 9, 2026: this exact primary-source URL is a reference in the versioned, digest-bound public source directory, not a selected execution provider or a network dispatch destination. The directory loader and HTML/JSON Feed/Markdown renderers make no upstream request. The source record documents its purpose, access and reuse limits; the URL was opened and its description checked on October 9, 2026, and malformed-link and exact-selection tests cover the boundary. Future URL changes remain new findings."
+  created_on: '2026-10-09'
+  expires_on: '2027-01-09'
+- finding_id: hardcoding.bafeb3a6c29375e72f676166
+  owner: "loop_engine.core.service_runtime.feed_source_collections.json:sources[49].url"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed October 9, 2026: this exact primary-source URL is a reference in the versioned, digest-bound public source directory, not a selected execution provider or a network dispatch destination. The directory loader and HTML/JSON Feed/Markdown renderers make no upstream request. The source record documents its purpose, access and reuse limits; the URL was opened and its description checked on October 9, 2026, and malformed-link and exact-selection tests cover the boundary. Future URL changes remain new findings."
+  created_on: '2026-10-09'
+  expires_on: '2027-01-09'
+- finding_id: hardcoding.41ea976f991db0f40d453c0d
+  owner: "loop_engine.core.service_runtime.feed_source_collections.json:sources[50].url"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed October 9, 2026: this exact primary-source URL is a reference in the versioned, digest-bound public source directory, not a selected execution provider or a network dispatch destination. The directory loader and HTML/JSON Feed/Markdown renderers make no upstream request. The source record documents its purpose, access and reuse limits; the URL was opened and its description checked on October 9, 2026, and malformed-link and exact-selection tests cover the boundary. Future URL changes remain new findings."
+  created_on: '2026-10-09'
+  expires_on: '2027-01-09'
+- finding_id: hardcoding.ffb7dba44ed706cee518fb1e
+  owner: "loop_engine.core.service_runtime.feed_source_collections.json:sources[51].url"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed October 9, 2026: this exact primary-source URL is a reference in the versioned, digest-bound public source directory, not a selected execution provider or a network dispatch destination. The directory loader and HTML/JSON Feed/Markdown renderers make no upstream request. The source record documents its purpose, access and reuse limits; the URL was opened and its description checked on October 9, 2026, and malformed-link and exact-selection tests cover the boundary. Future URL changes remain new findings."
+  created_on: '2026-10-09'
+  expires_on: '2027-01-09'
+- finding_id: hardcoding.29e0c242c3616e30cbbb17f9
+  owner: "loop_engine.core.service_runtime.feed_source_collections.json:sources[52].url"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed October 9, 2026: this exact primary-source URL is a reference in the versioned, digest-bound public source directory, not a selected execution provider or a network dispatch destination. The directory loader and HTML/JSON Feed/Markdown renderers make no upstream request. The source record documents its purpose, access and reuse limits; the URL was opened and its description checked on October 9, 2026, and malformed-link and exact-selection tests cover the boundary. Future URL changes remain new findings."
+  created_on: '2026-10-09'
+  expires_on: '2027-01-09'
+- finding_id: hardcoding.4193d3bab39bbef2d0bd43e1
+  owner: "loop_engine.core.service_runtime.feed_source_collections.json:sources[53].url"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed October 9, 2026: this exact primary-source URL is a reference in the versioned, digest-bound public source directory, not a selected execution provider or a network dispatch destination. The directory loader and HTML/JSON Feed/Markdown renderers make no upstream request. The source record documents its purpose, access and reuse limits; the URL was opened and its description checked on October 9, 2026, and malformed-link and exact-selection tests cover the boundary. Future URL changes remain new findings."
+  created_on: '2026-10-09'
+  expires_on: '2027-01-09'
+- finding_id: hardcoding.ae9c1f34a3bc5201f2df65c8
+  owner: "loop_engine.core.service_runtime.feed_source_collections.json:sources[54].url"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed October 9, 2026: this exact primary-source URL is a reference in the versioned, digest-bound public source directory, not a selected execution provider or a network dispatch destination. The directory loader and HTML/JSON Feed/Markdown renderers make no upstream request. The source record documents its purpose, access and reuse limits; the URL was opened and its description checked on October 9, 2026, and malformed-link and exact-selection tests cover the boundary. Future URL changes remain new findings."
+  created_on: '2026-10-09'
+  expires_on: '2027-01-09'
+- finding_id: hardcoding.40ec6b88e09d72af245de2bf
+  owner: "loop_engine.core.service_runtime.feed_source_collections.json:sources[55].url"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed October 9, 2026: this exact primary-source URL is a reference in the versioned, digest-bound public source directory, not a selected execution provider or a network dispatch destination. The directory loader and HTML/JSON Feed/Markdown renderers make no upstream request. The source record documents its purpose, access and reuse limits; the URL was opened and its description checked on October 9, 2026, and malformed-link and exact-selection tests cover the boundary. Future URL changes remain new findings."
+  created_on: '2026-10-09'
+  expires_on: '2027-01-09'
+- finding_id: hardcoding.557be43232ca44720237dca8
+  owner: "loop_engine.core.service_runtime.feed_source_collections.json:sources[56].url"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed October 9, 2026: this exact primary-source URL is a reference in the versioned, digest-bound public source directory, not a selected execution provider or a network dispatch destination. The directory loader and HTML/JSON Feed/Markdown renderers make no upstream request. The source record documents its purpose, access and reuse limits; the URL was opened and its description checked on October 9, 2026, and malformed-link and exact-selection tests cover the boundary. Future URL changes remain new findings."
+  created_on: '2026-10-09'
+  expires_on: '2027-01-09'
+- finding_id: hardcoding.3e1aaa83c5831605b076e466
+  owner: "loop_engine.core.service_runtime.feed_source_collections.json:sources[57].url"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed October 9, 2026: this exact primary-source URL is a reference in the versioned, digest-bound public source directory, not a selected execution provider or a network dispatch destination. The directory loader and HTML/JSON Feed/Markdown renderers make no upstream request. The source record documents its purpose, access and reuse limits; the URL was opened and its description checked on October 9, 2026, and malformed-link and exact-selection tests cover the boundary. Future URL changes remain new findings."
+  created_on: '2026-10-09'
+  expires_on: '2027-01-09'
+- finding_id: hardcoding.d16e307e08bdfcfd29f00ed6
+  owner: "loop_engine.core.service_runtime.feed_source_collections.json:sources[58].url"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed October 9, 2026: this exact primary-source URL is a reference in the versioned, digest-bound public source directory, not a selected execution provider or a network dispatch destination. The directory loader and HTML/JSON Feed/Markdown renderers make no upstream request. The source record documents its purpose, access and reuse limits; the URL was opened and its description checked on October 9, 2026, and malformed-link and exact-selection tests cover the boundary. Future URL changes remain new findings."
+  created_on: '2026-10-09'
+  expires_on: '2027-01-09'
+- finding_id: hardcoding.961a6cb8aba986ed3abedf23
+  owner: "loop_engine.core.service_runtime.feed_source_collections.json:sources[59].url"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed October 9, 2026: this exact primary-source URL is a reference in the versioned, digest-bound public source directory, not a selected execution provider or a network dispatch destination. The directory loader and HTML/JSON Feed/Markdown renderers make no upstream request. The source record documents its purpose, access and reuse limits; the URL was opened and its description checked on October 9, 2026, and malformed-link and exact-selection tests cover the boundary. Future URL changes remain new findings."
+  created_on: '2026-10-09'
+  expires_on: '2027-01-09'
 - finding_id: hardcoding.de60817b5f889de3432d79ec
   owner: "tools.creative_originals.asset_contracts.items.articulation_manifest_godot_builder.item.json:contract.entry_points[9].dialect"
   classification: STRATEGY_OR_PROVIDER_BINDING
