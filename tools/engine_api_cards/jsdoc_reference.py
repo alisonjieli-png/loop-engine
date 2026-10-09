@@ -302,8 +302,8 @@ _EXPORT_LIST = re.compile(r"^export\s*\{([^}]*)\}\s*from\s*['\"]([^'\"]+)['\"]",
 _EXPORT_ALL = re.compile(r"^export\s*\*\s*from\s*['\"]([^'\"]+)['\"]", re.M)
 _EXPORT_LOCAL = re.compile(r"^export\s*\{([^}]*)\}\s*;?\s*$", re.M)
 _IMPORT_LIST = re.compile(r"^import\s*\{([^}]*)\}\s*from\s*['\"]([^'\"]+)['\"]", re.M)
-_EXPORT_DECLARATION = re.compile(r"^export\s+(?:default\s+)?(?:async\s+)?(?:class|function\*?|const|let|var)\s+"
-                                 r"([A-Za-z_$][\w$]*)", re.M)
+_EXPORT_DECLARATION = re.compile(r"^export\s+(?:declare\s+)?(?:default\s+)?(?:abstract\s+)?(?:async\s+)?"
+                                 r"(?:class|function\*?|const|let|var|enum)\s+([A-Za-z_$][\w$]*)", re.M)
 
 
 def module_exports(entry: str, read) -> dict:

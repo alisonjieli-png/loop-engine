@@ -506,8 +506,25 @@ def _threejs_cards(args, run_folder: Path, workspace: Path, only: tuple) -> tupl
     return reader, lambda: line.read_threejs(reader, workspace, only=only), verifier
 
 
+def _babylonjs_cards(args, run_folder: Path, workspace: Path, only: tuple) -> tuple:
+    """(reader, read, verifier) of the Babylon.js adapter: the npm package's declarations, checked by Node."""
+    import hashlib
+    from engine_api_cards import node_native
+    from supply_lines import engine_api_cards as line
+    reader = FactReader(run_folder, line.BABYLONJS_HOSTS, maximum_requests=args.maximum_requests,
+                        pause_seconds=args.pause_seconds, maximum_bytes=64 * 1024 * 1024)
+
+    def verifier(sources):
+        module = workspace / line.PACKAGE_FOLDER / line.BABYLONJS_MODULE
+        node = node_native.locate(line.BABYLONJS_MODULE, hashlib.sha256(module.read_bytes()).hexdigest())
+        return lambda prepared: line.node_evidence(node, module, prepared, workspace, run_folder / "evidence")
+
+    observe = line.node_observer(line.BABYLONJS_MODULE, workspace)
+    return reader, lambda: line.read_babylon(reader, workspace, only=only, observe=observe), verifier
+
+
 #: The engine adapters of the engine-api-cards command.
-CARD_ADAPTERS = {"godot": _godot_cards, "threejs": _threejs_cards}
+CARD_ADAPTERS = {"godot": _godot_cards, "threejs": _threejs_cards, "babylonjs": _babylonjs_cards}
 
 
 def engine_api_cards(args) -> dict:
@@ -772,9 +789,10 @@ def parser() -> argparse.ArgumentParser:
     originals.add_argument("--item", action="append", help="only these item identities")
     cards_command = commands.add_parser("engine-api-cards")
     common(cards_command)
-    cards_command.add_argument("--engine", choices=("godot", "threejs"), default="godot",
+    cards_command.add_argument("--engine", choices=("godot", "threejs", "babylonjs"), default="godot",
                                help="the engine adapter (godot: the pinned 4.7.2-stable build and tag; threejs: the "
-                                    "r186 tag and the three@0.186.1 package built from it)")
+                                    "r186 tag and the three@0.186.1 package built from it; babylonjs: the 9.30.0 tag "
+                                    "and the @babylonjs/core package built from it)")
     cards_command.add_argument("--godot", help="the Godot build (default: the pinned build tools/creative_originals/"
                                                "engines.py finds); it must be the release's own")
     cards_command.add_argument("--class", dest="engine_class", action="append",

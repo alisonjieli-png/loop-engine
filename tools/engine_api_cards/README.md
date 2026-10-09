@@ -61,12 +61,14 @@ engine_api_surface/v1 (api.json) and engine_api_card/v1 (component.json): the fi
 │   godot_verify.gd, and the fact reading in ../supply_lines/engine_api_cards.py), syntax "godot"
 ├── threejs adapter: three.js r186, the npm package three@0.186.1 (jsdoc_reference.py, node_native.py,
 │   javascript_verify.mjs, and the fact reading in the same line module), syntax "javascript"
+├── babylonjs adapter: Babylon.js 9.30.0, the npm package @babylonjs/core@9.30.0 (typescript_declarations.py,
+│   the same Node check, and the fact reading in the same line module), syntax "javascript"
 └── a further adapter writes the same two records, with its own reader, text interface, syntax (when its
     declarations read differently) and native check; the card writer, checker and packaging stay as they are
 ```
 
 An adapter gives the card writer its text through one interface (`markdown`, `title`, `address`: the
-BBCode converter's `Context` for Godot, `JsDocText` for three.js), and says in its `EngineRelease` where the
+BBCode converter's `Context` for Godot, `JsDocText` for three.js and Babylon.js), and says in its `EngineRelease` where the
 surface was read, the format and licence of the text, and which classes exist only in an editor.
 
 A card is the same files whatever the engine: `README.md` (and `members-2.md`,
@@ -204,14 +206,65 @@ types) is one declaration on one line, and a description that opens a code fence
 (PositionalAudio) has it closed at its end: the dry run of October 9, 2026 found both, because the package's
 own test refused the two cards whose headings they broke.
 
+## The Babylon.js adapter
+
+```text
+Babylon.js 9.30.0
+├── facts: the npm registry's record of @babylonjs/core@9.30.0 (its tarball, SHA-512 integrity and gitHead);
+│   the tag's commit, which must be that gitHead; the tarball, streamed once, its integrity checked, unpacked
+│   with nothing outside its folder
+├── surface: the classes the package's root index exports (index.js, followed through the declaration files
+│   to the file and name each class is declared with), read from their declarations
+│   (typescript_declarations.py): constructors, methods (one item per overload), properties and accessors,
+│   with static, readonly and abstract as declared; private, protected, @internal, @hidden and @ignore
+│   members, underscored names and index signatures are not the public surface
+├── observation: before any card is written, Node imports index.js once and reports which listed properties
+│   the module does not hold; the cards mark those `declare`
+├── text: the declarations' TSDoc, as the published package ships them. Apache-2.0 by license.md (the
+│   package's copy is the tag's, byte for byte), the package's license field and GitHub's licence interface;
+│   the package's NOTICE.md, equal to the repository's at the tag, ships in every card as UPSTREAM-NOTICE
+└── native check: Node imports index.js once for every card: the class is exported, its parent is the
+    expected export, every method is callable, every property is held, and every property marked declare is
+    still not held
+```
+
+A card's files are Baltor's MIT and its text is Babylon.js's, so a package's
+licence expression is `MIT AND Apache-2.0`: `LICENSE` for the generated files,
+`UPSTREAM-LICENSE` and `UPSTREAM-NOTICE` (section 4(d)) for the text. The
+Source line names the notice's own holder line, "Copyright 2023 The Babylon.js
+team"; its other lines name bundled components' holders and travel in
+`UPSTREAM-NOTICE`.
+
+`declare` is an observation, never read from a declaration: Node found the
+property neither on the class, its prototypes or a new instance, nor named in
+the source of the class or a class it extends (`this.name`, or `Class.name`
+for a static). It exists once a caller assigns it. A first version traced
+`this.name` in the compiled class instead; asked of the running module, 426 of
+its 620 `declare` marks were wrong, because Babylon.js 9 compiles standard
+decorators to accessor storage, assigns statics through a class alias
+(`_a.OCCLUSION_TYPE_NONE`) and lets a parent's constructor assign what a
+subclass redeclares. A member marked `abstract` has no body for any module to
+hold and is not asked. The dry run of October 9, 2026 marked 171 of 8,576
+properties and confirmed 1,370 of 1,374 classes. The four it refuses
+(`NodeMaterialDefines`, `OpenPBRMaterialDefines`, `PBRMaterialDefines`,
+`StandardMaterialDefines`) extend a mixin's result: their declarations name a
+`*_base` constant as the parent, which the module never exports, so
+`parent_matches` fails.
+
+Babylon.js numbers Apache-2.0's clause 4 items "1." to "4." where the canonical
+text letters them "(a)" to "(d)". The licence normalizer read the canonical
+"(c) You must retain" as a copyright notice, so the Apache-2.0 template lacked
+"retain" and this copy was refused for adding it; the shared fix is commit
+`3361e35c` (licences.py and the template's words).
+
 ## Commands
 
 ```bash
-PYTHONPATH=src:tools python tools/build_library_supply.py engine-api-cards [--engine godot|threejs] \
+PYTHONPATH=src:tools python tools/build_library_supply.py engine-api-cards [--engine godot|threejs|babylonjs] \
   --run-folder RUN --authorize-network-reads [--authorize-store-writes --store-root STORE] \
   [--materialize] [--class Node --class Vector3] [--godot PATH] [--workers 8]
 PYTHONPATH=src:tools python -m unittest tools.test_engine_api_cards tools.test_engine_api_cards_line \
-  tools.test_engine_api_cards_threejs
+  tools.test_engine_api_cards_threejs tools.test_engine_api_cards_babylonjs
 ```
 
 The run folder keeps every fetched fact (cached by address), the dump, the
@@ -228,6 +281,7 @@ refusals.
 | godot-docs `classes/*.rst` | Rejected: generated from the same XML, so it adds nothing but the documentation site's formatting, and the repository's own licence statement is the one to rely on. |
 | `tools/creative_originals/engines.py` | Adopted to locate and run the pinned build. Repaired here: it probed the user service manager with the caller's environment and launched without the session bus, so every engine run of a session with a user bus failed; the launcher now gets the bus and the engine, started by `env -i`, gets only the isolated environment. |
 | `supply_lines` reading, packaging, records and licences | Adopted: FactReader, pinned files by blob identity, the shared packaging and the licence decision, with the same-blob rule above. |
+| Microsoft API Extractor (`.api.json` doc model) and TypeDoc | Rejected for Babylon.js: both run from packages installed out of the registry at build time and model far more than a card needs. The package's own `.d.ts` files are the compiler's output in a regular shape (one member per line at a fixed indent, TSDoc above it), so a small reader suffices, and the Node import checks what it reads. |
 
 ## Limits
 
@@ -246,4 +300,9 @@ refusals.
   addons, the WebGPU and TSL entries, and the module's functions and constants
   are not. A member without a JSDoc block is not listed, and the JSDoc types
   are not checked by the running module.
+- Babylon.js: only the classes of `@babylonjs/core`'s root index are carded;
+  its functions, constants, enumerations and interfaces, the other
+  `@babylonjs/*` packages, and the members other modules add to a class by
+  module augmentation are not. The types are the declarations' claims, which
+  the running module cannot confirm.
 - Nothing here was loaded by a harness.

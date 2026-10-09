@@ -275,7 +275,7 @@ STATE_SCOPES = ("", "apis_guru_directory", "google_discovery", "api_components",
                 "polyhaven", "ambientcg", "godot_demo_projects",
                 # The engine API card line keeps one state per engine and API version, so a complete run of one
                 # release never withdraws the cards of another.
-                "godot_4_7", "threejs_r186")
+                "godot_4_7", "threejs_r186", "babylonjs_9_30")
 
 
 def state_record_id(line: str, scope: str = "") -> str:

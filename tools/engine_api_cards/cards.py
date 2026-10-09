@@ -87,6 +87,10 @@ class EngineRelease:
     #: The api types whose classes exist only in the engine's editor, and what a card of such a class says.
     editor_api_types: tuple = ()
     editor_note: str = ""
+    #: Where the text file was read, when it is not the repository at the tag (a package built from it).
+    text_origin: str = ""
+    #: The notice file every card carries beside the licence (Apache-2.0 section 4(d)), when there is one.
+    notice_file: str = ""
 
     def identity(self) -> dict:
         return {"name": self.name, "title": self.title, "release": self.release, "version": self.version,
@@ -189,9 +193,11 @@ def _source(api: dict, release: EngineRelease, sources: CardSources, copyright_l
     module = card_module()
     lines = [module.SECTION_PREFIX + "Source",
              f"- Surface: {release.surface_source}, and checked against the same build (`verification/native.json`).",
-             f"- Text: `{sources.reference_path}` of {release.repository} at tag `{release.release}` (commit "
-             f"`{release.commit}`), converted from {release.text_format}. " + " ".join(copyright_lines) +
-             f" {release.licence}, see `UPSTREAM-LICENSE`."]
+             f"- Text: `{sources.reference_path}` of "
+             f"{release.text_origin or release.repository} at tag `{release.release}` (commit `{release.commit}`), "
+             f"converted from {release.text_format}. " + "".join(f"{line} " for line in copyright_lines) +
+             f"{release.licence}, see `UPSTREAM-LICENSE`" +
+             (f" and `{release.notice_file}`." if release.notice_file else ".")]
     if api.get("renames"):
         lines.append(f"- Renames: `{sources.renames_path}` at the same commit.")
     lines.append(f"- `{TEST_NAME}` checks that every heading of this card agrees with `{API_NAME}`.")

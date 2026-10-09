@@ -37,11 +37,13 @@ from pathlib import Path
 
 from creative_originals.assemble import Entry, run_package_tests
 from engine_api_cards import bbcode, cards, godot_native, godot_renames, jsdoc_reference, node_native
+from engine_api_cards import typescript_declarations
 from engine_api_cards.godot_reference import ClassKind, ReferenceError, inheritance, read_reference
 
 from .creative_originals import derived_effects
 from .licences import LICENCE_UNKNOWN, decide, repository_licence
-from .packaging import LICENCE_NAME, UPSTREAM_LICENCE_NAME, PackageFile, SupplyPackage, build
+from .packaging import (LICENCE_NAME, UPSTREAM_LICENCE_NAME, UPSTREAM_NOTICE_NAME, PackageFile, SupplyPackage, build,
+                        notice_files)
 from .reading import RAW_HOST, github_blob_address, https_address, pinned_files
 from .records import (ENGINE_API_CARDS, GENERATED, GENERATED_CODE_LICENCE, GENERATED_TEST_FAILED, LICENCE_TEXT,
                       SupplyRecordError, fact_source, provenance, refusal, upstream_key)
@@ -162,6 +164,12 @@ class EngineSources:
     state_scope: str = ""
     #: A package registry's record of the release the build came from (role package_metadata), when there is one.
     metadata: "dict | None" = None
+    #: The licence of every package (Baltor's generated files and the engine's text), and the engine repository's
+    #: notice files a package carries (Apache-2.0 section 4(d)).
+    licence_expression: str = GENERATED_CODE_LICENCE
+    notices: list = field(default_factory=list)
+    #: The text whose copyright lines a card quotes, when it is not the licence (an Apache NOTICE file).
+    copyright_text: bytes = b""
 
 
 #: How the licence of the tag was decided: GitHub's interface at the tag, or (when it names none there) GitHub's
@@ -190,9 +198,9 @@ def tag_licence(reader, repository: str, commit: str, pinned_licence: dict) -> t
     return decide(repository, commit, (decision.path, decision.text, spdx)), LICENCE_OF_THE_SAME_BLOB
 
 
-def _fact(pinned: dict, role: str, basis: str) -> dict:
-    return fact_source(pinned["url"], pinned["retrieved_at"], pinned["sha256"], len(pinned["bytes"]), role,
-                       spdx=GENERATED_CODE_LICENCE, basis=basis)
+def _fact(pinned: dict, role: str, basis: str, spdx: str = GENERATED_CODE_LICENCE) -> dict:
+    return fact_source(pinned["url"], pinned["retrieved_at"], pinned["sha256"],
+                       pinned.get("size_bytes", len(pinned.get("bytes", b""))), role, spdx=spdx, basis=basis)
 
 
 def _release_asset(reader, engine, tag: str) -> dict:
@@ -449,6 +457,150 @@ def read_threejs(reader, workspace: Path, *, only=()) -> EngineSources:
                          state_scope=THREEJS_STATE_SCOPE, metadata=metadata)
 
 
+#: The Babylon.js release the adapter is pinned to: the npm package @babylonjs/core built from the tag 9.30.0.
+BABYLONJS, BABYLONJS_TITLE = "babylonjs", "Babylon.js"
+BABYLONJS_REPOSITORY, BABYLONJS_TAG = "BabylonJS/Babylon.js", "9.30.0"
+BABYLONJS_PACKAGE, BABYLONJS_VERSION = "@babylonjs/core", "9.30.0"
+BABYLONJS_STATE_SCOPE = "babylonjs_9_30"
+BABYLONJS_LICENCE_PATH, BABYLONJS_ENTRY, BABYLONJS_MODULE = "license.md", "index.js", "index.js"
+#: The package's own notice file (Apache-2.0 section 4(d)), in the package and in the repository at the tag.
+BABYLONJS_NOTICE, BABYLONJS_PACKAGE_FOLDER = "NOTICE.md", "packages/public/@babylonjs/core"
+BABYLONJS_DOCS_HOST = "doc.babylonjs.com"
+BABYLONJS_HOSTS = (RAW_HOST, REGISTRY_HOST)
+#: A module's declarations sit beside its compiled file, the same path with this suffix.
+SCRIPT_SUFFIX, DECLARATION_SUFFIX = ".js", ".d.ts"
+BABYLONJS_LIMITS = ("The surface is what the package's own declaration files give for the classes its root index "
+                    "exports, each confirmed by importing the published module in Node. A member marked abstract (a "
+                    "subclass implements it) is listed and not asked of the running module. A property marked "
+                    "declare is one the running module was observed not to hold: not on the class, its prototypes "
+                    "or a new instance, and not named in the source of the class or a class it extends; it exists "
+                    "once a caller assigns it. Members other modules add to a class by module augmentation, and the "
+                    "package's functions, constants and enumerations, are not listed. The text is the "
+                    "declarations' TSDoc. Nothing here was loaded by a harness.")
+#: The folder under the workspace where Node is asked which properties a module holds, before the cards exist.
+OBSERVE_FOLDER = "observe"
+
+
+def node_observer(module: str, workspace: Path):
+    """The observe hook of a JavaScript adapter: once the package is unpacked, Node imports its module and reports
+    which listed properties the module does not hold ({class: [names]})."""
+    def observe(apis: list) -> dict:
+        module_file = Path(workspace) / PACKAGE_FOLDER / module
+        engine = node_native.locate(module, hashlib.sha256(module_file.read_bytes()).hexdigest())
+        return node_native.observe(engine, module_file, apis, Path(workspace) / OBSERVE_FOLDER)
+    return observe
+
+
+def read_babylon(reader, workspace: Path, *, only=(), observe=None) -> EngineSources:
+    """Read the pinned Babylon.js release: the npm package built from the tag (its integrity checked), the classes
+    its root index exports with their declarations and TSDoc, and the licence; raises LineStopped. ``observe``
+    (node_observer) marks declare on each property the published module does not hold; without it no property is
+    marked, and the native check refuses a card whose property the module lacks."""
+    version, api_version = release_numbers(BABYLONJS_TAG)
+    address = https_address(REGISTRY_HOST, f"{BABYLONJS_PACKAGE}/{BABYLONJS_VERSION}")
+    record = reader.get(address)
+    if record.status != 200:
+        raise LineStopped("source_unreadable", f"{BABYLONJS_PACKAGE}@{BABYLONJS_VERSION}: the registry did not answer")
+    document = json.loads(record.body)
+    distribution = document.get("dist") or {}
+    head = reader.github(f"repos/{BABYLONJS_REPOSITORY}/commits/{BABYLONJS_TAG}")
+    if head.status != 200:
+        raise LineStopped("source_unreadable", f"the tag {BABYLONJS_TAG} has no readable commit")
+    commit = json.loads(head.body)["sha"]
+    if document.get("gitHead") != commit:
+        raise LineStopped("engine_binary_unverified", f"{BABYLONJS_PACKAGE}@{BABYLONJS_VERSION} was built from "
+                                                      f"{document.get('gitHead')}, not the tag's {commit[:12]}")
+    folder = Path(workspace) / PACKAGE_FOLDER
+    tarball = distribution.get("tarball", "")
+    digested = reader.digest(tarball, published={"integrity": distribution.get("integrity")},
+                             maximum_bytes=MAXIMUM_PACKAGE_BYTES,
+                             inspect=lambda path: _package_files(path, folder),
+                             use_cache=(folder / BABYLONJS_MODULE).is_file())
+    if not digested.ok or (digested.inspected or {}).get("integrity") != distribution.get("integrity"):
+        raise LineStopped("engine_binary_unverified", f"{tarball}: the download does not match its integrity")
+
+    def published(path):
+        target = folder / path
+        return target.read_text(encoding="utf-8") if target.is_file() else None
+
+    def declarations(path):
+        return published(path[:-len(SCRIPT_SUFFIX)] + DECLARATION_SUFFIX if path.endswith(SCRIPT_SUFFIX) else path)
+
+    exports = jsdoc_reference.module_exports(BABYLONJS_ENTRY, declarations)
+    references, reference_paths, dump, read = {}, {}, {}, {}
+    for name, (path, original) in sorted(exports.items()):
+        if only and name not in only:
+            continue
+        if path not in read:
+            read[path] = {row[0]: row for row in typescript_declarations.read_declarations(declarations(path) or "")}
+        if original not in read[path]:
+            continue  # a function, a constant or an enumeration, not a class
+        _name, _parent, reference = read[path][original]
+        references[name] = reference if name == original else replace(reference, name=name)
+        reference_paths[name] = path[:-len(SCRIPT_SUFFIX)] + DECLARATION_SUFFIX
+        dump[name] = (path, (folder / path).read_bytes())
+    declared = typescript_declarations.mark_declared(references, observe(
+        [{"class": name, "sections": reference.sections} for name, reference in references.items()])) \
+        if observe is not None and references else 0
+    try:
+        licence_file = reader.pinned_file(BABYLONJS_REPOSITORY, commit, BABYLONJS_LICENCE_PATH)
+    except LookupError as error:
+        raise LineStopped("source_unreadable", str(error)[:200]) from None
+    decision, licence_basis = tag_licence(reader, BABYLONJS_REPOSITORY, commit, licence_file)
+    if not decision.allowed:
+        raise LineStopped(decision.reason, f"{BABYLONJS_REPOSITORY} at {commit[:12]}: {decision.evidence()}")
+    package_licence = json.loads(published("package.json") or "{}").get("license")
+    if package_licence != decision.spdx or (folder / BABYLONJS_LICENCE_PATH).read_bytes() != licence_file["bytes"]:
+        raise LineStopped("licence_signals_disagree", f"the package names {package_licence}; its licence file must "
+                                                      "be the tag's")
+    notice = None
+    if (folder / BABYLONJS_NOTICE).is_file():
+        try:
+            notice_file = reader.pinned_file(BABYLONJS_REPOSITORY, commit, f"{BABYLONJS_PACKAGE_FOLDER}/{BABYLONJS_NOTICE}")
+        except LookupError as error:
+            raise LineStopped("source_unreadable", str(error)[:200]) from None
+        if notice_file["bytes"] != (folder / BABYLONJS_NOTICE).read_bytes():
+            raise LineStopped("published_source_differs", f"{BABYLONJS_NOTICE} is not the tag's")
+        notice = {"repository": BABYLONJS_REPOSITORY, "commit": commit, "path": notice_file["path"],
+                  "bytes": notice_file["bytes"], "sha256": notice_file["sha256"],
+                  "retrieved_at": notice_file["retrieved_at"], "spdx": decision.spdx,
+                  "url": github_blob_address(BABYLONJS_REPOSITORY, commit, notice_file["path"])}
+    package_fact = {"url": tarball, "sha256": digested.sha256, "size_bytes": digested.size_bytes,
+                    "retrieved_at": digested.retrieved_at}
+    pinned = {path: package_fact for path in reference_paths.values()}
+    release = cards.EngineRelease(
+        name=BABYLONJS, title=BABYLONJS_TITLE, release=BABYLONJS_TAG, version=version, api_version=api_version,
+        repository=BABYLONJS_REPOSITORY, commit=commit, binary_name=Path(tarball).name,
+        binary_sha256=digested.sha256, binary_version=BABYLONJS_VERSION,
+        docs_address=https_address(BABYLONJS_DOCS_HOST, ""), syntax=cards.card_module().JAVASCRIPT_SYNTAX,
+        surface_source=(f"read from the declarations of `{BABYLONJS_PACKAGE}@{BABYLONJS_VERSION}` "
+                        f"(`{Path(tarball).name}`, SHA-256 `{digested.sha256}`) for the classes its root index "
+                        f"exports, each confirmed by importing its `{BABYLONJS_MODULE}` in Node"),
+        surface_phrase="the surface the package's own declarations give and its published module confirms",
+        text_format="TSDoc", licence=decision.spdx, notice_file=UPSTREAM_NOTICE_NAME if notice else "",
+        text_origin=f"the npm package `{BABYLONJS_PACKAGE}@{BABYLONJS_VERSION}`, built from {BABYLONJS_REPOSITORY}")
+    licence = dict(licence_file, evidence=decision.evidence(), basis=licence_basis)
+    metadata = {"url": address, "bytes": record.body, "sha256": record.sha256, "retrieved_at": record.retrieved_at}
+    summary = {"exports": len(exports), "classes": len(references), "package": f"{BABYLONJS_PACKAGE}@{BABYLONJS_VERSION}",
+               "notice": bool(notice), "declared_properties": declared}
+    code = cards.card_module().code
+    return EngineSources(release, dump, references, dict(references), reference_paths, pinned, licence, None, {},
+                         None, None, [], summary, text_for=lambda name: jsdoc_reference.JsDocText(code),
+                         licence_path=BABYLONJS_LICENCE_PATH, text_basis="package_licence_file_at_the_tag",
+                         limits=BABYLONJS_LIMITS, state_scope=BABYLONJS_STATE_SCOPE, metadata=metadata,
+                         licence_expression=f"{GENERATED_CODE_LICENCE} AND {decision.spdx}",
+                         notices=[notice] if notice else [], copyright_text=_own_notice(notice))
+
+
+def _own_notice(notice: "dict | None") -> bytes:
+    """The work's own copyright line of a notice file: its first one. The lines after it name the bundled
+    components' holders, which the notice file itself carries to every package."""
+    if not notice:
+        return b""
+    lines = [line for line in notice["bytes"].decode("utf-8").splitlines() if line.startswith("Copyright")]
+    return lines[0].encode("utf-8") if lines else b""
+
+
 def node_evidence(engine, module_file: Path, prepared: dict, workspace: Path, folder: "Path | None" = None) -> dict:
     """{class: evidence bytes} from one Node run over every prepared card of a JavaScript library."""
     answers = node_native.verify(engine, module_file, [card.api for card in prepared.values()],
@@ -477,8 +629,10 @@ class PreparedCard:
 
 
 def _copyright_lines(licence_bytes: bytes) -> list:
-    """The copyright notices of a licence text, each ending as a sentence."""
-    lines = [line.strip() for line in licence_bytes.decode("utf-8").splitlines() if line.startswith("Copyright")]
+    """The copyright notices of a licence text, each ending as a sentence; a licence's own template line (Apache's
+    "Copyright [yyyy] [name of copyright owner]") names no year and is not a notice."""
+    lines = [line.strip() for line in licence_bytes.decode("utf-8").splitlines()
+             if line.startswith("Copyright") and re.search(r"\d{4}", line)]
     return [line if line.endswith(".") else line + "." for line in lines]
 
 
@@ -513,7 +667,7 @@ def prepare(sources: EngineSources, licence_text: bytes, only=()) -> tuple:
         context = sources.text_for(name) if sources.text_for else bbcode.Context(
             known, name, sources.release.docs_address, module.code)
         texts = cards.documents(api, sources.release, documentation, context, card_sources,
-                                _copyright_lines(sources.licence["bytes"]))
+                                _copyright_lines(sources.copyright_text or sources.licence["bytes"]))
         files = {path: text.encode("utf-8") for path, text in texts.items()}
         files[cards.API_NAME] = cards.json_bytes(api)
         files.update(cards.shared_files())
@@ -581,10 +735,11 @@ def _package(card: PreparedCard, files: dict, sources: EngineSources, *, code_re
         else:
             rows.append(PackageFile(path, data, EXECUTABLE_ROLE if path.endswith(PYTHON_SUFFIX) else OTHER_ROLE,
                                     GENERATED))
-    facts = [_fact(sources.licence, "licence_text", sources.licence["basis"])]
+    text_licence = sources.release.licence
+    facts = [_fact(sources.licence, "licence_text", sources.licence["basis"], text_licence)]
     if sources.copyright is not None:
         facts.append(_fact(sources.copyright, "licence_evidence", "copyright_file_files_star_expat_at_the_tag"))
-    facts.append(_fact(sources.pinned[card.sources.reference_path], "data_source", sources.text_basis))
+    facts.append(_fact(sources.pinned[card.sources.reference_path], "data_source", sources.text_basis, text_licence))
     if card.sources.renames_path:
         facts.append(_fact(sources.renames_map, "data_source", sources.text_basis))
     if sources.metadata is not None:
@@ -596,12 +751,15 @@ def _package(card: PreparedCard, files: dict, sources: EngineSources, *, code_re
         facts.append(fact_source(asset["url"], asset["retrieved_at"], asset["sha256"], asset["size_bytes"] or 0,
                                  "release", spdx=GENERATED_CODE_LICENCE,
                                  basis="official_build_of_the_tag_surface_read_never_copied"))
+    notice_rows, notice_facts = notice_files(sources.notices)
+    rows += notice_rows
+    facts += notice_facts
     identity = f"{release.name}/{release.api_version}/{name}"
     reference = sources.references[name]
     supply = SupplyPackage(
         line=ENGINE_API_CARDS, identity=identity, key=upstream_key(ENGINE_API_CARDS, identity), kind=cards.KIND,
         native_format=NATIVE_FORMAT, form=cards.FORM, name=f"{name} ({release.title} {release.api_version})",
-        description=component["purpose"], files=rows, licence_expression=GENERATED_CODE_LICENCE,
+        description=component["purpose"], files=rows, licence_expression=sources.licence_expression,
         provenance=provenance("github_repository", release.repository, card.sources.reference_path, release.commit,
                               facts, {"identity": "engine_api_cards", "version": GENERATOR_VERSION,
                                       "code_revision": code_revision}),
@@ -655,8 +813,8 @@ def package(prepared: dict, evidence: dict, sources: EngineSources, *, code_revi
 
 
 def facts_of(sources: EngineSources) -> dict:
-    """{SHA-256: bytes} of every pinned fact the packages name, for the store's quarantine."""
-    return {row["sha256"]: row["bytes"] for row in sources.pinned.values()}
+    """{SHA-256: bytes} of every pinned fact the packages name and the run kept, for the store's quarantine."""
+    return {row["sha256"]: row["bytes"] for row in sources.pinned.values() if row.get("bytes")}
 
 
 def generate(sources: EngineSources, *, verifier, code_revision: str, licence_text: bytes, generated_on: str,
@@ -679,5 +837,6 @@ def generate(sources: EngineSources, *, verifier, code_revision: str, licence_te
 
 __all__ = ["GENERATOR_VERSION", "NATIVE_FORMAT", "GODOT_TAG", "GODOT_STATE_SCOPE", "HOSTS", "EngineSources",
            "PreparedCard", "LineStopped", "read_godot", "read_threejs", "prepare", "native_evidence", "node_evidence",
-           "package", "generate", "THREEJS_HOSTS", "THREEJS_STATE_SCOPE",
+           "package", "generate", "THREEJS_HOSTS", "THREEJS_STATE_SCOPE", "read_babylon", "BABYLONJS_HOSTS",
+           "BABYLONJS_STATE_SCOPE", "node_observer",
            "copyright_stanzas", "governing_licence", "release_numbers"]

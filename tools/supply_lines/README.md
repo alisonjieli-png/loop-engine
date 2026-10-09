@@ -224,7 +224,9 @@ Supply lines (each writes library_supply_candidate/v1 records)
 └── engine_api_cards: one version-pinned API contract card per class of a pinned engine release (engine_api_cards.py)
     ├── kind contract_schema, form schema; one card format (tools/engine_api_cards), one adapter per engine
     │   (Godot 4.7.2-stable; three.js r186 from the npm package built from the tag, its JSDoc checked by Node
-    │   importing the module), the job key component.json job.engine, job.version and job.class
+    │   importing the module; Babylon.js 9.30.0 from @babylonjs/core's declaration files, checked the same way,
+    │   Apache-2.0 with its NOTICE.md as UPSTREAM-NOTICE), the job key component.json job.engine, job.version
+    │   and job.class
     ├── surface: the official build's --doctool dump (1,076 classes); the build proven the member of the release
     │   asset whose SHA-256 GitHub publishes, its version naming the tag's commit
     ├── text: the class reference XML at the tag, each file proven by blob identity, MIT by LICENSE.txt and the
@@ -373,7 +375,8 @@ PYTHONPATH=src:tools python tools/build_library_supply.py creative-assets \
   [--asset ID] [--maximum-assets N] [--resolution 4k] [--digest-cache FOLDER] [--godot PATH]
 PYTHONPATH=src:tools python tools/build_library_supply.py engine-api-cards \
   --run-folder /home/username/baltor-library/supply/engine-api-cards/DATE \
-  --authorize-network-reads --authorize-store-writes [--class NAME] [--godot PATH] [--workers 8]
+  --authorize-network-reads --authorize-store-writes [--engine godot|threejs|babylonjs] [--class NAME] \
+  [--godot PATH] [--workers 8]
 PYTHONPATH=src:tools python tools/build_library_supply.py report \
   --library-bundle /home/username/baltor-bundles/RELEASE --output REPORT.json [--admission-folder ADMISSION]
 ```
