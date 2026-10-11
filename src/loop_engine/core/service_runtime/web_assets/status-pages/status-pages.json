@@ -1064,6 +1064,26 @@
       "description": "Browse Baltor's original Godot shaders, procedural textures, meshes and Blender tools, each with the render its engine check recorded."
      },
      {
+      "address": "/random",
+      "title": "Random creative previews",
+      "description": "Find a creative starting point: public previews with source details, licences and exact versions. Browse images, video and music by availability."
+     },
+     {
+      "address": "/random/image",
+      "title": "Random image previews",
+      "description": "Discover an original public image preview, inspect its licence and source, and choose another without searching the full library."
+     },
+     {
+      "address": "/random/video",
+      "title": "Random video previews",
+      "description": "Browse reviewed public video previews when available, with their source and licence. An empty category stays explicit."
+     },
+     {
+      "address": "/random/music",
+      "title": "Random music previews",
+      "description": "Browse reviewed public music previews when available, with their source and licence. An empty category stays explicit."
+     },
+     {
       "address": "/public-good",
       "title": "Public Good",
       "description": "Browse useful component files for sustainable development and public-benefit work. Downloads require a Baltor account, not a paid subscription."

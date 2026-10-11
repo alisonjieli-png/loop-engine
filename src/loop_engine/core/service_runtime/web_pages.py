@@ -217,6 +217,8 @@ WEB_ASSETS = {
     # 2026: their one stylesheet and one script, which adds copy buttons and the gallery's kind filters.
     "/assets/offering-pages.css": ("offering-pages.css", "text/css"),
     "/assets/offering-pages.js": ("offering-pages.js", "text/javascript"),
+    "/assets/gallery-random.css": ("gallery-random.css", "text/css"),
+    "/assets/gallery-random.js": ("gallery-random.js", "text/javascript"),
     # The pictures a shared link shows, 1200 by 630 pixels each, drawn from the brand mark, the site's own type and the
     # gallery's renders by tools/render_share_cards.mjs: the one-page site's views, Use Agent Feeds, Harness Files and
     # the gallery. Each page names its own card in its head, which with_page_head keeps.
@@ -230,13 +232,14 @@ WEB_ASSETS = {
 def _gallery_previews():
     """The gallery's preview images, one WebP for each public item with a recorded render, read from its record."""
     from .gallery_records import preview_assets
-    return preview_assets()
+    from .gallery_media import media_assets
+    return {**preview_assets(), **media_assets()}
 
 
 WEB_ASSETS.update(_gallery_previews())
 #: Packaged files whose names already carry their content digest. A page names them as they are; adding `?v=` again
 #: would only repeat the digest, and the gallery's 329 previews would add 17 ms to every page render.
-CONTENT_ADDRESSED_PREFIXES = ("/assets/gallery/",)
+CONTENT_ADDRESSED_PREFIXES = ("/assets/gallery/", "/assets/gallery-media/")
 #: Files written from the site map rather than packaged, with their media types.
 #: Each answers GET and HEAD like a packaged file, with a strong validator.
 GENERATED_WEB_FILES = {
