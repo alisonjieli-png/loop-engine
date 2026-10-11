@@ -82,6 +82,15 @@ window.BaltorDocumentation = (() => {
     ? "This service answered with a documentation list this page was not written for, so nothing from it is shown. Reload the page after the next release."
     : "The documentation list could not be loaded. Check your connection and reload the page.";
 
+  const pageState = (state, message = "") => {
+    const article = $("docs-article"), status = $("docs-page-status");
+    article.dataset.docsState = state;
+    if (state === "loading") article.setAttribute("aria-busy", "true");
+    else article.removeAttribute("aria-busy");
+    status.hidden = !message;
+    status.textContent = message;
+  };
+
   /* The tabs of the documentation bar: the overview, then one tab for each section of the index, opening the first page of the
      section that this view shows. The tab of the section being read is marked, and the scroll region brings it into view. */
   const drawTabs = current => {
@@ -204,6 +213,7 @@ window.BaltorDocumentation = (() => {
       drawTabs("");
       const note = element("p", "", "docs-note"); note.append("Open the ", link(HOME, "documentation list"), " to find the page you need.");
       article.replaceChildren(note);
+      pageState("missing");
       drawnPage = path;
       return;
     }
@@ -217,8 +227,8 @@ window.BaltorDocumentation = (() => {
       .toLocaleDateString("en-US", {year:"numeric", month:"long", day:"numeric", timeZone:"UTC"});
     $("docs-page-source").href = SOURCE_EDIT + entry.repository_path;
     $("docs-page-meta").hidden = false;
-    article.setAttribute("aria-busy", "true");
-    article.replaceChildren(element("p", "Loading this page.", "docs-note"));
+    article.replaceChildren();
+    pageState("loading", "Loading this page.");
     $("docs-toc").hidden = true;
     try {
       const response = await fetch(entry.body, {cache:"no-store", headers:{Accept:"text/html"}});
@@ -232,6 +242,7 @@ window.BaltorDocumentation = (() => {
       frameExamples(article);
       drawContents(article);
       drawnPage = path;
+      pageState("ready");
       settleOnTarget();
     } catch (error) {
       if (ticket !== generation) return;
@@ -241,8 +252,7 @@ window.BaltorDocumentation = (() => {
       note.dataset.docsRefused = error instanceof Refused ? "body" : "load";
       note.append("Open the ", link(HOME, "documentation list"), " or reload the page.");
       article.replaceChildren(note);
-    } finally {
-      if (ticket === generation) article.removeAttribute("aria-busy");
+      pageState("error", "This documentation page could not be loaded.");
     }
   };
 
@@ -254,12 +264,28 @@ window.BaltorDocumentation = (() => {
       document.title = serviceName + " | " + $("docs-page-title").textContent;
       return;
     }
+    if (page) {
+      // A pending navigation must not reuse the previous page's cached title or body.
+      drawnPage = "";
+      $("docs-page-title").textContent = ""; $("docs-page-section").textContent = "";
+      $("docs-page-summary").textContent = ""; $("docs-page-meta").hidden = true;
+      $("docs-nav").replaceChildren(); $("docs-pager").replaceChildren(); $("docs-toc").hidden = true;
+      $("docs-article").replaceChildren();
+      pageState("loading", index ? "Loading this page." : "Loading the documentation list.");
+    }
     try {
       await loadIndex();
     } catch (error) {
       if (ticket !== generation) return;
       $("docs-status").textContent = refusal(error);
-      if (page) { $("docs-page-title").textContent = "Documentation"; $("docs-article").replaceChildren(element("p", refusal(error), "docs-note")); drawnPage = ""; }
+      if (page) {
+        $("docs-page-title").textContent = "Documentation";
+        const note = element("p", refusal(error), "docs-note");
+        note.dataset.docsRefused = error instanceof Refused ? "index" : "index-load";
+        $("docs-article").replaceChildren(note);
+        pageState("error", "This documentation page could not be loaded.");
+        drawnPage = "";
+      }
       return;
     }
     if (ticket !== generation) return;

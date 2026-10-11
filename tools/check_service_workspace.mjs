@@ -5,6 +5,7 @@ import {heroProblems,heroCheckRejectsItsKnownWrongCases,checkAudiences,keepsTheP
 import {runShowcasePageChecks,showcasePaths,showcaseScreenshotSuffixes} from "./showcase_page_checks.mjs";
 import {runDirectoryChecks} from "./directory_browser_checks.mjs";
 import {runConnectionEndpointChecks} from "./connection_endpoint_checks.mjs";
+import {runDocumentationReadinessChecks} from "./documentation_readiness_checks.mjs";
 import {internalTerms,publicVocabulary,retiredAccessWords,invitationWords,unpublishedTerms,cardStatusWords,retiredPhrases} from "./public_wording_rules.mjs";
 import {chromium} from "../showcase/node_modules/playwright-core/index.mjs";
 import {spawn} from "node:child_process";
@@ -1109,6 +1110,7 @@ try {
      view keeps the exact runtime terms, so it and its pages are scanned for the other rules only. */
   const docsIndex=JSON.parse(readFileSync(resolve(root,"src/loop_engine/core/service_runtime/web_assets/documentation-index.json"),"utf8"));
   const docsPagePaths=docsIndex.sections.flatMap(section=>section.pages).filter(entry=>entry.body&&entry.address.startsWith("/docs/")).map(entry=>entry.address);
+  await runDocumentationReadinessChecks({browser,base:fixture.base,check});
   /* Returning through Overview keeps the cached article and restores its section tab. The removed guard changes only
      documentation.js in memory; the same user clicks then expose Overview incorrectly marked as the current section. */
   const cachedDocsEntry=docsIndex.sections.flatMap(section=>section.pages.map(entry=>({...entry,sectionId:section.id}))).find(entry=>entry.id==="quickstart-codex");

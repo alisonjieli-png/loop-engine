@@ -3,8 +3,9 @@
    The owner, September 25, 2026: "For releases you may want to adjust the logic, to be more flexible, reasonable, and human
    oriented tests rather than something too strict." This check decides whether a release stays live. It asks what a visitor
    would notice, page by page from the typed site map, at desktop and phone width: the page opens, its heading shows, no script
-   error fires, nothing scrolls sideways on a phone, and every link on it leads somewhere. It saves a screenshot of each page in
-   light and dark for a person to look at. It does not compare copy word for word; tools/check_hosted_website.mjs keeps those
+   error fires, nothing scrolls sideways on a phone, and every link on it leads somewhere. It keeps the initial 1.5-second
+   observation, then allows a bounded wait for actual content. Screenshots cover desktop/light and phone/dark, every failed
+   view, and any initial not-ready state. It does not compare copy word for word; tools/check_hosted_website.mjs keeps those
    detailed rules and runs beside this one as advice.
 
    Usage: node tools/check_live_site_for_people.mjs <the site's exact secure origin> <new report folder> */
@@ -12,6 +13,7 @@ import {chromium} from "../showcase/node_modules/playwright-core/index.mjs";
 import {readFileSync,writeFileSync,existsSync,mkdirSync} from "node:fs";
 import {resolve} from "node:path";
 import {setRequestedAppearance,readRequestedAppearance,appearanceProblems,appearanceKnownWrongControls} from "./browser_appearance_checks.mjs";
+import {observePageReadiness,readinessProblems,shouldCaptureView} from "./live_site_readiness.mjs";
 
 const origin=process.argv[2],folder=resolve(process.argv[3]||"");
 if(!origin||!origin.startsWith("https://")||new URL(origin).origin!==origin||!process.argv[3]||existsSync(folder))
@@ -23,7 +25,7 @@ const siteMap=JSON.parse(readFileSync(resolve(root,"src/loop_engine/core/service
    opened too, because a person can still follow one, and so are the pages reached by their address only (the changelog,
    the feature list and the open work of September 26, 2026), which the site map lists with no place that links to them.
    Pages behind sign-in are opened as a signed-out visitor sees them. */
-const pages=siteMap.pages.filter(page=>!page.address.startsWith("/auth/")).map(page=>page.address);
+const pages=siteMap.pages.filter(page=>!page.address.startsWith("/auth/"));
 const hostnames=(siteMap.hostnames||[]).map(item=>item.hostname).filter(Boolean);
 const problems=[],rows=[],linkStatus=new Map();
 const note=(where,problem)=>problems.push({where,problem});
@@ -40,25 +42,27 @@ for(const [sizeName,viewport] of Object.entries(sizes)){
   for(const scheme of ["light","dark"]){
     const context=await browser.newContext({viewport,colorScheme:scheme,userAgent:"Baltor live check for people"});
     await setRequestedAppearance(context,origin,scheme);
-    for(const address of pages){
+    for(const {address,view} of pages){
       const page=await context.newPage(),scriptErrors=[];
       page.on("pageerror",error=>scriptErrors.push(String(error.message||error).slice(0,200)));
       page.on("console",message=>{if(message.type()==="error"&&!/favicon|Failed to load resource/i.test(message.text()))scriptErrors.push(message.text().slice(0,200));});
       const where=`${address} (${sizeName}, ${scheme})`;
-      let status=0;
-      /* A person reads the page once it has loaded; a page that keeps fetching (the directory loads its rows in parts) is not
-         waited on until every request stops, only for a short moment after the load. */
-      try{status=(await page.goto(origin+address,{waitUntil:"load",timeout:45000}))?.status()||0;await page.waitForTimeout(1500);}catch(error){note(where,"did not open: "+String(error.message).slice(0,120));}
+      const firstProblem=problems.length,openedAt=performance.now();
+      const shot=`${address==="/"?"home":address.replace(/^\//,"").replace(/[^a-z0-9]+/gi,"-")}-${sizeName}-${scheme}.png`;
+      let status=0,initialScreenshot=null;
+      try{status=(await page.goto(origin+address,{waitUntil:"load",timeout:45000}))?.status()||0;}catch(error){note(where,"did not open: "+String(error.message).slice(0,120));}
+      const navigationLoadMs=performance.now()-openedAt;
       if(status!==200)note(where,"answered "+status);
-      const seen=await page.evaluate(()=>{
-        const visible=node=>!!node&&node.getClientRects().length>0&&getComputedStyle(node).visibility!=="hidden";
-        const heading=[...document.querySelectorAll("h1")].find(visible);
-        const scroller=document.scrollingElement||document.documentElement;
-        const links=[...document.querySelectorAll("a[href]")].filter(visible).map(link=>link.href).filter(href=>href.startsWith(location.origin));
-        return {heading:heading?heading.textContent.replace(/\s+/g," ").trim():"",sideways:scroller.scrollWidth-window.innerWidth,
-          links:[...new Set(links.map(href=>href.split("#")[0]))]};
-      }).catch(()=>({heading:"",sideways:0,links:[]}));
-      if(!seen.heading)note(where,"shows no main heading");
+      // Keep the 1.5-second observation. Async documentation also needs a bounded content-readiness wait.
+      const {seen,readiness}=await observePageReadiness(page,{documentation:view==="docs"?(address==="/docs"?"index":"page"):null,
+        onInitialNotReady:async()=>{
+          initialScreenshot=shot.replace(/\.png$/,"-initial.png");
+          await page.screenshot({path:resolve(folder,initialScreenshot),fullPage:false,timeout:5000})
+            .catch(error=>{initialScreenshot=null;note(where,"could not capture initial state: "+String(error.message).slice(0,120));});
+        }});
+      for(const problem of readinessProblems(seen))note(where,problem);
+      if(readiness.timed_out)note(where,`did not become ready within ${readiness.timeout_after_initial_ms} ms after the initial observation`);
+      else if(readiness.errors.length)note(where,"could not read readiness: "+readiness.errors.join(" | "));
       if(sizeName==="phone"&&seen.sideways>2)note(where,`scrolls sideways by ${seen.sideways} pixels on a phone`);
       if(scriptErrors.length)note(where,"script errors: "+scriptErrors.slice(0,3).join(" | "));
       const appearance=await readRequestedAppearance(page).catch(()=>({theme:"unreadable"}));
@@ -67,10 +71,11 @@ for(const [sizeName,viewport] of Object.entries(sizes)){
       if(scheme==="light"&&sizeName==="desktop"){
         for(const href of seen.links){const answer=await linkCheck(context,href);if(answer!==200)note(where,`links to ${href.replace(origin,"")}, which answers ${answer}`);}
       }
-      const shot=`${address==="/"?"home":address.replace(/^\//,"").replace(/[^a-z0-9]+/gi,"-")}-${sizeName}-${scheme}.png`;
-      if((sizeName==="desktop"&&scheme==="light")||(sizeName==="phone"&&scheme==="dark"))
-        await page.screenshot({path:resolve(folder,shot),fullPage:false}).catch(()=>{});
-      rows.push({address,size:sizeName,scheme,appearance,status,heading:seen.heading.slice(0,120),script_errors:scriptErrors.length});
+      const screenshot=shouldCaptureView({size:sizeName,scheme,failed:problems.length>firstProblem})?shot:null;
+      if(screenshot)await page.screenshot({path:resolve(folder,screenshot),fullPage:false,timeout:5000})
+        .catch(error=>note(where,"could not capture final state: "+String(error.message).slice(0,120)));
+      rows.push({address,size:sizeName,scheme,appearance,status,heading:seen.heading.slice(0,120),script_errors:scriptErrors.length,
+        navigation_load_ms:navigationLoadMs,readiness,initial_screenshot:initialScreenshot,screenshot});
       await page.close();
     }
     await context.close();
@@ -81,10 +86,19 @@ const hostContext=await browser.newContext({viewport:sizes.desktop});
 for(const hostname of hostnames){
   const page=await hostContext.newPage();
   let status=0;
-  try{status=(await page.goto(new URL("/",`${new URL(origin).protocol}//${hostname}`).href,{waitUntil:"load",timeout:45000}))?.status()||0;await page.waitForTimeout(1500);}catch{status=0;}
-  const heading=await page.evaluate(()=>document.querySelector("h1")?.textContent.trim()||"").catch(()=>"");
+  const openedAt=performance.now();
+  try{status=(await page.goto(new URL("/",`${new URL(origin).protocol}//${hostname}`).href,{waitUntil:"load",timeout:45000}))?.status()||0;}catch{status=0;}
+  const navigationLoadMs=performance.now()-openedAt;
+  const {seen,readiness}=await observePageReadiness(page),heading=seen.heading;
   if(status!==200||!heading)note(hostname,`root answered ${status}${heading?"":" with no main heading"}`);
-  rows.push({hostname,status,heading:heading.slice(0,120)});
+  if(readiness.timed_out||readiness.errors.length)note(hostname,"root did not complete bounded readiness");
+  let screenshot=null;
+  if(status!==200||!heading||readiness.timed_out||readiness.errors.length){
+    screenshot=`host-${hostname.replace(/[^a-z0-9]+/gi,"-")}-failed.png`;
+    await page.screenshot({path:resolve(folder,screenshot),fullPage:false,timeout:5000})
+      .catch(error=>note(hostname,"could not capture failed root: "+String(error.message).slice(0,120)));
+  }
+  rows.push({hostname,status,heading:heading.slice(0,120),navigation_load_ms:navigationLoadMs,readiness,screenshot});
   await page.close();
 }
 await browser.close();

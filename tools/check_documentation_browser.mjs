@@ -5,6 +5,7 @@ import {spawn} from "node:child_process";
 import {createInterface} from "node:readline";
 import {existsSync,readFileSync,writeFileSync,mkdirSync} from "node:fs";
 import {resolve,dirname} from "node:path";
+import {runDocumentationReadinessChecks} from "./documentation_readiness_checks.mjs";
 const root=resolve(new URL("..",import.meta.url).pathname), assets=resolve(root,"src/loop_engine/core/service_runtime/web_assets");
 const output=resolve(process.argv[2] || "artifacts/site-docs-browser.json"), live=process.argv[3] || "";
 if(live&&(new URL(live).origin!==live||!live.startsWith("https://")))throw new Error("Live checks require an exact HTTPS origin");
@@ -87,6 +88,7 @@ try{
  const missing=await page.request.get(base+"/docs/absent");check("unknown_doc_route_is_not_served",missing.status()===404);
  for(const entry of entries.filter(e=>e.body)){const response=await page.request.get(base+entry.body);check(`${entry.id}_served_exact_body`,response.ok()&&(response.headers()["content-type"]||"").startsWith("text/html")&&await response.text()===readFileSync(resolve(assets,"docs",entry.id+".html"),"utf8"));}
  if(!live){
+  await runDocumentationReadinessChecks({browser,base,check,screenshotPrefix:output.replace(/\.json$/,"-readiness")});
   const mutations=[
    ["unknown_version",r=>r.record_type="website_documentation_index/v99"],
    ["foreign_address",r=>r.sections[0].pages[0].address="https://foreign.invalid/capture"],
