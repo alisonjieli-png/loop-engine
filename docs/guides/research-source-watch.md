@@ -16,7 +16,7 @@ python3 tools/refresh_research_sources.py
 To check public sources, opt in to bounded read-only network requests:
 
 ```bash
-python3 tools/refresh_research_sources.py --online
+python3 tools/refresh_research_sources.py --online --max-online-sources 50
 ```
 
 Each invocation writes a new JSON report in `artifacts/research-source-watch/`.

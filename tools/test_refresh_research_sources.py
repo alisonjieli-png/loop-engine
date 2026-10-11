@@ -139,6 +139,11 @@ class ManifestChecks(unittest.TestCase):
         self.assertLess(limit, 60)
         self.assertLessEqual(len(json.loads((root / "tools/research_source_watch.json").read_text())["sources"]), limit)
 
+    def test_guide_full_manifest_command_declares_the_request_ceiling(self):
+        guide = (Path(__file__).resolve().parents[1] / "docs/guides/research-source-watch.md").read_text("utf-8")
+        limits = re.findall(r"python3 tools/refresh_research_sources.py --online --max-online-sources (\d+)", guide)
+        self.assertEqual(limits, [str(watch.MAX_ONLINE_SOURCES)])
+
 
 class ObservationChecks(unittest.TestCase):
     def test_offline_mode_never_calls_network_and_keeps_change_unknown(self):
