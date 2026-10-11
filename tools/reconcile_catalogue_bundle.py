@@ -460,6 +460,12 @@ def write_reconciled(base, updates, changes, output, observed, *, extra_roots=()
     else:
         write_bundle(output, schema=base.schema, lines=result.rows.values(), payloads=payloads,
                      notes=notes, withdrawals=result.withdrawals)
+    # The next phase reads and independently validates the written candidate.
+    # Do not retain its construction copy and all payload bytes alongside that
+    # readback. Counts are observations of the verified inputs, not estimates.
+    base_bodies_verified = len(held)
+    new_blob_count, new_blob_bytes = len(new_files), sum(len(payload) for payload in payloads)
+    del result, payloads, held, new_files, stores
     accepted = tuple(sorted({item.item.license_name for item in base.items} | {item.item.license_name for update in updates for item in update.items}))
     candidate = load_bundle(output, accepted)
     proof = proof_for(base, candidate, changes)
@@ -468,8 +474,8 @@ def write_reconciled(base, updates, changes, output, observed, *, extra_roots=()
         stream.write(raw)
     return {'record_type':RESULT_VERSION, 'state':'written', 'base_release':changes.base_release, 'bundle_digest':candidate.digest,
             'reconciliation_digest':hashlib.sha256(raw).hexdigest(), 'items':len(candidate.items),
-            'new_blob_count':len(new_files), 'new_blob_bytes':sum(len(payload) for payload in payloads),
-            'body_mode':proof['body_mode'], 'bundle_format':bundle_format, 'base_bodies_verified':len(held)}
+            'new_blob_count':new_blob_count, 'new_blob_bytes':new_blob_bytes,
+            'body_mode':proof['body_mode'], 'bundle_format':bundle_format, 'base_bodies_verified':base_bodies_verified}
 
 
 def main(argv=None):
@@ -495,12 +501,15 @@ def main(argv=None):
         from publish_catalogue_delta import active_catalogue
         observed = active_catalogue()
         require_live_base(base, changes, observed)
-        composed = compose(base, updates, changes)
         if options.write:
+            # write_reconciled performs this same composition validation before
+            # any write. A second unused copy here held the full catalogue live
+            # throughout byte checks and proof generation.
             result = write_reconciled(base, updates, changes, options.output, observed,
                                       extra_roots=options.body_root, notes=options.notes,
                                       bundle_format=options.bundle_format, segment_target=options.segment_target)
         else:
+            composed = compose(base, updates, changes)
             result = {'record_type':RESULT_VERSION, 'state':'checked_metadata_only_no_write',
                       'base_release':changes.base_release, 'items':len(composed.rows)}
     except (OSError, ValueError, ServiceRuntimeError) as error:

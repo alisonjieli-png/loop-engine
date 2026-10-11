@@ -1,9 +1,14 @@
 """Exact baseline preservation; synthetic packages, no provider or production calls."""
 from dataclasses import replace
+from contextlib import redirect_stdout
+import gc
+import io
 import json
 from pathlib import Path
 import tempfile
 import unittest
+from unittest import mock
+import weakref
 
 import reconcile_catalogue_bundle as reconcile
 from loop_engine.core.harness_intelligence import HarnessIntelligenceDraft, item_from_body
@@ -53,6 +58,63 @@ class PreservationChecks(unittest.TestCase):
         self.assertEqual(result.rows['old'], reconcile.bundle_rows(self.base)['old'])
         self.assertEqual(result.versions['old'], self.base.items[0].version)
         self.assertEqual(set(result.rows), {'old', 'new'})
+
+    def cli_arguments(self, output, *, write=False, bundle_format=reconcile.BUNDLE_RECORD_TYPE):
+        path = self.root / 'changes.json'
+        path.write_text(json.dumps(self.changes.to_dict()))
+        arguments = ['--base-bundle', str(self.base.folder), '--update-bundle', str(self.add.folder),
+                     '--changes', str(path), '--output', str(output), '--accept-license', 'MIT',
+                     '--bundle-format', bundle_format]
+        return arguments + (['--write'] if write else [])
+
+    def test_cli_write_composes_once_in_both_bundle_formats(self):
+        for index, form in enumerate(reconcile.BUNDLE_FORMATS):
+            output = self.root / ('single-composition-' + str(index))
+            stream = io.StringIO()
+            with mock.patch('publish_catalogue_delta.active_catalogue', return_value=observation(self.base)), \
+                    mock.patch.object(reconcile, 'compose', wraps=reconcile.compose) as compose, \
+                    redirect_stdout(stream):
+                self.assertEqual(reconcile.main(self.cli_arguments(output, write=True, bundle_format=form)), 0)
+            self.assertEqual(compose.call_count, 1, 'The write path must not retain an unused full composition.')
+            result = json.loads(stream.getvalue())
+            self.assertEqual((result['base_bodies_verified'], result['new_blob_count'], result['new_blob_bytes']),
+                             (1, 1, len('new bytes')))
+            after = reconcile.load_bundle(output, ('MIT',))
+            proof = json.loads((output / reconcile.PROOF_FILE).read_text())
+            self.assertEqual(reconcile.check_proof(self.base, after, proof), self.changes)
+
+    def test_cli_metadata_only_composes_once_without_writing(self):
+        output = self.root / 'no-write'
+        stream = io.StringIO()
+        with mock.patch('publish_catalogue_delta.active_catalogue', return_value=observation(self.base)), \
+                mock.patch.object(reconcile, 'compose', wraps=reconcile.compose) as compose, \
+                mock.patch.object(reconcile, 'write_reconciled', side_effect=AssertionError('unexpected write')), \
+                redirect_stdout(stream):
+            self.assertEqual(reconcile.main(self.cli_arguments(output)), 0)
+        self.assertEqual(compose.call_count, 1)
+        self.assertEqual(json.loads(stream.getvalue())['state'], 'checked_metadata_only_no_write')
+        self.assertFalse(output.exists())
+
+    def test_construction_rows_are_released_before_candidate_proof(self):
+        references = []
+        original_compose, original_proof = reconcile.compose, reconcile.proof_for
+
+        def compose(*args):
+            result = original_compose(*args)
+            references.append(weakref.ref(result))
+            return result
+
+        def proof(*args):
+            gc.collect()
+            self.assertTrue(references)
+            self.assertTrue(all(reference() is None for reference in references),
+                            'Construction metadata is retained during independent candidate validation.')
+            return original_proof(*args)
+
+        with mock.patch.object(reconcile, 'compose', side_effect=compose), \
+                mock.patch.object(reconcile, 'proof_for', side_effect=proof):
+            reconcile.write_reconciled(self.base, (self.add,), self.changes,
+                                      self.root / 'released', observation(self.base))
 
     def test_missing_live_row_is_not_an_implicit_withdrawal(self):
         with self.assertRaisesRegex(ValueError, 'preservation'):
