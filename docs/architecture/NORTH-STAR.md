@@ -4,6 +4,32 @@ Kind: current product direction. Updated October 11, 2026 under the owner's requ
 
 ## Current direction
 
+Baltor gives people and their chosen agents a head start through maintained
+external knowledge and reusable working material. A person can begin with an
+idea, compare suitable approaches, obtain an implementation and revise the
+result without rediscovering every prerequisite.
+
+Agent Feeds supplies dated capabilities, comparisons, requirements, prices,
+benchmarks and methods. Harness Files supplies instructions, code, tools,
+checks, assets and editable native projects. Customer-authorized live execution
+is a separate capability. Private project access is not a prerequisite for
+useful public research. Engineering, business operations and creative production
+share this foundation.
+
+The [current architecture map](CURRENT-ARCHITECTURE-MAP.md) separates public
+service, customer execution, internal hosted operations and internal production.
+The deployment record identifies their actual placement. A Cloudflare product
+or upstream repository becomes an engine choice only after its existing typed
+edge, permissions, costs and behavior are qualified.
+
+Maintain a prioritized research frontier: source discoveries and observed
+failures can suggest further questions, with shared finite budgets and explicit
+exit conditions. Popularity is a discovery signal, not qualification. Public
+web prominence and observed agent consumption need different rankings and
+visible measurement windows. Creative alternatives include genuinely open-source
+editors and native scripting or MCP adapters; a language choice or a claimed
+clean-room origin does not establish compatibility, rights or task success.
+
 On October 11 the owner prioritized deploying the Claude-export interface,
 then reaching at least two million distinct served harness component files,
 then improving each feature set starting with Feeds. Reconcile earlier prompts,

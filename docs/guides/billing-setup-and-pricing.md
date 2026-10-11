@@ -28,7 +28,7 @@ tools remain included with Pro at no extra charge.
 
 These public prices do not change existing subscriptions or account grants.
 The host's active billing policy determines which Stripe Price a new Pro
-checkout uses. The launch decision and dated test receipts below retain
+checkout uses. The launch decision and dated test records below retain
 their original amounts; they do not establish the current provider setup.
 
 ## The price at launch

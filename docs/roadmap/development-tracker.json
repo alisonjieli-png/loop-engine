@@ -29,6 +29,28 @@
    "waiting_on": []
   },
   {
+   "acceptance": "Current pages show $9 Basic/Feeds, $49 Pro and $99 Max, and new Pro checkout selects the verified $49 monthly USD Price while existing subscriptions and grants remain valid.",
+   "comment": "Prices are monthly standard rates, not evidence that paid Feeds or Max enrollment has been activated. Existing paid periods, free grants and terms remain intact.",
+   "complete": false,
+   "completion_status": "published",
+   "depends_on": [
+    "S-6.35.03"
+   ],
+   "evidence": "October 11 explicit owner price request. Read-only preflight confirmed one existing $29 Pro Price. One new $49 monthly USD Price was created and read back; the old Price is unchanged, with zero subscription mutations or payments. Frontend source checks are in progress in an isolated worktree.",
+   "id": "S-6.35.04",
+   "next_action": "Finish the checked source integration and guarded host-policy transition; the new Price is prepared but not yet selected by live checkout.",
+   "owner_step": "S-6.35",
+   "procedure": [
+    "Keep Feeds free through December 31, 2026 Eastern with paid opt-in and keep Max's local public preview free without paid checkout.",
+    "Reconcile the current provider Product and Price; create or reuse one exact new Pro Price with an idempotent recorded operation, without changing subscriptions.",
+    "Retain prior Price identities in the entitlement policy and bind only new checkout to the new Price.",
+    "Check every current price surface and known-wrong mixed-price cases; deploy exact CI-passed code and verify provider, host policy, edge and checkout presentation."
+   ],
+   "status": "building",
+   "title": "Apply the owner's monthly Basic, Pro and Max prices",
+   "waiting_on": []
+  },
+  {
    "acceptance": "The homepage and pricing page show three visually distinct offerings outside the hero, with working actions and truthful current price and execution scope.",
    "comment": "No third paid hosted service or new billing price is activated by a card layout.",
    "complete": true,
@@ -425,6 +447,32 @@
    ]
   },
   {
+   "acceptance": "Source findings propose deduplicated follow-up questions through existing managed records and scheduler, with initiative-level budgets, depth and fanout enforced before dispatch and independent review before promotion.",
+   "comment": "A prompt telling an agent to make only three searches is not a hard transport limit. A generated idea cannot grant network, model or publication authority.",
+   "complete": false,
+   "completion_status": "offline_verified",
+   "depends_on": [
+    "S-6.214.03",
+    "S-6.214.04"
+   ],
+   "evidence": "October 11 source/research-owner inspection identified existing scheduler and managed-record boundaries plus gaps; 24 wrong controls are proposed, not executed frontier tests. Tracking-parameter source dedup is implemented separately.",
+   "id": "S-6.214.13",
+   "next_action": "Implement the smallest typed frontier admission increment under knowledge_radar and SQLiteReactiveScheduler, with cycle, duplicate, concurrent-cap and unknown-outcome controls.",
+   "owner_step": "S-6.214",
+   "procedure": [
+    "Bind source, originating finding, question, purpose, policy and exact record revision for every follow-up.",
+    "Reserve shared request, model, byte, time and cost limits; descendants cannot reset an allowance or widen source access.",
+    "Use existing trigger, lease, priority and uncertain-outcome handling; reject unsupported cooldown settings instead of pretending they work.",
+    "Keep no-candidate outcomes and failed attempts; audit novelty and utility before component expansion."
+   ],
+   "status": "ready",
+   "title": "Bound and prioritize follow-up research initiatives",
+   "waiting_on": [
+    "S-6.214.03",
+    "S-6.214.04"
+   ]
+  },
+  {
    "acceptance": "Each selected source has a recorded allowed use, retention policy and redistribution boundary.",
    "comment": "Marketplace ratings and compliance claims are not independent evidence.",
    "complete": false,
@@ -473,6 +521,26 @@
     "S-6.214.04",
     "S-6.214.05"
    ]
+  },
+  {
+   "acceptance": "Existing source-watch machinery detects relevant editor changes, and prioritized native or MCP adapters pass reproducible editing, meaningful revision, export and clean-reopen checks before use.",
+   "comment": "The same intake records include prompts.chat, Claude Image View, the Maps actor directory and Dopefolio with source-specific tests and rights limits. Facebook references remain access/reuse qualification targets.",
+   "complete": false,
+   "completion_status": "live_qualified",
+   "depends_on": [],
+   "evidence": "Primary-source research found FilmCraft's claimed clean-room Rust/headless-MCP route, WeftCut's documented MCP timeline interface, Graphite's alpha Rust engine and Flare's early-alpha OpenToonz fork. These are documented leads, not Baltor-executed integrations.",
+   "id": "S-6.214.15",
+   "next_action": "Extend the existing bounded daily source watch and qualify a representative edit/revision/export task for selected candidates.",
+   "owner_step": "S-6.214",
+   "procedure": [
+    "Track film editing, compositing, drawing, animation, audio and 3D tools; distinguish free proprietary, open source and unresolved reconstruction claims.",
+    "Preserve exact source revision and separate code, data, media, codec and trademark terms.",
+    "Prefer existing native scripting or CLI engines behind the same typed edge; qualify MCP transport and effect control separately.",
+    "Test bounded files, cancellation, state inspection, undo, edit locality, import/export fidelity and reopen behavior; do not execute untrusted upstream code during discovery."
+   ],
+   "status": "building",
+   "title": "Watch and qualify open creative-tool alternatives and automation interfaces",
+   "waiting_on": []
   },
   {
    "acceptance": "One thousand canonical sources meet the recorded access, rights, freshness and collection criteria.",
@@ -585,6 +653,32 @@
    "title": "Deliver and measure personalized feeds",
    "waiting_on": [
     "S-6.214.10"
+   ]
+  },
+  {
+   "acceptance": "The public website filters eligible feeds and components and explains separate web-popularity and agent-use sorts with source, period, sample coverage and unknown states.",
+   "comment": "Popularity is not a quality score or permission to adopt a tool. An absent usage measurement is unknown, not zero.",
+   "complete": false,
+   "completion_status": "live_qualified",
+   "depends_on": [
+    "S-6.214.09",
+    "S-6.214.11"
+   ],
+   "evidence": "October 11 audit: monthly billing counts are account/item-digest units, and anonymous link counters cannot distinguish agents, people or bots. No measured agent-use ranking is available yet.",
+   "id": "S-6.214.14",
+   "next_action": "Ship sourced web-prominence metrics first where comparable; collect qualified agent-use evidence before presenting an agent-use leaderboard.",
+   "owner_step": "S-6.214",
+   "procedure": [
+    "Build a ranking projection over existing item/source records, not a competing catalogue or engine-selection policy.",
+    "Keep GitHub stars, downloads, web mentions and growth separate unless a named normalization policy qualifies their combination.",
+    "Record authorized client consumption separately from billing dedup, anonymous page counts, execution and accepted outcomes; exclude internal tests and known abuse.",
+    "Protect private users and projects, bound low-volume disclosure and test missing/stale metrics, ties, duplicates and fabricated counts."
+   ],
+   "status": "proposed",
+   "title": "Show top feeds and components with distinct popularity and agent-use rankings",
+   "waiting_on": [
+    "S-6.214.09",
+    "S-6.214.11"
    ]
   },
   {
@@ -859,7 +953,7 @@
    ],
    "evidence": "",
    "id": "S-6.218.08",
-   "next_action": "Keep the $49.99 target conditional on a workable delivered scope.",
+   "next_action": "Keep the owner's $99 monthly Max price conditional on qualified paid scope; the current local public preview stays free.",
    "owner_step": "S-6.218",
    "procedure": [
     "Measure unit economics for the qualified provider set.",
@@ -1263,9 +1357,9 @@
    "complete": false,
    "completion_status": "offline_verified",
    "depends_on": [],
-   "evidence": "The priority RapidAPI session is extracted; broader 24/36-hour history coverage and semantic review remain incomplete.",
+   "evidence": "October 11 inventory covers forty accessible local files in the October 9 16:46 UTC to October 11 16:46 UTC window: 57 user-role records and 124 visible assistant records. Sixteen deduplicated owner-message candidates were reviewed, including long design/API/research pastes. The single oversized raw record is an October 8 compaction outside the window, not a missing in-window owner prompt. Notifications and agent work are separate; complete cross-conversation action coverage is not certified.",
    "id": "S-6.217.01",
-   "next_action": "Review prioritized recent chunks instead of treating extraction as full understanding.",
+   "next_action": "Complete the action-to-evidence review and append newer owner requests; keep missing external conversations explicit.",
    "owner_step": "S-6.217",
    "procedure": [
     "Read actual message timestamps and distinguish owner instructions from tool or agent output.",
@@ -1326,7 +1420,7 @@
  ],
  "execution_counts": {
   "complete": 16,
-  "total": 62
+  "total": 66
  },
  "lanes": {
   "blocked": [
@@ -6764,7 +6858,7 @@
  ],
  "record_type": "development_tracker/v2",
  "source": "docs/roadmap/roadmap.yaml",
- "source_fingerprint": "sha256:a9f2a9ee0571895b66518f72c2939490d7f665ceb78924e431c119229c3ccbba",
+ "source_fingerprint": "sha256:60b05a7a919bf8772ea019097836f07496007b4bcb043e87d27d4e18869fdcad",
  "working_schedule": {
   "blocks": [
    {

@@ -1,5 +1,53 @@
 schema: hardcoding_allowlist/v1
 entries:
+- finding_id: hardcoding.a5079d2377f03e176407c5f2
+  owner: "tools.research_source_watch.json:sources[40].url"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed October 11, 2026: this exact owner-requested repository URL belongs to the validated source-watch manifest, not a hidden implementation endpoint. One bounded anonymous revision read succeeded and its baseline is recorded. The reader enforces HTTPS, the GitHub repository shape, no redirects, unique identities and a 50-request ceiling. Source-specific notes retain code, media and service rights limits. Change detection grants no installation, execution or publication authority; changed URLs remain new findings. tools/test_refresh_research_sources.py checks the manifest and refusal boundaries."
+  created_on: '2026-10-11'
+  expires_on: '2027-01-11'
+- finding_id: hardcoding.df34f86d602664419636942a
+  owner: "tools.research_source_watch.json:sources[41].url"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed October 11, 2026: this exact owner-requested repository URL belongs to the validated source-watch manifest, not a hidden implementation endpoint. One bounded anonymous revision read succeeded and its baseline is recorded. The reader enforces HTTPS, the GitHub repository shape, no redirects, unique identities and a 50-request ceiling. Source-specific notes retain code, media and service rights limits. Change detection grants no installation, execution or publication authority; changed URLs remain new findings. tools/test_refresh_research_sources.py checks the manifest and refusal boundaries."
+  created_on: '2026-10-11'
+  expires_on: '2027-01-11'
+- finding_id: hardcoding.ca0eec411d908c4e13ef82bd
+  owner: "tools.research_source_watch.json:sources[42].url"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed October 11, 2026: this exact owner-requested repository URL belongs to the validated source-watch manifest, not a hidden implementation endpoint. One bounded anonymous revision read succeeded and its baseline is recorded. The reader enforces HTTPS, the GitHub repository shape, no redirects, unique identities and a 50-request ceiling. Source-specific notes retain code, media and service rights limits. Change detection grants no installation, execution or publication authority; changed URLs remain new findings. tools/test_refresh_research_sources.py checks the manifest and refusal boundaries."
+  created_on: '2026-10-11'
+  expires_on: '2027-01-11'
+- finding_id: hardcoding.a7b585f8217f1f2443da620a
+  owner: "tools.research_source_watch.json:sources[43].url"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed October 11, 2026: this exact owner-requested repository URL belongs to the validated source-watch manifest, not a hidden implementation endpoint. One bounded anonymous revision read succeeded and its baseline is recorded. The reader enforces HTTPS, the GitHub repository shape, no redirects, unique identities and a 50-request ceiling. Source-specific notes retain code, media and service rights limits. Change detection grants no installation, execution or publication authority; changed URLs remain new findings. tools/test_refresh_research_sources.py checks the manifest and refusal boundaries."
+  created_on: '2026-10-11'
+  expires_on: '2027-01-11'
+- finding_id: hardcoding.6755bb631d444b83b4bed908
+  owner: "tools.research_source_watch.json:sources[44].url"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed October 11, 2026: this exact owner-requested repository URL belongs to the validated source-watch manifest, not a hidden implementation endpoint. One bounded anonymous revision read succeeded and its baseline is recorded. The reader enforces HTTPS, the GitHub repository shape, no redirects, unique identities and a 50-request ceiling. Source-specific notes retain code, media and service rights limits. Change detection grants no installation, execution or publication authority; changed URLs remain new findings. tools/test_refresh_research_sources.py checks the manifest and refusal boundaries."
+  created_on: '2026-10-11'
+  expires_on: '2027-01-11'
+- finding_id: hardcoding.c5f764387cba52ad99a7335d
+  owner: "tools.research_source_watch.json:sources[45].url"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed October 11, 2026: this exact owner-requested repository URL belongs to the validated source-watch manifest, not a hidden implementation endpoint. One bounded anonymous revision read succeeded and its baseline is recorded. The reader enforces HTTPS, the GitHub repository shape, no redirects, unique identities and a 50-request ceiling. Source-specific notes retain code, media and service rights limits. Change detection grants no installation, execution or publication authority; changed URLs remain new findings. tools/test_refresh_research_sources.py checks the manifest and refusal boundaries."
+  created_on: '2026-10-11'
+  expires_on: '2027-01-11'
+- finding_id: hardcoding.e93e83656ebcf1adccb02b1c
+  owner: "tools.research_source_watch.json:sources[46].url"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed October 11, 2026: this exact owner-requested repository URL belongs to the validated source-watch manifest, not a hidden implementation endpoint. One bounded anonymous revision read succeeded and its baseline is recorded. The reader enforces HTTPS, the GitHub repository shape, no redirects, unique identities and a 50-request ceiling. Source-specific notes retain code, media and service rights limits. Change detection grants no installation, execution or publication authority; changed URLs remain new findings. tools/test_refresh_research_sources.py checks the manifest and refusal boundaries."
+  created_on: '2026-10-11'
+  expires_on: '2027-01-11'
+- finding_id: hardcoding.8dd8e26c75f2ac40fa449768
+  owner: "tools.research_source_watch.json:sources[47].url"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed October 11, 2026: this exact owner-requested repository URL belongs to the validated source-watch manifest, not a hidden implementation endpoint. One bounded anonymous revision read succeeded and its baseline is recorded. The reader enforces HTTPS, the GitHub repository shape, no redirects, unique identities and a 50-request ceiling. Source-specific notes retain code, media and service rights limits. Change detection grants no installation, execution or publication authority; changed URLs remain new findings. tools/test_refresh_research_sources.py checks the manifest and refusal boundaries."
+  created_on: '2026-10-11'
+  expires_on: '2027-01-11'
 - finding_id: hardcoding.c9cf27114430ad12fd7d9055
   owner: "tools.knowledge_radar.greenhouse_intake:GreenhouseGet.__init__"
   classification: DEPLOYMENT_CONFIGURATION

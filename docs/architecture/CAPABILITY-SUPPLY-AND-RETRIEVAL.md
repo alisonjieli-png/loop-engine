@@ -1,6 +1,6 @@
 # Capability supply and retrieval
 
-Kind: current architecture guide. Checked September 30, 2026. The
+Kind: current architecture guide. Checked October 11, 2026. The
 [roadmap](../roadmap/roadmap.yaml) owns work status, and
 [AGENTS.md](../../AGENTS.md#commit-push-and-release-authority) owns authority.
 The [deployment record](MVP-CLIENT-SERVER.md#current-deployment) identifies
@@ -37,7 +37,7 @@ flowchart LR
 
 The public service, customer client, internal server jobs and internal local
 pipelines remain the four operating areas. Their boundaries are documented
-in the [four-area architecture](FOUR-ZONE-ARCHITECTURE-2026-09-27.md).
+in the [current architecture map](CURRENT-ARCHITECTURE-MAP.md#2-package-architecture).
 Internal research does not run inside a public web request.
 
 The wrapping design is:
@@ -101,18 +101,19 @@ S-6.40, S-6.81, S-6.214 and S-6.215.
 
 ## Current search implementation
 
-The hosted catalogue uses
-[`ReleaseSearchIndex`](../../src/loop_engine/core/service_runtime/catalogue_search.py):
-SQLite FTS5/BM25, deterministic character-hash vectors and authorized ranking.
-It builds an index per catalogue view. These hash vectors are not learned
-semantic embeddings. The general retrieval module also contains an optional
-LanceDB/Tantivy adapter; the hosted catalogue does not select it.
+The hosted catalogue selects an engine through
+[`catalogue_search_index/v1`](../../src/loop_engine/core/service_runtime/catalogue_index_engines.py).
+The baseline uses `ReleaseSearchIndex`; the selectable disk engine stores its
+index and descriptors on the volume. Both use SQLite FTS5/BM25, deterministic
+character-hash vectors and authorized ranking. These vectors are not learned
+semantic embeddings. The current deployment uses the custom disk-backed path.
 
-`catalogue_serving.py` constructs `ReleaseSearchIndex` directly when it builds
-a catalogue view. The lexical and vector slots are declared in the slot
-catalogue, but that declaration does not make this constructor a selectable
-Rust server. A replacement needs host configuration, a versioned engine
-handshake and the same authorization and result checks before activation.
+`service_catalogue_source/v2` names `search_engine` and `index_root`; version 3
+also supports an explicit body-store selection. Host startup refuses an
+unavailable or planned search engine rather than silently replacing it. The
+Lance object-store and D1/KV engines remain planned in this slot despite their
+prototype measurements. A replacement needs the same versioned edge,
+authorization, result and withdrawal checks before activation.
 
 No Rust migration is complete. Compare index construction time, memory,
 search latency and relevance through the existing retrieval edge before
@@ -123,7 +124,7 @@ filters, exact references and unsupported-capability refusals in that comparison
 Current hosted request
   → service authentication and request limits
   → immutable catalogue view
-  → ReleaseSearchIndex (Python; SQLite FTS5 and hash-vector ranking)
+  → configured catalogue_search_index/v1 engine (SQLite FTS5 and hash vectors)
   → permission-scoped results with exact package references
   → separately authorized and metered download
 

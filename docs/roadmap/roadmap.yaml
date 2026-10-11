@@ -24,7 +24,7 @@ continuation:
       - {task: S-6.217.01, owner: History and evidence, offset_hours: 0, duration_hours: 3}
       - {task: S-6.204.02, owner: Launch and funding, offset_hours: 3, duration_hours: 5}
       - {task: S-6.204.01, owner: Customer outcomes, offset_hours: 6, duration_hours: 4}
-  execution_order: ["S-6.35.03","S-6.12.04","S-6.35.01","S-6.215.01","S-6.215.02","S-6.215.03","S-6.215.04","S-6.215.05","S-6.215.06","S-6.215.07","S-6.215.08","S-6.215.09","S-6.215.10","S-6.215.11","S-6.215.12","S-6.215.13","S-6.214.01","S-6.214.02","S-6.214.03","S-6.214.04","S-6.214.05","S-6.214.06","S-6.214.07","S-6.214.09","S-6.214.12","S-6.214.10","S-6.214.11","S-6.207.01","S-6.207.02","S-6.207.03","S-6.207.04","S-6.207.05","S-6.218.01","S-6.218.02","S-6.218.03","S-6.218.04","S-6.218.05","S-6.218.06","S-6.218.07","S-6.218.08","S-6.218.09","S-6.13.01","S-6.13.02","S-6.13.03","S-6.12.01","S-6.12.02","S-6.12.03","S-6.24.01","S-6.24.02","S-6.201.01","S-6.201.02","S-6.201.03","S-6.102.01","S-6.102.02","S-6.204.01","S-6.204.02","S-6.216.01","S-6.67.01","S-6.35.02","S-6.217.01","S-6.215.14","S-6.214.08"]
+  execution_order: ["S-6.35.03","S-6.35.04","S-6.12.04","S-6.35.01","S-6.215.01","S-6.215.02","S-6.215.03","S-6.215.04","S-6.215.05","S-6.215.06","S-6.215.07","S-6.215.08","S-6.215.09","S-6.215.10","S-6.215.11","S-6.215.12","S-6.215.13","S-6.214.01","S-6.214.02","S-6.214.03","S-6.214.04","S-6.214.13","S-6.214.05","S-6.214.06","S-6.214.15","S-6.214.07","S-6.214.09","S-6.214.12","S-6.214.10","S-6.214.11","S-6.214.14","S-6.207.01","S-6.207.02","S-6.207.03","S-6.207.04","S-6.207.05","S-6.218.01","S-6.218.02","S-6.218.03","S-6.218.04","S-6.218.05","S-6.218.06","S-6.218.07","S-6.218.08","S-6.218.09","S-6.13.01","S-6.13.02","S-6.13.03","S-6.12.01","S-6.12.02","S-6.12.03","S-6.24.01","S-6.24.02","S-6.201.01","S-6.201.02","S-6.201.03","S-6.102.01","S-6.102.02","S-6.204.01","S-6.204.02","S-6.216.01","S-6.67.01","S-6.35.02","S-6.217.01","S-6.215.14","S-6.214.08"]
   title: First release and continued system development
   started_at: "2026-09-19T14:12:54Z"
   target_at: "2026-09-20T14:12:54Z"
@@ -2764,6 +2764,16 @@ steps:
         next_action: "Apply the owner's subsequent $9/$49/$99 monthly price change through a separate checked release; preserve existing subscriptions and free preview terms."
         evidence: "Release 87 from 9d7b7e50 is live on Fly and Cloudflare. Exact CI 38156437645 and guarded deployment 38157179704 passed, gate closed. Local browser 979/979 and 197/197 wrong controls, design 144/144. Live offering matrix 483/483; independent review 456/456 across ten hosts and 68 views; all 3,273 edge files match. Full route audit: 71 pages, 293 views, 830 links, zero problems. See pilot-release-87.json for limits and retained failed attempts."
         comment: "Basic, Pro and Max are plan names; Agent Feeds, Harness Files and Overnight / AFK Work remain features. Max's scoped public preview does not claim hosted execution or activate a paid checkout. The owner explicitly prioritizes the design release over the longer migration and factory programme."
+      - id: "S-6.35.04"
+        title: "Apply the owner's monthly Basic, Pro and Max prices"
+        status: "building"
+        completion_status: "published"
+        depends_on: ["S-6.35.03"]
+        acceptance: "Current pages show $9 Basic/Feeds, $49 Pro and $99 Max, and new Pro checkout selects the verified $49 monthly USD Price while existing subscriptions and grants remain valid."
+        procedure: ["Keep Feeds free through December 31, 2026 Eastern with paid opt-in and keep Max's local public preview free without paid checkout.","Reconcile the current provider Product and Price; create or reuse one exact new Pro Price with an idempotent recorded operation, without changing subscriptions.","Retain prior Price identities in the entitlement policy and bind only new checkout to the new Price.","Check every current price surface and known-wrong mixed-price cases; deploy exact CI-passed code and verify provider, host policy, edge and checkout presentation."]
+        next_action: "Finish the checked source integration and guarded host-policy transition; the new Price is prepared but not yet selected by live checkout."
+        evidence: "October 11 explicit owner price request. Read-only preflight confirmed one existing $29 Pro Price. One new $49 monthly USD Price was created and read back; the old Price is unchanged, with zero subscription mutations or payments. Frontend source checks are in progress in an isolated worktree."
+        comment: "Prices are monthly standard rates, not evidence that paid Feeds or Max enrollment has been activated. Existing paid periods, free grants and terms remain intact."
       - id: "S-6.35.01"
         title: "Release reviewed main and verify it live"
         status: "published"
@@ -5209,6 +5219,36 @@ steps:
         next_action: "Integrate the checked builder with the new design, deploy and verify both agents' downloaded files against their selections."
         evidence: "53 focused tests, 26 HTTP web checks and 21 browser checks passed in the source worktree. Root's merged feed/delivery check population passed 71 tests."
         comment: "Profiles are customer-owned files. Hosted saved assignments, opt-in private scopes and personalized event delivery remain in S-6.214.10 and S-6.214.11."
+      - id: "S-6.214.13"
+        title: "Bound and prioritize follow-up research initiatives"
+        status: "ready"
+        completion_status: "offline_verified"
+        depends_on: ["S-6.214.03", "S-6.214.04"]
+        acceptance: "Source findings propose deduplicated follow-up questions through existing managed records and scheduler, with initiative-level budgets, depth and fanout enforced before dispatch and independent review before promotion."
+        procedure: ["Bind source, originating finding, question, purpose, policy and exact record revision for every follow-up.","Reserve shared request, model, byte, time and cost limits; descendants cannot reset an allowance or widen source access.","Use existing trigger, lease, priority and uncertain-outcome handling; reject unsupported cooldown settings instead of pretending they work.","Keep no-candidate outcomes and failed attempts; audit novelty and utility before component expansion."]
+        next_action: "Implement the smallest typed frontier admission increment under knowledge_radar and SQLiteReactiveScheduler, with cycle, duplicate, concurrent-cap and unknown-outcome controls."
+        evidence: "October 11 source/research-owner inspection identified existing scheduler and managed-record boundaries plus gaps; 24 wrong controls are proposed, not executed frontier tests. Tracking-parameter source dedup is implemented separately."
+        comment: "A prompt telling an agent to make only three searches is not a hard transport limit. A generated idea cannot grant network, model or publication authority."
+      - id: "S-6.214.14"
+        title: "Show top feeds and components with distinct popularity and agent-use rankings"
+        status: "proposed"
+        completion_status: "live_qualified"
+        depends_on: ["S-6.214.09", "S-6.214.11"]
+        acceptance: "The public website filters eligible feeds and components and explains separate web-popularity and agent-use sorts with source, period, sample coverage and unknown states."
+        procedure: ["Build a ranking projection over existing item/source records, not a competing catalogue or engine-selection policy.","Keep GitHub stars, downloads, web mentions and growth separate unless a named normalization policy qualifies their combination.","Record authorized client consumption separately from billing dedup, anonymous page counts, execution and accepted outcomes; exclude internal tests and known abuse.","Protect private users and projects, bound low-volume disclosure and test missing/stale metrics, ties, duplicates and fabricated counts."]
+        next_action: "Ship sourced web-prominence metrics first where comparable; collect qualified agent-use evidence before presenting an agent-use leaderboard."
+        evidence: "October 11 audit: monthly billing counts are account/item-digest units, and anonymous link counters cannot distinguish agents, people or bots. No measured agent-use ranking is available yet."
+        comment: "Popularity is not a quality score or permission to adopt a tool. An absent usage measurement is unknown, not zero."
+      - id: "S-6.214.15"
+        title: "Watch and qualify open creative-tool alternatives and automation interfaces"
+        status: "building"
+        completion_status: "live_qualified"
+        depends_on: []
+        acceptance: "Existing source-watch machinery detects relevant editor changes, and prioritized native or MCP adapters pass reproducible editing, meaningful revision, export and clean-reopen checks before use."
+        procedure: ["Track film editing, compositing, drawing, animation, audio and 3D tools; distinguish free proprietary, open source and unresolved reconstruction claims.","Preserve exact source revision and separate code, data, media, codec and trademark terms.","Prefer existing native scripting or CLI engines behind the same typed edge; qualify MCP transport and effect control separately.","Test bounded files, cancellation, state inspection, undo, edit locality, import/export fidelity and reopen behavior; do not execute untrusted upstream code during discovery."]
+        next_action: "Extend the existing bounded daily source watch and qualify a representative edit/revision/export task for selected candidates."
+        evidence: "Primary-source research found FilmCraft's claimed clean-room Rust/headless-MCP route, WeftCut's documented MCP timeline interface, Graphite's alpha Rust engine and Flare's early-alpha OpenToonz fork. These are documented leads, not Baltor-executed integrations."
+        comment: "The same intake records include prompts.chat, Claude Image View, the Maps actor directory and Dopefolio with source-specific tests and rights limits. Facebook references remain access/reuse qualification targets."
     title: "Daily distillations: new papers, skills, plugins, protocol servers, services and repositories, each served as a summary page, RSS, JSON and downloadable components"
     status: building
     depends_on: [S-6.213, S-6.102, S-6.81, S-6.197]
@@ -5428,8 +5468,8 @@ steps:
         depends_on: []
         acceptance: "Accessible owner directions and actions from the requested time window map to existing roadmap owners with coverage gaps retained."
         procedure: ["Read actual message timestamps and distinguish owner instructions from tool or agent output.","Reconcile changed prices, product scope, privacy, deployment and source requests.","Keep source text private and record only authorized generalizations in public documentation."]
-        next_action: "Review prioritized recent chunks instead of treating extraction as full understanding."
-        evidence: "The priority RapidAPI session is extracted; broader 24/36-hour history coverage and semantic review remain incomplete."
+        next_action: "Complete the action-to-evidence review and append newer owner requests; keep missing external conversations explicit."
+        evidence: "October 11 inventory covers forty accessible local files in the October 9 16:46 UTC to October 11 16:46 UTC window: 57 user-role records and 124 visible assistant records. Sixteen deduplicated owner-message candidates were reviewed, including long design/API/research pastes. The single oversized raw record is an October 8 compaction outside the window, not a missing in-window owner prompt. Notifications and agent work are separate; complete cross-conversation action coverage is not certified."
         comment: "Imported instructions are historical data, not current effect authority."
     title: "Library candidates from the owner's Dot direction: review and persona packs, rubrics, briefs, templates and worked examples, one per distinct job"
     status: building
@@ -5536,7 +5576,7 @@ steps:
         depends_on: ["S-6.218.07"]
         acceptance: "Checkout, permissions, displayed limits and the delivered service agree without changing existing subscriptions."
         procedure: ["Measure unit economics for the qualified provider set.","Separate BYOK access from any capped included credits.","Apply the approved pricing process and preserve existing rates and grants."]
-        next_action: "Keep the $49.99 target conditional on a workable delivered scope."
+        next_action: "Keep the owner's $99 monthly Max price conditional on qualified paid scope; the current local public preview stays free."
         evidence: ""
         comment: "Model tokens and unlimited third-party calls are not included by implication."
       - id: "S-6.218.09"
