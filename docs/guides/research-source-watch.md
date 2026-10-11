@@ -42,8 +42,19 @@ bulk material, create intelligence, run models, qualify harnesses, change
 runtime authority, or publish anything. Intelligence ingestion and review
 use the existing candidate and approval path.
 
+The daily research-watch workflow keeps the report, summary and command log
+as artifacts. It opens or updates the existing research issue when a source
+changes or collection coverage fails. A successful unchanged watch adds no
+issue comment. A failed check does not establish that a source changed or
+disappeared.
+
+The summary records changes and coverage errors separately. A missing or
+malformed report leaves the change count unknown and records a monitoring
+error. The workflow retains the watcher's exit status and fails degraded
+runs after the artifact and issue steps. It makes no model call.
+
 Run the focused checks with:
 
 ```bash
-python3 -m unittest tools.test_refresh_research_sources
+python3 -m unittest tools.test_refresh_research_sources tools.test_summarize_research_watch
 ```

@@ -3,7 +3,7 @@ name: Research watch
 # A daily, read-only check of the primary sources in tools/research_source_watch.json:
 # protocol and harness specifications, registries and projects Baltor follows. It makes
 # bounded HTTPS reads and no model call, keeps its report as a run artifact, and opens
-# or updates one issue when a source changed, so the research team reads the change.
+# or updates the existing research issue when a source changed or collection failed.
 on:
   schedule:
     - cron: "41 7 * * *"
@@ -49,11 +49,12 @@ jobs:
         run: |
           set -euo pipefail
           report="$RUNNER_TEMP/research-watch.json"
+          watch_exit_code=0
           PYTHONPATH=src:tools python tools/refresh_research_sources.py --online --max-online-sources 50 \
-            --prior-dir "$RUNNER_TEMP/research-watch-prior" --output "$report" > "$RUNNER_TEMP/research-watch.log" 2>&1 || true
+            --prior-dir "$RUNNER_TEMP/research-watch-prior" --output "$report" > "$RUNNER_TEMP/research-watch.log" 2>&1 || watch_exit_code=$?
           cat "$RUNNER_TEMP/research-watch.log"
-          python3 tools/summarize_research_watch.py "$report" > "$RUNNER_TEMP/research-watch.md"
-          echo "changed=$(python3 tools/summarize_research_watch.py "$report" --changed-count)" >> "$GITHUB_OUTPUT"
+          python3 tools/summarize_research_watch.py "$report" --watch-exit-code "$watch_exit_code" \
+            --github-output "$GITHUB_OUTPUT" > "$RUNNER_TEMP/research-watch.md"
       - name: Keep the report
         if: always()
         uses: actions/upload-artifact@v7
@@ -62,10 +63,11 @@ jobs:
           path: |
             ${{ runner.temp }}/research-watch.json
             ${{ runner.temp }}/research-watch.md
-          if-no-files-found: ignore
+            ${{ runner.temp }}/research-watch.log
+          if-no-files-found: warn
           retention-days: 30
-      - name: Open or update the research issue when a source changed
-        if: steps.watch.outputs.changed != '0'
+      - name: Open or update the research issue for changes or failed coverage
+        if: always() && steps.watch.outcome == 'success' && (steps.watch.outputs.changed != '0' || steps.watch.outputs.errors != '0')
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
@@ -77,3 +79,8 @@ jobs:
           else
             gh issue create --title "$title" --body-file "$RUNNER_TEMP/research-watch.md"
           fi
+      - name: Fail the run when collection coverage is degraded
+        if: always() && steps.watch.outputs.errors != '' && steps.watch.outputs.errors != '0'
+        run: |
+          echo "Research watch coverage is degraded. See the research-watch artifact and issue summary."
+          exit 1
