@@ -33,8 +33,8 @@ def run_checks(check, root):
     _billing(check, root / "billing")
 
 
-#: Pure packaged-record readers; neither imports a service or renderer module.
-WEB_PAGES_MAY_IMPORT = frozenset({"web_site_map", "gallery_records", "feed_source_collections"})
+#: Pure packaged-record readers; their restricted dependencies are checked below.
+WEB_PAGES_MAY_IMPORT = frozenset({"web_site_map", "gallery_records", "gallery_media", "feed_source_collections"})
 
 
 def _imported_service_modules(source):
@@ -64,20 +64,23 @@ def _web_pages_boundary(check):
     each page's own head and to choose the page a hostname shows at its root.
     The site map's reader, `web_site_map`, imports no service module itself,
     so it and the gallery preview record are permitted while both stay independent
-    of the application and other service modules.
+    of the application. The gallery media projection may read only that gallery
+    record, never a renderer, catalogue or transport.
     """
     from importlib.resources import files
     from types import SimpleNamespace
-    from . import web_pages, web_site_map, gallery_records, feed_source_collections
+    from . import web_pages, web_site_map, gallery_records, gallery_media, feed_source_collections
     from .http import ServiceHttpApplication
     from .web_pages import HTML_MEDIA_TYPE, WEB_ASSETS, served_asset
     source = Path(web_pages.__file__).read_text("utf-8")
     leaf = Path(web_site_map.__file__).read_text("utf-8")
     gallery_leaf = Path(gallery_records.__file__).read_text("utf-8")
+    media_leaf = Path(gallery_media.__file__).read_text("utf-8")
     feed_leaf = Path(feed_source_collections.__file__).read_text("utf-8")
     check("served_address_table_does_not_import_the_transport_application",
           _imported_service_modules(source) <= WEB_PAGES_MAY_IMPORT
           and not _imported_service_modules(leaf) and not _imported_service_modules(gallery_leaf)
+          and _imported_service_modules(media_leaf) <= {"gallery_records"}
           and _imported_service_modules(feed_leaf) <= {"records"})
     # Known-wrong cases: the same guard applied to a module that does import the
     # application, and to a site map reader that starts importing the service.
@@ -87,6 +90,8 @@ def _web_pages_boundary(check):
           and not _imported_service_modules(source + "from .http import ServiceHttpApplication\n") <= WEB_PAGES_MAY_IMPORT
           and bool(_imported_service_modules(leaf + "from .runtime import ServiceRuntime\n"))
           and bool(_imported_service_modules(gallery_leaf + "from .http import ServiceHttpApplication\n"))
+          and all(not _imported_service_modules(media_leaf + "from . import " + forbidden + "\n")
+                  <= {"gallery_records"} for forbidden in ("http", "runtime", "gallery_page", "web_pages"))
           and not _imported_service_modules(feed_leaf + "from .http import ServiceHttpApplication\n") <= {"records"})
     packaged = files("loop_engine").joinpath("core", "service_runtime", "web_assets")
     check("every_served_address_names_a_packaged_file",

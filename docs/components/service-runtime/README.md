@@ -613,6 +613,59 @@ unstated. Each one is designed and refused today, not silently missing.
 
 ## How to check it
 
+### Random public previews
+
+The gallery owns the random discovery pages at `/random`, `/random/image`,
+`/random/video` and `/random/music`. They use the same public gallery metadata
+and packaged preview files as the gallery. The browser selects from a bounded
+projection, avoids repeating the current preview when another exists, and
+retains an exact preview identity in the shareable address. A missing identity
+shows an unavailable state. It never falls back to another asset silently.
+Exact query links are restored by the browser. Without JavaScript, the page
+labels its fixed gallery sample explicitly and does not show it as the chosen
+preview. The selected card stays hidden until the address is resolved.
+
+The current projection contains 329 distinct WebP renders and no video or
+music. These are previews, not 329 independently qualified creative
+capabilities. Video and music pages state their empty populations. The source
+packages declare MIT; the gallery does not separately record a reuse licence
+for the rendered previews. The page keeps those facts separate. Saving public
+preview bytes grants neither reuse rights nor access to editable source files.
+Source links retain the gallery's account and plan requirements.
+
+The passive reader `gallery_media.py` checks exact preview bytes once and
+caches the finite projection. It reads no catalogue or customer state. Its
+companion record, `website_gallery_media/v1`, lives in
+`web_assets/gallery-media/media.json` under the same gallery owner. It is empty
+until a reviewer approves additional public previews. An entry names the
+public source item, exact source version, separate preview licence, provenance,
+review reference and reviewer, file digest, media type and dimensions or
+duration. Only approved entries with a current public source and matching
+packaged bytes enter the website asset registry. Unknown versions, remote
+media URLs, path traversal, unsupported formats and oversized inventories are
+refused. The reader permits at most 64 companion previews, 16 MiB per file,
+64 MiB in the companion inventory and five minutes per audio or video preview.
+
+Adding a reviewed video or music preview requires data and its exact packaged
+bytes, not a new renderer or provider connection. Approval must separately
+establish rights to the media inputs and public derivative. A source-code
+licence alone is insufficient. A small original video derivative can come from
+qualified native creative material after an independent preview review. Music
+needs an original composition or a separately cleared cue. Test tones and
+parser fixtures do not count as music. Neither path has been executed for this
+page release.
+
+Run `tools/test_gallery_random.py` with the gallery's existing tests, then
+`node --test tools/test_gallery_random.mjs`. The loopback-only browser check is
+`node tools/check_gallery_random.mjs NEW_DIRECTORY`, with `PYTHON` naming the
+qualified environment if needed. It tests mobile and desktop layouts in both
+appearances, keyboard selection, exact links, empty categories, failed media,
+no-script fallback and the existing download authorization boundary. Its media
+record fixtures are not playback or rights qualification. Static export uses
+the same page renderer and public asset registry.
+
+### Service checks
+
 Run the component's own checks first, then the service smoke run:
 
 ```bash

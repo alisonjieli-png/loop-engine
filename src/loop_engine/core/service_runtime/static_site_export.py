@@ -94,7 +94,7 @@ def static_addresses(*, include_model_details=True):
                   *dot_pages.ROUTES, *status_pages.ADDRESSES]
     # The guide page of Agent Feeds and the gallery are the same bytes on every request; Harness Files counts the served
     # catalogue and stays with the origin, like the library page.
-    addresses += [offering_guides.FEEDS_SETUP, gallery_page.INDEX, gallery_page.SITEMAP,
+    addresses += [offering_guides.FEEDS_SETUP, gallery_page.INDEX, gallery_page.SITEMAP, *gallery_page.RANDOM_ROUTES,
                   *(gallery_page.PREFIX + item["slug"] for item in gallery_page.public_items())]
     addresses += list(feed_source_collections.formats())
     seen, ordered = set(), []

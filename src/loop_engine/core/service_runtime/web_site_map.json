@@ -61,6 +61,54 @@
       "indexed": true
     },
     {
+      "address": "/random",
+      "view": "random",
+      "title": "Random creative previews",
+      "description": "Find a creative starting point: public previews with source details, licences and exact versions. Browse images, video and music by availability.",
+      "group": "Product",
+      "linked_from": ["footer", "page"],
+      "unlinked_reason": "",
+      "scroll_budget": "page",
+      "price_in_first_screen": false,
+      "indexed": true
+    },
+    {
+      "address": "/random/image",
+      "view": "random-image",
+      "title": "Random image previews",
+      "description": "Discover an original public image preview, inspect its licence and source, and choose another without searching the full library.",
+      "group": "Product",
+      "linked_from": ["page"],
+      "unlinked_reason": "",
+      "scroll_budget": "page",
+      "price_in_first_screen": false,
+      "indexed": true
+    },
+    {
+      "address": "/random/video",
+      "view": "random-video",
+      "title": "Random video previews",
+      "description": "Browse reviewed public video previews when available, with their source and licence. An empty category stays explicit.",
+      "group": "Product",
+      "linked_from": ["page"],
+      "unlinked_reason": "",
+      "scroll_budget": "page",
+      "price_in_first_screen": false,
+      "indexed": true
+    },
+    {
+      "address": "/random/music",
+      "view": "random-music",
+      "title": "Random music previews",
+      "description": "Browse reviewed public music previews when available, with their source and licence. An empty category stays explicit.",
+      "group": "Product",
+      "linked_from": ["page"],
+      "unlinked_reason": "",
+      "scroll_budget": "page",
+      "price_in_first_screen": false,
+      "indexed": true
+    },
+    {
       "address": "/dot-context",
       "view": "context",
       "title": "Dot working context",
@@ -1218,6 +1266,11 @@
             "role": "link",
             "label": "Gallery",
             "href": "/gallery"
+          },
+          {
+            "role": "link",
+            "label": "Random previews",
+            "href": "/random"
           },
           {"role": "link", "label": "Feeds", "href": "/feeds"},
           {

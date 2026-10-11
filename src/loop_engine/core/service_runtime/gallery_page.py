@@ -38,6 +38,7 @@ import json
 import re
 
 from . import gallery_records
+from .gallery_random import ROUTES as RANDOM_ROUTES
 from .gallery_records import (ASSET_PREFIX, PUBLIC_TIERS, RECORD_TYPE, RECORD_FOLDER, RECORD_FILE, TIERS,
                               TIER_LABELS, GalleryRecordError, parse_record, record)
 
@@ -71,7 +72,7 @@ def item_at(path: str):
 
 
 def handles(path: str) -> bool:
-    return path in (INDEX, SITEMAP) or item_at(path) is not None
+    return path in (INDEX, SITEMAP, *RANDOM_ROUTES) or item_at(path) is not None
 
 
 # --- Parts -------------------------------------------------------------------------------------------------------------
@@ -153,7 +154,8 @@ def index_body() -> str:
              'the engine.</p>'
              f'<p class="md-reading og-price">Your harness downloads the exact files with <strong>Pro, '
              f'{escape(price)}</strong>.</p><div class="md-actions"><a class="button primary" href="/get-started">Get started'
-             '</a><a class="lib-text-link" href="#get-files">How to get the files</a></div></div>')
+             '</a><a class="lib-text-link" href="#get-files">How to get the files</a>'
+             '<a class="lib-text-link" href="/random">Find a random preview</a></div></div>')
     chips = (f'<a class="gl-chip" href="#gallery-kinds" data-kind-filter="" aria-current="true">All <span>{len(items):,}'
              '</span></a>' + "".join(
                  f'<a class="gl-chip" href="#kind-{kind["id"]}" data-kind-filter="{kind["id"]}">{escape(kind["label"])} '
@@ -328,6 +330,9 @@ def rendered(path: str, method: str, display_name: str, host: "str | None" = Non
     from . import web_pages
     if method not in ("GET", "HEAD"):
         return None
+    if path in RANDOM_ROUTES:
+        from .gallery_random import rendered as random_rendered
+        return random_rendered(path, method, display_name, host)
     if path == SITEMAP:
         return sitemap_xml(web_pages.packaged_site_map()), "application/xml"
     if path == INDEX:
