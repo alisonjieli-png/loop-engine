@@ -583,6 +583,11 @@ class StripeSessionAdapter:
         if config.allow_network is not True or config.allow_session_creation is not True:
             raise ServiceRuntimeError("session_network_authority_required")
         self.effects.policy_available(self.policy_digest)
+        # Reject an unavailable plan before creating or looking up a provider customer.
+        if request.operation == CHECKOUT_OPERATION:
+            selected = next((plan for plan in config.plans if plan.plan_ref == request.plan_ref), None)
+            if selected is None:
+                raise ServiceRuntimeError("unknown_session_plan")
         # Checkout creates the account's one provider customer when it has
         # none. The portal needs an existing customer and never creates one.
         customer = (self._bound_customer(current, authorization_expires_at)
@@ -593,9 +598,6 @@ class StripeSessionAdapter:
         customer_id = customer["provider_customer_id"]
         price_id = ""
         if request.operation == CHECKOUT_OPERATION:
-            selected = next((plan for plan in config.plans if plan.plan_ref == request.plan_ref), None)
-            if selected is None:
-                raise ServiceRuntimeError("unknown_session_plan")
             price_id = selected.price_id
             parameters = (("customer", customer_id), ("mode", SUBSCRIPTION_MODE),
                 ("line_items[0][price]", price_id), ("line_items[0][quantity]", str(selected.quantity)),
