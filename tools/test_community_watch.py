@@ -81,6 +81,47 @@ class CommunityWatchTests(unittest.TestCase):
             with self.subTest(url=url), self.assertRaises(ValueError):
                 public_url(url)
 
+    def test_tracking_variants_keep_one_source_identity(self):
+        canonical = "https://github.com/example/rig"
+        baseline = make_lead("s", canonical, "Blender rig workflow", "Godot mesh", "", self.registry)
+        self.assertIsNotNone(baseline)
+        for query in ("fbclid=example", "FBCLID=example", "fBcLiD=", "%66bclid=example",
+                      "%46BCLID=example", "fbclid=one&fbclid=two&UTM_SOURCE=example"):
+            with self.subTest(query=query):
+                lead = make_lead("s", canonical + "?" + query, "Blender rig workflow", "Godot mesh", "", self.registry)
+                self.assertEqual(lead.url, canonical)
+                self.assertEqual(lead.identity, baseline.identity)
+                self.assertEqual(lead.content_digest, baseline.content_digest)
+
+    def test_tracking_filter_preserves_resource_queries_and_decodes_keys_once(self):
+        for query in ("id=101", "fbid=202&set=a.303", "query=Blender+rig&page=2&limit=10",
+                      "FBID=202&fbclid_extra=keep", "%2566bclid=keep",
+                      "query=fbclid%3Dkeep%26utm_source%3Ddata"):
+            with self.subTest(query=query):
+                canonical = "https://example.com/search?" + query
+                self.assertEqual(public_url(canonical + "&fbclid=discard"), canonical)
+                self.assertEqual(public_url(canonical), canonical)
+
+    def test_distinct_facebook_resources_keep_distinct_identities(self):
+        urls = ("https://www.facebook.com/profile.php?id=101",
+                "https://www.facebook.com/profile.php?id=102",
+                "https://www.facebook.com/photo/?fbid=201&set=a.301",
+                "https://www.facebook.com/photo/?fbid=202&set=a.301",
+                "https://www.facebook.com/photo/?fbid=201&set=a.302")
+        leads = [make_lead("s", url + "&fbclid=discard", "Blender rig workflow", "Godot mesh", "", self.registry)
+                 for url in urls]
+        self.assertEqual(tuple(lead.url for lead in leads), urls)
+        self.assertEqual(len({lead.identity for lead in leads}), len(urls))
+
+    def test_tracking_filter_does_not_hide_credential_fields_or_duplicate_links(self):
+        for query in ("fbclid=example&API%5FKEY=fixture", "utm_secret=fixture&fbclid=example"):
+            with self.subTest(query=query), self.assertRaisesRegex(ValueError, "credential_shaped_reference"):
+                public_url("https://example.com/?" + query)
+        content = ('<a href="https://github.com/example/rig?fbclid=one">source</a>'
+                   '<a href="https://github.com/example/rig?FBCLID=two">same source</a>')
+        lead = make_lead("s", "https://example.com/work", "Blender rig workflow", content, "", self.registry)
+        self.assertEqual(lead.linked_sources, ("https://github.com/example/rig",))
+
     def test_dry_run_has_no_store_or_network_effect(self):
         network = Network(HttpsResponse(200, RSS))
         result = tick(self.registry, self.root, network=network)

@@ -46,7 +46,10 @@ def public_url(value: str, base: str = "") -> str:
     query = parse_qsl(part.query, keep_blank_values=True)
     if any(_FORBIDDEN_QUERY.search(key) for key, _value in query):
         raise ValueError("credential_shaped_reference")
-    query = [(key, value) for key, value in query if not key.lower().startswith("utm_")]
+    # parse_qsl decodes keys once. Drop only known tracking fields, not resource
+    # identifiers (for example Facebook id, fbid and set) or provider queries.
+    query = [(key, value) for key, value in query
+             if key.lower() != "fbclid" and not key.lower().startswith("utm_")]
     return urlunsplit(("https", host, part.path or "/", urlencode(query), ""))
 
 
