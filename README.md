@@ -110,7 +110,7 @@ Working on the live service today:
 - public sign-up at <https://baltor.ai/get-started>: your email address, then
   the link we send you, then a password you choose. The first 10 accounts
   hold Baltor Pro free each month;
-- Baltor Pro at $29 a month through Stripe checkout, cancelled from your
+- new Pro subscriptions at $49 a month through Stripe checkout, cancelled from your
   account page;
 - personal client keys, and ready connection entries for Claude Code, Codex,
   OpenCode, Pi (through a small Baltor extension) and the Baltor Harness (with

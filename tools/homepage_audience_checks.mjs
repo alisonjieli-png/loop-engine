@@ -1,16 +1,17 @@
-/* The owner's September 29 direction: three equal entry points, one product.
-   Rules inspect meaning and destinations, not a verbatim marketing headline. */
+/* Three equal entry points share one product. The headline uses the owner's
+   October 11 wording; the other checks inspect meaning and destinations. */
 export const audienceDestinations={engineers:"/for/coding-agents",designers:"/for/designers","ai-agents":"/for/protocol-and-client"};
 export const keepsThePerStepOptionOut=copy=>!/fresh harness|harness (?:for|per) (?:each|every) step|one harness per step/i.test(copy.text);
 export const heroProblems=copy=>[
   ...([/\bengineers\b/i,/\bdesigners\b/i,/\bAI agents\b/i].every(rule=>rule.test(copy.text))?[]:["the hero must name all three audiences"]),
-  ...(/\bagents\b/i.test(copy.headline)&&copy.headline.split(/\s+/).length<=12?[]:["the hero needs a short agent-facing headline"]),
+  ...(copy.headline.trim()==="Give your agent a head start."?[]:["the hero must use the owner's agent-facing headline"]),
   ...(/\blibrary\b/i.test(copy.subhead)&&/\bcode\b/i.test(copy.subhead)&&/\btools\b/i.test(copy.subhead)?[]:["the hero must explain the shared product"]),
   ...(/\bby hand\b|\brewriting\b/i.test(copy.subhead)?[]:["the hero must explain the repeated work it removes"]),
   ...(keepsThePerStepOptionOut(copy)?[]:["the hero promises a fresh harness for each step"])];
 export function heroCheckRejectsItsKnownWrongCases(copy){
   return ["engineers","designers","AI agents"].every(word=>heroProblems({...copy,text:copy.text.replace(new RegExp(word,"ig"),"")}).length>0)
     &&heroProblems({...copy,headline:""}).length>0
+    &&heroProblems({...copy,headline:"Give your agents a head start."}).length>0
     &&heroProblems({...copy,subhead:""}).length>0
     &&heroProblems({...copy,text:copy.text+" Each step runs in a fresh harness."}).length>0;
 }
@@ -34,6 +35,7 @@ export async function checkAudiences(page,check){
     id:item.dataset.offering,title:item.querySelector('h2')?.innerText.replace(/\s+/g,' ').trim(),
     href:item.querySelector('a')?.getAttribute('href'),text:item.innerText.replace(/\s+/g,' ')})));
   check('homepage_separates_three_offerings_with_working_paths',offeringProblems(offerings).length===0);
+  check('offering_prices_reject_stale_and_mixed_plan_amounts',offeringPriceControls(offerings));
   check('offering_check_refuses_missing_paths_wrong_destinations_and_hidden_availability',
     offeringProblems(offerings.slice(1)).length>0&&offeringProblems(offerings.map(row=>({...row,href:'/'}))).length>0
     &&offeringProblems(offerings.map(row=>({...row,text:''}))).length>0);
@@ -70,13 +72,26 @@ export function offeringProblems(cards){
     const [id,title,href]=expected[index],card=cards[index];
     if(card.id!==id||card.title!==title||card.href!==href)problems.push('offering identity or destination differs');
   }
-  if(!/\$4\.99 a month/.test(cards[0].text)||!/Free through December 31, 2026 \(Eastern\)/.test(cards[0].text)
+  for(const card of cards)problems.push(...offeringPriceProblems(card));
+  if(!/Free through December 31, 2026 \(Eastern\)/.test(cards[0].text)
     ||!/No automatic charge/.test(cards[0].text)||!/opt-in/.test(cards[0].text)||!/source collections/i.test(cards[0].text))problems.push('feed price, free period, consent or current scope is missing');
-  if(!/Agent Feeds \+ Harness Files/.test(cards[1].text)||!/\$29 a month/.test(cards[1].text))problems.push('full library price is missing');
+  if(!/Agent Feeds \+ Harness Files/.test(cards[1].text))problems.push('full library scope is missing');
   if(!/local overnight/i.test(cards[2].text)||!/preview/i.test(cards[2].text)||!/no extra charge/i.test(cards[2].text)
     ||!/checkpoints/i.test(cards[2].text)||!/morning reports/i.test(cards[2].text))problems.push('usable overnight preview scope is missing');
-  if(!/\$49 a month/.test(cards[2].text)||!/free public preview/i.test(cards[2].text))problems.push('Max price or free preview scope is missing');
+  if(!/free public preview/i.test(cards[2].text))problems.push('Max free preview scope is missing');
   return problems;
+}
+
+export const offeringPrices={"agent-feeds":"$9 a month","agent-feeds-harness-files":"$49 a month","overnight-afk-work":"$99 a month"};
+export function offeringPriceProblems(card){
+  const expected=offeringPrices[card.id],prices=(card.text||"").match(/\$\d+(?:\.\d+)?\s+a month\b/g)||[];
+  return expected&&prices.length>0&&prices.every(price=>price===expected)?[]:["offering price is missing, stale or mixed: "+card.id];
+}
+export function offeringPriceControls(cards){
+  const stale={"agent-feeds":"$4.99 a month","agent-feeds-harness-files":"$29 a month","overnight-afk-work":"$49 a month"};
+  return cards.every(card=>offeringPriceProblems(card).length===0
+    &&offeringPriceProblems({...card,text:card.text.replace(offeringPrices[card.id],stale[card.id])}).length>0
+    &&offeringPriceProblems({...card,text:card.text+" "+stale[card.id]}).length>0);
 }
 
 export function useCaseProblems(groups){

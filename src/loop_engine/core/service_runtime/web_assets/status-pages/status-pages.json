@@ -34,13 +34,12 @@
     "number": 85,
     "at": "2026-10-09T14:25:59Z",
     "lines": [
-     "Clearer offer on the homepage and pricing page: Agent Feeds free through December 31, 2026, Harness Files at $29 a month, Overnight / AFK Work included in Preview.",
      "Setup page: three ways to connect a harness.",
      "Agent Feeds per agent, with 19 feed collections, six of them new and backed by 32 checked sources.",
      "Copy fixes across the deck, directory, library and security pages."
     ],
     "seen_after_release": "",
-    "not_shown": 1
+    "not_shown": 2
    },
    {
     "kind": "service",
@@ -1023,7 +1022,7 @@
   ]
  },
  "features": {
-  "plan": "$29 a month",
+  "plan": "$49 a month",
   "page_groups": [
    {
     "group": "Product",
@@ -1066,7 +1065,7 @@
      {
       "address": "/get-started",
       "title": "Get started",
-      "description": "Create your Baltor account with your email address, choose a password, subscribe to Pro for $29 a month and connect your harness."
+      "description": "Create your Baltor account with your email address, choose a password, subscribe to Pro for $49 a month and connect your harness."
      },
      {
       "address": "/setup",
@@ -1081,7 +1080,7 @@
      {
       "address": "/pricing",
       "title": "Pricing",
-      "description": "Agent Feeds: $4.99 a month, free through December 31, 2026. Add the full Harness Files library for $29 a month. No automatic feed-only charge."
+      "description": "Agent Feeds: $9 a month, free through December 31, 2026. Add the full Harness Files library for $49 a month. No automatic feed-only charge."
      },
      {
       "address": "/examples",

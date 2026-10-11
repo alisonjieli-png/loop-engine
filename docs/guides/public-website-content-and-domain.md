@@ -330,23 +330,23 @@ a Stripe credential and is not a Supabase customer access token.
 
 ## Pricing view
 
-The pricing view answers at `/pricing` and compares the two offerings.
+The pricing view answers at `/pricing` and compares Basic, Pro and Max.
 
 | Fact | Published wording |
 |---|---|
-| Information | Agent Feeds, free preview |
-| Information and reusable files | Agent Feeds + Harness Files |
-| Paid price | $29 a month |
+| Basic | Agent Feeds, $9 a month; free through December 31, 2026 (Eastern), with explicit opt-in before payment |
+| Pro | Agent Feeds + Harness Files, $49 a month |
+| Max | $99 a month; free public preview of local Overnight / AFK Work, with no Max subscription checkout |
 | Other free access | Public Good files with an account; the open-source Baltor Harness |
 | Measured unit | One downloaded item |
 | Existing account grants | State the account's actual grant, never promise a grant to everyone |
 
-The October 7 owner direction changes the presentation, not the existing
-subscription price, billing identifiers or access rights. Historical provider
-records and the approved terms keep their original names. Do not create a new
-subscription to rename an existing one. Update the homepage, pricing, account,
-setup, refusal messages and generated guides together; the copy checks cover
-each application view and the generated guide population.
+The prices shown for new purchases do not change existing subscriptions,
+account grants or billing identities. The local overnight tools remain
+included with Pro at no extra charge. Historical provider records and the
+approved terms keep their original wording. Update the homepage, pricing,
+account, setup and generated guides together; the copy checks cover each
+application view and the generated guide population.
 
 The payment state is not written into the page. The view reads
 `billing.checkout` from `/api/v1/capabilities`. While that field is false the

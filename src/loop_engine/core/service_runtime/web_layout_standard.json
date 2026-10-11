@@ -25,5 +25,5 @@
   "primary_actions_per_view_max": 1,
   "dark_bands_per_view_max": 1,
   "line_characters_max": 80,
-  "price": {"marker": "$29", "phrase": "$29 a month", "refused_phrases": ["United States dollars"]}
+  "price": {"marker": "$49", "phrase": "$49 a month", "refused_phrases": ["United States dollars"]}
 }

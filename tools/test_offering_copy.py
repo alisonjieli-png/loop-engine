@@ -17,7 +17,8 @@ RUNTIME = ROOT / "src/loop_engine/core/service_runtime"
 ASSETS = RUNTIME / "web_assets"
 COMBINED = "Agent Feeds + Harness Files"
 RETIRED = re.compile(r"\bBaltor Pro\b|\bone plan\b|refresh(?:ing)? the context", re.I)
-FEED_FACTS = ("$4.99 a month", "Free through December 31, 2026 (Eastern)", "No automatic charge", "opt-in", "source collections")
+FEED_FACTS = ("$9 a month", "Free through December 31, 2026 (Eastern)", "No automatic charge", "opt-in", "source collections")
+PLAN_PRICES = {"agent-feeds": "$9 a month", "agent-feeds-harness-files": "$49 a month", "overnight-afk-work": "$99 a month"}
 PREVIEW_FACTS = ("local", "overnight", "preview", "limits", "checkpoints", "morning report")
 FUTURE_MARKETING = re.compile(r"\bplanned\b|coming soon|in development|being qualified", re.I)
 
@@ -35,6 +36,8 @@ def retired_copy(text):
 def feed_price_problems(text):
     text = re.sub(r"\s+", " ", text)
     problems = ["missing " + fact for fact in FEED_FACTS if fact not in text]
+    if re.search(r"\$(?:4\.99|29)(?![\d.])", text):
+        problems.append("stale price mixed with the current offer")
     if re.search(r"automatically (?:charged|billed)|free forever|personalized feeds are available now", text, re.I):
         problems.append("unsupported enrollment or availability claim")
     return problems
@@ -45,6 +48,14 @@ def overnight_tools_problems(text):
     if re.search(r"hosted supervision|guaranteed results|unlimited model", text, re.I) or FUTURE_MARKETING.search(text):
         problems.append("unqualified hosted feature, result or future promise")
     return problems
+
+
+def plan_price_problems(identity, text):
+    text = re.sub(r"\s+", " ", text)
+    # The source parser joins adjacent element text; the browser check also verifies rendered price phrases.
+    prices = re.findall(r"\$\d+(?:\.\d+)?", text)
+    expected = PLAN_PRICES.get(identity, "")
+    return [] if expected and expected in text and prices and set(prices) == {expected.split()[0]} else ["missing, stale or mixed plan price"]
 
 
 class OfferingCopyTests(unittest.TestCase):
@@ -81,7 +92,7 @@ class OfferingCopyTests(unittest.TestCase):
         views = marketing_views((ASSETS / "index.html").read_text())
         for name in ("home", "pricing"):
             text = re.sub(r"\s+", " ", views[name])
-            for fact in ("Basic", "Pro", "Max", "Agent Feeds", COMBINED, "Overnight / AFK Work", "Public preview", "$29", "$49"):
+            for fact in ("Basic", "Pro", "Max", "Agent Feeds", COMBINED, "Overnight / AFK Work", "Public preview", "$9", "$49", "$99"):
                 self.assertIn(fact, text, (name, fact))
             self.assertEqual(feed_price_problems(text), [], name)
 
@@ -94,9 +105,43 @@ class OfferingCopyTests(unittest.TestCase):
         expected = ["agent-feeds", "agent-feeds-harness-files", "overnight-afk-work"] * 2
         self.assertEqual([row["attrs"]["data-offering"] for row in cards], expected)
         for row in cards:
+            self.assertEqual(plan_price_problems(row["attrs"]["data-offering"], row["text"]), [])
             if row["attrs"]["data-offering"] == "overnight-afk-work":
                 self.assertIn("no extra charge", row["text"].lower())
                 self.assertEqual(overnight_tools_problems(row["text"]), [])
+
+    def test_plan_price_guard_refuses_old_mixed_and_swapped_prices(self):
+        stale = {"agent-feeds": "$4.99 a month", "agent-feeds-harness-files": "$29 a month", "overnight-afk-work": "$49 a month"}
+        for identity, price in PLAN_PRICES.items():
+            self.assertEqual(plan_price_problems(identity, price), [])
+            for wrong in ("", stale[identity], price + " " + stale[identity], *[value for value in PLAN_PRICES.values() if value != price]):
+                self.assertTrue(plan_price_problems(identity, wrong), (identity, wrong))
+
+    def test_current_price_standard_and_customer_surfaces_agree(self):
+        standard = json.loads((RUNTIME / "web_layout_standard.json").read_text())
+        self.assertEqual(standard["price"]["marker"], "$49")
+        self.assertEqual(standard["price"]["phrase"], PLAN_PRICES["agent-feeds-harness-files"])
+        for name, text in marketing_views((ASSETS / "index.html").read_text()).items():
+            self.assertNotRegex(text, r"\$(?:4\.99|29)(?![\d.])", name)
+        for path in (ASSETS / "service.js", ASSETS / "deck.html", RUNTIME / "web_site_map.json",
+                     ROOT / "README.md", ROOT / "docs/guides/service-your-account.md",
+                     ROOT / "docs/guides/service-usage-and-what-you-pay-for.md"):
+            self.assertNotRegex(path.read_text(), r"\$(?:4\.99|29)(?![\d.])", str(path))
+
+    def test_homepage_uses_the_owners_singular_headline(self):
+        source = (ASSETS / "index.html").read_text()
+        self.assertIn("<h1>Give your agent a head start.</h1>", source)
+        self.assertNotIn("Give your agents a head start", source)
+
+    def test_account_and_usage_copy_preserve_existing_subscription_prices(self):
+        account = marketing_views((ASSETS / "index.html").read_text())["account"]
+        copies = [account, *(path.read_text() for path in (
+            ROOT / "docs/guides/service-your-account.md",
+            ROOT / "docs/guides/service-usage-and-what-you-pay-for.md"))]
+        for text in copies:
+            text = re.sub(r"\s+", " ", text)
+            for fact in ("New Pro subscriptions are $49 a month", "Existing subscribers keep their subscribed price", "customer portal shows"):
+                self.assertIn(fact, text)
 
     def test_feed_price_period_consent_and_availability_are_not_optional(self):
         from loop_engine.core.service_runtime.catalogue_feed import page_body
@@ -106,7 +151,7 @@ class OfferingCopyTests(unittest.TestCase):
         valid = " ".join(FEED_FACTS)
         for fact in FEED_FACTS:
             self.assertTrue(feed_price_problems(valid.replace(fact, "")), fact)
-        for wrong in ("Automatically charged in 2027", "Free forever", "Personalized feeds are available now"):
+        for wrong in ("Automatically charged in 2027", "Free forever", "Personalized feeds are available now", "$4.99 a month", "$29 a month"):
             self.assertTrue(feed_price_problems(valid + " " + wrong), wrong)
 
     def test_free_feed_actions_do_not_start_the_existing_paid_library_journey(self):

@@ -618,11 +618,11 @@ const applyPaymentState = name => {
     founding_free_monthly:{title:"Your account includes Pro", text:"As one of the first accounts, it is free each month. Search and downloads are open to this account.", covered:true},
     promotion_code:{title:"A promotion code covers Pro", text:"There is nothing to pay while the code lasts. Search and downloads are open to this account.", covered:true},
     subscription:{title:"You subscribe to Pro", text:"Manage or cancel the subscription from your account page.", covered:true},
-    checkout:{title:"Subscribe to Pro", text:"$29 a month. Cancel any time from your account page.", covered:false, subscribe:true},
-    unpaid:{title:"Subscribe to Pro", text:"$29 a month. Subscribe from your account page.", covered:false}};
+    checkout:{title:"Subscribe to Pro", text:"$49 a month. Cancel any time from your account page.", covered:false, subscribe:true},
+    unpaid:{title:"Subscribe to Pro", text:"$49 a month. Subscribe from your account page.", covered:false}};
   const funnelOrder = ["account", "confirm", "password", "plan", "setup"];
   /* The price line under the heading, the fourth step and the pricing page's free plan answer follow the plan the account holds and
-     the founding offer the service reports, so no line says "subscribe for $29 a month" to an account that Agent Feeds + Harness Files already
+     the founding offer the service reports, so no line says "subscribe for $49 a month" to an account that Agent Feeds + Harness Files already
      covers, and no step is marked as a subscription that never happened. The founding offer is stated to a visitor who is not signed
      in, and only while the service reports a founding place free. The served words are the default and are kept here, so a signed-out
      page shows them again. Finding 10 of the persona journeys of September 24, 2026. */
@@ -637,9 +637,9 @@ const applyPaymentState = name => {
     const plan = signedIn ? funnelPlans[accessSource] || (checkout ? funnelPlans.checkout : funnelPlans.unpaid) : null;
     const coveredStep = plan?.covered ? coveredSteps[accessSource] : null;
     $("funnel-price").textContent = coveredStep ? plan.title + ". Connect your harness to start."
-      : foundingOpen ? "Create your account and connect your harness. Pro is $29 a month, and while founding places last a new account gets it free each month." : servedFunnel.price;
+      : foundingOpen ? "Create your account and connect your harness. Pro is $49 a month, and while founding places last a new account gets it free each month." : servedFunnel.price;
     $("funnel-step-plan-title").textContent = coveredStep ? coveredStep[0] : servedFunnel.title;
-    $("funnel-step-plan-note").textContent = coveredStep ? coveredStep[1] : foundingOpen ? "$29 a month, or free each month while founding places last" : servedFunnel.note;
+    $("funnel-step-plan-note").textContent = coveredStep ? coveredStep[1] : foundingOpen ? "$49 a month, or free each month while founding places last" : servedFunnel.note;
     for (const sentence of document.querySelectorAll("[data-founding-offer]")) sentence.hidden = !foundingOpen;
     for (const sentence of document.querySelectorAll("[data-plan-note]")) sentence.hidden = !signedIn || sentence.dataset.planNote !== accessSource;
     const state = signedIn ? "plan" : (registrationOpen || waitingList) ? "register" : "invite", creating = signedIn || registrationOpen || waitingList;
@@ -672,7 +672,7 @@ const applyPaymentState = name => {
     for (const item of document.querySelectorAll("[data-funnel-step]")) item.classList.toggle("holds-card", item === holder);
     $("funnel").dataset.funnelCovered = String(Boolean(plan?.covered));
     $("funnel-title").textContent = signedIn ? "Welcome to Baltor." : "Get started with Baltor.";
-    if (signedIn && !coveredStep) $("funnel-price").textContent = "Your account is open. Subscribe to Pro for $29 a month, then connect your harness.";
+    if (signedIn && !coveredStep) $("funnel-price").textContent = "Your account is open. Subscribe to Pro for $49 a month, then connect your harness.";
   }
   // Subscribing uses the checkout the account page uses, for the first plan the service offers; the host offers one plan.
   $("funnel-subscribe").addEventListener("click", async () => {

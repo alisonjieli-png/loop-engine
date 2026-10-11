@@ -163,7 +163,7 @@
       "address": "/get-started",
       "view": "start",
       "title": "Get started",
-      "description": "Create your Baltor account with your email address, choose a password, subscribe to Pro for $29 a month and connect your harness.",
+      "description": "Create your Baltor account with your email address, choose a password, subscribe to Pro for $49 a month and connect your harness.",
       "group": "Product",
       "linked_from": [
         "header",
@@ -220,7 +220,7 @@
       "address": "/pricing",
       "view": "pricing",
       "title": "Pricing",
-      "description": "Agent Feeds: $4.99 a month, free through December 31, 2026. Add the full Harness Files library for $29 a month. No automatic feed-only charge.",
+      "description": "Agent Feeds: $9 a month, free through December 31, 2026. Add the full Harness Files library for $49 a month. No automatic feed-only charge.",
       "group": "Product",
       "linked_from": [
         "header",

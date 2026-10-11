@@ -2,7 +2,9 @@
 
 Kind: customer guide to the plan, download usage and uncertain outcomes.
 
-Pro is $29 a month, and there is no overage billing at launch. Stripe
+New Pro subscriptions are $49 a month. Existing subscribers keep their
+subscribed price, which the customer portal shows. There is no overage
+billing at launch. Stripe
 adds sales tax at checkout where your billing address requires it, and shows it
 before you pay. Accounts with an operator grant use it free. Model access and
 provider charges are separate from this subscription.

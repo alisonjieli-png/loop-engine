@@ -830,11 +830,11 @@ try {
     &&categoryProblems({...categoryState,harnesses:[...heroHarnesses].reverse()}).length===1);
   /* Prices belong to the dedicated three-offering section, not the introductory hero. */
   const heroPrice=await page.evaluate(()=>document.querySelector('[data-view="home"] [data-offering="agent-feeds-harness-files"]')?.textContent.replace(/\s+/g," ").trim()||"");
-  const statesThePlanAndPrice=text=>/Agent Feeds \+ Harness Files/.test(text)&&/\$29 a month\b/.test(text)&&!/United States dollars|per month/i.test(text);
+  const statesThePlanAndPrice=text=>/Agent Feeds \+ Harness Files/.test(text)&&/\$49 a month\b/.test(text)&&!/United States dollars|per month/i.test(text);
   check("homepage_plan_section_states_the_plan_and_the_price",statesThePlanAndPrice(heroPrice),{price:heroPrice});
   check("homepage_intro_has_no_pricing_cards",await page.locator('[data-view="home"] [data-band="hero"] [data-offering]').count()===0);
   check("hero_price_check_rejects_a_missing_price_and_another_way_of_writing_it",!statesThePlanAndPrice("")&&!statesThePlanAndPrice("Agent Feeds + Harness Files")&&!statesThePlanAndPrice("Agent Feeds + Harness Files 29 United States dollars each month")
-    &&!statesThePlanAndPrice("Agent Feeds + Harness Files $29 per month")&&statesThePlanAndPrice("Agent Feeds + Harness Files $29 a month for the whole library"));
+    &&!statesThePlanAndPrice("Agent Feeds + Harness Files $49 per month")&&statesThePlanAndPrice("Agent Feeds + Harness Files $49 a month for the whole library"));
   /* Two actions in the hero, as the owner decided on September 23, 2026: Get started, the one primary action, which opens the
      funnel, and Get set up, the secondary action, which opens the guide, with one line under them that says how the two differ.
      No second way into the access journey anywhere in the hero. */
@@ -1040,14 +1040,14 @@ try {
   const givesEveryOffer=(names,text)=>JSON.stringify(names)===JSON.stringify(["downloads","keys","library","usage"])&&["search","download","usage"].every(word=>text.toLowerCase().includes(word));
   check("homepage_says_what_an_account_gives_you",givesEveryOffer(offers,planText),{offers});
   check("offer_check_rejects_a_summary_without_the_usage_record",!givesEveryOffer(offers.filter(name=>name!=="usage"),planText)&&!givesEveryOffer(offers,planText.replace(/usage/gi,"")));
-  /* The pricing band on the homepage states the price the one way the design standards allow, "$29 a month", and the measured unit,
+  /* The pricing band on the homepage states the price the one way the design standards allow, "$49 a month", and the measured unit,
      and links the pricing page. It no longer says who is free: the owner removed that on September 23, 2026. */
   const teaserText=(await page.locator(".pricing-teaser").innerText()).replace(/\s+/g," ");
-  const teaserProblems=text=>[...(/\$29 a month/.test(text)?[]:["no \"$29 a month\""]),...(/per month|United States dollars/i.test(text)?["the price is written another way"]:[]),
+  const teaserProblems=text=>[...(/\$49 a month/.test(text)?[]:["no \"$49 a month\""]),...(/per month|United States dollars/i.test(text)?["the price is written another way"]:[]),
     ...(/one downloaded item/i.test(text)?[]:["no measured unit"]),...(invitationWords.test(text)?["a retired word: "+text.match(invitationWords)[0]]:[])];
   check("homepage_states_the_plan_price_and_the_measured_unit",teaserProblems(teaserText).length===0
     &&await page.locator('.pricing-teaser a[data-page="pricing"]').evaluateAll(links=>links.length>0&&links.every(link=>link.getAttribute("href")==="/pricing")),{problems:teaserProblems(teaserText)});
-  check("teaser_check_rejects_another_price_phrase_a_missing_unit_and_free_invited_accounts",teaserProblems(teaserText.replace("$29 a month","$29 per month")).length>=1&&teaserProblems(teaserText.replace(/one downloaded item/gi,"one call")).length===1
+  check("teaser_check_rejects_another_price_phrase_a_missing_unit_and_free_invited_accounts",teaserProblems(teaserText.replace("$49 a month","$49 per month")).length>=1&&teaserProblems(teaserText.replace(/one downloaded item/gi,"one call")).length===1
     &&teaserProblems(teaserText+" Invited accounts are free.").length===1&&teaserProblems(teaserText+" Search is free.").length===1);
   /* The closing band holds the one primary action, Get started, and at most the guide beside it as a secondary action. */
   const closingActions=await page.locator('[data-band="closing"]').evaluate(band=>[...band.querySelectorAll("a, button")].filter(node=>node.getClientRects().length>0)
@@ -1468,11 +1468,10 @@ try {
   /* The pricing view is read as a person reads it: the amount and "a month" stand on two lines of the plan card, and a line break
      inside the price is a space. */
   const pricingText=(await page.locator('[data-view="pricing"]').innerText()).replace(/\s+/g," ");
-  /* The published facts in the pricing view's words since September 23, 2026: one plan, Agent Feeds + Harness Files, "$29 a month", the download
-     as the measured unit, and how to stop paying. The owner removed "Search is free" and the free invited accounts that day, and
-     the price is written only "$29 a month", so each of those is a refused phrase with a known-wrong page of its own. */
-  const pricingFacts=[["feed offering","Agent Feeds"],["combined offering","Agent Feeds + Harness Files"],["feed price","$4.99 a month"],["feed free period","Free through December 31, 2026 (Eastern)"],["feed consent","No automatic charge"],["feed opt-in","opt-in"],["feed scope","source collections"],["plan name","Agent Feeds + Harness Files"],["price","$29 a month"],["measured unit","one downloaded item"],["how to stop paying","Cancel from your account page."]];
-  const refusedPricingPhrases=[["free search",/\bsearch(?:ing)? is free\b/i],["free invited accounts",/\binvited\b/i],["another way of writing the price",/United States dollars|per month|\$29\s*\/\s*mo/i]];
+  /* The pricing view separates current plan prices, the download unit and cancellation from the feed's free period and consent.
+     Retired free-search and invited-account claims, and inconsistent price wording, each have a known-wrong page. */
+  const pricingFacts=[["feed offering","Agent Feeds"],["combined offering","Agent Feeds + Harness Files"],["feed price","$9 a month"],["feed free period","Free through December 31, 2026 (Eastern)"],["feed consent","No automatic charge"],["feed opt-in","opt-in"],["feed scope","source collections"],["plan name","Agent Feeds + Harness Files"],["price","$49 a month"],["measured unit","one downloaded item"],["how to stop paying","Cancel from your account page."]];
+  const refusedPricingPhrases=[["free search",/\bsearch(?:ing)? is free\b/i],["free invited accounts",/\binvited\b/i],["another way of writing the price",/United States dollars|per month|\$49\s*\/\s*mo/i]];
   const missingFacts=text=>[...pricingFacts.filter(([,fact])=>!text.includes(fact)).map(([name])=>name),...refusedPricingPhrases.filter(([,rule])=>rule.test(text)).map(([name])=>name)];
   check("pricing_view_states_every_published_fact",missingFacts(pricingText).length===0,{missing:missingFacts(pricingText)});
   check("pricing_fact_check_fails_when_one_fact_is_missing_or_a_retired_offer_returns",pricingFacts.every(([name,fact])=>missingFacts(pricingText.split(fact).join("")).includes(name))
@@ -1579,7 +1578,7 @@ try {
   /* The terms of service the owner approved on September 23, 2026, served like the privacy notice: at their own address on a
      direct visit, with the operator line and the date of the last change that section 9 promises, a link to the privacy
      notice, the same words as docs/legal/TERMS-OF-SERVICE.md, and a link in the shared footer. The owner had them amended the
-     same evening: section 2 no longer calls the service a beta, and section 6 states the price as "$29 a month" without free
+     same evening: section 2 no longer calls the service a beta, and section 6 originally stated the price as "$29 a month" without free
      search or invited beta users. The page is also read for a retired word and an invitation word outside the approved text.
      Removed-guard controls serve changed bytes in memory, never a source file, and each must fail its own named check. */
   const termsOperatorLine="Operator: "+privacyOperator+", "+privacyAddress+".";
@@ -1983,7 +1982,7 @@ try {
     {name:"call_a_library_kind_available",changes:[{path:"/",find:'<li class="kind" data-kind="tools"><h3>Tools and code</h3>',replacement:'<li class="kind" data-kind="tools"><h3>Tools and code</h3><p class="status-tag is-available" data-status="available">Available now</p>'}],
      run:async (opened,note)=>note("library_names_the_six_kinds_without_a_status_word",cardProblems(await homeCards(opened,"[data-kind]","kind"),kindOrder).length===0),
      expected:["library_names_the_six_kinds_without_a_status_word"]},
-    {name:"take_the_price_out_of_the_plan_section",changes:[{path:"/",find:'<span class="hero-price-amount">$29 a month</span>',replacement:'<span class="hero-price-amount"></span>'}],
+    {name:"take_the_price_out_of_the_plan_section",changes:[{path:"/",find:'<span class="hero-price-amount">$49 a month</span>',replacement:'<span class="hero-price-amount"></span>'}],
      run:async (opened,note)=>note("homepage_plan_section_states_the_plan_and_the_price",statesThePlanAndPrice(await opened.evaluate(()=>document.querySelector('[data-view="home"] [data-offering="agent-feeds-harness-files"]')?.textContent.replace(/\s+/g," ").trim()||""))),
      expected:["homepage_plan_section_states_the_plan_and_the_price"]},
     {name:"bring_back_see_one_step_in_place_of_the_guide",changes:[{path:"/",find:'<a class="button secondary on-night" id="hero-setup" href="/setup" data-page="setup">Get set up</a>',replacement:'<a class="button secondary" id="hero-see-step" href="#step-demo">See one step work</a>'}],
@@ -2597,7 +2596,7 @@ try {
      run only, and must fail the rule's own named check. */
   const standIn=fixture.confirm_identity_origin;
   /* The plan step's words for a signed-in account without paid access while checkout is closed, and for one that checkout covers. */
-  const unpaidPlanText="$29 a month. Subscribe from your account page.",checkoutPlanText="$29 a month. Cancel any time from your account page.";
+  const unpaidPlanText="$49 a month. Subscribe from your account page.",checkoutPlanText="$49 a month. Cancel any time from your account page.";
   const outbox=async (target,address)=>(await (await target.request.get(standIn+"/stand-in/outbox?to="+encodeURIComponent(address))).json());
   const newestLink=async (target,address)=>{const box=await outbox(target,address);return (box.messages.at(-1)?.text||"").split(/\s+/).find(word=>word.includes("/auth/confirm?"))||"";};
   const standInSignIn=async (target,address,password)=>(await target.request.post(standIn+"/auth/v1/token?grant_type=password",{data:{email:address,password}})).status();
@@ -2699,7 +2698,7 @@ try {
   /* The funnel in each state a service can report. Where the service takes new accounts, by registration or by its request list,
      the card shows the one account form, #funnel-email with its one action and the sentence that links the terms and the privacy
      notice, and the first step reads "Create your account", in the same words in both states. Where it takes neither, the card
-     offers Sign in. The price line says "$29 a month" and, since the owner's decision of September 23, 2026, no longer says that
+     offers Sign in. The price line says "$49 a month" and, since the owner's decision of September 23, 2026, no longer says that
      search is free; no step and no action says invitation. */
   const funnelProblems=(facts,open,waitingList=false)=>{const creating=open||waitingList;return [...(facts.path==="/get-started"&&JSON.stringify(facts.views)===JSON.stringify(["start"])?[]:["the page is not the funnel alone"]),
     ...(facts.state===(creating?"register":"invite")?[]:["the card is "+JSON.stringify(facts.state)]),
@@ -2707,7 +2706,7 @@ try {
     ...(creating?(facts.primaries[0]?.id==="funnel-signup-button"&&facts.form&&facts.consent?.text===consentWords&&JSON.stringify(facts.consent?.links)===JSON.stringify(["/terms","/privacy"])?[]:["the account form, its one action or its consent sentence is missing"])
       :(facts.primaries[0]?.id==="funnel-invite"&&facts.primaries[0]?.text==="Sign in"&&facts.primaries[0]?.href==="/login"&&!facts.form&&!facts.consent?[]:["the sign-in action is missing or account creation is offered"])),
     ...(JSON.stringify(facts.steps)===JSON.stringify([creating?openSteps[0]:"Sign in",...openSteps.slice(1)])&&facts.setup==="/setup"?[]:["the five steps read "+JSON.stringify(facts.steps)]),
-    ...(facts.price.includes("$29 a month")&&!invitationWords.test(facts.price)?[]:["the price line reads "+JSON.stringify(facts.price)]),
+    ...(facts.price.includes("$49 a month")&&!invitationWords.test(facts.price)?[]:["the price line reads "+JSON.stringify(facts.price)]),
     ...(invitationWords.test(facts.words||"")?["the funnel says "+JSON.stringify(facts.words.match(invitationWords)[0])]:[])];};
   /* The first screen: at 1440 by 900 the heading, the price, all five steps and the first step's action; at 390 by 844 the heading and the
      first step's field and action. The steps may follow on a phone. */
@@ -3004,7 +3003,7 @@ try {
      month" as done for an account that never subscribed, and no page stated the founding offer before sign-up. The price line, the
      fourth step and the pricing page's free plan answer now follow the account's plan and the founding offer the service reports. */
   const foundingSentence="While founding places last, a new account gets Pro free each month.";
-  const foundingPrice="Create your account and connect your harness. Pro is $29 a month, and while founding places last a new account gets it free each month.";
+  const foundingPrice="Create your account and connect your harness. Pro is $49 a month, and while founding places last a new account gets it free each month.";
   const planFacts=target=>target.evaluate(()=>{const shown=node=>Boolean(node&&node.getClientRects().length);
     return {price:document.getElementById("funnel-price")?.textContent||"",stepTitle:document.getElementById("funnel-step-plan-title")?.textContent||"",
       stepNote:document.getElementById("funnel-step-plan-note")?.textContent||"",stepDone:document.querySelector('[data-funnel-step="plan"]')?.classList.contains("is-done")===true,
@@ -3021,9 +3020,9 @@ try {
     const reported=(await (await target.request.get(base+"/api/v1/capabilities")).json()).result.website.founding_offer_open;
     if(open)note("pricing_and_get_started_state_the_founding_offer_while_places_remain",reported===true&&pricing.card
       &&JSON.stringify(pricing.founding)===JSON.stringify([foundingSentence,foundingSentence.trim()])&&pricing.answer.includes(foundingSentence)&&pricing.notes.length===0
-      &&funnel.price===foundingPrice&&funnel.price.includes("$29 a month")&&funnel.stepTitle==="Subscribe to Pro"&&funnel.stepNote==="$29 a month, or free each month while founding places last",{reported,pricing,funnel});
+      &&funnel.price===foundingPrice&&funnel.price.includes("$49 a month")&&funnel.stepTitle==="Subscribe to Pro"&&funnel.stepNote==="$49 a month, or free each month while founding places last",{reported,pricing,funnel});
     else note("no_page_states_the_founding_offer_when_the_service_reports_no_free_place",reported===false&&!pricing.card&&pricing.founding.length===0&&!/founding/i.test(pricing.answer)
-      &&funnel.price==="Create your account, subscribe to Pro for $29 a month and connect your harness."&&funnel.stepNote==="$29 a month, cancel any time",{reported,pricing,funnel});
+      &&funnel.price==="Create your account, subscribe to Pro for $49 a month and connect your harness."&&funnel.stepNote==="$49 a month, cancel any time",{reported,pricing,funnel});
   };
   const coveredPlan=(credential,source)=>async (target,note)=>{
     await target.goto(fixture.billing_base+"/login");await target.fill("#access-token",credential);await target.click("#connect-button");await waitConnected(target);
@@ -3033,7 +3032,7 @@ try {
     const pricing=await planFacts(target);
     const expected={founding_free_monthly:["Pro included","Free each month, as one of the first accounts","Your account holds a founding place, so Agent Feeds + Harness Files is free for it each month."],
       free_monthly:["Pro included","Free each month for this account","Your account includes Pro free each month."]}[source];
-    note("get_started_and_pricing_follow_the_"+source+"_plan",funnel.price==="Your account includes Pro. Connect your harness to start."&&!/\$29|subscribe/i.test(funnel.price)
+    note("get_started_and_pricing_follow_the_"+source+"_plan",funnel.price==="Your account includes Pro. Connect your harness to start."&&!/\$49|subscribe/i.test(funnel.price)
       &&funnel.stepTitle===expected[0]&&funnel.stepNote===expected[1]&&funnel.stepDone&&!steps.includes("Subscribe to Pro")
       &&JSON.stringify(pricing.notes)===JSON.stringify([source])&&pricing.answer.includes(expected[2])&&pricing.founding.length===0&&!pricing.card,{funnel,steps,pricing});
   };
@@ -3152,7 +3151,7 @@ try {
       await target.waitForFunction(()=>document.querySelector("#funnel-plan-message a")!==null||document.getElementById("funnel-plan-message")?.classList.contains("error"),null,{timeout:10000}).catch(()=>{});
       link=await target.evaluate(()=>document.querySelector("#funnel-plan-message a")?.href||"");}
     note("get_started_funnel_offers_checkout_to_an_account_without_paid_access",facts.state==="plan"&&facts.title==="Subscribe to Pro"&&facts.subscribe&&facts.primaries.length===1&&(await target.locator("#funnel-plan-text").textContent())===checkoutPlanText
-      &&facts.primaries[0].id==="funnel-subscribe"&&facts.primaries[0].text==="Subscribe for $29 a month"&&link.startsWith("https://checkout.stripe.com/"),{...facts,link});
+      &&facts.primaries[0].id==="funnel-subscribe"&&facts.primaries[0].text==="Subscribe for $49 a month"&&link.startsWith("https://checkout.stripe.com/"),{...facts,link});
   };
   /* A scenario that needs a second visit opens a second context, as a person opening the link on another device would. */
   const inSecondContext=async (mutation,tracker,run)=>{const {context:later,page:second}=await openJourney(mutation,undefined,tracker);try{await run(second);}finally{await later.close();}};
@@ -3190,7 +3189,7 @@ try {
     {name:"never_offer_account_creation_on_the_funnel",scenario:"funnel_open",path:"/assets/service.js",find:'(registrationOpen || waitingList) ? "register" : "invite"',replacement:'false ? "register" : "invite"',expected:["get_started_funnel_offers_account_creation_while_registration_is_open"]},
     {name:"always_offer_account_creation_on_the_funnel",scenario:"funnel_closed",path:"/assets/service.js",find:'(registrationOpen || waitingList) ? "register" : "invite"',replacement:'true ? "register" : "invite"',expected:["get_started_funnel_offers_sign_in_when_registration_and_the_request_list_are_closed"]},
     {name:"ignore_the_request_list_on_the_funnel",scenario:"funnel_waitlist",path:"/assets/service.js",find:'(registrationOpen || waitingList) ? "register" : "invite"',replacement:'registrationOpen ? "register" : "invite"',expected:["get_started_funnel_takes_the_address_where_the_service_keeps_a_request_list"]},
-    {name:"bring_back_free_search_in_the_funnel_price_line",scenario:"funnel_waitlist",path:"/get-started",find:'subscribe to Pro for $29 a month and connect your harness.</p>',replacement:'subscribe to Pro for $29 a month and connect your harness. Search is free.</p>',expected:["get_started_funnel_takes_the_address_where_the_service_keeps_a_request_list"]},
+    {name:"bring_back_free_search_in_the_funnel_price_line",scenario:"funnel_waitlist",path:"/get-started",find:'subscribe to Pro for $49 a month and connect your harness.</p>',replacement:'subscribe to Pro for $49 a month and connect your harness. Search is free.</p>',expected:["get_started_funnel_takes_the_address_where_the_service_keeps_a_request_list"]},
     {name:"send_no_address_to_the_request_list",scenario:"list_request",path:"/assets/service.js",find:'email:$("funnel-email").value.trim(),note:""',replacement:'email:"",note:""',expected:["get_started_funnel_puts_the_address_on_the_request_list_and_says_a_link_follows"]},
     {name:"take_no_request_on_the_funnel",scenario:"list_request",path:"/assets/service.js",find:"const listed = capabilities?.record_type === CAPABILITIES_RECORD_TYPE && capabilities.website?.waitlist_available === true;",replacement:"const listed = false;",expected:["get_started_funnel_puts_the_address_on_the_request_list_and_says_a_link_follows"]},
     {name:"push_the_first_step_below_the_first_screen_open",scenario:"funnel_open",path:"/assets/service.css",find:".funnel-band{padding:64px",replacement:".funnel-band{padding-top:900px!important;padding:64px",expected:["get_started_funnel_first_step_fits_the_first_screen_open_1440","get_started_funnel_first_step_fits_the_first_screen_open_390"]},

@@ -20,7 +20,7 @@ below refuses one way to lose something:
   and a page the site map calls unlinked that something links to;
 - a page, header link, footer link or section that a dated inventory recorded and that is gone without a
   dated removal row in the site map;
-- a customer page that writes the price any way but "$29 a month".
+- a customer page that writes the price any way but "$49 a month".
 
 Every rule has known-wrong sites beside it, built from a small fixture site that passes every rule, and a
 mutant control that removes the rule and requires its named check to fail.
@@ -645,10 +645,10 @@ FIXTURE_PARTS = {
                '<a href="/admin" hidden>Administration</a><a href="/login" data-signed-out>Sign in</a>'
                '<button type="button" data-signed-in hidden>Sign out</button></nav>'
                '<a class="button primary" href="/start" data-signed-out>Get started</a></header>'),
-    "home": ('<section data-view="home"><div data-band="hero"><h1>Home</h1><p>One plan, $29 a month.</p>'
+    "home": ('<section data-view="home"><div data-band="hero"><h1>Home</h1><p>One plan, $49 a month.</p>'
              '<a href="/guide">Read the guide</a><div id="demo"></div></div>'
              '<div data-band="library" id="library"><h2 id="library-title">Library</h2></div></section>'),
-    "pricing": '<section data-view="pricing" hidden><h1>Pricing</h1><p>$29 a month.</p></section>',
+    "pricing": '<section data-view="pricing" hidden><h1>Pricing</h1><p>$49 a month.</p></section>',
     "start": '<section data-view="start" hidden><h1>Start</h1></section>',
     "guide": '<section data-view="guide" hidden><h1>Guide</h1><h2 id="guide-steps">Steps</h2></section>',
     "login": '<section data-view="login" hidden><h1>Sign in</h1><div hidden><h1>Signed in</h1></div></section>',
@@ -774,8 +774,8 @@ KNOWN_WRONG = {
         ("an inventoried section is gone", _part("guide", '<h2 id="guide-steps">Steps</h2>', "<h2>Steps</h2>")),
         ("the removal row that gave the reason is deleted", _no_removals)),
     "customer_pages_write_the_price_one_way": (
-        ("a page writes United States dollars", _part("pricing", "<p>$29 a month.</p>", "<p>29 United States dollars each month.</p>")),
-        ("the price is followed by other words", _part("home", "$29 a month", "$29 per month"))),
+        ("a page writes United States dollars", _part("pricing", "<p>$49 a month.</p>", "<p>29 United States dollars each month.</p>")),
+        ("the price is followed by other words", _part("home", "$49 a month", "$49 per month"))),
 }
 
 

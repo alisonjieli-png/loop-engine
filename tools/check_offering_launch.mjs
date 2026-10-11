@@ -9,7 +9,7 @@ import {existsSync,mkdirSync,writeFileSync,readFileSync} from "node:fs";
 import {createHash} from "node:crypto";
 import {resolve} from "node:path";
 import {setRequestedAppearance,readRequestedAppearance,appearanceProblems,appearanceKnownWrongControls} from "./browser_appearance_checks.mjs";
-import {offeringProblems,heroProblems,heroCheckRejectsItsKnownWrongCases,readOvernightTools,overnightToolsProblems} from "./homepage_audience_checks.mjs";
+import {offeringProblems,offeringPriceControls,heroProblems,heroCheckRejectsItsKnownWrongCases,readOvernightTools,overnightToolsProblems} from "./homepage_audience_checks.mjs";
 
 const root=resolve(new URL("..",import.meta.url).pathname),output=resolve(process.argv[2]||"");
 let base=process.argv[3];
@@ -97,8 +97,9 @@ with TemporaryDirectory() as folder:
    if(path==="/"){
     check("short_outcome_hero_keeps_audiences_and_product",heroProblems(state.heroCopy).length===0&&heroCheckRejectsItsKnownWrongCases(state.heroCopy),where);
     check("three_offers_show_price_period_consent_and_scope",offeringProblems(state.offerings).length===0,{...where,offers:state.offerings});
+    check("each_plan_rejects_its_old_price_and_mixed_prices",offeringPriceControls(state.offerings),where);
     check("third_offering_is_required",offeringProblems(state.offerings.slice(0,2)).length>0,where);
-    check("known_wrong_missing_feed_price_or_consent_is_refused",offeringProblems(state.offerings.map(row=>({...row,text:row.text.replace("$4.99 a month","")}))).length>0
+    check("known_wrong_missing_feed_price_or_consent_is_refused",offeringProblems(state.offerings.map(row=>({...row,text:row.text.replace("$9 a month","")}))).length>0
       &&offeringProblems(state.offerings.map(row=>({...row,text:row.text.replace("No automatic charge","")}))).length>0,where);
     check("homepage_marketing_counts_files_not_packages",state.packageHeadlineCount===0&&!/\bpackages?\b/i.test(state.visibleText),where);
     check("existing_access_and_setup_paths_are_preserved",state.start==="/get-started"&&state.setup==="/setup",where);
@@ -137,9 +138,9 @@ with TemporaryDirectory() as folder:
       &&overnightToolsProblems({...preview,text:(preview.text||"")+" Coming soon"}).length>0
       &&overnightToolsProblems({...preview,scope:"hosted"}).length>0,where);
    }
-   if(path==="/pricing"||path==="/feeds")check("feed_price_free_end_date_and_opt_in_are_explicit",/\$4\.99\s+a month/.test(state.visibleText)
+   if(path==="/pricing"||path==="/feeds")check("feed_price_free_end_date_and_opt_in_are_explicit",/\$9\s+a month/.test(state.visibleText)
     &&/Free through December 31, 2026 \(Eastern\)/.test(state.visibleText)&&/No automatic charge/.test(state.visibleText)&&/opt-in/.test(state.visibleText)
-    &&/source collections/i.test(state.visibleText)&&/\$29\s+a month/.test(state.visibleText),where);
+    &&/source collections/i.test(state.visibleText)&&/\$49\s+a month/.test(state.visibleText),where);
    if(path==="/pricing")check("pricing_page_has_three_separate_cards",JSON.stringify(state.pricingIds)===JSON.stringify(
     ['agent-feeds','agent-feeds-harness-files','overnight-afk-work']),where);
    if(path==="/library")check("library_hero_does_not_advertise_package_counts",!/\bpackages?\b/i.test(await page.locator(".lib-hero").innerText()),where);

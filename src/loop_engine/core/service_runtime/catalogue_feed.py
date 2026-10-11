@@ -241,7 +241,7 @@ def page_body():
     from .feed_profile_web import page_section as profile_section
     return ('<section class="md-band md-intro"><p class="eyebrow">Agent Feeds</p>'
             '<h1 id="feeds-title">Sources your agents can check.</h1>'
-            '<p class="md-reading feed-offer-price"><strong>$4.99 a month.</strong> Free through December 31, 2026 (Eastern). '
+            '<p class="md-reading feed-offer-price"><strong>$9 a month.</strong> Free through December 31, 2026 (Eastern). '
             'No automatic charge; a paid subscription requires your explicit opt-in.</p>'
             '<p class="md-reading">Pick the decision in front of your agent, such as choosing a coding model, and give it one link. '
             'Your agent reads the sources, what to compare and when to look again. Agent Feeds helps your agents decide; '
@@ -253,7 +253,7 @@ def page_body():
             + '<section class="md-band"><h2>Harness Files</h2><p class="md-reading">'
             'Agent Feeds supplies public source collections and the library updates feed. '
             'Agent Feeds + Harness Files also gives you the whole library: skills, tools, code, hooks and settings your harness '
-            'downloads at an exact version. The full-library plan is $29 a month.</p>'
+            'downloads at an exact version. The full-library plan is $49 a month.</p>'
             '<p class="md-reading">A feed notice never installs or runs its contents. Downloaded files still require their normal '
             'authorization, source and licence checks. The Public Good collection is free with an account.</p><div class="md-actions">'
             '<a class="button secondary" href="/library">Explore Harness Files</a>'

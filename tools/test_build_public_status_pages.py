@@ -230,12 +230,12 @@ class Generation(unittest.TestCase):
         public = tool.PublicText(site_map, json.loads(tool.LAYOUT_STANDARD.read_text("utf-8")))
         for line in ("Anchored to 9a483df.", "Moved to tools/red_team.py.", "The reads_fs default.",
                      "Reads service_provisioning_request/v2.", "Runs as a Loop.", "The runtime answers.",
-                     "Deployed to baltor-pilot.fly.dev.", "Served at /admin/mcp.", "Costs $49 a month.",
+                     "Deployed to baltor-pilot.fly.dev.", "Served at /admin/mcp.", "Costs $29 a month.",
                      "A planned page.", "Run 36243640251 passed.", "Links to /todo.", "A receipt for each call."):
             with self.subTest(line=line):
                 self.assertTrue(public.problem(line), line)
         for line in ("The library page counts every kind of harness file.", "Served at /library and on docs.baltor.ai.",
-                     "The plan is $29 a month."):
+                     "The plan is $49 a month."):
             with self.subTest(line=line):
                 self.assertEqual(public.problem(line), "", line)
         self.assertEqual(tool.clean("the change (S-6.84) and (commits e0d965bd and c1071922)"), "The change and.")

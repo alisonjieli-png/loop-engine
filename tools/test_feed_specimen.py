@@ -134,7 +134,7 @@ class FeedSpecimenTests(unittest.TestCase):
     def assert_three_offerings(self, source):
         for wording in ("Compare the three offerings", "Agent Feeds", "Harness Files", "Overnight / AFK Work",
                         "Preview", "Your worker and model access", "No extra charge with Harness Files",
-                        "$4.99 a month.", "$29 a month", "Free through December 31, 2026 (Eastern)",
+                        "$9 a month.", "$49 a month", "Free through December 31, 2026 (Eastern)",
                         "No automatic charge; a paid subscription requires your explicit opt-in."):
             self.assertTrue(wording in source, "Missing feed offering text: " + wording)
         self.assertIn('href="/overnight"', source)
@@ -150,7 +150,7 @@ class FeedSpecimenTests(unittest.TestCase):
         source = feed.page_body()
         for wrong in (source.replace("Compare the three offerings", "Compare the two offerings"),
                       source.replace("Overnight / AFK Work", "Other work"),
-                      source.replace("Preview", ""), source.replace("$29 a month", "$49.99 a month"),
+                      source.replace("Preview", ""), source.replace("$49 a month", "$49.99 a month"),
                       source.replace("No extra charge with Harness Files", "")):
             with self.assertRaises(AssertionError):
                 self.assert_three_offerings(wrong)

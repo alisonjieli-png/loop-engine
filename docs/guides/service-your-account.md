@@ -95,7 +95,9 @@ support messages.
 
 ## Subscription and help
 
-Pro is $29 a month. Accounts with an operator grant use it free.
+New Pro subscriptions are $49 a month. Existing subscribers keep their
+subscribed price, which the customer portal shows. Accounts with an operator
+grant use it free.
 When available, the account page opens checkout or the customer portal. Account
 creation and checkout are separate capabilities; available checkout does not
 mean public registration is open.

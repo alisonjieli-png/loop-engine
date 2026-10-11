@@ -17,6 +17,20 @@ shape of what is free and what is sold.
 
 Current behaviour and planned behaviour are kept apart in every section.
 
+## Current customer prices
+
+Basic includes Agent Feeds at $9 a month. It is free through December 31,
+2026 (Eastern), with no automatic charge; paid enrollment requires explicit
+opt-in. Pro includes Agent Feeds and Harness Files at $49 a month. Max
+displays $99 a month, with a free public preview of the local overnight
+tools. Max subscriptions are not sold during that preview, and the local
+tools remain included with Pro at no extra charge.
+
+These public prices do not change existing subscriptions or account grants.
+The host's active billing policy determines which Stripe Price a new Pro
+checkout uses. The launch decision and dated test receipts below retain
+their original amounts; they do not establish the current provider setup.
+
 ## The price at launch
 
 Customer-facing name: Agent Feeds + Harness Files. The existing Stripe

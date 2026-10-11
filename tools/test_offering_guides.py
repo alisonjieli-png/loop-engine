@@ -31,6 +31,12 @@ class OfferingGuideTests(unittest.TestCase):
         self.assertIn("/feeds/", body)
         self.assertNotIn("[PRICE]", body)
 
+    def test_feed_setup_keeps_current_price_free_period_and_paid_consent(self):
+        body = guides.feeds_setup_body()
+        for fact in ("$9 a month", "December 31, 2026 (Eastern)", "opt-in"):
+            self.assertIn(fact, body)
+        self.assertNotIn("$4.99", body)
+
     def test_app_configuration_contains_references_never_example_credentials(self):
         endpoint = "https://baltor.example/mcp"
         entries = guides.app_configurations(endpoint)

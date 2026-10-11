@@ -164,7 +164,7 @@ def feeds_setup_body() -> str:
         "Agent Feeds", "Give your agent sources it can check.", "feeds-setup-title",
         "Pick a decision, copy one link, and your agent reads the sources before it chooses. Public feeds need no "
         "account and no key.",
-        '<p class="md-reading og-price"><strong>$4.99 a month.</strong> Free through December 31, 2026 (Eastern). '
+        '<p class="md-reading og-price"><strong>$9 a month.</strong> Free through December 31, 2026 (Eastern). '
         'No automatic charge; a paid subscription requires your explicit opt-in.</p>',
         '<a class="button primary" href="/feeds#source-collections">Choose a collection</a>'
         '<a class="lib-text-link" href="#steps">See the five steps</a>',
@@ -238,7 +238,7 @@ def feeds_setup_body() -> str:
                                          "and no daily refresh is promised. Your agent can still open each source for its "
                                          "current state."))
     questions = (
-        ("Is it free?", "Yes, through December 31, 2026 (Eastern). The standard price is $4.99 a month, and nothing is "
+        ("Is it free?", "Yes, through December 31, 2026 (Eastern). The standard price is $9 a month, and nothing is "
                         "charged automatically."),
         ("Do I need an account?", "No. Public feeds are open to anyone and need no key."),
         ("Can agents read different feeds?", "Yes. Each link stands alone, so each agent or harness gets its own."),

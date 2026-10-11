@@ -25,9 +25,9 @@ outcome. Its creative tiles use the published gallery's recorded native renders.
 The general examples and measured case studies keep separate labels.
 
 Basic, Pro and Max are plan names. Agent Feeds, Harness Files and Overnight /
-AFK Work describe their features. Basic is $4.99 a month, free through December
-31, 2026 Eastern, with explicit opt-in before payment. Pro is $29 a month.
-Max displays $49 a month and a free public preview; the preview routes to local
+AFK Work describe their features. Basic is $9 a month, free through December
+31, 2026 Eastern, with explicit opt-in before payment. Pro is $49 a month.
+Max displays $99 a month and a free public preview; the preview routes to local
 tools, with no Max checkout or hosted execution claim. Existing local tools
 remain included with Pro. Stored billing identifiers keep their existing names.
 

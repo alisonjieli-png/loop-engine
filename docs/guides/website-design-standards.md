@@ -369,8 +369,8 @@ its content.
 
 - Short sentences in plain words, as the [writing context](../../humanizer-context.md)
   says.
-- The full-library price is written "$29 a month". Agent Feeds has a standard
-  price of "$4.99 a month" and is free through December 31, 2026, in Eastern
+- The full-library price is written "$49 a month". Agent Feeds has a standard
+  price of "$9 a month" and is free through December 31, 2026, in Eastern
   time. No automatic charge follows that period; paid enrollment requires
   explicit opt-in and is not open yet. The current source collections and
   catalogue feed are distinct from personalized subscriptions still in
@@ -389,13 +389,14 @@ State the included lower offerings on each card. Use the same names and scope
 on the pricing, feeds, library and overnight pages without repeating a full
 pricing grid on every page.
 
-Agent Feeds shows its $4.99 standard monthly price, free period and paid
-opt-in. Harness Files includes Agent Feeds and the full library at the current
-$29 monthly checkout price. Overnight / AFK Work is an included local Preview
-at no extra charge with Harness Files. Its card names run limits, task
-checkpoints and morning reports, with the customer's own worker and model
-access. It is not a paid hosted supervision service. A different proposed
-price stays out of a purchase path until billing, access and delivery agree.
+Basic shows Agent Feeds at $9 a month, its free period and paid opt-in.
+Pro includes Agent Feeds and the full Harness Files library at $49 a month.
+Max displays $99 a month beside its free public preview. Max subscriptions
+are not sold during the preview. Overnight / AFK Work runs on the customer's
+own worker with their own model access; the local tools remain included with
+Pro at no extra charge. Its card names run limits, task checkpoints and
+morning reports. It is not a paid hosted supervision service. Existing
+subscriptions and account grants keep their terms.
 
 Different card treatments identify the offerings; they do not establish
 popularity or measured value. Do not add Most popular, Best value or adoption
