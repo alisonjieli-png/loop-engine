@@ -1,13 +1,13 @@
 {
   "record_type": "mcp_shortlist/v1",
-  "checked_at": "2026-10-10",
+  "checked_at": "2026-10-11",
   "ranking": "GitHub stars among this editorial shortlist; not a quality score or Baltor usage count.",
   "baltor_usage_state": "not_measured",
   "items": [
     {
       "name": "Context7",
       "repository": "upstash/context7",
-      "stars": 62854,
+      "stars": 62898,
       "archived": false,
       "publisher": "Upstash",
       "relationship": "publisher",
@@ -20,7 +20,7 @@
     {
       "name": "Playwright MCP",
       "repository": "microsoft/playwright-mcp",
-      "stars": 37990,
+      "stars": 38015,
       "archived": false,
       "publisher": "Microsoft",
       "relationship": "publisher",
@@ -33,7 +33,7 @@
     {
       "name": "GitHub MCP Server",
       "repository": "github/github-mcp-server",
-      "stars": 33487,
+      "stars": 33508,
       "archived": false,
       "publisher": "GitHub",
       "relationship": "publisher",
@@ -46,7 +46,7 @@
     {
       "name": "MCP for Blender",
       "repository": "ahujasid/mcp-for-blender",
-      "stars": 30381,
+      "stars": 30459,
       "archived": false,
       "publisher": "ahujasid",
       "relationship": "community",
@@ -59,7 +59,7 @@
     {
       "name": "n8n MCP",
       "repository": "czlonkowski/n8n-mcp",
-      "stars": 23052,
+      "stars": 23055,
       "archived": false,
       "publisher": "czlonkowski",
       "relationship": "community",
@@ -72,7 +72,7 @@
     {
       "name": "Firecrawl MCP Server",
       "repository": "firecrawl/firecrawl-mcp-server",
-      "stars": 7577,
+      "stars": 7581,
       "archived": false,
       "publisher": "Firecrawl",
       "relationship": "publisher",
