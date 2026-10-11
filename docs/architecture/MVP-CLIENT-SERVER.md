@@ -48,27 +48,35 @@ section. Update this section in the same change that records a new release.
 Public registration is enabled. The site offers the existing monthly plan;
 these deployment checks alone do not establish a fully qualified paid service.
 
-The running image is Fly release 87, from
-`9d7b7e50ee34621e6a86dc4c0932f2bcf47ac5d3`, image
-`sha256:7e8d6a5df6d9d3be2afa3417a14a134fae2d36a3923df786b5910e4d32a453bf`.
-Exact CI `38156437645` and guarded deployment `38157179704` passed; the gate
-is closed. The exact local browser suite passed 979 checks and all 197 mutants;
-the dedicated design suite passed 144 checks. Independent read-only review
-passed 456 checks across 68 desktop/phone views on all ten hosts. The all-host
-pulse passed fifty reads. The full public route audit passed 71 pages,
-293 views and 830 links. The live offering matrix passed 483 checks.
+The running image is Fly release 88, from
+`ab1f658b3c03cc5e993c1b73ea9c9527665349c1`, image
+`sha256:f4ff046ec5712d75fe7d0f09b3f712047fdf1075b0beb65360aea9d2ad7db833`.
+Exact CI `38164365328` and guarded deployment `38165025109` passed; the gate
+is closed. The exact local browser suite passed 980 checks and all 197 mutants.
+Independent read-only review passed 456 checks across 68 desktop/phone views
+on all ten hosts. The final all-host pulse passed fifty reads without slow
+responses. The live offering matrix passed 497 checks. The full route audit
+covered 71 pages, 293 views and 801 links but recorded one asynchronous
+documentation heading missing at its fixed observation time. Three isolated
+live repeats passed; delayed-response and missing-heading controls established
+a checker readiness race. A visible loading state and bounded readiness check
+remain follow-ups; the original report remains failed.
 These checks cover their stated routes and states, not every authenticated
 journey or marketing claim. Failed checks and their diagnoses remain in the
-[release record](../../artifacts/architecture-audit-2026-09-19/pilot-release-87.json).
+[release record](../../artifacts/architecture-audit-2026-09-19/pilot-release-88.json).
 
 Release 87 serves the Claude-export design, Basic/Pro/Max plan presentation,
 native-render gallery, local Run Desk preview, per-agent reading-profile
 builder and OpenAPI connection guides. It also contains selected-file delivery,
 OAuth context and all-omitted download metering safeguards.
+Release 88 adds the owner price change, refuses unavailable checkout plans
+before provider effects, and includes the bounded job-board metadata adapter,
+source-identity cleanup and expanded revision watch. These acquisition tools
+do not establish completed job-derived production or recurring source success.
 
 All nine product hostnames now serve public assets through Cloudflare and
 forward dynamic requests to Fly. The technical Fly hostname remains a direct
-fallback. Export `15780d0e2e5e1e275afd26471b37ce6ca6a5037d04820f44f898f600d59a5624` contains 3,273 files, all verified on
+fallback. Export `d6693af2c644819bfd5ba164993e584326446dc385ebd32554941db9f4a7d052` contains 3,273 files, all verified on
 `baltor.ai` against their exact bodies and required headers. It is refreshed
 from the deployed revision after each catalogue publication, so the homepage
 shows the 1,560,856 files served now. The October 11 capabilities read confirms
@@ -77,10 +85,10 @@ records to recover the direct paths; do not delete the routes or resources.
 
 The homepage and pricing page separate plan names from features. Basic
 contains Agent Feeds; Pro adds Harness Files; Max describes Overnight / AFK
-Work in a free local public preview. Release 87 displays $4.99, $29 and $49
-a month. The owner's subsequent October 11 direction raises these to $9,
-$49 and $99; that price change is a separate release and is not live in this
-record. Existing subscriptions and grants are preserved. Feeds remains free
+Work in a free local public preview. Release 88 displays $9, $49 and $99
+a month. New Pro checkout selects a verified $49 monthly USD Price; its prior
+Price remains accepted and existing subscriptions and grants are preserved.
+No subscription migration or engineering payment was performed. Feeds remains free
 through December 31, 2026 Eastern, with explicit future opt-in and no automatic
 charge. Max subscriptions are not sold during its public preview. Pricing
 sits outside the introductory hero.
@@ -91,12 +99,15 @@ cancellation. The amendment alone changes no subscription price.
 Curated decision-source collections and a live catalogue specimen are available. Local per-agent
 reading profiles are live; hosted saved preferences, agent assignments
 and personalized research delivery remain unfinished. Hosted supervised
-execution is not active. The [release record](../../artifacts/architecture-audit-2026-09-19/pilot-release-87.json)
+execution is not active. The [release record](../../artifacts/architecture-audit-2026-09-19/pilot-release-88.json)
 binds the application, public export, live checks and separate follow-ups.
-Release 86 is the compatible image rollback, at
-`sha256:7696ff57dc09157585f75392e20cc5b843923c0f2767d55271a030839d182ecf`,
-with export `97954b43cea23ab07681ccb6b9e434dc0531dd38deefb95b32846f4b0e35b066`
-as the edge rollback. Later directory refreshes on main go out with the next
+Release 87 is the compatible image rollback, at
+`sha256:7e8d6a5df6d9d3be2afa3417a14a134fae2d36a3923df786b5910e4d32a453bf`,
+with export `15780d0e2e5e1e275afd26471b37ce6ca6a5037d04820f44f898f600d59a5624`
+as the edge rollback. Retain both accepted Pro Price identities and the
+v2-capable billing reader; never restore an old-only entitlement policy. A
+checkout-selection rollback also needs matching public copy. Later directory
+refreshes on main go out with the next
 application release; the edge export uses the deployed revision.
 This source includes the model-directory refresh, repaired private supply
 journals, isolated constraint-case generation, bounded overnight operator and

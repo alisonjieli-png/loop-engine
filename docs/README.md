@@ -2,7 +2,7 @@
 
 Use the [main README](../README.md) for the public quickstart.
 The [current north star](architecture/NORTH-STAR.md) and
-[October 11 checkpoint](context/SESSION-HANDOFF-2026-10-11.md)
+[October 11 release 88 checkpoint](context/SESSION-HANDOFF-2026-10-11-RELEASE88.md)
 state current direction, reviewed coverage and remaining work.
 For current development, open the
 [single development HTML](../artifacts/architecture-audit-2026-09-19/loop-engine-system-map.html),
@@ -22,8 +22,8 @@ and what still needs the owner, are in the
 [commit, push and release authority](../AGENTS.md#commit-push-and-release-authority)
 section of AGENTS.md. No other document restates them.
 
-The [October 11 checkpoint](context/SESSION-HANDOFF-2026-10-11.md)
-records release 87 and the remaining work. Earlier snapshots include the
+The [October 11 release 88 checkpoint](context/SESSION-HANDOFF-2026-10-11-RELEASE88.md)
+records the live design, price change and remaining work. Earlier snapshots include the
 [October 8 handoff](context/SESSION-HANDOFF-2026-10-08.md), the
 [September 25 evening handoff](context/SESSION-HANDOFF-2026-09-25-EVENING.md), the
 [September 25 afternoon handoff](context/SESSION-HANDOFF-2026-09-25-AFTERNOON.md),

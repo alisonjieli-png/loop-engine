@@ -21,11 +21,13 @@ two defects that were found and fixed after the first claims of correctness.
 
 ## Current context route
 
-Read the [October 11 release and continuation checkpoint](SESSION-HANDOFF-2026-10-11.md)
-first: the Claude-export design is live as release 87, the catalogue remains
-below two million distinct files, and the subsequent owner price increase is
-a separate change. The workstation pointer names exact private evidence and
-active writers. Historical running-job observations need fresh checks.
+Read the [October 11 release 88 checkpoint](SESSION-HANDOFF-2026-10-11-RELEASE88.md)
+first: the Claude-export design and owner price increase are live, while the
+catalogue remains below two million distinct files. It records the selected
+48-hour history reconciliation and the documentation loading check's limit.
+The [earlier October 11 checkpoint](SESSION-HANDOFF-2026-10-11.md) preserves
+release 87 and the then-pending price change as history. The workstation pointer
+names exact private evidence and active writers. Recheck historical running jobs.
 
 Read the [October 8 account and engineering handoff](SESSION-HANDOFF-2026-10-08.md)
 for release 78, the stopped private factory, preserved queue repairs,

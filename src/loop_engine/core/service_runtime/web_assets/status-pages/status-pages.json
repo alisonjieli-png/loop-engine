@@ -5,6 +5,22 @@
   "releases": [
    {
     "kind": "service",
+    "number": 88,
+    "at": "2026-10-11T18:46:53Z",
+    "lines": [
+     "Owner-directed monthly standard prices: Basic/Feeds USD9, Pro USD49 and Max USD99.",
+     "New Pro checkout selects the verified USD49 monthly Price; prior Price identities and existing entitlements remain accepted.",
+     "Unavailable Basic/Max checkout plans are refused before customer creation or provider effects.",
+     "Exact singular head-start hero, current architecture and North Star reconciliation.",
+     "Bounded public Greenhouse metadata intake behind the existing source edge, with shared quota accounting.",
+     "Source URL normalization removes fbclid without losing resource-identifying query parameters.",
+     "Daily revision watch expanded to 48 sources under its 50-source bound."
+    ],
+    "seen_after_release": "",
+    "not_shown": 0
+   },
+   {
+    "kind": "service",
     "number": 87,
     "at": "2026-10-11T16:54:24Z",
     "lines": [

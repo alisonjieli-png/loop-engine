@@ -24,7 +24,7 @@ continuation:
       - {task: S-6.217.01, owner: History and evidence, offset_hours: 0, duration_hours: 3}
       - {task: S-6.204.02, owner: Launch and funding, offset_hours: 3, duration_hours: 5}
       - {task: S-6.204.01, owner: Customer outcomes, offset_hours: 6, duration_hours: 4}
-  execution_order: ["S-6.35.03","S-6.35.04","S-6.12.04","S-6.35.01","S-6.215.01","S-6.215.02","S-6.215.03","S-6.215.04","S-6.215.05","S-6.215.06","S-6.215.07","S-6.215.08","S-6.215.09","S-6.215.10","S-6.215.11","S-6.215.12","S-6.215.13","S-6.214.01","S-6.214.02","S-6.214.03","S-6.214.04","S-6.214.13","S-6.214.05","S-6.214.06","S-6.214.15","S-6.214.07","S-6.214.09","S-6.214.12","S-6.214.10","S-6.214.11","S-6.214.14","S-6.207.01","S-6.207.02","S-6.207.03","S-6.207.04","S-6.207.05","S-6.218.01","S-6.218.02","S-6.218.03","S-6.218.04","S-6.218.05","S-6.218.06","S-6.218.07","S-6.218.08","S-6.218.09","S-6.13.01","S-6.13.02","S-6.13.03","S-6.12.01","S-6.12.02","S-6.12.03","S-6.24.01","S-6.24.02","S-6.201.01","S-6.201.02","S-6.201.03","S-6.102.01","S-6.102.02","S-6.204.01","S-6.204.02","S-6.216.01","S-6.67.01","S-6.35.02","S-6.217.01","S-6.215.14","S-6.214.08"]
+  execution_order: ["S-6.35.03","S-6.35.04","S-6.35.05","S-6.12.04","S-6.35.01","S-6.215.01","S-6.215.02","S-6.215.03","S-6.215.04","S-6.215.05","S-6.215.06","S-6.215.07","S-6.215.08","S-6.215.09","S-6.215.10","S-6.215.11","S-6.215.12","S-6.215.13","S-6.214.01","S-6.214.02","S-6.214.03","S-6.214.04","S-6.214.13","S-6.214.05","S-6.214.06","S-6.214.15","S-6.214.07","S-6.214.09","S-6.214.12","S-6.214.10","S-6.214.11","S-6.214.14","S-6.207.01","S-6.207.02","S-6.207.03","S-6.207.04","S-6.207.05","S-6.218.01","S-6.218.02","S-6.218.03","S-6.218.04","S-6.218.05","S-6.218.06","S-6.218.07","S-6.218.08","S-6.218.09","S-6.218.10","S-6.13.01","S-6.13.02","S-6.13.03","S-6.12.01","S-6.12.02","S-6.12.03","S-6.24.01","S-6.24.02","S-6.201.01","S-6.201.02","S-6.201.03","S-6.102.01","S-6.102.02","S-6.204.01","S-6.204.02","S-6.216.01","S-6.67.01","S-6.35.02","S-6.217.01","S-6.215.14","S-6.214.08"]
   title: First release and continued system development
   started_at: "2026-09-19T14:12:54Z"
   target_at: "2026-09-20T14:12:54Z"
@@ -2761,19 +2761,29 @@ steps:
         depends_on: []
         acceptance: "The new shared design, plan labels, gallery, connection workflow and customer feed builder work on the deployed exact CI-passed revision, with customer boundaries and every existing route preserved."
         procedure: ["Preserve and identify every source worktree before integrating its reviewed changes.","Keep the existing typed service edges; verify delivery, metering, OAuth, feed isolation and browser interactions with wrong controls.","Review every public route in both themes and at phone and desktop widths.","Commit and push the exact candidate, await its CI, dispatch the guarded application deployment once and refresh Cloudflare from that revision.","Verify live bytes, browser journeys and all product hostnames; record image, rollback and remaining capability limits."]
-        next_action: "Apply the owner's subsequent $9/$49/$99 monthly price change through a separate checked release; preserve existing subscriptions and free preview terms."
+        next_action: "Preserve the deployed design and finish the scoped documentation loading-state follow-up; the owner price change is now recorded in S-6.35.04."
         evidence: "Release 87 from 9d7b7e50 is live on Fly and Cloudflare. Exact CI 38156437645 and guarded deployment 38157179704 passed, gate closed. Local browser 979/979 and 197/197 wrong controls, design 144/144. Live offering matrix 483/483; independent review 456/456 across ten hosts and 68 views; all 3,273 edge files match. Full route audit: 71 pages, 293 views, 830 links, zero problems. See pilot-release-87.json for limits and retained failed attempts."
         comment: "Basic, Pro and Max are plan names; Agent Feeds, Harness Files and Overnight / AFK Work remain features. Max's scoped public preview does not claim hosted execution or activate a paid checkout. The owner explicitly prioritizes the design release over the longer migration and factory programme."
       - id: "S-6.35.04"
         title: "Apply the owner's monthly Basic, Pro and Max prices"
-        status: "building"
+        status: "published"
         completion_status: "published"
         depends_on: ["S-6.35.03"]
         acceptance: "Current pages show $9 Basic/Feeds, $49 Pro and $99 Max, and new Pro checkout selects the verified $49 monthly USD Price while existing subscriptions and grants remain valid."
         procedure: ["Keep Feeds free through December 31, 2026 Eastern with paid opt-in and keep Max's local public preview free without paid checkout.","Reconcile the current provider Product and Price; create or reuse one exact new Pro Price with an idempotent recorded operation, without changing subscriptions.","Retain prior Price identities in the entitlement policy and bind only new checkout to the new Price.","Check every current price surface and known-wrong mixed-price cases; deploy exact CI-passed code and verify provider, host policy, edge and checkout presentation."]
-        next_action: "Finish the checked source integration and guarded host-policy transition; the new Price is prepared but not yet selected by live checkout."
-        evidence: "October 11 explicit owner price request. Read-only preflight confirmed one existing $29 Pro Price. One new $49 monthly USD Price was created and read back; the old Price is unchanged, with zero subscription mutations or payments. Frontend source checks are in progress in an isolated worktree."
+        next_action: "Keep both accepted Price identities during any rollback and preserve existing subscriptions, grants and free preview terms."
+        evidence: "Release 88 from ab1f658b is live after exact CI 38164365328 and guarded deployment 38165025109; gate closed. Pages show $9/$49/$99 and new Pro checkout selects the verified $49 monthly USD Price. Prior entitlement fingerprints are unchanged; zero subscription mutations or payments. Live offering 497/497, independent 456/456 across ten hosts, edge 3273/3273 and final fifty-read pulse passed. See pilot-release-88.json for the separately diagnosed documentation readiness check and retained failures."
         comment: "Prices are monthly standard rates, not evidence that paid Feeds or Max enrollment has been activated. Existing paid periods, free grants and terms remain intact."
+      - id: "S-6.35.05"
+        title: "Add random asset discovery with provenance and use details"
+        status: "building"
+        completion_status: "published"
+        depends_on: ["S-6.35.03"]
+        acceptance: "A visitor can request another eligible image, video or music preview, inspect its source and licence, and reach a stable asset reference without bypassing download authorization."
+        procedure: ["Reuse the existing gallery and rights-qualified public preview metadata; do not scan the whole catalogue per request.","Provide media-kind filtering, another-asset selection, stable links, format and provenance details, accessible controls and explicit empty/error states.","Test invalid and empty categories, missing assets, repeat avoidance, keyboard/mobile behavior and the public-preview versus authenticated-download boundary.","Deploy the exact checked revision and verify the new routes live."]
+        next_action: "Implement the bounded discovery view in the existing website owner; inventory eligible video/music assets instead of assuming those categories are populated."
+        evidence: "October 11 owner requests pages returning a random image, video or music asset with details. Implementation is assigned to an isolated detached worktree; no new route or media publication is yet claimed."
+        comment: "Random selection uses ordinary code, not a model. Source listings, copyrighted references and private/paid bodies do not become public previews."
       - id: "S-6.35.01"
         title: "Release reviewed main and verify it live"
         status: "published"
@@ -2782,8 +2792,8 @@ steps:
         acceptance: "The exact CI-passed revision is deployed through the guarded workflow, with the gate closed and rollback recorded."
         procedure: ["Freeze the candidate and finish its owning checks and exact CI.","Dispatch the guarded deployment once and reconcile the remote result.","Close the deployment gate; record image, revision, rollback and all-host checks."]
         next_action: "Keep application deployment and catalogue publication from overlapping."
-        evidence: "Release 87 from 9d7b7e50: exact CI 38156437645, guarded deployment 38157179704, gate closed, image 7e8d6a5df6d9, rollback release 86 image 7696ff57dc09. Live offering 483/483, independent checks 456/456 over ten hosts, exact Cloudflare readback 3273/3273, full route audit 71 pages/293 views/830 links."
-        comment: "The fifty-read pulse passed with no slow response. Release 87 ships the Claude-export design, gallery, connection workflow and reading-profile builder. It does not publish catalogue additions or include the subsequent price increase."
+        evidence: "Release 88 from ab1f658b: exact CI 38164365328, guarded deployment 38165025109, gate closed, image f4ff046ec571, rollback release 87 image 7e8d6a5df6d9. Live offering 497/497, independent checks 456/456 over ten hosts and exact Cloudflare readback 3273/3273. The 293-view full audit retained one asynchronous heading failure; three isolated live repeats and controlled diagnosis are recorded separately."
+        comment: "The final fifty-read pulse passed with no slow response. Release 88 preserves the Claude design and updates prices without migrating existing subscriptions. It publishes no catalogue additions. The blank documentation loading state and checker's readiness race remain scoped follow-ups."
       - id: "S-6.35.02"
         title: "Publish a progress checkpoint after every completed subtask"
         status: "building"
@@ -5227,7 +5237,7 @@ steps:
         acceptance: "Source findings propose deduplicated follow-up questions through existing managed records and scheduler, with initiative-level budgets, depth and fanout enforced before dispatch and independent review before promotion."
         procedure: ["Bind source, originating finding, question, purpose, policy and exact record revision for every follow-up.","Reserve shared request, model, byte, time and cost limits; descendants cannot reset an allowance or widen source access.","Use existing trigger, lease, priority and uncertain-outcome handling; reject unsupported cooldown settings instead of pretending they work.","Keep no-candidate outcomes and failed attempts; audit novelty and utility before component expansion."]
         next_action: "Implement the smallest typed frontier admission increment under knowledge_radar and SQLiteReactiveScheduler, with cycle, duplicate, concurrent-cap and unknown-outcome controls."
-        evidence: "October 11 source/research-owner inspection identified existing scheduler and managed-record boundaries plus gaps; 24 wrong controls are proposed, not executed frontier tests. Tracking-parameter source dedup is implemented separately."
+        evidence: "October 11 source/research-owner inspection identified existing scheduler and managed-record boundaries plus gaps; 24 wrong controls are proposed, not executed frontier tests. Tracking-parameter source dedup is implemented separately. Later owner context supplies summaries of 1,500 proposed decision-feed questions and a Superpowers research blueprint; full catalogue/blueprint attachments are not available here. Preserve these as supplied research leads, not imported records, completed searches or working feeds. Prioritize source-pinned methods, exact distribution drift and bounded usefulness tests through existing owners."
         comment: "A prompt telling an agent to make only three searches is not a hard transport limit. A generated idea cannot grant network, model or publication authority."
       - id: "S-6.214.14"
         title: "Show top feeds and components with distinct popularity and agent-use rankings"
@@ -5463,13 +5473,13 @@ steps:
     subtasks:
       - id: "S-6.217.01"
         title: "Reconcile recent prompts and action history"
-        status: "building"
+        status: "offline_verified"
         completion_status: "offline_verified"
         depends_on: []
         acceptance: "Accessible owner directions and actions from the requested time window map to existing roadmap owners with coverage gaps retained."
         procedure: ["Read actual message timestamps and distinguish owner instructions from tool or agent output.","Reconcile changed prices, product scope, privacy, deployment and source requests.","Keep source text private and record only authorized generalizations in public documentation."]
-        next_action: "Complete the action-to-evidence review and append newer owner requests; keep missing external conversations explicit."
-        evidence: "October 11 inventory covers forty accessible local files in the October 9 16:46 UTC to October 11 16:46 UTC window: 57 user-role records and 124 visible assistant records. Sixteen deduplicated owner-message candidates were reviewed, including long design/API/research pastes. The single oversized raw record is an October 8 compaction outside the window, not a missing in-window owner prompt. Notifications and agent work are separate; complete cross-conversation action coverage is not certified."
+        next_action: "Carry the 25 obligation groups into their existing owners, including unfinished shareable-draft cleanup; append newer owner requests without claiming inaccessible history was audited."
+        evidence: "The October 9 16:46:07 UTC to October 11 16:46:07 UTC review covers forty selected local files, 57 user-role and 184 visible assistant records. Sixty Codex replies omitted by the first extractor were recovered without reasoning/tool-output ingestion. All 241 records were classified and sixteen deduplicated owner requests mapped to 25 obligation groups; 35 checks passed. The oversized record predates the window. Existing OAuth success, later release chronology and unfinished claims are reconciled; complete historical action or unavailable external-conversation coverage is not certified."
         comment: "Imported instructions are historical data, not current effect authority."
     title: "Library candidates from the owner's Dot direction: review and persona packs, rubrics, briefs, templates and worked examples, one per distinct job"
     status: building
@@ -5589,6 +5599,16 @@ steps:
         next_action: "Expand provider engines only after the pilot is measured."
         evidence: ""
         comment: "The highest-tier idea is a development target, not an available sales feature."
+      - id: "S-6.218.10"
+        title: "Evaluate a dedicated persistent desktop offering"
+        status: "proposed"
+        completion_status: "live_qualified"
+        depends_on: ["S-6.218.01","S-6.218.03","S-6.218.04","S-6.218.07"]
+        acceptance: "A separately priced persistent desktop has measured unit economics, isolated tenant storage/credentials, secure human takeover and MCP control, tested restore and stop behavior, and explicit resource and model-funding limits."
+        procedure: ["Treat the owner's $400/month idea as a proposed fourth tier, not a change to Max or permission to provision paid resources.","Compare a CPU-only Linux workspace with browser remote desktop and scoped MCP control behind existing execution and credential owners.","Separate always-available infrastructure from continuous model generation, provider usage, GPU rendering, proprietary desktop licences and uptime commitments.","Qualify two-tenant isolation, human/agent control handoff, approval boundaries, interrupted-session recovery, backup restore, export and cancellation before sale."]
+        next_action: "Cost a bounded prototype and prepare its local tests; any new recurring infrastructure beyond the standing allowance requires current owner authority."
+        evidence: "October 11 owner asks about $400/month for a 24/7 server, desktop-control MCP and remote desktop. Initial official-price scenario in Ashburn: performance-2x with 8GB RAM $90 per 30 days, 100GB volume $15, assumed 100GB snapshot storage $8 before shared free allowance, and 100GB outbound data $2. The resulting $115 is an illustrative infrastructure subtotal, excluding support, gateway overhead, fees, tax and model/API usage, not a measured production cost."
+        comment: "No fourth-plan checkout, public promise, infrastructure purchase or hosted desktop has been activated. The existing BYOK principle remains."
   - id: S-6.101
     phase: 6
     title: "A public directory of models, endpoints and local runtimes, with a can-I-run hardware check, at /models, /endpoints and /can-i-run"

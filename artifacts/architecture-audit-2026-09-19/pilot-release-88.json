@@ -1,0 +1,72 @@
+{
+  "record_type": "pilot_release_record/v1",
+  "release": 88,
+  "app": "baltor-pilot",
+  "source_revision": "ab1f658b3c03cc5e993c1b73ea9c9527665349c1",
+  "image": "registry.fly.io/baltor-pilot@sha256:f4ff046ec5712d75fe7d0f09b3f712047fdf1075b0beb65360aea9d2ad7db833",
+  "rollback_release": 87,
+  "rollback_image": "registry.fly.io/baltor-pilot@sha256:7e8d6a5df6d9d3be2afa3417a14a134fae2d36a3923df786b5910e4d32a453bf",
+  "owner_local_date": "2026-10-11",
+  "deployed_at": "2026-10-11T18:46:53Z",
+  "ci_run": 38164365328,
+  "ci_conclusion": "success",
+  "deploy_run": 38165025109,
+  "deploy_workflow_conclusion": "success",
+  "deployment_gate_after": false,
+  "catalogue": {"release_id": "29a2bc33c3132a97466e79c18350f3574624f2ef7967b07241029e269b92e742", "packages": 256380, "distinct_files": 1560856, "changed_by_this_application_release": false},
+  "changes": [
+    "Owner-directed monthly standard prices: Basic/Feeds USD9, Pro USD49 and Max USD99",
+    "New Pro checkout selects the verified USD49 monthly Price; prior Price identities and existing entitlements remain accepted",
+    "Unavailable Basic/Max checkout plans are refused before customer creation or provider effects",
+    "Exact singular head-start hero, current architecture and North Star reconciliation",
+    "Bounded public Greenhouse metadata intake behind the existing source edge, with shared quota accounting",
+    "Source URL normalization removes fbclid without losing resource-identifying query parameters",
+    "Daily revision watch expanded to 48 sources under its 50-source bound"
+  ],
+  "billing": {
+    "currency": "USD", "new_pro_checkout_monthly_amount": 49,
+    "previous_pro_price_retained": true, "existing_entitlements_unchanged": true,
+    "subscription_mutations": 0, "payments_executed_by_engineering": 0,
+    "feeds_free_through": "2026-12-31 America/New_York",
+    "future_feeds_paid_opt_in_required": true, "max_paid_checkout_enabled": false,
+    "max_local_preview_included_with_pro": true,
+    "rollback_requirement": "Keep both accepted Price identities and the v2-capable billing reader. Reverting new checkout selection must not revoke the new Price or existing grants. Match public pricing to the chosen checkout policy."
+  },
+  "cloudflare": {
+    "worker": "baltor-web-edge", "export_id": "d6693af2c644819bfd5ba164993e584326446dc385ebd32554941db9f4a7d052",
+    "worker_deployment": "f1eea1c600f249afa3928cc5677a5a65", "static_files": 3273,
+    "static_bytes": 87075490, "origin_mode": "all", "production_routes_changed": false,
+    "rollback_export_id": "15780d0e2e5e1e275afd26471b37ce6ca6a5037d04820f44f898f600d59a5624",
+    "rollback_worker_deployment": "1c1c47b5749b416a9dd1e2d967f31189"
+  },
+  "checks": {
+    "local_browser": {"passed": 980, "total": 980, "mutants_detected": 197, "mutants_total": 197},
+    "local_offering_matrix": {"passed": 497, "total": 497},
+    "live_offering_matrix": {"passed": 497, "total": 497, "attempt": 1},
+    "independent_live_checks": {"passed": 456, "total": 456, "hostnames": 10, "views": 68, "browser_errors": 0, "attempt": 2},
+    "edge_readback": {"passed": 3273, "total": 3273, "scope": "Exact exported bodies, required headers and export identity"},
+    "live_full_public_route_map": {"pages": 71, "views": 293, "hostnames": 9, "links_checked": 801, "automated_problems": 1, "passed": false, "finding": "One phone/light documentation view had no heading at the checker's fixed 1.5-second observation. All other recorded views passed."},
+    "route_followup": {"route": "/docs/searching-and-retrieving", "fresh_phone_light_visits": 3, "passed_visits": 3, "delayed_index_control_reproduced_empty_heading": true, "eventual_heading_observed": true, "cleared_heading_control_refused": true, "conclusion": "The checker can observe the asynchronous page before it is ready. The original fetch timing was not captured, so its exact transport cause is unknown. A visible loading state and bounded readiness check remain follow-up work."},
+    "pulse": {"reads": 50, "problems": 0, "slow": 0, "identity_provider_health": 200, "passed": true, "attempt": 2},
+    "provider_readback": {"release_status": "complete", "machine_state": "started", "health_passed": true},
+    "billing_readback": {"passed": true, "checkout_ready": true, "portal_ready": true, "prior_entitlement_fingerprints_unchanged": true}
+  },
+  "retained_failed_attempts": [
+    "Independent attempt 01 had a native-fetch edge-status timeout and one health transport failure, omitted a host and correctly failed coverage. Complete attempt 02 passed all ten hosts.",
+    "Full-route attempt 01 stopped before browsing because the read-only guard received an absolute log path instead of its required basename. The corrected invocation completed as attempt 02.",
+    "Full-route attempt 02 retained the one asynchronous heading failure. Three isolated live repeats passed; a delayed-index control reproduced the race and a cleared heading still failed. Do not relabel the original report as passing.",
+    "Pulse attempt 01 passed readiness but recorded two slow responses. Fresh attempt 02 passed with none.",
+    "An initial local pre-push selection used unsupported short shard aliases and did not run those shards. The corrected explicit four-shard run passed; a separate fail-closed selector repair is pending integration.",
+    "The initial hardcoding gate identified eight new source URLs. Exact reviewed registry allowances resolved them; the complete repeat reported no new high findings."
+  ],
+  "private_evidence_root": "ui-release-20261011-wCaugV",
+  "private_evidence": ["release88-deployment-01.json", "release88-provider-readback.json", "billing-state-before-01.json", "billing-state-after-01.json", "release88-browser-01.json", "release88-offering-01/report.json", "release88-live-offering-01/report.json", "cloudflare-release88-01/events.jsonl", "release88-edge-readback-01.json", "live-independent88/attempt-01/report.json", "live-independent88/attempt-02/report.json", "release88-live-routes-02/report.json", "release88-route-start-failure-01.json", "release88-route-diagnosis-IoMwxB/diagnosis.json", "release88-route-diagnosis-IoMwxB/probe-report.json", "release88-pulse-01.json", "release88-pulse-02.json"],
+  "limits": [
+    "Public browser checks use emulated viewports and do not qualify every authenticated journey, provider or customer task.",
+    "No live charge or subscription migration was performed to test checkout.",
+    "The research-watch failure-visibility repair is not included in this revision; an expanded watch is not proof of successful recurring collection from every source.",
+    "Greenhouse qualification covers metadata intake, not job descriptions, generated components or daily production volume.",
+    "Separate popularity/agent-use rankings, bounded recursive research automation and comprehensive decision feeds remain unfinished.",
+    "No catalogue additions, body-store migration, hosted Max execution or two-million-file milestone were published by this release."
+  ]
+}
