@@ -33,6 +33,15 @@ tool; adding a new host requires source review and a code change. A move,
 authentication requirement, rate limit, or unavailable source appears as a
 failure for human review.
 
+The current manifest fills its fifty-source ceiling. Superpowers and Context
+Mode occupy the final two slots because their planning, verification and
+context behavior directly address the owner's repeated-work investigation.
+Other reviewed leads stay in the research backlog; adding them requires a
+deliberate rotation or a separately qualified coverage design, not a larger
+unchecked request limit. Watching a restricted-licence implementation does
+not authorize hosting it. Source inspection, adoption and measured benefit
+remain separate.
+
 Review each changed source at its recorded revision before revising a research
 claim. Save the new research assessment under a new dated name, record the
 observed and untested parts separately, and update the existing roadmap step

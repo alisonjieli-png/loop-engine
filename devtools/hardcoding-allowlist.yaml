@@ -1,5 +1,17 @@
 schema: hardcoding_allowlist/v1
 entries:
+- finding_id: hardcoding.cc3e813c36abe9a11bd6d9f2
+  owner: "tools.research_source_watch.json:sources[48].url"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed October 11, 2026: exact Superpowers primary repository, pinned by the bounded public-source review. This validated watch binding reads anonymous revision metadata only under the unchanged fifty-source ceiling, HTTPS/GitHub shape and no-redirect rules. Upstream skill instructions, installation and runtime effects are not authorized. Tests retain distribution/version and watch-only limits; another URL creates a different finding."
+  created_on: '2026-10-11'
+  expires_on: '2027-01-11'
+- finding_id: hardcoding.33a5033e3d27ba11948f074d
+  owner: "tools.research_source_watch.json:sources[49].url"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed October 11, 2026: exact Context Mode primary repository, with inspected ELv2 rights limits and a pinned source revision. It is a source-watch binding, not a hosted engine or hidden endpoint. The existing bounded anonymous reader and refusal tests remain unchanged; hosted adoption and benefit claims stay unqualified. Another URL creates a different finding."
+  created_on: '2026-10-11'
+  expires_on: '2027-01-11'
 - finding_id: hardcoding.a5079d2377f03e176407c5f2
   owner: "tools.research_source_watch.json:sources[40].url"
   classification: STRATEGY_OR_PROVIDER_BINDING

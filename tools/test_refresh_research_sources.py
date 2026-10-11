@@ -113,13 +113,24 @@ class ManifestChecks(unittest.TestCase):
         by_url = {row["url"]: row for row in sources}
         for repository in ("storytold/filmcraft", "WeftCut/WeftCut", "GraphiteEditor/Graphite",
                            "Flare-Animate/Flare", "f/prompts.chat", "cporter202/google-maps-scraping-apis",
-                           "jarrodwatts/claude-image-view", "rammcodes/Dopefolio"):
+                           "jarrodwatts/claude-image-view", "rammcodes/Dopefolio",
+                           "obra/superpowers", "mksglu/context-mode"):
             with self.subTest(repository=repository):
                 row = by_url["https://github.com/" + repository]
                 self.assertEqual(row["kind"], "github_repository")
                 self.assertIn("watch only", row["note"].lower())
                 self.assertIn("no installation, execution, adoption or publication approval", row["note"].lower())
                 self.assertNotIn("facebook.com", row["url"])
+
+    def test_context_and_workflow_watches_preserve_adoption_and_distribution_limits(self):
+        sources = watch.validate_manifest(json.loads(Path(__file__).with_name(
+            "research_source_watch.json").read_text("utf-8")))
+        by_id = {row["id"]: row for row in sources}
+        self.assertEqual(len(sources), watch.MAX_MANIFEST_SOURCES)
+        self.assertIn("Elastic License 2.0", by_id["context_mode"]["license_state"])
+        self.assertIn("Hosted adoption is held", by_id["context_mode"]["license_state"])
+        self.assertIn("marketplace distribution and installed versions", by_id["superpowers"]["note"])
+        self.assertIn("not measured Baltor savings", by_id["context_mode"]["note"])
 
     def test_fifty_sources_are_valid_but_fifty_one_are_refused(self):
         sources = [dict(SOURCE, id=f"example_{i}", url=f"https://github.com/example/project-{i}")

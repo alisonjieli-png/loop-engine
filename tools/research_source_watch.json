@@ -431,6 +431,26 @@
       "roadmap_step": "S-6.215",
       "license_state": "Repository declares GPL-3.0; full licence, dependencies and asset-specific rights need review. Do not relabel as MIT.",
       "note": "Research watch only; no installation, execution, adoption or publication approval. Native HTML/CSS/JavaScript/Sass template candidate, not a replacement for Baltor's approved redesign. Qualify accessibility, destinations, meaningful revision and clean reopen."
+    },
+    {
+      "id": "superpowers",
+      "name": "Superpowers workflow methods and activation",
+      "kind": "github_repository",
+      "url": "https://github.com/obra/superpowers",
+      "baseline_revision": "bb92a77741419a4ab5f06e711a283343f1ada0c3",
+      "roadmap_step": "S-6.214",
+      "license_state": "MIT root licence inspected; preserve notices and inspect dependencies, scripts and bundled assets separately.",
+      "note": "Research watch only; no installation, execution, adoption or publication approval. Prioritized for planning, repair, fresh verification and native activation methods. Keep upstream, marketplace distribution and installed versions separate. Imported skills do not override Baltor authority, branch rules or budgets; automatic benefit claims require matched task evaluation."
+    },
+    {
+      "id": "context_mode",
+      "name": "Context Mode retrieval and session continuity",
+      "kind": "github_repository",
+      "url": "https://github.com/mksglu/context-mode",
+      "baseline_revision": "abb104847cbb66c2182816a72bb69455bc778b5e",
+      "roadmap_step": "S-6.214",
+      "license_state": "Elastic License 2.0 inspected. Hosted adoption is held pending applicable permission; do not label this implementation MIT.",
+      "note": "Research watch only; no installation, execution, adoption or publication approval. Compare selected-output fidelity, compaction continuity, permissions and complete accepted-task cost. Publisher compression examples are not measured Baltor savings. Hooks, session capture, code execution, upgrades and purge remain separately authorized operations."
     }
   ]
 }
