@@ -66,6 +66,23 @@ file are different records. None is counted as the next simply because it
 exists on disk. Preserve their source relationships when moving one qualified
 capability into the existing library.
 
+## Open-source project discovery feed
+
+The existing community RSS adapter also lists
+[Opensourceprojects.dev](https://www.opensourceprojects.dev/rss-info), whose
+publisher documents RSS at `/rss` and Atom at `/feed.xml`. Use one canonical
+channel, not two independent confirmations of the same material. The registry
+selects RSS at a six-hour interval under the unchanged per-tick read ceiling.
+The access-reference field points to the publisher's subscription instructions,
+not a grant to redistribute article prose, code or media. Only internal link
+discovery is selected. Trace useful leads to original repositories and check
+their exact versions, terms and behavior before adoption.
+
+A configured interval does not prove a deployed timer or successful repeated
+collection. The website advertises five-minute feed updates; that is a
+publisher statement, not a measured freshness guarantee. The existing managed
+source state, lead deduplication and work queue remain the owners.
+
 ## Public Greenhouse job metadata
 
 [`tools/read_greenhouse_jobs.py`](../read_greenhouse_jobs.py) implements one

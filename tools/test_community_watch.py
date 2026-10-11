@@ -52,6 +52,21 @@ class CommunityWatchTests(unittest.TestCase):
         self.source = dict(self.registry["sources"][0], id="test_forum", url="https://forum.example/latest.rss")
         self.registry["sources"] = [self.source]
 
+    def test_project_directory_uses_one_publisher_feed_under_existing_limits(self):
+        registry = read_registry()
+        selected = [source for source in registry["sources"] if source["id"] == "opensourceprojects"]
+        self.assertEqual(len(selected), 1)
+        source = selected[0]
+        self.assertEqual(source["url"], "https://www.opensourceprojects.dev/rss")
+        self.assertEqual(source["terms_url"], "https://www.opensourceprojects.dev/rss-info")
+        self.assertEqual(source["engine"], "rss_atom")
+        self.assertEqual(source["use"], "internal_link_discovery")
+        self.assertEqual(source["interval_seconds"], 21600)
+        self.assertTrue(source["enabled"])
+        self.assertEqual(registry["maximum_reads_per_tick"], 12)
+        self.assertFalse(any(row["url"] == "https://www.opensourceprojects.dev/feed.xml"
+                             for row in registry["sources"]))
+
     def test_feed_keeps_hints_and_safe_references_not_author_or_thread_bodies(self):
         leads, coverage = parse_feed(RSS, self.source, self.registry)
         self.assertEqual(len(leads), 1)

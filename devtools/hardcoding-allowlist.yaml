@@ -1,5 +1,17 @@
 schema: hardcoding_allowlist/v1
 entries:
+- finding_id: hardcoding.ad60058684a25c2d261a8bce
+  owner: "tools.knowledge_radar.community-watch-v1.json:sources[9].url"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed October 11, 2026: the owner's discovery source publishes this exact RSS endpoint. One bounded anonymous read through the existing community transport returned 12 metadata leads; no body archive, model call or publication. The existing registry owns its six-hour interval and unchanged per-tick ceiling. RSS and Atom aliases are not separate evidence sources. The source-specific test binds this URL and internal_link_discovery scope; a different URL remains a new finding."
+  created_on: '2026-10-11'
+  expires_on: '2027-01-11'
+- finding_id: hardcoding.ecadd11ebe52d26e2322e603
+  owner: "tools.knowledge_radar.community-watch-v1.json:sources[9].terms_url"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed October 11, 2026: this is the publisher's RSS subscription/access reference for the adjacent source binding, not a licence grant or execution endpoint. The owning guide explicitly distinguishes that field from redistribution rights. The exact URL is checked by the source-specific fixture; changed references require fresh review."
+  created_on: '2026-10-11'
+  expires_on: '2027-01-11'
 - finding_id: hardcoding.cc3e813c36abe9a11bd6d9f2
   owner: "tools.research_source_watch.json:sources[48].url"
   classification: STRATEGY_OR_PROVIDER_BINDING

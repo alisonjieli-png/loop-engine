@@ -1,6 +1,6 @@
 {
   "record_type": "community_watch_registry/v1",
-  "revision": "2026-09-30",
+  "revision": "2026-10-11",
   "maximum_reads_per_tick": 12,
   "maximum_entries_per_source": 40,
   "maximum_harness_runs_per_day": 4,
@@ -14,7 +14,8 @@
     {"id":"supercollider_forum","engine":"rss_atom","url":"https://scsynth.org/latest.rss","interval_seconds":7200,"terms_url":"https://scsynth.org/tos","use":"internal_link_discovery","enabled":true},
     {"id":"n8n_forum","engine":"rss_atom","url":"https://community.n8n.io/latest.rss","interval_seconds":7200,"terms_url":"https://community.n8n.io/tos","use":"internal_link_discovery","enabled":true},
     {"id":"hacker_news","engine":"rss_atom","url":"https://news.ycombinator.com/rss","interval_seconds":14400,"terms_url":"https://www.ycombinator.com/legal/","use":"internal_link_discovery","enabled":true},
-    {"id":"github_news","engine":"rss_atom","url":"https://github.blog/feed/","interval_seconds":21600,"terms_url":"https://docs.github.com/en/site-policy/github-terms/github-terms-of-service","use":"internal_link_discovery","enabled":true}
+    {"id":"github_news","engine":"rss_atom","url":"https://github.blog/feed/","interval_seconds":21600,"terms_url":"https://docs.github.com/en/site-policy/github-terms/github-terms-of-service","use":"internal_link_discovery","enabled":true},
+    {"id":"opensourceprojects","engine":"rss_atom","url":"https://www.opensourceprojects.dev/rss","interval_seconds":21600,"terms_url":"https://www.opensourceprojects.dev/rss-info","use":"internal_link_discovery","enabled":true}
   ],
   "research_topics": [
     {"id":"ai_game_workflows","query":"site:reddit.com/r/aigamedev (MCP OR workflow OR procedural) (Godot OR Blender OR Three.js)","domains":["reddit.com","github.com"],"interval_seconds":21600},
