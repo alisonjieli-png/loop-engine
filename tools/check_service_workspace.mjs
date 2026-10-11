@@ -1195,6 +1195,7 @@ try {
   servedFiles.push("/assets/worker-compose.yaml","/assets/docs/container-worker.html");
   servedFiles.push("/assets/oauth-consent.js","/assets/public-good.js","/assets/public-good.css","/assets/staff-work.js");
   servedFiles.push("/assets/feed-specimen.js");
+  servedFiles.push("/assets/gallery-random.js","/assets/gallery-random.css");
   servedFiles.push("/assets/feed-profile.js","/assets/feed-profile.css","/assets/run-desk.js","/assets/run-desk-core.js",
     "/assets/offering-pages.js","/assets/offering-pages.css","/assets/share-card.png","/assets/share-card-feeds.png",
     "/assets/share-card-harness-files.png","/assets/share-card-gallery.png");
