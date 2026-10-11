@@ -49,7 +49,7 @@ jobs:
         run: |
           set -euo pipefail
           report="$RUNNER_TEMP/research-watch.json"
-          PYTHONPATH=src:tools python tools/refresh_research_sources.py --online --max-online-sources 40 \
+          PYTHONPATH=src:tools python tools/refresh_research_sources.py --online --max-online-sources 50 \
             --prior-dir "$RUNNER_TEMP/research-watch-prior" --output "$report" > "$RUNNER_TEMP/research-watch.log" 2>&1 || true
           cat "$RUNNER_TEMP/research-watch.log"
           python3 tools/summarize_research_watch.py "$report" > "$RUNNER_TEMP/research-watch.md"

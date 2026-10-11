@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import json
+import re
 import tempfile
 import unittest
 from copy import deepcopy
@@ -106,6 +107,38 @@ class ManifestChecks(unittest.TestCase):
         self.assertIn("https://github.com/playcanvas/editor-mcp-server", urls)
         self.assertIn("https://github.com/hi-godot/godot-ai", urls)
 
+    def test_requested_creative_and_discovery_repositories_are_watch_only(self):
+        sources = watch.validate_manifest(json.loads(Path(__file__).with_name(
+            "research_source_watch.json").read_text("utf-8")))
+        by_url = {row["url"]: row for row in sources}
+        for repository in ("storytold/filmcraft", "WeftCut/WeftCut", "GraphiteEditor/Graphite",
+                           "Flare-Animate/Flare", "f/prompts.chat", "cporter202/google-maps-scraping-apis",
+                           "jarrodwatts/claude-image-view", "rammcodes/Dopefolio"):
+            with self.subTest(repository=repository):
+                row = by_url["https://github.com/" + repository]
+                self.assertEqual(row["kind"], "github_repository")
+                self.assertIn("watch only", row["note"].lower())
+                self.assertIn("no installation, execution, adoption or publication approval", row["note"].lower())
+                self.assertNotIn("facebook.com", row["url"])
+
+    def test_fifty_sources_are_valid_but_fifty_one_are_refused(self):
+        sources = [dict(SOURCE, id=f"example_{i}", url=f"https://github.com/example/project-{i}")
+                   for i in range(51)]
+        self.assertEqual(len(watch.validate_manifest(self.manifest(*sources[:50]))), 50)
+        with self.assertRaisesRegex(ValueError, "bounded"):
+            watch.validate_manifest(self.manifest(*sources))
+
+    def test_daily_workflow_covers_the_manifest_within_the_same_request_ceiling(self):
+        root = Path(__file__).resolve().parents[1]
+        workflow = (root / ".github/workflows/research-watch.yml").read_text("utf-8")
+        limits = re.findall(r"--max-online-sources\s+(\d+)", workflow)
+        self.assertEqual(len(limits), 1)
+        limit = int(limits[0])
+        self.assertEqual(limit, watch.MAX_ONLINE_SOURCES)
+        self.assertEqual(limit, watch.MAX_MANIFEST_SOURCES)
+        self.assertLess(limit, 60)
+        self.assertLessEqual(len(json.loads((root / "tools/research_source_watch.json").read_text())["sources"]), limit)
+
 
 class ObservationChecks(unittest.TestCase):
     def test_offline_mode_never_calls_network_and_keeps_change_unknown(self):
@@ -178,6 +211,27 @@ class ObservationChecks(unittest.TestCase):
             watch.run_watch([SOURCE, dict(SOURCE, id="second")], online=True,
                             max_online_sources=1, opener=opener)
         self.assertEqual([], opener.requests)
+
+    def test_fifty_online_requests_are_bounded_and_fifty_one_never_dispatch(self):
+        class FreshResponseOpener(FakeOpener):
+            def open(self, request, timeout):
+                self.requests.append((request, timeout))
+                return FakeResponse(json.dumps([{"sha": "a" * 40}]).encode())
+
+        sources = [dict(SOURCE, id=f"example_{i}", url=f"https://github.com/example/project-{i}")
+                   for i in range(51)]
+        opener = FreshResponseOpener()
+        report = watch.run_watch(sources[:50], online=True, max_online_sources=50, opener=opener)
+        self.assertEqual(len(opener.requests), 50)
+        self.assertEqual(len(report["sources"]), 50)
+        self.assertTrue(all(row["change"] == "unchanged" for row in report["sources"]))
+        self.assertIn("not source claims, candidate approval, or runtime authority", report["interpretation"])
+        self.assertTrue(all(request.get_header("Authorization") is None for request, _timeout in opener.requests))
+        for sources_arg, ceiling in ((sources, 50), (sources[:50], 51)):
+            refused = FakeOpener(error=AssertionError("network should not be called"))
+            with self.subTest(ceiling=ceiling), self.assertRaises(ValueError):
+                watch.run_watch(sources_arg, online=True, max_online_sources=ceiling, opener=refused)
+            self.assertEqual(refused.requests, [])
 
 
 class ReportChecks(unittest.TestCase):

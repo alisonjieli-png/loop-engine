@@ -29,7 +29,7 @@ SHA_PATTERN = re.compile(r"[0-9a-f]{40}\Z")
 HOST_LABEL = re.compile(r"[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\Z")
 REPO_PATH = re.compile(r"/[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+/?\Z")
 MAX_MANIFEST_SOURCES = 50
-MAX_ONLINE_SOURCES = 40
+MAX_ONLINE_SOURCES = 50
 ALLOWED_PAGE_HOSTS = frozenset({"arxiv.org", "modelcontextprotocol.io",
                                  "agentplugins.io", "skills.sh", "www.skills.sh",
                                  "jfrog.com", "developers.openai.com"})

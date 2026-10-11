@@ -351,6 +351,86 @@
       "roadmap_step": "S-6.215",
       "license_state": "Not cleared for import; source change detection only.",
       "note": "Research candidate. No installation, copying, execution or publication approval."
+    },
+    {
+      "id": "filmcraft",
+      "name": "FilmCraft headless video and MCP candidate",
+      "kind": "github_repository",
+      "url": "https://github.com/storytold/filmcraft",
+      "baseline_revision": "0800a8b0aa4a703ba42172f415b45a61f8d8a5e1",
+      "roadmap_step": "S-6.215",
+      "license_state": "Code, dependencies and media require separate rights review; a clean-room claim is not a licence grant.",
+      "note": "Research watch only; no installation, execution, adoption or publication approval. Publisher describes a Rust implementation, headless MCP and a clean-room approach; those claims are not independently verified. Qualify editable output, revision, rendering, reopening and declared effects before any engine selection."
+    },
+    {
+      "id": "weftcut",
+      "name": "WeftCut editable video candidate",
+      "kind": "github_repository",
+      "url": "https://github.com/WeftCut/WeftCut",
+      "baseline_revision": "8117a7a19af2a7e14c7a6f71dd068eb49b84228c",
+      "roadmap_step": "S-6.215",
+      "license_state": "Source-declared MIT for project code; FFmpeg dependencies and media retain separate terms. Not cleared for import.",
+      "note": "Research watch only; no installation, execution, adoption or publication approval. Preserve the distinction between editor code, codec/build configuration and supplied media. Test a meaningful edit and clean reopen before claiming workflow compatibility."
+    },
+    {
+      "id": "graphite",
+      "name": "Graphite procedural graphics candidate",
+      "kind": "github_repository",
+      "url": "https://github.com/GraphiteEditor/Graphite",
+      "baseline_revision": "7477cd2fab315494e4c2613bc446c707733e6e7b",
+      "roadmap_step": "S-6.215",
+      "license_state": "Source-declared MIT/Apache-2.0 code; branding has a separate licence and third-party assets need review. Not cleared for import.",
+      "note": "Research watch only; no installation, execution, adoption or publication approval. Evaluate native editable graphics and procedural operations through existing typed capability boundaries; a source update does not establish Baltor integration or asset redistribution rights."
+    },
+    {
+      "id": "flare_animate",
+      "name": "Flare animation editor candidate",
+      "kind": "github_repository",
+      "url": "https://github.com/Flare-Animate/Flare",
+      "baseline_revision": "cfae5de4105123862d74d57fbc640908b46eaf0e",
+      "roadmap_step": "S-6.215",
+      "license_state": "OpenToonz-derived code, additions, dependencies and assets require file-specific rights review. Not cleared for import.",
+      "note": "Research watch only; no installation, execution, adoption or publication approval. Publisher describes an early-alpha OpenToonz fork. Preserve upstream lineage and qualify project loading, revision, export and recovery before recommending an engine."
+    },
+    {
+      "id": "prompts_chat",
+      "name": "prompts.chat prompt corpus and application",
+      "kind": "github_repository",
+      "url": "https://github.com/f/prompts.chat",
+      "baseline_revision": "bd4ed9313fdb1204e8c256d709d13694f72581de",
+      "roadmap_step": "S-6.214",
+      "license_state": "Source-declared MIT application/site code and CC0 prompt text/data; inspect file-specific terms and submitted content before reuse.",
+      "note": "Research watch only; no installation, execution, adoption or publication approval. Review prompt data separately from the web application and plugins. CSV and Markdown can represent the same prompts; popularity is not measured task quality or independent approval."
+    },
+    {
+      "id": "maps_api_directory",
+      "name": "Google Maps scraping API directory",
+      "kind": "github_repository",
+      "url": "https://github.com/cporter202/google-maps-scraping-apis",
+      "baseline_revision": "86f36f73848f901df92aed63d23451f93d8fa0c2",
+      "roadmap_step": "S-6.214",
+      "license_state": "Repository declares MIT; linked Apify actors, platform access and returned data have separate terms. No data reuse rights established.",
+      "note": "Research watch only; no installation, execution, adoption or publication approval. A directory and playbooks with disclosed affiliate links, not an implemented Baltor scraper. Qualify each actor's operation, allowance and permitted retained fields separately."
+    },
+    {
+      "id": "claude_image_view",
+      "name": "Claude Image View terminal preview mod",
+      "kind": "github_repository",
+      "url": "https://github.com/jarrodwatts/claude-image-view",
+      "baseline_revision": "b3c412bb6d167cafade79148e95f9114ee1aad7c",
+      "roadmap_step": "S-6.214",
+      "license_state": "MIT licence inspected; preserve copyright and permission notices. Host API, dependencies and image-content rights remain separate.",
+      "note": "Research watch only; no installation, execution, adoption or publication approval. Publisher documents a terminal image-preview mod, not a new harness. Test supported client/terminal versions, file-read bounds, cache/session isolation and polling overhead; static review is not runtime qualification."
+    },
+    {
+      "id": "dopefolio",
+      "name": "Dopefolio static portfolio template",
+      "kind": "github_repository",
+      "url": "https://github.com/rammcodes/Dopefolio",
+      "baseline_revision": "4734cb2c742ee9d849fdc5c1f05e1cbe13359a73",
+      "roadmap_step": "S-6.215",
+      "license_state": "Repository declares GPL-3.0; full licence, dependencies and asset-specific rights need review. Do not relabel as MIT.",
+      "note": "Research watch only; no installation, execution, adoption or publication approval. Native HTML/CSS/JavaScript/Sass template candidate, not a replacement for Baltor's approved redesign. Qualify accessibility, destinations, meaningful revision and clean reopen."
     }
   ]
 }
