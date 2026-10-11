@@ -2,7 +2,7 @@
 
 Use the [main README](../README.md) for the public quickstart.
 The [current north star](architecture/NORTH-STAR.md) and
-[September 29 reconciliation](context/SESSION-RECONCILIATION-2026-09-29.md)
+[October 11 checkpoint](context/SESSION-HANDOFF-2026-10-11.md)
 state current direction, reviewed coverage and remaining work.
 For current development, open the
 [single development HTML](../artifacts/architecture-audit-2026-09-19/loop-engine-system-map.html),
@@ -22,13 +22,14 @@ and what still needs the owner, are in the
 [commit, push and release authority](../AGENTS.md#commit-push-and-release-authority)
 section of AGENTS.md. No other document restates them.
 
-The [September 25 evening handoff](context/SESSION-HANDOFF-2026-09-25-EVENING.md)
-is the newest dated record of the live state and the work in flight; the
+The [October 11 checkpoint](context/SESSION-HANDOFF-2026-10-11.md)
+records release 87 and the remaining work. Earlier snapshots include the
+[October 8 handoff](context/SESSION-HANDOFF-2026-10-08.md), the
+[September 25 evening handoff](context/SESSION-HANDOFF-2026-09-25-EVENING.md), the
 [September 25 afternoon handoff](context/SESSION-HANDOFF-2026-09-25-AFTERNOON.md),
 the [September 25 session handoff](context/SESSION-HANDOFF-2026-09-25.md) of the
 morning and the
-[September 23 session handoff](context/SESSION-HANDOFF-2026-09-23.md) are the
-ones before it. The
+[September 23 session handoff](context/SESSION-HANDOFF-2026-09-23.md). The
 [takeover checkpoint](context/TAKEOVER-CHECKPOINT-2026-09-20.md) records the
 working cycle, the open findings of September 20 and the private beta
 definition. The earlier September 20 checkpoint and handoff remain valid as
@@ -74,7 +75,7 @@ correctness. Read the evidence limits beside each view.
 | [What Baltor is](guides/service-what-baltor-is.md), [your account](guides/service-your-account.md), [getting set up](guides/service-getting-set-up.md), [searching and retrieving](guides/service-searching-and-retrieving.md), [usage and what you pay for](guides/service-usage-and-what-you-pay-for.md), [serving and connections](guides/service-serving-and-connections.md) and [troubleshooting](guides/service-troubleshooting.md) | The hosted service as a paying customer meets it: what it is, the account and its permissions, client token, client settings, search, download, what is measured, protocol, and every refusal code. |
 | [Customer feedback and requests](guides/customer-feedback-and-requests.md) | Rating a download, asking for material, the search gap count, what staff read, and the dated feedback report. |
 | [Claude Code](guides/quickstart-claude-code.md), [Codex](guides/quickstart-codex.md), [OpenCode](guides/quickstart-opencode.md), [Pi](guides/quickstart-pi.md) and [Baltor Harness](guides/quickstart-baltor-harness.md) quickstarts | One page for each harness: what you need, the configuration to paste, the first search, the first download and the check that it worked. A nightly check runs each page's steps against the live service. |
-| [Hosting procedures](guides/hosting-and-deployment-procedures.md) | Preparation for deployment families. Only the Fly.io profile is deployed, as a private pilot. The other profiles are not proof of a live deployment. |
+| [Hosting procedures](guides/hosting-and-deployment-procedures.md) | Preparation for deployment families. Current public edge delivery uses Cloudflare and dynamic service requests use Fly; the deployment record distinguishes working paths from candidate migrations. |
 | [Owner launch checklist](guides/launch-owner-checklist.md) | Account, payment, hosting, and live-model decisions that need explicit authority. |
 
 The [guides index](guides/README.md) lists operating documentation.

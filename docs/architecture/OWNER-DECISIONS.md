@@ -2,7 +2,23 @@
 
 Kind: current decision route with retained dated decisions. The owner's current conversation takes precedence. [AGENTS.md](../../AGENTS.md#commit-push-and-release-authority) remains the single commit, push, release and effect-authority source. This file records product choices; it grants no new authority.
 
-## Current website and delivery direction, October 9, 2026
+## Current prices, October 11, 2026
+
+The owner states: "We need to raise the prices, 9 for the feed, 49 dollars for
+pro and 99 dollars for max". Monthly standard prices are therefore $9 for
+Basic (Agent Feeds), $49 for Pro and $99 for Max. This supersedes earlier
+price proposals below. It is a price decision, not a claim that every tier's
+paid checkout or hosted capability is active.
+
+Engineering applies the Pro price to new subscriptions and keeps existing
+subscription prices, paid periods and free grants unchanged. Feeds' published
+free period through December 31, 2026 Eastern and explicit paid opt-in still
+apply. Max's local public preview stays free; a price change does not qualify
+hosted execution or activate Max sales. Website copy, new-checkout Price and
+the host's entitlement policy must agree before the change is reported live.
+The release record identifies the actual deployed prices.
+
+## Website and delivery direction, October 9, 2026
 
 The current conversation prioritizes implementing the supplied Claude Design
 reference across the live website. Keep existing routes and account boundaries,
@@ -12,9 +28,9 @@ production application.
 
 Plan names describe the subscription level. Engineering selects Basic, Pro
 and Max under the owner's instruction to use judgment. Agent Feeds, Harness
-Files and Overnight / AFK Work describe features. The current price direction
-is $4.99, $29 and $49 a month, replacing the earlier $29.99 and $49.99 targets
-below. Basic's Agent Feeds remain free through December 31, 2026 Eastern, with
+Files and Overnight / AFK Work describe features. The October 9 price direction
+was $4.99, $29 and $49 a month, superseded by the October 11 decision above.
+Basic's Agent Feeds remain free through December 31, 2026 Eastern, with
 paid activation requiring opt-in. Existing billing identities, subscriptions
 and grants remain bound to their actual provider records.
 

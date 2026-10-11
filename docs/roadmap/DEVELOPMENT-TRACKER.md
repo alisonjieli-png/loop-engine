@@ -3,7 +3,7 @@
 Kind: generated view. Do not edit by hand. The only task authority is
 [roadmap.yaml](roadmap.yaml); change it, then run
 `PYTHONPATH=src:tools .venv/bin/python tools/build_development_tracker.py`.
-Source fingerprint: `sha256:8b77f2bdcdd05162104275a64d9e3e6c99ea7ff6e267b22ef2588be064051ec3`.
+Source fingerprint: `sha256:a9f2a9ee0571895b66518f72c2939490d7f665ceb78924e431c119229c3ccbba`.
 
 ## Where things stand
 
@@ -27,7 +27,7 @@ gantt
     dateFormat YYYY-MM-DDTHH:mm:ssZ
     axisFormat %d %H:%M
     section Website and release
-    Integrate the new design and interrupted fixes into the live website :active, work0, 2026-10-09T20:09:03+00:00, 3h
+    Integrate the new design and interrupted fixes into the live website :done, work0, 2026-10-09T20:09:03+00:00, 3h
     Review the complete public page and design surface :work1, 2026-10-09T20:09:03+00:00, 3h
     section Customer feeds
     Let customers build a distinct reading profile for each agent :active, work2, 2026-10-09T20:09:03+00:00, 3h
@@ -49,7 +49,7 @@ gantt
 
 | Task | Owner | Planned start UTC | Planned end UTC | Actual state |
 |---|---|---|---|---|
-| S-6.35.03 | Website and release | 2026-10-09T20:09:03+00:00 | 2026-10-09T23:09:03+00:00 | building |
+| S-6.35.03 | Website and release | 2026-10-09T20:09:03+00:00 | 2026-10-09T23:09:03+00:00 | published |
 | S-6.67.01 | Website and release | 2026-10-09T20:09:03+00:00 | 2026-10-09T23:09:03+00:00 | ready |
 | S-6.214.12 | Customer feeds | 2026-10-09T20:09:03+00:00 | 2026-10-09T23:09:03+00:00 | building |
 | S-6.13.01 | Cloudflare migration | 2026-10-09T23:09:03+00:00 | 2026-10-10T03:09:03+00:00 | ready |
@@ -65,13 +65,13 @@ gantt
 
 Each subtask lives in its owning step in roadmap.yaml. A local check does not complete a task that requires publication.
 
-Completed within their stated scope: 15 of 62 subtasks.
+Completed within their stated scope: 16 of 62 subtasks.
 
-Next eligible subtask: S-6.35.03: Integrate the new design and interrupted fixes into the live website
+Next eligible subtask: S-6.215.13: Measure and broaden production capacity
 
 | Order | Task | State | Completion required | Next action or dependency |
 |---:|---|---|---|---|
-| 1 | [ ] S-6.35.03: Integrate the new design and interrupted fixes into the live website | building | published | Finish the website agent's integrated browser checks and the independent all-omitted MCP metering repair, then run final gates and deploy. |
+| 1 | [x] S-6.35.03: Integrate the new design and interrupted fixes into the live website | published | published | Apply the owner's subsequent $9/$49/$99 monthly price change through a separate checked release; preserve existing subscriptions and free preview terms. |
 | 2 | [x] S-6.12.04: Separate three product cards from the introductory hero | live_qualified | live_qualified | Keep the three visible offerings consistent while the separate billing and hosted-service work proceeds. |
 | 3 | [x] S-6.35.01: Release reviewed main and verify it live | published | published | Keep application deployment and catalogue publication from overlapping. |
 | 4 | [x] S-6.215.01: Record the current live file baseline | offline_verified | offline_verified | Use this exact baseline for reconciliation. |
@@ -138,7 +138,7 @@ Next eligible subtask: S-6.35.03: Integrate the new design and interrupted fixes
 
 ### S-6.35.03 Integrate the new design and interrupted fixes into the live website
 
-Owner step: S-6.35. State: building. Completion requires: published.
+Owner step: S-6.35. State: published. Completion requires: published.
 
 Acceptance: The new shared design, plan labels, gallery, connection workflow and customer feed builder work on the deployed exact CI-passed revision, with customer boundaries and every existing route preserved.
 
@@ -148,9 +148,9 @@ Acceptance: The new shared design, plan labels, gallery, connection workflow and
 4. Commit and push the exact candidate, await its CI, dispatch the guarded application deployment once and refresh Cloudflare from that revision.
 5. Verify live bytes, browser journeys and all product hostnames; record image, rollback and remaining capability limits.
 
-Evidence: Four interrupted worktrees have exact private patches and archives. Combined billing/delivery/OAuth checks pass 296 tests; Connect/customer-delivery/run-desk checks pass 52; integrated feed checks pass 71. The design's dedicated browser pass covers 143 checks; final full-tree verification is pending.
+Evidence: Release 87 from 9d7b7e50 is live on Fly and Cloudflare. Exact CI 38156437645 and guarded deployment 38157179704 passed, gate closed. Local browser 979/979 and 197/197 wrong controls, design 144/144. Live offering matrix 483/483; independent review 456/456 across ten hosts and 68 views; all 3,273 edge files match. Full route audit: 71 pages, 293 views, 830 links, zero problems. See pilot-release-87.json for limits and retained failed attempts.
 
-Next: Finish the website agent's integrated browser checks and the independent all-omitted MCP metering repair, then run final gates and deploy.
+Next: Apply the owner's subsequent $9/$49/$99 monthly price change through a separate checked release; preserve existing subscriptions and free preview terms.
 
 Comment: Basic, Pro and Max are plan names; Agent Feeds, Harness Files and Overnight / AFK Work remain features. Max's scoped public preview does not claim hosted execution or activate a paid checkout. The owner explicitly prioritizes the design release over the longer migration and factory programme.
 
@@ -180,11 +180,11 @@ Acceptance: The exact CI-passed revision is deployed through the guarded workflo
 2. Dispatch the guarded deployment once and reconcile the remote result.
 3. Close the deployment gate; record image, revision, rollback and all-host checks.
 
-Evidence: Release 85 from c948a9aa: exact CI 37940684057, guarded deployment 37943750820, gate closed, image 4801fdb6ac7a, rollback release 84. Local suites on the exact tree: browser 977/977 with 197/197 wrong controls, offering 483/483, service smoke 766/766. All ten hosts pass the independent offering/Terms/health checks (426/426); Cloudflare export a5d9cd327dab matches all 2,556 files; route audit 67 pages, 277 views, 419 links, zero problems.
+Evidence: Release 87 from 9d7b7e50: exact CI 38156437645, guarded deployment 38157179704, gate closed, image 7e8d6a5df6d9, rollback release 86 image 7696ff57dc09. Live offering 483/483, independent checks 456/456 over ten hosts, exact Cloudflare readback 3273/3273, full route audit 71 pages/293 views/830 links.
 
 Next: Keep application deployment and catalogue publication from overlapping.
 
-Comment: The fifty-read pulse passed with no slow response. Release 85 ships the clearer offer, three ways to connect and per-agent feeds; release 84 corrected the overnight copy. Application releases do not publish catalogue additions.
+Comment: The fifty-read pulse passed with no slow response. Release 87 ships the Claude-export design, gallery, connection workflow and reading-profile builder. It does not publish catalogue additions or include the subsequent price increase.
 
 ### S-6.215.01 Record the current live file baseline
 

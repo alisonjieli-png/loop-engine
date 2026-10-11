@@ -1,0 +1,38 @@
+{
+  "record_type": "pilot_release_record/v1",
+  "release": 87,
+  "app": "baltor-pilot",
+  "source_revision": "9d7b7e50ee34621e6a86dc4c0932f2bcf47ac5d3",
+  "image": "registry.fly.io/baltor-pilot@sha256:7e8d6a5df6d9d3be2afa3417a14a134fae2d36a3923df786b5910e4d32a453bf",
+  "rollback_release": 86,
+  "rollback_image": "registry.fly.io/baltor-pilot@sha256:7696ff57dc09157585f75392e20cc5b843923c0f2767d55271a030839d182ecf",
+  "owner_local_date": "2026-10-11",
+  "deployed_at": "2026-10-11T16:54:24Z",
+  "ci_run": 38156437645,
+  "ci_conclusion": "success",
+  "deploy_run": 38157179704,
+  "deploy_workflow_conclusion": "success",
+  "deployment_gate_after": false,
+  "catalogue": {"release_id": "29a2bc33c3132a97466e79c18350f3574624f2ef7967b07241029e269b92e742", "packages": 256380, "distinct_files": 1560856, "changed_by_this_application_release": false},
+  "changes": ["Claude-export shared design, Basic/Pro/Max plan presentation and native-render gallery", "Customer-owned per-agent reading profiles with checked JSON and Markdown downloads", "Local Run Desk public preview and connection guides with OpenAPI", "Exact selected-file delivery, OAuth context and all-omitted download metering safeguards", "Visible account-options fallback without JavaScript"],
+  "cloudflare": {"worker": "baltor-web-edge", "export_id": "15780d0e2e5e1e275afd26471b37ce6ca6a5037d04820f44f898f600d59a5624", "worker_deployment": "1c1c47b5749b416a9dd1e2d967f31189", "static_files": 3273, "static_bytes": 87069274, "origin_mode": "all", "production_routes_changed": false, "rollback_export_id": "97954b43cea23ab07681ccb6b9e434dc0531dd38deefb95b32846f4b0e35b066", "rollback_worker_deployment": "b32cb99bd40f47d3aab66e3d6872365f"},
+  "checks": {
+    "local_browser": {"passed": 979, "total": 979, "mutants_detected": 197, "mutants_total": 197},
+    "local_design": {"passed": 144, "total": 144},
+    "local_offering_matrix": {"passed": 483, "total": 483},
+    "live_offering_matrix": {"passed": 483, "total": 483, "attempt": 2},
+    "independent_live_checks": {"passed": 456, "total": 456, "hostnames": 10, "views": 68, "browser_errors": 0, "attempt": 3, "coverage_guards": "Missing host, unready host and dropped view controls are refused."},
+    "edge_readback": {"passed": 3273, "total": 3273, "scope": "Exact exported bodies, required headers and export identity"},
+    "live_full_public_route_map": {"pages": 71, "views": 293, "hostnames": 9, "links_checked": 830, "automated_problems": 0, "passed": true},
+    "pulse": {"reads": 50, "problems": 0, "slow": 0, "identity_provider_health": 200, "passed": true},
+    "provider_readback": {"release_status": "complete", "machine_state": "started", "health_passed": true}
+  },
+  "retained_failed_attempts": [
+    "live-offering-01 stopped after 101/102 on a library page load timeout. A subsequent direct GET succeeded; complete attempt 02 passed.",
+    "Independent attempt 01 checked all ten hosts but used stale pre-redesign Max wording. Attempt 02 also encountered local native-fetch connection timeouts and incomplete host coverage. The revised checker keeps stricter full-host/full-view coverage and known-wrong controls; attempt 03 uses IPv4-first address selection and passes.",
+    "Local tool shard b exceeded the Unix socket pathname limit under the long temporary root. The test uses a short explicit socket directory; the focused check and complete shard then passed."
+  ],
+  "private_evidence_root": "ui-release-20261011-wCaugV",
+  "private_evidence": ["release87-deployment-01.json", "release87-provider-readback.json", "service-browser-01.json", "design-checks-01/report.json", "offering-checks-01/report.json", "cloudflare-release87-01/events.jsonl", "edge-readback-01.json", "live-offering-01/report.json", "live-offering-02/report.json", "live-independent/attempt-01/report.json", "live-independent/attempt-02/report.json", "live-independent/attempt-03/report.json", "live-routes-01/report.json", "live-pulse-01.json"],
+  "limits": ["The subsequent October 11 owner request for $9/$49/$99 monthly prices is not part of this frozen release.", "Browser checks use emulated viewports, not physical devices. Public checks do not qualify every authenticated journey or claim.", "A local reading profile does not activate hosted scheduling or personalized delivery.", "Max remains a free local public preview; no Max subscriptions or hosted execution were activated.", "No catalogue candidates were published and no two-million-file target was achieved by this application release.", "No body-store, identity-provider or search-engine migration occurred."]
+}

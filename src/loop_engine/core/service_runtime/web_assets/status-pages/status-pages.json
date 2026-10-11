@@ -5,6 +5,20 @@
   "releases": [
    {
     "kind": "service",
+    "number": 87,
+    "at": "2026-10-11T16:54:24Z",
+    "lines": [
+     "Claude-export shared design, Basic/Pro/Max plan presentation and native-render gallery.",
+     "Customer-owned per-agent reading profiles with checked JSON and Markdown downloads.",
+     "Local Run Desk public preview and connection guides with OpenAPI.",
+     "Exact selected-file delivery, OAuth context and all-omitted download metering safeguards.",
+     "Visible account-options fallback without JavaScript."
+    ],
+    "seen_after_release": "",
+    "not_shown": 0
+   },
+   {
+    "kind": "service",
     "number": 86,
     "at": "2026-10-09T18:45:06Z",
     "lines": [
