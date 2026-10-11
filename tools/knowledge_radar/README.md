@@ -66,6 +66,90 @@ file are different records. None is counted as the next simply because it
 exists on disk. Preserve their source relationships when moving one qualified
 capability into the existing library.
 
+## Public Greenhouse job metadata
+
+[`tools/read_greenhouse_jobs.py`](../read_greenhouse_jobs.py) implements one
+public ATS source through the existing `knowledge_radar_source/v1` edge and
+engine registry. It uses the documented Greenhouse Job Board GET for one
+board, without `content=true`. The official
+[Job Board API documentation](https://docs.greenhouse.io/job-board.html),
+inspected October 11, 2026, describes these GETs as public and unauthenticated.
+That access description does not establish an employer's permission to
+redistribute its prose. The source contract remains `live_lookup_only` for
+public delivery; this operator path keeps only private metadata observations.
+
+Prior work inspected: the Trendshift source engine and managed intake,
+Kaggle's metadata projection, the community lead/work compiler, the shared
+query transport and `DurableSearchQuota`. The adapter reuses these existing
+contracts. It is absent from the generic query multiplier, which saves raw
+bodies. No new source registry, scheduler, store or runtime is introduced.
+
+The default validates a selection and prints a plan, with no network or writes:
+
+```sh
+PYTHONPATH=src:tools python3 tools/read_greenhouse_jobs.py --board figma --limit 20
+```
+
+A host may execute one scoped read using its existing private record root,
+shared quota file and `web_research_quota_policy/v1` policy:
+
+```sh
+PYTHONPATH=src:tools python3 tools/read_greenhouse_jobs.py --board figma --limit 20 \
+  --state /path/to/private/community-state \
+  --quota-state /path/to/private/shared-source-quota.sqlite \
+  --quota-policy /path/to/private/source-quota-policy.json \
+  --execute --enqueue --prepare-work \
+  --authorize-network-reads --authorize-local-writes
+```
+
+Every board and process uses account `greenhouse:public-job-board` in that
+same host-selected accounting file. The policy supplies a declared daily
+ceiling and at most one request per window of at least ten seconds. These
+are operator bounds, not a claimed provider allowance. A different board,
+record root or process does not create another allowance. Do not select a
+new quota file to evade exhausted requests or a hold. Cross-host accounting
+is not supplied by a local SQLite binding.
+
+The existing quota owner reserves before dispatch. Unknown outcomes block
+later reads until evidence-backed reconciliation through that owner;
+401/403 and a rate limit with no usable retry evidence stay held. The CLI
+has no force-clear or retry option. One response is limited to one MiB and
+1,000 source rows, with at most sixty retained observations. Redirects,
+description queries, additional paths and caller-selected hosts are refused.
+The transport sends no credential, cookie or environment proxy.
+
+The metadata projection keeps the board, provider job identity, safe title,
+original job URL, source dates and explicit unknowns. Employer name remains
+unknown unless the row supplies it. Titles containing contact details or
+instruction-like text are excluded. Explicitly private, unpublished or
+inactive rows and prospect posts are excluded. Custom metadata, job HTML,
+application questions and contacts are discarded. Request logs retain size
+and digest, never response bodies. A limited or malformed page cannot close
+unseen jobs or renew an earlier failed observation.
+
+`--enqueue` writes existing `Lead` records as `needs_research` through
+CommunityStore/RecordOperationService. Stable identity uses board plus job
+ID, so different `gh_jid` query values cannot collapse to one careers URL.
+The original URL is retained only when its optional query is the matching
+`gh_jid`; other query shapes are excluded pending qualification.
+Tool and signal hints reuse the existing community dictionary on the title
+alone, with explicit inference provenance. They are not extracted duties.
+`--prepare-work` invokes the existing pure work compiler and saves deferred
+research work orders, with missing task evidence and reuse rights recorded.
+It creates no activation, model call, candidate package or public feed. The
+existing community queue refuses leads whose task evidence is explicitly
+`not_collected`, including during compiler reconciliation. A later authorized
+source-verification stage must supply substantive duties before opportunity
+generation. That verification adapter is not implemented by this increment.
+
+Offline checks cover the metadata projection, strict requests, host/path
+guards, private fields, injected source instructions, oversize responses,
+shared quota, failed refreshes, unknown dispatches and deferred work lineage:
+
+```sh
+PYTHONPATH=src:tools python3 -m unittest tools.test_greenhouse_jobs
+```
+
 ## Private Kaggle metadata reads
 
 [`tools/read_kaggle.py`](../read_kaggle.py) reads competition metadata,

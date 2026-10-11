@@ -1,5 +1,17 @@
 schema: hardcoding_allowlist/v1
 entries:
+- finding_id: hardcoding.c9cf27114430ad12fd7d9055
+  owner: "tools.knowledge_radar.greenhouse_intake:GreenhouseGet.__init__"
+  classification: DEPLOYMENT_CONFIGURATION
+  rationale: "Reviewed October 11, 2026: the empty environment passed to the public Greenhouse transport is an explicit exclusion of inherited credentials. The source uses unauthenticated GET only, disables environment proxies, and has fixed host/path and metadata-only request guards. tools/test_greenhouse_jobs.py checks the empty environment, effect-free default, outgoing headers and target refusals. The exact allowance covers this empty mapping only."
+  created_on: '2026-10-11'
+  expires_on: '2027-01-11'
+- finding_id: hardcoding.3c01f1e8e1c0fe2b925ed11d
+  owner: "tools.knowledge_radar.source-contracts-v1.json:contracts[20].terms_address"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed October 11, 2026: the radar source contract owns Greenhouse's official public Job Board API documentation reference. This passive address records access evidence; the adapter fetches only the separately fixed public board metadata endpoint. The strict contract reader and greenhouse source tests preserve the source binding. Employer reuse rights and public redistribution remain unestablished."
+  created_on: '2026-10-11'
+  expires_on: '2027-01-11'
 - finding_id: hardcoding.9da2c9f5798319742bf39972
   owner: "tools.build_gallery:_webp"
   classification: CLOSED_CONTROLLED_VOCABULARY

@@ -1,6 +1,6 @@
 {
  "record_type": "knowledge_radar_source_contracts/v1",
- "revised_on": "2026-10-08",
+ "revised_on": "2026-10-11",
  "never_read_by_script": [
   {
    "host": "openrouter.ai",
@@ -478,6 +478,24 @@
    "maximum_requests_per_run": 1,
    "maximum_response_bytes": 1048576,
    "failure_policy": "Record failure and provider hold. No retry, engine fallback or access bypass. Keep previous observations without renewing them.",
+   "republication": "live_lookup_only",
+   "excluded_upstreams": [],
+   "excluded_publishers": []
+  },
+  {
+   "record_type": "knowledge_radar_source_contract/v1",
+   "engine_id": "greenhouse_public_jobs",
+   "parser_version": "1.0.0",
+   "access_method": "https_get",
+   "hosts": ["boards-api.greenhouse.io"],
+   "permitted_uses": "Operator-authorized private discovery of public board job identifiers, titles, original links and dates. Title keyword hints remain inference; this is not a grant from an employer to reuse its job text.",
+   "never_used": "Job-description bodies, custom metadata, contact or applicant data, unpublished or explicitly private rows, credentials, applications and public redistribution.",
+   "attribution": "The exact employer board and Greenhouse job identifier, public source URL and observation date. Employer name is unknown unless explicitly returned.",
+   "terms_address": "https://docs.greenhouse.io/job-board.html",
+   "minimum_seconds_between_requests": 10.0,
+   "maximum_requests_per_run": 1,
+   "maximum_response_bytes": 1048576,
+   "failure_policy": "Record every attempt with the shared quota. Unknown outcomes and provider refusals hold; no retries or fallback. Missing entries never close jobs. Source access documentation is not a redistribution licence.",
    "republication": "live_lookup_only",
    "excluded_upstreams": [],
    "excluded_publishers": []

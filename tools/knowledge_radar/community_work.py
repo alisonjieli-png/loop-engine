@@ -77,6 +77,10 @@ def definition_digest():
 
 
 def queue_lead(scheduler, series, identity, version, document, now, loop_id):
+    # A metadata-only source explicitly lacks the task evidence needed by
+    # component research. Reconciliation cannot turn its title into duties.
+    if document["data"].get("task_evidence") == "not_collected":
+        return False
     value = LoopValue.create(document, LoopValueCreateRequest(INPUT_CONTRACT, "community_lead", loop_id, "community.intake/v1"))
     digest = value.content_digest
     trigger_id = hashlib.sha256((series.series_id + ":" + digest).encode()).hexdigest()
