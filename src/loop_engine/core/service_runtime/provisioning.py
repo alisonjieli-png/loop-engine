@@ -109,7 +109,9 @@ class DurableProvisioningBinding:
         return self.invoke_for_principal(self.runtime.authenticate_key(raw_key), operation, **fields)
 
     def invoke_for_principal(self, principal, operation: str, *, expected_digest=None, view=None, candidates=None,
-                             public_good_reservation=_AUTOMATIC_PUBLIC_GOOD_RESERVATION, **fields):
+                             public_good_reservation=_AUTOMATIC_PUBLIC_GOOD_RESERVATION, delivery_check=None, **fields):
+        if delivery_check is not None and (operation != "read" or not callable(delivery_check)):
+            raise ServiceRuntimeError("invalid_delivery_check")
         view = view if view is not None else self._view
         transport_reserved = public_good_reservation is not _AUTOMATIC_PUBLIC_GOOD_RESERVATION
         if not transport_reserved:
@@ -213,6 +215,7 @@ class DurableProvisioningBinding:
 
         qualifier = ProvisioningQualificationResolver(
             view.qualification_resolver.resolver_id + ":selected", selected_qualification)
+        delivery_guards = ()
         def measure(request):
             """Keep a definite refusal from the durable meter apart from an unknown commitment.
 
@@ -221,16 +224,28 @@ class DurableProvisioningBinding:
             is definite: nothing was recorded. Those keep their own code, so the customer is told what happened and
             whether to retry, instead of being told that the outcome is unknown."""
             try:
-                return self.runtime.record_usage(request, current, guards=(grant_guard,))
+                return self.runtime.record_usage(request, current, guards=(grant_guard, *delivery_guards))
             except ServiceCommitUnknown:
                 raise
             except ServiceRuntimeError as refusal:
                 raise ProvisioningMeterRefusal("the durable meter refused this measured unit", refusal.code) from None
 
         policy = ProvisioningAccessPolicy(grants, qualifier)
+        def prepare_delivery(item, meter_request, body_answer):
+            nonlocal delivery_guards
+            from ...catalog.protocol import CatalogRecordPrecondition
+            try:
+                guards = delivery_check(item, meter_request, body_answer)
+                if guards is not None and (not isinstance(guards, tuple)
+                        or any(not isinstance(guard, CatalogRecordPrecondition) for guard in guards)):
+                    raise ServiceRuntimeError("invalid_delivery_guards")
+                delivery_guards = guards or ()
+            except ServiceRuntimeError as refusal:
+                raise ProvisioningError("the host refused delivery preparation", refusal.code) from None
         server = ProvisioningServer(catalogue, (tenant,), view.body_reader, measure,
             access_policy=policy,
-            tenant_resolver=ProvisioningTenantResolver("durable_service_tenant", resolve_tenant))
+            tenant_resolver=ProvisioningTenantResolver("durable_service_tenant", resolve_tenant),
+            delivery_check=prepare_delivery if delivery_check is not None else None)
         result = server.handle(ProvisioningRequest(operation, internal_key, **fields))
         if automatic_reservation:
             self.public_good.complete(public_good_reservation, current, view,

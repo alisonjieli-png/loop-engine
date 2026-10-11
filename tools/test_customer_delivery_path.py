@@ -208,9 +208,8 @@ class ProtocolPackageRead(unittest.TestCase):
     def test_a_file_too_large_for_an_answer_is_named_and_served_by_the_download_address(self):
         (answer,) = self.service.protocol(("provisioning_read", {"identity": "gear_maker", "request_id": "large",
                                                                  "path": "assets/large.bin"}))
-        record = answer.structured_content["result"]
-        self.assertEqual(record["files"], [])
-        self.assertEqual([row["path"] for row in record["omitted"]], ["assets/large.bin"])
+        self.assertEqual(answer.structured_content["error"]["code"], "response_limit_exceeded")
+        self.assertEqual(self.service.usage(), 0, "a response carrying no file cannot consume a paid unit")
         downloaded = self.service.client.post("/api/v1/download", json=v2(
             "read", identity="gear_maker", request_id="large", path="assets/large.bin"))
         self.assertEqual(downloaded.status_code, 200)
@@ -746,7 +745,7 @@ def no_plan_is_told_how_to_subscribe(service, key):
     return (error["code"] == "plan_required" and "pricing page" in error["next_action"]
             and "Ask the person who runs this service" not in error["next_action"]
             and error["details"]["pricing_url"] == service.base + "/pricing"
-            and error["details"]["plan"] == "Agent Feeds + Harness Files" and SINGLE[0][1] not in answer.content)
+            and error["details"]["plan"] == "Pro" and SINGLE[0][1] not in answer.content)
 
 
 class AnAccountWithoutAPlanIsToldHowToSubscribe(unittest.TestCase):

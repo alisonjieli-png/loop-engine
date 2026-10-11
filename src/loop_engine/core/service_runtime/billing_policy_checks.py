@@ -251,10 +251,10 @@ def prices_outside_the_billing_policy_change_nothing(root):
 
 
 def paid_access_is_not_ended_without_the_operator_saying_so(root):
-    """A changed entitlement policy while one account has paid access under the held one."""
+    """A non-price term change while one account has paid access under the held policy."""
     path, application = configured(root)
     granted = paid_account(application)
-    rewrite(path, a_new_entitlement_policy)
+    rewrite(path, lambda host: host["billing"]["policy"].update(allow_trialing=True))
     before = stored(path)
     code = refused_code(path)
     return (granted == "applied" and code == PAID_ACCESS_REFUSAL and stored(path) == before
@@ -367,7 +367,7 @@ def _drift_checks(check, root):
 def _entitlement_checks(check, root):
     path, application = configured(root / "reset")
     paid_account(application)
-    rewrite(path, a_new_entitlement_policy)
+    rewrite(path, lambda host: host["billing"]["policy"].update(allow_trialing=True))
     status, record, _printed = apply(path, "--reset-paid-access")
     check("the_operator_can_end_paid_access_explicitly_and_the_report_counts_it",
           status == 0 and record["paid_access_ended_for_accounts"] == 1 and record["billing_policy"]["changed"] is True

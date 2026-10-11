@@ -157,6 +157,11 @@ CODE_GUIDANCE = {
                      "Use the service address the setup guide names."),
     "invalid_origin": ("A browser sent this request from a page this service does not serve.",
                        "Use the website at this service's own address."),
+    "cross_origin_request_refused": ("A browser asked to send a request this address does not accept from "
+                                     "another site.",
+                                     "Read the document with GET and call each operation with POST, sending only "
+                                     "Authorization, Content-Type, X-Session-Id or Baltor-Step-Effects, and no "
+                                     "cookie."),
     "unsupported_protocol_version": ("The client asked for a protocol version this release does not speak.",
                                      "Use a version the capabilities record lists, then reconnect."),
     "external_authorization_not_configured": ("This service does not offer a browser authorization flow for "

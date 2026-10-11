@@ -265,6 +265,9 @@ class OAuthAccessContext:
     #: The presentation of `/mcp` this delegation's client reads, from its registered redirects (see
     #: `chatgpt_app.profile_for_client`). Presentation only: the scopes above are the whole authority.
     client_profile: str = ""
+    # Exact existing records whose versions authorized this ephemeral token
+    # snapshot; never serialized into a token or customer response.
+    authority_guards: tuple = field(repr=False, compare=False, kw_only=True)
 
 
 class OAuthAuthorizationProvider:
@@ -697,7 +700,7 @@ class OAuthAuthorizationProvider:
             held = self._token_record(store, ACCESS, raw)
             if held is None:
                 return None
-            _, token, _, _, _, principal, _ = held
+            row, token, grant_row, _grant, client_row, principal, guards = held
             scopes = tuple(sorted(set(token["scopes"]) & set(principal.scopes) & set(self.policy.allowed_scopes)))
             if not scopes:
                 return None
@@ -705,7 +708,9 @@ class OAuthAuthorizationProvider:
             from .chatgpt_app import profile_for_client
             return OAuthAccessContext(principal, scopes, token["expires_at"], token["client_id"], token["subject"],
                                       token["resource"], token["grant_id"],
-                                      client_profile=profile_for_client(client.redirect_uris if client else ()))
+                                      client_profile=profile_for_client(client.redirect_uris if client else ()),
+                                      authority_guards=(*guards, self.catalog.guard(row), self.catalog.guard(grant_row),
+                                       self.catalog.guard(client_row)))
 
     async def access_context(self, raw):
         return await asyncio.to_thread(self.resolve_access, raw)

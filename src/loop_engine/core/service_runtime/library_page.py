@@ -239,7 +239,7 @@ def _counts_table(rows) -> str:
                    f'<td class="lib-num lib-all">{count:,}</td></tr>' for kind, count in kinds)
     return ('<div class="md-table-wrap lib-kinds"><table class="md-table lib-kind-table" data-library-counts><thead><tr>'
             '<th scope="col">Kind of file</th><th scope="col" class="lib-bar-cell"><span class="sr-only">Share of the '
-            f'largest kind</span></th><th scope="col" class="lib-num">Packages</th></tr></thead><tbody>{body}'
+            f'largest kind</span></th><th scope="col" class="lib-num">Items</th></tr></thead><tbody>{body}'
             '<tr class="lib-total-row"><th scope="row">All kinds</th><td class="lib-bar-cell"></td>'
             f'<td class="lib-num lib-all">{len(rows):,}</td></tr></tbody></table></div>')
 
@@ -260,11 +260,11 @@ def _release_band(view, rows) -> str:
                     if isinstance(built, (int, float)) and built > 0 else "")
     head = ['<h2 id="releases-title">Releases and withdrawals</h2>']
     if release:
-        head.append(f'<p class="md-reading">This page shows catalogue release <code>{escape(release[:12])}</code>'
-                    + (f", served since {escape(served_since)}" if served_since else "") + ". A catalogue release changes "
+        head.append(f'<p class="md-reading">This page shows library release <code>{escape(release[:12])}</code>'
+                    + (f", served since {escape(served_since)}" if served_since else "") + ". A library release changes "
                     "the library without a new version of the service, and every later release honours a withdrawal.</p>")
     else:
-        head.append('<p class="md-reading">A catalogue release changes the library without a new version of the service, '
+        head.append('<p class="md-reading">A library release changes the library without a new version of the service, '
                     "and every later release honours a withdrawal.</p>")
     lines = []
     if any(counts.values()):
@@ -328,15 +328,15 @@ def library_body(view, rows=None) -> str:
               '<h2 id="counts-title">What is in it</h2><p class="md-reading">Every kind of file a harness picks up from its '
               'working directory, together in one library.</p></div><div class="lib-counts">'
               + '<details data-technical-detail><summary>Technical grouping by kind</summary>'
-              '<p>Files travel together when dependencies require it. These package counts describe complete retrieval groups, '
-              'not distinct-file totals.</p>' + _counts_table(rows) + "</details></div></div>")
+              '<p>Each count is items of that kind; one item can hold several files.</p>' + _counts_table(rows)
+              + "</details></div></div>")
     price = _plan_price()
     table = ('<div class="md-band lib-band lib-cta-band" id="browse" aria-labelledby="browse-title"><div class="lib-cta">'
              '<div class="lib-cta-copy"><h2 id="browse-title">Search it as a table</h2><p class="md-reading">A signed-in '
              "account sees every file in one searchable table: its purpose, the kind of file, the kinds of "
              "step it supports, its licence and the effects it declares, with a search box and sortable columns. Each "
              "row opens to the file's details. Public Good files need an account but no paid plan; other files need the stated access.</p>"
-             + (f'<p class="lib-cta-price">Agent Feeds + Harness Files, {escape(price)}. <a href="{APP_LIBRARY_ADDRESS}">Sign in and '
+             + (f'<p class="lib-cta-price">Pro, {escape(price)}. <a href="{APP_LIBRARY_ADDRESS}">Sign in and '
                 'browse</a></p>' if price else "")
              + f'</div><div class="md-actions"><a class="button primary" href="{SIGN_UP_ADDRESS}">Get started</a></div>'
              "</div></div>")
@@ -355,10 +355,45 @@ def library_body(view, rows=None) -> str:
     return intro + counts + shown + table + _release_band(view, rows)
 
 
+#: The counts of each recently served catalogue, kept so the Harness Files guide (`offering_guides.py`) shows them
+#: without walking every item a second time. Rendering this page fills it; a view nobody rendered is counted once.
+_SUMMARIES, _SUMMARIES_LOCK = OrderedDict(), threading.Lock()
+
+
+def _summary_of(view, rows) -> dict:
+    """What the guide pages may say about one served view: the items of each kind, the item total and, when the view
+    measured it completely for exactly these items, the distinct files."""
+    population = view.file_population() if hasattr(view, "file_population") else {}
+    files = population.get("distinct_files") if isinstance(population, dict) else None
+    measured = (isinstance(population, dict) and population.get("record_type") == "catalogue_file_population/v1"
+                and population.get("complete") is True and population.get("packages") == len(rows)
+                and type(files) is int and files >= 0)
+    return {"kinds": tuple(counts_by_harness_kind(rows)), "items": len(rows),
+            "distinct_files": files if measured else None}
+
+
+def _remember_summary(key, summary) -> dict:
+    with _SUMMARIES_LOCK:
+        _SUMMARIES[key] = summary
+        _SUMMARIES.move_to_end(key)
+        while len(_SUMMARIES) > PAGES_KEPT:
+            _SUMMARIES.popitem(last=False)
+    return summary
+
+
+def kind_summary(view) -> dict:
+    """The counts by kind of the view the service serves now, read once per served catalogue."""
+    key = _view_key(view)
+    with _SUMMARIES_LOCK:
+        held = _SUMMARIES.get(key)
+    return held if held is not None else _remember_summary(key, _summary_of(view, library_rows(view)))
+
+
 def library_page(view, site_map, display_name: str) -> str:
     """The whole page, framed like the other pages the service renders on its own."""
     from .model_directory_pages import SCHEMA_CONTEXT, Page, breadcrumbs, canonical, frame
     rows = library_rows(view)
+    _remember_summary(_view_key(view), _summary_of(view, rows))
     entry = site_map.page(ADDRESS)
     structured = {"@context": SCHEMA_CONTEXT, "@type": "CollectionPage", "name": entry.title,
                   "url": canonical(site_map, ADDRESS), "description": entry.description,

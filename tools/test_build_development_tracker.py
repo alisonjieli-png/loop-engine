@@ -19,6 +19,39 @@ def dump(data):
 
 
 class DevelopmentTrackerTests(unittest.TestCase):
+    def test_working_schedule_uses_task_status_without_inventing_completion(self):
+        tracker = tool.build(tool.ROADMAP.read_bytes())
+        schedule = tracker["working_schedule"]
+        tasks = {row["id"]: row for row in tracker["execution"]}
+        self.assertTrue(schedule["blocks"])
+        for block in schedule["blocks"]:
+            self.assertEqual(block["status"], tasks[block["task"]]["status"])
+            self.assertEqual(block["complete"], tasks[block["task"]]["complete"])
+        rendered = tool.render(tracker)
+        self.assertIn("```mermaid\ngantt", rendered)
+        self.assertIn("planned work windows", rendered)
+
+    def test_schedule_refuses_unknown_duplicate_or_out_of_window_tasks(self):
+        original = yaml.safe_load(tool.ROADMAP.read_bytes())
+        for mutation in ("unknown", "duplicate", "overflow", "negative", "boolean", "naive_time"):
+            data = copy.deepcopy(original)
+            schedule = data["continuation"]["working_schedule"]
+            first = schedule["blocks"][0]
+            if mutation == "unknown":
+                first["task"] = "S-6.unknown"
+            elif mutation == "duplicate":
+                schedule["blocks"].append(dict(first))
+            elif mutation == "overflow":
+                first["duration_hours"] = schedule["horizon_hours"] + 1
+            elif mutation == "negative":
+                first["offset_hours"] = -1
+            elif mutation == "boolean":
+                first["duration_hours"] = True
+            else:
+                schedule["starts_at"] = "2026-10-09T20:09:03"
+            with self.subTest(mutation=mutation), self.assertRaises(tool.TrackerError):
+                tool.build(dump(data))
+
     def setUp(self):
         self.raw = tool.ROADMAP.read_bytes()
         self.data = yaml.safe_load(self.raw)
@@ -93,6 +126,9 @@ class DevelopmentTrackerTests(unittest.TestCase):
 
     def subtask_plan(self):
         data = copy.deepcopy(self.data)
+        # This fixture replaces the real task graph; its real schedule names
+        # tasks that are deliberately absent from the isolated test graph.
+        data["continuation"].pop("working_schedule", None)
         for step in data["steps"]:
             step.pop("subtasks", None)
         parent = data["steps"][0]

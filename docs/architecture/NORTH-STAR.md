@@ -1,8 +1,19 @@
 # Baltor north star
 
-Kind: current product direction. Updated October 8, 2026 under the owner's request to broaden atomic harness materials, accelerate supply and reconcile launch readiness. The [roadmap](../roadmap/roadmap.yaml) is the task authority. [AGENTS.md](../../AGENTS.md#commit-push-and-release-authority) governs authority.
+Kind: current product direction. Updated October 11, 2026 under the owner's request to deploy the new interface, expand qualified supply and improve Feeds. The [roadmap](../roadmap/roadmap.yaml) is the task authority. [AGENTS.md](../../AGENTS.md#commit-push-and-release-authority) governs authority.
 
 ## Current direction
+
+On October 11 the owner prioritized deploying the Claude-export interface,
+then reaching at least two million distinct served harness component files,
+then improving each feature set starting with Feeds. Reconcile earlier prompts,
+API examples and research with the existing owners before adding work. Feeds
+needs specific comparison fields, applicable evidence and useful retrieval for
+engineers and agents. Trace research should distinguish external research,
+local exploration, execution and repair, with measured usage and acceptance.
+Proposed field counts and reported agent workloads are not implemented
+capabilities or measured Baltor benefits. Release the reviewed interface while
+the larger supply and Feeds work continues through its own qualification gates.
 
 The owner's subsequent direction adds a target of feeds supported by more than
 10,000 qualified upstream sources and an explicit task-by-task progress record.

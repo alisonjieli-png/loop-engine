@@ -33,14 +33,14 @@ window.BaltorClientAccess = {
       options = null; active = false; submission = null; loading = null; opened = false; revocations.clear(); clearSecret();
       tile("Not loaded", "One for each device or tool.");
       $("client-access-controls").hidden = true; $("client-access-list").replaceChildren(); $("client-token-label").value = "";
-      message("client-access-message", "Sign in with your verified account to manage client tokens. A service token cannot create more credentials."); controls();
+      message("client-access-message", "Sign in with your verified account to manage Baltor keys. A Baltor key cannot create more keys."); controls();
     }
     function connectionChanged() {
       controls();
-      if (eligible()) message("client-access-message", "Create one token for each device or tool. These are not model-provider keys.");
+      if (eligible()) message("client-access-message", "Create one Baltor key for each tool or device. These are not model keys.");
       // A sign-in kept by the tab can open before the service has said what it offers, so "not enabled" waits for the answer.
-      else if (current().known && !current().available) message("client-access-message", "Client token management is not enabled on this service.");
-      if (current().connected && !eligible() && current().mode !== "browser_identity") tile("Not listed here", "Client tokens are created from an email sign-in.");
+      else if (current().known && !current().available) message("client-access-message", "Baltor keys cannot be managed on this service right now.");
+      if (current().connected && !eligible() && current().mode !== "browser_identity") tile("Not listed here", "Baltor keys are created from an email sign-in.");
       openView();
     }
     /* A second request for the list while one is on its way waits for that one, so a caller that focuses the form after the
@@ -72,7 +72,7 @@ window.BaltorClientAccess = {
         $("client-token-minutes").max = Math.floor(value.maximum_lifetime_seconds / 60);
         if (!$("client-token-minutes").value) $("client-token-minutes").value = value.default_lifetime_seconds / 60;
         $("client-access-list").replaceChildren();
-        if (!value.tokens.length) $("client-access-list").append(element("p", "You have not created a client token yet.", "empty"));
+        if (!value.tokens.length) $("client-access-list").append(element("p", "You have not created a Baltor key yet.", "empty"));
         for (const row of value.tokens) {
           const card = element("article", "", "result"); card.dataset.state = row.state; card.append(element("h3", row.label), element("span", row.state, "badge"));
           card.append(element("p", row.scopes.map(scope => scopeLabels[scope] || scope).join(" · ")), element("p", "Expires " + new Date(row.expires_at * 1000).toLocaleString()));
@@ -82,7 +82,7 @@ window.BaltorClientAccess = {
           }
           $("client-access-list").append(card);
         }
-        $("client-history-note").textContent = "Showing " + value.tokens.length + " of " + value.total_records + " personal token records. Revocation cannot recall files already downloaded.";
+        $("client-history-note").textContent = "Showing " + value.tokens.length + " of " + value.total_records + " key records. Revoking a key cannot recall files already downloaded.";
       } catch (error) { if (epoch === current().generation) message("client-access-message", said(error), failureState(error)); }
       finally { if (epoch === current().generation) { active = false; controls(); } }
     }
@@ -93,7 +93,7 @@ window.BaltorClientAccess = {
       try {
         await request(path, {record_type:version, operation:"revoke", request_id:revocations.get(row.key_id), key_id:row.key_id});
         if (epoch !== current().generation) return;
-        clearSecret(); revocations.delete(row.key_id); message("client-access-message", "Client token revoked.");
+        clearSecret(); revocations.delete(row.key_id); message("client-access-message", "Key revoked.");
       } catch (error) { if (epoch === current().generation) message("client-access-message", said(error) + " Refresh to inspect the result before retrying.", failureState(error)); }
       finally { if (epoch === current().generation) { active = false; controls(); await refresh(); } }
     }
@@ -127,15 +127,15 @@ window.BaltorClientAccess = {
         if (result.record_type !== "service_client_access_result/v1" || result.committed !== true) throw new Error("Token creation was not confirmed. Refresh before retrying.");
         if (result.token) {
           $("client-issued-token").value = result.token; $("client-issued").hidden = false;
-          message("client-access-message", "Save this token now. Use it only for Baltor, through your client's secret settings.");
-        } else message("client-access-message", "This request already created a token. Its secret cannot be recovered. Revoke it before making a replacement.");
+          message("client-access-message", "Save this key now. Use it only for Baltor, through your tool's secret settings.");
+        } else message("client-access-message", "This request already created a key. It cannot be shown again. Revoke it before making a replacement.");
         submission = null;
       } catch (error) { if (epoch === current().generation) message("client-access-message", said(error) + " No automatic retry was made; an exact retry keeps this request identity.", failureState(error)); }
       finally { if (epoch === current().generation) { active = false; controls(); await refresh(); } }
     });
     $("copy-client-token").addEventListener("click", async () => {
-      try { await navigator.clipboard.writeText($("client-issued-token").value); message("client-access-message", "Copied. Keep the token in your secret manager, not a shared file."); }
-      catch (_) { $("client-issued-token").type = "text"; $("client-issued-token").select(); message("client-access-message", "Copy the selected token, then clear it from this page."); }
+      try { await navigator.clipboard.writeText($("client-issued-token").value); message("client-access-message", "Key copied. Store it somewhere private, not a shared file."); }
+      catch (_) { $("client-issued-token").type = "text"; $("client-issued-token").select(); message("client-access-message", "Copy the selected key, then clear it from this page."); }
     });
     $("clear-client-token").addEventListener("click", clearSecret);
     reset();

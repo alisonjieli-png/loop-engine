@@ -1,6 +1,6 @@
 # Your account
 
-Kind: customer guide to sign-in, personal client tokens and access decisions.
+Kind: customer guide to sign-in, personal Baltor keys and access decisions.
 
 Open [Get started](https://app.baltor.ai/get-started) to create your account.
 Enter your email, open the link and choose a password on the confirmation page.
@@ -8,13 +8,13 @@ While the service cannot create accounts at once, the same form keeps your
 address and we email you the link when your account can be created. Manage your
 account at `/account`.
 
-Your browser sign-in and your coding tool's client token are different
-credentials. The browser manages your account. The client token authorizes the
+Your browser sign-in and your coding tool's Baltor key are different
+credentials. The browser manages your account. The Baltor key authorizes the
 specific service operations its scopes allow.
 
-## Create a client token
+## Create a Baltor key
 
-On `/account`, open Your client tokens and create one for each client or
+On `/account`, open Your Baltor keys and create one for each client or
 machine. Give it a label you will recognize. Copy the secret when it is shown;
 later listings contain its identity and state, not the secret.
 
@@ -45,7 +45,7 @@ belonging to another account.
 | `bodies` | Metadata and permitted body downloads. |
 
 A subscription or operator grant supplies the account entitlement. Creating a
-token does not upgrade it. An operator grant can make Agent Feeds + Harness Files free for an
+token does not upgrade it. An operator grant can make Pro free for an
 account.
 
 ### Scopes
@@ -58,8 +58,8 @@ account.
 | `billing:manage` | Authorized checkout and customer portal operations. |
 | `access:manage` | Operator access administration. |
 
-A personal client token is limited by the account, browser session and host
-policy. It cannot create more client tokens through the customer management
+A personal Baltor key is limited by the account, browser session and host
+policy. It cannot create more Baltor keys through the customer management
 endpoint; that operation requires a browser session.
 
 ## Token limits and state
@@ -95,7 +95,7 @@ support messages.
 
 ## Subscription and help
 
-Agent Feeds + Harness Files is $29 a month. Accounts with an operator grant use it free.
+Pro is $29 a month. Accounts with an operator grant use it free.
 When available, the account page opens checkout or the customer portal. Account
 creation and checkout are separate capabilities; available checkout does not
 mean public registration is open.

@@ -1,0 +1,33 @@
+{
+  "record_type": "pilot_release_record/v1",
+  "release": 86,
+  "app": "baltor-pilot",
+  "source_revision": "ae11db3fcb0ead1745370f96299accf83c69a5dd",
+  "image": "registry.fly.io/baltor-pilot@sha256:7696ff57dc09157585f75392e20cc5b843923c0f2767d55271a030839d182ecf",
+  "rollback_release": 85,
+  "rollback_image": "registry.fly.io/baltor-pilot@sha256:4801fdb6ac7ae15d50e786f46b3a2d243af3cac1099d79b91ff43905ff42449b",
+  "owner_local_date": "2026-10-09",
+  "deployed_at": "2026-10-09T18:45:06Z",
+  "reconciled_on": "2026-10-11",
+  "ci_run": 37958348120,
+  "ci_conclusion": "success",
+  "deploy_run": 37975131768,
+  "deploy_workflow_conclusion": "success",
+  "deployment_gate_after": false,
+  "failed_attempt": {"run": 37973854261, "conclusion": "failure", "stage": "image push", "observation": "Fly registry returned 502 before flyctl deploy ran; release 85 remained live. The successful retry has its own deployment record."},
+  "record_correction": "The unfinished record builder referenced the failed first attempt and a missing live offering report. This record uses the successful second attempt and only the checks whose evidence exists.",
+  "catalogue": {"release_id": "29a2bc33c3132a97466e79c18350f3574624f2ef7967b07241029e269b92e742", "packages": 256380, "distinct_files": 1560856, "changed_by_this_application_release": false},
+  "changes": ["ChatGPT app presentation and support page", "Documented OAuth callback routes and issuer identification", "Model directory refresh and MCP directory retry repair"],
+  "cloudflare": {"worker": "baltor-web-edge", "export_id": "97954b43cea23ab07681ccb6b9e434dc0531dd38deefb95b32846f4b0e35b066", "worker_deployment": "b32cb99bd40f47d3aab66e3d6872365f", "static_files": 2553, "static_bytes": 76454261, "origin_mode": "all", "production_routes_changed": false, "rollback_export_id": "cad2ab154429fc50ca3ea92adad48c42c9386ecd46f2dde12944243872ee2f51", "rollback_worker_deployment": "74eeab35cbe24aafa05b6412c2b17e07"},
+  "checks": {
+    "local_browser": {"passed": 977, "total": 977, "mutants_detected": 197, "mutants_total": 197},
+    "live_offering_matrix": {"passed": 483, "total": 483, "observed_on": "2026-10-11", "private_evidence": "ui-release-20261011-wCaugV/release86-baseline-offering-01/report.json"},
+    "independent_live_checks": {"passed": 426, "total": 426, "hostnames": 10, "views": 68, "browser_errors": 0},
+    "edge_readback": {"passed": 2553, "total": 2553, "scope": "Exact exported bodies and required headers"},
+    "pulse": {"reads": 50, "problems": 0, "slow": 0, "passed": true},
+    "live_full_public_route_map": {"pages": 68, "views": 281, "links_checked": 449, "automated_problems": 0, "passed": true},
+    "provider_readback": {"release_status": "complete", "machine_state": "started", "current_release_reconfirmed_on": "2026-10-11"}
+  },
+  "private_evidence": ["release86-20261009-703527/release86-deployment.json", "release86-20261009-703527/release86-deployment-02.json", "release86-20261009-703527/release86-provider-readback.json", "release86-20261009-703527/workspace-ae11db3f-01.json", "release86-20261009-703527/live/independent/attempt-01/report.json", "release86-20261009-703527/live/pulse-01.json", "integration-20261009-YAAUOG/release86-live-routes-01/report.json", "repo-disk-review-20261007-1uZpT8/cloudflare-site-release86-01/events.jsonl", "repo-disk-review-20261007-1uZpT8/release86-edge-readback-01.json"],
+  "limits": ["Browser checks use emulated viewports, not the owner's session or a physical device.", "Public route checks do not qualify every authenticated journey or every product claim.", "Application deployment did not publish catalogue candidates, activate provider products or hosted supervision, or switch the body-storage engine."]
+}

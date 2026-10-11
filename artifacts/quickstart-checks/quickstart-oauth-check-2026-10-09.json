@@ -1,0 +1,52 @@
+{
+ "account": {
+  "access_source": "founding_free_monthly",
+  "authentication_mode": "browser_identity",
+  "entitlement": "bodies",
+  "signed_up_at": "2026-10-06T00:07:06.631Z",
+  "tenant_id": "customer.cac8d8104f29d6ae17585f7fddaaff375b05b4b75e74807952d4827cff14cb40"
+ },
+ "body_text_kept": false,
+ "callback_delivered_by": null,
+ "catalogue_release": null,
+ "checked_at": "2026-10-09T05:55:00.246267+00:00",
+ "checker_sha256": "8d5c5e148740a0d709d7424e41e36f81c9dca6ffa4a4d9c3007a37baabf0e0ce",
+ "claude_code_version": "2.1.295 (Claude Code)",
+ "client": null,
+ "consent": null,
+ "credential_printed": false,
+ "digest_prefix": null,
+ "failed_step": "claude_code_needs_authentication",
+ "harness": "Claude Code",
+ "http_calls": 5,
+ "identity": null,
+ "origin": "https://baltor.ai",
+ "passed": false,
+ "physical_model_calls": 0,
+ "published_base": "https://baltor.ai",
+ "record_type": "quickstart_oauth_check/v1",
+ "request_id": null,
+ "steps": [
+  {
+   "detail": "customer.cac8d8104f2 signed up through Get started at 2026-10-06T00:07:06.631Z, access founding_free_monthly",
+   "name": "account_ready",
+   "passed": true
+  },
+  {
+   "detail": "https://baltor.ai/.well-known/oauth-protected-resource/mcp",
+   "name": "challenge_names_the_resource",
+   "passed": true
+  },
+  {
+   "detail": "issuer https://baltor.ai, scopes provisioning:metadata provisioning:read usage:read",
+   "name": "discovery_matches",
+   "passed": true
+  },
+  {
+   "detail": "claude mcp list showed '✔ Connected' before signing in",
+   "name": "claude_code_needs_authentication",
+   "passed": false
+  }
+ ],
+ "usage_records_added": 0
+}

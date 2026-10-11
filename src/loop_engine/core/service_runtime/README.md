@@ -1565,6 +1565,34 @@ references for coding, retrieval, cost, safety and hardware comparisons;
 model and platform changes; MCP services; papers; founder tools; product
 discovery; competitions; and financial context.
 
+`feed_profiles.py` is the installed pure projection shared by the local CLI
+and the `/feeds` profile editor. Its strict version-2 request selects registered
+collections, topic groups and source IDs, then applies explicit source exclusions.
+The exact selected IDs, source-directory digest and documentation date are
+frozen in `profile.json`; `READING.md` carries the corresponding reading guide.
+Both files use the existing `CataloguePackage` digest and file metadata.
+The label is data, not authenticated agent identity.
+
+`feed_profile_web.py` owns the bounded stateless export at
+`POST /api/v1/feeds/profile`. It uses the host's UTC date, requires the displayed
+directory digest, returns exact UTF-8 files and keeps no settings. Anonymous
+access is limited to the public registered source directory. The existing
+HTTP admission, response limits and failed-attempt limiter apply; input is
+capped at 8 KiB and profile output at 128 KiB. Responses are `no-store`; even
+detailed failure capture excludes the selection body. The browser verifies
+file digests, invalidates downloads on every edit, and keeps no browser storage.
+No credentials, model calls, upstream source reads or library downloads occur.
+
+The requested reading interval belongs to the customer's harness. The export
+does not create a schedule, newsletter, live research feed or private hosted
+assignment. Saved authenticated profiles remain separate work requiring scoped
+agent authority, revision conflicts and revocation checks. The current approved
+privacy notice covers explicitly submitted content in the Fly service database;
+this increment needs neither persistence nor a change to that notice.
+Check with `PYTHONPATH=src:tools python -m unittest
+tools.test_feed_reading_profiles tools.test_feed_profile_web` and
+`node tools/check_feed_profiles.mjs --local /path/to/new-report.json`.
+
 `feed_source_collections.json` is a packaged website directory, not an
 intelligence admission store or a source-collection scheduler.
 `feed_source_collections.py` validates its strict versioned record and produces

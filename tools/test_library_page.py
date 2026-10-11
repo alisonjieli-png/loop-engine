@@ -161,7 +161,7 @@ class LibraryPageTests(unittest.TestCase):
         self.assertEqual(listed(self.html), set())
         self.assertIn("Files your coding agent can use, across 3 kinds", self.html)
         self.assertNotIn("2 Verified and 3 Community", self.html)
-        self.assertIn('<th scope="col" class="lib-num">Packages</th>', self.html)
+        self.assertIn('<th scope="col" class="lib-num">Items</th>', self.html)
         self.assertIn('<details data-technical-detail><summary>Technical grouping by kind</summary>', self.html)
         self.assertIn('href="/get-started"', self.html)
         self.assertIn('href="/app#browse-heading"', self.html)

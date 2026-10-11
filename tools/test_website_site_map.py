@@ -167,6 +167,7 @@ class Site:
     inventories: tuple
     layout: object = None
     parsed: dict = field(default_factory=dict)
+    fragment_bodies: dict = field(default_factory=dict)
 
     def answer(self, address):
         return self.serve(address)
@@ -187,6 +188,12 @@ class Site:
             if document is not None:
                 seen.setdefault(id(document), (document, []))[1].append(page.address)
         return list(seen.values())
+
+    def fragment_documents(self, address):
+        """The page shell and the exact documentation body its client loads."""
+        targets = (address, self.fragment_bodies.get(address))
+        return tuple(document for target in targets if target is not None
+                     if (document := self.document(target)) is not None)
 
 
 def view_of(document, view):
@@ -378,8 +385,9 @@ def internal_addresses_are_served(site):
             if site.answer(path) is None:
                 problems.append(f"{where}: no route serves {path}")
                 continue
-            target = site.document(path)
-            if fragment and target is not None and not any(node.attrs.get("id") == fragment for node in target.walk()):
+            targets = site.fragment_documents(path)
+            if fragment and targets and not any(node.attrs.get("id") == fragment
+                                                for target in targets for node in target.walk()):
                 problems.append(f"{where}: the page at {path} has no element with the id {fragment!r}")
     for surface in site.site_map.hostnames:
         page = site.site_map.page(surface.address)
@@ -526,14 +534,19 @@ def served_site():
     """The website this checkout serves, read through the service's own served address table."""
     from urllib.parse import unquote
 
-    from loop_engine.core.service_runtime import (catalogue_feed, dot_pages, feed_source_collections, library_page,
-                                                  public_good_page, red_team_page, status_pages, support_page)
+    from loop_engine.core.service_runtime import (catalogue_feed, dot_pages, feed_source_collections, gallery_page,
+                                                  library_page, offering_guides, openapi_tool_server, public_good_page, red_team_page,
+                                                  status_pages, support_page)
     from loop_engine.core.service_runtime.model_directory_pages import rendered_page
     from loop_engine.core.service_runtime.public_links import PublicListLinks
     site_map = load_site_map()
     counted_links = PublicListLinks()
 
     def serve(address):
+        if address == openapi_tool_server.DOCUMENT_PATH and "GET" in openapi_tool_server.ROUTES.get(address, ()):
+            # An exact public data route, not a wildcard exception for API paths.
+            # test_openapi_tool_server checks the actual HTTP response and document against the transport routes.
+            return "", "application/json"
         if address in feed_source_collections.formats():
             body, media_type = feed_source_collections.render(address, "https://" + site_map.canonical_hostname)
             return body.decode("utf-8"), media_type
@@ -544,7 +557,7 @@ def served_site():
         # The transport answers the model directory's rendered pages after the served address table, then the library
         # page from the catalogue it serves; no catalogue runs here, so the library page is rendered from an empty view.
         # The decision red team page and the three pages nothing links to (changelog, features, open work) come next,
-        # each from its packaged record, and the support page last.
+        # each from its packaged record, then the support page, the two guide pages and the gallery.
         answer = (web_pages.served_asset(address, "GET", site_map.display_name)
                   or rendered_page(address, "GET", site_map.display_name)
                   or library_page.rendered(library_page.empty_view(), address, "GET", site_map.display_name)
@@ -553,11 +566,17 @@ def served_site():
                   or dot_pages.rendered(address, "GET", site_map.display_name)
                   or red_team_page.rendered(address, "GET", site_map.display_name)
                   or status_pages.rendered(address, "GET", site_map.display_name)
-                  or support_page.rendered(address, "GET", site_map.display_name))
+                  or support_page.rendered(address, "GET", site_map.display_name)
+                  or offering_guides.rendered(address, "GET", site_map.display_name, None, library_page.empty_view())
+                  or gallery_page.rendered(address, "GET", site_map.display_name))
         if answer is None:
             return ("", COUNTED_LINK_ANSWER) if counted_links.destination(unquote(address)) else None
         return (answer[0].decode("utf-8"), answer[1]) if answer[1] == HTML else ("", answer[1])
-    return Site(site_map, serve, tuple(web_pages.WEB_ASSETS), load_inventories(), load_layout_standard())
+    index = json.loads(web_pages.read_packaged_asset("documentation-index.json"))
+    bodies = {address: page["body"] for section in index["sections"] for page in section["pages"]
+              if "body" in page for address in (page["address"], *page.get("aliases", ()))}
+    return Site(site_map, serve, tuple(web_pages.WEB_ASSETS), load_inventories(), load_layout_standard(),
+                fragment_bodies=bodies)
 
 
 def inventory_of(site, release, revision):
@@ -769,6 +788,21 @@ def report(found):
 
 
 class SiteMapRules(unittest.TestCase):
+    def test_documentation_fragments_require_the_heading_in_the_declared_body(self):
+        held = fixture()
+        held = replace(held, parts={**held.parts, "home": held.parts["home"] +
+                                   '<a href="/pricing#plan-details">Plan details</a>'})
+        site = held.site()
+        serve = site.serve
+        body = '<h2 id="plan-details">Plan details</h2>'
+        site.fragment_bodies = {"/pricing": "/assets/plan-details.html"}
+        site.serve = lambda address: (body, HTML) if address == "/assets/plan-details.html" else serve(address)
+        self.assertEqual(internal_addresses_are_served(site), [])
+        body = '<h2 id="other-details">Plan details</h2>'
+        self.assertTrue(any("plan-details" in problem for problem in internal_addresses_are_served(site)))
+        site.serve = serve
+        self.assertTrue(any("plan-details" in problem for problem in internal_addresses_are_served(site)))
+
     """Each rule reports its known-wrong sites, and the fixture site passes every rule."""
 
     def test_the_fixture_site_passes_every_rule(self):

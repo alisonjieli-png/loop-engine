@@ -88,7 +88,8 @@ class DemonstrationRecordTest(unittest.TestCase):
         for field in ("evidence_class", "evidence_label", "evidence_href", "evidence_link", "outcome", "query", "chosen"):
             pattern = field + r': [^\n]+'
             self.assertEqual(re.findall(pattern, source), re.findall(pattern, rewritten))
-        planted = source.replace('{name: "find_duplicate_records_with_blocking_keys"', '{name: "missing_reference"', 1)
+        planted = source.replace('{name: "orient_on_a_task_and_write_its_contracts"', '{name: "missing_reference"', 1)
+        self.assertNotEqual(planted, source)
         rewritten, problems = record._rewrite_script(planted)
         self.assertTrue(problems)
         self.assertIn('name: "missing_reference"', rewritten)

@@ -33,9 +33,8 @@ def run_checks(check, root):
     _billing(check, root / "billing")
 
 
-#: The one sibling module the served address table may import: the typed site
-#: map reader, which imports no service module of its own.
-WEB_PAGES_MAY_IMPORT = frozenset({"web_site_map"})
+#: Pure packaged-record readers; neither imports a service or renderer module.
+WEB_PAGES_MAY_IMPORT = frozenset({"web_site_map", "gallery_records", "feed_source_collections"})
 
 
 def _imported_service_modules(source):
@@ -56,7 +55,7 @@ def _web_pages_boundary(check):
     A check, an operator command or a page test must be able to read which
     addresses the service answers without importing the application, its
     authentication or its provisioning bindings. The table therefore lives in
-    its own module, `web_pages`, that imports no sibling service module. These
+    its own module, `web_pages`, that imports only pure record readers. These
     checks came with the waiting list, whose branch had moved the same table
     out of `http` into a module of its own; main moved it into `web_pages`
     first, so the checks hold that module to the same rule.
@@ -64,25 +63,31 @@ def _web_pages_boundary(check):
     Since September 24, 2026 the table also reads the typed site map, to write
     each page's own head and to choose the page a hostname shows at its root.
     The site map's reader, `web_site_map`, imports no service module itself,
-    so it is the one sibling the table may import, and only while that stays
-    true.
+    so it and the gallery preview record are permitted while both stay independent
+    of the application and other service modules.
     """
     from importlib.resources import files
     from types import SimpleNamespace
-    from . import web_pages, web_site_map
+    from . import web_pages, web_site_map, gallery_records, feed_source_collections
     from .http import ServiceHttpApplication
     from .web_pages import HTML_MEDIA_TYPE, WEB_ASSETS, served_asset
     source = Path(web_pages.__file__).read_text("utf-8")
     leaf = Path(web_site_map.__file__).read_text("utf-8")
+    gallery_leaf = Path(gallery_records.__file__).read_text("utf-8")
+    feed_leaf = Path(feed_source_collections.__file__).read_text("utf-8")
     check("served_address_table_does_not_import_the_transport_application",
-          _imported_service_modules(source) <= WEB_PAGES_MAY_IMPORT and not _imported_service_modules(leaf))
+          _imported_service_modules(source) <= WEB_PAGES_MAY_IMPORT
+          and not _imported_service_modules(leaf) and not _imported_service_modules(gallery_leaf)
+          and _imported_service_modules(feed_leaf) <= {"records"})
     # Known-wrong cases: the same guard applied to a module that does import the
     # application, and to a site map reader that starts importing the service.
     check("served_address_guard_rejects_a_module_that_imports_the_application",
           _imported_service_modules("from .http import ServiceHttpApplication\n") == {"http"}
           and _imported_service_modules("from . import runtime\n") == {"runtime"}
           and not _imported_service_modules(source + "from .http import ServiceHttpApplication\n") <= WEB_PAGES_MAY_IMPORT
-          and bool(_imported_service_modules(leaf + "from .runtime import ServiceRuntime\n")))
+          and bool(_imported_service_modules(leaf + "from .runtime import ServiceRuntime\n"))
+          and bool(_imported_service_modules(gallery_leaf + "from .http import ServiceHttpApplication\n"))
+          and not _imported_service_modules(feed_leaf + "from .http import ServiceHttpApplication\n") <= {"records"})
     packaged = files("loop_engine").joinpath("core", "service_runtime", "web_assets")
     check("every_served_address_names_a_packaged_file",
           all(packaged.joinpath(name).is_file() for name, _media in WEB_ASSETS.values())

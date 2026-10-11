@@ -5,7 +5,7 @@ Kind: generated planning artifact.
 Source: `roadmap.yaml`. Regenerate with
 `python tools/build_continuation_status.py`; `--check` rejects a stale view.
 
-Plan fingerprint: `895f4e90e16baf0a07028a266cbae9bece7832b6f64392f1e4dbe8c3c7a81cb7`.
+Plan fingerprint: `8b77f2bdcdd05162104275a64d9e3e6c99ea7ff6e267b22ef2588be064051ec3`.
 
 Started: 2026-09-19T14:12:54Z. Historical target: 2026-09-20T14:12:54Z. This is not a release forecast.
 

@@ -81,7 +81,7 @@ class OfferingCopyTests(unittest.TestCase):
         views = marketing_views((ASSETS / "index.html").read_text())
         for name in ("home", "pricing"):
             text = re.sub(r"\s+", " ", views[name])
-            for fact in ("Agent Feeds", COMBINED, "Overnight / AFK Work", "Included in Preview", "$29"):
+            for fact in ("Basic", "Pro", "Max", "Agent Feeds", COMBINED, "Overnight / AFK Work", "Public preview", "$29", "$49"):
                 self.assertIn(fact, text, (name, fact))
             self.assertEqual(feed_price_problems(text), [], name)
 
@@ -95,7 +95,7 @@ class OfferingCopyTests(unittest.TestCase):
         self.assertEqual([row["attrs"]["data-offering"] for row in cards], expected)
         for row in cards:
             if row["attrs"]["data-offering"] == "overnight-afk-work":
-                self.assertIn("No extra charge", row["text"])
+                self.assertIn("no extra charge", row["text"].lower())
                 self.assertEqual(overnight_tools_problems(row["text"]), [])
 
     def test_feed_price_period_consent_and_availability_are_not_optional(self):
@@ -137,7 +137,7 @@ class OfferingCopyTests(unittest.TestCase):
             source = (ASSETS / filename).read_text()
             self.assertNotIn("Baltor Pro", source)
             self.assertNotIn('tag:"One plan"', source)
-            self.assertIn(COMBINED, source)
+            self.assertIn("Pro", source)
 
     def test_search_descriptions_and_deck_use_current_names(self):
         site_map = json.loads((RUNTIME / "web_site_map.json").read_text())
@@ -146,7 +146,7 @@ class OfferingCopyTests(unittest.TestCase):
 
     def test_refusal_names_the_same_offering_without_changing_billing_identity(self):
         from loop_engine.core.service_runtime.http import PLAN_NAME
-        self.assertEqual(PLAN_NAME, COMBINED)
+        self.assertEqual(PLAN_NAME, "Pro")
         self.assertIn('"baltor_pro"', (ROOT / "tools/setup_stripe_sandbox.py").read_text())
 
     def test_guard_refuses_old_copy_in_each_marketing_surface(self):

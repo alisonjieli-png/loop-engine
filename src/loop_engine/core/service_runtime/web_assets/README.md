@@ -10,10 +10,47 @@ billing sessions use the real versioned service routes. Downloads check the
 selected content digest before saving. No file is executed or automatically
 installed into a harness.
 
-The workspace is not an identity provider. Tenant creation and subject binding
-remain explicit operator operations. A billing session is not an entitlement.
+The workspace uses the configured identity provider. Browser sign-up verifies
+the email address before a person chooses a password, and Baltor records the
+account's origin before activating it. A billing session is not an entitlement.
 The service's capability record distinguishes configured behavior from live
 provider qualification.
+
+## Design, offering guides and creative previews
+
+The shared frame uses Geist, warm neutral surfaces and the ember accent in both
+appearances. The homepage links the three customer paths and shows exact
+starter-catalogue search references alongside an explicitly illustrative task
+outcome. Its creative tiles use the published gallery's recorded native renders.
+The general examples and measured case studies keep separate labels.
+
+Basic, Pro and Max are plan names. Agent Feeds, Harness Files and Overnight /
+AFK Work describe their features. Basic is $4.99 a month, free through December
+31, 2026 Eastern, with explicit opt-in before payment. Pro is $29 a month.
+Max displays $49 a month and a free public preview; the preview routes to local
+tools, with no Max checkout or hosted execution claim. Existing local tools
+remain included with Pro. Stored billing identifiers keep their existing names.
+
+`offering_guides.py` renders `/feeds/setup` and `/harness-files` from shared
+records. `gallery_records.py` reads the versioned gallery and its public preview
+addresses without importing a renderer, authentication or HTTP. `gallery_page.py`
+renders the public index and exact item pages. Private gallery items have no
+public page or preview route. Each preview has a digest-bound filename, and its
+record binds the original PNG, rendered dimensions and file size.
+
+The Run Desk prepares a task manifest and a shell-quoted command for the existing
+overnight queue. Editing a form field invalidates that prepared manifest. The
+browser can inspect `overnight_queue_status/v2` reports and keeps reserved calls
+separate from measured calls. Task paths and imported reports stay in the browser.
+The customer runs the command and controls the worker, model access and output
+checks. The page does not dispatch work or treat process completion as acceptance.
+
+Owning checks are `test_gallery_page`, `test_offering_guides`, `test_offering_copy`,
+`test_homepage_demonstration` and `test_run_desk`. The rendered checks in
+`tools/check_design_integration.mjs` cover both appearances, mobile layout, the
+homepage's 4,000-pixel desktop limit, gallery controls, report handling and the
+removed stale-manifest guard. The offering matrix also checks a ten-million-file
+counter at 320 pixels; it substitutes that number for layout only.
 
 ## One call to action, the guide and the waiting list page
 

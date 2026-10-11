@@ -166,6 +166,9 @@ EXIT_CREDENTIAL_FAILED = 3
 CREDENTIAL_WARNING_SECONDS = 3 * 86400
 CREDENTIAL_EXPIRES_SOON = "credential_expires_soon"
 TIMEOUT = 60
+#: The name every request of this check carries. Cloudflare's browser integrity check answers a library's default
+#: user agent with error 1010 on any address the edge does not exempt (tools/check_quickstart_oauth.py).
+USER_AGENT = "baltor-quickstart-check/1.1"
 
 
 @dataclass(frozen=True)
@@ -392,7 +395,8 @@ class Service:
 
     def exchange(self, path: str, body=None, headers=None):
         """Status, lower-cased headers and bytes of one request; a refused request is answered, not raised."""
-        fields = {"Accept": "application/json", "Authorization": "Bearer " + self._key, **(headers or {})}
+        fields = {"Accept": "application/json", "User-Agent": USER_AGENT, "Authorization": "Bearer " + self._key,
+                  **(headers or {})}
         if self.step_effects:
             fields[STEP_EFFECTS_HEADER] = self.step_effects
         data = None

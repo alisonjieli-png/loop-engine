@@ -62,14 +62,23 @@ class Service(oauth.Http):
         super().__init__(opener=object())
         self.access, self.refresh, self.generation = "boat_" + "a" * 43, "bort_" + "r" * 43, 0
         self.revoked = False
-        #: Known-wrong switches: an old refresh token still accepted, and a revocation that changes nothing.
+        #: Grants an earlier run left behind, refresh token to access token, and the ones revoked since.
+        self.earlier, self.earlier_revoked = {}, set()
+        #: Known-wrong switches: an old refresh token still accepted, a revocation that changes nothing, and a
+        #: revocation refused before the service (Cloudflare's error 1010 answered 403 on October 8, 2026).
         self.accept_reuse = False
         self.ineffective_revocation = False
+        self.refuse_revocation = None
+        self.user_agents = []
 
     def request(self, method, url, *, json_body=None, form=None, headers=None):
         self.calls += 1
         path = urllib.parse.urlsplit(url).path
         token = ((headers or {}).get("Authorization") or "").removeprefix("Bearer ")
+        if method == "GET" and path == "/api/v1/session":
+            live = token == self.access and not self.revoked
+            return self.answer(200, {"result": {"access_source": "founding_free_monthly"}}) if live else \
+                self.answer(401, {"error": {"code": "unauthorized"}})
         if method == "GET" and path == "/api/v1/capabilities":
             return self.answer(200, {"record_type": "service_http_result/v1", "result": {
                 "protocol": {"handshake_versions": ["2025-11-25"]},
@@ -88,7 +97,9 @@ class Service(oauth.Http):
         if method == "POST" and path == "/mcp":
             if not token:
                 return 401, {"www-authenticate": 'Bearer resource_metadata="{}/.well-known/oauth-protected-resource/mcp"'.format(BASE)}, b"{}"
-            return (200, {}, b"{}") if token == self.access and not self.revoked else (401, {}, b"{}")
+            live = (token == self.access and not self.revoked) or any(
+                token == access and refresh not in self.earlier_revoked for refresh, access in self.earlier.items())
+            return (200, {}, b"{}") if live else (401, {}, b"{}")
         if method == "POST" and path == "/token":
             assert form["resource"] == ENDPOINT and form["grant_type"] == "refresh_token"
             if form["refresh_token"] == self.refresh and not self.revoked:
@@ -100,6 +111,10 @@ class Service(oauth.Http):
                 return self.answer(200, {"access_token": self.access, "refresh_token": self.refresh})
             return self.answer(400, {"error": "invalid_grant"})
         if method == "POST" and path == "/revoke":
+            if self.refuse_revocation is not None:
+                return self.refuse_revocation, {}, b'{"error_code":1010}'
+            if form["token"] in self.earlier and not self.ineffective_revocation:
+                self.earlier_revoked.add(form["token"])
             self.revoked = self.revoked or (form["token"] == self.refresh and not self.ineffective_revocation)
             return 200, {}, b""
         return self.answer(404, {"error": "not_found"})
@@ -128,19 +143,19 @@ class Harness:
             self.configured = True
             return 0, "Added HTTP MCP server baltor"
         if arguments[:2] == ["mcp", "list"]:
-            status = "✔ Connected" if self.signed_in else self.listed_before
+            status = "✔ Connected" if self.signed_in or self.stored().get("access") else self.listed_before
             return 0, "Checking MCP server health…\n\nbaltor: {} (HTTP) - {}\n".format(ENDPOINT, status)
         if arguments == ["--version"]:
             return 0, "2.1.290 (Claude Code)\n"
         return 1, ""
 
+    def stored(self):
+        return oauth.claude_tokens(self.folder, ENDPOINT)
+
     def login(self, command, environment, cwd, answer, *, address_pattern, **_options):
         assert address_pattern.fullmatch(self.login_address), "the login is given the published endpoint's pattern"
         redirect = answer(self.login_address)
-        store = self.folder / oauth.CLAUDE_FOLDER / ".credentials.json"
-        store.write_text(json.dumps({"mcpOAuth": {"baltor|fixture": {
-            "serverName": "baltor", "serverUrl": ENDPOINT, "accessToken": self.service.access,
-            "refreshToken": self.service.refresh, "clientId": "55b89515-0000-4000-8000-000000000000"}}}))
+        store_tokens(self.folder, self.service.access, self.service.refresh)
         self.signed_in = True
         return {"exit": 0, "address": self.login_address, "redirect": redirect, "delivered_by": "listener",
                 "text": "Authentication successful. Connected to baltor."}
@@ -152,6 +167,17 @@ class Harness:
         return {"callback_url": callback_prefix + "?" + urllib.parse.urlencode({"code": CODE, "state": state, "iss": BASE}),
                 "shown": {"client_name": "Claude Code (baltor)", "scopes": ["one", "two", "three"],
                           "destination": "http://localhost:57853/callback"}}
+
+
+def store_tokens(folder, access, refresh):
+    """Claude Code's store as Claude Code 2.1.290 wrote it: the client registration with the server's tokens."""
+    store = folder / oauth.CLAUDE_FOLDER / ".credentials.json"
+    store.parent.mkdir(mode=0o700, exist_ok=True)
+    store.write_text(json.dumps({"mcpOAuth": {"baltor|fixture": {
+        "serverName": "baltor", "serverUrl": ENDPOINT, "accessToken": access, "refreshToken": refresh,
+        "expiresAt": 1791526203845, "clientId": "55b89515-0000-4000-8000-000000000000",
+        "redirectUri": "http://localhost:57853/callback"}}}))
+    return store
 
 
 def protocol_rows(service, quickstart, capabilities, stamp):
@@ -212,6 +238,89 @@ class OAuthCheckTests(unittest.TestCase):
                        "boat_" + "a" * 43, "bort_" + "r" * 43):
             self.assertNotIn(secret, text)
         self.assertEqual((record["physical_model_calls"], record["credential_printed"]), (0, False))
+
+    def test_a_passing_run_leaves_the_client_registration_and_no_tokens_in_the_store(self):
+        harness = Harness(Service(), self.folder)
+        record = check(self.folder, harness)
+        self.assertTrue(record["passed"])
+        self.assertEqual(record["account"]["live_access_source"], "founding_free_monthly")
+        self.assertIsNone(record["earlier_grant"])
+        held = json.loads((self.folder / oauth.CLAUDE_FOLDER / ".credentials.json").read_text())["mcpOAuth"]["baltor|fixture"]
+        self.assertEqual(held["clientId"], "55b89515-0000-4000-8000-000000000000")
+        self.assertFalse(set(oauth.TOKEN_FIELDS) & set(held), "the ended grant's tokens leave the store")
+        self.assertEqual(oct((self.folder / oauth.CLAUDE_FOLDER / ".credentials.json").stat().st_mode & 0o777), "0o600")
+
+    def test_a_grant_an_earlier_run_could_not_end_is_revoked_and_cleared_before_signing_in(self):
+        # October 8, 2026: the edge refused the run's revocation, so Claude Code kept a live grant and on October 9
+        # `claude mcp list` said Connected before signing in. The next run ends that grant first.
+        service = Service()
+        earlier_access, earlier_refresh = "boat_" + "e" * 43, "bort_" + "e" * 43
+        service.earlier[earlier_refresh] = earlier_access
+        store_tokens(self.folder, earlier_access, earlier_refresh)
+        harness = Harness(service, self.folder)
+        record = check(self.folder, harness)
+        self.assertTrue(record["passed"], json.dumps(record["steps"], indent=1))
+        self.assertEqual(record["earlier_grant"], "revoked")
+        self.assertEqual(service.earlier_revoked, {earlier_refresh})
+        self.assertEqual(step(record, "claude_code_needs_authentication")["detail"], "! Needs authentication")
+        for secret in (earlier_access, earlier_refresh):
+            self.assertNotIn(secret, json.dumps(record))
+
+    def test_known_wrong_without_ending_the_earlier_grant_the_run_fails_as_on_october_9(self):
+        service = Service()
+        earlier_access, earlier_refresh = "boat_" + "e" * 43, "bort_" + "e" * 43
+        service.earlier[earlier_refresh] = earlier_access
+        store_tokens(self.folder, earlier_access, earlier_refresh)
+        with unittest.mock.patch.object(oauth, "end_earlier_grant", lambda *arguments: None):
+            record = check(self.folder, Harness(service, self.folder))
+        needs = step(record, "claude_code_needs_authentication")
+        self.assertFalse(needs["passed"])
+        self.assertIn("Connected", needs["detail"])
+        self.assertEqual(service.earlier_revoked, set(), "the earlier grant is still live")
+
+    def test_known_wrong_a_refused_revocation_of_the_earlier_grant_fails_and_keeps_its_tokens(self):
+        service = Service()
+        service.refuse_revocation = 403
+        earlier_access, earlier_refresh = "boat_" + "e" * 43, "bort_" + "e" * 43
+        service.earlier[earlier_refresh] = earlier_access
+        store_tokens(self.folder, earlier_access, earlier_refresh)
+        harness = Harness(service, self.folder)
+        record = check(self.folder, harness)
+        needs = step(record, "claude_code_needs_authentication")
+        self.assertFalse(needs["passed"])
+        self.assertIn("was not revoked: the revocation answered 403", needs["detail"])
+        self.assertNotIn("claude_code_authorization_requested", names(record))
+        self.assertEqual(harness.stored()["refresh"], earlier_refresh, "the next run tries again")
+        self.assertNotIn(earlier_refresh, json.dumps(record))
+
+    def test_every_request_names_the_check_and_never_the_library_default(self):
+        import http.server
+        seen = []
+
+        class Answer(http.server.BaseHTTPRequestHandler):
+            def log_message(self, *_arguments):
+                pass
+
+            def do_GET(self):
+                seen.append(self.headers.get("User-Agent"))
+                self.send_response(200)
+                self.end_headers()
+                self.wfile.write(b"{}")
+        server = http.server.HTTPServer(("127.0.0.1", 0), Answer)
+        threading.Thread(target=server.serve_forever, daemon=True).start()
+        try:
+            address = "http://127.0.0.1:{}/".format(server.server_address[1])
+            oauth.Http().request("GET", address)
+            quickstarts.Service("http://127.0.0.1:{}".format(server.server_address[1]), "key").exchange("/x")
+            # Known wrong: the library's own default, which Cloudflare refuses with error 1010.
+            urllib.request.build_opener(urllib.request.ProxyHandler({})).open(address, timeout=10).read()
+        finally:
+            server.shutdown()
+            server.server_close()
+        self.assertEqual(seen[:2], [oauth.USER_AGENT, quickstarts.USER_AGENT])
+        self.assertTrue(seen[2].startswith("Python-urllib/"), seen[2])
+        for value in seen[:2]:
+            self.assertFalse(value.lower().startswith("python-urllib"))
 
     def test_known_wrong_an_old_refresh_token_still_accepted_fails_refreshed_and_the_grant_is_still_revoked(self):
         service = Service()

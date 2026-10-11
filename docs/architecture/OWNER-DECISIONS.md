@@ -2,7 +2,41 @@
 
 Kind: current decision route with retained dated decisions. The owner's current conversation takes precedence. [AGENTS.md](../../AGENTS.md#commit-push-and-release-authority) remains the single commit, push, release and effect-authority source. This file records product choices; it grants no new authority.
 
-## Current clarifications, September 29, 2026
+## Current website and delivery direction, October 9, 2026
+
+The current conversation prioritizes implementing the supplied Claude Design
+reference across the live website. Keep existing routes and account boundaries,
+complete the controls, verify every page and release improvements iteratively.
+The four-artboard export is a design reference. Its canvas bundle is not the
+production application.
+
+Plan names describe the subscription level. Engineering selects Basic, Pro
+and Max under the owner's instruction to use judgment. Agent Feeds, Harness
+Files and Overnight / AFK Work describe features. The current price direction
+is $4.99, $29 and $49 a month, replacing the earlier $29.99 and $49.99 targets
+below. Basic's Agent Feeds remain free through December 31, 2026 Eastern, with
+paid activation requiring opt-in. Existing billing identities, subscriptions
+and grants remain bound to their actual provider records.
+
+Use Public preview for working, explicitly scoped early capabilities. The
+included local queue tools remain part of Pro. Customer-controlled worker
+preparation and report inspection do not imply hosted execution, funded model
+calls or an active paid Max entitlement. S-6.218 owns customer-facing cloud-tool
+qualification and entitlement activation.
+
+The owner reiterates ten million useful served files and requests a bounded
+twelve-hour attempt toward another million, broader atomic materials, source
+and benchmark coverage, per-agent feeds and Cloudflare hosting wherever it
+qualifies. The owner permits maintenance downtime and explicitly requests
+parallel agents. Preserve custom search, retrieval and authoritative records
+while comparing hosting engines. Source, candidate, qualification, admission
+and serving counts remain distinct.
+
+The current design release takes precedence over the longer programme. The
+roadmap's working window, ordered checklist and acceptance records govern the
+sequence. Scheduled windows are forecasts; recorded outcomes decide completion.
+
+## Retained clarifications, September 29, 2026
 
 - The owner transferred responsibility for the closed OpenCode session to Codex and requested reconciliation of code, prompts, guidance, architecture, sources, components, distribution and monetization. Preserve existing component-factory work and its provenance.
 - Cheap deterministic checks remain the default for generated components. Optional execution checks run when requested. Missing execution evidence means not tested, not failed or tested successfully. A model sample does not prove every package ran. Independent review, rights, secrets, permissions and effects remain separate.

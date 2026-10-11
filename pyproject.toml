@@ -113,7 +113,8 @@ loop_engine = [
     "core/service_runtime/edge/*.mjs",  # Offline conformance host for the edge engines
     "**/*.woff2",         # Packaged website typefaces, served from the same origin
     "core/service_runtime/web_assets/*.svg",  # The website mark, a placeholder
-    "core/service_runtime/web_assets/*.png",  # The page icons drawn from that mark
+    "core/service_runtime/web_assets/*.png",  # The page icons drawn from that mark, and the shared-link cards
+    "core/service_runtime/web_assets/gallery/*.webp",  # The gallery's previews, the renders its checks recorded
     "core/service_runtime/web_assets/pi/*.ts",  # The Baltor extension for Pi, served for download
     "core/service_runtime/web_assets/baltor-library/*.txt",  # The Baltor library skill, served for download
     "core/service_runtime/web_assets/baltor-library/**/*.txt",

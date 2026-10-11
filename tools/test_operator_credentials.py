@@ -8,6 +8,7 @@ import json
 from pathlib import Path
 import subprocess
 import sys
+from tempfile import TemporaryDirectory
 import unittest
 from unittest.mock import patch
 
@@ -74,6 +75,70 @@ class CredentialTests(unittest.TestCase):
             resolved = [tool.resolve(name, saved, data) for name in names]
         self.assertEqual(resolved, ["fixture-research-" + str(index) for index in range(len(names))])
         self.assertTrue(all(item.writes == 0 for item in rows))
+
+    def test_third_reference_selects_its_own_fake_keyring_record(self):
+        data = tool.references()
+        items = []
+        for name in ("rapidapi-owner-secondary", "rapidapi-owner-third"):
+            spec = data["api_keys"][name]
+            attributes = {"application": "loop-engine", **{
+                key: spec[key] for key in ("service", "account", "purpose")}}
+            items.append(KeyItem(("fixture-value-for-" + name).encode(), attributes))
+
+        class ScopedSaved(Saved):
+            def search_items(self, attributes):
+                return [item for item in self.items if all(
+                    item.get_attributes().get(key) == value for key, value in attributes.items())]
+
+        with patch.object(tool, "collection", side_effect=AssertionError("live keyring forbidden")), \
+                patch.object(tool, "request_refresh", side_effect=AssertionError("provider forbidden")):
+            self.assertEqual(tool.resolve("rapidapi-owner-third", ScopedSaved(items), data),
+                             "fixture-value-for-rapidapi-owner-third")
+
+    def test_third_reference_audit_exception_is_exact_and_known_bad_values_still_block(self):
+        root = Path(__file__).resolve().parents[1]
+        sys.path.insert(0, str(root / "devtools" / "src"))
+        from loop_engine_devtools.assurance.hardcoding import (
+            AuditRequest, compare_with_baseline, load_audit_finding_ids, new_findings_at_or_above, scan_hardcoding,
+        )
+        allowlist = root / "devtools/hardcoding-allowlist.yaml"
+        baseline = load_audit_finding_ids(root / "devtools/hardcoding-ci-baseline.json")
+        spec = tool.references()["api_keys"]["rapidapi-owner-third"]
+        with TemporaryDirectory(prefix="credential-reference-audit-") as temporary:
+            fixture = Path(temporary)
+            (fixture / "pyproject.toml").write_text("[project]\nname='loop-engine'\nversion='0.0.0'\n")
+            (fixture / "tools").mkdir()
+            manifest = fixture / "tools/operator_credentials.json"
+
+            def audit(value, *, exceptions=allowlist):
+                manifest.write_text(json.dumps(value))
+                report = scan_hardcoding(AuditRequest(fixture, allowlist_path=exceptions,
+                    source_prefixes=("tools/operator_credentials.json",)))
+                delta = compare_with_baseline(report, baseline)
+                return report, new_findings_at_or_above(delta, report, "high")
+
+            valid = {"record_type": "operator_credential_references/v1", "api_keys": {"rapidapi-owner-third": spec}}
+            report, blocking = audit(valid)
+            self.assertEqual(blocking, ())
+            target = next(row for row in report["findings"]
+                          if row["symbol_ref"] == "api_keys.rapidapi-owner-third.environment")
+            self.assertEqual(target["classification"], "SECRET_OR_CREDENTIAL_REFERENCE")
+            self.assertEqual(target["severity"], "high")
+            self.assertTrue(target["suppressed"], "the reviewed finding stays visible")
+            self.assertTrue(audit(valid, exceptions=None)[1], "removing the exact exception must expose the finding")
+            changed = copy.deepcopy(valid)
+            changed["api_keys"]["rapidapi-owner-third"]["environment"] = "UNREVIEWED_API_KEY"
+            self.assertTrue(audit(changed)[1], "another environment name cannot inherit this review")
+            changed = copy.deepcopy(valid)
+            changed["api_keys"]["unreviewed-reference"] = dict(spec)
+            self.assertTrue(audit(changed)[1], "another owner cannot inherit this review")
+            changed = copy.deepcopy(valid)
+            changed["api_keys"]["rapidapi-owner-third"]["environment"] = "Bearer " + "fixture-shaped-value-not-a-secret"
+            report, blocking = audit(changed)
+            self.assertTrue(blocking)
+            secrets = [row for row in report["findings"] if row["finding_id"] in blocking]
+            self.assertTrue(any(row["severity"] == "critical" and row["sensitive_value_redacted"]
+                                and row["literal_preview"] == "<redacted>" for row in secrets))
 
     def test_reddit_inventory_alias_reuses_the_native_reader_keyring_identity(self):
         from knowledge_radar.rapidapi_reddit import REFERENCE

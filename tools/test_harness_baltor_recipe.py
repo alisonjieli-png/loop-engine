@@ -76,7 +76,9 @@ class BaltorHarnessTests(unittest.TestCase):
     def test_trusted_process_is_explicit_fresh_and_does_not_claim_an_os_sandbox(self):
         from loop_engine.core.harness_process import HarnessProcessRequest, HarnessProcessSpec, run_harness_process
         from loop_engine.core.harness_semantic import GatewayHarnessProcessAdapter
-        with tempfile.TemporaryDirectory() as folder:
+        # Pre-push gives each test shard a long private TMPDIR. Unix sockets have a much smaller pathname limit.
+        # Keep work there, but use the production request's explicit short socket directory.
+        with tempfile.TemporaryDirectory() as folder, tempfile.TemporaryDirectory(prefix=".hp-", dir=Path.home()) as sockets:
             root = Path(folder)
             work = root / "work"
             work.mkdir()
@@ -93,7 +95,7 @@ class BaltorHarnessTests(unittest.TestCase):
                             "choices": [{"index": 0, "message": {"role": "assistant", "content": expected},
                                          "finish_reason": "stop"}], "usage": {"total_tokens": 5}}
                 request = HarnessProcessRequest(spec, marker, "fixture-model", 100, 20, 10,
-                                                str(work), socket_directory=str(root))
+                                                str(work), socket_directory=sockets)
                 with mock.patch.dict("os.environ", {"UNDECLARED_HARNESS_SECRET": "must never be inherited"}):
                     result = run_harness_process(request, broker)
                 self.assertTrue(result.ok, (result.errors, result.stderr))

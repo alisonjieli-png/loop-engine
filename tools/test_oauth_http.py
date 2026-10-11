@@ -227,6 +227,100 @@ class HttpOAuthIntegration(unittest.TestCase):
         self.assertEqual(safe_error(response), 'invalid_grant')
         self.assertEqual(len(self.rows(GRANT)), 1)
 
+    def test_verified_delegation_reaches_api_and_mcp_not_caller_headers_or_arguments(self):
+        tokens = self.issue()
+        expected = self.provider.resolve_access(tokens['access_token'])
+        seen = []
+        search = self.app._search
+
+        def inspect_context(authentication, *args, **kwargs):
+            seen.append(authentication)
+            return search(authentication, *args, **kwargs)
+
+        forged_headers = {'X-OAuth-Client-Id': 'caller-selected-client',
+                          'X-OAuth-Grant-Id': 'caller-selected-grant', 'X-Agent-Id': 'caller-selected-agent'}
+        forged_arguments = {'client_id': 'caller-selected-client', 'grant_id': 'caller-selected-grant',
+                            'agent_label': 'caller-selected-agent',
+                            'oauth_context': {'client_id': 'caller-selected-client', 'grant_id': 'caller-selected-grant'}}
+
+        class HeaderCredentials(Credentials):
+            def headers(self, _tenant='alpha'):
+                return {**super().headers(_tenant), **forged_headers}
+
+        async def mcp():
+            async with _protocol_client(self.base, HeaderCredentials(tokens['access_token']), 'legacy') as protocol:
+                found = await protocol.call_tool('intelligence_search', {'query': 'alpha'})
+                self.assertFalse(found.is_error)
+                before = len(seen)
+                for name, value in forged_arguments.items():
+                    refused = await protocol.call_tool('intelligence_search', {'query': 'alpha', name: value})
+                    self.assertTrue(refused.is_error)
+                    self.assertEqual(len(seen), before)
+                self.assertNotIn(expected.grant_id, json.dumps(found.structured_content))
+
+        with mock.patch.object(self.app, '_search', inspect_context):
+            response = self.client.post('/api/v1/retrieval',
+                headers={**self.bearer(tokens['access_token']), **forged_headers},
+                json={'record_type': 'service_retrieval_request/v2', 'query': 'alpha', 'mode': 'lexical'})
+            self.expect(response, 200, 'verified_delegation_on_api')
+            self.assertNotIn(expected.grant_id, response.text)
+            before = len(seen)
+            for name, value in forged_arguments.items():
+                response = self.client.post('/api/v1/retrieval', headers=self.bearer(tokens['access_token']),
+                    json={'record_type': 'service_retrieval_request/v2', 'query': 'alpha', name: value})
+                self.expect(response, 400, 'caller_delegation_argument_refused_' + name)
+                self.assertEqual(len(seen), before)
+            asyncio.run(mcp())
+            oauth_seen = list(seen)
+            response = self.client.post('/api/v1/retrieval', headers={**self.fixture.headers(), **forged_headers},
+                json={'record_type': 'service_retrieval_request/v2', 'query': 'alpha', 'mode': 'lexical'})
+            self.expect(response, 200, 'host_key_header_spoof_has_no_delegation')
+        self.assertEqual(len(oauth_seen), 2)
+        for context in oauth_seen:
+            self.assertEqual(context.oauth_context.client_id, expected.client_id)
+            self.assertEqual(context.oauth_context.grant_id, expected.grant_id)
+            self.assertEqual(context.oauth_context.principal.tenant_id, self.tenant)
+            self.assertEqual(context.effective_scopes, ('provisioning:metadata',))
+        self.assertIsNone(seen[-1].oauth_context)
+        self.assertEqual(seen[-1].principal.tenant_id, 'alpha')
+        session = self.client.get('/api/v1/session', headers=self.bearer(tokens['access_token']))
+        self.expect(session, 200, 'existing_session_response_unchanged')
+        self.assertNotIn(expected.grant_id, session.text)
+        self.assertNotIn('oauth_context', session.json()['result'])
+
+    def revoked_during_body_read(self, transport):
+        self.fixture.runtime.set_operator_entitlement(self.tenant, valid_until=int(time.time()) + 3600,
+                                                      evidence_ref='synthetic-oauth-metering')
+        token = self.issue(scope='provisioning:metadata provisioning:read usage:read')['access_token']
+        principal = self.provider.resolve_access(token).principal
+        async def revoke():
+            await self.provider.revoke_token(await self.provider.load_access_token(token))
+        self.fixture.before_read = lambda _item: asyncio.run(revoke())
+        self.assertEqual(self.fixture.runtime.usage_for(principal)['records'], 0)
+        if transport == 'http':
+            response = self.client.post('/api/v1/download', headers=self.bearer(token), json={
+                'record_type': 'service_provisioning_request/v1', 'operation': 'read',
+                'identity': 'skill.alpha', 'request_id': 'oauth-http-revoked-read'})
+            self.assertEqual((response.status_code, safe_error(response)), (401, 'unauthorized'))
+            self.assertNotIn('APPROVED_ALPHA_BODY', response.text)
+        else:
+            async def read():
+                async with _protocol_client(self.base, Credentials(token), 'legacy') as protocol:
+                    result = await protocol.call_tool('provisioning_read', {
+                        'identity': 'skill.alpha', 'request_id': 'oauth-mcp-revoked-read'})
+                    self.assertTrue(result.is_error)
+                    self.assertEqual(result.structured_content['error']['code'], 'unauthorized')
+                    self.assertNotIn('APPROVED_ALPHA_BODY', str(result))
+            asyncio.run(read())
+        self.assertEqual(self.fixture.runtime.usage_for(principal)['records'], 0,
+                         'OAuth revocation during storage read consumed a paid unit')
+
+    def test_http_oauth_revoked_during_body_read_does_not_meter(self):
+        self.revoked_during_body_read('http')
+
+    def test_mcp_oauth_revoked_during_body_read_does_not_meter(self):
+        self.revoked_during_body_read('mcp')
+
     def test_origin_browser_and_admin_guards(self):
         pending = self.pending()
         body = self.decision_body(pending)

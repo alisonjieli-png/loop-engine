@@ -5,6 +5,18 @@
   "releases": [
    {
     "kind": "service",
+    "number": 86,
+    "at": "2026-10-09T18:45:06Z",
+    "lines": [
+     "ChatGPT app presentation and support page.",
+     "Documented OAuth callback routes and issuer identification.",
+     "Model directory refresh and MCP directory retry repair."
+    ],
+    "seen_after_release": "",
+    "not_shown": 0
+   },
+   {
+    "kind": "service",
     "number": 85,
     "at": "2026-10-09T14:25:59Z",
     "lines": [
@@ -1008,6 +1020,21 @@
       "description": "Source collections your agents check before they decide: models, benchmarks, MCP servers, papers and releases, as JSON Feed or Markdown links for each agent."
      },
      {
+      "address": "/feeds/setup",
+      "title": "Use Agent Feeds",
+      "description": "Give each agent the source collections it needs: pick a decision, copy one link per agent, choose the format and how often it reads."
+     },
+     {
+      "address": "/harness-files",
+      "title": "Harness Files",
+      "description": "Skills, instruction files, tools, hooks and settings your harness picks up: what they are, how a harness gets them, and the setup for each harness."
+     },
+     {
+      "address": "/gallery",
+      "title": "Gallery",
+      "description": "Browse Baltor's original Godot shaders, procedural textures, meshes and Blender tools, each with the render its engine check recorded."
+     },
+     {
       "address": "/public-good",
       "title": "Public Good",
       "description": "Browse useful component files for sustainable development and public-benefit work. Downloads require a Baltor account, not a paid subscription."
@@ -1025,7 +1052,7 @@
      {
       "address": "/get-started",
       "title": "Get started",
-      "description": "Create your Baltor account with your email address, choose a password, subscribe to Agent Feeds + Harness Files for $29 a month and connect your harness."
+      "description": "Create your Baltor account with your email address, choose a password, subscribe to Pro for $29 a month and connect your harness."
      },
      {
       "address": "/setup",
@@ -1090,7 +1117,7 @@
      {
       "address": "/efficiency",
       "title": "More efficient operation",
-      "description": "Give every step only the context it needs, reuse proven code and run each decision on the smallest model that does it well."
+      "description": "Give each step only the context, files and tools it asks for, reuse code that already exists, and measure the effect on your own task."
      },
      {
       "address": "/learning",
@@ -1742,6 +1769,42 @@
     "feature": "Filters",
     "value": "declared filterable public attributes",
     "fixed": true
+   },
+   {
+    "section": "Openapi tool server",
+    "feature": "Openapi version",
+    "value": "",
+    "fixed": false
+   },
+   {
+    "section": "Openapi tool server",
+    "feature": "Version",
+    "value": "",
+    "fixed": false
+   },
+   {
+    "section": "Openapi tool server",
+    "feature": "Operations",
+    "value": "",
+    "fixed": false
+   },
+   {
+    "section": "Openapi tool server",
+    "feature": "Cross origin",
+    "value": "any origin bearer token only",
+    "fixed": true
+   },
+   {
+    "section": "Openapi tool server",
+    "feature": "Credentials allowed",
+    "value": "No",
+    "fixed": true
+   },
+   {
+    "section": "Openapi tool server",
+    "feature": "Allowed request headers",
+    "value": "",
+    "fixed": false
    },
    {
     "section": "Delivery",

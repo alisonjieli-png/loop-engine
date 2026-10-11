@@ -406,6 +406,10 @@ class ProvisioningServer:
     access_policy: ProvisioningAccessPolicy = field(default_factory=ProvisioningAccessPolicy)
     record_type: str = SERVER_RECORD_TYPE
     tenant_resolver: ProvisioningTenantResolver | None = field(default=None, repr=False)
+    # Host-only preparation of the selected delivery, after item/body authority
+    # and integrity, before the existing meter: (item, meter_request, native
+    # answer). Never a caller-supplied field or a second read of the body.
+    delivery_check: object = field(default=None, repr=False, compare=False)
     _lock: object = field(default_factory=threading.RLock, init=False, repr=False, compare=False)
 
     def __post_init__(self) -> None:
@@ -420,6 +424,8 @@ class ProvisioningServer:
                 or len({tenant.key_digest for tenant in self.tenants}) != len(self.tenants)):
             raise ProvisioningError("tenant identities and key digests must be unique")
         self._validate_policy(self.access_policy)
+        if self.delivery_check is not None and not callable(self.delivery_check):
+            raise ProvisioningError("a delivery check is a host callable", "invalid_request")
         if self.tenant_resolver is not None and not isinstance(self.tenant_resolver, ProvisioningTenantResolver):
             raise ProvisioningError("tenant resolver must be typed")
 
@@ -598,6 +604,16 @@ class ProvisioningServer:
         if hashlib.sha256(encoded).hexdigest() != item.digest or len(encoded) != item.size_bytes:
             raise ProvisioningError("body does not match the exact item", "body_integrity_failed")
         self._recheck(tenant, request, binding, grant, decision)
+        if self.delivery_check is not None:
+            try:
+                # A fresh native answer supplies the already verified bytes;
+                # preparation must not re-read a body or mutate the final reply.
+                self.delivery_check(item, meter_request, _body_answer(tenant, item, body, decision, None))
+            except ProvisioningError:
+                raise
+            except Exception:
+                raise ProvisioningError("delivery preparation failed", "body_reader_unavailable") from None
+            self._recheck(tenant, request, binding, grant, decision)
         acknowledgment = None
         if meter_request is not None:
             try:
@@ -617,13 +633,17 @@ class ProvisioningServer:
                     "meter commitment is not established; retry the same request identity",
                     "meter_commit_unknown")
             self._recheck(tenant, request, binding, grant, decision)
-        return {"record_type": TIERED_BODY_RECORD_TYPE, "tenant_id": tenant.tenant_id,
-                "identity": item.identity, "digest": item.digest,
-                "size_bytes": item.size_bytes, "body": body,
-                "qualification_basis": decision.basis, **tier_fields(decision),
-                "metered": acknowledgment is not None,
-                "metered_unit": METERED_UNIT if acknowledgment is not None else None,
-                "metering_acknowledgment": asdict(acknowledgment) if acknowledgment else None}
+        return _body_answer(tenant, item, body, decision, acknowledgment)
+
+
+def _body_answer(tenant, item, body, decision, acknowledgment):
+    """One native read shape for pre-meter sizing and the actual final answer."""
+    return {"record_type": TIERED_BODY_RECORD_TYPE, "tenant_id": tenant.tenant_id,
+            "identity": item.identity, "digest": item.digest, "size_bytes": item.size_bytes, "body": body,
+            "qualification_basis": decision.basis, **tier_fields(decision),
+            "metered": acknowledgment is not None,
+            "metered_unit": METERED_UNIT if acknowledgment is not None else None,
+            "metering_acknowledgment": asdict(acknowledgment) if acknowledgment else None}
 
 
 #: Each tiered answer and the version 2 answer a reader that predates trust

@@ -143,7 +143,7 @@ def render(record, path, origin):
 
 def live_specimen_body():
     """Static shell for one anonymous catalogue read; failures never render a made-up zero."""
-    return ('<section class="md-band" id="live-catalogue"><p class="eyebrow">Library updates feed · live</p>'
+    return ('<section class="md-band" id="live-catalogue"><p class="eyebrow">Library updates feed</p>'
             '<h2>Read an actual feed item.</h2><p class="md-reading">This notice comes from the library Baltor serves now. '
             'It reports what the library holds, not current model news or benchmark results.</p>'
             '<article class="feed-specimen" id="catalogue-specimen" data-state="loading" aria-labelledby="catalogue-specimen-heading">'
@@ -220,61 +220,25 @@ def decision_specimen_body():
 
 
 def setup_section():
-    """How a person gives each agent only the feeds it needs. The examples and the excerpt come from the packaged directory."""
-    from . import web_pages
-    from .feed_source_collections import COLLECTION_PREFIX, directory, render as render_collection
-    from .model_directory_pages import canonical
-    data = directory()
-    by_id = {item.id: item for item in data.collections}
-    sources = {item.id: item for item in data.sources}
-    _require(all(identity in by_id for identity in ("coding-benchmarks", "coding-agent-releases", "research-papers",
-                                                     "retrieval-benchmarks", "creative-engines")), "feed_specimen_source_missing")
-    site = web_pages.packaged_site_map()
-    example = by_id["coding-benchmarks"]
-    link = canonical(site, COLLECTION_PREFIX + example.id + ".md")
-    origin = canonical(site, "")
+    """A short band on /feeds that keeps its anchor and sends a reader to the full guide at /feeds/setup.
 
-    def named(*identities):
-        return " and ".join(f'<a href="#collection-{identity}">{escape(by_id[identity].title)}</a>' for identity in identities)
-    # The excerpt is the collection's own section of the served Markdown, cut from the bytes the feed address answers.
-    served = render_collection(COLLECTION_PREFIX + example.id + ".md", origin)[0].decode("utf-8")
-    excerpt = served[served.index("## " + example.title):served.index("\n\n[Browse Baltor Feeds]")].strip()
+    Until October 9, 2026 the five steps, the served excerpt and the questions stood here; they moved to the guide page
+    (offering_guides.py) so /feeds keeps its height budget."""
+    from .feed_source_collections import directory
+    data = directory()
     return ('<section class="md-band" id="feed-setup" aria-labelledby="feed-setup-title"><p class="eyebrow">Set up</p>'
             '<h2 id="feed-setup-title">Give each agent only the feeds it needs</h2>'
-            '<p class="md-reading">Public feeds need no account and no key. Five steps, and your agent reads sources it can check '
-            'before it decides.</p><ol class="feed-steps">'
-            f'<li><strong>Choose what each agent decides.</strong> Pick one to three collections for each agent\'s job. Give a coding '
-            f'agent {named("coding-benchmarks", "coding-agent-releases")}; give a research agent '
-            f'{named("research-papers", "retrieval-benchmarks")}; give a creative agent {named("creative-engines")}.</li>'
-            '<li><strong>Copy the link in the format it reads.</strong> Markdown suits instruction files and chat agents. '
-            'JSON Feed suits scripts and tools, with the decision question and comparison fields in its <code>_baltor</code> '
-            'extension. The library updates feed is also served as RSS for a feed reader.</li>'
-            '<li><strong>Add the link to the agent\'s instructions.</strong> For example, one line in <code>AGENTS.md</code> or '
-            f'<code>CLAUDE.md</code>:<pre class="md-code md-code-wrap" tabindex="0">Before choosing a coding model, read {escape(link)} '
-            'and follow its decision checklist.</pre></li>'
-            '<li><strong>Decide how often it reads.</strong> Your harness owns scheduling and source access. Baltor does not push. Collections '
-            'change with Baltor releases and the library updates feed changes with the library, so once a day or before each '
-            'decision is enough. Send the last <code>ETag</code> in <code>If-None-Match</code> and an unchanged feed answers '
-            '304 Not Modified.</li>'
-            '<li><strong>Check which version it read.</strong> Each file names the date its sources were checked and a digest of '
-            'the directory, so you can tell exactly what an agent used.</li></ol>'
-            f'<details class="feed-excerpt"><summary>What a collection looks like</summary><p class="md-reading">The '
-            f'collection\'s section of <a href="{COLLECTION_PREFIX}{example.id}.md">{COLLECTION_PREFIX}{example.id}.md</a>, '
-            f'as served:</p><pre class="md-code md-code-wrap" tabindex="0">{escape(excerpt)}</pre></details>'
-            '<p class="md-reading">Saved feed settings for each agent, each with a token of its own, are not available yet. '
-            'Today the links you give an agent are its settings.</p>'
-            '<h3>Questions</h3><div class="feed-questions">'
-            '<details><summary>Is it free?</summary><p>Yes, through December 31, 2026 (Eastern). The standard price is $4.99 a '
-            'month, and nothing is charged automatically.</p></details>'
-            '<details><summary>Do I need an account?</summary><p>No. Public feeds are open to anyone and need no key.</p></details>'
-            '<details><summary>How fresh is it?</summary><p>Sources are checked on the date each file shows. Updates follow '
-            'website releases; no daily refresh is promised.</p></details>'
-            '<details><summary>Does a feed run anything?</summary><p>No. A feed never installs or runs its contents, and '
-            'reading a source does not grant permission to copy it.</p></details></div></section>')
+            '<p class="md-reading">Public feeds need no account and no key. Pick one to three collections for each agent, put '
+            'its Markdown or JSON Feed link in the agent\'s instructions file, and let your harness read it once a day or '
+            f'before each decision. {len(data.collections)} collections, five steps.</p>'
+            '<div class="md-actions"><a class="button secondary" href="/feeds/setup">Read the five setup steps</a></div>'
+            '<p class="md-reading"><a href="#feed-profile">Download a separate reading profile for each agent</a>. '
+            'Its files record the sources you selected and the reading interval for your harness to configure.</p></section>')
 
 
 def page_body():
     from .feed_source_collections import page_section
+    from .feed_profile_web import page_section as profile_section
     return ('<section class="md-band md-intro"><p class="eyebrow">Agent Feeds</p>'
             '<h1 id="feeds-title">Sources your agents can check.</h1>'
             '<p class="md-reading feed-offer-price"><strong>$4.99 a month.</strong> Free through December 31, 2026 (Eastern). '
@@ -283,9 +247,9 @@ def page_body():
             'Your agent reads the sources, what to compare and when to look again. Agent Feeds helps your agents decide; '
             'Harness Files helps them build, and Overnight / AFK Work keeps a local queue moving while you are away.</p>'
             '<div class="md-actions"><a class="button primary" href="#source-collections">Choose a collection</a>'
-            '<a class="button secondary" href="#feed-setup">Set up feeds for each agent</a>'
+            '<a class="button secondary" href="/feeds/setup">Set up feeds for each agent</a>'
             '<a class="button secondary" href="/pricing">Compare the three offerings</a></div></section>'
-            + page_section() + setup_section() + live_specimen_body() + decision_specimen_body()
+            + profile_section() + page_section() + setup_section() + live_specimen_body() + decision_specimen_body()
             + '<section class="md-band"><h2>Harness Files</h2><p class="md-reading">'
             'Agent Feeds supplies public source collections and the library updates feed. '
             'Agent Feeds + Harness Files also gives you the whole library: skills, tools, code, hooks and settings your harness '
@@ -314,7 +278,9 @@ def rendered_page(path, method, display_name, host=None):
                   "breadcrumb": breadcrumbs(site, (("Home", "/"), ("Feeds", PAGE)))}
     body = frame(site, display_name, Page(PAGE, "feeds", entry.title, entry.description,
                                         page_body(), structured, "feeds-title")).encode()
-    body = body.replace(b'</head>', b'<script type="module" src="/assets/feed-specimen.js"></script>\n</head>', 1)
+    body = body.replace(b'</head>', b'<script type="module" src="/assets/feed-specimen.js"></script>\n'
+        b'<script type="module" src="/assets/feed-profile.js"></script>\n'
+        b'<link rel="stylesheet" href="/assets/feed-profile.css">\n</head>', 1)
     head = web_pages.page_head(site, path, host, display_name)
     if head is not None:
         body = web_pages.with_page_head(body, head)

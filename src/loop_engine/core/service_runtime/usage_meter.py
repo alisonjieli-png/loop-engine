@@ -61,6 +61,35 @@ def usage_unit(request, period):
             period), digest(unit)
 
 
+def acknowledgment_size_preview(runtime, request):
+    """A noncommitted shape for response budgeting only; no store read or write.
+
+    The real meter owns the same identity function. A period change changes
+    its hash, not the reference's encoded length. False occupies one more JSON
+    byte than the eventual True, so this preview never understates its size.
+    A transport must replace it with the actual meter acknowledgment, never
+    return the preview as a successful read.
+    """
+    if not isinstance(request, ProvisioningMeterRequest):
+        raise ServiceRuntimeError("invalid_usage_request")
+    logical, _digest = usage_unit(request, usage_period(runtime._now()))
+    return ProvisioningMeterAcknowledgment(request, False, runtime._catalog.identity(USAGE, logical), "durable")
+
+
+def _exact_guards(*groups):
+    """Deduplicate identical read-set guards; never replace a conflicting snapshot."""
+    from ...catalog.protocol import CatalogRecordPrecondition
+    held = {}
+    for group in groups:
+        for guard in group:
+            if not isinstance(guard, CatalogRecordPrecondition):
+                raise ServiceRuntimeError("invalid_usage_guard")
+            if guard.record_id in held and held[guard.record_id] != guard:
+                raise ServiceRuntimeError("concurrent_update")
+            held[guard.record_id] = guard
+    return tuple(held.values())
+
+
 def record_usage(runtime, request, principal, guards=()):
     """Record one metered unit, or acknowledge the unit this item version already holds this month."""
     if not isinstance(request, ProvisioningMeterRequest):
@@ -109,7 +138,7 @@ def _record_once(runtime, request, principal, guards):
             "period": period, "unit": request.unit, "quantity": request.quantity,
             "item_identity": request.binding.identity, "body_digest": request.binding.body_digest,
             "at": now}, tenant_id=request.tenant_id)
-        catalog.commit(store, (row,), (*auth_guards, *guards, catalog.guard(None, row["record_id"])))
+        catalog.commit(store, (row,), _exact_guards(auth_guards, guards, (catalog.guard(None, row["record_id"]),)))
         return ProvisioningMeterAcknowledgment(request, True, row["record_id"], "durable")
 
 

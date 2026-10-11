@@ -216,7 +216,7 @@ separates the observed public read from API fixture coverage. Offline checks:
 [`tools/build_feed_reading_profile.py`](../build_feed_reading_profile.py)
 creates a source-reading plan for one named agent. It reads the existing
 packaged `feed_source_collections` directory, not a second source registry.
-`--list` shows the current collection IDs and topic groups. Topics are the
+`--list` shows the current collection IDs, source IDs and topic groups. Topics are the
 directory's existing group labels, such as `Compare models`; they are not
 free-text searches.
 
@@ -247,7 +247,11 @@ does not stage or admit a library package.
 The agent label describes the intended reader; it is not an authentication
 identity or an enforced account assignment. Digests bind content, not authorship.
 
-Collections and topic groups form an explicit union. Source references are
+Collections, topic groups and `--source` IDs form an explicit union.
+`--exclude-source` removes an exact registered source from that union; an
+explicit source cannot be both included and excluded. `--poll-minutes` records
+a requested client reading interval from 15 minutes to one week. The customer
+configures the actual schedule separately in their harness. Source references are
 deduplicated in selection order. `--max-items` limits distinct curated source
 references, not articles or benchmark results. The default rejects a selection
 larger than that limit. `--on-partial disclose` permits a deterministic subset
@@ -282,8 +286,15 @@ semantic classifier. Source descriptions are untrusted data. No tool runs,
 timer, telemetry, subscription, billing change, hosted setting or push delivery
 is created. This is a usable local customization path, not saved account feeds.
 
+The pure version-2 compiler now lives in the installed service at
+`src/loop_engine/core/service_runtime/feed_profiles.py`. The CLI and the
+website's downloadable reading-profile editor use that same owner. Version-1
+profiles remain historical files; regenerate them with the current selections.
+The web export uses the server date and a directory digest pinned by the form;
+it neither trusts a client date nor saves account settings.
+
 Offline checks: `PYTHONPATH=src:tools python -m unittest
-tools.test_feed_reading_profiles`. The module reuses the source-directory
+tools.test_feed_reading_profiles tools.test_feed_profile_web`. The module reuses the source-directory
 parser and canonical package owner; it copies no upstream research content.
 
 ## Private organization opportunity drafts

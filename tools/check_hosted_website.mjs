@@ -127,7 +127,7 @@ try{
   check("category_line_check_rejects_a_shortened_line_a_missing_harness_and_a_status",categoryProblems({...liveCategory,footer:"Optimized operation."}).length===1
     &&categoryProblems({...liveCategory,harnesses:heroHarnesses.filter(name=>name!=="Pi")}).length===1&&categoryProblems({...liveCategory,harnesses:heroHarnesses.map(name=>name==="Pi"?"Pi Planned":name)}).length===1);
   /* The price in the hero, "Agent Feeds + Harness Files $29 a month", the one way the design standards allow. */
-  const liveHeroPrice=await page.evaluate(()=>document.querySelector('[data-view="home"] .hero-price')?.textContent.replace(/\s+/g," ").trim()||"");
+  const liveHeroPrice=await page.evaluate(()=>document.querySelector('[data-view="home"] [data-offering="agent-feeds-harness-files"]')?.textContent.replace(/\s+/g," ").trim()||"");
   check("live_homepage_hero_states_the_plan_and_the_price",statesThePlanAndPrice(liveHeroPrice));
   check("hero_price_check_rejects_a_missing_price_and_another_way_of_writing_it",!statesThePlanAndPrice("")&&!statesThePlanAndPrice("Agent Feeds + Harness Files 29 United States dollars each month")&&!statesThePlanAndPrice("Agent Feeds + Harness Files $29 per month")&&statesThePlanAndPrice("Agent Feeds + Harness Files $29 a month for the whole library"));
   /* The bands of the design, in order, each set off from the next by a change of ground and a rule. */
@@ -135,15 +135,15 @@ try{
     return {names:bands.map(node=>node.dataset.band||""),apart:bands.slice(1).every((node,index)=>ground(node)!==ground(bands[index])&&parseFloat(getComputedStyle(node).borderTopWidth)>0)};});
   /* The design's order since September 24, 2026: the hero with the working directory one step gets, the three demonstrations, the
      library, the three use cases, trust, pricing, questions and the closing band. The Ask, get, place band left that day. */
-  check("live_homepage_bands_follow_the_design_and_are_set_apart",JSON.stringify(liveBands.names)===JSON.stringify(["hero","demos","library","use-cases","trust","pricing","faq","closing"])&&liveBands.apart
-    &&await page.locator('[data-band="hero"] #hero-directory').count()===1);
+  check("live_homepage_bands_follow_the_design_and_are_set_apart",JSON.stringify(liveBands.names)===JSON.stringify(["hero","pricing","explore","demos","library","use-cases","trust","start","faq","closing"])&&liveBands.apart
+    &&await page.locator('[data-band="explore"] #hero-directory').count()===1);
   check("live_homepage_says_what_an_account_gives_you",JSON.stringify(await page.locator("[data-offer]").evaluateAll(items=>items.map(item=>item.dataset.offer).sort()))===JSON.stringify(["downloads","keys","library","usage"]));
   /* No card on the homepage carries a status word since September 23, 2026: the six kinds, the three use cases and, since
      September 24, the three demonstrations, each in the design's order. The hero's directory carries the one tag, "Example
      layout". Each use case and each demonstration links its own page. */
   const liveCards=(selector,key)=>page.locator(selector).evaluateAll((items,key)=>items.map(item=>({name:item.dataset[key]||"",title:item.querySelector("h3")?.textContent.replace(/\s+/g," ").trim()||"",
     text:item.textContent.replace(/\s+/g," ").trim(),tags:item.querySelectorAll(".status-tag, [data-status]").length,links:[...item.querySelectorAll("a[href]")].map(link=>link.getAttribute("href")),shown:item.getClientRects().length>0})),key);
-  const demoCardPages={simple:"/demo",overnight:"/overnight",kaggle:"/demo/kaggle"};
+  const demoCardPages={creative:"/gallery",api:"/setup#openapi-connect",research:"/feeds/setup"};
   const demoCardProblems=cards=>[...cardProblems(cards,Object.keys(demoCardPages)),...cards.filter(card=>JSON.stringify(card.links)!==JSON.stringify([demoCardPages[card.name]])).map(card=>card.name+" links another page")];
   const liveCardProblems=[...cardProblems(await liveCards("[data-kind]","kind"),["skills","instructions","tools","agents","hooks","servers"]),...demoCardProblems(await liveCards('[data-view="home"] [data-demo-card]',"demoCard")),
     ...useCaseProblems(await liveCards('[data-view="home"] [data-use-case]',"useCase"))];
@@ -152,7 +152,7 @@ try{
     &&useCaseProblems([{name:"overnight",title:"Keep track of overnight work",text:"",tags:0,links:["/overnight"],shown:true}]).length===1);
   /* The hero shows the working directory one step gets and no worked example, as the owner asked on September 24, 2026: no
      search, no reference, no digest and no download in the hero band. */
-  const liveHeroDirectory=await page.evaluate(()=>{const band=document.querySelector('[data-view="home"] [data-band="hero"]');
+  const liveHeroDirectory=await page.evaluate(()=>{const band=document.querySelector('[data-view="home"] [data-band="explore"]');
     return {label:band?.querySelector("[data-hero-directory] [data-hero-label]")?.textContent.replace(/\s+/g," ").trim()||"",parts:[...(band?.querySelectorAll("[data-hero-part]")||[])].map(node=>node.dataset.heroPart),
       example:band?band.querySelectorAll("[data-step-demo], [data-demo-item], [data-demo-query], [data-demo-download], [data-task-demo]").length:0,text:band?.textContent.replace(/\s+/g," ")||""};});
   /* The hero's directory, as the owner decided on September 24, 2026 and kept on September 28, 2026: the three parts a
@@ -163,7 +163,7 @@ try{
   check("live_hero_directory_shows_the_three_parts_under_an_example_label",heroDirectoryIsAnExample(liveHeroDirectory));
   /* The directory figure itself carries no search, no reference, no digest and no download. The terminal beside it does, and
      that is the recorded part the owner asked for; the directory is not allowed to restate it. */
-  const liveHeroDirectoryFigure=await page.evaluate(()=>{const band=document.querySelector('[data-view="home"] [data-band="hero"]');
+  const liveHeroDirectoryFigure=await page.evaluate(()=>{const band=document.querySelector('[data-view="home"] [data-band="explore"]');
     const figure=band?.querySelector("[data-hero-directory]");
     return {text:figure?.textContent.replace(/\s+/g," ")||""};});
   check("live_hero_directory_figure_carries_no_search_no_digest_and_no_download",
@@ -171,7 +171,7 @@ try{
   /* The hero's three worked steps, as the owner asked for on September 28, 2026: three steps, each with the step it is and
      the result it produced, and exactly one of them marked as the recorded run so a reader cannot mistake a worked example
      for a measured one. */
-  const liveHeroScenarios=await page.evaluate(()=>{const band=document.querySelector('[data-view="home"] [data-band="hero"]');
+  const liveHeroScenarios=await page.evaluate(()=>{const band=document.querySelector('[data-view="home"] [data-band="explore"]');
     const group=band?.querySelector(".hero-scenarios");
     const buttons=[...(group?.querySelectorAll("[data-hero-scenario]")||[])];
     return {count:buttons.length,labelled:group?.getAttribute("aria-label")||"",

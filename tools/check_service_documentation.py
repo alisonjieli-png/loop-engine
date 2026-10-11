@@ -318,10 +318,18 @@ def source_facts(root: Path) -> dict:
                         refusals.add(constants[inner.id])
 
     addresses = {"/mcp"}
-    for module in (HTTP_MODULE, PAGES_MODULE, PUBLIC_GOOD_PAGE_MODULE):
+    for module in (HTTP_MODULE, PUBLIC_GOOD_PAGE_MODULE):
         for node in ast.walk(trees[root / module]):
             if isinstance(node, ast.Constant) and isinstance(node.value, str) and node.value.startswith("/"):
                 addresses.add(node.value)
+    # Page prose can name another owner's route. Only address-table keys establish
+    # a page route here; otherwise a stale link can validate itself after its route moves.
+    for node in trees[root / PAGES_MODULE].body:
+        if (isinstance(node, ast.Assign) and isinstance(node.value, ast.Dict)
+                and any(isinstance(target, ast.Name) and target.id in {"WEB_ASSETS", "GENERATED_WEB_FILES"}
+                        for target in node.targets)):
+            addresses.update(key.value for key in node.value.keys
+                             if isinstance(key, ast.Constant) and isinstance(key.value, str) and key.value.startswith("/"))
     addresses.update(value for value in constants.values() if value.startswith("/"))
 
     scopes = set()

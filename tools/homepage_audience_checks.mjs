@@ -62,8 +62,8 @@ export function overnightToolsProblems(preview){
 }
 
 export function offeringProblems(cards){
-  const expected=[['agent-feeds','Agent Feeds','/feeds'],['agent-feeds-harness-files','Harness Files','/get-started'],
-    ['overnight-afk-work','Overnight / AFK Work','/overnight']];
+  const expected=[['agent-feeds','Basic','/feeds'],['agent-feeds-harness-files','Pro','/get-started'],
+    ['overnight-afk-work','Max','/overnight']];
   const problems=[];
   if(cards.length!==expected.length)return ['three distinct offerings are required'];
   for(let index=0;index<expected.length;index++){
@@ -75,6 +75,7 @@ export function offeringProblems(cards){
   if(!/Agent Feeds \+ Harness Files/.test(cards[1].text)||!/\$29 a month/.test(cards[1].text))problems.push('full library price is missing');
   if(!/local overnight/i.test(cards[2].text)||!/preview/i.test(cards[2].text)||!/no extra charge/i.test(cards[2].text)
     ||!/checkpoints/i.test(cards[2].text)||!/morning reports/i.test(cards[2].text))problems.push('usable overnight preview scope is missing');
+  if(!/\$49 a month/.test(cards[2].text)||!/free public preview/i.test(cards[2].text))problems.push('Max price or free preview scope is missing');
   return problems;
 }
 

@@ -14,7 +14,11 @@ import json
 import math
 import threading
 import time
+from typing import TYPE_CHECKING
 from urllib.parse import urlsplit
+
+if TYPE_CHECKING:
+    from .oauth_authorization import OAuthAccessContext
 
 AUTHENTICATION_RECORD_TYPE = "service_http_authentication/v1"
 HOST_KEY_AUTHENTICATION = "host_key"
@@ -135,7 +139,11 @@ class ServiceHttpAuthentication:
 
 @dataclass(frozen=True)
 class AuthenticatedHttpRequest:
-    """Ephemeral verified request identity; never serialize the credential."""
+    """Ephemeral verified identity; never serialize credentials or delegation facts.
+
+    The internal OAuth context preserves the existing provider's typed result.
+    It changes no wire protocol, stored record version, scope or permission.
+    """
 
     principal: object = field(repr=False)
     credential: str = field(repr=False)
@@ -149,6 +157,20 @@ class AuthenticatedHttpRequest:
     #: redirect to an OpenAI host, "" otherwise (`chatgpt_app.profile_for_client`). It names a presentation only
     #: and grants nothing.
     client_profile: str = field(default="", compare=False)
+    oauth_context: OAuthAccessContext | None = field(default=None, repr=False, kw_only=True)
+
+    def __post_init__(self):
+        if self.mode != OAUTH_ACCESS_AUTHENTICATION:
+            if self.oauth_context is not None:
+                raise HttpAuthenticationError()
+            return
+        # Import only on the OAuth path: the provider imports this auth owner,
+        # and ordinary host-key authentication does not require the MCP SDK.
+        from .oauth_authorization import OAuthAccessContext
+        context = self.oauth_context
+        if (not isinstance(context, OAuthAccessContext) or context.principal != self.principal
+                or context.scopes != self.token_scopes or context.expires_at != self.expires_at):
+            raise HttpAuthenticationError()
 
     @property
     def effective_scopes(self):
@@ -269,12 +291,13 @@ class ServiceHttpAuthenticator:
         """
         credential = self._credential(authorization, purpose)
         if self.oauth_authorization is not None and credential.startswith("boat_"):
+            from .oauth_authorization import OAuthAccessContext
             held = self.oauth_authorization.resolve_access(credential)
-            if held is None:
+            if not isinstance(held, OAuthAccessContext):
                 raise HttpAuthenticationError()
             return AuthenticatedHttpRequest(held.principal, credential, OAUTH_ACCESS_AUTHENTICATION,
                                             held.expires_at, held.scopes,
-                                            client_profile=getattr(held, "client_profile", ""))
+                                            client_profile=held.client_profile, oauth_context=held)
         if HOST_KEY_AUTHENTICATION not in self.configuration.modes:
             return None
         from .records import ServiceRuntimeError
@@ -355,11 +378,18 @@ class ServiceHttpAuthenticator:
                                         float(claims["exp"]), tuple(claims.get("scope", "").split()))
 
     def revalidate(self, request: AuthenticatedHttpRequest):
+        if not isinstance(request, AuthenticatedHttpRequest):
+            raise HttpAuthenticationError()
+        AuthenticatedHttpRequest.__post_init__(request)
         if request.expires_at is not None and request.expires_at <= time.time():
             raise HttpAuthenticationError()
         fresh = self.authenticate("Bearer " + request.credential,
                                   purpose="website" if request.mode == BROWSER_IDENTITY_AUTHENTICATION else "service")
         if fresh.principal.tenant_id != request.principal.tenant_id or fresh.mode != request.mode:
+            raise HttpAuthenticationError()
+        if request.oauth_context is not None and (
+                fresh.oauth_context.client_id != request.oauth_context.client_id
+                or fresh.oauth_context.grant_id != request.oauth_context.grant_id):
             raise HttpAuthenticationError()
         return fresh
 

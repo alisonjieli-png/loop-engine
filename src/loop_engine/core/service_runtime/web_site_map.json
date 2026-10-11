@@ -1,7 +1,7 @@
 {
   "record_type": "service_web_site_map/v3",
   "decided_on": "2026-10-09",
-  "decided_by": "engineering, preserving earlier design, hostnames and audience paths, and adding the owner's Feeds direction as a clearly limited catalogue-metadata preview; on October 9, 2026 engineering relabeled the footer link to /overnight from \"Solve problems overnight\" to the offering name \"Overnight / AFK Work\" and rewrote the use cases description to match the page, with no page or link removed",
+  "decided_by": "engineering, preserving earlier design, hostnames and audience paths, and adding the owner's Feeds direction as a clearly limited catalogue-metadata preview; on October 9, 2026 engineering relabeled the footer link to /overnight from \"Solve problems overnight\" to the offering name \"Overnight / AFK Work\" and rewrote the use cases description to match the page, with no page or link removed; for release 87 the same day engineering added three pages with footer links (Use Agent Feeds at /feeds/setup, Harness Files at /harness-files, Gallery at /gallery), renamed the signed-in workspace page title to Workspace and rewrote the efficiency description to match its page, again with no page or link removed",
   "display_name": "Baltor",
   "canonical_hostname": "baltor.ai",
   "groups": [
@@ -19,6 +19,42 @@
       "description": "Source collections your agents check before they decide: models, benchmarks, MCP servers, papers and releases, as JSON Feed or Markdown links for each agent.",
       "group": "Product",
       "linked_from": ["header", "footer"],
+      "unlinked_reason": "",
+      "scroll_budget": "long",
+      "price_in_first_screen": false,
+      "indexed": true
+    },
+    {
+      "address": "/feeds/setup",
+      "view": "feeds-setup",
+      "title": "Use Agent Feeds",
+      "description": "Give each agent the source collections it needs: pick a decision, copy one link per agent, choose the format and how often it reads.",
+      "group": "Product",
+      "linked_from": ["footer", "page"],
+      "unlinked_reason": "",
+      "scroll_budget": "long",
+      "price_in_first_screen": false,
+      "indexed": true
+    },
+    {
+      "address": "/harness-files",
+      "view": "harness-files",
+      "title": "Harness Files",
+      "description": "Skills, instruction files, tools, hooks and settings your harness picks up: what they are, how a harness gets them, and the setup for each harness.",
+      "group": "Product",
+      "linked_from": ["footer", "page"],
+      "unlinked_reason": "",
+      "scroll_budget": "long",
+      "price_in_first_screen": false,
+      "indexed": true
+    },
+    {
+      "address": "/gallery",
+      "view": "gallery",
+      "title": "Gallery",
+      "description": "Browse Baltor's original Godot shaders, procedural textures, meshes and Blender tools, each with the render its engine check recorded.",
+      "group": "Product",
+      "linked_from": ["footer", "page"],
       "unlinked_reason": "",
       "scroll_budget": "long",
       "price_in_first_screen": false,
@@ -127,7 +163,7 @@
       "address": "/get-started",
       "view": "start",
       "title": "Get started",
-      "description": "Create your Baltor account with your email address, choose a password, subscribe to Agent Feeds + Harness Files for $29 a month and connect your harness.",
+      "description": "Create your Baltor account with your email address, choose a password, subscribe to Pro for $29 a month and connect your harness.",
       "group": "Product",
       "linked_from": [
         "header",
@@ -296,7 +332,7 @@
       "address": "/efficiency",
       "view": "efficiency",
       "title": "More efficient operation",
-      "description": "Give every step only the context it needs, reuse proven code and run each decision on the smallest model that does it well.",
+      "description": "Give each step only the context, files and tools it asks for, reuse code that already exists, and measure the effect on your own task.",
       "group": "Use cases",
       "linked_from": [
         "footer"
@@ -786,7 +822,7 @@
     {
       "address": "/app",
       "view": "workspace",
-      "title": "Intelligence workspace",
+      "title": "Workspace",
       "description": "Your signed-in workspace: search the library and download checked items.",
       "group": "Account",
       "linked_from": [
@@ -1145,6 +1181,16 @@
           },
           {
             "role": "link",
+            "label": "Harness Files",
+            "href": "/harness-files"
+          },
+          {
+            "role": "link",
+            "label": "Use Agent Feeds",
+            "href": "/feeds/setup"
+          },
+          {
+            "role": "link",
             "label": "Demonstration",
             "href": "/demo"
           },
@@ -1167,6 +1213,11 @@
             "role": "link",
             "label": "Browse the library",
             "href": "/library"
+          },
+          {
+            "role": "link",
+            "label": "Gallery",
+            "href": "/gallery"
           },
           {"role": "link", "label": "Feeds", "href": "/feeds"},
           {

@@ -481,16 +481,29 @@ class PublicGoodHttp(unittest.TestCase):
         baseline = asyncio.run(read(self.raw, 'baseline-mcp'))
         self.assertFalse(baseline.is_error)
         full_size = len(baseline.model_dump_json(by_alias=True).encode())
-        self.app.configuration = replace(self.app.configuration, maximum_response_bytes=full_size - 1)
+        from loop_engine.core.service_runtime import http as http_owner
+        # Inline admission now catches a predictable small cap before metering
+        # or completion. Exercise this independent FINAL-completion guard with
+        # unexpected framing growth after preparation instead; keep its known-
+        # wrong early completion observable without bypassing the new guard.
+        self.app.configuration = replace(self.app.configuration,
+            maximum_response_bytes=full_size + http_owner.PROTOCOL_ANSWER_RESERVE_BYTES)
         other, raw = self.customer('unpaid-mcp-second')
-        if restore_early_completion:
-            original = self.app._protocol_read
-            def early(authentication, fields, step=None, completions=None):
-                return original(authentication, fields, step, completions=None)
-            with mock.patch.object(self.app, '_protocol_read', early):
+        original_loop = http_owner._loop_result
+        def oversized_envelope(operation, function, role, profile):
+            result = original_loop(operation, function, role, profile)
+            if operation == 'read':
+                result['execution']['synthetic_framing_failure'] = 'x' * self.app.configuration.maximum_response_bytes
+            return result
+        with mock.patch.object(http_owner, '_loop_result', oversized_envelope):
+            if restore_early_completion:
+                original = self.app._protocol_read
+                def early(authentication, fields, step=None, completions=None):
+                    return original(authentication, fields, step, completions=None)
+                with mock.patch.object(self.app, '_protocol_read', early):
+                    refused = asyncio.run(read(raw, 'mcp-over-envelope-cap'))
+            else:
                 refused = asyncio.run(read(raw, 'mcp-over-envelope-cap'))
-        else:
-            refused = asyncio.run(read(raw, 'mcp-over-envelope-cap'))
         code = refused.structured_content.get('error', {}).get('code') if refused.structured_content else None
         self.record('mcp_final_envelope_refused', refused.is_error, error_code=code,
                     maximum_response_bytes=self.app.configuration.maximum_response_bytes)

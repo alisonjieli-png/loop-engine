@@ -38,7 +38,7 @@ ROOT_META = '  <meta name="baltor-root-address" content="{address}">\n'
 _HEAD_END = re.compile(r"</head\s*>", re.IGNORECASE)
 #: Addresses the edge always passes to the origin: their bytes depend on state the edge does not hold.
 ORIGIN_PREFIXES = ("/api/", "/mcp", "/oauth/", "/.well-known/", "/out/", "/auth/")
-ORIGIN_ADDRESSES = ("/library", "/feeds/catalogue.json", "/feeds/catalogue.rss", "/feeds/catalogue.md")
+ORIGIN_ADDRESSES = ("/library", "/harness-files", "/feeds/catalogue.json", "/feeds/catalogue.rss", "/feeds/catalogue.md")
 UNAVAILABLE_PAGE = "/__edge/unavailable"
 
 
@@ -79,7 +79,8 @@ def page_headers(identity_origin="", *, creative_preview=False):
 
 def static_addresses(*, include_model_details=True):
     """Every address the export renders, in a stable order."""
-    from . import catalogue_feed, dot_pages, feed_source_collections, model_directory_pages, public_good_page, red_team_page, status_pages
+    from . import (catalogue_feed, dot_pages, feed_source_collections, gallery_page, model_directory_pages, offering_guides,
+                   public_good_page, red_team_page, status_pages)
     from .web_pages import GENERATED_WEB_FILES, WEB_ASSETS
     addresses = list(WEB_ASSETS) + list(GENERATED_WEB_FILES)
     addresses += list(model_directory_pages.PAGES) + [model_directory_pages.SITEMAP_ADDRESS]
@@ -91,6 +92,10 @@ def static_addresses(*, include_model_details=True):
                 addresses.append(path)
     addresses += [catalogue_feed.PAGE, public_good_page.ADDRESS, red_team_page.ADDRESS,
                   *dot_pages.ROUTES, *status_pages.ADDRESSES]
+    # The guide page of Agent Feeds and the gallery are the same bytes on every request; Harness Files counts the served
+    # catalogue and stays with the origin, like the library page.
+    addresses += [offering_guides.FEEDS_SETUP, gallery_page.INDEX, gallery_page.SITEMAP,
+                  *(gallery_page.PREFIX + item["slug"] for item in gallery_page.public_items())]
     addresses += list(feed_source_collections.formats())
     seen, ordered = set(), []
     for address in addresses:
@@ -103,7 +108,8 @@ def static_addresses(*, include_model_details=True):
 
 def render(address, host, display_name, library_population=None):
     """(bytes, media type) as the service's web route renders `address` for `host`, or None; the same order."""
-    from . import catalogue_feed, dot_pages, feed_source_collections, public_good_page, red_team_page, status_pages
+    from . import (catalogue_feed, dot_pages, feed_source_collections, gallery_page, offering_guides, public_good_page,
+                   red_team_page, status_pages)
     from .model_directory_pages import rendered_page
     from .web_pages import packaged_site_map, served_asset
     if address in feed_source_collections.formats():
@@ -111,7 +117,7 @@ def render(address, host, display_name, library_population=None):
         return feed_source_collections.render(address, canonical(packaged_site_map(), ""))
     asset = served_asset(address, "GET", display_name, host, library_population=library_population)
     for renderer in (rendered_page, public_good_page.rendered, dot_pages.rendered, red_team_page.rendered,
-                     status_pages.rendered, catalogue_feed.rendered_page):
+                     status_pages.rendered, catalogue_feed.rendered_page, offering_guides.rendered, gallery_page.rendered):
         if asset is not None:
             break
         asset = renderer(address, "GET", display_name, host)

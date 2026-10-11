@@ -383,7 +383,7 @@ def served_tool_names():
 #: the local engine is built to do. Such a sentence must say "built to".
 PER_STEP = re.compile(r"\b(?:assembl|build|built)\w*\b[^.!?]*\b(?:each|every|this|one)\s+(?:step|subtask)\b", re.IGNORECASE)
 #: The three demonstrations under the hero, in order, with the page each one opens.
-DEMONSTRATIONS = (("simple", "/demo"), ("overnight", "/overnight"), ("kaggle", "/demo/kaggle"))
+DEMONSTRATIONS = (("creative", "/gallery"), ("api", "/setup#openapi-connect"), ("research", "/feeds/setup"))
 
 
 def hero_markup(page):
@@ -422,8 +422,8 @@ def hero_problems(page, served_tools=HERO_TOOLS):
     # kept the other two sentences and dropped this one used to pass here and fail only against the live service.
     subhead = re.search(r'<p class="hero-subhead">(.*?)</p>', hero, re.S)
     subhead_words = " ".join(re.sub(r"<[^>]+>", " ", subhead.group(1)).split()) if subhead else ""
-    if not re.search(r"by hand", subhead_words, re.IGNORECASE):
-        problems.append("the hero does not name the work it removes as the work done by hand")
+    if not re.search(r"by hand|rewrit", subhead_words, re.IGNORECASE):
+        problems.append("the hero does not name the repeated work it addresses")
     claims = [sentence for sentence in re.split(r"(?<=[.!?])\s+", words) if PER_STEP.search(sentence) and "built to" not in sentence.lower()]
     if claims or "built to" not in note.lower():
         problems.append(f"the hero states assembly for each step as a current capability: {claims}")
@@ -448,7 +448,7 @@ def demonstration_problems(page, served):
     cards = re.findall(r'data-demo-card="([a-z]+)">.*?<a [^>]*href="([^"]+)"', page, re.S)
     problems = [] if tuple(cards) == DEMONSTRATIONS else [f"the homepage links the demonstrations {cards}, and it links {list(DEMONSTRATIONS)}"]
     return problems + [f"the {name} demonstration links {address}, which this service does not serve"
-                       for name, address in cards if address not in served]
+                       for name, address in cards if address.split("#", 1)[0] not in served]
 
 
 def opening_claim_problems(page):
@@ -481,9 +481,10 @@ class HomepageHeroTest(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         from loop_engine.core.service_runtime.web_pages import WEB_ASSETS
+        from loop_engine.core.service_runtime import gallery_page, offering_guides
         cls.page = PAGE.read_text(encoding="utf-8")
         cls.items, cls.item_count = released_items()
-        cls.served = set(WEB_ASSETS)
+        cls.served = set(WEB_ASSETS) | set(offering_guides.ADDRESSES) | {gallery_page.INDEX}
         cls.archived = (ROOT / "artifacts" / "website-archive-2026-09-24" / "homepage-before-2026-09-24-hero.html").read_text(encoding="utf-8")
 
     def test_the_hero_shows_one_step_with_its_parts_labels_and_tools(self):
@@ -509,8 +510,9 @@ class HomepageHeroTest(unittest.TestCase):
         # example below the hero still says "by hand" when it names the manual work that example replaces, so this planted
         # hero keeps those words elsewhere and the claim can only be read from the subhead. It failed only against the live
         # service on September 29, 2026, which is why the local check holds the same line as the hosted one.
-        self.assertEqual(hero_problems(_planted(self.page, " by hand.", "."), served_tool_names()),
-                         ["the hero does not name the work it removes as the work done by hand"])
+        subhead = re.search(r'<p class="hero-subhead">(.*?)</p>', self.page, re.S).group(1)
+        self.assertEqual(hero_problems(_planted(self.page, subhead, "Research, code, tools and files in one library."), served_tool_names()),
+                         ["the hero does not name the repeated work it addresses"])
 
     def test_the_hero_search_and_download_are_this_release_own(self):
         harmful = recorded_harm()
@@ -557,9 +559,9 @@ class HomepageHeroTest(unittest.TestCase):
                           'blocking_keys.py</span>\n└── .baltor/step.lock.json')
         problems = hero_result_problems(before, self.items, harmful)
         self.assertEqual(problems, ["the step folder shows lib/blocking_keys.py, which the download of "
-                                    "find_duplicate_records_with_blocking_keys does not deliver"])
+                                    "orient_on_a_task_and_write_its_contracts does not deliver"])
         self.assertTrue(any(problem.startswith("the hero directory shows the parts") for problem in hero_problems(before)))
-        skill = ".claude/skills/find-duplicate-records-with-blocking-keys/"
+        skill = ".claude/skills/orient-on-a-task-and-write-its-contracts/"
         extra = _planted(self.page, 'SKILL.md</span>\n├── <span data-hero-part="tools"',
                          'SKILL.md</span>\n│       └── <span data-demo-path="' + skill + 'scripts/dedupe.py">dedupe.py</span>\n'
                          '├── <span data-hero-part="tools"')
@@ -569,18 +571,18 @@ class HomepageHeroTest(unittest.TestCase):
         # KNOWN_WRONG, the owner's constraint of September 24, 2026: assembly for each step stated as what Baltor does today, as a
         # label beside the directory, as a sentence of the introduction, and as a note that no longer says the engine is built to.
         for planted in (_planted(self.page, '<p class="hero-directory-note"', '<p>Assembled for this step.</p><p class="hero-directory-note"'),
-                        _planted(self.page, "rebuilding by hand.</p>",
-                                 "rebuilding by hand. Baltor assembles one for every step.</p>"),
-                        _planted(self.page, "The local engine is built to assemble a directory", "The local engine assembles a directory")):
+                        _planted(self.page, '<p class="hero-subhead">',
+                                 '<p class="hero-subhead">Baltor assembles one for every step. '),
+                        _planted(self.page, "The Baltor Harness is built to assemble a folder", "The Baltor Harness assembles a folder")):
             with self.subTest(planted=len(planted)):
                 self.assertTrue(any("current capability" in problem for problem in hero_problems(planted)))
 
     def test_the_homepage_links_three_demonstrations_start_to_finish(self):
         self.assertEqual(demonstration_problems(self.page, self.served), [])
         # KNOWN_WRONG: a demonstration that opens a page this service does not serve, and a missing demonstration.
-        unserved = demonstration_problems(_planted(self.page, 'href="/demo/kaggle" data-page="demo-kaggle"', 'href="/demo/kaggle-2026" data-page="demo-kaggle"'), self.served)
-        self.assertIn("the kaggle demonstration links /demo/kaggle-2026, which this service does not serve", unserved)
-        self.assertEqual(len(demonstration_problems(_planted(self.page, 'data-demo-card="overnight"', 'data-demo-card="retired"'), self.served)), 1)
+        unserved = demonstration_problems(_planted(self.page, 'href="/setup#openapi-connect"', 'href="/missing-api-guide"'), self.served)
+        self.assertIn("the api demonstration links /missing-api-guide, which this service does not serve", unserved)
+        self.assertEqual(len(demonstration_problems(_planted(self.page, 'data-demo-card="creative"', 'data-demo-card="retired"'), self.served)), 1)
 
     def test_the_study_reader_finds_the_harmful_item_and_nothing_else(self):
         harmful = recorded_harm()

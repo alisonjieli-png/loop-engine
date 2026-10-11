@@ -15,11 +15,10 @@ import unicodedata
 from loop_engine.core.model_call_records import default_secret_patterns
 from loop_engine.core.service_runtime import feed_source_collections as collections
 from loop_engine.core.service_runtime.catalogue_bundle import strict_json
-from .engines import clean_title
 
-REQUEST = "agent_feed_reading_profile_request/v1"
-PROFILE = "agent_feed_reading_profile/v1"
-BUILDER_VERSION = "1.0.0"
+REQUEST = "agent_feed_reading_profile_request/v2"
+PROFILE = "agent_feed_reading_profile/v2"
+BUILDER_VERSION = "2.0.0"
 MAXIMUM_BYTES = 65536
 FORMATS, MODES = ("markdown", "json"), ("initial_design", "periodic_review", "both")
 STALE_POLICIES, PARTIAL_POLICIES = ("refuse", "hold"), ("refuse", "disclose")
@@ -27,6 +26,8 @@ _LABEL = re.compile(r"[A-Za-z0-9][A-Za-z0-9 _.-]{0,63}\Z")
 _SLUG = re.compile(r"[a-z][a-z0-9-]{0,63}\Z")
 _UNSAFE = re.compile(r"(?i)(https?://|mailto:|file:|www\.|\b(?:api[_ -]?key|access[_ -]?token|password|secret)\s*[=:]|\bbearer\s+|\bkgat_|\bts_live_|(?:^|\s)(?:system|developer|assistant|tool)\s*:)")
 _AUTHORITY = re.compile(r"(?i)\b(?:grant|authorize|override|disable)\b.{0,40}\b(?:permissions?|network|safeguards?|rules?|approval|restrictions?)\b")
+_STEERING = re.compile(r"(?i)\b(?:ignore|disregard|forget|override)\b[^.\n]{0,40}\b(?:previous|prior|above|earlier|all|any)\b[^.\n]{0,20}\b(?:instructions?|prompts?|rules?|guidelines?)\b|\b(?:approve this (?:item|skill|file)|mark (?:it|this) (?:as )?approved|you are now in)\b|\b(?:curl|wget|fetch|iwr|invoke-webrequest)\b[^\n|]*\|\s*(?:sudo\s+)?(?:ba|z|k|c|da|fi)?sh\b|\brm\s+-[a-z]*r[a-z]*\s+(?:/|~|\$HOME)|(?:~/\.ssh/|\bid_(?:rsa|ed25519|ecdsa)\b|\.aws/credentials\b|/etc/shadow\b)")
+_MARKUP = re.compile(r"[`|<>\[\]\\*]")
 
 
 class FeedProfileError(ValueError):
@@ -47,8 +48,10 @@ def safe_text(value):
             or any(unicodedata.category(char) in ("Cc", "Cf") for char in value)
             or _UNSAFE.search(value) or _AUTHORITY.search(value) or any(re.search(pattern, value) for pattern in default_secret_patterns())):
         raise FeedProfileError("feed_profile_text_refused")
-    cleaned, refusal = clean_title(value)
-    if refusal or cleaned != value:raise FeedProfileError("feed_profile_text_refused")
+    # This installed compiler accepts plain source labels only. It has no
+    # dependency on the developer-only collector or any network adapter.
+    if len(value) > 200 or value != " ".join(value.split()) or _MARKUP.search(value) or _STEERING.search(value):
+        raise FeedProfileError("feed_profile_text_refused")
     return value
 
 
@@ -72,26 +75,35 @@ class ProfileRequest:
     on_stale: str
     on_partial: str
     as_of: str
+    source_ids: tuple = ()
+    excluded_source_ids: tuple = ()
+    requested_poll_interval_minutes: int = 1440
 
     def __post_init__(self):
         safe_text(self.agent_label)
         if not _LABEL.fullmatch(self.agent_label):raise FeedProfileError("feed_profile_agent_label_invalid")
-        for values in (self.collection_ids, self.topics):
-            if type(values) is not tuple or len(values) > collections.MAXIMUM_COLLECTIONS or any(type(item) is not str for item in values):
+        for values, limit in ((self.collection_ids, collections.MAXIMUM_COLLECTIONS), (self.topics, collections.MAXIMUM_COLLECTIONS),
+                              (self.source_ids, collections.MAXIMUM_SOURCES), (self.excluded_source_ids, collections.MAXIMUM_SOURCES)):
+            if type(values) is not tuple or len(values) > limit or any(type(item) is not str for item in values):
                 raise FeedProfileError("feed_profile_selection_invalid")
             if len(values) != len(set(values)):raise FeedProfileError("feed_profile_duplicate_selection")
-        if not (self.collection_ids or self.topics):raise FeedProfileError("feed_profile_selection_required")
+        if not (self.collection_ids or self.topics or self.source_ids):raise FeedProfileError("feed_profile_selection_required")
         if any(not _SLUG.fullmatch(item) for item in self.collection_ids):raise FeedProfileError("feed_profile_collection_invalid")
+        if any(not _SLUG.fullmatch(item) for item in self.source_ids + self.excluded_source_ids):
+            raise FeedProfileError("feed_profile_source_invalid")
+        if set(self.source_ids) & set(self.excluded_source_ids):raise FeedProfileError("feed_profile_source_conflict")
         for topic in self.topics:safe_text(topic)
         if self.report_format not in FORMATS or self.mode not in MODES:raise FeedProfileError("feed_profile_output_mode_invalid")
         if self.on_stale not in STALE_POLICIES or self.on_partial not in PARTIAL_POLICIES:raise FeedProfileError("feed_profile_policy_invalid")
-        for value, low, high in ((self.max_items, 1, collections.MAXIMUM_SOURCES), (self.max_bytes, 1024, MAXIMUM_BYTES), (self.max_age_days, 0, 365)):
+        for value, low, high in ((self.max_items, 1, collections.MAXIMUM_SOURCES), (self.max_bytes, 1024, MAXIMUM_BYTES),
+                                 (self.max_age_days, 0, 365), (self.requested_poll_interval_minutes, 15, 10080)):
             if type(value) is not int or not low <= value <= high:raise FeedProfileError("feed_profile_limit_invalid")
         day(self.as_of)
 
     def record(self):
         value = asdict(self)
-        value.update(collection_ids=list(self.collection_ids), topics=list(self.topics))
+        for key in ("collection_ids", "topics", "source_ids", "excluded_source_ids"):
+            value[key] = list(value[key])
         return {"record_type": REQUEST, **value}
 
 
@@ -99,7 +111,7 @@ def read_request(value):
     if type(value) is not dict or value.get("record_type") != REQUEST or set(value) != set(ProfileRequest.__dataclass_fields__) | {"record_type"}:
         raise FeedProfileError("feed_profile_request_contract")
     fields = {key: item for key, item in value.items() if key != "record_type"}
-    for name in ("collection_ids", "topics"):
+    for name in ("collection_ids", "topics", "source_ids", "excluded_source_ids"):
         if type(fields[name]) is not list:raise FeedProfileError("feed_profile_selection_invalid")
         fields[name] = tuple(fields[name])
     return ProfileRequest(**fields)
@@ -117,7 +129,8 @@ def inventory(directory=None):
     return {"source_record_type": collections.RECORD_TYPE, "directory_digest": data.digest,
             "topics": list(dict.fromkeys(safe_text(item.group) for item in data.collections)),
             "collections": [{"id": item.id, "title": safe_text(item.title), "topic": safe_text(item.group),
-                             "source_references": len(item.source_ids)} for item in data.collections]}
+                             "source_references": len(item.source_ids), "source_ids": list(item.source_ids)} for item in data.collections],
+            "sources": [{"id": item.id, "name": safe_text(item.name), "kind": item.kind} for item in data.sources]}
 
 
 def freshness(request, data, as_of):
@@ -136,11 +149,21 @@ def build(request, directory=None):
     groups = {item.group for item in data.collections}
     if not set(request.collection_ids) <= set(by_collection):raise FeedProfileError("feed_profile_unknown_collection")
     if not set(request.topics) <= groups:raise FeedProfileError("feed_profile_unknown_topic")
+    if not set(request.source_ids + request.excluded_source_ids) <= set(by_source):
+        raise FeedProfileError("feed_profile_unknown_source")
     selected = list(request.collection_ids)
     for topic in request.topics:
         for item in data.collections:
             if item.group == topic and item.id not in selected:selected.append(item.id)
     source_ids = list(dict.fromkeys(source_id for key in selected for source_id in by_collection[key].source_ids))
+    source_ids = list(dict.fromkeys([*source_ids, *request.source_ids]))
+    source_ids = [key for key in source_ids if key not in request.excluded_source_ids]
+    if not source_ids:raise FeedProfileError("feed_profile_empty_selection")
+    # A directly chosen source keeps the research questions of its owning
+    # collections; those collections still cannot add other source identities.
+    for item in data.collections:
+        if any(key in request.source_ids for key in item.source_ids) and item.id not in selected:
+            selected.append(item.id)
     if not set(source_ids) <= set(by_source):raise FeedProfileError("feed_profile_source_withdrawn")
     partial = len(source_ids) > request.max_items
     if partial and request.on_partial == "refuse":raise FeedProfileError("feed_profile_partial_selection_refused")
@@ -164,6 +187,8 @@ def build(request, directory=None):
         "freshness": freshness(request, data, request.as_of),
         "limits_scope": "curated_source_references_and_combined_profile_files",
         "effects_granted": [], "automatic_tool_execution": False, "scheduled": False, "hosted_settings_saved": False}
+    profile["client_reading_preference"] = {"requested_poll_interval_minutes": request.requested_poll_interval_minutes,
+        "schedule_owner": "customer_harness", "activation": "requires_separate_harness_configuration"}
     profile["profile_digest"] = digest(profile)
     return profile
 
@@ -185,7 +210,7 @@ def validate(value, *, as_of, directory=None):
     except (ValueError, TypeError, RecursionError):same = False
     if not same:raise FeedProfileError("feed_profile_content_mismatch")
     current = freshness(request, data, as_of)
-    return {"record_type": "agent_feed_profile_check/v1", "profile_digest": value["profile_digest"],
+    return {"record_type": "agent_feed_profile_check/v2", "profile_digest": value["profile_digest"],
             "status": "needs_source_docs_recheck" if current["source_documentation_status"] == "stale" else "validated_source_profile",
             "freshness": current, "partial_selection": value["coverage"]["partial_selection"], "live_research_items": False,
             "effects_granted": [], "hosted_settings_saved": False}
@@ -210,6 +235,7 @@ def instructions(profile):
         f"Documentation checked: {profile['source_directory']['source_docs_checked_on']}; profile reference date: {request['as_of']}.",
         f"Active references: {coverage['active_source_count']} of {coverage['requested_source_count']}; omitted: {coverage['omitted_source_count']}.",
         f"Limits: {request['max_items']} distinct source references and {request['max_bytes']} combined profile-file bytes. These are not counts or budgets for collected articles.", "",
+        f"Requested client reading interval: {request['requested_poll_interval_minutes']} minutes. Configure this separately in your harness; this file starts no timer.", "",
         "Use only the source IDs listed below. Collection downloads may contain additional references; they are outside this selection. Disclose omitted, unavailable or unverified evidence instead of claiming complete coverage.", ""]
     for item in profile["collections"]:
         lines.extend(["### " + item["id"], "", "Collection path: " + item["collection_path"],
@@ -223,3 +249,20 @@ def instructions(profile):
         lines += ["## Periodic review", "", "When a review is separately requested, compare new dated evidence with the recorded decision and baseline. Report what changed, what remains unverified and whether a bounded test would justify revisiting the decision. A trigger description does not create a timer.", ""]
     lines += ["## Requested review output", "", "Output format: " + request["report_format"] + ". Include the decision, constraints, source IDs, evidence dates, alternatives, uncertainty, missing/partial coverage and the next check. A documentation date is not an upstream article date or a current benchmark result.", ""]
     return "\n".join(lines).encode("utf-8")
+
+
+def compile_files(request, directory=None):
+    """Return exact native files and their existing catalogue package metadata."""
+    from .catalogue_packages import CataloguePackage, CataloguePackageFile
+    profile = build(request, directory)
+    bodies = {"profile.json": (json.dumps(profile, ensure_ascii=False, sort_keys=True, indent=2) + "\n").encode(),
+              "READING.md": instructions(profile)}
+    total = sum(map(len, bodies.values()))
+    if total > request.max_bytes:raise FeedProfileError("feed_profile_bundle_byte_limit")
+    entries = [CataloguePackageFile(name, sha256(body).hexdigest(), len(body),
+        "application/json" if name == "profile.json" else "text/markdown",
+        "configuration" if name == "profile.json" else "instruction_file").to_dict() for name, body in bodies.items()]
+    package = CataloguePackage.from_dict({"body_form": "package", "files": entries})
+    return profile, bodies, {"package": package.to_dict(), "package_digest": package.package_digest,
+                            "payload_files": len(bodies), "payload_bytes": total, "executable": package.executable,
+                            "approved": False, "published": False}

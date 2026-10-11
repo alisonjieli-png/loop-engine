@@ -8,6 +8,27 @@
  },
  "execution": [
   {
+   "acceptance": "The new shared design, plan labels, gallery, connection workflow and customer feed builder work on the deployed exact CI-passed revision, with customer boundaries and every existing route preserved.",
+   "comment": "Basic, Pro and Max are plan names; Agent Feeds, Harness Files and Overnight / AFK Work remain features. Max's scoped public preview does not claim hosted execution or activate a paid checkout. The owner explicitly prioritizes the design release over the longer migration and factory programme.",
+   "complete": false,
+   "completion_status": "published",
+   "depends_on": [],
+   "evidence": "Four interrupted worktrees have exact private patches and archives. Combined billing/delivery/OAuth checks pass 296 tests; Connect/customer-delivery/run-desk checks pass 52; integrated feed checks pass 71. The design's dedicated browser pass covers 143 checks; final full-tree verification is pending.",
+   "id": "S-6.35.03",
+   "next_action": "Finish the website agent's integrated browser checks and the independent all-omitted MCP metering repair, then run final gates and deploy.",
+   "owner_step": "S-6.35",
+   "procedure": [
+    "Preserve and identify every source worktree before integrating its reviewed changes.",
+    "Keep the existing typed service edges; verify delivery, metering, OAuth, feed isolation and browser interactions with wrong controls.",
+    "Review every public route in both themes and at phone and desktop widths.",
+    "Commit and push the exact candidate, await its CI, dispatch the guarded application deployment once and refresh Cloudflare from that revision.",
+    "Verify live bytes, browser journeys and all product hostnames; record image, rollback and remaining capability limits."
+   ],
+   "status": "building",
+   "title": "Integrate the new design and interrupted fixes into the live website",
+   "waiting_on": []
+  },
+  {
    "acceptance": "The homepage and pricing page show three visually distinct offerings outside the hero, with working actions and truthful current price and execution scope.",
    "comment": "No third paid hosted service or new billing price is activated by a card layout.",
    "complete": true,
@@ -498,6 +519,27 @@
    "waiting_on": [
     "S-6.214.06"
    ]
+  },
+  {
+   "acceptance": "A customer chooses collections, includes and excludes individual sources, sets a reading interval, and downloads exact JSON and Markdown for each agent through the live website.",
+   "comment": "Profiles are customer-owned files. Hosted saved assignments, opt-in private scopes and personalized event delivery remain in S-6.214.10 and S-6.214.11.",
+   "complete": false,
+   "completion_status": "live_qualified",
+   "depends_on": [],
+   "evidence": "53 focused tests, 26 HTTP web checks and 21 browser checks passed in the source worktree. Root's merged feed/delivery check population passed 71 tests.",
+   "id": "S-6.214.12",
+   "next_action": "Integrate the checked builder with the new design, deploy and verify both agents' downloaded files against their selections.",
+   "owner_step": "S-6.214",
+   "procedure": [
+    "Compile the website and CLI through one versioned profile contract pinned to the source directory.",
+    "Keep source selection independent between agents and invalidate downloads after edits.",
+    "Bound input size, preserve source rights and freshness labels, and verify file digests in the browser.",
+    "Test malformed input, changed directory, two-agent isolation and desktop/mobile interactions.",
+    "Deploy and repeat the real customer download path; distinguish a requested interval from an activated scheduler."
+   ],
+   "status": "building",
+   "title": "Let customers build a distinct reading profile for each agent",
+   "waiting_on": []
   },
   {
    "acceptance": "Two customers and two agents can create, change and revoke isolated feed definitions.",
@@ -1284,7 +1326,7 @@
  ],
  "execution_counts": {
   "complete": 15,
-  "total": 60
+  "total": 62
  },
  "lanes": {
   "blocked": [
@@ -6722,5 +6764,134 @@
  ],
  "record_type": "development_tracker/v2",
  "source": "docs/roadmap/roadmap.yaml",
- "source_fingerprint": "sha256:895f4e90e16baf0a07028a266cbae9bece7832b6f64392f1e4dbe8c3c7a81cb7"
+ "source_fingerprint": "sha256:8b77f2bdcdd05162104275a64d9e3e6c99ea7ff6e267b22ef2588be064051ec3",
+ "working_schedule": {
+  "blocks": [
+   {
+    "complete": false,
+    "duration_hours": 3,
+    "ends_at": "2026-10-09T23:09:03+00:00",
+    "offset_hours": 0,
+    "owner": "Website and release",
+    "starts_at": "2026-10-09T20:09:03+00:00",
+    "status": "building",
+    "task": "S-6.35.03",
+    "title": "Integrate the new design and interrupted fixes into the live website"
+   },
+   {
+    "complete": false,
+    "duration_hours": 3,
+    "ends_at": "2026-10-09T23:09:03+00:00",
+    "offset_hours": 0,
+    "owner": "Website and release",
+    "starts_at": "2026-10-09T20:09:03+00:00",
+    "status": "ready",
+    "task": "S-6.67.01",
+    "title": "Review the complete public page and design surface"
+   },
+   {
+    "complete": false,
+    "duration_hours": 3,
+    "ends_at": "2026-10-09T23:09:03+00:00",
+    "offset_hours": 0,
+    "owner": "Customer feeds",
+    "starts_at": "2026-10-09T20:09:03+00:00",
+    "status": "building",
+    "task": "S-6.214.12",
+    "title": "Let customers build a distinct reading profile for each agent"
+   },
+   {
+    "complete": false,
+    "duration_hours": 4,
+    "ends_at": "2026-10-10T03:09:03+00:00",
+    "offset_hours": 3,
+    "owner": "Cloudflare migration",
+    "starts_at": "2026-10-09T23:09:03+00:00",
+    "status": "ready",
+    "task": "S-6.13.01",
+    "title": "Qualify authenticated R2 file delivery"
+   },
+   {
+    "complete": false,
+    "duration_hours": 2,
+    "ends_at": "2026-10-09T22:09:03+00:00",
+    "offset_hours": 0,
+    "owner": "Cloudflare migration",
+    "starts_at": "2026-10-09T20:09:03+00:00",
+    "status": "ready",
+    "task": "S-6.13.03",
+    "title": "Evaluate the customer authentication boundary"
+   },
+   {
+    "complete": false,
+    "duration_hours": 4,
+    "ends_at": "2026-10-10T07:09:03+00:00",
+    "offset_hours": 7,
+    "owner": "Cloudflare migration",
+    "starts_at": "2026-10-10T03:09:03+00:00",
+    "status": "proposed",
+    "task": "S-6.13.02",
+    "title": "Place bounded collectors and durable jobs on Cloudflare"
+   },
+   {
+    "complete": false,
+    "duration_hours": 12,
+    "ends_at": "2026-10-10T08:09:03+00:00",
+    "offset_hours": 0,
+    "owner": "Component factory",
+    "starts_at": "2026-10-09T20:09:03+00:00",
+    "status": "building",
+    "task": "S-6.215.13",
+    "title": "Measure and broaden production capacity"
+   },
+   {
+    "complete": false,
+    "duration_hours": 4,
+    "ends_at": "2026-10-10T03:09:03+00:00",
+    "offset_hours": 3,
+    "owner": "Sources and API operations",
+    "starts_at": "2026-10-09T23:09:03+00:00",
+    "status": "building",
+    "task": "S-6.214.03",
+    "title": "Normalize the supplied provider operations"
+   },
+   {
+    "complete": false,
+    "duration_hours": 3,
+    "ends_at": "2026-10-09T23:09:03+00:00",
+    "offset_hours": 0,
+    "owner": "History and evidence",
+    "starts_at": "2026-10-09T20:09:03+00:00",
+    "status": "building",
+    "task": "S-6.217.01",
+    "title": "Reconcile recent prompts and action history"
+   },
+   {
+    "complete": false,
+    "duration_hours": 5,
+    "ends_at": "2026-10-10T04:09:03+00:00",
+    "offset_hours": 3,
+    "owner": "Launch and funding",
+    "starts_at": "2026-10-09T23:09:03+00:00",
+    "status": "ready",
+    "task": "S-6.204.02",
+    "title": "Prepare launch, funding and startup-credit material"
+   },
+   {
+    "complete": false,
+    "duration_hours": 4,
+    "ends_at": "2026-10-10T06:09:03+00:00",
+    "offset_hours": 6,
+    "owner": "Customer outcomes",
+    "starts_at": "2026-10-10T02:09:03+00:00",
+    "status": "ready",
+    "task": "S-6.204.01",
+    "title": "Measure onboarding and product use"
+   }
+  ],
+  "horizon_hours": 12,
+  "note": "October 9 active iteration. The new design is the first release priority. Parallel work has one named owner per boundary. The twelve-hour factory is a bounded production attempt toward one million additional useful files; only qualified, admitted, reconciled and actually served distinct digests count toward the ten-million target. Dates are planning windows, not promises of publication.",
+  "record_type": "development_working_schedule/v1",
+  "starts_at": "2026-10-09T20:09:03Z"
+ }
 }

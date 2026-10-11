@@ -6,14 +6,22 @@ credentials are not persisted in these records.
 """
 from __future__ import annotations
 
-from dataclasses import dataclass, field
+from dataclasses import asdict, dataclass, field
 import math
 import re
 
-from .records import ServiceRuntimeError, identifier, text
+from .records import ServiceRuntimeError, canonical, digest, identifier, text
 
 WEBHOOK_VERSION = "stripe_webhook_configuration/v1"
 POLICY_VERSION = "stripe_entitlement_policy/v1"
+STORED_POLICY_VERSION = "service_billing_policy/v1"
+COMPATIBLE_POLICY_VERSION = "service_billing_policy/v2"
+STORED_POLICY_VERSIONS = (STORED_POLICY_VERSION, COMPATIBLE_POLICY_VERSION)
+#: Compatibility is a bounded proof inside the existing policy record, not a
+#: scan of grants or an unbounded chain of old policy identities. Exhaustion
+#: refuses before writing; it never drops evidence that still protects access.
+MAXIMUM_COMPATIBLE_POLICIES = 64
+MAXIMUM_COMPATIBLE_POLICY_BYTES = 262_144
 CUSTOMER_PROJECTION_VERSION = "stripe_customer_projection/v1"
 CUSTOMER_OBJECT = "customer"
 CUSTOMER_IDENTITY_PREFIX = "cus_"
@@ -85,6 +93,91 @@ class StripeEntitlementPolicy:
             raise ServiceRuntimeError("duplicate_price_identity")
         for price in self.allowed_price_ids:
             identifier(price, "Stripe Price")
+
+
+def is_price_only_addition(previous, proposed):
+    """True only for a strict Price-ID superset with every other term exact."""
+    if not isinstance(previous, StripeEntitlementPolicy) or not isinstance(proposed, StripeEntitlementPolicy):
+        raise ServiceRuntimeError("invalid_billing_policy")
+    before, after = asdict(previous), asdict(proposed)
+    old_prices, new_prices = set(before.pop("allowed_price_ids")), set(after.pop("allowed_price_ids"))
+    return before == after and old_prices < new_prices
+
+
+def _policy_proof(value):
+    """Read full policy content and verify its digest, never trust a digest list."""
+    if not isinstance(value, dict) or set(value) != {"policy", "policy_digest"}:
+        raise ServiceRuntimeError("invalid_billing_policy_proof")
+    encoded = value["policy"]
+    if (not isinstance(encoded, dict) or set(encoded) != {"record_type", "allowed_price_ids", "allow_trialing"}
+            or not isinstance(encoded["allowed_price_ids"], (list, tuple))):
+        raise ServiceRuntimeError("invalid_billing_policy_proof")
+    for price in encoded["allowed_price_ids"]:
+        if type(price) is not str:
+            raise ServiceRuntimeError("invalid_billing_policy_proof")
+        try:
+            identifier(price, "Stripe Price")
+        except ServiceRuntimeError:
+            raise ServiceRuntimeError("invalid_billing_policy_proof") from None
+    policy = StripeEntitlementPolicy(**encoded)
+    if value["policy_digest"] != digest(asdict(policy)):
+        raise ServiceRuntimeError("invalid_billing_policy_proof")
+    return policy
+
+
+def read_stored_billing_policy(value):
+    """Read the current v1 policy or the explicit bounded v2 compatibility record.
+
+    Version 1 remains the current stored input for a deliberate migration.
+    Version 2 is produced only by a qualified additive change. Older images
+    refuse v2 rather than silently losing the meaning of preserved grants.
+    """
+    if not isinstance(value, dict) or value.get("record_type") not in STORED_POLICY_VERSIONS:
+        raise ServiceRuntimeError("unsupported_billing_policy_record")
+    compatible = value["record_type"] == COMPATIBLE_POLICY_VERSION
+    fields = {"record_type", "policy", "policy_digest"} | ({"compatible_policies"} if compatible else set())
+    if set(value) != fields:
+        raise ServiceRuntimeError("invalid_billing_policy_proof")
+    current = _policy_proof({name: value[name] for name in ("policy", "policy_digest")})
+    if not compatible:
+        return current, ()
+    evidence = value["compatible_policies"]
+    if (not isinstance(evidence, list) or not 1 <= len(evidence) <= MAXIMUM_COMPATIBLE_POLICIES
+            or len(canonical(value).encode("utf-8")) > MAXIMUM_COMPATIBLE_POLICY_BYTES):
+        raise ServiceRuntimeError("billing_policy_compatibility_bound")
+    policies, seen = [], set()
+    for proof in evidence:
+        prior = _policy_proof(proof)
+        if proof["policy_digest"] in seen or not is_price_only_addition(prior, current):
+            raise ServiceRuntimeError("invalid_billing_policy_proof")
+        seen.add(proof["policy_digest"])
+        policies.append(prior)
+    return current, tuple(policies)
+
+
+def additive_billing_policy_record(previous, proposed):
+    """A self-contained proof that prior grants retain the same allowed terms.
+
+    Only the policy record changes, under its exact revision precondition.
+    A grant committed immediately before that change is covered without a
+    query-range lock. A writer still in flight holds the old policy revision
+    and its existing atomic guard refuses the stale write.
+    """
+    current, ancestors = read_stored_billing_policy(previous)
+    if not is_price_only_addition(current, proposed):
+        raise ServiceRuntimeError("billing_policy_not_price_addition")
+    records = [{"policy": asdict(policy), "policy_digest": digest(asdict(policy))}
+               for policy in (*ancestors, current)]
+    value = {"record_type": COMPATIBLE_POLICY_VERSION, "policy": asdict(proposed),
+             "policy_digest": digest(asdict(proposed)), "compatible_policies": records}
+    read_stored_billing_policy(value)
+    return value
+
+
+def billing_policy_accepts_grant(value, policy_digest):
+    """Compatibility changes no grant, expiry, tenant, revocation or payment state."""
+    current, ancestors = read_stored_billing_policy(value)
+    return any(policy_digest == digest(asdict(policy)) for policy in (current, *ancestors))
 
 
 @dataclass(frozen=True)

@@ -182,7 +182,7 @@ class FilePopulationTests(unittest.TestCase):
         self.assertIn('<span class="lib-total">3</span> <span class="lib-title-words">files, ready for your harness', html)
         self.assertIn("3 distinct files. Identical shared files are counted once.", html)
         self.assertIn("Technical grouping by kind", html)
-        self.assertIn('<th scope="col" class="lib-num">Packages</th>', html)
+        self.assertIn('<th scope="col" class="lib-num">Items</th>', html)
         # Four placements share one exact file; the unapproved candidate stays out.
         changed = self.view.without({("beta", self.packages["beta"].served_digest)}, state_revision=1)
         html = library_body(replace(changed, body_reader=lambda _item: "Allowed fixture sample"))

@@ -2,7 +2,7 @@
 
 Kind: product architecture with measured local implementation and proposed hosting.
 Date: 2026-09-19. The [current deployment](#current-deployment) section was
-added on 2026-09-20 and last checked on 2026-10-09, after Fly release 85.
+added on 2026-09-20 and last checked on 2026-10-11, with Fly release 86 live.
 
 The hosted product manages accounts, subscriptions, and access to intelligence.
 The customer runs Loop Engine and the selected harnesses. A hosted intelligence
@@ -48,31 +48,30 @@ section. Update this section in the same change that records a new release.
 Public registration is enabled. The site offers the existing monthly plan;
 these deployment checks alone do not establish a fully qualified paid service.
 
-The running image is Fly release 85, from
-`c948a9aa08b0ee6890c9abf70d5992f161711bee`, image
-`sha256:4801fdb6ac7ae15d50e786f46b3a2d243af3cac1099d79b91ff43905ff42449b`.
-Exact CI `37940684057` and guarded deployment `37943750820` passed; the gate
-is closed. On a fresh worktree of that revision the full local browser suite
-passed 977 checks and all 197 mutants, the offering matrix 483 checks and the
-service smoke 766 checks. The live offering/layout matrix passed 483 checks.
+The running image is Fly release 86, from
+`ae11db3fcb0ead1745370f96299accf83c69a5dd`, image
+`sha256:7696ff57dc09157585f75392e20cc5b843923c0f2767d55271a030839d182ecf`.
+Exact CI `37958348120` and guarded deployment `37975131768` passed; the gate
+is closed. The first deployment attempt, `37973854261`, failed at the image
+registry before changing the application. Its separate failure record remains.
+The exact local browser suite passed 977 checks and all 197 mutants.
 Independent read-only review passed 426 checks across 68 desktop/phone views
-on all ten hosts, including twenty Terms comparisons unchanged since release
-84. The all-host pulse passed fifty reads with no slow response. A fresh full
-public route audit passed 67 pages, 277 views and 419 links. It checks
-rendering and navigation, not every authenticated journey or marketing claim.
-Release 85 makes the offer clearer on the homepage and pricing page, shows
-three ways to connect a harness on the setup page, organizes Agent Feeds per
-agent with 19 collections (six new, backed by 32 checked sources) and fixes
-copy on several pages. Release 84 earlier corrected the overnight copy that
-the release-83 review found overstated.
+on all ten hosts. The all-host pulse passed fifty reads. A full public route
+audit passed 68 pages, 281 views and 449 links. The October 11 live offering
+matrix passed 483 checks. These checks cover their stated public routes and
+states, not every authenticated journey or marketing claim.
+Release 86 adds the ChatGPT app presentation, the support page, documented
+OAuth callback routes and issuer identification, and directory updates.
+The Claude-export redesign is in the next release candidate and is not yet
+established by this deployment record.
 
 All nine product hostnames now serve public assets through Cloudflare and
 forward dynamic requests to Fly. The technical Fly hostname remains a direct
-fallback. Export `04d74cbc354d...` contains 2,556 files, all verified on
+fallback. Export `97954b43cea23ab07681ccb6b9e434dc0531dd38deefb95b32846f4b0e35b066` contains 2,553 files, all verified on
 `baltor.ai` against their exact bodies and required headers. It is refreshed
 from the deployed revision after each catalogue publication, so the homepage
-shows the 1,560,856 files served now. It reads the live
-population, so the homepage shows the 1,473,065 files served now. Disable proxying on the saved DNS
+shows the 1,560,856 files served now. The October 11 capabilities read confirms
+that population. Disable proxying on the saved DNS
 records to recover the direct paths; do not delete the routes or resources.
 
 The homepage and pricing page show three distinct cards: Agent Feeds,
@@ -86,17 +85,16 @@ The owner-approved flexible pricing clause is live in Terms section 6, dated
 October 8; all other sections and privacy text are unchanged. It refers to
 checkout terms, protects paid periods and preserves notice, consent and
 cancellation. The amendment alone changes no subscription price.
-Thirteen curated decision-source
-collections and a live catalogue specimen are available. Local per-agent
+Curated decision-source collections and a live catalogue specimen are available. Local per-agent
 reading profiles are implemented; hosted saved preferences, agent assignments
 and personalized research delivery remain unfinished. The proposed Supervised
-Runs tier is not active. The [release record](../../artifacts/architecture-audit-2026-09-19/pilot-release-85.json)
+Runs tier is not active. The [release record](../../artifacts/architecture-audit-2026-09-19/pilot-release-86.json)
 binds the application, public export, live checks and separate follow-ups.
-Release 84 is the compatible image rollback, at
-`sha256:c6d1532de4dff5dfbe8330c667b3e4a5cd216332c78a6c6c6dc1f1f12ee3caa6`,
-with export `7d2c719ca8ab...` as the edge rollback. The model-directory data
-refresh `a77744aa` reached main after this release was built and goes out
-with the next one; the edge export uses the deployed revision.
+Release 85 is the compatible image rollback, at
+`sha256:4801fdb6ac7ae15d50e786f46b3a2d243af3cac1099d79b91ff43905ff42449b`,
+with export `cad2ab154429fc50ca3ea92adad48c42c9386ecd46f2dde12944243872ee2f51`
+as the edge rollback. Later directory refreshes on main go out with the next
+application release; the edge export uses the deployed revision.
 This source includes the model-directory refresh, repaired private supply
 journals, isolated constraint-case generation, bounded overnight operator and
 account handoff. Available local overnight tools are labelled Preview, with

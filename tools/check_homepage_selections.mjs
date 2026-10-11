@@ -10,8 +10,8 @@ const remote=process.argv[3];if(remote&&new URL(remote).origin!==remote)throw Er
 const refs=new Map(JSON.parse(readFileSync(resolve(root,'examples/29_intelligence_service/starter-catalogue/host-release/manifest.json'))).items.map(row=>[row.reference.identity,row.reference]));
 const skillRoots=JSON.parse(readFileSync(resolve(root,'integrations/baltor-library/release.json'))).native_skill_folders;
 const profiles={"claude-code":['CLAUDE.md','.mcp.json'],codex:['AGENTS.md','.codex/config.toml'],opencode:['AGENTS.md','opencode.json'],pi:['AGENTS.md','.pi/baltor.json'],"baltor-harness":['task.md',null]};
-const tasks={dedupe:['find_duplicate_records_with_blocking_keys','step-3-find-duplicates'],overnight:['read_the_train_validation_gap','step-2-close-the-validation-gap'],handoff:['report_observed_derived_assumed_and_unknown','step-5-report-the-result']};
-const evidence={dedupe:['recorded_catalogue','Recorded starter-catalogue results','/docs/searching-and-retrieving','recorded','Packaged bytes match'],
+const tasks={api:['orient_on_a_task_and_write_its_contracts','step-1-plan-api-integration'],overnight:['read_the_train_validation_gap','step-2-close-the-validation-gap'],handoff:['report_observed_derived_assumed_and_unknown','step-5-report-the-result']};
+const evidence={api:['recorded_catalogue','Recorded starter-catalogue results','/docs/searching-and-retrieving','recorded','Packaged bytes match'],
  overnight:['worked_example','Worked example: starter-catalogue references','/demo/kaggle#kaggle-step-3-title','illustration','Illustrated download request'],
  handoff:['worked_example','Worked example: starter-catalogue references','/demo#task-step-5-title','illustration','Illustrated download request']};
 const checks=[],errors=[];let child,browser,lastPage,base=remote;
@@ -72,27 +72,27 @@ with TemporaryDirectory() as folder:
   path:node.querySelector('.hero-tree [data-demo-path]')?.dataset.demoPath}));
  for(const width of [1440,390]){
   await page.setViewportSize({width,height:1000});await page.goto(base+'/');
-  await page.waitForFunction(()=>document.querySelector('.hero-terminal')?.dataset.heroScenario==='dedupe');
+  await page.waitForFunction(()=>document.querySelector('.hero-terminal')?.dataset.heroScenario==='api');
   for(const from of Object.keys(profiles)){
    await page.locator(`[data-hero-harness="${from}"]`).click();
    for(const harness of Object.keys(profiles)){
     await page.locator(`[data-hero-harness="${harness}"]`).click();
-    for(const task of ['dedupe','overnight','handoff','dedupe','overnight']){
+    for(const task of ['api','overnight','handoff','api','overnight']){
      await page.locator(`button[data-hero-scenario="${task}"]`).click();
      const seen=await state();check('consistent_selection',valid(seen,harness,task),{width,from,harness,task,...seen});
     }
    }
   }
-  await page.reload();await page.waitForFunction(()=>document.querySelector('.hero-terminal')?.dataset.heroScenario==='dedupe');
-  check('reload_starts_coherently',valid(await state(),'claude-code','dedupe'),{width});
+  await page.reload();await page.waitForFunction(()=>document.querySelector('.hero-terminal')?.dataset.heroScenario==='api');
+  check('reload_starts_coherently',valid(await state(),'claude-code','api'),{width});
   const seen=await state();
-  check('known_wrong_profile_refused',!valid({...seen,harness:'codex'},'codex','dedupe'),{width});
-  check('known_wrong_read_refused',!valid({...seen,read:'wrong'},'claude-code','dedupe'),{width});
-  check('known_wrong_full_digest_refused',!valid({...seen,digest:'0'.repeat(64),expected:'0'.repeat(64)},'claude-code','dedupe'),{width});
-  check('known_wrong_visible_digest_refused',!valid({...seen,expectedShown:'00000000…'},'claude-code','dedupe'),{width});
-  check('known_wrong_evidence_class_refused',!valid({...seen,evidenceClass:'customer_run'},'claude-code','dedupe'),{width});
-  check('known_wrong_outcome_claim_refused',!valid({...seen,outcome:'17,000 rows in, 15,940 out'},'claude-code','dedupe'),{width});
-  check('known_wrong_evidence_link_refused',!valid({...seen,evidenceLink:'/pricing'},'claude-code','dedupe'),{width});
+  check('known_wrong_profile_refused',!valid({...seen,harness:'codex'},'codex','api'),{width});
+  check('known_wrong_read_refused',!valid({...seen,read:'wrong'},'claude-code','api'),{width});
+  check('known_wrong_full_digest_refused',!valid({...seen,digest:'0'.repeat(64),expected:'0'.repeat(64)},'claude-code','api'),{width});
+  check('known_wrong_visible_digest_refused',!valid({...seen,expectedShown:'00000000…'},'claude-code','api'),{width});
+  check('known_wrong_evidence_class_refused',!valid({...seen,evidenceClass:'customer_run'},'claude-code','api'),{width});
+  check('known_wrong_outcome_claim_refused',!valid({...seen,outcome:'17,000 rows in, 15,940 out'},'claude-code','api'),{width});
+  check('known_wrong_evidence_link_refused',!valid({...seen,evidenceLink:'/pricing'},'claude-code','api'),{width});
   await page.locator('button[data-hero-scenario="overnight"]').click();const worked=await state();
   check('known_wrong_recorded_label_on_worked_example_refused',valid(worked,'claude-code','overnight')
     &&!valid({...worked,evidenceLabel:'Recorded starter-catalogue results',evidenceClass:'recorded_catalogue'},'claude-code','overnight'),{width});
@@ -101,10 +101,10 @@ with TemporaryDirectory() as folder:
  const withoutScripts=await browser.newContext({javaScriptEnabled:false,viewport:{width:390,height:1000}});
  const initial=await withoutScripts.newPage();await initial.goto(base+'/');
  const expectedInitial=await initial.locator('[data-demo-expected-digest]').getAttribute('data-demo-expected-digest');
- check('static_download_digest_matches_selected_reference',expectedInitial===refs.get(tasks.dedupe[0]).digest
+ check('static_download_digest_matches_selected_reference',expectedInitial===refs.get(tasks.api[0]).digest
    &&await initial.locator('.hero-results .is-chosen [data-fact=digest]').textContent()===expectedInitial.slice(0,8));
  check('static_page_names_task_illustration_and_reference_scope',(await initial.locator('.hero-terminal').textContent()).includes('task outcome is illustrative')
-   &&await initial.locator('[data-hero-evidence-link]').getAttribute('href')===evidence.dedupe[2]);
+   &&await initial.locator('[data-hero-evidence-link]').getAttribute('href')===evidence.api[2]);
  await withoutScripts.close();
  check('no_browser_errors',errors.length===0,{errors});
 }catch(error){check('completed_sequence',false,{message:String(error),

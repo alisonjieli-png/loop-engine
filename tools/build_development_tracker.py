@@ -13,6 +13,7 @@ Outputs:
 from __future__ import annotations
 
 import argparse
+from datetime import datetime, timedelta, timezone
 import hashlib
 import json
 import sys
@@ -203,6 +204,7 @@ def build(raw: bytes) -> dict:
              for action in continuation.get("owner_actions") or ()]
 
     execution = _execution(roadmap, by_id)
+    schedule = working_schedule(continuation.get("working_schedule"), execution)
 
     return {
         "record_type": RECORD_TYPE,
@@ -215,8 +217,46 @@ def build(raw: bytes) -> dict:
         "packages": packages,
         "owner_actions": owner,
         "execution": execution,
+        "working_schedule": schedule,
         "execution_counts": {"total": len(execution), "complete": sum(row["complete"] for row in execution)},
     }
+
+
+def working_schedule(value, execution):
+    """A dated planning view over existing tasks, never another completion authority."""
+    if value is None:
+        return None
+    fields = {"record_type", "starts_at", "horizon_hours", "note", "blocks"}
+    if not isinstance(value, dict) or set(value) != fields or value["record_type"] != "development_working_schedule/v1":
+        raise TrackerError("unsupported working schedule")
+    try:
+        start = datetime.fromisoformat(value["starts_at"].replace("Z", "+00:00"))
+    except (ValueError, TypeError, AttributeError):
+        raise TrackerError("schedule start must be an explicit UTC timestamp") from None
+    if start.tzinfo is None or start.utcoffset() != timedelta(0):
+        raise TrackerError("schedule start must be UTC")
+    horizon = value["horizon_hours"]
+    if type(horizon) is not int or horizon < 1 or horizon > 336 or not isinstance(value["note"], str):
+        raise TrackerError("invalid schedule horizon or note")
+    if not isinstance(value["blocks"], list) or not value["blocks"]:
+        raise TrackerError("a working schedule needs blocks")
+    tasks = {row["id"]: row for row in execution}
+    blocks, seen = [], set()
+    for block in value["blocks"]:
+        if not isinstance(block, dict) or set(block) != {"task", "owner", "offset_hours", "duration_hours"}:
+            raise TrackerError("invalid schedule block")
+        name = block["task"]
+        if not isinstance(name, str) or name not in tasks or name in seen or not isinstance(block["owner"], str) or not block["owner"].strip():
+            raise TrackerError("schedule task must exist once with an owner")
+        offset, duration = block["offset_hours"], block["duration_hours"]
+        if any(type(number) is not int for number in (offset, duration)) or offset < 0 or duration < 1 or offset + duration > horizon:
+            raise TrackerError("schedule block exceeds its declared horizon")
+        seen.add(name)
+        task = tasks[name]
+        blocks.append({**block, "title": task["title"], "status": task["status"], "complete": task["complete"],
+                       "starts_at": (start + timedelta(hours=offset)).isoformat(),
+                       "ends_at": (start + timedelta(hours=offset + duration)).isoformat()})
+    return {**value, "blocks": blocks}
 
 
 def _cell(text) -> str:
@@ -239,6 +279,27 @@ def render(tracker: dict) -> str:
     ]
     for key, title in LANES:
         lines.append(f"| {title} | {tracker['counts'][key]} |")
+    schedule = tracker.get("working_schedule")
+    if schedule:
+        lines += ["", "## Active working window", "", schedule["note"], "",
+                  "The bars are planned work windows. Completion comes only from each task's acceptance and evidence.", "",
+                  "```mermaid", "gantt", "    title Current delivery window in UTC", "    dateFormat YYYY-MM-DDTHH:mm:ssZ",
+                  "    axisFormat %d %H:%M"]
+        owners = []
+        for block in schedule["blocks"]:
+            if block["owner"] not in owners:
+                owners.append(block["owner"])
+        for owner in owners:
+            lines.append("    section " + _cell(owner).replace(":", " "))
+            for index, block in enumerate(schedule["blocks"]):
+                if block["owner"] != owner:
+                    continue
+                tag = "done, " if block["complete"] else "active, " if block["status"] == "building" else ""
+                title = _cell(block["title"]).replace(":", " ").replace(";", " ")
+                lines.append(f"    {title} :{tag}work{index}, {block['starts_at']}, {block['duration_hours']}h")
+        lines += ["```", "", "| Task | Owner | Planned start UTC | Planned end UTC | Actual state |", "|---|---|---|---|---|"]
+        for block in schedule["blocks"]:
+            lines.append(f"| {block['task']} | {_cell(block['owner'])} | {block['starts_at']} | {block['ends_at']} | {block['status']} |")
     if tracker["execution"]:
         tasks = tracker["execution"]
         next_task = next((row for row in tasks if not row["complete"] and not row["waiting_on"]

@@ -1,0 +1,17 @@
+.feed-profile-editor { max-width: 58rem; }
+.feed-profile-editor > summary { cursor: pointer; font-weight: 650; padding-block: .75rem; }
+#feed-profile-form { display: grid; gap: 1rem; margin-top: 1rem; }
+#feed-profile-form label { display: grid; gap: .45rem; font-size: .95rem; }
+#feed-profile-form input, #feed-profile-form select {
+  width: 100%; box-sizing: border-box; font: inherit; padding: .65rem;
+  color: var(--text, inherit); background: var(--surface, transparent);
+  border: 1px solid var(--line, currentColor); border-radius: .5rem;
+}
+#feed-profile-form select[multiple] { min-height: 9rem; }
+#feed-profile-form option { padding: .25rem; }
+.feed-profile-fields { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 13rem), 1fr)); gap: 1rem; }
+#feed-profile-form details > summary { cursor: pointer; padding-block: .6rem; }
+#feed-profile-form .md-actions { flex-wrap: wrap; }
+#feed-profile-status { overflow-wrap: anywhere; }
+#feed-profile-downloads[hidden] { display: none; }
+#feed-profile-form :focus-visible { outline: 2px solid var(--accent, #BD4600); outline-offset: 3px; }

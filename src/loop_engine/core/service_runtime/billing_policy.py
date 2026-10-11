@@ -15,7 +15,8 @@ This module holds the repair and the check:
 - `apply_host_billing_policy` re-applies both policies from the host file
   through the existing writers. It reads each held record version first and
   names it as the exact expected revision, and it reports the digests it held
-  and wrote.
+  and wrote. A strict price-only addition installs the versioned compatibility
+  proof in the same policy write; existing grants retain their exact bytes.
 - `billing_policy_refusal` names why the stored policies do not serve the
   running configuration. The health record and the command both read it.
 
@@ -29,16 +30,15 @@ from dataclasses import asdict, dataclass
 import json
 
 from .billing_effects import SESSION_POLICY_IDENTITY, SESSION_POLICY_KIND, SESSION_POLICY_VERSION
+from .billing_records import is_price_only_addition, read_stored_billing_policy
 from .records import ServiceRuntimeError, digest
-from .runtime import BILLING_POLICY, SCHEMAS
+from .runtime import BILLING_POLICY
 
 APPLICATION_VERSION = "service_billing_policy_application/v1"
-#: A changed entitlement policy ends the paid access recorded under the held
-#: one. Each such entitlement names the digest it was decided under, and a
-#: different stored digest reads it as no access until the account's next
-#: subscription notification decides it again. The command refuses that change
-#: while any account holds paid access, unless the operator says so; the
-#: release workflow never says so.
+#: A non-additive entitlement-policy change ends paid access recorded under
+#: the held one. A strict price-only addition instead retains bounded, checked
+#: proofs of the earlier policies. The destructive-change guard remains for
+#: narrowing or any other term change; the release workflow never overrides it.
 PAID_ACCESS_REFUSAL = "billing_policy_change_ends_paid_access"
 REFUSAL_VERSION = "service_billing_policy_refusal/v1"
 #: The refusals of this command that an operator must be able to read. The
@@ -64,8 +64,9 @@ def _held_billing_policy(runtime):
         row = runtime._catalog.read(store, BILLING_POLICY, "stripe")
     if row is None:
         return None
-    return {"record_version": row["record_version"],
-            "policy_digest": runtime._payload(row, BILLING_POLICY)["policy_digest"]}
+    payload = runtime._payload(row, BILLING_POLICY)
+    policy, _ancestors = read_stored_billing_policy(payload)
+    return {"record_version": row["record_version"], "policy_digest": payload["policy_digest"], "policy": policy}
 
 
 def _other_session_policy_versions(runtime):
@@ -131,6 +132,12 @@ def apply_billing_policy(application, configuration, *, reset_paid_access=False)
     than overwritten. A host file whose session prices are not all in its own
     entitlement policy is refused before anything is written. A second run
     finds both policies current and changes nothing.
+
+    Addition changes only the policy record, never a scanned grant population.
+    This preserves grants committed during preparation as well as existing
+    ones. It does not renew expiry or reconcile a pending payment. Non-additive
+    changes retain their existing operator guard; their zero-payer precheck is
+    not a transaction-wide absence proof.
     """
     if type(reset_paid_access) is not bool:
         raise ServiceRuntimeError("invalid_request", "the paid access choice is an explicit Boolean")
@@ -150,13 +157,15 @@ def apply_billing_policy(application, configuration, *, reset_paid_access=False)
         raise ServiceRuntimeError("session_price_not_in_billing_policy")
     held = _held_billing_policy(runtime)
     ended = 0
+    preserve = held is not None and is_price_only_addition(held["policy"], policy)
     if held is not None and held["policy_digest"] != digest(asdict(policy)):
-        ended = _accounts_with_paid_access(runtime)
+        ended = 0 if preserve else _accounts_with_paid_access(runtime)
         if ended and not reset_paid_access:
             raise ServiceRuntimeError(PAID_ACCESS_REFUSAL, f"{ended} accounts hold paid access under the held "
                                       "billing policy and would lose it until their next subscription event")
-    applied = runtime.configure_billing_policy(policy, expected_version=held["record_version"] if held else None)
-    billing = {"record_type": SCHEMAS[BILLING_POLICY],
+    applied = runtime.configure_billing_policy(policy, expected_version=held["record_version"] if held else None,
+                                               preserve_price_additions=preserve)
+    billing = {"record_type": applied["record_type"],
                "held_record_version": held["record_version"] if held else None,
                "held_policy_digest": held["policy_digest"] if held else None,
                "record_version": applied["record_version"], "policy_digest": applied["policy_digest"],

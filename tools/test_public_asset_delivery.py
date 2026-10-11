@@ -64,7 +64,12 @@ class PublicAssetDelivery(unittest.TestCase):
                     self.assertEqual(asset.headers['x-frame-options'], 'SAMEORIGIN')
                     continue
                 versions = parse_qs(urlsplit(path).query).get('v')
-                self.assertEqual(versions, [hashlib.sha256(asset.content).hexdigest()])
+                digest = hashlib.sha256(asset.content).hexdigest()
+                self.assertEqual(asset.status_code, 200)
+                if versions is None and re.fullmatch(r'/assets/gallery/[a-z0-9-]+-[0-9a-f]{12}\.webp', path):
+                    self.assertTrue(path.endswith('-' + digest[:12] + '.webp'))
+                else:
+                    self.assertEqual(versions, [digest])
         self.assertEqual(page.headers['cache-control'], 'no-store')
 
     def test_head_reports_metadata_without_body(self):

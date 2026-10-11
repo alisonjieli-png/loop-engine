@@ -105,11 +105,15 @@ class ServiceRuntime:
         if row is None:
             raise ServiceRuntimeError("not_found")
         payload = row.get("payload")
+        from .billing_records import STORED_POLICY_VERSIONS, read_stored_billing_policy
         supported = (KEY_SCHEMAS if kind == KEY else
+                     STORED_POLICY_VERSIONS if kind == BILLING_POLICY else
                      CUSTOMER_EFFECT_SCHEMAS if kind == CUSTOMER_EFFECT else
                      (SCHEMAS[kind], "service_grants/v2") if kind == GRANTS else (SCHEMAS[kind],))
         if not isinstance(payload, dict) or payload.get("record_type") not in supported:
             raise ServiceRuntimeError("unsupported_or_corrupt_record")
+        if kind == BILLING_POLICY:
+            read_stored_billing_policy(payload)
         return payload
 
     def _tenant(self, store, tenant_id):
@@ -124,8 +128,9 @@ class ServiceRuntime:
             return METADATA
         value = self._payload(row, ENTITLEMENT)
         if value.get("source") == STRIPE_SNAPSHOT_SOURCE:
+            from .billing_records import billing_policy_accepts_grant
             configured = self._payload(policy, BILLING_POLICY) if policy is not None else {}
-            if not configured.get("policy_digest") or configured["policy_digest"] != value.get("policy_digest"):
+            if not configured or not billing_policy_accepts_grant(configured, value.get("policy_digest")):
                 return METADATA
         elif value.get("source") not in COMPED_SOURCES:
             return METADATA
@@ -468,24 +473,38 @@ class ServiceRuntime:
                 "counted as revenue, whatever its expiry or its grants say.",
                 "An account with no entitlement record has no row here; it has free access only."]}
 
-    def configure_billing_policy(self, policy, *, expected_version=None):
-        from .billing_records import StripeEntitlementPolicy
-        if not isinstance(policy, StripeEntitlementPolicy):
+    def configure_billing_policy(self, policy, *, expected_version=None, preserve_price_additions=False):
+        """Write one exact policy revision, optionally preserving price-subset proofs.
+
+        The preserved form is explicitly versioned. An old image cannot read
+        it: deploy compatible readers before changing the host's prices and
+        retain a compatible image for rollback. This method does not migrate
+        provider subscriptions, renew grants or resolve pending events.
+        """
+        from .billing_records import StripeEntitlementPolicy, additive_billing_policy_record
+        if not isinstance(policy, StripeEntitlementPolicy) or type(preserve_price_additions) is not bool:
             raise ServiceRuntimeError("invalid_billing_policy")
         encoded = asdict(policy)
         with self._catalog.store(write=True) as store:
             previous = self._catalog.read(store, BILLING_POLICY, "stripe")
+            payload = {"record_type": SCHEMAS[BILLING_POLICY], "policy": encoded, "policy_digest": digest(encoded)}
             if previous is not None:
-                if digest(self._payload(previous, BILLING_POLICY).get("policy")) == digest(encoded):
-                    return {"committed": True, "record_version": previous["record_version"], "policy_digest": digest(encoded)}
+                held = self._payload(previous, BILLING_POLICY)
+                if expected_version is not None and expected_version != previous["record_version"]:
+                    raise ServiceRuntimeError("billing_policy_revision_required")
+                if digest(held.get("policy")) == digest(encoded):
+                    return {"committed": True, "record_type": held["record_type"],
+                            "record_version": previous["record_version"], "policy_digest": digest(encoded)}
                 if expected_version != previous["record_version"]:
                     raise ServiceRuntimeError("billing_policy_revision_required")
+                if preserve_price_additions:
+                    payload = additive_billing_policy_record(held, policy)
             elif expected_version is not None:
                 raise ServiceRuntimeError("billing_policy_revision_required")
-            row = self._catalog.record(BILLING_POLICY, "stripe", {"record_type": SCHEMAS[BILLING_POLICY],
-                "policy": encoded, "policy_digest": digest(encoded)})
+            row = self._catalog.record(BILLING_POLICY, "stripe", payload)
             self._catalog.commit(store, (row,), (self._catalog.guard(previous, row["record_id"]),))
-        return {"committed": True, "record_version": row["record_version"], "policy_digest": digest(encoded)}
+        return {"committed": True, "record_type": payload["record_type"],
+                "record_version": row["record_version"], "policy_digest": digest(encoded)}
 
     def revoke_entitlement(self, tenant_id: str):
         with self._catalog.store(write=True) as store:

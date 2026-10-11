@@ -148,7 +148,7 @@ with ExitStack() as stack:
     confirm_base,_=stack.enter_context(running_http(confirm,application_factory=lambda config:ServiceHttpApplication(confirm.runtime,confirm.provisioning,config,browser_identity=confirm_identity,account_email=account_email(config,project,confirm_identity_origin,confirm.runtime),client_access=confirm_access),display_name="Baltor",request_limits=stated))
     # An invited account on the billing service: an operator grant, the way an invitation gives paid access. The other account has none.
     billing.runtime.set_operator_entitlement("beta",valid_until=int(time.time())+30*86400,evidence_ref="browser fixture invitation")
-    # A third account holds free monthly Agent Feeds + Harness Files, written by the same rows a superadmin grant commits.
+    # A third account holds free monthly Pro, written by the same rows a superadmin grant commits.
     billing.runtime.register_tenant(TenantRegistration("gamma","tenant:gamma"))
     free_key=billing.runtime.issue_key(TenantKeyIssue("gamma","browser fixture free monthly"))
     with billing.runtime._catalog.store(write=True) as store:
@@ -401,7 +401,7 @@ const bandProblems=measured=>[...(measured.count<6?["the homepage has "+measured
 /* The pricing band on a wide screen. The heading column and the plan card sit side by side, and the heading starts at the top of
    the card, so no empty area opens above the heading beside the taller card. The review of September 23 found the column centred
    beside the card. On a phone the two stack, and the reader reports the card below the heading instead of beside it. */
-const pricingColumns=target=>target.evaluate(async ()=>{await document.fonts.ready;const band=document.querySelector('[data-band="start"]'),box=selector=>band?.querySelector(selector)?.getBoundingClientRect()||null;
+const pricingColumns=target=>target.evaluate(async ()=>{const details=document.querySelector('.home-access-details');if(details)details.open=true;await document.fonts.ready;const band=document.querySelector('[data-band="start"]'),box=selector=>band?.querySelector(selector)?.getBoundingClientRect()||null;
   const title=box(".pricing-teaser > .section-title"),card=box(".pricing-teaser > .plan-summary");
   return {width:innerWidth,titleTop:title?Math.round(title.top):null,titleLeft:title?Math.round(title.left):null,cardTop:card?Math.round(card.top):null,cardLeft:card?Math.round(card.left):null};});
 const headingMeetsTheCard=measured=>measured.titleTop!==null&&measured.cardTop!==null&&measured.cardLeft>measured.titleLeft&&Math.abs(measured.titleTop-measured.cardTop)<=1;
@@ -437,7 +437,7 @@ const heroDirectory=target=>target.evaluate(()=>{
 const heroDirectoryProblems=state=>[...(state.shown?[]:["the hero shows no working directory"]),
   ...(JSON.stringify(state.parts)===JSON.stringify(heroDirectoryParts)?[]:["the directory holds the parts "+JSON.stringify(state.parts)]),
   ...(state.label==="Example layout"&&!invitationWords.test(state.label)?[]:["the directory is labelled "+JSON.stringify(state.label)]),
-  ...(/\bby hand\b/i.test(state.text)?[]:["the hero does not describe the manual work in its example"]),
+  ...(/\bby hand\b|\brewrit/i.test(state.text)?[]:["the hero does not describe the repeated work in its example"]),
   ...(perStepClaim(state.text).length===0&&/\bbuilt to\b/i.test(state.note)?[]:["the hero states assembly for each step as a current capability: "+JSON.stringify(perStepClaim(state.text))]),
   ...(JSON.stringify(state.stages)===JSON.stringify(heroStages)?[]:["the terminal shows the parts "+JSON.stringify(state.stages)]),
   ...(JSON.stringify(state.tools)===JSON.stringify(heroTools)?[]:["the terminal calls "+JSON.stringify(state.tools)])];
@@ -465,9 +465,9 @@ const demoFactProblems=steps=>[...(steps.length?[]:["the demonstration shows no 
    them the same day, so no card carries a status tag and no card says Available now, Being built, Planned, Coming soon or that
    packages are coming. The two labels of the demonstration are the only tags the homepage keeps. A card that claims or disclaims
    a state is the known-wrong case. Each use case links to its own page. */
-const kindOrder=["skills","instructions","tools","agents","hooks","servers"],useCaseOrder=["overnight","efficiency","learning"],demoCardOrder=["simple","overnight","kaggle"];
-const demoCardPages={simple:"/demo",overnight:"/overnight",kaggle:"/demo/kaggle"};
-const useCaseTitles={overnight:"Keep track of overnight work",efficiency:"More efficient operation",learning:"Learning and optimization, built in"};
+const kindOrder=["skills","instructions","tools","agents","hooks","servers"],useCaseOrder=["overnight","efficiency","learning"],demoCardOrder=["creative","api","research"];
+const demoCardPages={creative:"/gallery",api:"/setup#openapi-connect",research:"/feeds/setup"};
+const useCaseTitles={overnight:"Keep track of overnight work",efficiency:"More efficient operation",learning:"Every run leaves a record"};
 const homeCards=(target,selector,key)=>target.evaluate(([selector,key])=>[...document.querySelectorAll(selector)].map(node=>({name:node.dataset[key]||"",
   title:node.querySelector("h3")?.textContent.replace(/\s+/g," ").trim()||"",text:node.textContent.replace(/\s+/g," ").trim(),tags:node.querySelectorAll(".status-tag, [data-status]").length,
   links:[...node.querySelectorAll("a[href]")].map(link=>link.getAttribute("href")),shown:node.getClientRects().length>0})),[selector,key]);
@@ -607,7 +607,7 @@ async function checkShownRecipe(page,base,record,recipe,note){
   note("recipe_uses_current_origin_"+id,parsed!==null&&problems.addresses.length===0&&!shown.includes("{{")&&addresses.every(address=>address===endpoint||(problems.schemas.includes(address)&&sameHost(address,String(recipe.source_url)))),{addresses:addresses.length,places:problems.addresses});
   await page.evaluate(()=>navigator.clipboard.writeText("nothing copied yet"));
   await page.click("#copy-configuration");
-  await page.waitForFunction(()=>document.querySelector("#copy-configuration").textContent==="Configuration copied"||document.querySelector("#setup-message").textContent.includes("Clipboard unavailable"));
+  await page.waitForFunction(()=>document.querySelector("#copy-configuration").textContent==="Copied. No key included."||document.querySelector("#setup-message").textContent.includes("Clipboard unavailable"));
   const copied=await page.evaluate(()=>navigator.clipboard.readText());
   note("recipe_copy_matches_displayed_text_"+id,copied===shown&&copied===await content("#client-configuration")&&shown.length>0,{copied_length:copied.length,shown_length:shown.length});
   note("recipe_states_how_to_check_and_revoke_"+id,recipe.verification_command.length>0&&plainCommand.test(await content("#client-verify-command"))&&await content("#client-verify-command")===recipe.verification_command&&await content("#client-verify-note")===recipe.verification_note&&/revoke/i.test(record.revocation_note)&&await content("#client-revoke-note")===record.revocation_note&&await content("#client-removal-note")===recipe.removal_note&&await page.locator("#client-revoke-note").isVisible()&&await page.locator("#client-removal-note").isVisible());
@@ -904,7 +904,7 @@ try {
   check("hero_directory_check_rejects_placeholder_commands_a_missing_part_and_missing_words",heroDirectoryProblems({...hero,tools:["baltor.search","baltor.fetch"]}).length===1
     &&heroDirectoryProblems({...hero,stages:["search","folder"]}).length===1&&heroDirectoryProblems({...hero,stages:["search","search","download","folder"]}).length===1
     &&heroDirectoryProblems({...hero,parts:hero.parts.filter(part=>part!=="tools")}).length===1
-    &&heroDirectoryProblems({...hero,text:hero.text.replace(/by hand/ig,"")}).length===1);
+    &&heroDirectoryProblems({...hero,text:hero.text.replace(/by hand|rewrit\w*/ig,"")}).length===1);
   /* The known-wrong heroes of the owner's constraint of September 24, 2026: assembly for each step stated as what Baltor does today,
      as a label and as a sentence, and a note that no longer says the engine is built to do it. */
   check("per_step_assembly_check_rejects_a_current_capability_claim",["Assembled for this step.","Baltor assembles a directory like this for every step.","Built on demand for each step."].every(claim=>heroDirectoryProblems({...hero,text:hero.text+" "+claim}).length===1)
@@ -915,7 +915,7 @@ try {
   const demoCardProblems=cards=>[...cardProblems(cards,demoCardOrder),...cards.filter(card=>JSON.stringify(card.links)!==JSON.stringify([demoCardPages[card.name]])).map(card=>card.name+" links "+JSON.stringify(card.links))];
   check("homepage_links_three_demonstrations_start_to_finish",demoCardProblems(demoCards).length===0,{problems:demoCardProblems(demoCards)});
   check("demonstration_card_check_rejects_a_missing_card_and_another_address",demoCardProblems(demoCards.slice(1)).length>=1
-    &&demoCardProblems(demoCards.map(card=>card.name==="kaggle"?{...card,links:["/examples"]}:card)).length===1);
+    &&demoCardProblems(demoCards.map(card=>card.name==="api"?{...card,links:["/examples"]}:card)).length===1);
   /* The demonstration pages print each step's search and download, recorded from this release's library. */
   const demoPages=[["/demo","demo"],["/demo/kaggle","demo-kaggle"]],shownFacts={};
   for(const [address,view] of demoPages){await page.goto(fixture.base+address);shownFacts[view]=await demoFacts(page,view);}
@@ -934,7 +934,7 @@ try {
      server settings beside the instruction files, and the hero's directory holds protocol server settings. */
   await page.goto(fixture.base+"/"); await page.waitForFunction(()=>document.querySelector("#service-status").textContent.includes("Service available"));
   const libraryText=await page.locator('[data-band="library"]').innerText();
-  const namesFilesBeyondMarkdown=text=>/\bscripts\b/i.test(text)&&/tools and code/i.test(text)&&/\bhooks\b/i.test(text)&&/protocol server/i.test(text);
+  const namesFilesBeyondMarkdown=text=>/\bscripts\b/i.test(text)&&/tools and code/i.test(text)&&/\bhooks\b/i.test(text)&&/\bMCP server\b/i.test(text);
   check("library_names_files_beyond_markdown",namesFilesBeyondMarkdown(libraryText)&&hero.parts.includes("tools"));
   check("library_word_check_rejects_a_band_that_names_only_instruction_files",!namesFilesBeyondMarkdown("Instruction files such as AGENTS.md and CLAUDE.md.")&&namesFilesBeyondMarkdown(libraryText));
   /* No motion of its own. With reduced motion requested, nothing on the homepage animates or moves by a transition. */
@@ -1034,6 +1034,8 @@ try {
   check("recipe_client_check_rejects_a_hero_list_without_a_reviewed_client",!namesEveryRecipeClient(categoryState.harnesses.filter(name=>name!=="Codex"))&&!namesEveryRecipeClient([]));
   /* What an account gives you, in the plan summary on the homepage: the whole library, the download as the measured unit, a key for
      each client and the usage record. */
+  // The account detail is a disclosure. Read the price and usage once a visitor opens it.
+  await page.locator('.home-access-details').evaluate(node=>{node.open=true;});
   const offers=await page.locator("[data-offer]").evaluateAll(items=>items.map(item=>item.dataset.offer).sort()),planText=await page.locator(".plan-summary").innerText();
   const givesEveryOffer=(names,text)=>JSON.stringify(names)===JSON.stringify(["downloads","keys","library","usage"])&&["search","download","usage"].every(word=>text.toLowerCase().includes(word));
   check("homepage_says_what_an_account_gives_you",givesEveryOffer(offers,planText),{offers});
@@ -1191,6 +1193,9 @@ try {
   servedFiles.push("/assets/worker-compose.yaml","/assets/docs/container-worker.html");
   servedFiles.push("/assets/oauth-consent.js","/assets/public-good.js","/assets/public-good.css","/assets/staff-work.js");
   servedFiles.push("/assets/feed-specimen.js");
+  servedFiles.push("/assets/feed-profile.js","/assets/feed-profile.css","/assets/run-desk.js","/assets/run-desk-core.js",
+    "/assets/offering-pages.js","/assets/offering-pages.css","/assets/share-card.png","/assets/share-card-feeds.png",
+    "/assets/share-card-harness-files.png","/assets/share-card-gallery.png");
   servedFiles.push("/assets/top-mcps.json",...[
     "index.html","arena.js","arena.css","asset-briefs.json","blender-import.py","THREE-LICENSE.txt"
   ].map(name=>"/assets/creative-arena/"+name));
@@ -1226,6 +1231,8 @@ try {
   const notOurText={"/assets/supabase-client.js":"the identity provider's own library","/assets/third-party-notices.txt":"the licence texts of other projects",
     "/assets/geist.woff2":"a typeface","/assets/geist-mono.woff2":"a typeface","/assets/baltor-mark.svg":"a picture","/assets/favicon-32.png":"a picture","/assets/favicon-192.png":"a picture","/assets/apple-touch-icon.png":"a picture"};
   notOurText["/assets/deck-card.png"]="a picture";
+  for(const name of ["share-card","share-card-feeds","share-card-harness-files","share-card-gallery"])
+    notOurText["/assets/"+name+".png"]="a picture";
   notOurText["/assets/creative-arena/THREE-LICENSE.txt"]="the Three.js licence text";
   const withoutComments=source=>source.replace(/\/\*[\s\S]*?\*\//g," ").replace(/(^|[\s;{}()\[\],])\/\/[^\n]*/g,"$1");
   const customerStrings=source=>[...withoutComments(source).matchAll(/"((?:[^"\\\n]|\\.)*)"|'((?:[^'\\\n]|\\.)*)'|`((?:[^`\\]|\\.)*)`/g)].map(found=>found[1]??found[2]??found[3]??"")
@@ -1262,7 +1269,7 @@ try {
      keeps, which the rule must leave alone. */
   const invitationKnownWrong=["Invitation only while we open in small groups.","Request an invitation","Invited accounts are free.","We invite people in small groups.","Join the waiting list.",
     "Search is free.","Searching is free, and each item your tools download appears here.","Being built","A key for each device from your account page is being prepared.","Planned"];
-  const invitationKept=["Get started","Create your account","One plan. The whole library.","The plan can change as you learn more.","Your account covers Agent Feeds + Harness Files.","Get set up connects your harness."];
+  const invitationKept=["Get started","Create your account","One plan. The whole library.","The plan can change as you learn more.","Your account covers Pro.","Get set up connects your harness."];
   check("invitation_word_check_rejects_a_known_wrong_page",invitationKnownWrong.every(claim=>invitationWords.test(claim))&&invitationKept.every(claim=>!invitationWords.test(claim)),{pages:invitationKnownWrong.length});
   /* The served-file reading is narrow in the same way. Each case is read on its own, so a page defect elsewhere cannot hide it: a
      message in a script string and a sentence in a documentation body are reported; a comment and a lowercase state name are
@@ -1739,10 +1746,10 @@ try {
   const samePayment=(payment,want)=>payment.badges===0&&payment.shown===want.note;
   /* The personal-key wording is published in two places. Both follow the reported capability; neither is written as a fact in the page. */
   const keyWording={
-    open:{offer:"A personal key for each device, from your account page",
-          plan:"Create and revoke a key for every client you connect, from your account page."},
-    closed:{offer:"A key for each client you connect, issued to your account",
-            plan:"Every client you connect gets its own key, issued to your account."}};
+    open:{offer:"A Baltor key for each tool or device, from your account page",
+          plan:"Create and revoke a Baltor key for each tool you connect, from your account page."},
+    closed:{offer:"A Baltor key for each tool you connect, issued to your account",
+            plan:"Each tool you connect gets its own key, issued to your account."}};
   const keyState=async opened=>({offer:await opened.locator("#offer-usage-keys").evaluate(node=>node.textContent),plan:await opened.locator("#plan-keys-detail").evaluate(node=>node.textContent)});
   const sameKeys=(keys,want)=>keys.offer===want.offer&&keys.plan===want.plan;
   /* The request list shows on the account status page as a button to Get started, and the note that points to Get started shows
@@ -2025,7 +2032,7 @@ try {
     {name:"lengthen_the_hero_note_after_the_script_runs",changes:[{path:"/assets/service.js",find:'$("hero-access-note").textContent = state.note;',replacement:'$("hero-access-note").textContent = state.note + " " + state.note + " " + state.note;'}],
      run:async (opened,note)=>note("homepage_first_screen_does_not_move_when_the_script_runs",boxesMoved(servedHeroBoxes,await heroBoxes(opened)).length===0),
      expected:["homepage_first_screen_does_not_move_when_the_script_runs"]},
-    {name:"centre_the_pricing_heading_beside_the_plan_card",changes:[{path:"/assets/architecture.css",find:".home-band .pricing-teaser{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,30rem);gap:4.5rem;align-items:start;",replacement:".home-band .pricing-teaser{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,30rem);gap:4.5rem;align-items:center;"}],
+    {name:"centre_the_pricing_heading_beside_the_plan_card",changes:[{path:"/assets/service.css",find:'html [data-view="home"] .pricing-teaser{align-items:start;',replacement:'html [data-view="home"] .pricing-teaser{align-items:center;'}],
      run:async (opened,note)=>{await opened.setViewportSize({width:1440,height:1000});note("pricing_heading_lines_up_with_the_top_of_the_plan_card",headingMeetsTheCard(await pricingColumns(opened)));},
      expected:["pricing_heading_lines_up_with_the_top_of_the_plan_card"]}];
   for(const control of homepageControls){
@@ -2106,15 +2113,15 @@ try {
   /* The careful state must be what the service serves, not only what the page script reaches. A visitor without JavaScript reads the
      served text, and the page script starts from the same careful state before the service answers and keeps it for a record
      version it was not written for: the pricing view with no payment until the account is ready, the words every access state
-     shares, keys issued to the account, the operator's panel leading the guide, and the one "Get started" action. Each element
+     shares, keys issued to the account, a visible link to the account options before capabilities arrive, and the one "Get started" action. Each element
      is read by its id from the served page itself, so a changed attribute order cannot hide a changed word. */
   const servedHome=await (await page.request.get(fixture.base+"/")).text();
   const servedDefaults=markup=>page.evaluate(markup=>{const doc=new DOMParser().parseFromString(markup,"text/html"),text=id=>doc.getElementById(id)?.textContent.replace(/\s+/g," ").trim()??null,hero=doc.getElementById("hero-primary");
     return {"pricing-payment-state":text("pricing-payment-state"),"pricing-teaser-note":text("pricing-teaser-note"),"hero-access-note":text("hero-access-note"),
       "home-plan-access":text("home-plan-access"),"closing-note":text("closing-note"),"offer-usage-keys":text("offer-usage-keys"),"plan-keys-detail":text("plan-keys-detail"),
-      "start-access":doc.getElementById("start-access")?.dataset.startAccess??null,"hero-primary":hero?[hero.getAttribute("href"),hero.dataset.accessState,hero.querySelector("[data-access-label]")?.textContent.trim()]:null};},markup);
+      "start-access":doc.getElementById("start-access")?.dataset.startAccess??null,"start-visible-panels":[...doc.querySelectorAll("[data-start-state]")].filter(panel=>!panel.hidden).map(panel=>panel.dataset.startState),"hero-primary":hero?[hero.getAttribute("href"),hero.dataset.accessState,hero.querySelector("[data-access-label]")?.textContent.trim()]:null};},markup);
   const carefulDefaults={"pricing-payment-state":paymentWords.closed.note,"pricing-teaser-note":"Cancel any time from your account page.","hero-access-note":accessWords.note,
-    "home-plan-access":accessWords.tag,"closing-note":accessWords.closing,"offer-usage-keys":keyWording.closed.offer,"plan-keys-detail":keyWording.closed.plan,"start-access":"operator","hero-primary":[accessPaths.closed,"waiting",accessLabels.closed]};
+    "home-plan-access":accessWords.tag,"closing-note":accessWords.closing,"offer-usage-keys":keyWording.closed.offer,"plan-keys-detail":keyWording.closed.plan,"start-access":"operator","start-visible-panels":["operator"],"hero-primary":[accessPaths.closed,"waiting",accessLabels.closed]};
   const unsettled=/Checking payment|Checking whether payment is open/;
   const carefulProblems=(found,markup)=>[...Object.entries(carefulDefaults).filter(([id,want])=>JSON.stringify(found[id])!==JSON.stringify(want)).map(([id])=>id+" is served as "+JSON.stringify(found[id])+" and the careful state is "+JSON.stringify(carefulDefaults[id])),
     ...(unsettled.test(markup)?["an unsettled placeholder"]:[])];
@@ -2123,6 +2130,9 @@ try {
   const wrongMarkup=servedHome.replace(/(id="pricing-payment-state"[^>]*>)[^<]*/,"$1Checking whether payment is open.");
   const wrongFound=await servedDefaults(wrongMarkup);
   check("careful_default_check_rejects_a_served_page_that_never_settles",wrongMarkup!==servedHome&&carefulProblems(wrongFound,wrongMarkup).filter(problem=>/^pricing-payment-state |unsettled/.test(problem)).length===2,{problems:carefulProblems(wrongFound,wrongMarkup)});
+  const hiddenStartMarkup=servedHome.replace('data-start-state="operator"','data-start-state="operator" hidden');
+  const hiddenStartFound=await servedDefaults(hiddenStartMarkup);
+  check("careful_default_check_rejects_hidden_account_options",hiddenStartMarkup!==servedHome&&carefulProblems(hiddenStartFound,hiddenStartMarkup).some(problem=>problem.startsWith("start-visible-panels ")));
   /* The wording rules live once, in tools/public_wording_rules.mjs. Both page checks import them there and define no copy
      of their own, so a rule cannot drift between the local and the hosted reading. */
   const importsTheRules=text=>/from "\.\/public_wording_rules\.mjs";/.test(text)&&!/^\s*const (?:internalTerms|liveInvitation|liveRetired|invitationWords|retiredAccessWords|unpublishedTerms|cardStatusWords)=\//m.test(text);
@@ -2638,7 +2648,7 @@ try {
     note("a_password_chosen_first_by_someone_else_no_longer_opens_the_account",await standInSignIn(target,address,chosenFirst)===400&&await standInSignIn(target,address,owner)===200);
     /* While checkout is closed the plan step names the plan and its price and offers no control that starts a payment. Since
        September 23, 2026 it no longer says that payment is not open; the absent control is what the rule holds. */
-    note("get_started_funnel_offers_no_payment_while_checkout_is_closed",after.funnel.state==="plan"&&after.funnel.title==="Subscribe to Agent Feeds + Harness Files"&&after.funnel.text===unpaidPlanText&&after.funnel.subscribe===false,after.funnel);
+    note("get_started_funnel_offers_no_payment_while_checkout_is_closed",after.funnel.state==="plan"&&after.funnel.title==="Subscribe to Pro"&&after.funnel.text===unpaidPlanText&&after.funnel.subscribe===false,after.funnel);
     return {address,owner,link,signedIn:after.connected==="Connected"};
   };
   /* A used link says so plainly, changes nothing and offers a way to ask for another. */
@@ -2685,7 +2695,7 @@ try {
       field:box(document.getElementById("funnel-email")),action:box(document.getElementById("funnel-signup-button"))||box(document.getElementById("funnel-invite")),
       viewport:innerHeight,overflow:document.documentElement.scrollWidth>innerWidth+1,words:view?.innerText||""};
   });
-  const openSteps=["Create your account","Confirm your email","Choose a password","Subscribe to Agent Feeds + Harness Files","Get set up"];
+  const openSteps=["Create your account","Confirm your email","Choose a password","Subscribe to Pro","Get set up"];
   /* The funnel in each state a service can report. Where the service takes new accounts, by registration or by its request list,
      the card shows the one account form, #funnel-email with its one action and the sentence that links the terms and the privacy
      notice, and the first step reads "Create your account", in the same words in both states. Where it takes neither, the card
@@ -2790,7 +2800,7 @@ try {
       row:[...document.querySelectorAll("#staff-accounts article")].map(item=>item.innerText).find(text=>text.includes(address))||"",
       formWords:document.getElementById("staff-links-form")?.innerText||""}),address);
     note("a_superadmin_sends_a_sign_up_link_and_the_account_shows_as_waiting",form&&shown.message==="Link sent to "+address+"."
-      &&/Sign-up link sent/.test(shown.row)&&/Free monthly Agent Feeds \+ Harness Files starts when the account opens/.test(shown.row)&&/Not confirmed/.test(shown.row)
+      &&/Sign-up link sent/.test(shown.row)&&/Free monthly Pro starts when the account opens/.test(shown.row)&&/Not confirmed/.test(shown.row)
       &&!invitationWords.test(shown.message+" "+shown.row+" "+shown.formWords),{form,...shown});
   };
   /* The confirmation page keeps Confirm disabled, with a short note, until its sign-in settings have loaded, so a quick click
@@ -2873,8 +2883,8 @@ try {
     }
     const wrong=Object.entries(found).map(([path,words])=>[path,(open?closedAccessWords:openAccessWords).exec(words)?.[0]||""]).filter(([,words])=>words);
     const security=found["/security"]||"",about=found["/how-it-works"]||"";
-    const facts=["You sign in with your email address and password.","Client tokens for your tools are created and revoked on your account page"].every(text=>security.includes(text))
-      &&about.includes("you sign in with your email address and password, create a client token for each of your tools on your account page");
+    const facts=["You sign in with your email address and password.","Baltor keys for your tools are created and revoked on your account page"].every(text=>security.includes(text))
+      &&about.includes("you sign in with your email address and password, create a Baltor key for each of your tools on your account page");
     if(open){
       note("no_page_says_account_creation_is_closed_while_registration_is_open",wrong.length===0,{wrong});
       note("security_and_how_it_works_state_the_self_service_account_facts",facts&&security.includes("Anyone can create an account on Get started: you give your email address, open the link we send and choose a password.")
@@ -2979,8 +2989,8 @@ try {
     await target.waitForTimeout(300);
     const member=await setupCheck(target);
     note("get_set_up_offers_a_signed_in_visitor_a_client_token_instead_of_sign_in",visitor.signIn&&!visitor.create&&member.path==="/setup"&&!member.signIn&&member.create
-      &&member.createText==="Create a client token"&&member.createHref==="/account#account-keys"
-      &&member.line.startsWith("This check runs with a client token, not with your email sign-in.")&&await target.locator("#test-protocol").isDisabled(),{visitor,member});
+      &&member.createText==="Create a Baltor key"&&member.createHref==="/account#account-keys"
+      &&member.line.startsWith("This check runs with a Baltor key, not with your email sign-in.")&&await target.locator("#test-protocol").isDisabled(),{visitor,member});
     if(member.create)await target.click("#setup-create-token");
     await target.waitForFunction(()=>document.getElementById("client-access-controls")?.hidden===false,null,{timeout:10000}).catch(()=>{});
     await target.waitForTimeout(200);
@@ -2990,11 +3000,11 @@ try {
       &&panel.controls&&panel.creator&&panel.focused==="client-token-label",{panel});
   };
   /* Finding 10 of the persona journeys of September 24, 2026: the price line under the Get started heading said "subscribe to Baltor
-     Pro for $29 a month" to an account that the founding offer already covered, the step list marked "Subscribe to Agent Feeds + Harness Files, $29 a
+     Pro for $29 a month" to an account that the founding offer already covered, the step list marked "Subscribe to Pro, $29 a
      month" as done for an account that never subscribed, and no page stated the founding offer before sign-up. The price line, the
      fourth step and the pricing page's free plan answer now follow the account's plan and the founding offer the service reports. */
-  const foundingSentence="While founding places last, a new account gets Agent Feeds + Harness Files free each month.";
-  const foundingPrice="Create your account and connect your harness. Agent Feeds + Harness Files is $29 a month, and while founding places last a new account gets it free each month.";
+  const foundingSentence="While founding places last, a new account gets Pro free each month.";
+  const foundingPrice="Create your account and connect your harness. Pro is $29 a month, and while founding places last a new account gets it free each month.";
   const planFacts=target=>target.evaluate(()=>{const shown=node=>Boolean(node&&node.getClientRects().length);
     return {price:document.getElementById("funnel-price")?.textContent||"",stepTitle:document.getElementById("funnel-step-plan-title")?.textContent||"",
       stepNote:document.getElementById("funnel-step-plan-note")?.textContent||"",stepDone:document.querySelector('[data-funnel-step="plan"]')?.classList.contains("is-done")===true,
@@ -3011,9 +3021,9 @@ try {
     const reported=(await (await target.request.get(base+"/api/v1/capabilities")).json()).result.website.founding_offer_open;
     if(open)note("pricing_and_get_started_state_the_founding_offer_while_places_remain",reported===true&&pricing.card
       &&JSON.stringify(pricing.founding)===JSON.stringify([foundingSentence,foundingSentence.trim()])&&pricing.answer.includes(foundingSentence)&&pricing.notes.length===0
-      &&funnel.price===foundingPrice&&funnel.price.includes("$29 a month")&&funnel.stepTitle==="Subscribe to Agent Feeds + Harness Files"&&funnel.stepNote==="$29 a month, or free each month while founding places last",{reported,pricing,funnel});
+      &&funnel.price===foundingPrice&&funnel.price.includes("$29 a month")&&funnel.stepTitle==="Subscribe to Pro"&&funnel.stepNote==="$29 a month, or free each month while founding places last",{reported,pricing,funnel});
     else note("no_page_states_the_founding_offer_when_the_service_reports_no_free_place",reported===false&&!pricing.card&&pricing.founding.length===0&&!/founding/i.test(pricing.answer)
-      &&funnel.price==="Create your account, subscribe to Agent Feeds + Harness Files for $29 a month and connect your harness."&&funnel.stepNote==="$29 a month, cancel any time",{reported,pricing,funnel});
+      &&funnel.price==="Create your account, subscribe to Pro for $29 a month and connect your harness."&&funnel.stepNote==="$29 a month, cancel any time",{reported,pricing,funnel});
   };
   const coveredPlan=(credential,source)=>async (target,note)=>{
     await target.goto(fixture.billing_base+"/login");await target.fill("#access-token",credential);await target.click("#connect-button");await waitConnected(target);
@@ -3021,10 +3031,10 @@ try {
     const funnel=await planFacts(target),steps=await target.evaluate(()=>[...document.querySelectorAll("[data-funnel-step] strong")].map(node=>node.textContent.trim()));
     await openInPage(target,"/pricing");
     const pricing=await planFacts(target);
-    const expected={founding_free_monthly:["Agent Feeds + Harness Files included","Free each month, as one of the first accounts","Your account holds a founding place, so Agent Feeds + Harness Files is free for it each month."],
-      free_monthly:["Agent Feeds + Harness Files included","Free each month for this account","Your account includes Agent Feeds + Harness Files free each month."]}[source];
-    note("get_started_and_pricing_follow_the_"+source+"_plan",funnel.price==="Your account includes Agent Feeds + Harness Files. Connect your harness to start."&&!/\$29|subscribe/i.test(funnel.price)
-      &&funnel.stepTitle===expected[0]&&funnel.stepNote===expected[1]&&funnel.stepDone&&!steps.includes("Subscribe to Agent Feeds + Harness Files")
+    const expected={founding_free_monthly:["Pro included","Free each month, as one of the first accounts","Your account holds a founding place, so Agent Feeds + Harness Files is free for it each month."],
+      free_monthly:["Pro included","Free each month for this account","Your account includes Pro free each month."]}[source];
+    note("get_started_and_pricing_follow_the_"+source+"_plan",funnel.price==="Your account includes Pro. Connect your harness to start."&&!/\$29|subscribe/i.test(funnel.price)
+      &&funnel.stepTitle===expected[0]&&funnel.stepNote===expected[1]&&funnel.stepDone&&!steps.includes("Subscribe to Pro")
       &&JSON.stringify(pricing.notes)===JSON.stringify([source])&&pricing.answer.includes(expected[2])&&pricing.founding.length===0&&!pricing.card,{funnel,steps,pricing});
   };
   /* Finding 8 of the persona journeys of September 24, 2026: nothing said who vets library items, or how. Security now has a "How
@@ -3130,18 +3140,18 @@ try {
     await target.waitForFunction(()=>document.querySelector("#connection-state")?.textContent==="Connected",null,{timeout:10000}).catch(()=>{});
     await target.evaluate(()=>{history.pushState({},"","/get-started");dispatchEvent(new PopStateEvent("popstate"));});
     const facts=await funnelFacts(target);
-    /* The owner's wording of September 23, 2026: an account with free monthly Agent Feeds + Harness Files, founding or granted, reads that its
+    /* The owner's wording of September 23, 2026: an account with free monthly Pro, founding or granted, reads that its
        account includes Agent Feeds \+ Harness Files, on the funnel and on the account page, with no invitation or trial word. */
     if(covered&&freeMonthly){const plan=await target.evaluate(()=>({shown:document.getElementById("account-plan")?.hidden===false,text:document.getElementById("account-plan")?.textContent||""}));
-      note("get_started_funnel_tells_a_free_monthly_account_that_it_includes_baltor_pro",facts.state==="plan"&&facts.title==="Your account includes Agent Feeds + Harness Files"&&!facts.subscribe&&!invitationWords.test(facts.words)
-        &&facts.primaries.length===1&&facts.primaries[0].id==="funnel-setup-action"&&facts.primaries[0].href==="/setup"&&plan.shown&&plan.text==="Your account includes Agent Feeds + Harness Files.",{...facts,plan});return;}
-    if(covered){note("get_started_funnel_tells_a_granted_account_that_its_plan_is_covered",facts.state==="plan"&&facts.title==="Your account covers Agent Feeds + Harness Files"&&!facts.subscribe&&!invitationWords.test(facts.words)
+      note("get_started_funnel_tells_a_free_monthly_account_that_it_includes_baltor_pro",facts.state==="plan"&&facts.title==="Your account includes Pro"&&!facts.subscribe&&!invitationWords.test(facts.words)
+        &&facts.primaries.length===1&&facts.primaries[0].id==="funnel-setup-action"&&facts.primaries[0].href==="/setup"&&plan.shown&&plan.text==="Your account includes Pro.",{...facts,plan});return;}
+    if(covered){note("get_started_funnel_tells_a_granted_account_that_its_plan_is_covered",facts.state==="plan"&&facts.title==="Your account covers Pro"&&!facts.subscribe&&!invitationWords.test(facts.words)
       &&facts.primaries.length===1&&facts.primaries[0].id==="funnel-setup-action"&&facts.primaries[0].href==="/setup",facts);return;}
     let link="";
     if(facts.subscribe){await target.click("#funnel-subscribe");
       await target.waitForFunction(()=>document.querySelector("#funnel-plan-message a")!==null||document.getElementById("funnel-plan-message")?.classList.contains("error"),null,{timeout:10000}).catch(()=>{});
       link=await target.evaluate(()=>document.querySelector("#funnel-plan-message a")?.href||"");}
-    note("get_started_funnel_offers_checkout_to_an_account_without_paid_access",facts.state==="plan"&&facts.title==="Subscribe to Agent Feeds + Harness Files"&&facts.subscribe&&facts.primaries.length===1&&(await target.locator("#funnel-plan-text").textContent())===checkoutPlanText
+    note("get_started_funnel_offers_checkout_to_an_account_without_paid_access",facts.state==="plan"&&facts.title==="Subscribe to Pro"&&facts.subscribe&&facts.primaries.length===1&&(await target.locator("#funnel-plan-text").textContent())===checkoutPlanText
       &&facts.primaries[0].id==="funnel-subscribe"&&facts.primaries[0].text==="Subscribe for $29 a month"&&link.startsWith("https://checkout.stripe.com/"),{...facts,link});
   };
   /* A scenario that needs a second visit opens a second context, as a person opening the link on another device would. */
@@ -3180,14 +3190,14 @@ try {
     {name:"never_offer_account_creation_on_the_funnel",scenario:"funnel_open",path:"/assets/service.js",find:'(registrationOpen || waitingList) ? "register" : "invite"',replacement:'false ? "register" : "invite"',expected:["get_started_funnel_offers_account_creation_while_registration_is_open"]},
     {name:"always_offer_account_creation_on_the_funnel",scenario:"funnel_closed",path:"/assets/service.js",find:'(registrationOpen || waitingList) ? "register" : "invite"',replacement:'true ? "register" : "invite"',expected:["get_started_funnel_offers_sign_in_when_registration_and_the_request_list_are_closed"]},
     {name:"ignore_the_request_list_on_the_funnel",scenario:"funnel_waitlist",path:"/assets/service.js",find:'(registrationOpen || waitingList) ? "register" : "invite"',replacement:'registrationOpen ? "register" : "invite"',expected:["get_started_funnel_takes_the_address_where_the_service_keeps_a_request_list"]},
-    {name:"bring_back_free_search_in_the_funnel_price_line",scenario:"funnel_waitlist",path:"/get-started",find:'subscribe to Agent Feeds \+ Harness Files for $29 a month and connect your harness.</p>',replacement:'subscribe to Agent Feeds \+ Harness Files for $29 a month and connect your harness. Search is free.</p>',expected:["get_started_funnel_takes_the_address_where_the_service_keeps_a_request_list"]},
+    {name:"bring_back_free_search_in_the_funnel_price_line",scenario:"funnel_waitlist",path:"/get-started",find:'subscribe to Pro for $29 a month and connect your harness.</p>',replacement:'subscribe to Pro for $29 a month and connect your harness. Search is free.</p>',expected:["get_started_funnel_takes_the_address_where_the_service_keeps_a_request_list"]},
     {name:"send_no_address_to_the_request_list",scenario:"list_request",path:"/assets/service.js",find:'email:$("funnel-email").value.trim(),note:""',replacement:'email:"",note:""',expected:["get_started_funnel_puts_the_address_on_the_request_list_and_says_a_link_follows"]},
     {name:"take_no_request_on_the_funnel",scenario:"list_request",path:"/assets/service.js",find:"const listed = capabilities?.record_type === CAPABILITIES_RECORD_TYPE && capabilities.website?.waitlist_available === true;",replacement:"const listed = false;",expected:["get_started_funnel_puts_the_address_on_the_request_list_and_says_a_link_follows"]},
     {name:"push_the_first_step_below_the_first_screen_open",scenario:"funnel_open",path:"/assets/service.css",find:".funnel-band{padding:64px",replacement:".funnel-band{padding-top:900px!important;padding:64px",expected:["get_started_funnel_first_step_fits_the_first_screen_open_1440","get_started_funnel_first_step_fits_the_first_screen_open_390"]},
     {name:"push_the_first_step_below_the_first_screen_closed",scenario:"funnel_closed",path:"/assets/service.css",find:".funnel-band{padding:64px",replacement:".funnel-band{padding-top:900px!important;padding:64px",expected:["get_started_funnel_first_step_fits_the_first_screen_closed_1440","get_started_funnel_first_step_fits_the_first_screen_closed_390"]},
     {name:"push_the_first_step_below_the_first_screen_list",scenario:"funnel_waitlist",path:"/assets/service.css",find:".funnel-band{padding:64px",replacement:".funnel-band{padding-top:900px!important;padding:64px",expected:["get_started_funnel_first_step_fits_the_first_screen_list_1440","get_started_funnel_first_step_fits_the_first_screen_list_390"]},
     {name:"ignore_where_paid_access_comes_from",scenario:"invited",path:"/assets/service.js",find:"funnelPlans[accessSource] ||",replacement:"",expected:["get_started_funnel_tells_a_granted_account_that_its_plan_is_covered"]},
-    {name:"use_another_title_for_a_free_monthly_account",scenario:"free_monthly",path:"/assets/service.js",find:'free_monthly:{title:"Your account includes Agent Feeds + Harness Files"',replacement:'free_monthly:{title:"Your account covers Agent Feeds + Harness Files"',expected:["get_started_funnel_tells_a_free_monthly_account_that_it_includes_baltor_pro"]},
+    {name:"use_another_title_for_a_free_monthly_account",scenario:"free_monthly",path:"/assets/service.js",find:'free_monthly:{title:"Your account includes Pro"',replacement:'free_monthly:{title:"Your account covers Pro"',expected:["get_started_funnel_tells_a_free_monthly_account_that_it_includes_baltor_pro"]},
     {name:"hide_the_included_plan_on_the_account_page",scenario:"free_monthly",path:"/assets/service.js",find:'$("account-plan").hidden = !coveredSources.includes(accessSource);',replacement:'$("account-plan").hidden = true;',expected:["get_started_funnel_tells_a_free_monthly_account_that_it_includes_baltor_pro"]},
     {name:"hide_the_staff_accounts_view",scenario:"staff",path:"/assets/service.js",find:'$("staff-admin").hidden = false;',replacement:"",expected:["a_superadmin_sees_every_account_and_grants_free_monthly_in_the_administration_view"]},
     {name:"hide_the_sign_up_link_form",scenario:"staff_links",path:"/assets/service.js",find:'$("staff-links-form").hidden = !overview.permissions.includes("accounts.send_sign_up_links");',replacement:'$("staff-links-form").hidden = true;',expected:["a_superadmin_sends_a_sign_up_link_and_the_account_shows_as_waiting"]},
@@ -3200,7 +3210,7 @@ try {
      find:'if (passwordSet === "set") { $("confirm-password-step").hidden = true; $("confirm-unusable").hidden = true; return; }',replacement:"",
      expected:["a_password_set_without_an_open_account_says_so_and_offers_sign_in"]},
     {name:"bring_back_the_closed_account_creation_sentence_on_security",scenario:"access_facts_open",path:"/security",
-     find:'You sign in with your email address and password. Client tokens',replacement:'Public account creation is not open. Access comes from your operator, who can issue and revoke test tokens. Client tokens',
+     find:'You sign in with your email address and password. Baltor keys',replacement:'Public account creation is not open. Access comes from your operator, who can issue and revoke test tokens. Baltor keys',
      expected:["no_page_says_account_creation_is_closed_while_registration_is_open","security_and_how_it_works_state_the_self_service_account_facts"]},
     {name:"bring_back_the_operator_revocation_sentence_on_get_set_up",scenario:"access_facts_open",path:"/assets/client-recipes.json",
      find:'"revocation_note": "Open your account page,',replacement:'"revocation_note": "If your operator gave you the token, ask your operator to revoke it. Open your account page,',
@@ -3227,7 +3237,7 @@ try {
     {name:"keep_offering_sign_in_to_a_signed_in_visitor_on_get_set_up",scenario:"setup_signed_in",path:"/auth/confirm",
      find:'data-after-login="/setup" data-signed-out>',replacement:'data-after-login="/setup">',expected:["get_set_up_offers_a_signed_in_visitor_a_client_token_instead_of_sign_in"]},
     {name:"offer_no_client_token_on_get_set_up",scenario:"setup_signed_in",path:"/auth/confirm",
-     find:'data-page="account" data-signed-in hidden>Create a client token</a>',replacement:'data-page="account" hidden>Create a client token</a>',
+     find:'data-page="account" data-signed-in hidden>Create a Baltor key</a>',replacement:'data-page="account" hidden>Create a Baltor key</a>',
      expected:["get_set_up_offers_a_signed_in_visitor_a_client_token_instead_of_sign_in","create_a_client_token_opens_the_loaded_token_panel"]},
     {name:"open_the_account_page_without_loading_the_token_panel",scenario:"setup_signed_in",path:"/assets/service.js",
      find:'clientAccess.refresh().then(() => { if (!$("client-access-controls").hidden) $("client-token-label").focus({preventScroll:true}); });',replacement:"",
@@ -3349,13 +3359,22 @@ try {
   const namedScripts=[...new Set([...pageText.matchAll(/src="([^\"]+)"/g)].map(found=>internalReference(found[1])).filter(Boolean).map(value=>new URL(value,fixture.browse_base).pathname))];
   const namedAssets=[...pageText.matchAll(/(?:href|src)="([^\"]+)"/g)].map(found=>found[1]).filter(value=>{try{return new URL(value,fixture.browse_base).pathname.startsWith("/assets/");}catch(_){return false;}});
   // The no-store preview document is rendered with versioned dependencies; other named assets still require their digest.
-  const correctAssetVersions=values=>values.every(value=>{const path=new URL(value,fixture.browse_base).pathname;return sameOriginAsset(value,fixture.browse_base,path,path!=="/assets/creative-arena/index.html");});
+  const correctAssetVersions=values=>values.every(value=>{try{const path=new URL(value,fixture.browse_base).pathname;
+    const namedDigest=path.match(/^\/assets\/gallery\/[a-z0-9-]+-([a-f0-9]{12})\.webp$/);
+    if(namedDigest)return assetDigest(path).startsWith(namedDigest[1])&&sameOriginAsset(value,fixture.browse_base,path,false);
+    return sameOriginAsset(value,fixture.browse_base,path,path!=="/assets/creative-arena/index.html");}catch(_){return false;}});
   check("served_page_asset_versions_bind_to_exact_packaged_bytes",namedAssets.length>0&&correctAssetVersions(namedAssets),{assets:namedAssets});
   check("preview_document_exception_rejects_unversioned_scripts_and_other_origins",
     correctAssetVersions(["/assets/creative-arena/index.html"])
     &&!correctAssetVersions(["/assets/service.js"])
     &&!correctAssetVersions(["https://other.invalid/assets/creative-arena/index.html"])
     &&!correctAssetVersions(["/assets/creative-arena/index.html?v=wrong"]));
+  const namedGallery=namedAssets.find(value=>/\/gallery\/.*\.webp$/.test(value));
+  check("digest_named_gallery_assets_reject_wrong_content_names_and_other_origins",Boolean(namedGallery)
+    &&correctAssetVersions([namedGallery])
+    &&!correctAssetVersions([namedGallery.replace(/-[a-f0-9]{12}\.webp$/,"-000000000000.webp")])
+    &&!correctAssetVersions(["https://other.invalid"+namedGallery])
+    &&!correctAssetVersions([namedGallery+"?v=wrong"]));
   const answered=[];
   for(const address of internalAddresses(pageText)) answered.push({address,status:(await plainContext.request.get(fixture.browse_base+address)).status()});
   check("every_address_the_page_names_is_answered_by_the_service",

@@ -1,5 +1,23 @@
 schema: hardcoding_allowlist/v1
 entries:
+- finding_id: hardcoding.9da2c9f5798319742bf39972
+  owner: "tools.build_gallery:_webp"
+  classification: CLOSED_CONTROLLED_VOCABULARY
+  rationale: "Reviewed October 9, 2026: RGB is Pillow's standard three-channel pixel mode, not a selected provider or product policy. The preview adapter preserves RGB/RGBA inputs and converts other modes before WebP encoding. Gallery checks bind the resulting bytes to the declared preview digest. This exception covers only the exact existing mode literal."
+  created_on: '2026-10-09'
+  expires_on: '2027-01-09'
+- finding_id: hardcoding.b2da4d214be84804286efa67
+  owner: "tools.build_gallery:_webp"
+  classification: CLOSED_CONTROLLED_VOCABULARY
+  rationale: "Reviewed October 9, 2026: RGBA is Pillow's standard pixel mode with an alpha channel. The native preview adapter retains that channel; this is an image encoding vocabulary, not a runtime strategy. Exact preview-digest and image-integrity checks remain enforced."
+  created_on: '2026-10-09'
+  expires_on: '2027-01-09'
+- finding_id: hardcoding.418d13d4f9422920c580fda6
+  owner: "tools.check_service_workspace:url"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed October 9, 2026: other.invalid is a reserved non-provider origin used only by a known-wrong asset-origin control. No request is dispatched to it. The browser suite requires the control to be refused and still checks the exact digest and version of allowed same-origin assets."
+  created_on: '2026-10-09'
+  expires_on: '2027-01-09'
 - finding_id: hardcoding.12bfb212a1fd99c79a00c83b
   owner: "loop_engine.core.service_runtime.feed_source_collections.json:sources[28].url"
   classification: STRATEGY_OR_PROVIDER_BINDING

@@ -52,13 +52,21 @@ from . import library_page
 from . import public_good_page
 from . import catalogue_feed
 from . import feed_source_collections
+from . import feed_profile_web
+from .feed_profile_web import PATH as FEED_PROFILE_PATH
 from . import dot_pages
 from . import public_good_files
 from . import red_team_page
 from . import status_pages
 from . import support_page
+from . import offering_guides
+from . import gallery_page
 from . import oauth_http
 from . import chatgpt_app
+from . import openapi_tool_server
+# The OpenAPI tool server's addresses under the names the router answers them by (see `openapi_tool_server`).
+from .openapi_tool_server import (DOCUMENT_PATH as TOOL_SERVER_DOCUMENT_PATH, SEARCH_PATH as TOOL_SERVER_SEARCH_PATH,
+                                  MANIFEST_PATH as TOOL_SERVER_MANIFEST_PATH, READ_PATH as TOOL_SERVER_READ_PATH)
 from .web_pages import (CACHEABLE_WEB_ASSETS, CREATIVE_PREVIEW_PATH, GENERATED_WEB_FILES, HTML_MEDIA_TYPE, PUBLIC_ASSET_CACHE_CONTROL,
                         WEB_ASSETS, asset_etag, missing_address_page, served_asset, server_error_page,
                         validator_matches)
@@ -179,8 +187,8 @@ RETRY_REFUSAL_VERSION = "service_retry_refusal/v1"
 #: service for download access (September 27, 2026).
 PLAN_REQUIRED_CODE = "plan_required"
 PLAN_REQUIRED_VERSION = "service_plan_required/v1"
-#: The one plan the service sells, as the pricing page names it.
-PLAN_NAME = "Agent Feeds + Harness Files"
+#: The library subscription's customer-facing name. Stored billing identities remain unchanged.
+PLAN_NAME = "Pro"
 RETRY_AFTER_SECONDS = {"usage_store_busy": 1, "store_busy": 1}
 #: The deepest request or host file this service reads nests about five
 #: containers. The reader refuses anything deeper before it parses, because the
@@ -227,6 +235,7 @@ API_ROUTES = {
     OPENAI_APPS_CHALLENGE_PATH: ("GET",),
     "/api/v1/health": ("GET",),
     "/api/v1/capabilities": ("GET",),
+    feed_profile_web.PATH: ("POST",),
     public_good_page.COLLECTION_PATH: ("GET",),
     "/api/v1/public-good/files": ("GET",),
     "/api/v1/billing/webhook": ("POST",),
@@ -251,6 +260,8 @@ API_ROUTES = {
     "/api/v1/provisioning": ("POST",),
     "/api/v1/download": ("POST",),
     "/api/v1/retrieval": ("POST",),
+    # The OpenAPI tool server: its document, and three protocol tools as plain POST operations.
+    **openapi_tool_server.ROUTES,
     BILLING_PLANS_PATH: ("GET",),
     BILLING_CHECKOUT_PATH: ("POST",),
     BILLING_PORTAL_PATH: ("POST",),
@@ -270,9 +281,10 @@ DECLARED_ROUTES = (*API_ROUTES, PROTOCOL_PATH, *WEB_ASSETS, *GENERATED_WEB_FILES
 #: to capture, because no recording choice may record a credential. The refusal
 #: itself is still recorded. A staff sign-up link request carries email
 #: addresses, which the published privacy notice keeps with the identity
-#: provider, so its body is never kept either.
+#: provider, so its body is never kept either. Ephemeral reading-profile
+#: selections also stay out of diagnostic bodies at every capture level.
 CREDENTIAL_BODY_ROUTES = ("/api/v1/account/signup", PROMOTION_REDEMPTION_PATH, ADMIN_SIGN_UP_LINKS_PATH,
-                          *oauth_http.CREDENTIAL_ROUTES)
+                          *oauth_http.CREDENTIAL_ROUTES, feed_profile_web.PATH)
 
 
 class ServiceHttpError(ValueError):
@@ -449,9 +461,11 @@ def _json_bytes(value):
 
 def _protocol_cost(value):
     """The bytes one value adds to a protocol tool answer, which carries every record twice: as structured content,
-    and as the JSON text of the same record inside a text block, where that text is escaped once more."""
+    and as UTF-8 JSON text inside a text block, where that text is escaped once more. The modern protocol's outer
+    JSON wrapper ASCII-escapes Unicode. Budget that form; the legacy UTF-8 wrapper can only be smaller."""
     encoded = _json_bytes(value)
-    return len(encoded) + len(json.dumps(encoded.decode("utf-8"), ensure_ascii=False).encode("utf-8"))
+    return (len(json.dumps(value, ensure_ascii=True, separators=(",", ":"), allow_nan=False).encode("utf-8"))
+            + len(json.dumps(encoded.decode("utf-8"), ensure_ascii=True).encode("utf-8")))
 
 
 def _delivered_file(entry, data):
@@ -802,6 +816,8 @@ def _status(error):
     code = getattr(error, "code", "operation_failed")
     if isinstance(error, ServiceHttpError):
         return error.status, code
+    if code in ("response_limit_exceeded", "download_limit_exceeded"):
+        return 413, code
     # Closed account creation is a state of the service, not a bad request. The identity codes stay ahead
     # of the authentication answer: the identity adapter raises them as an authentication failure, and an
     # unreachable provider is a service state, not a wrong password.
@@ -1064,6 +1080,16 @@ class ServiceHttpApplication:
                               "scope": "authorized_catalogue_metadata", "returns_bodies": False,
                               "index": "one_reusable_index_for_each_catalogue_view",
                               "filters": "declared_filterable_public_attributes"},
+                # Three protocol tools as plain HTTP operations, for OpenAPI tool-server hosts such as Open WebUI.
+                # Browsers on any site may call them with a bearer token alone; no cookie is accepted.
+                "openapi_tool_server": {"document": TOOL_SERVER_DOCUMENT_PATH,
+                                        "openapi_version": openapi_tool_server.OPENAPI_VERSION,
+                                        "version": openapi_tool_server.DOCUMENT_VERSION,
+                                        "operations": dict(openapi_tool_server.OPERATIONS),
+                                        "cross_origin": "any_origin_bearer_token_only",
+                                        "credentials_allowed": False,
+                                        "allowed_request_headers":
+                                            list(openapi_tool_server.ALLOWED_REQUEST_HEADER_NAMES)},
                 "delivery": {"inline_body_bytes": self.configuration.maximum_inline_body_bytes,
                              "download_bytes": self.configuration.maximum_download_bytes,
                              "download_endpoint": "/api/v1/download", "requires_reauthorization": True,
@@ -1364,7 +1390,10 @@ class ServiceHttpApplication:
         reservation = (self._reserve_public_good(current, view, manifest, fields, self.configuration.maximum_response_bytes)
                        if operation == READ_OPERATION else None)
         result = self.provisioning.invoke_for_principal(current.principal, operation, view=view,
-            **({"public_good_reservation":reservation} if operation == READ_OPERATION else {}), **fields)
+            **({"public_good_reservation": reservation, "delivery_check": lambda _item, meter, answer:
+                self._check_inline_delivery(authentication, view, reservation, meter, answer,
+                    tiered=tiered, encoding=encoding)} if operation == READ_OPERATION else {}),
+            **fields)
         if operation == LIST_OPERATION and callable(getattr(view, "shown_attributes", None)):
             # Each listed row carries the served attributes an account may see (the tier the row already names,
             # the kind of file a harness picks up and the step functions), so the signed-in table filters on
@@ -1464,6 +1493,45 @@ class ServiceHttpApplication:
         latest = self.authenticator.revalidate(authentication)
         self._require_scope(latest, "provisioning:read")
 
+    def _check_inline_delivery(self, authentication, view, reservation, meter_request, answer, *, tiered, encoding):
+        """Size exact verified inline bytes before metering, in the reply's encoding.
+
+        The native owner supplies the read shape and the usage owner supplies
+        its noncommitted acknowledgment. Existing envelope reserves include
+        Loop/JSON wrapping and the MCP answer's second escaped text copy.
+        The real acknowledgment is still produced only by the actual commit.
+        """
+        from dataclasses import asdict
+        from .list_paging import ENVELOPE_RESERVE_BYTES
+        from .usage_meter import acknowledgment_size_preview
+        preview = dict(answer)
+        if meter_request is not None:
+            preview.update(metered=True, metered_unit=meter_request.unit,
+                metering_acknowledgment=asdict(acknowledgment_size_preview(self.runtime, meter_request)))
+        if not tiered:
+            preview = tierless_answer(preview)
+        cost = _protocol_cost(preview) if encoding == PROTOCOL_ENCODING else len(_json_bytes(preview))
+        reserve = PROTOCOL_ANSWER_RESERVE_BYTES if encoding == PROTOCOL_ENCODING else ENVELOPE_RESERVE_BYTES
+        if cost + reserve > self.configuration.maximum_response_bytes:
+            raise ServiceRuntimeError("response_limit_exceeded")
+        return self._check_prepared_delivery(authentication, view, reservation)
+
+    def _check_prepared_delivery(self, authentication, view, reservation):
+        """Full transport authority after selected bytes, before the durable unit.
+
+        The domain checks its own principal/grant again and the existing usage
+        transaction guards them. Transport completion still revalidates before
+        releasing bytes; a later loss is not proof of network delivery.
+        """
+        try:
+            current = self.authenticator.revalidate(authentication)
+            self._require_scope(current, "provisioning:read")
+            if reservation is not None:
+                self.provisioning.public_good.revalidate(reservation, current.principal, view)
+            return current.oauth_context.authority_guards if current.oauth_context is not None else ()
+        except (HttpAuthenticationError, ServiceHttpError) as refusal:
+            raise ServiceRuntimeError(refusal.code) from None
+
     def _protocol_read(self, authentication, fields, step=None, completions=None):
         """`provisioning_read` over the protocol: a single-file item's text inline, or a package's files by page.
 
@@ -1494,7 +1562,10 @@ class ServiceHttpApplication:
                 raise ServiceHttpError("download_required", 413)
             reservation = self._reserve_public_good(current, view, manifest, fields, self.configuration.maximum_response_bytes)
             result = self.provisioning.invoke_for_principal(current.principal, READ_OPERATION, view=view,
-                public_good_reservation=reservation, **fields)
+                public_good_reservation=reservation,
+                delivery_check=lambda _item, meter, answer: self._check_inline_delivery(
+                    authentication, view, reservation, meter, answer, tiered=True, encoding=PROTOCOL_ENCODING),
+                **fields)
             if completions is not None:
                 completions.append((reservation, authentication, view))
             else:
@@ -1509,43 +1580,62 @@ class ServiceHttpApplication:
             if start >= len(package.files):
                 raise ServiceHttpError("file_offset_out_of_range")
             chosen = package.files[start:]
+        if all(entry.size_bytes > self.configuration.maximum_download_bytes for entry in chosen):
+            raise ServiceHttpError("download_limit_exceeded", 413)
         reservation = self._reserve_public_good(current, view, manifest, fields, self.configuration.maximum_response_bytes)
-        value = self.provisioning.invoke_for_principal(current.principal, READ_OPERATION, view=view,
-            public_good_reservation=reservation, **fields)
-        self.authenticator.revalidate(authentication)
-        record = {"record_type": PACKAGE_READ_VERSION, "tenant_id": value["tenant_id"],
-                  "identity": value["identity"], "digest": value["digest"], "size_bytes": value["size_bytes"],
-                  "package": view.package_summary(value["identity"]),
-                  "selection": {"path": selected_path} if selected_path is not None else {"file_offset": start},
-                  "files": [], "omitted": [], "next_file_offset": None,
-                  "download_endpoint": "/api/v1/download",
-                  **{key: value[key] for key in ("qualification_basis", "library_tier", "library_tier_label",
-                                                 "metered", "metered_unit", "metering_acknowledgment")}}
         budget = self.configuration.maximum_response_bytes - PROTOCOL_ANSWER_RESERVE_BYTES
-        alone = used = _protocol_cost(record)
-        for index, entry in enumerate(chosen, start):
-            if entry.size_bytes > self.configuration.maximum_download_bytes:
-                record["omitted"].append(_omitted_file(entry, "larger_than_the_download_limit"))
-                used += _protocol_cost(record["omitted"][-1]) + 4
-                continue
-            # Both copies of the answer hold at least the file's own bytes, so a file that cannot fit even alone
-            # is known before it is read.
-            if alone + 2 * entry.size_bytes > budget:
-                record["omitted"].append(_omitted_file(entry, "too_large_for_one_protocol_answer"))
-                used += _protocol_cost(record["omitted"][-1]) + 4
-                continue
-            ((data, _entry),) = view.read_package_entries(value["identity"], (entry,))
-            row = _delivered_file(entry, data)
-            cost = _protocol_cost(row) + 4
-            if alone + cost > budget:
-                record["omitted"].append(_omitted_file(entry, "too_large_for_one_protocol_answer"))
-                used += _protocol_cost(record["omitted"][-1]) + 4
-                continue
-            if used + cost > budget:
-                record["next_file_offset"] = index
-                break
-            record["files"].append(row)
-            used += cost
+        prepared = []
+        def prepare_selected(item, meter_request, _body_answer):
+            from dataclasses import asdict
+            from .usage_meter import acknowledgment_size_preview
+            preview = asdict(acknowledgment_size_preview(self.runtime, meter_request)) if meter_request else None
+            record = {"record_type": PACKAGE_READ_VERSION, "tenant_id": current.principal.tenant_id,
+                      "identity": item.identity, "digest": item.digest, "size_bytes": item.size_bytes,
+                      "package": view.package_summary(item.identity),
+                      "selection": {"path": selected_path} if selected_path is not None else {"file_offset": start},
+                      "files": [], "omitted": [], "next_file_offset": None,
+                      "download_endpoint": "/api/v1/download",
+                      **{key: manifest[key] for key in ("qualification_basis", "library_tier", "library_tier_label")},
+                      "metered": meter_request is not None, "metered_unit": meter_request.unit if meter_request else None,
+                      "metering_acknowledgment": preview}
+            alone = used = _protocol_cost(record)
+            for index, entry in enumerate(chosen, start):
+                if entry.size_bytes > self.configuration.maximum_download_bytes:
+                    record["omitted"].append(_omitted_file(entry, "larger_than_the_download_limit"))
+                    used += _protocol_cost(record["omitted"][-1]) + 4
+                    continue
+                # Preserve response-size admission before remote body work.
+                if alone + 2 * entry.size_bytes > budget:
+                    record["omitted"].append(_omitted_file(entry, "too_large_for_one_protocol_answer"))
+                    used += _protocol_cost(record["omitted"][-1]) + 4
+                    continue
+                ((data, _entry),) = view.read_package_entries(item.identity, (entry,))
+                row = _delivered_file(entry, data)
+                cost = _protocol_cost(row) + 4
+                if alone + cost > budget:
+                    record["omitted"].append(_omitted_file(entry, "too_large_for_one_protocol_answer"))
+                    used += _protocol_cost(record["omitted"][-1]) + 4
+                    continue
+                if used + cost > budget:
+                    record["next_file_offset"] = index
+                    break
+                record["files"].append(row)
+                used += cost
+            # An omissions-only answer has delivered no file. Keep it outside
+            # the durable usage boundary; callers can use the existing raw
+            # download route for a file within that route's byte allowance.
+            if not record["files"] or _protocol_cost(record) > budget:
+                raise ServiceRuntimeError("response_limit_exceeded")
+            guards = self._check_prepared_delivery(authentication, view, reservation)
+            prepared.append(record)
+            return guards
+        value = self.provisioning.invoke_for_principal(current.principal, READ_OPERATION, view=view,
+            public_good_reservation=reservation, delivery_check=prepare_selected, **fields)
+        self.authenticator.revalidate(authentication)
+        record = prepared[0]
+        # Only the actual existing meter can acknowledge a committed unit.
+        record.update({key: value[key] for key in ("qualification_basis", "library_tier", "library_tier_label",
+                                                   "metered", "metered_unit", "metering_acknowledgment")})
         if completions is not None:
             completions.append((reservation, authentication, view))
         else:
@@ -1953,6 +2043,18 @@ class ServiceHttpApplication:
             (lambda: self._invoke(context, operation, arguments, tiered=True,
                                   encoding=PROTOCOL_ENCODING, step=step))))
 
+    @staticmethod
+    def tool_server_tools():
+        """The description and input schema of each protocol tool the OpenAPI tool server serves, as `/mcp` lists it."""
+        return {"intelligence_search": (PROTOCOL_TOOL_DESCRIPTIONS["search"], http_retrieval_schema()),
+                "provisioning_manifest": (PROTOCOL_TOOL_DESCRIPTIONS[MANIFEST_OPERATION],
+                                          protocol_tool_schema(MANIFEST_OPERATION)),
+                "provisioning_read": (PROTOCOL_TOOL_DESCRIPTIONS[READ_OPERATION], protocol_tool_schema(READ_OPERATION))}
+
+    def tool_server_document(self):
+        """The OpenAPI 3.1 document of the tool server for this host's published base address."""
+        return openapi_tool_server.document(self.configuration.public_base_url, self.tool_server_tools())
+
     def _protocol_library(self):
         """Refuse the whole application when the installed protocol library cannot speak a version the host serves."""
         from mcp.types.version import HANDSHAKE_PROTOCOL_VERSIONS as LIBRARY_HANDSHAKE
@@ -2251,16 +2353,36 @@ class ServiceHttpApplication:
             scope[SCOPE_REFERENCE_KEY] = reference
             sent_origins = request.headers.getlist("origin")
             origin = selected_origin(sent_origins)
-            cors = ({"Access-Control-Allow-Origin": origin, "Vary": "Origin",
-                     "Access-Control-Expose-Headers": "X-Content-SHA256, X-Loop-Engine-Record-Type"}
-                    if origin is not None and origin in config.allowed_origins else {})
+            # The OpenAPI tool server answers a browser on any site that sends a bearer token, and invites no cookie
+            # (see `openapi_tool_server`). Every other address shares its answers with this service's own origins only.
+            open_surface = openapi_tool_server.handles(request.url.path)
+            if open_surface:
+                cors = openapi_tool_server.response_headers(sent_origins)
+            else:
+                cors = ({"Access-Control-Allow-Origin": origin, "Vary": "Origin",
+                         "Access-Control-Expose-Headers": "X-Content-SHA256, X-Loop-Engine-Record-Type"}
+                        if origin is not None and origin in config.allowed_origins else {})
             try:
                 if (len(request.headers.getlist("host")) != 1
                         or request.headers["host"] not in config.allowed_hosts):
                     raise ServiceHttpError("invalid_host", 421)
-                if sent_origins and (origin is None or origin not in config.allowed_origins):
+                if open_surface:
+                    # A request that names several origins names none, as everywhere else.
+                    if len(sent_origins) > 1:
+                        raise ServiceHttpError("invalid_origin", 403)
+                elif sent_origins and (origin is None or origin not in config.allowed_origins):
                     raise ServiceHttpError("invalid_origin", 403)
-                if request.method == "OPTIONS":
+                if request.method == "OPTIONS" and open_surface:
+                    try:
+                        accepted = openapi_tool_server.preflight(
+                            request.url.path, sent_origins, request.headers.getlist("access-control-request-method"),
+                            request.headers.getlist("access-control-request-headers"))
+                    except openapi_tool_server.CrossOriginRefusal:
+                        # Refused without any sharing header, so the browser does not send the request it asked about.
+                        cors = {}
+                        raise ServiceHttpError(openapi_tool_server.REFUSAL_CODE, 403) from None
+                    response = Response(status_code=204, headers=accepted)
+                elif request.method == "OPTIONS":
                     if origin not in config.allowed_origins:
                         raise ServiceHttpError("invalid_origin", 403)
                     response = Response(status_code=204, headers={**cors,
@@ -2492,6 +2614,16 @@ class ServiceHttpApplication:
             # The support page, with the support address the host file names once mail to it is delivered.
             asset = support_page.rendered(path, method, self.configuration.display_name, request.headers.get("host"),
                                           self.configuration.support_email)
+        if asset is None and offering_guides.handles(path):
+            # The guide pages of Agent Feeds and Harness Files. Harness Files counts the catalogue served now, read once
+            # for each served catalogue beside the library page's own render.
+            view = self.provisioning.current_view() if path == offering_guides.HARNESS_FILES else None
+            asset = offering_guides.rendered(path, method, self.configuration.display_name, request.headers.get("host"),
+                                             view)
+        if asset is None:
+            # The gallery, its item pages and its site map, from the packaged gallery record. A private item's address
+            # answers the standard missing page below.
+            asset = gallery_page.rendered(path, method, self.configuration.display_name, request.headers.get("host"))
         if asset is not None:
             body, media_type = asset
             headers = self._page_headers(creative_preview=path == CREATIVE_PREVIEW_PATH)
@@ -2626,6 +2758,21 @@ class ServiceHttpApplication:
                 raise ServiceHttpError("billing_reconciliation_pending", 503, details=output["result"])
         elif path == "/api/v1/capabilities" and method == "GET":
             output = self.capabilities()
+        elif path == TOOL_SERVER_DOCUMENT_PATH and method == "GET":
+            # Public, like the capabilities: a tool-server host reads it before it holds a credential, and Open WebUI
+            # sends the person's bearer token with this read too, which is neither needed nor checked here.
+            return Response(_json_bytes(self.tool_server_document()), media_type="application/json")
+        elif path == FEED_PROFILE_PATH and method == "POST":
+            if request.query_params:
+                raise ServiceHttpError("unknown_request_field")
+            async with self._limited(request):
+                fields = _parse_json(await self._body(request, maximum_bytes=min(
+                    feed_profile_web.MAXIMUM_REQUEST_BYTES, self.configuration.maximum_request_bytes)))
+                try:
+                    output = await self._work(lambda: invoke_http_service_as_loop("feed_profile_export",
+                        lambda: feed_profile_web.export(fields)))
+                except feed_profile_web.profiles.FeedProfileError as error:
+                    raise ServiceHttpError(error.code, 400) from None
         elif path == "/api/v1/account/identity" and method == "GET":
             if self.browser_identity is None:
                 raise ServiceHttpError("browser_identity_unavailable", 503)
@@ -2859,17 +3006,29 @@ class ServiceHttpApplication:
                             if package is None:
                                 raise ServiceRuntimeError("package_files_unavailable")
                             planned = package.file(selected_path).size_bytes
+                            if planned > self.configuration.maximum_download_bytes:
+                                raise ServiceHttpError("download_limit_exceeded", 413)
                         reservation = self._reserve_public_good(current, view, manifest, fields, planned)
+                        selected_bytes = []
+                        def prepare_selected(item, _meter_request, _body_answer):
+                            if selected_path is None:
+                                return self._check_prepared_delivery(context, view, reservation)
+                            payload, entry = view.read_package_file(item.identity, selected_path)
+                            if len(payload) > self.configuration.maximum_download_bytes:
+                                raise ServiceRuntimeError("download_limit_exceeded")
+                            guards = self._check_prepared_delivery(context, view, reservation)
+                            selected_bytes.append((payload, entry))
+                            return guards
                         value = self.provisioning.invoke_for_principal(current.principal, READ_OPERATION,
-                            view=view, public_good_reservation=reservation, **fields)
+                            view=view, public_good_reservation=reservation,
+                            delivery_check=prepare_selected, **fields)
                         self.authenticator.revalidate(context)
                         if len(value["body"].encode("utf-8")) > self.configuration.maximum_download_bytes:
                             raise ServiceHttpError("download_limit_exceeded", 413)
                         if selected_path is not None:
-                            # The item's own read was authorized and metered
-                            # above; one file of its package is then read from
-                            # the same view and checked against its digest.
-                            payload, entry = view.read_package_file(value["identity"], selected_path)
+                            # These exact bytes passed integrity and transport
+                            # authority before the item's unit was committed.
+                            payload, entry = selected_bytes[0]
                             if len(payload) > self.configuration.maximum_download_bytes:
                                 raise ServiceHttpError("download_limit_exceeded", 413)
                             completions.append((reservation, context, view))
@@ -2894,6 +3053,21 @@ class ServiceHttpApplication:
                                                 step_effects(request.headers))
                 output = await self._tenant_work(context, lambda: invoke_http_retrieval_as_loop(
                     lambda: self._search(context, fields, step)))
+            elif (path in (TOOL_SERVER_SEARCH_PATH, TOOL_SERVER_MANIFEST_PATH, TOOL_SERVER_READ_PATH)
+                  and method == "POST"):
+                # The OpenAPI tool server: the protocol tool this address names, with the JSON body as its arguments,
+                # through the one dispatch `/mcp` uses, so the schemas, scopes, metering and refusals are the tool's.
+                if request.query_params:
+                    raise ServiceHttpError("unknown_request_field")
+                arguments = _parse_json(await self._body(request))
+                if not isinstance(arguments, dict):
+                    raise ServiceHttpError("object_required")
+                from jsonschema import ValidationError
+                try:
+                    output = await self._protocol_output(context, openapi_tool_server.OPERATIONS[path], arguments,
+                                                         step_effects(request.headers), completions)
+                except ValidationError:
+                    raise ServiceHttpError("invalid_request") from None
             else:
                 raise ServiceHttpError("route_unavailable", 404)
         if output.get("record_type") != RESULT_VERSION:

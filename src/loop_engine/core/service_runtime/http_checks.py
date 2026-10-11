@@ -37,7 +37,8 @@ def _web_checks(check, root):
             script = httpx.get(base + "/assets/service.js", trust_env=False)
             check("packaged_public_workspace_loads_without_exposing_private_source",
                   public.status_code == script.status_code == 200
-                  and "Intelligence workspace" in public.text
+                  and '<section data-view="workspace"' in public.text
+                  and '<section data-view="workspace" hidden' not in public.text
                   and "frame-ancestors 'none'" in public.headers["content-security-policy"]
                   and public.headers["referrer-policy"] == "no-referrer"
                   and "localStorage" not in script.text
@@ -64,6 +65,8 @@ def _web_checks(check, root):
             from .catalogue_feed import PAGE as feed_page_address
             from .dot_pages import ROUTES as dot_routes
             from .support_page import handles as _rendered_support_page
+            from .offering_guides import handles as _rendered_offering_guide
+            from .gallery_page import handles as _rendered_gallery_page
             linked = {value for value in _re.findall(r'(?:href|src)="(/[^"#?]*)"', page)}
             # The model directory's pages are rendered from its records after the page table finds nothing, the
             # library page from the catalogue the service serves, the decision red team page from its packaged record,
@@ -76,9 +79,14 @@ def _web_checks(check, root):
                               and value != feed_page_address
                               and value not in dot_routes
                               and not _rendered_support_page(value)
+                              and not _rendered_offering_guide(value)
+                              and not _rendered_gallery_page(value)
                               and not value.startswith("/api/")
                               and not value.startswith("/.well-known/") and value != "/mcp")
             check("every_internal_address_on_the_page_is_served", not unserved)
+            check("rendered_gallery_and_offering_routes_refuse_unknown_addresses",
+                  not _rendered_gallery_page("/gallery/not-a-published-item")
+                  and not _rendered_offering_guide("/feeds/setup/not-a-page"))
             check("the_declared_feed_page_is_actually_served",
                   httpx.get(base + feed_page_address, trust_env=False).status_code == 200)
             # The addresses are read from the page; a page that names none

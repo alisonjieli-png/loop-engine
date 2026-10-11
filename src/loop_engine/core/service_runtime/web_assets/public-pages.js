@@ -211,22 +211,21 @@
      task outcome and folder remains illustrative; none is a customer run.
      The release recorder updates reference facts from the packaged manifest. */
   const HERO_SCENARIOS = {
-    "dedupe": {
-      label: "Deduplicate a customer table",
+    "api": {
+      label: "Plan an API integration",
       evidence_class: "recorded_catalogue",
       evidence_label: "Recorded starter-catalogue results",
       evidence_href: "/docs/searching-and-retrieving",
       evidence_link: "Recorded reference scope",
-      outcome: "Example objective: identify duplicate candidates and propose merges for review",
-      query: "find duplicate customer records",
+      outcome: "Example objective: define the API integration's inputs, permissions and acceptance checks",
+      query: "plan an API integration and write its contracts",
       results: [
-        {name: "find_duplicate_records_with_blocking_keys", kind: "skill", licence: "MIT", size: "2.7 KB", digest: "984e29c538e36b5c894e50583e7839cdbf8222ff9f58efbe9f1fc7bd7f94a35b"},
-        {name: "score_duplicate_pairs_by_weakest_signal", kind: "skill", licence: "MIT", size: "2.6 KB", digest: "5f381262eb12f0c5c9067809b8532d366025a66c4b9f6a02a128d38714bb3df9"}
+        {name: "orient_on_a_task_and_write_its_contracts", kind: "skill", licence: "MIT", size: "2.9 KB", digest: "a1240b9bf0ad23a6ced689e91fa2347a6bddd08fc33a45f906bee3427c9c2efb"},
+        {name: "plan_and_split_work_with_explicit_joins", kind: "skill", licence: "MIT", size: "2.7 KB", digest: "7ca77d62af0107b54dd7789bdd1033da5282f26d1adcb7e94bc620b7bc953316"}
       ],
       chosen: 0,
-      step: "step-3-find-duplicates",
-      tree: [["CLAUDE.md", 1], [".claude/skills/", 1], ["find-duplicate-records-with-blocking-keys/", 2], ["SKILL.md", 3], [".mcp.json", 1], [".baltor/step.lock.json", 1]],
-      replaces: "reading the whole table by hand to decide which rows are the same customer"
+      step: "step-1-plan-api-integration",
+      replaces: "rewriting the plan and its handoff rules for every integration"
     },
     "overnight": {
       label: "Investigate a validation gap",
@@ -374,10 +373,10 @@
     button.addEventListener("click", () => paintScenario(key));
   });
   window.__baltorPaintTree = () => {
-    const key = document.querySelector(".hero-terminal")?.dataset.heroScenario || "dedupe";
-    paintHeroTree(HERO_SCENARIOS[key] || HERO_SCENARIOS.dedupe);
+    const key = document.querySelector(".hero-terminal")?.dataset.heroScenario || "api";
+    paintHeroTree(HERO_SCENARIOS[key] || HERO_SCENARIOS.api);
   };
-  if (heroScenarioButtons.length) paintScenario("dedupe");
+  if (heroScenarioButtons.length) paintScenario("api");
 
   /* Each view acts when it opens: service.js marks the open view on the body. */
   let opened = "";

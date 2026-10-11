@@ -190,7 +190,8 @@ def _served(site_map=None):
     """Serve an address as the service does: its page table first, then the pages the model directory renders, then
     the library page, rendered here from a view that serves nothing because no catalogue runs in a check, and the
     support page last."""
-    from . import catalogue_feed, dot_pages, library_page, red_team_page, status_pages, support_page, public_good_page
+    from . import (catalogue_feed, dot_pages, gallery_page, library_page, offering_guides, red_team_page, status_pages,
+                   support_page, public_good_page)
     from .model_directory_pages import rendered_page
 
     def serve(address, host):
@@ -211,6 +212,10 @@ def _served(site_map=None):
             answer = status_pages.rendered(address, "GET", DISPLAY_NAME, host)
         if answer is None:
             answer = support_page.rendered(address, "GET", DISPLAY_NAME, host)
+        if answer is None:
+            answer = offering_guides.rendered(address, "GET", DISPLAY_NAME, host, library_page.empty_view())
+        if answer is None:
+            answer = gallery_page.rendered(address, "GET", DISPLAY_NAME, host)
         return answer
     return serve
 

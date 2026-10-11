@@ -11,8 +11,9 @@ import unittest
 from unittest.mock import patch
 
 from loop_engine.core.service_runtime import feed_source_collections as sources
-from knowledge_radar import feed_profiles as profiles
-from knowledge_radar.feed_profile_files import GUIDE_FILE, PROFILE_FILE, check_folder, compile_files, write_new
+from loop_engine.core.service_runtime import feed_profiles as profiles
+from loop_engine.core.service_runtime.feed_profiles import compile_files
+from knowledge_radar.feed_profile_files import GUIDE_FILE, PROFILE_FILE, check_folder, write_new
 from tools.build_feed_reading_profile import main
 
 TODAY = "2026-10-09"
@@ -55,7 +56,7 @@ class ProfileTests(unittest.TestCase):
         for changed in (request(collection_ids=("not-a-collection",)), request(topics=("Not a topic",))):
             with self.assertRaises(profiles.FeedProfileError):compile_files(changed)
         record = request().record()
-        for changed in ({**record, "record_type": "agent_feed_reading_profile_request/v2"}, {**record, "api_key": "not-accepted"}):
+        for changed in ({**record, "record_type": "agent_feed_reading_profile_request/v1"}, {**record, "api_key": "not-accepted"}):
             with self.assertRaises(profiles.FeedProfileError):profiles.read_request(changed)
         self.assertEqual(profiles.read_request(record), request())
 
@@ -89,7 +90,7 @@ class ProfileTests(unittest.TestCase):
         data = sources.parse_directory(json.dumps(record).encode())
         with self.assertRaisesRegex(profiles.FeedProfileError, "source_withdrawn"):
             profiles.validate(profile, as_of=TODAY, directory=data)
-        with patch("knowledge_radar.feed_profiles.current_directory", return_value=data):
+        with patch.object(profiles, "current_directory", return_value=data):
             with self.assertRaisesRegex(profiles.FeedProfileError, "source_withdrawn"):
                 profiles.validate(profile, as_of=TODAY)
         record = directory_record();record["sources"][0]["description"] += " Clarified scope."
@@ -140,7 +141,7 @@ class ProfileTests(unittest.TestCase):
     def test_known_wrong_removed_age_policy_would_accept_the_stale_input(self):
         stale = request(as_of="2026-10-17")
         with self.assertRaises(profiles.FeedProfileError):profiles.build(stale)
-        with patch("knowledge_radar.feed_profiles.freshness", return_value={"source_documentation_status": "incorrectly_current"}):
+        with patch.object(profiles, "freshness", return_value={"source_documentation_status": "incorrectly_current"}):
             self.assertEqual(profiles.build(stale)["freshness"]["source_documentation_status"], "incorrectly_current")
 
 

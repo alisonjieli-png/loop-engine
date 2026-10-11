@@ -19,7 +19,10 @@ Steps, in order, each recorded with what decided it:
    ``WWW-Authenticate`` challenge that names the protected-resource metadata on the published base.
 3. ``discovery_matches``: that metadata names the resource and its authorization server, whose metadata offers
    S256 PKCE, dynamic registration of public clients, refresh and revocation.
-4. ``claude_code_needs_authentication``: ``claude mcp list`` reports the server as needing authentication.
+4. ``claude_code_needs_authentication``: ``claude mcp list`` reports the server as needing authentication. A grant
+   that an earlier run could not end (its revocation was refused) is revoked first and its tokens are removed from
+   Claude Code's store, keeping Claude Code's client registration; the record names it in ``earlier_grant``. When that
+   revocation is refused too, this step fails and the tokens stay, so the next run tries again.
 5. ``claude_code_authorization_requested``: ``claude mcp login baltor --no-browser``, in a pseudo-terminal, prints
    the authorization address: on the published base, the code flow, S256, the exact resource, a loopback redirect,
    only offered scopes, a client identity and a state.
@@ -38,7 +41,12 @@ Steps, in order, each recorded with what decided it:
     whenever tokens were issued, even after a failed step, so a run leaves no live grant behind.
 
 The record holds no password, token, code or body text. The checking account takes a founding place when one is
-free, as any new account does; the record names its access source.
+free, as any new account does; the record names its access source as the journey state recorded it and, once
+tokens exist, as the service reports it now (``live_access_source`` from ``/api/v1/session``).
+
+Every request names this check in its User-Agent. Cloudflare's browser integrity check refuses Python's default
+``Python-urllib`` user agent with error 1010 on any address the edge does not exempt; since the edge cutover of
+October 7, 2026 that includes the token and revocation addresses, and the nightly runs of October 8 and 9 failed on it.
 
     PYTHONPATH=src:tools python tools/check_quickstart_oauth.py --origin https://baltor.ai \\
         --state-dir ~/.le-safety/quickstart-oauth [--create-account]
@@ -90,6 +98,12 @@ SECRET_FIELDS = re.compile(r"((?:code|state|code_challenge|access_token|refresh_
 ACCESS_PREFIX, REFRESH_PREFIX = "boat_", "bort_"
 TIMEOUT = 60
 LOGIN_SECONDS = 300
+#: The name every request of this check carries. A library's default user agent meets Cloudflare's error 1010 at the
+#: edge (observed on /token and /revoke from October 8, 2026), so the check names itself as every Baltor client does.
+USER_AGENT = "baltor-quickstart-oauth-check/1.1"
+#: The token fields Claude Code keeps for a server. Removing only these keeps its client registration, so a clean-up
+#: never makes Claude Code register another client.
+TOKEN_FIELDS = ("accessToken", "refreshToken", "expiresAt")
 #: How long Claude Code's own listener may take to finish after the browser delivered the redirect to it.
 LISTENER_SECONDS = 30
 CONSENT_SECONDS = 180
@@ -126,7 +140,7 @@ class Http:
         self.calls = 0
 
     def request(self, method, url, *, json_body=None, form=None, headers=None):
-        fields = {"Accept": "application/json", **(headers or {})}
+        fields = {"Accept": "application/json", "User-Agent": USER_AGENT, **(headers or {})}
         data = None
         if json_body is not None:
             data, fields["Content-Type"] = json.dumps(json_body).encode(), "application/json"
@@ -356,6 +370,56 @@ def claude_tokens(folder: Path, endpoint: str) -> dict:
     return {}
 
 
+def clear_claude_tokens(folder: Path, endpoint: str) -> int:
+    """Remove the server's tokens from Claude Code's store, keeping its client registration; the entries changed.
+
+    The store is rewritten whole through a private temporary file, so a failure leaves the earlier file in place."""
+    store = folder / CLAUDE_FOLDER / ".credentials.json"
+    if not store.is_file():
+        return 0
+    value = json.loads(store.read_text(encoding="utf-8")) or {}
+    changed = 0
+    for entry in (value.get("mcpOAuth") or {}).values():
+        if isinstance(entry, dict) and entry.get("serverName") == SERVER and entry.get("serverUrl") == endpoint \
+                and any(name in entry for name in TOKEN_FIELDS):
+            for name in TOKEN_FIELDS:
+                entry.pop(name, None)
+            changed += 1
+    if changed:
+        written = store.with_name(store.name + ".clearing")
+        descriptor = os.open(written, os.O_WRONLY | os.O_CREAT | os.O_TRUNC, 0o600)
+        with os.fdopen(descriptor, "w", encoding="utf-8") as stream:
+            json.dump(value, stream)
+        os.replace(written, store)
+    return changed
+
+
+def end_earlier_grant(http: Http, folder: Path, endpoints: dict, endpoint: str, version: str, secrets: list):
+    """End a delegation an earlier run left in Claude Code's store, before this run asks Claude Code for its status.
+
+    Returns None when the store holds no tokens for the server, and "revoked" once the service confirmed the
+    revocation and the tokens were removed. A refused revocation raises, and the tokens stay for the next run."""
+    held = claude_tokens(folder, endpoint)
+    secrets.extend(value for value in held.values() if value)
+    if not (held.get("access") or held.get("refresh")):
+        return None
+    if not (held.get("refresh") and held.get("client_id")):
+        raise CheckFailed("Claude Code's store holds an access token without the refresh token and client that "
+                          "revocation needs")
+    problem = revoke(http, endpoints["revocation"], endpoint, held, version)
+    if problem:
+        raise CheckFailed("a grant left by an earlier run was not revoked: " + problem)
+    clear_claude_tokens(folder, endpoint)
+    return "revoked"
+
+
+def live_access_source(http: Http, base: str, token: str):
+    """The access source the service reports now for the account behind a token, or None when it does not answer."""
+    status, _headers, answer = http.json("GET", base + "/api/v1/session", headers={"Authorization": "Bearer " + token})
+    source = ((answer or {}).get("result") or {}).get("access_source") if status == 200 else None
+    return source if isinstance(source, str) and re.fullmatch(r"[a-z_]{1,40}", source) else None
+
+
 def initialize(http: Http, endpoint: str, token: str, version: str) -> int:
     status, _headers, _raw = http.request("POST", endpoint, json_body={
         "jsonrpc": "2.0", "id": "qs-oauth-init", "method": "initialize",
@@ -373,7 +437,7 @@ def run_check(origin: str, folder: Path, *, claude: str, node: str, create: bool
     http = http or Http()
     rows, facts, secrets = [], {"account": None, "client": None, "consent": None, "callback_delivered_by": None,
                                 "identity": None, "digest_prefix": None, "request_id": None,
-                                "catalogue_release": None}, []
+                                "catalogue_release": None, "earlier_grant": None}, []
     tokens, endpoints = {}, {}
 
     def step(name, passed, detail=""):
@@ -441,6 +505,8 @@ def run_check(origin: str, folder: Path, *, claude: str, node: str, create: bool
         offered = (resource or {}).get("scopes_supported") or server.get("scopes_supported") or []
         step("discovery_matches", True, "issuer {}, scopes {}".format(issuer, " ".join(offered)))
 
+        # Before Claude Code reads its store (`mcp get` checks the server's health and may refresh a stored grant).
+        facts["earlier_grant"] = end_earlier_grant(http, folder, endpoints, endpoint, version, secrets)
         code, shown = run_claude(claude, ["mcp", "get", SERVER], environment, folder / PROJECT_FOLDER)
         if code != 0 or endpoint not in shown:
             run_claude(claude, ["mcp", "remove", SERVER, "--scope", "local"], environment, folder / PROJECT_FOLDER)
@@ -496,6 +562,7 @@ def run_check(origin: str, folder: Path, *, claude: str, node: str, create: bool
         if after is None or "connected" not in after.lower():
             raise CheckFailed("claude mcp list showed {!r} after signing in".format(after))
         step("claude_code_connected", True, after)
+        facts["account"]["live_access_source"] = live_access_source(http, published_base, tokens["access"])
 
         service = quickstarts.Service(published_base, tokens["access"])
         service.step_effects = effects or None
@@ -533,6 +600,13 @@ def run_check(origin: str, folder: Path, *, claude: str, node: str, create: bool
         if tokens.get("refresh") and tokens.get("client_id") and endpoints.get("revocation"):
             revoked = revoke(http, endpoints["revocation"], endpoint, tokens, version)
             step("revoked", revoked == "", revoked or "revocation ended the delegation; the access token is refused")
+            if revoked == "":
+                # The ended grant's tokens leave Claude Code's store too, so the next run starts from a store that
+                # holds only the client registration. A grant whose revocation failed stays for the next run.
+                try:
+                    clear_claude_tokens(folder, endpoint)
+                except (OSError, ValueError):
+                    pass
     passed = bool(rows) and all(row["passed"] for row in rows) and [row["name"] for row in rows] == STEPS
     return {"record_type": RECORD_TYPE, "checked_at": now.isoformat(), "origin": origin,
             "published_base": published_base, "harness": QUICKSTART.harness,

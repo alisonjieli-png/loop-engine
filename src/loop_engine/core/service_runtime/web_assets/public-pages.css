@@ -290,6 +290,8 @@ main:has(> [data-view=learning]:not([hidden])),main:has(> [data-view=security]:n
 .content-band .case-links,.showcase-band .case-links{margin-top:.25rem}
 /* Get set up: the three ways an agent reaches Baltor and the entries for MCP apps without a tab. These rules live here, in the
    stylesheet of the one-page app, so the shared service.css that every standalone page loads stays the same size. */
+[data-view=setup] .setup-oauth-apps{margin:.75rem 0;padding-left:1.25rem;display:grid;gap:.5rem;line-height:1.55}
+[data-view=setup] .setup-oauth-apps code{overflow-wrap:anywhere}
 [data-view=setup] .setup-ways{padding:0 max(var(--band-gutter),calc((100% - 64rem) / 2)) var(--space-4)}
 [data-view=setup] .setup-ways-head{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:var(--space-1) var(--space-3);margin-bottom:var(--space-2)}
 [data-view=setup] .setup-ways-head h2{margin:0;font-size:1.3125rem;font-weight:600;letter-spacing:-.015em}

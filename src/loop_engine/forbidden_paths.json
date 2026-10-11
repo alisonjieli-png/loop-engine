@@ -335,6 +335,14 @@
         "_FETCH_RECORD = \"baltor_library_fetch_receipt/v2\"",
         "raw = _read(path / \"receipt.json\", MAXIMUM_FETCH_RECORD_BYTES)"
       ],
+      "core/service_runtime/web_assets/gallery/gallery.json": [
+        "inverter(child: Task",
+        "One child run per tick for the repeater. Reactive composites halt only the child that was running.",
+        "Finite state machine with child-node states",
+        "Run one active state at a time from child nodes, with ordered exit and enter calls",
+        "States are found by node name among direct children.",
+        "set_initial(parent_name: StringName, child_name: StringName)"
+      ],
       "nomenclature_conformance.py": [
         "chronicle",
         "A chronicle.",

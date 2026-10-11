@@ -3,7 +3,7 @@
 Kind: generated view. Do not edit by hand. The only task authority is
 [roadmap.yaml](roadmap.yaml); change it, then run
 `PYTHONPATH=src:tools .venv/bin/python tools/build_development_tracker.py`.
-Source fingerprint: `sha256:895f4e90e16baf0a07028a266cbae9bece7832b6f64392f1e4dbe8c3c7a81cb7`.
+Source fingerprint: `sha256:8b77f2bdcdd05162104275a64d9e3e6c99ea7ff6e267b22ef2588be064051ec3`.
 
 ## Where things stand
 
@@ -15,78 +15,144 @@ Source fingerprint: `sha256:895f4e90e16baf0a07028a266cbae9bece7832b6f64392f1e4db
 | Blocked | 3 |
 | Done | 49 |
 
+## Active working window
+
+October 9 active iteration. The new design is the first release priority. Parallel work has one named owner per boundary. The twelve-hour factory is a bounded production attempt toward one million additional useful files; only qualified, admitted, reconciled and actually served distinct digests count toward the ten-million target. Dates are planning windows, not promises of publication.
+
+The bars are planned work windows. Completion comes only from each task's acceptance and evidence.
+
+```mermaid
+gantt
+    title Current delivery window in UTC
+    dateFormat YYYY-MM-DDTHH:mm:ssZ
+    axisFormat %d %H:%M
+    section Website and release
+    Integrate the new design and interrupted fixes into the live website :active, work0, 2026-10-09T20:09:03+00:00, 3h
+    Review the complete public page and design surface :work1, 2026-10-09T20:09:03+00:00, 3h
+    section Customer feeds
+    Let customers build a distinct reading profile for each agent :active, work2, 2026-10-09T20:09:03+00:00, 3h
+    section Cloudflare migration
+    Qualify authenticated R2 file delivery :work3, 2026-10-09T23:09:03+00:00, 4h
+    Evaluate the customer authentication boundary :work4, 2026-10-09T20:09:03+00:00, 2h
+    Place bounded collectors and durable jobs on Cloudflare :work5, 2026-10-10T03:09:03+00:00, 4h
+    section Component factory
+    Measure and broaden production capacity :active, work6, 2026-10-09T20:09:03+00:00, 12h
+    section Sources and API operations
+    Normalize the supplied provider operations :active, work7, 2026-10-09T23:09:03+00:00, 4h
+    section History and evidence
+    Reconcile recent prompts and action history :active, work8, 2026-10-09T20:09:03+00:00, 3h
+    section Launch and funding
+    Prepare launch, funding and startup-credit material :work9, 2026-10-09T23:09:03+00:00, 5h
+    section Customer outcomes
+    Measure onboarding and product use :work10, 2026-10-10T02:09:03+00:00, 4h
+```
+
+| Task | Owner | Planned start UTC | Planned end UTC | Actual state |
+|---|---|---|---|---|
+| S-6.35.03 | Website and release | 2026-10-09T20:09:03+00:00 | 2026-10-09T23:09:03+00:00 | building |
+| S-6.67.01 | Website and release | 2026-10-09T20:09:03+00:00 | 2026-10-09T23:09:03+00:00 | ready |
+| S-6.214.12 | Customer feeds | 2026-10-09T20:09:03+00:00 | 2026-10-09T23:09:03+00:00 | building |
+| S-6.13.01 | Cloudflare migration | 2026-10-09T23:09:03+00:00 | 2026-10-10T03:09:03+00:00 | ready |
+| S-6.13.03 | Cloudflare migration | 2026-10-09T20:09:03+00:00 | 2026-10-09T22:09:03+00:00 | ready |
+| S-6.13.02 | Cloudflare migration | 2026-10-10T03:09:03+00:00 | 2026-10-10T07:09:03+00:00 | proposed |
+| S-6.215.13 | Component factory | 2026-10-09T20:09:03+00:00 | 2026-10-10T08:09:03+00:00 | building |
+| S-6.214.03 | Sources and API operations | 2026-10-09T23:09:03+00:00 | 2026-10-10T03:09:03+00:00 | building |
+| S-6.217.01 | History and evidence | 2026-10-09T20:09:03+00:00 | 2026-10-09T23:09:03+00:00 | building |
+| S-6.204.02 | Launch and funding | 2026-10-09T23:09:03+00:00 | 2026-10-10T04:09:03+00:00 | ready |
+| S-6.204.01 | Customer outcomes | 2026-10-10T02:09:03+00:00 | 2026-10-10T06:09:03+00:00 | ready |
+
 ## Ordered task checklist
 
 Each subtask lives in its owning step in roadmap.yaml. A local check does not complete a task that requires publication.
 
-Completed within their stated scope: 15 of 60 subtasks.
+Completed within their stated scope: 15 of 62 subtasks.
 
-Next eligible subtask: S-6.215.13: Measure and broaden production capacity
+Next eligible subtask: S-6.35.03: Integrate the new design and interrupted fixes into the live website
 
 | Order | Task | State | Completion required | Next action or dependency |
 |---:|---|---|---|---|
-| 1 | [x] S-6.12.04: Separate three product cards from the introductory hero | live_qualified | live_qualified | Keep the three visible offerings consistent while the separate billing and hosted-service work proceeds. |
-| 2 | [x] S-6.35.01: Release reviewed main and verify it live | published | published | Keep application deployment and catalogue publication from overlapping. |
-| 3 | [x] S-6.215.01: Record the current live file baseline | offline_verified | offline_verified | Use this exact baseline for reconciliation. |
-| 4 | [x] S-6.215.02: Qualify the retained API-contract population | offline_verified | offline_verified | Carry only the 31,459 qualified packages into admission. |
-| 5 | [x] S-6.215.03: Admit the qualified contract batch | offline_verified | offline_verified | Build the admitted additions bundle. |
-| 6 | [x] S-6.215.04: Build the additions bundle | offline_verified | offline_verified | Use bundle 26c50a60 in the preservation check. |
-| 7 | [x] S-6.215.05: Check retrieval and grant preservation | offline_verified | offline_verified | Perform exact metadata and body reconciliation. |
-| 8 | [x] S-6.215.06: Reconcile the complete release and its bodies | offline_verified | offline_verified | Use the exact completed proof for the next guarded publication after the prioritized website release. |
-| 9 | [x] S-6.215.07: Publish the reconciled contract delta | published | published | Publish the next qualified delta against the release live at that time, with the publisher that stages objects as the service user. |
-| 10 | [x] S-6.215.08: Verify the new catalogue as a customer | live_qualified | live_qualified | Repeat for each later publication with one new and one earlier package. |
-| 11 | [x] S-6.215.09: Mirror the new bodies and refresh public counts | live_qualified | live_qualified | Mirror each later publication's new bodies after its customer check. |
-| 12 | [x] S-6.215.10: Complete the repaired case-generation pilot | offline_verified | offline_verified | Qualify and globally deduplicate the completed pilot. |
-| 13 | [x] S-6.215.11: Qualify and admit the new case groups | offline_verified | offline_verified | Regroup the 1,983 non-overlapping jobs held in 376 groups and qualify the 379-group pilot separately before the next case publication. |
-| 14 | [x] S-6.215.12: Publish the qualified case delta | published | published | Publish later case cohorts against the release live at that time. |
-| 15 | [ ] S-6.215.13: Measure and broaden production capacity | building | offline_verified | Integrate the retained-record repair into the release owner's next application release. Prepare a fresh bounded recovery with updated exclusions and enough disk headroom for generation, qualification and publication. Preserve the old failed journal and keep Claude's creative lane separate. |
-| 16 | [ ] S-6.214.01: Define canonical source counting | ready | offline_verified | Write and test the source-counting rules in the existing source owner. |
-| 17 | [ ] S-6.214.02: Build the source coverage census | ready | offline_verified | Waiting on S-6.214.01 |
-| 18 | [ ] S-6.214.03: Normalize the supplied provider operations | building | offline_verified | Waiting on S-6.214.01 |
-| 19 | [ ] S-6.214.04: Enforce shared quotas and collection costs | ready | offline_verified | Waiting on S-6.214.03 |
-| 20 | [ ] S-6.214.05: Qualify source rights and privacy | ready | offline_verified | Waiting on S-6.214.02 |
-| 21 | [ ] S-6.214.06: Run a hundred-source collection pilot | proposed | live_qualified | Waiting on S-6.214.03, S-6.214.04, S-6.214.05 |
-| 22 | [ ] S-6.214.07: Expand to one thousand qualified sources | proposed | live_qualified | Waiting on S-6.214.06 |
-| 23 | [ ] S-6.214.09: Produce useful source-backed feeds | ready | live_qualified | Waiting on S-6.214.06 |
-| 24 | [ ] S-6.214.10: Save customer feed preferences per agent | proposed | live_qualified | Waiting on S-6.214.09 |
-| 25 | [ ] S-6.214.11: Deliver and measure personalized feeds | proposed | live_qualified | Waiting on S-6.214.10 |
-| 26 | [ ] S-6.207.01: Complete the approved SMB metadata inventory | blocked | offline_verified | Resolve the measured storage allocation before resuming. |
-| 27 | [x] S-6.207.02: Extract the priority RapidAPI coding session | offline_verified | offline_verified | Use the exact chunks for substantive review and missing-artifact recovery. |
-| 28 | [ ] S-6.207.03: Recover the missing registry artifacts | ready | offline_verified | Start with the two missing native databases and the missing discovery module. |
-| 29 | [ ] S-6.207.04: Perform source-specific question reviews | building | offline_verified | Continue focused history review and turn verified gaps into tests and original implementations. |
-| 30 | [ ] S-6.207.05: Convert approved findings into original candidates | proposed | offline_verified | Waiting on S-6.207.04 |
-| 31 | [ ] S-6.218.01: Specify the hosted live-tool boundary | ready | offline_verified | Draft the narrow first hosted-tool contract and adversarial cases. |
-| 32 | [ ] S-6.218.02: Qualify providers for customer-facing use | ready | offline_verified | Waiting on S-6.218.01 |
-| 33 | [ ] S-6.218.03: Build tenant-bound credential leases | proposed | offline_verified | Waiting on S-6.218.01 |
-| 34 | [ ] S-6.218.04: Add per-tenant budgets and upstream quota reservations | proposed | offline_verified | Waiting on S-6.218.02, S-6.218.03 |
-| 35 | [ ] S-6.218.05: Implement scoped live invocation | proposed | offline_verified | Waiting on S-6.218.04 |
-| 36 | [ ] S-6.218.06: Expose discovery and invocation through MCP and API | proposed | offline_verified | Waiting on S-6.218.05 |
-| 37 | [ ] S-6.218.07: Verify customer isolation and abuse controls | proposed | live_qualified | Waiting on S-6.218.06 |
-| 38 | [ ] S-6.218.08: Reconcile top-tier entitlements and pricing | proposed | live_qualified | Waiting on S-6.218.07 |
-| 39 | [ ] S-6.218.09: Launch and monitor the qualified hosted-tool pilot | proposed | published | Waiting on S-6.218.08 |
-| 40 | [ ] S-6.13.01: Qualify authenticated R2 file delivery | ready | live_qualified | Prepare a bounded delivery canary; keep Fly delivery until it passes. |
-| 41 | [ ] S-6.13.02: Place bounded collectors and durable jobs on Cloudflare | proposed | live_qualified | Waiting on S-6.214.06 |
-| 42 | [ ] S-6.13.03: Evaluate the customer authentication boundary | ready | offline_verified | Document the migration evidence needed and cost; do not replace login solely because DNS uses Cloudflare. |
-| 43 | [ ] S-6.12.01: Add private-by-default customer submissions | ready | live_qualified | Implement a narrow customer upload flow before adding a public contribution CTA. |
-| 44 | [ ] S-6.12.02: Add sharing and public-library submission controls | proposed | live_qualified | Waiting on S-6.12.01 |
-| 45 | [ ] S-6.12.03: Reconcile the three offering cards and new-signup prices | building | live_qualified | Review and deploy compatible billing readers before an additive new-signup price migration; qualify the hosted upper tier before sale. |
-| 46 | [ ] S-6.24.01: Prove one bounded overnight customer task | ready | live_qualified | Retain current provider holds; do not reset the earlier token ceiling. |
-| 47 | [ ] S-6.24.02: Verify OpenCode and another harness against live Baltor | ready | live_qualified | Run the customer path on this PC without borrowing administrator access. |
-| 48 | [ ] S-6.201.01: Recover the authorized TensorArt asset history | blocked | offline_verified | Resolve the missing target-account access without forwarding cookies to third parties. |
-| 49 | [ ] S-6.201.02: Complete one editable creative project and revision | ready | offline_verified | Select a small end-to-end creative proof rather than expanding untested templates. |
-| 50 | [ ] S-6.201.03: Produce a rights-cleared product demonstration | proposed | published | Waiting on S-6.201.02 |
-| 51 | [ ] S-6.102.01: Package and test the ChatGPT and Codex plugin | building | offline_verified | Release the integration, then run tools/check_chatgpt_app_live.py with --expect-presentation and --screens as a fresh account, confirm the authorization server metadata advertises authorization_response_iss_parameter_supported, and keep the report with the release record. The remaining steps for each directory and client are in docs/guides/chatgpt-app.md. |
-| 52 | [ ] S-6.102.02: Complete plugin review and release prerequisites | proposed | published | Waiting on S-6.102.01 |
-| 53 | [ ] S-6.204.01: Measure onboarding and product use | ready | live_qualified | Use measured activation and usefulness to guide the next batch and marketing. |
-| 54 | [ ] S-6.204.02: Prepare launch, funding and startup-credit material | ready | offline_verified | Prioritize the infrastructure already used and the next customer proof. |
-| 55 | [ ] S-6.216.01: Expand useful SDG and competition-derived materials | ready | published | Choose unmet SDG jobs from measured coverage rather than multiplying labels. |
-| 56 | [ ] S-6.67.01: Review the complete public page and design surface | ready | live_qualified | Run the owning browser checks for each visible release and verify the live result. |
-| 57 | [ ] S-6.35.02: Publish a progress checkpoint after every completed subtask | building | offline_verified | Complete the first canonical subtask checklist and then advance it one result at a time. |
-| 58 | [ ] S-6.217.01: Reconcile recent prompts and action history | building | offline_verified | Review prioritized recent chunks instead of treating extraction as full understanding. |
-| 59 | [ ] S-6.215.14: Reach two million useful served files | proposed | published | Waiting on S-6.215.13 |
-| 60 | [ ] S-6.214.08: Reach ten thousand active qualified sources | proposed | live_qualified | Waiting on S-6.214.07 |
+| 1 | [ ] S-6.35.03: Integrate the new design and interrupted fixes into the live website | building | published | Finish the website agent's integrated browser checks and the independent all-omitted MCP metering repair, then run final gates and deploy. |
+| 2 | [x] S-6.12.04: Separate three product cards from the introductory hero | live_qualified | live_qualified | Keep the three visible offerings consistent while the separate billing and hosted-service work proceeds. |
+| 3 | [x] S-6.35.01: Release reviewed main and verify it live | published | published | Keep application deployment and catalogue publication from overlapping. |
+| 4 | [x] S-6.215.01: Record the current live file baseline | offline_verified | offline_verified | Use this exact baseline for reconciliation. |
+| 5 | [x] S-6.215.02: Qualify the retained API-contract population | offline_verified | offline_verified | Carry only the 31,459 qualified packages into admission. |
+| 6 | [x] S-6.215.03: Admit the qualified contract batch | offline_verified | offline_verified | Build the admitted additions bundle. |
+| 7 | [x] S-6.215.04: Build the additions bundle | offline_verified | offline_verified | Use bundle 26c50a60 in the preservation check. |
+| 8 | [x] S-6.215.05: Check retrieval and grant preservation | offline_verified | offline_verified | Perform exact metadata and body reconciliation. |
+| 9 | [x] S-6.215.06: Reconcile the complete release and its bodies | offline_verified | offline_verified | Use the exact completed proof for the next guarded publication after the prioritized website release. |
+| 10 | [x] S-6.215.07: Publish the reconciled contract delta | published | published | Publish the next qualified delta against the release live at that time, with the publisher that stages objects as the service user. |
+| 11 | [x] S-6.215.08: Verify the new catalogue as a customer | live_qualified | live_qualified | Repeat for each later publication with one new and one earlier package. |
+| 12 | [x] S-6.215.09: Mirror the new bodies and refresh public counts | live_qualified | live_qualified | Mirror each later publication's new bodies after its customer check. |
+| 13 | [x] S-6.215.10: Complete the repaired case-generation pilot | offline_verified | offline_verified | Qualify and globally deduplicate the completed pilot. |
+| 14 | [x] S-6.215.11: Qualify and admit the new case groups | offline_verified | offline_verified | Regroup the 1,983 non-overlapping jobs held in 376 groups and qualify the 379-group pilot separately before the next case publication. |
+| 15 | [x] S-6.215.12: Publish the qualified case delta | published | published | Publish later case cohorts against the release live at that time. |
+| 16 | [ ] S-6.215.13: Measure and broaden production capacity | building | offline_verified | Integrate the retained-record repair into the release owner's next application release. Prepare a fresh bounded recovery with updated exclusions and enough disk headroom for generation, qualification and publication. Preserve the old failed journal and keep Claude's creative lane separate. |
+| 17 | [ ] S-6.214.01: Define canonical source counting | ready | offline_verified | Write and test the source-counting rules in the existing source owner. |
+| 18 | [ ] S-6.214.02: Build the source coverage census | ready | offline_verified | Waiting on S-6.214.01 |
+| 19 | [ ] S-6.214.03: Normalize the supplied provider operations | building | offline_verified | Waiting on S-6.214.01 |
+| 20 | [ ] S-6.214.04: Enforce shared quotas and collection costs | ready | offline_verified | Waiting on S-6.214.03 |
+| 21 | [ ] S-6.214.05: Qualify source rights and privacy | ready | offline_verified | Waiting on S-6.214.02 |
+| 22 | [ ] S-6.214.06: Run a hundred-source collection pilot | proposed | live_qualified | Waiting on S-6.214.03, S-6.214.04, S-6.214.05 |
+| 23 | [ ] S-6.214.07: Expand to one thousand qualified sources | proposed | live_qualified | Waiting on S-6.214.06 |
+| 24 | [ ] S-6.214.09: Produce useful source-backed feeds | ready | live_qualified | Waiting on S-6.214.06 |
+| 25 | [ ] S-6.214.12: Let customers build a distinct reading profile for each agent | building | live_qualified | Integrate the checked builder with the new design, deploy and verify both agents' downloaded files against their selections. |
+| 26 | [ ] S-6.214.10: Save customer feed preferences per agent | proposed | live_qualified | Waiting on S-6.214.09 |
+| 27 | [ ] S-6.214.11: Deliver and measure personalized feeds | proposed | live_qualified | Waiting on S-6.214.10 |
+| 28 | [ ] S-6.207.01: Complete the approved SMB metadata inventory | blocked | offline_verified | Resolve the measured storage allocation before resuming. |
+| 29 | [x] S-6.207.02: Extract the priority RapidAPI coding session | offline_verified | offline_verified | Use the exact chunks for substantive review and missing-artifact recovery. |
+| 30 | [ ] S-6.207.03: Recover the missing registry artifacts | ready | offline_verified | Start with the two missing native databases and the missing discovery module. |
+| 31 | [ ] S-6.207.04: Perform source-specific question reviews | building | offline_verified | Continue focused history review and turn verified gaps into tests and original implementations. |
+| 32 | [ ] S-6.207.05: Convert approved findings into original candidates | proposed | offline_verified | Waiting on S-6.207.04 |
+| 33 | [ ] S-6.218.01: Specify the hosted live-tool boundary | ready | offline_verified | Draft the narrow first hosted-tool contract and adversarial cases. |
+| 34 | [ ] S-6.218.02: Qualify providers for customer-facing use | ready | offline_verified | Waiting on S-6.218.01 |
+| 35 | [ ] S-6.218.03: Build tenant-bound credential leases | proposed | offline_verified | Waiting on S-6.218.01 |
+| 36 | [ ] S-6.218.04: Add per-tenant budgets and upstream quota reservations | proposed | offline_verified | Waiting on S-6.218.02, S-6.218.03 |
+| 37 | [ ] S-6.218.05: Implement scoped live invocation | proposed | offline_verified | Waiting on S-6.218.04 |
+| 38 | [ ] S-6.218.06: Expose discovery and invocation through MCP and API | proposed | offline_verified | Waiting on S-6.218.05 |
+| 39 | [ ] S-6.218.07: Verify customer isolation and abuse controls | proposed | live_qualified | Waiting on S-6.218.06 |
+| 40 | [ ] S-6.218.08: Reconcile top-tier entitlements and pricing | proposed | live_qualified | Waiting on S-6.218.07 |
+| 41 | [ ] S-6.218.09: Launch and monitor the qualified hosted-tool pilot | proposed | published | Waiting on S-6.218.08 |
+| 42 | [ ] S-6.13.01: Qualify authenticated R2 file delivery | ready | live_qualified | Prepare a bounded delivery canary; keep Fly delivery until it passes. |
+| 43 | [ ] S-6.13.02: Place bounded collectors and durable jobs on Cloudflare | proposed | live_qualified | Waiting on S-6.214.06 |
+| 44 | [ ] S-6.13.03: Evaluate the customer authentication boundary | ready | offline_verified | Document the migration evidence needed and cost; do not replace login solely because DNS uses Cloudflare. |
+| 45 | [ ] S-6.12.01: Add private-by-default customer submissions | ready | live_qualified | Implement a narrow customer upload flow before adding a public contribution CTA. |
+| 46 | [ ] S-6.12.02: Add sharing and public-library submission controls | proposed | live_qualified | Waiting on S-6.12.01 |
+| 47 | [ ] S-6.12.03: Reconcile the three offering cards and new-signup prices | building | live_qualified | Review and deploy compatible billing readers before an additive new-signup price migration; qualify the hosted upper tier before sale. |
+| 48 | [ ] S-6.24.01: Prove one bounded overnight customer task | ready | live_qualified | Retain current provider holds; do not reset the earlier token ceiling. |
+| 49 | [ ] S-6.24.02: Verify OpenCode and another harness against live Baltor | ready | live_qualified | Run the customer path on this PC without borrowing administrator access. |
+| 50 | [ ] S-6.201.01: Recover the authorized TensorArt asset history | blocked | offline_verified | Resolve the missing target-account access without forwarding cookies to third parties. |
+| 51 | [ ] S-6.201.02: Complete one editable creative project and revision | ready | offline_verified | Select a small end-to-end creative proof rather than expanding untested templates. |
+| 52 | [ ] S-6.201.03: Produce a rights-cleared product demonstration | proposed | published | Waiting on S-6.201.02 |
+| 53 | [ ] S-6.102.01: Package and test the ChatGPT and Codex plugin | building | offline_verified | Release the integration, then run tools/check_chatgpt_app_live.py with --expect-presentation and --screens as a fresh account, confirm the authorization server metadata advertises authorization_response_iss_parameter_supported, and keep the report with the release record. The remaining steps for each directory and client are in docs/guides/chatgpt-app.md. |
+| 54 | [ ] S-6.102.02: Complete plugin review and release prerequisites | proposed | published | Waiting on S-6.102.01 |
+| 55 | [ ] S-6.204.01: Measure onboarding and product use | ready | live_qualified | Use measured activation and usefulness to guide the next batch and marketing. |
+| 56 | [ ] S-6.204.02: Prepare launch, funding and startup-credit material | ready | offline_verified | Prioritize the infrastructure already used and the next customer proof. |
+| 57 | [ ] S-6.216.01: Expand useful SDG and competition-derived materials | ready | published | Choose unmet SDG jobs from measured coverage rather than multiplying labels. |
+| 58 | [ ] S-6.67.01: Review the complete public page and design surface | ready | live_qualified | Run the owning browser checks for each visible release and verify the live result. |
+| 59 | [ ] S-6.35.02: Publish a progress checkpoint after every completed subtask | building | offline_verified | Complete the first canonical subtask checklist and then advance it one result at a time. |
+| 60 | [ ] S-6.217.01: Reconcile recent prompts and action history | building | offline_verified | Review prioritized recent chunks instead of treating extraction as full understanding. |
+| 61 | [ ] S-6.215.14: Reach two million useful served files | proposed | published | Waiting on S-6.215.13 |
+| 62 | [ ] S-6.214.08: Reach ten thousand active qualified sources | proposed | live_qualified | Waiting on S-6.214.07 |
 
 ## Subtask procedures and evidence
+
+### S-6.35.03 Integrate the new design and interrupted fixes into the live website
+
+Owner step: S-6.35. State: building. Completion requires: published.
+
+Acceptance: The new shared design, plan labels, gallery, connection workflow and customer feed builder work on the deployed exact CI-passed revision, with customer boundaries and every existing route preserved.
+
+1. Preserve and identify every source worktree before integrating its reviewed changes.
+2. Keep the existing typed service edges; verify delivery, metering, OAuth, feed isolation and browser interactions with wrong controls.
+3. Review every public route in both themes and at phone and desktop widths.
+4. Commit and push the exact candidate, await its CI, dispatch the guarded application deployment once and refresh Cloudflare from that revision.
+5. Verify live bytes, browser journeys and all product hostnames; record image, rollback and remaining capability limits.
+
+Evidence: Four interrupted worktrees have exact private patches and archives. Combined billing/delivery/OAuth checks pass 296 tests; Connect/customer-delivery/run-desk checks pass 52; integrated feed checks pass 71. The design's dedicated browser pass covers 143 checks; final full-tree verification is pending.
+
+Next: Finish the website agent's integrated browser checks and the independent all-omitted MCP metering repair, then run final gates and deploy.
+
+Comment: Basic, Pro and Max are plan names; Agent Feeds, Harness Files and Overnight / AFK Work remain features. Max's scoped public preview does not claim hosted execution or activate a paid checkout. The owner explicitly prioritizes the design release over the longer migration and factory programme.
 
 ### S-6.12.04 Separate three product cards from the introductory hero
 
@@ -455,6 +521,24 @@ Evidence: Not yet recorded.
 Next: Qualify a small number of topic feeds before multiplying them.
 
 Comment: A list of URLs is not automatically a decision brief.
+
+### S-6.214.12 Let customers build a distinct reading profile for each agent
+
+Owner step: S-6.214. State: building. Completion requires: live_qualified.
+
+Acceptance: A customer chooses collections, includes and excludes individual sources, sets a reading interval, and downloads exact JSON and Markdown for each agent through the live website.
+
+1. Compile the website and CLI through one versioned profile contract pinned to the source directory.
+2. Keep source selection independent between agents and invalidate downloads after edits.
+3. Bound input size, preserve source rights and freshness labels, and verify file digests in the browser.
+4. Test malformed input, changed directory, two-agent isolation and desktop/mobile interactions.
+5. Deploy and repeat the real customer download path; distinguish a requested interval from an activated scheduler.
+
+Evidence: 53 focused tests, 26 HTTP web checks and 21 browser checks passed in the source worktree. Root's merged feed/delivery check population passed 71 tests.
+
+Next: Integrate the checked builder with the new design, deploy and verify both agents' downloaded files against their selections.
+
+Comment: Profiles are customer-owned files. Hosted saved assignments, opt-in private scopes and personalized event delivery remain in S-6.214.10 and S-6.214.11.
 
 ### S-6.214.10 Save customer feed preferences per agent
 

@@ -7,7 +7,24 @@ schema_version: roadmap/v1
 # development planning data, not an executable runtime configuration.
 continuation:
   schema_version: continuation_plan/v1
-  execution_order: ["S-6.12.04","S-6.35.01","S-6.215.01","S-6.215.02","S-6.215.03","S-6.215.04","S-6.215.05","S-6.215.06","S-6.215.07","S-6.215.08","S-6.215.09","S-6.215.10","S-6.215.11","S-6.215.12","S-6.215.13","S-6.214.01","S-6.214.02","S-6.214.03","S-6.214.04","S-6.214.05","S-6.214.06","S-6.214.07","S-6.214.09","S-6.214.10","S-6.214.11","S-6.207.01","S-6.207.02","S-6.207.03","S-6.207.04","S-6.207.05","S-6.218.01","S-6.218.02","S-6.218.03","S-6.218.04","S-6.218.05","S-6.218.06","S-6.218.07","S-6.218.08","S-6.218.09","S-6.13.01","S-6.13.02","S-6.13.03","S-6.12.01","S-6.12.02","S-6.12.03","S-6.24.01","S-6.24.02","S-6.201.01","S-6.201.02","S-6.201.03","S-6.102.01","S-6.102.02","S-6.204.01","S-6.204.02","S-6.216.01","S-6.67.01","S-6.35.02","S-6.217.01","S-6.215.14","S-6.214.08"]
+  working_schedule:
+    record_type: development_working_schedule/v1
+    starts_at: '2026-10-09T20:09:03Z'
+    horizon_hours: 12
+    note: 'October 9 active iteration. The new design is the first release priority. Parallel work has one named owner per boundary. The twelve-hour factory is a bounded production attempt toward one million additional useful files; only qualified, admitted, reconciled and actually served distinct digests count toward the ten-million target. Dates are planning windows, not promises of publication.'
+    blocks:
+      - {task: S-6.35.03, owner: Website and release, offset_hours: 0, duration_hours: 3}
+      - {task: S-6.67.01, owner: Website and release, offset_hours: 0, duration_hours: 3}
+      - {task: S-6.214.12, owner: Customer feeds, offset_hours: 0, duration_hours: 3}
+      - {task: S-6.13.01, owner: Cloudflare migration, offset_hours: 3, duration_hours: 4}
+      - {task: S-6.13.03, owner: Cloudflare migration, offset_hours: 0, duration_hours: 2}
+      - {task: S-6.13.02, owner: Cloudflare migration, offset_hours: 7, duration_hours: 4}
+      - {task: S-6.215.13, owner: Component factory, offset_hours: 0, duration_hours: 12}
+      - {task: S-6.214.03, owner: Sources and API operations, offset_hours: 3, duration_hours: 4}
+      - {task: S-6.217.01, owner: History and evidence, offset_hours: 0, duration_hours: 3}
+      - {task: S-6.204.02, owner: Launch and funding, offset_hours: 3, duration_hours: 5}
+      - {task: S-6.204.01, owner: Customer outcomes, offset_hours: 6, duration_hours: 4}
+  execution_order: ["S-6.35.03","S-6.12.04","S-6.35.01","S-6.215.01","S-6.215.02","S-6.215.03","S-6.215.04","S-6.215.05","S-6.215.06","S-6.215.07","S-6.215.08","S-6.215.09","S-6.215.10","S-6.215.11","S-6.215.12","S-6.215.13","S-6.214.01","S-6.214.02","S-6.214.03","S-6.214.04","S-6.214.05","S-6.214.06","S-6.214.07","S-6.214.09","S-6.214.12","S-6.214.10","S-6.214.11","S-6.207.01","S-6.207.02","S-6.207.03","S-6.207.04","S-6.207.05","S-6.218.01","S-6.218.02","S-6.218.03","S-6.218.04","S-6.218.05","S-6.218.06","S-6.218.07","S-6.218.08","S-6.218.09","S-6.13.01","S-6.13.02","S-6.13.03","S-6.12.01","S-6.12.02","S-6.12.03","S-6.24.01","S-6.24.02","S-6.201.01","S-6.201.02","S-6.201.03","S-6.102.01","S-6.102.02","S-6.204.01","S-6.204.02","S-6.216.01","S-6.67.01","S-6.35.02","S-6.217.01","S-6.215.14","S-6.214.08"]
   title: First release and continued system development
   started_at: "2026-09-19T14:12:54Z"
   target_at: "2026-09-20T14:12:54Z"
@@ -2737,6 +2754,16 @@ steps:
   - id: S-6.35
     phase: 6
     subtasks:
+      - id: "S-6.35.03"
+        title: "Integrate the new design and interrupted fixes into the live website"
+        status: "building"
+        completion_status: "published"
+        depends_on: []
+        acceptance: "The new shared design, plan labels, gallery, connection workflow and customer feed builder work on the deployed exact CI-passed revision, with customer boundaries and every existing route preserved."
+        procedure: ["Preserve and identify every source worktree before integrating its reviewed changes.","Keep the existing typed service edges; verify delivery, metering, OAuth, feed isolation and browser interactions with wrong controls.","Review every public route in both themes and at phone and desktop widths.","Commit and push the exact candidate, await its CI, dispatch the guarded application deployment once and refresh Cloudflare from that revision.","Verify live bytes, browser journeys and all product hostnames; record image, rollback and remaining capability limits."]
+        next_action: "Finish the website agent's integrated browser checks and the independent all-omitted MCP metering repair, then run final gates and deploy."
+        evidence: "Four interrupted worktrees have exact private patches and archives. Combined billing/delivery/OAuth checks pass 296 tests; Connect/customer-delivery/run-desk checks pass 52; integrated feed checks pass 71. The design's dedicated browser pass covers 143 checks; final full-tree verification is pending."
+        comment: "Basic, Pro and Max are plan names; Agent Feeds, Harness Files and Overnight / AFK Work remain features. Max's scoped public preview does not claim hosted execution or activate a paid checkout. The owner explicitly prioritizes the design release over the longer migration and factory programme."
       - id: "S-6.35.01"
         title: "Release reviewed main and verify it live"
         status: "published"
@@ -5172,6 +5199,16 @@ steps:
         next_action: "Connect delivery to the existing entitlement and subscription boundaries."
         evidence: ""
         comment: "Receiving a feed never grants permission to execute it."
+      - id: "S-6.214.12"
+        title: "Let customers build a distinct reading profile for each agent"
+        status: "building"
+        completion_status: "live_qualified"
+        depends_on: []
+        acceptance: "A customer chooses collections, includes and excludes individual sources, sets a reading interval, and downloads exact JSON and Markdown for each agent through the live website."
+        procedure: ["Compile the website and CLI through one versioned profile contract pinned to the source directory.","Keep source selection independent between agents and invalidate downloads after edits.","Bound input size, preserve source rights and freshness labels, and verify file digests in the browser.","Test malformed input, changed directory, two-agent isolation and desktop/mobile interactions.","Deploy and repeat the real customer download path; distinguish a requested interval from an activated scheduler."]
+        next_action: "Integrate the checked builder with the new design, deploy and verify both agents' downloaded files against their selections."
+        evidence: "53 focused tests, 26 HTTP web checks and 21 browser checks passed in the source worktree. Root's merged feed/delivery check population passed 71 tests."
+        comment: "Profiles are customer-owned files. Hosted saved assignments, opt-in private scopes and personalized event delivery remain in S-6.214.10 and S-6.214.11."
     title: "Daily distillations: new papers, skills, plugins, protocol servers, services and repositories, each served as a summary page, RSS, JSON and downloadable components"
     status: building
     depends_on: [S-6.213, S-6.102, S-6.81, S-6.197]

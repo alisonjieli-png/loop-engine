@@ -77,7 +77,7 @@ EXEC_TIMEOUT = 600
 BATCH_BYTES = 24 * 1024 * 1024
 #: Content-addressed object directories in the supported catalogue bundle formats.
 BLOB_OBJECT, SEGMENT_OBJECT, ITEM_OBJECT = UPLOAD_OBJECT_KINDS = ("blobs", "segments", "items")
-#: How long to wait for the pointer to move before reporting that nothing was published.
+#: How long to wait for exact confirmation before reporting an uncertain outcome.
 POINTER_WAIT_SECONDS = 120 * 60
 MAXIMUM_UPLOAD_WORKERS = 4
 MAXIMUM_UPLOAD_ATTEMPTS = 3
@@ -519,6 +519,175 @@ def publication_inputs(bundle, digest, base_bundle, base_release, reconciliation
     return base, candidate, changes, proof, set(held)
 
 
+def publication_receipt(raw: str, result_path: str) -> dict:
+    """Read the native receipt before success checks; failure never proves rollback.
+
+    The detached CLI's exit status is not the dispatch command's exit status.
+    Its typed error must stop monitoring even when public health is unavailable.
+    Incomplete/malformed receipt bytes remain unknown and cannot confirm success.
+    """
+    from loop_engine.core.service_runtime.catalogue_bundle import strict_json
+    from loop_engine.core.service_runtime.records import ServiceRuntimeError
+    try:
+        receipt = strict_json(raw, "invalid_publication_receipt")
+    except ServiceRuntimeError:
+        return {}
+    result = receipt.get("result", receipt)
+    for record in (receipt, result):
+        if not isinstance(record, dict):
+            continue
+        if record.get("record_type") == "service_cli_error/v1" or record.get("refused") is True:
+            code = record.get("code")
+            if not isinstance(code, str) or not re.fullmatch(r"[a-z][a-z0-9_]{0,127}", code):
+                code = "unreadable_error_code"
+            raise RuntimeError(f"native publication error {code}; reconciliation required; "
+                               f"effect commitment is not asserted; preserve staging and receipt {result_path}; "
+                               "no automatic retry or cleanup")
+    return result if isinstance(result, dict) else {}
+
+
+def own_staging_tree(stage, incoming, uid, gid):
+    """Transfer one stopped/pre-dispatch stage, preserving private modes and bytes.
+
+    This self-contained Linux helper is sent to the Machine, not installed as
+    another service. The caller owns the stage exclusively; it never dispatches,
+    retries or cleans up a publication. Validate the whole tree before writes,
+    then reopen every entry without following links and verify the final tree.
+    A failure can leave partial ownership changes; preserve and reconcile them.
+    """
+    import os
+    import json
+    import re
+    import stat
+    from contextlib import ExitStack
+
+    if (type(stage) is not str or type(incoming) is not str
+            or not os.path.isabs(incoming) or incoming == '/'
+            or incoming != os.path.normpath(incoming) or stage != os.path.normpath(stage)
+            or os.path.dirname(stage) != incoming
+            or not re.fullmatch(r'delta-[A-Za-z0-9][A-Za-z0-9._-]{0,95}-[0-9a-f]{12}', os.path.basename(stage))
+            or any(type(value) is not int or not 0 <= value < 2**31 for value in (uid, gid))):
+        raise ValueError('staging ownership requires one exact normalized stage and numeric owners')
+
+    def identity(info):
+        return (info.st_dev, info.st_ino, info.st_mode, info.st_nlink)
+
+    def validate(info, device):
+        directory = stat.S_ISDIR(info.st_mode)
+        if (info.st_dev != device or not (directory or stat.S_ISREG(info.st_mode))
+                or not directory and info.st_nlink != 1
+                or info.st_mode & (stat.S_ISUID | stat.S_ISGID | stat.S_ISVTX)
+                or not info.st_mode & stat.S_IRUSR
+                or directory and not info.st_mode & stat.S_IXUSR):
+            raise RuntimeError('invalid staging entry')
+        return directory
+
+    try:
+        flags = os.O_RDONLY | os.O_CLOEXEC | os.O_NOFOLLOW | os.O_NONBLOCK
+        directory_flags = flags | os.O_DIRECTORY
+        with ExitStack() as handles:
+            parent = os.open('/', directory_flags)
+            handles.callback(os.close, parent)
+            for part in incoming.lstrip('/').split('/'):
+                parent = os.open(part, directory_flags, dir_fd=parent)
+                handles.callback(os.close, parent)
+            root = os.open(os.path.basename(stage), directory_flags, dir_fd=parent)
+            handles.callback(os.close, root)
+            root_info = os.fstat(root)
+            device = root_info.st_dev
+            if not root_info.st_mode & stat.S_IWUSR:
+                raise RuntimeError('staging cannot write its receipt')
+
+            def walk(fd, parts=()):
+                info = os.fstat(fd)
+                directory = validate(info, device)
+                yield parts, fd, info, directory
+                if directory:
+                    for name in sorted(os.listdir(fd)):
+                        before = os.stat(name, dir_fd=fd, follow_symlinks=False)
+                        child_directory = validate(before, device)
+                        child = os.open(name, directory_flags if child_directory else flags, dir_fd=fd)
+                        try:
+                            if identity(os.fstat(child)) != identity(before):
+                                raise RuntimeError('staging entry changed while opening')
+                            yield from walk(child, (*parts, name))
+                        finally:
+                            os.close(child)
+
+            census = {parts: (identity(info), info.st_uid, info.st_gid)
+                      for parts, _fd, info, _directory in walk(root)}
+            journal_name = 'ownership-transfer.jsonl'
+            if (journal_name,) in census:
+                raise RuntimeError('a prior ownership journal requires reconciliation')
+            journal_fd = os.open(journal_name, os.O_WRONLY | os.O_CREAT | os.O_EXCL | os.O_NOFOLLOW
+                                 | os.O_CLOEXEC, 0o600, dir_fd=root)
+            journal = handles.enter_context(os.fdopen(journal_fd, 'w', encoding='utf-8'))
+            journal_info = os.fstat(journal.fileno())
+            census[(journal_name,)] = (identity(journal_info), journal_info.st_uid, journal_info.st_gid)
+            expected = {parts: entry[0] for parts, entry in census.items()}
+            journal.write(json.dumps({'record_type': 'catalogue_staging_ownership_plan/v1',
+                'stage': os.path.basename(stage), 'uid': uid, 'gid': gid, 'entries': len(census),
+                'state': 'prepared', 'automatic_retry': False}, sort_keys=True) + '\n')
+            for parts, (signature, old_uid, old_gid) in sorted(census.items()):
+                journal.write(json.dumps({'path': '/'.join(parts) or '.', 'device': signature[0],
+                    'inode': signature[1], 'mode': stat.S_IMODE(signature[2]), 'links': signature[3],
+                    'uid': old_uid, 'gid': old_gid}, sort_keys=True) + '\n')
+            journal.flush()
+            os.fsync(journal.fileno())
+            os.fsync(root)
+            # This durable original census precedes every ownership write.
+            # No completed record means partial metadata must be reconciled.
+            visited = set()
+            for parts, fd, info, _directory in walk(root):
+                if (identity(info) != expected.get(parts)
+                        or (info.st_uid, info.st_gid) != census[parts][1:]
+                        or identity(os.stat(os.path.basename(stage), dir_fd=parent,
+                                            follow_symlinks=False)) != identity(root_info)):
+                    raise RuntimeError('staging tree changed before ownership transfer')
+                os.fchown(fd, uid, gid)
+                held = os.fstat(fd)
+                if identity(held) != expected[parts] or (held.st_uid, held.st_gid) != (uid, gid):
+                    raise RuntimeError('staging ownership did not verify')
+                visited.add(parts)
+            if visited != expected.keys():
+                raise RuntimeError('staging tree changed during ownership transfer')
+            verified = set()
+            directories = files = 0
+            for parts, _fd, info, directory in walk(root):
+                if identity(info) != expected.get(parts) or (info.st_uid, info.st_gid) != (uid, gid):
+                    raise RuntimeError('staging ownership changed during verification')
+                verified.add(parts)
+                directories += int(directory)
+                files += int(not directory)
+            if (verified != expected.keys()
+                    or identity(os.stat(os.path.basename(stage), dir_fd=parent,
+                                        follow_symlinks=False)) != identity(root_info)):
+                raise RuntimeError('staging tree changed during verification')
+            journal.write(json.dumps({'record_type': 'catalogue_staging_ownership_completion/v1',
+                'state': 'verified', 'entries': len(verified)}, sort_keys=True) + '\n')
+            journal.flush()
+            os.fsync(journal.fileno())
+    except (OSError, RuntimeError, AttributeError, RecursionError) as error:
+        raise RuntimeError('staging ownership refused; preserve the exact stage and reconcile partial metadata; '
+                           'no publication was dispatched by this helper') from error
+    return {'record_type': 'catalogue_staging_ownership/v1', 'stage': os.path.basename(stage),
+            'uid': uid, 'gid': gid, 'directories': directories, 'files': files,
+            'modes_preserved': True, 'helper_wrote_payload_bytes': False, 'journal': journal_name}
+
+
+def prepare_staging_owner(remote):
+    """Run the exact checked transfer as root before invoking the service user."""
+    import inspect
+    if type(remote) is not str or not re.fullmatch(r'delta-[A-Za-z0-9][A-Za-z0-9._-]{0,95}-[0-9a-f]{12}', remote):
+        raise ValueError('staging ownership requires one exact stage name')
+    script = ('import json\n' + inspect.getsource(own_staging_tree)
+              + f'\nprint(json.dumps(own_staging_tree({REMOTE_ROOT + "/" + remote!r}, {REMOTE_ROOT!r}, '
+              '65534, 65534), sort_keys=True))\n')
+    # The synchronous exit status, unlike the detached publication dispatch,
+    # belongs to the helper itself. Any failure prevents publication dispatch.
+    return machine_exec(f'python3 -c {shlex.quote(script)}', timeout=EXEC_TIMEOUT)
+
+
 def publish(name: str, bundle: Path, digest: str, *, base_bundle: Path | None = None,
             base_release: str | None = None, reconciliation_digest: str | None = None,
             body_roots=(), accepted_licenses=("MIT",), upload_workers=1, compress=False,
@@ -586,8 +755,9 @@ def publish(name: str, bundle: Path, digest: str, *, base_bundle: Path | None = 
     for filename in ("bundle.json", listing):
         fly("ssh", "sftp", "put", str(bundle / filename), f"{REMOTE_ROOT}/{remote}/{filename}",
             "--machine", MACHINE, "--app", APP, timeout=EXEC_TIMEOUT)
-    # Payloads are readable; only the receipt's containing directory needs service ownership.
-    machine_exec(f"chown 65534:65534 {REMOTE_ROOT}/{remote}", timeout=60)
+    # Uploaded private modes are valid. Transfer only this fully checked stage
+    # to the service user, so private metadata and payloads remain readable.
+    prepare_staging_owner(remote)
 
     require_live_base(base, changes, active_catalogue())
     before = base_release
@@ -603,12 +773,12 @@ def publish(name: str, bundle: Path, digest: str, *, base_bundle: Path | None = 
         minute += 1
         observed = active_catalogue()
         now = observed.get("release_id", "")
+        try:
+            raw_receipt = machine_exec(f"tail -c 8192 {result_path}", timeout=60)
+        except RuntimeError:
+            raw_receipt = ""
+        result = publication_receipt(raw_receipt, result_path)
         if now:
-            try:
-                receipt = json.loads(machine_exec(f"tail -c 8192 {result_path}", timeout=60))
-                result = receipt.get("result", receipt)
-            except (RuntimeError, ValueError):
-                result = {}
             if (result.get("release_id") == now == proof["result_release"]
                     and result.get("content_digest") == observed.get("content_digest") == proof["result_content_digest"]
                     and result.get("bundle_digest") == digest):

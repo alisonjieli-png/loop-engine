@@ -14,8 +14,8 @@ ROOT = Path(__file__).resolve().parents[1]
 for directory in (ROOT, ROOT / "src", ROOT / "tools"):
     if str(directory) not in sys.path:sys.path.insert(0, str(directory))
 
-from knowledge_radar.feed_profiles import FORMATS, MODES, PARTIAL_POLICIES, STALE_POLICIES, FeedProfileError, ProfileRequest, inventory
-from knowledge_radar.feed_profile_files import check_folder, compile_files, write_new
+from loop_engine.core.service_runtime.feed_profiles import FORMATS, MODES, PARTIAL_POLICIES, STALE_POLICIES, FeedProfileError, ProfileRequest, inventory, compile_files
+from knowledge_radar.feed_profile_files import check_folder, write_new
 
 
 def main(argv=None):
@@ -26,6 +26,9 @@ def main(argv=None):
     parser.add_argument("--agent-label")
     parser.add_argument("--collection", action="append", default=[])
     parser.add_argument("--topic", action="append", default=[], help="Exact existing group label from --list; union with selected collections.")
+    parser.add_argument("--source", action="append", default=[], help="Include an exact registered source ID.")
+    parser.add_argument("--exclude-source", action="append", default=[], help="Exclude a registered source from selected collections/topics.")
+    parser.add_argument("--poll-minutes", type=int, help="Requested client reading interval, 15-10080 minutes; default 1440. Your harness configures the timer.")
     parser.add_argument("--format", choices=FORMATS, dest="report_format", help="Requested future review output; default markdown. Profile files are always JSON plus Markdown.")
     parser.add_argument("--mode", choices=MODES, help="Default both; this does not schedule either review.")
     parser.add_argument("--max-items", type=int, help="Maximum distinct curated source references, not collected articles; default 20.")
@@ -38,8 +41,8 @@ def main(argv=None):
     parser.add_argument("--name", help="New child folder name, lowercase letters/digits/hyphens.")
     parser.add_argument("--authorize-local-writes", action="store_true")
     args = parser.parse_args(argv)
-    build_options = (args.report_format, args.mode, args.max_items, args.max_bytes, args.max_age_days, args.on_stale, args.on_partial)
-    if (args.list or args.check) and (args.agent_label or args.collection or args.topic or args.output_root or args.name or args.authorize_local_writes
+    build_options = (args.report_format, args.mode, args.max_items, args.max_bytes, args.max_age_days, args.on_stale, args.on_partial, args.poll_minutes)
+    if (args.list or args.check) and (args.agent_label or args.collection or args.topic or args.source or args.exclude_source or args.output_root or args.name or args.authorize_local_writes
                                     or any(value is not None for value in build_options)):
         parser.error("listing/checking cannot also build or write a profile")
     if args.authorize_local_writes and not (args.output_root and args.name):parser.error("writes require --output-root and --name")
@@ -51,10 +54,11 @@ def main(argv=None):
             if not args.agent_label:parser.error("building needs --agent-label and a collection or topic")
             request = ProfileRequest(args.agent_label, tuple(args.collection), tuple(args.topic), args.report_format or "markdown",
                 args.mode or "both", 20 if args.max_items is None else args.max_items, 32768 if args.max_bytes is None else args.max_bytes,
-                30 if args.max_age_days is None else args.max_age_days, args.on_stale or "refuse", args.on_partial or "refuse", args.as_of)
+                30 if args.max_age_days is None else args.max_age_days, args.on_stale or "refuse", args.on_partial or "refuse", args.as_of,
+                tuple(args.source), tuple(args.exclude_source), 1440 if args.poll_minutes is None else args.poll_minutes)
             profile, bodies, native = compile_files(request)
             output = write_new(args.output_root, args.name, bodies, authorized=True) if args.authorize_local_writes else None
-            report = {"record_type": "agent_feed_profile_build/v1", "status": "written" if output else "validated_only",
+            report = {"record_type": "agent_feed_profile_build/v2", "status": "written" if output else "validated_only",
                 "profile_digest": profile["profile_digest"], "directory": profile["source_directory"], "coverage": profile["coverage"],
                 "freshness": profile["freshness"], "native_package": native, "output": str(output) if output else None,
                 "network_calls": 0, "hosted_settings_saved": False, "scheduled": False}

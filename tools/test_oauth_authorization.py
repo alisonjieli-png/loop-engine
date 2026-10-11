@@ -27,13 +27,17 @@ from loop_engine.catalog.query import IntelligenceQuery
 from loop_engine.catalog.stores.sqlite_store import SQLiteRecordStore
 from loop_engine.core.service_runtime import account_origin
 from loop_engine.core.service_runtime.browser_identity import VerifiedIdentity
-from loop_engine.core.service_runtime.http_auth import AuthenticatedHttpRequest, BROWSER_IDENTITY_AUTHENTICATION
+from loop_engine.core.service_runtime.http_auth import (
+    AuthenticatedHttpRequest, BROWSER_IDENTITY_AUTHENTICATION, HttpAuthenticationError,
+    ServiceHttpAuthentication, ServiceHttpAuthenticator,
+)
 from loop_engine.core.service_runtime.oauth_authorization import (
     ACCESS, CLIENT, CODE, GRANT, HOSTED_CLIENT_REDIRECTS, LIMITS, OPENAI_CALLBACK_PREFIX, REFRESH, REQUEST,
     OAuthAuthorizationPolicy, OAuthAuthorizationProvider, same_redirect,
 )
 from loop_engine.core.service_runtime.records import (
     DEFAULT_SCOPES, ServiceCommitUnknown, ServiceRuntimeConfig, ServiceRuntimeError, SubjectBindingRequest, TenantRegistration,
+    TenantKeyIssue,
 )
 from loop_engine.core.service_runtime.runtime import ServiceRuntime
 from loop_engine.core.service_runtime.storage import ServiceCatalogBinding
@@ -118,6 +122,121 @@ class OAuthAuthorizationTests(unittest.IsolatedAsyncioTestCase):
                          ("synthetic", "synthetic-subject", self.policy.resource_url))
         self.assertEqual(context.scopes, ("provisioning:metadata",))
         self.assertEqual(context.principal.entitlement, "metadata", "OAuth does not create a paid entitlement")
+
+    async def test_http_context_retains_verified_oauth_delegation_without_new_authority(self):
+        tokens = await self.issue(["provisioning:metadata"])
+        expected = self.provider.resolve_access(tokens.access_token)
+        authenticator = ServiceHttpAuthenticator(self.runtime, ServiceHttpAuthentication(),
+                                                oauth_authorization=self.provider)
+        request = authenticator.authenticate("Bearer " + tokens.access_token)
+        self.assertIsNotNone(getattr(request, "oauth_context", None), "verified OAuth delegation was discarded")
+        self.assertEqual(request.oauth_context, expected)
+        self.assertEqual(authenticator.revalidate(request).oauth_context, expected)
+        self.assertEqual(request.effective_scopes, ("provisioning:metadata",))
+        self.assertEqual(request.principal.entitlement, "metadata")
+        self.assertNotIn(tokens.access_token, repr(request))
+        self.assertNotIn(expected.grant_id, repr(request))
+
+    async def test_request_revalidation_rejects_spoofed_delegation_and_untyped_provider_facts(self):
+        tokens = await self.issue()
+        authenticator = ServiceHttpAuthenticator(self.runtime, ServiceHttpAuthentication(),
+                                                oauth_authorization=self.provider)
+        request = authenticator.authenticate("Bearer " + tokens.access_token)
+        for changes in ({"client_id": "caller-selected-client"}, {"grant_id": "caller-selected-grant"}):
+            with self.subTest(changes=changes), self.assertRaises(HttpAuthenticationError):
+                authenticator.revalidate(replace(request, oauth_context=replace(request.oauth_context, **changes)))
+        for value in (None, {"client_id": self.client.client_id}, "caller-selected-grant"):
+            with self.subTest(value=value), self.assertRaises(HttpAuthenticationError):
+                replace(request, oauth_context=value)
+        with mock.patch.object(self.provider, "resolve_access", return_value={"client_id": "forged"}):
+            with self.assertRaises(HttpAuthenticationError):
+                authenticator.authenticate("Bearer " + tokens.access_token)
+
+    async def test_host_key_and_browser_contexts_cannot_claim_oauth_delegation(self):
+        tokens = await self.issue()
+        authenticator = ServiceHttpAuthenticator(self.runtime, ServiceHttpAuthentication(),
+                                                oauth_authorization=self.provider)
+        oauth = authenticator.authenticate("Bearer " + tokens.access_token)
+        key = self.runtime.issue_key(TenantKeyIssue("synthetic", self.client.client_id))
+        request = authenticator.authenticate("Bearer " + key.key)
+        self.assertIsNone(request.oauth_context)
+        self.assertIsNone(authenticator.revalidate(request).oauth_context)
+        self.assertIsNone(self.authentication.oauth_context)
+        for context in (request, self.authentication):
+            with self.assertRaises(HttpAuthenticationError):
+                replace(context, oauth_context=oauth.oauth_context)
+
+    async def test_inflight_grant_replacement_is_refused_and_missing_guard_is_detected(self):
+        tokens = await self.issue()
+        authenticator = ServiceHttpAuthenticator(self.runtime, ServiceHttpAuthentication(),
+                                                oauth_authorization=self.provider)
+        original = authenticator.authenticate("Bearer " + tokens.access_token)
+        other_tokens = await self.issue()
+        other = self.provider.resolve_access(other_tokens.access_token)
+        self.assertEqual(other.client_id, original.oauth_context.client_id)
+        self.assertNotEqual(other.grant_id, original.oauth_context.grant_id)
+        with mock.patch.object(self.provider, "resolve_access", return_value=other):
+            with self.assertRaises(HttpAuthenticationError):
+                authenticator.revalidate(original)
+            # The old tenant/mode-only comparison silently adopts another grant.
+            def missing_guard(request):
+                fresh = authenticator.authenticate("Bearer " + request.credential)
+                if fresh.principal.tenant_id != request.principal.tenant_id or fresh.mode != request.mode:
+                    raise HttpAuthenticationError()
+                return fresh
+            self.assertEqual(missing_guard(original).oauth_context.grant_id, other.grant_id)
+
+    async def test_same_account_agents_and_other_accounts_keep_distinct_verified_bindings(self):
+        authenticator = ServiceHttpAuthenticator(self.runtime, ServiceHttpAuthentication(),
+                                                oauth_authorization=self.provider)
+        first_tokens = await self.issue()
+        first = authenticator.authenticate("Bearer " + first_tokens.access_token)
+        self.client = self.client.model_copy(update={"client_id": "second-agent", "client_name": self.client.client_name})
+        await self.provider.register_client(self.client)
+        second_tokens = await self.issue()
+        second = authenticator.authenticate("Bearer " + second_tokens.access_token)
+        self.assertEqual(first.principal.tenant_id, second.principal.tenant_id)
+        self.assertNotEqual(first.oauth_context.client_id, second.oauth_context.client_id)
+        self.assertNotEqual(first.oauth_context.grant_id, second.oauth_context.grant_id)
+        with self.assertRaises(HttpAuthenticationError):
+            authenticator.revalidate(replace(first, credential=second_tokens.access_token))
+
+        self.runtime.register_tenant(TenantRegistration("other-account", "other-namespace"))
+        binding = SubjectBindingRequest("other-account", self.policy.identity_issuer, "other-subject")
+        self.runtime.bind_subject(binding)
+        account_origin.record_origin(self.runtime, self.policy.identity_issuer, binding.subject, account_origin.SIGNUP_ORIGIN)
+        principal = self.runtime.authenticate_subject(binding.issuer, binding.subject)
+        self.authentication = AuthenticatedHttpRequest(principal, "other-synthetic-browser", BROWSER_IDENTITY_AUTHENTICATION,
+            self.now + 3600, DEFAULT_SCOPES, VerifiedIdentity(binding.subject, "", account_origin.SIGNUP_ORIGIN))
+        other_tokens = await self.issue()
+        other = authenticator.authenticate("Bearer " + other_tokens.access_token)
+        self.assertEqual(other.principal.tenant_id, "other-account")
+        self.assertEqual(other.oauth_context.principal.tenant_id, "other-account")
+        with self.assertRaises(HttpAuthenticationError):
+            authenticator.revalidate(replace(first, credential=other_tokens.access_token))
+
+    async def test_delegation_identity_survives_refresh_but_not_expiry_or_revocation(self):
+        tokens = await self.issue(["provisioning:metadata", "usage:read"])
+        authenticator = ServiceHttpAuthenticator(self.runtime, ServiceHttpAuthentication(),
+                                                oauth_authorization=self.provider)
+        old = authenticator.authenticate("Bearer " + tokens.access_token)
+        refresh = await self.provider.load_refresh_token(self.client, tokens.refresh_token)
+        renewed = await self.provider.exchange_refresh_token(self.client, refresh, ["provisioning:metadata"])
+        current = authenticator.authenticate("Bearer " + renewed.access_token)
+        self.assertEqual((current.oauth_context.client_id, current.oauth_context.grant_id),
+                         (old.oauth_context.client_id, old.oauth_context.grant_id))
+        self.assertEqual(current.effective_scopes, ("provisioning:metadata",))
+        with self.assertRaises(HttpAuthenticationError):
+            authenticator.revalidate(old)
+        access = await self.provider.load_access_token(renewed.access_token)
+        await self.provider.revoke_token(access)
+        with self.assertRaises(HttpAuthenticationError):
+            authenticator.revalidate(current)
+        fresh = await self.issue(["provisioning:metadata"])
+        expiring = authenticator.authenticate("Bearer " + fresh.access_token)
+        self.now = expiring.oauth_context.expires_at
+        with self.assertRaises(HttpAuthenticationError):
+            authenticator.revalidate(expiring)
 
     async def test_authorization_rejects_wrong_resource_and_redirect(self):
         params = AuthorizationParams(state="synthetic-state", scopes=list(DEFAULT_SCOPES), code_challenge=self.challenge,

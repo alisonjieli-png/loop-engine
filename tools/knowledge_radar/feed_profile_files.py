@@ -4,33 +4,15 @@ The writer creates only a new child folder under an explicit existing root.
 Descriptor-relative, no-follow operations keep symlinks and path traversal
 out of the write boundary. Existing folders and files are never overwritten.
 """
-import hashlib
-import json
 import os
 from pathlib import Path
 import re
 
-from loop_engine.core.service_runtime.catalogue_packages import CataloguePackage, CataloguePackageFile
-from .feed_profiles import FeedProfileError, MAXIMUM_BYTES, build, instructions, read_profile, read_request, validate
+from loop_engine.core.service_runtime.feed_profiles import FeedProfileError, MAXIMUM_BYTES, instructions, read_profile, read_request, validate
 
 PROFILE_FILE, GUIDE_FILE = "profile.json", "READING.md"
 OUTPUT_FILES = (PROFILE_FILE, GUIDE_FILE)
 _NAME = re.compile(r"[a-z][a-z0-9-]{0,63}\Z")
-
-
-def compile_files(request, directory=None):
-    profile = build(request, directory)
-    bodies = {PROFILE_FILE: (json.dumps(profile, ensure_ascii=False, sort_keys=True, indent=2) + "\n").encode(),
-              GUIDE_FILE: instructions(profile)}
-    total = sum(map(len, bodies.values()))
-    if total > request.max_bytes:raise FeedProfileError("feed_profile_bundle_byte_limit")
-    entries = [CataloguePackageFile(name, hashlib.sha256(body).hexdigest(), len(body),
-        "application/json" if name == PROFILE_FILE else "text/markdown",
-        "configuration" if name == PROFILE_FILE else "instruction_file").to_dict() for name, body in bodies.items()]
-    package = CataloguePackage.from_dict({"body_form": "package", "files": entries})
-    return profile, bodies, {"package": package.to_dict(), "package_digest": package.package_digest,
-                            "payload_files": len(bodies), "payload_bytes": total, "executable": package.executable,
-                            "approved": False, "published": False}
 
 
 def _open_directory(path):
