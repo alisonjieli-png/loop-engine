@@ -645,6 +645,11 @@ packaged bytes enter the website asset registry. Unknown versions, remote
 media URLs, path traversal, unsupported formats and oversized inventories are
 refused. The reader permits at most 64 companion previews, 16 MiB per file,
 64 MiB in the companion inventory and five minutes per audio or video preview.
+The companion JSON is bounded to 1 MiB before parsing, with duplicate fields
+and non-finite numbers refused. Packaged filesystem and zip resources are read
+without extraction; linked or special files, linked directories and duplicate
+zip members are refused. These checks assume an immutable installed release,
+not a privileged concurrent writer changing its files.
 
 Adding a reviewed video or music preview requires data and its exact packaged
 bytes, not a new renderer or provider connection. Approval must separately

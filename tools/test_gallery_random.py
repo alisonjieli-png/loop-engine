@@ -5,13 +5,18 @@ music quality. They are not published assets or rights evidence.
 """
 import copy
 import hashlib
+import io
 import json
 from pathlib import Path
 import re
 import shutil
+import stat
 import subprocess
+import tempfile
 import unittest
+import warnings
 from unittest.mock import patch
+from zipfile import Path as ZipPath, ZipFile, ZipInfo
 
 from loop_engine.core.service_runtime import gallery_media as media
 from loop_engine.core.service_runtime import gallery_page, gallery_random, gallery_records, web_pages
@@ -39,6 +44,195 @@ def fixture(kind="video", status="approved"):
 
 
 class RandomGalleryTests(unittest.TestCase):
+    def test_duplicate_approval_and_version_fields_are_refused(self):
+        _, extra, _ = fixture()
+        raw = json.dumps(extra)
+        wrong = (
+            raw.replace('"status": "approved"', '"status": "rejected", "status": "approved"'),
+            raw.replace('"review": {', '"review": {"status":"pending","reference":"pending",'
+                        '"reviewer":"fixture"}, "review": {'),
+            raw.replace('"record_type": "website_gallery_media/v1"',
+                        '"record_type": "website_gallery_media/v99", "record_type": "website_gallery_media/v1"'),
+        )
+        for text in wrong:
+            with self.subTest(text=text), self.assertRaisesRegex(ValueError, "duplicate"):
+                media.parse_media(text)
+
+    def test_media_json_size_is_checked_before_parse_and_nonfinite_json_is_refused(self):
+        with patch.object(media, "MAX_RECORD_BYTES", 128, create=True), \
+                patch.object(media.json, "loads", side_effect=AssertionError("oversized JSON was parsed")):
+            for raw in (" " * 129, "é" * 65):
+                with self.subTest(raw=raw), self.assertRaises(ValueError):
+                    media.parse_media(raw)
+        for raw in ('{"record_type":"website_gallery_media/v1","items":NaN}',
+                    '[' * 1500 + ']' * 1500, '\ud800'):
+            with self.subTest(raw=raw[:50]), self.assertRaises(ValueError):
+                media.parse_media(raw)
+
+    def test_packaged_record_read_is_bounded_and_refuses_symlinks(self):
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            folder = root / "package/core/service_runtime/web_assets/gallery-media"
+            folder.mkdir(parents=True)
+            path = folder / "media.json"
+            path.write_text(" " * 4096 + json.dumps({"record_type": media.RECORD_TYPE, "items": []}))
+            try:
+                with patch.object(media, "files", return_value=root / "package"), \
+                        patch.object(media, "MAX_RECORD_BYTES", 128, create=True):
+                    media.media_record.cache_clear()
+                    with self.assertRaises(ValueError):
+                        media.media_record()
+                path.unlink()
+                outside = root / "outside.json"
+                outside.write_text(json.dumps({"record_type": media.RECORD_TYPE, "items": []}))
+                path.symlink_to(outside)
+                with patch.object(media, "files", return_value=root / "package"):
+                    media.media_record.cache_clear()
+                    with self.assertRaises(ValueError):
+                        media.media_record()
+                path.unlink()
+                path.symlink_to(path)
+                with patch.object(media, "files", return_value=root / "package"):
+                    media.media_record.cache_clear()
+                    with self.assertRaises(ValueError):
+                        media.media_record()
+            finally:
+                media.media_record.cache_clear()
+
+    def test_packaged_record_reads_only_the_bound_plus_one_bytes(self):
+        reads = []
+        class BoundedStream(io.BytesIO):
+            def read(self, size=-1):
+                reads.append(size)
+                if size != 129:
+                    raise AssertionError("packaged metadata used an unbounded read")
+                return super().read(size)
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            path = root / "package/core/service_runtime/web_assets/gallery-media/media.json"
+            path.parent.mkdir(parents=True)
+            path.write_text(json.dumps({"record_type": media.RECORD_TYPE, "items": []}))
+            try:
+                with patch.object(media, "files", return_value=root / "package"), \
+                        patch.object(media, "MAX_RECORD_BYTES", 128, create=True), \
+                        patch.object(Path, "open", return_value=BoundedStream(b" " * 4096)):
+                    media.media_record.cache_clear()
+                    with self.assertRaises(ValueError):
+                        media.media_record()
+                self.assertEqual(reads, [129])
+            finally:
+                media.media_record.cache_clear()
+
+    def test_symlinked_preview_and_directory_do_not_enter_projection(self):
+        value, extra, reader = fixture()
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            assets = root / "package/core/service_runtime/web_assets"
+            folder = assets / media.FOLDER
+            folder.mkdir(parents=True)
+            outside = root / "outside-preview"
+            outside.write_bytes(reader("fixture"))
+            path = folder / extra["items"][0]["preview"]["file"]
+            path.symlink_to(outside)
+            with patch.object(media, "files", return_value=root / "package"):
+                self.assertEqual(media.project(value, media.parse_media(json.dumps(extra)), media._read_asset), ())
+            path.unlink()
+            folder.rmdir()
+            outside_folder = root / "outside-folder"
+            outside_folder.mkdir()
+            (outside_folder / path.name).write_bytes(reader("fixture"))
+            folder.symlink_to(outside_folder, target_is_directory=True)
+            with patch.object(media, "files", return_value=root / "package"):
+                self.assertEqual(media.project(value, media.parse_media(json.dumps(extra)), media._read_asset), ())
+
+    def test_regular_and_zip_packaged_resources_use_the_same_bounds(self):
+        value, extra, reader = fixture()
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            prefix = "loop_engine/core/service_runtime/web_assets/gallery-media/"
+            record = json.dumps(extra).encode()
+            filename = extra["items"][0]["preview"]["file"]
+            with ZipFile(root / "package.zip", "w") as archive:
+                archive.writestr(prefix + "media.json", record)
+                archive.writestr(prefix + filename, reader("fixture"))
+            with ZipFile(root / "package.zip") as archive, \
+                    patch.object(media, "files", return_value=ZipPath(archive, "loop_engine/")):
+                try:
+                    media.media_record.cache_clear()
+                    parsed = media.media_record()
+                    self.assertEqual(parsed, extra)
+                    projected = media.project(value, parsed, media._read_asset)
+                    self.assertEqual(len(projected), 1)
+                    self.assertEqual(projected[0]["sha256"], extra["items"][0]["preview"]["sha256"])
+                    with patch.object(media, "MAX_RECORD_BYTES", len(record) - 1):
+                        media.media_record.cache_clear()
+                        with self.assertRaises(ValueError):
+                            media.media_record()
+                finally:
+                    media.media_record.cache_clear()
+
+    def test_zip_alias_special_and_duplicate_members_are_refused(self):
+        _, extra, reader = fixture()
+        prefix = "loop_engine/core/service_runtime/web_assets/gallery-media/"
+        with tempfile.TemporaryDirectory() as temp:
+            for index, mode in enumerate((stat.S_IFLNK, stat.S_IFIFO, "duplicate", "parent-link")):
+                path = Path(temp) / f"fixture-{index}.zip"
+                with ZipFile(path, "w") as archive:
+                    entry = ZipInfo(prefix + "media.json")
+                    entry.create_system = 3
+                    entry.external_attr = ((mode if type(mode) is int else stat.S_IFREG) | 0o600) << 16
+                    archive.writestr(entry, json.dumps(extra))
+                    if mode == "duplicate":
+                        with warnings.catch_warnings():
+                            warnings.simplefilter("ignore", UserWarning)
+                            archive.writestr(prefix + "media.json", json.dumps(extra))
+                    if mode == "parent-link":
+                        entry = ZipInfo(prefix.rstrip("/"))
+                        entry.create_system = 3
+                        entry.external_attr = (stat.S_IFLNK | 0o777) << 16
+                        archive.writestr(entry, "outside")
+                with ZipFile(path) as archive, \
+                        patch.object(media, "files", return_value=ZipPath(archive, "loop_engine/")):
+                    try:
+                        media.media_record.cache_clear()
+                        with self.subTest(mode=mode), self.assertRaises(ValueError):
+                            media.media_record()
+                    finally:
+                        media.media_record.cache_clear()
+
+    def test_zip_preview_symlink_is_not_public_even_with_matching_bytes(self):
+        value, extra, reader = fixture()
+        prefix = "loop_engine/core/service_runtime/web_assets/gallery-media/"
+        with tempfile.TemporaryDirectory() as temp:
+            path = Path(temp) / "fixture.zip"
+            with ZipFile(path, "w") as archive:
+                archive.writestr(prefix + "media.json", json.dumps(extra))
+                entry = ZipInfo(prefix + extra["items"][0]["preview"]["file"])
+                entry.create_system = 3
+                entry.external_attr = (stat.S_IFLNK | 0o777) << 16
+                archive.writestr(entry, reader("fixture"))
+            with ZipFile(path) as archive, patch.object(media, "files", return_value=ZipPath(archive, "loop_engine/")):
+                self.assertEqual(media.project(value, media.parse_media(json.dumps(extra)), media._read_asset), ())
+
+    def test_wrong_id_review_types_and_overlong_file_names_are_refused(self):
+        _, original, _ = fixture()
+        for field, values in (("id", (None, True, [], {}, "../private", "bad\n")),
+                              ("review", (None, False, [], "approved"))):
+            for value in values:
+                record = copy.deepcopy(original)
+                record["items"][0][field] = value
+                with self.subTest(field=field, value=value), self.assertRaises(ValueError):
+                    media.parse_media(json.dumps(record))
+        record = copy.deepcopy(original)
+        record["items"][0]["preview"]["file"] = "x" * 201 + "-" + record["items"][0]["preview"]["sha256"][:12] + ".mp4"
+        with self.assertRaises(ValueError):
+            media.parse_media(json.dumps(record))
+        for field in ("title", "provenance"):
+            record = copy.deepcopy(original)
+            record["items"][0][field] = "escaped non-UTF-8: \ud800"
+            with self.subTest(field=field), self.assertRaises(ValueError):
+                media.parse_media(json.dumps(record))
+
     def test_public_asset_reader_boundary_checks_include_the_new_passive_reader(self):
         from loop_engine.core.service_runtime.http_boundary_checks import _web_pages_boundary
         checks = []

@@ -14,7 +14,10 @@ import hashlib
 from importlib.resources import files
 import json
 import math
+from pathlib import Path, PurePosixPath
 import re
+import stat
+from zipfile import Path as ZipPath
 
 from . import gallery_records as gallery
 
@@ -23,6 +26,7 @@ FOLDER = "gallery-media"
 PREFIX = "/assets/gallery-media/"
 KINDS = ("image", "video", "music")
 MAX_EXTRA_ITEMS = 64
+MAX_RECORD_BYTES = 1024 * 1024
 MAX_FILE_BYTES = 16 * 1024 * 1024
 MAX_TOTAL_BYTES = 64 * 1024 * 1024
 FORMATS = {
@@ -42,12 +46,31 @@ def _require(condition, reason):
 
 
 def _text(value, maximum=2000):
-    return isinstance(value, str) and bool(value.strip()) and len(value) <= maximum
+    if not isinstance(value, str) or not value.strip() or len(value) > maximum:
+        return False
+    try:
+        value.encode("utf-8")
+    except UnicodeError:
+        return False
+    return True
 
 
 def parse_media(text: str) -> dict:
     """Validate the closed companion record; approval remains a separate review."""
-    value = json.loads(text)
+    _require(type(text) is str and len(text) <= MAX_RECORD_BYTES, "media record exceeds its byte bound")
+    try:
+        _require(len(text.encode("utf-8")) <= MAX_RECORD_BYTES, "media record exceeds its byte bound")
+        def unique_object(pairs):
+            result = {}
+            for key, value in pairs:
+                _require(key not in result, "duplicate media JSON field")
+                result[key] = value
+            return result
+        def finite_json(_value):
+            raise gallery.GalleryRecordError("non-finite media JSON number")
+        value = json.loads(text, object_pairs_hook=unique_object, parse_constant=finite_json)
+    except (UnicodeError, RecursionError, json.JSONDecodeError):
+        raise gallery.GalleryRecordError("media record is not bounded UTF-8 JSON") from None
     _require(isinstance(value, dict) and set(value) == {"record_type", "items"}
              and value["record_type"] == RECORD_TYPE, f"this reader reads {RECORD_TYPE}")
     _require(isinstance(value["items"], list) and len(value["items"]) <= MAX_EXTRA_ITEMS, "too many media previews")
@@ -76,7 +99,7 @@ def parse_media(text: str) -> dict:
                  and FORMATS[media_type][0] == item["kind"], "media kind and format must agree")
         extension = FORMATS[media_type][1]
         _require(isinstance(preview["sha256"], str) and _SHA.fullmatch(preview["sha256"])
-                 and isinstance(preview["file"], str)
+                 and _text(preview["file"], 200)
                  and re.fullmatch(r"[a-z0-9-]+-" + preview["sha256"][:12] + r"\." + extension, preview["file"]),
                  "preview must have a safe content-addressed filename")
         _require(type(preview["bytes"]) is int and 0 < preview["bytes"] <= MAX_FILE_BYTES, "preview size exceeds its bound")
@@ -96,19 +119,65 @@ def parse_media(text: str) -> dict:
 
 @lru_cache(maxsize=1)
 def media_record():
-    return parse_media(files("loop_engine").joinpath("core", "service_runtime", "web_assets", FOLDER,
-                                                    "media.json").read_text(encoding="utf-8"))
+    try:
+        return parse_media(_read_packaged(FOLDER + "/media.json", MAX_RECORD_BYTES).decode("utf-8"))
+    except UnicodeError:
+        raise gallery.GalleryRecordError("media record is not UTF-8") from None
+
+
+def _plain_resource(resource):
+    """Refuse aliases/special files without treating zip-backed resources as filesystem paths.
+
+    Packaged releases are immutable during use; this is not a sandbox against
+    a privileged concurrent writer changing the installed release's files.
+    """
+    if isinstance(resource, Path):
+        try:
+            plain = resource.resolve() == resource.absolute() and resource.is_file()
+        except (OSError, RuntimeError):
+            plain = False  # A broken or looping link is still not a packaged file.
+        _require(plain, "media resource must be a plain packaged file")
+    elif isinstance(resource, ZipPath):
+        path = PurePosixPath(resource.at)
+        _require(not path.is_absolute() and ".." not in path.parts and resource.is_file(),
+                 "media resource must be a plain zip member")
+        names = {str(path), *(str(parent) for parent in path.parents if str(parent) != ".")}
+        seen = set()
+        for entry in resource.root.infolist():
+            name = entry.filename.rstrip("/")
+            if name not in names:
+                continue
+            _require(name not in seen, "duplicate media zip member")
+            seen.add(name)
+            directory = name != str(path)
+            kind = stat.S_IFMT(entry.external_attr >> 16)
+            _require(entry.is_dir() == directory and kind in (0, stat.S_IFDIR if directory else stat.S_IFREG),
+                     "media zip members must not be links or special files")
+    else:
+        raise gallery.GalleryRecordError("unsupported packaged media resource backend")
+
+
+def _read_packaged(name, maximum):
+    parts = name.split("/")
+    _require(len(parts) == 2 and parts[0] in (FOLDER, gallery.RECORD_FOLDER)
+             and re.fullmatch(r"[a-zA-Z0-9_.-]{1,200}", parts[1]) and parts[1] not in (".", ".."),
+             "media reads stay in the declared packaged folders")
+    resource = files("loop_engine").joinpath("core", "service_runtime", "web_assets", *parts)
+    _plain_resource(resource)
+    with resource.open("rb") as source:
+        body = source.read(maximum + 1)
+    _require(len(body) <= maximum, "packaged media resource exceeds its byte bound")
+    return body
 
 
 def _read_asset(name):
-    with files("loop_engine").joinpath("core", "service_runtime", "web_assets", name).open("rb") as source:
-        return source.read(MAX_FILE_BYTES + 1)
+    return _read_packaged(name, MAX_FILE_BYTES)
 
 
 def _matching_bytes(name, preview, reader):
     try:
         body = reader(name)
-    except (OSError, FileNotFoundError):
+    except (OSError, gallery.GalleryRecordError):
         return False
     return len(body) == preview["bytes"] and hashlib.sha256(body).hexdigest() == preview["sha256"]
 
