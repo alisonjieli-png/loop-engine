@@ -588,6 +588,20 @@ uses explicit read-only blob roots; the output remains a full metadata snapshot
 with delta blobs, not a claimed full-body archive. The runbook's preservation
 procedure includes the rearm gates; the tooling does not change schedules.
 
+Reconciliation verifies local body bytes serially by default.
+`--verification-workers 4` opts into clean-spawn processes; the accepted range
+is 1 through 8, and 1 keeps the in-process serial path. Each worker uses the
+existing read-only volume body store. Workers receive explicit roots and
+digest/size batches, never the catalogue or payload bytes. A batch holds at
+most 64 references and 8 MiB of declared body bytes. Submitted work is capped
+at twice the worker count and 8 MiB per selected worker in total; one additional
+batch may be held as metadata while waiting for space. Results contain counts
+or typed refusals. The first file error in input order refuses the run, as does
+a worker crash. Corrupt bytes in an earlier root cannot fall through to a good
+copy in a later root. No output is written until every input byte check passes.
+Metadata-only mode still reads no bodies. Measure the chosen worker count on
+the intended host before using it for a full reconciliation.
+
 ## Designed but not built
 
 The component reports these as explicit negative facts rather than leaving them

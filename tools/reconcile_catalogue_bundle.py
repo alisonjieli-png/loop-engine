@@ -35,6 +35,7 @@ from loop_engine.core.service_runtime.catalogue_segments import (
 )
 from loop_engine.core.service_runtime.http_entrypoint import HostFamilyPolicy, HostLicensePolicy
 from loop_engine.core.service_runtime.records import ServiceRuntimeError
+from catalogue_file_verification import MAXIMUM_WORKERS, VerificationLimits, read_payload as _payload, validate_file, verify_parallel
 
 REQUEST_VERSION = 'catalogue_reconciliation_request/v1'
 PROOF_VERSION = 'catalogue_reconciliation_proof/v1'
@@ -341,17 +342,8 @@ def compose(base, updates, changes):
     return Composed(rows, versions, tuple(sorted(({'identity':i,'note':note} for i,_,note in changes.withdrawals),key=lambda r:r['identity'])))
 
 
-def _payload(file, stores):
-    for store in stores:
-        try:
-            return store.read(file.digest, file.size_bytes)
-        except ServiceRuntimeError as error:
-            if error.code != 'body_missing':
-                raise
-    raise ValueError('a required baseline or update blob is missing; supply explicit body roots')
-
-
-def verify_files(bundle, extra_roots=()):
+def verify_files(bundle, extra_roots=(), *, workers=1):
+    limits = VerificationLimits(workers)
     stores = tuple(store for store in (bundle.blobs(), *(VolumeBodyStore(str(Path(root))) for root in extra_roots))
                    if store is not None)
     files = {}
@@ -361,7 +353,12 @@ def verify_files(bundle, extra_roots=()):
                 raise ValueError('one file digest cannot declare conflicting byte sizes')
             files[file.digest] = file
     for file in files.values():
-        _payload(file, stores)
+        validate_file(file)
+    if workers == 1:
+        for file in files.values():
+            _payload(file, stores)
+    else:
+        verify_parallel(files.values(), stores, limits)
     return files
 
 
@@ -426,7 +423,8 @@ def check_proof(base, candidate, proof):
 
 
 def write_reconciled(base, updates, changes, output, observed, *, extra_roots=(), notes='',
-                     bundle_format=BUNDLE_RECORD_TYPE, segment_target=None):
+                     bundle_format=BUNDLE_RECORD_TYPE, segment_target=None, verification_workers=1):
+    VerificationLimits(verification_workers)
     require_live_base(base, changes, observed)
     result = compose(base, updates, changes)
     output = Path(output)
@@ -434,9 +432,9 @@ def write_reconciled(base, updates, changes, output, observed, *, extra_roots=()
         raise ValueError('write a new plain absolute bundle folder outside the repository')
     # A delta-only baseline is not called complete. Every referenced file must
     # resolve through its own blob folder or explicit read-only extra roots.
-    held = verify_files(base, extra_roots)
+    held = verify_files(base, extra_roots, workers=verification_workers)
     for update in updates:
-        checked = verify_files(update, (base.folder/'blobs', *extra_roots))
+        checked = verify_files(update, (base.folder/'blobs', *extra_roots), workers=verification_workers)
         for digest, file in checked.items():
             if digest in held and held[digest].size_bytes != file.size_bytes:
                 raise ValueError('one file digest cannot declare conflicting byte sizes')
@@ -488,6 +486,8 @@ def main(argv=None):
     parser.add_argument('--accept-license', action='append', default=[])
     parser.add_argument('--notes', default='')
     parser.add_argument('--write', action='store_true')
+    parser.add_argument('--verification-workers', type=int, choices=range(1, MAXIMUM_WORKERS + 1), default=1,
+                        help='clean-spawn local byte verification workers (default 1, serial); metadata-only mode still reads no bodies')
     parser.add_argument('--bundle-format', choices=BUNDLE_FORMATS, default=BUNDLE_RECORD_TYPE,
                         help='version 2 writes a segmented bundle; negotiate it with the service first')
     parser.add_argument('--segment-target', type=int, help='version 2: mean items per segment (a power of two)')
@@ -507,7 +507,8 @@ def main(argv=None):
             # throughout byte checks and proof generation.
             result = write_reconciled(base, updates, changes, options.output, observed,
                                       extra_roots=options.body_root, notes=options.notes,
-                                      bundle_format=options.bundle_format, segment_target=options.segment_target)
+                                      bundle_format=options.bundle_format, segment_target=options.segment_target,
+                                      verification_workers=options.verification_workers)
         else:
             composed = compose(base, updates, changes)
             result = {'record_type':RESULT_VERSION, 'state':'checked_metadata_only_no_write',
