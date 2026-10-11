@@ -10,10 +10,12 @@ import json
 from pathlib import Path
 import shutil
 import stat
+import struct
 import subprocess
 import tempfile
 import unittest
 import warnings
+import zlib
 from unittest.mock import patch
 from zipfile import ZipFile, ZipInfo, ZIP_DEFLATED
 
@@ -49,7 +51,48 @@ def example_fixture(*, payload=None, mode=stat.S_IFREG, duplicate=False, suffix=
     return value, record, reader, archive
 
 
+def replace_last_deflate(body, replacement):
+    """Synthetic ZIP mutation with consistent headers but an altered raw member stream."""
+    value = bytearray(body)
+    with ZipFile(io.BytesIO(body)) as archive:
+        member = max(archive.infolist(), key=lambda row: row.header_offset)
+        old_start = archive.start_dir
+    local = member.header_offset
+    name_length, extra_length = struct.unpack_from("<HH", value, local + 26)
+    start = local + 30 + name_length + extra_length
+    altered = replacement(bytes(value[start:old_start]))
+    value[start:old_start] = altered
+    new_start = start + len(altered)
+    struct.pack_into("<I", value, local + 18, len(altered))
+    cursor = new_start
+    while value[cursor:cursor + 4] == b"PK\x01\x02":
+        name, extra, comment = struct.unpack_from("<HHH", value, cursor + 28)
+        if struct.unpack_from("<I", value, cursor + 42)[0] == local:
+            struct.pack_into("<I", value, cursor + 20, len(altered))
+        cursor += 46 + name + extra + comment
+    struct.pack_into("<I", value, len(value) - 6, new_start)
+    return bytes(value)
+
+
 class WebsiteExampleTests(unittest.TestCase):
+    def test_raw_deflate_cannot_hide_extra_bytes_or_escape_as_an_exception(self):
+        _, record, _, body = example_fixture()
+        origin = record["items"][0]["source"]
+        def hidden_unpacked(raw):
+            original = zlib.decompress(raw, -zlib.MAX_WBITS)
+            encoder = zlib.compressobj(wbits=-zlib.MAX_WBITS)
+            return encoder.compress(original + b"unlisted" * 20000) + encoder.flush()
+        changes = (lambda raw: raw + b"UNLISTED-BINARY\x00not-source",
+                   lambda raw: b"\xff" + raw[1:], lambda raw: raw[:-1], hidden_unpacked)
+        for change in changes:
+            altered = replace_last_deflate(body, change)
+            source = copy.deepcopy(origin)
+            digest = hashlib.sha256(altered).hexdigest()
+            source["version"] = digest
+            source["archive"] = {"file": "fixture-" + digest[:12] + ".zip", "sha256": digest, "bytes": len(altered)}
+            with self.subTest(change=changes.index(change)):
+                self.assertFalse(media.valid_source_archive(altered, source))
+
     def test_media_content_policy_allows_same_origin_only(self):
         from types import SimpleNamespace
         from loop_engine.core.service_runtime.http import ServiceHttpApplication

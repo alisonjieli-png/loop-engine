@@ -20,6 +20,7 @@ from pathlib import Path, PurePosixPath
 import re
 import stat
 import struct
+import zlib
 from zipfile import BadZipFile, Path as ZipPath, ZipFile, ZIP_DEFLATED, ZIP_STORED
 
 from . import gallery_records as gallery
@@ -289,15 +290,30 @@ def valid_source_archive(body, source):
                     return False
                 if entry.file_size != wanted["bytes"] or entry.file_size > MAX_SOURCE_FILE_BYTES:
                     return False
-                with bundle.open(entry) as stream:
-                    payload = stream.read(MAX_SOURCE_FILE_BYTES + 1)
+                # ZipExtFile truncates to the header's file_size and can ignore
+                # trailing compressed bytes. Inspect the entire bounded raw
+                # stream instead, without an unbounded decompress or flush.
+                encoded_name = name.encode("utf-8" if entry.flag_bits & 2048 else "cp437")
+                start = entry.header_offset + 30 + len(encoded_name)
+                compressed = body[start:start + entry.compress_size]
+                if entry.compress_type == ZIP_STORED:
+                    if entry.compress_size != entry.file_size:
+                        return False
+                    payload = compressed
+                else:
+                    decoder = zlib.decompressobj(-zlib.MAX_WBITS)
+                    payload = decoder.decompress(compressed, wanted["bytes"] + 1)
+                    if not decoder.eof or decoder.unused_data or decoder.unconsumed_tail:
+                        return False
+                if zlib.crc32(payload) & 0xffffffff != entry.CRC:
+                    return False
                 if len(payload) != wanted["bytes"] or hashlib.sha256(payload).hexdigest() != wanted["sha256"] or b"\0" in payload:
                     return False
                 text = payload.decode("utf-8")
                 if any(pattern.search(text) for pattern in _source_secret_patterns()) or "PRIVATE KEY-----" in text:
                     return False
         return True
-    except (BadZipFile, OSError, ValueError, RuntimeError, KeyError, UnicodeError, re.error, struct.error):
+    except (BadZipFile, OSError, ValueError, RuntimeError, KeyError, UnicodeError, re.error, struct.error, zlib.error):
         return False
 
 
