@@ -125,6 +125,90 @@ Queue, provider SDK and Loop repair must not independently repeat the same
 logical operation. The existing scheduler and effect records own that policy.
 [Queues delivery guarantees](https://developers.cloudflare.com/queues/reference/delivery-guarantees/)
 
+### Large local jobs and bounded cloud work
+
+The October 11 catalogue reconciliation completed under a 20 GiB local limit
+after an earlier 12 GiB attempt was killed at its ceiling. The completed run
+verified 1,560,856 baseline bodies and 341,902 additions in 24m40s, with a
+14,535,568 KiB maximum process resident set and no swap. It produced a private
+candidate, not a published catalogue. The reconciler releases construction
+state before its independent reread and no longer composes the same catalogue
+twice before writing. These changes retain the complete byte and proof checks.
+
+Cloudflare Workers documents 128 MB per isolate. Containers documents a
+12 GiB maximum among its listed configurations; larger allocations require a
+provider request. Neither is a direct destination for this measured local job.
+Use Workers for bounded request handling and small jobs. Evaluate Queues and
+Workflows for transport and waiting behind the existing scheduler, with R2 for
+immutable bodies. Keep large qualification, native rendering and publication
+checks on approved machines until a partitioned implementation passes the same
+checks. No new cloud resource is activated by this placement decision.
+[Workers limits](https://developers.cloudflare.com/workers/platform/limits/),
+[Containers limits](https://developers.cloudflare.com/containers/platform/limits/)
+
+Local parallel verification is under qualification. Threads were slower in
+the tested samples. A clean-spawn process experiment over 46,538 files and
+224,074,942 bytes had median wall times of 4.140s with one process, 2.776s with
+four and 2.894s with eight, including startup and shutdown. This small sample
+does not establish full-catalogue speed. The proposed opt-in engine sends
+bounded digest/size batches and explicit roots to workers, keeps payload bytes
+out of results, preserves deterministic refusal order and retains serial
+verification as the default until the complete path is qualified.
+
+### Separate product brands: proposed, not deployed
+
+The owner's October 11 proposal is to test distinct websites, beginning with
+Agent Feeds, over the same services. S-6.35.06 in the
+[roadmap](../roadmap/roadmap.yaml) owns this investigation. Domain control has
+not been verified. Current hostnames select pages within one Baltor site map
+and shared page shell; a display-name substitution is not a separate brand.
+
+Keep these identities separate:
+
+| Identity | Owns | Does not grant |
+| --- | --- | --- |
+| Brand | Approved hostnames, design, copy, support presentation and public metadata | Product access or execution authority |
+| Product | The useful customer outcome and its existing typed service contracts | An invented independent company |
+| Plan | Price, included capabilities and stated limits | New provider or model spending authority |
+| Tenant/account | Customer identity, private state, credentials and grants | Access to another customer's records |
+| Experiment | Assignment, tested difference, observation window and result | Undisclosed tracking or a false claim about demand |
+
+A first implementation should select an approved brand from the request
+hostname and serve a brand-specific static export through the existing edge.
+Fly retains authoritative identity, entitlements and billing until a separately
+qualified migration. Shared product APIs and content identities stay unchanged.
+Include the brand in relevant cache keys, export identity, OAuth return paths,
+checkout configuration and support context. Refuse unknown hosts and unapproved
+redirects. Brand presentation must never stand in for tenant authorization.
+
+Unrelated domains cannot share an ordinary first-party cookie. Keep sessions
+origin-bound and make any common sign-in an explicit, tested redirect flow.
+Do not silently merge accounts, share private activity, duplicate charges or
+change existing grants when a person visits another brand. A shared backend
+also shares failure risks; measure and bound each brand's demand.
+
+Cloudflare supports multiple Worker Custom Domains in zones the operator
+controls. Billing needs a separate decision: Stripe requires separate accounts
+for independently operating projects or businesses and warns that mismatched
+public business details can confuse customers. One backend does not imply one
+payment account is appropriate for every brand.
+[Cloudflare Custom Domains](https://developers.cloudflare.com/workers/configuration/routing/custom-domains/),
+[Stripe account guidance](https://docs.stripe.com/get-started/account/multiple-accounts)
+
+Brands can have different names and presentation while accurately identifying
+their operator. Do not imply independent ownership, fabricate competitor
+endorsements or report the same customer's activity as independent demand.
+The FTC's guidance covers both express and implied advertising claims; a
+footer cannot cure a misleading main claim. Existing approved privacy and
+terms remain unchanged. New public legal commitments still need owner approval.
+[FTC advertising guidance](https://www.ftc.gov/business-guidance/resources/advertising-faqs-guide-small-business)
+
+For a presentation test, hold the offer, price, traffic source and eligibility
+constant. Different products or audiences test different propositions, not only
+branding. Measure a useful first outcome, repeat use, support burden and cost
+per retained customer; page views alone do not qualify a brand. Acquisition
+spend remains with the owner.
+
 ## 3. Database architecture
 
 ```text

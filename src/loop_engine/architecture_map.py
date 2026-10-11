@@ -91,6 +91,7 @@ MODULE_MAP = {
         "red_team_page",
         "feedback", "feedback_checks", "staff_work",
         "status_pages", "support_page", "offering_guides", "gallery_page", "gallery_records",
+        "gallery_media", "gallery_random",
         "openapi_tool_server", "feed_profile_web", "feed_profiles",
         "catalogue_d1_index", "catalogue_d1_index_checks",
         "catalogue_object_store", "object_store_fake", "catalogue_body_store_checks", "service_engine_body_store",
