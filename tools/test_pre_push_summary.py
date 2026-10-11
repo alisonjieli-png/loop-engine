@@ -15,6 +15,7 @@ missing command, not a failure.
 from __future__ import annotations
 
 import os
+import json
 from pathlib import Path
 import shutil
 import subprocess
@@ -104,7 +105,6 @@ class SummaryTests(unittest.TestCase):
         self.assertIn(f"benchmark-registry: {summary.NOT_FOUND_NOTE}", text)
         self.assertIn("could not run", last)
         self.assertIn("NOT EQUIVALENT TO CI (1 skipped in this run", last)
-
     def test_a_failure_outranks_a_missing_command(self):
         self.write(results=[(1, 5, "examples"), (127, 0, "benchmark-registry")])
         _text, last, status = self.run_summary(python="3.12")
@@ -167,6 +167,31 @@ class SummaryTests(unittest.TestCase):
         self.assertIn("NOT EQUIVALENT TO CI (1 skipped in this run", last)
 
 
+class SelectionContractTests(unittest.TestCase):
+    def test_complete_selection_comes_from_gate_declarations_and_shard_manifest(self):
+        script = (ROOT / "tools" / "pre_push_check.sh").read_text(encoding="utf-8")
+        shards = json.loads((ROOT / "tools" / "ci_test_shards.json").read_text())["shards"]
+        names = summary.declared_gate_names(script, shards)
+        self.assertTrue(set("tools-shard-" + shard for shard in shards) <= set(names))
+        self.assertEqual(summary.validate_only_selection(",".join(names), names), names)
+        self.assertNotIn("pristine-manifest", names)
+
+    def test_new_gate_and_shard_need_no_second_name_list(self):
+        script = 'gate "first" "A check" true\ngate "tools-shard-$shard" "Tools" true\n'
+        names = summary.declared_gate_names(script + 'local_gate "new-check" "Local check" true\n', ("later",))
+        self.assertEqual(names, ("first", "tools-shard-later", "new-check"))
+        self.assertEqual(summary.validate_only_selection("new-check,tools-shard-later", names),
+                         ("new-check", "tools-shard-later"))
+
+    def test_empty_duplicates_unknowns_and_unsupported_declarations_refuse(self):
+        for selection in ("", ",first", "first,", "first,,first", "first,first", "first,unknown", " first"):
+            with self.subTest(selection=selection), self.assertRaises(ValueError):
+                summary.validate_only_selection(selection, ("first",))
+        for script in ('gate "same" "A" true\ngate "same" "B" true', 'gate "$unsupported" "A" true', ""):
+            with self.subTest(script=script), self.assertRaises(ValueError):
+                summary.declared_gate_names(script, ("a",))
+
+
 class ShimTests(unittest.TestCase):
     """The pre-push script on a scratch tree whose one step calls `python`, on a PATH without any python."""
 
@@ -182,6 +207,12 @@ class ShimTests(unittest.TestCase):
         (cls.tree / ".github" / "workflows").mkdir(parents=True)
         (cls.tree / ".github" / "workflows" / "ci.yml").write_text(SCRATCH_WORKFLOW, encoding="utf-8")
         (cls.tree / "tools").mkdir()
+        # A malformed selection must never reach a real installed engine.
+        # Keep even the intentionally broken-script controls in this scratch tree.
+        (cls.tree / "src" / "loop_engine").mkdir(parents=True)
+        (cls.tree / "src" / "loop_engine" / "__init__.py").write_text("", encoding="utf-8")
+        (cls.tree / "src" / "loop_engine" / "__main__.py").write_text(
+            "print('scratch runtime gate executed')\n", encoding="utf-8")
         for name in ("run_test_shard.py", "ci_test_shards.json", "pre_push_summary.py", "pre_push_check.sh"):
             shutil.copy2(ROOT / "tools" / name, cls.tree / "tools" / name)
         # Only the commands the script needs, each linked by name, and nothing called python.
@@ -195,16 +226,71 @@ class ShimTests(unittest.TestCase):
         cls.interpreter.write_text(f'#!/bin/sh\nexec "{sys.executable}" "$@"\n', encoding="utf-8")
         cls.interpreter.chmod(0o755)
 
-    def run_script(self, script: Path):
+    def run_script(self, script: Path, *, only="benchmark-registry", extra=()):
         # Each run has its own home, so two runs in the same second never share a run folder, and git looks for no
         # repository above the scratch tree.
         home = self.home / f"user-{script.stem}"
         home.mkdir(exist_ok=True)
         environment = {"PATH": str(self.bin), "HOME": str(home), "PY": str(self.interpreter), "LANG": "C.UTF-8",
                        "GIT_CEILING_DIRECTORIES": str(self.home)}
-        return subprocess.run([str(self.bin / "bash"), str(script), "--tree", str(self.tree), "--only",
-                               "benchmark-registry"], env=environment, capture_output=True, text=True, timeout=300,
+        arguments = [str(self.bin / "bash"), str(script), "--tree", str(self.tree)]
+        if only is not None:
+            arguments += ["--only", only]
+        return subprocess.run([*arguments, *extra], env=environment, capture_output=True, text=True, timeout=300,
                               check=False)
+
+    def test_unknown_only_ids_and_mixed_selection_refuse_before_gates(self):
+        original = (self.tree / "tools" / "pre_push_check.sh").read_text(encoding="utf-8")
+        for index, selection in enumerate(("a,b,c,d,hardcoding", "benchmark-registry,unknown-gate")):
+            script = self.home / f"unknown-only-{index}.sh"
+            script.write_text(original, encoding="utf-8")
+            completed = self.run_script(script, only=selection)
+            with self.subTest(selection=selection):
+                self.assertEqual(completed.returncode, 2, completed.stdout + completed.stderr)
+                self.assertIn("unknown --only gate", completed.stderr)
+                self.assertNotIn("RESULT:", completed.stdout)
+                self.assertFalse((self.home / f"user-{script.stem}" / ".le-ci-tmp").exists())
+
+    def test_empty_duplicate_and_repeated_only_refuse_before_setup(self):
+        original = (self.tree / "tools" / "pre_push_check.sh").read_text(encoding="utf-8")
+        cases = (("", ()), (",benchmark-registry", ()), ("benchmark-registry,", ()),
+                 ("benchmark-registry,,benchmark-registry", ()), ("benchmark-registry,benchmark-registry", ()),
+                 ("benchmark-registry", ("--only", "benchmark-registry")), (None, ("--only",)))
+        for index, (selection, extra) in enumerate(cases):
+            script = self.home / f"malformed-only-{index}.sh"
+            script.write_text(original, encoding="utf-8")
+            completed = self.run_script(script, only=selection, extra=extra)
+            with self.subTest(selection=selection, extra=extra):
+                self.assertEqual(completed.returncode, 2, completed.stdout + completed.stderr)
+                self.assertIn("--only", completed.stderr)
+                self.assertFalse((self.home / f"user-{script.stem}" / ".le-ci-tmp").exists())
+
+    def test_list_and_complete_valid_selection_preserve_listing_without_running_gates(self):
+        original = (self.tree / "tools" / "pre_push_check.sh").read_text(encoding="utf-8")
+        shards = json.loads((self.tree / "tools" / "ci_test_shards.json").read_text())["shards"]
+        names = summary.declared_gate_names(original, shards)
+        for suffix, selection in (("all", ",".join(names)), ("none", None)):
+            script = self.home / f"list-{suffix}.sh"
+            script.write_text(original, encoding="utf-8")
+            completed = self.run_script(script, only=selection, extra=("--list",))
+            self.assertEqual(completed.returncode, 0, completed.stdout + completed.stderr)
+            self.assertIn("tools-shard-" + shards[0], completed.stdout)
+            self.assertIn("derived, not a selectable gate", completed.stdout)
+            self.assertNotIn("RESULT:", completed.stdout)
+            results = list((self.home / f"user-{script.stem}").glob(".le-ci-tmp/pre-push/*/results.txt"))
+            self.assertEqual(len(results), 1)
+            self.assertEqual(results[0].read_text(), "")
+
+    def test_every_requested_valid_gate_runs_without_extra_gates(self):
+        script = self.home / "valid-two.sh"
+        script.write_text((self.tree / "tools" / "pre_push_check.sh").read_text(encoding="utf-8"), encoding="utf-8")
+        completed = self.run_script(script, only="self-test,benchmark-registry")
+        self.assertEqual(completed.returncode, 0, completed.stdout + completed.stderr)
+        results = list((self.home / f"user-{script.stem}").glob(".le-ci-tmp/pre-push/*/results.txt"))
+        self.assertEqual(len(results), 1)
+        rows = [line.split() for line in results[0].read_text().splitlines()]
+        self.assertEqual(sorted(row[2] for row in rows), ["benchmark-registry", "self-test"])
+        self.assertTrue(all(row[0] == "0" for row in rows))
 
     def test_the_path_of_this_test_holds_no_python(self):
         self.assertEqual([path.name for path in self.bin.iterdir() if path.name.startswith("python")], [])

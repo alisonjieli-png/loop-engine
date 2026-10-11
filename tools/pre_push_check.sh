@@ -17,7 +17,7 @@
 #   PY=/path/to/python   the interpreter with the project's extras (default: .venv/bin/python of the tree, then of
 #                        the checkout that holds its repository, then python3 on PATH, reported as a gap)
 #   --tree PATH          check that checkout instead of the one holding this script
-#   --only a,b           run only the named gates (see --list)
+#   --only a,b           distinct, nonempty gate IDs (see --list); unknown IDs refuse before setup
 # Every gate gets TMPDIR and RUNNER_TEMP under $HOME/.le-ci-tmp/pre-push/, never /tmp: on one development
 # machine writes into /tmp silently produce empty files. Logs stay in that folder after the run.
 # The hook template tools/git-hooks/pre-push runs this script; it explains how to install it in one checkout.
@@ -25,13 +25,20 @@ set -u
 
 usage() { sed -n '2,20p' "${BASH_SOURCE[0]}" | sed 's/^# \{0,1\}//'; }
 
+script_path="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/${BASH_SOURCE[0]##*/}"
 root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 only=""
+only_supplied=0
 listing=0
 while [ $# -gt 0 ]; do
   case "$1" in
     --tree) root="$(cd "$2" && pwd)"; shift 2 ;;
-    --only) only="$2"; shift 2 ;;
+    --only)
+      if [ "$only_supplied" = 1 ]; then echo "--only may be supplied only once" >&2; exit 2; fi
+      if [ $# -lt 2 ] || [ -z "$2" ] || [[ "$2" == --* ]]; then
+        echo "--only requires nonempty gate IDs" >&2; exit 2
+      fi
+      only="$2"; only_supplied=1; shift 2 ;;
     --list) listing=1; shift ;;
     -h|--help) usage; exit 0 ;;
     *) echo "unknown argument: $1" >&2; usage >&2; exit 2 ;;
@@ -55,6 +62,26 @@ if [ ! -x "$PY" ]; then
   fi
 fi
 if [ -z "$PY" ]; then echo "no Python found; set PY" >&2; exit 2; fi
+# Validate before creating logs, installing dependencies or starting any gate.
+# The declarations below remain the gate-name authority; shard names come from
+# the same manifest used by tools/run_test_shard.py --list.
+if [ "$only_supplied" = 1 ]; then
+  if ! "$PY" -B - "$root/tools" "$script_path" "$only" <<'PY'
+import sys
+from pathlib import Path
+sys.path.insert(0, sys.argv[1])
+from pre_push_summary import declared_gate_names, validate_only_selection
+from run_test_shard import load_manifest
+try:
+    shards = load_manifest(Path(sys.argv[1]) / "ci_test_shards.json")["shards"]
+    names = declared_gate_names(Path(sys.argv[2]).read_text(encoding="utf-8"), shards)
+    validate_only_selection(sys.argv[3], names)
+except (OSError, ValueError) as error:
+    print(str(error), file=sys.stderr)
+    raise SystemExit(2)
+PY
+  then exit 2; fi
+fi
 venv_bin="$(cd "$(dirname "$PY")" && pwd)"
 revision="$(git rev-parse --short HEAD 2>/dev/null || echo untracked)"
 run_folder="${HOME}/.le-ci-tmp/pre-push/${revision}-$(date +%Y%m%d-%H%M%S)"
@@ -252,8 +279,8 @@ skip "Render current architecture diagrams" "continuous integration only: the di
 skip "Verify interactive architecture and video" "continuous integration only: the browser suite needs Chrome and the showcase server; run node tools/check_service_workspace.mjs on its own"
 
 if [ "$listing" = 1 ]; then
-  printf '  %-22s %s (local only)\n' "pristine-manifest" \
-    "the conformance manifest the conformance gate wrote from a clean tree equals HEAD's"
+  printf '  %-22s %s (derived, not a selectable gate)\n' "-" \
+    "pristine-manifest: compares the output of conformance plus pristine-tree on a clean tree"
   exit 0
 fi
 wait

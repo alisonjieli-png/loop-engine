@@ -27,6 +27,7 @@ from __future__ import annotations
 
 import argparse
 from pathlib import Path
+import re
 import sys
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -46,6 +47,39 @@ FAILURE_LINES = ("FAILED ", "FAIL: ", "ERROR: ")
 MISSING_MODULE = ("ModuleNotFoundError", "No module named")
 MISSING_MODULE_HINT = ("the log names a missing module: when the interpreter is not the project's environment, this is "
                        "the machine, not the change")
+
+
+def declared_gate_names(script: str, shards) -> tuple:
+    """Read selectable IDs from the actual gate declarations, expanding the existing shard manifest.
+
+    No second list of gate names is maintained. Derived summary rows such as
+    the pristine-manifest comparison are not independently runnable gates.
+    """
+    names = []
+    for name in re.findall(r'^\s*(?:gate|local_gate) "([^"\n]+)"', script, re.MULTILINE):
+        expanded = ([name.replace("$shard", shard) for shard in shards] if "$shard" in name else [name])
+        for entry in expanded:
+            if not entry or "$" in entry or "," in entry or any(c.isspace() for c in entry):
+                raise ValueError("unsupported gate declaration: " + repr(entry))
+            if entry in names:
+                raise ValueError("duplicate gate declaration: " + entry)
+            names.append(entry)
+    if not names:
+        raise ValueError("no gate declarations found")
+    return tuple(names)
+
+
+def validate_only_selection(selection: str, names) -> tuple:
+    """Refuse the entire selection before setup when any requested ID is unusable."""
+    selected = tuple(selection.split(","))
+    if any(not name for name in selected):
+        raise ValueError("empty --only gate ID")
+    if len(selected) != len(set(selected)):
+        raise ValueError("duplicate --only gate ID")
+    unknown = [name for name in selected if name not in names]
+    if unknown:
+        raise ValueError("unknown --only gate IDs: " + ", ".join(unknown) + "; use --list for selectable IDs")
+    return selected
 
 
 def _lines(path: Path) -> list:
