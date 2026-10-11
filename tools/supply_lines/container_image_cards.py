@@ -48,7 +48,7 @@ from .reading import RAW_HOST, github_blob_address, pinned_files
 from .records import (CONTAINER_IMAGE_CARDS, GENERATED, GENERATED_CODE_LICENCE, GENERATED_TEST_FAILED, LICENCE_TEXT,
                       SupplyRecordError, fact_source, provenance, refusal, upstream_key)
 
-GENERATOR_VERSION = "1.0.0"
+GENERATOR_VERSION = "1.0.1"
 NATIVE_FORMAT = "container_image_card"
 STATE_SCOPE = "docker_official_images"
 LIBRARY_REPOSITORY, DOCS_REPOSITORY = cards.LIBRARY_REPOSITORY, cards.DOCS_REPOSITORY

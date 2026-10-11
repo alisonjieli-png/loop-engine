@@ -22,7 +22,11 @@ import sys
 import tempfile
 import unittest
 import unittest.mock
+import threading
+import urllib.response
+from concurrent.futures import ThreadPoolExecutor
 from contextlib import redirect_stderr, redirect_stdout
+from email.message import Message
 from pathlib import Path
 from types import SimpleNamespace
 
@@ -314,6 +318,99 @@ class RegistryTests(unittest.TestCase):
                          "docker.io/library/demo@sha256:" + "e" * 64)
         with self.assertRaises(registry.RegistryError):
             registry.digest_hex("md5:abc")
+
+
+class PhysicalRequestTests(unittest.TestCase):
+    def setUp(self):
+        self.folder = tempfile.TemporaryDirectory()
+        self.addCleanup(self.folder.cleanup)
+        self.calls = []
+
+    def transport(self, locations):
+        calls = self.calls
+
+        class OfflineHTTPS(registry.urllib.request.HTTPSHandler):
+            def https_open(self, request):
+                calls.append(request)
+                headers = Message()
+                position = len(calls) - 1
+                redirect = position < len(locations)
+                if redirect:
+                    headers["Location"] = locations[position]
+                response = urllib.response.addinfourl(io.BytesIO(b"" if redirect else b"{}"), headers,
+                                                     request.full_url, 302 if redirect else 200)
+                response.msg = "Found" if redirect else "OK"
+                return response
+
+        opener = registry.urllib.request.build_opener(registry.urllib.request.ProxyHandler({}), OfflineHTTPS(),
+                                                      registry._DeclaredRedirects(registry.DOCKER_HUB.hosts()))
+        with unittest.mock.patch.object(registry.urllib.request, "build_opener", return_value=opener):
+            return registry.urllib_transport(registry.DOCKER_HUB.hosts())
+
+    def source(self, locations, ceiling):
+        return registry.RegistryReader(registry.DOCKER_HUB, Path(self.folder.name),
+                                       registry.RequestBudget(maximum_requests=ceiling), pause_seconds=0,
+                                       transport=self.transport(locations))
+
+    def test_redirect_cannot_exceed_one_physical_request(self):
+        source = self.source(["https://production.cloudfront.docker.com/config"], 1)
+        with self.assertRaises(registry.RequestCeilingReached):
+            source.read_document("demo", "sha256:" + hashlib.sha256(b"{}").hexdigest(), manifest=False)
+        self.assertEqual(len(self.calls), 1)
+        self.assertEqual(source.requests, 1)
+        self.assertEqual(len(source.log_path.read_text().splitlines()), 1)
+
+    def test_each_redirect_exchange_is_recorded_without_forwarding_credentials(self):
+        source = self.source(["https://production.cloudfront.docker.com/config?signed=fixture-only"], 2)
+        answer = source._send("GET", "https://registry-1.docker.io/config", {"Cookie": "session=fixture"}, "fixture", 1024)
+        self.assertEqual(answer.status, 200)
+        self.assertEqual(source.budget.used, 2)
+        self.assertEqual(source.requests, 2)
+        self.assertEqual(len(self.calls), 2)
+        self.assertEqual(self.calls[0].get_header("Authorization"), "Bearer fixture")
+        self.assertIsNone(self.calls[1].get_header("Authorization"))
+        self.assertIsNone(self.calls[1].get_header("Cookie"))
+        logs = [json.loads(row) for row in source.log_path.read_text().splitlines()]
+        self.assertEqual([row["sequence"] for row in logs], [1, 2])
+        self.assertEqual([row["status"] for row in logs], [302, 200])
+        self.assertNotIn("Bearer fixture", source.log_path.read_text())
+        self.assertNotIn("signed=fixture-only", source.log_path.read_text())
+
+    def test_redirect_destinations_and_hops_are_bounded(self):
+        for location in ("https://outside.example/config", "http://production.cloudfront.docker.com/config",
+                         "https://user@production.cloudfront.docker.com/config",
+                         "https://production.cloudfront.docker.com:8443/config"):
+            with self.subTest(location=location):
+                self.calls.clear()
+                source = self.source([location], 8)
+                with self.assertRaises(registry.RegistryError) as raised:
+                    source._send("GET", "https://registry-1.docker.io/config", {}, None, 1024)
+                self.assertEqual(raised.exception.reason, registry.REDIRECT_UNDECLARED)
+                self.assertEqual(len(self.calls), 1)
+        self.calls.clear()
+        source = self.source([f"https://production.cloudfront.docker.com/config/{i}"
+                              for i in range(registry.MAXIMUM_REDIRECTS + 1)], 8)
+        with self.assertRaises(registry.RegistryError):
+            source._send("GET", "https://registry-1.docker.io/config", {}, None, 1024)
+        self.assertEqual(len(self.calls), registry.MAXIMUM_REDIRECTS + 1)
+
+    def test_concurrent_completions_keep_their_reserved_sequence(self):
+        barrier = threading.Barrier(2)
+
+        def transport(*_args):
+            barrier.wait(timeout=5)
+            return registry.Answer(200, {}, b"{}", registry.DOCKER_HUB.host)
+
+        source = registry.RegistryReader(registry.DOCKER_HUB, Path(self.folder.name),
+                                         registry.RequestBudget(maximum_requests=2), pause_seconds=0,
+                                         transport=transport)
+        with ThreadPoolExecutor(max_workers=2) as pool:
+            pending = [pool.submit(source._send, "GET", f"https://registry-1.docker.io/config/{i}", {}, None, 1024)
+                       for i in range(2)]
+            for result in pending:
+                result.result()
+        logs = [json.loads(row) for row in source.log_path.read_text().splitlines()]
+        self.assertEqual(sorted(row["sequence"] for row in logs), [1, 2])
 
 
 class DocumentTests(unittest.TestCase):

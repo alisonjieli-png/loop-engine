@@ -74,7 +74,7 @@ _APACHE_NOTICE_WORDS = ("licensed under the apache licen[cs]e version 2 0 the li
                         "licen[cs]e is distributed on an as is basis without warranties or conditions of any kind "
                         "either express or implied see the licen[cs]e for the specific language governing "
                         "permissions and limitations under the licen[cs]e")
-_APPLIED_NOTICES = (re.compile(r"\b" + r"\W+".join(_APACHE_NOTICE_WORDS.split()) + r"\b\W*"),)
+_APPLIED_NOTICES = (re.compile(r"\b" + r"\W+".join(_APACHE_NOTICE_WORDS.split()) + r"\b\W*\Z"),)
 #: The two optional sections above that run to the end of a text end, in the canonical text, at
 #: a fixed sentence. Text written after that sentence is not part of the licence the text resembles.
 _TRAILING_SECTIONS = ((r"appendix: how to apply the apache license", r"limitations under the licen[cs]e"),
@@ -207,7 +207,14 @@ def _set_aside(text: str) -> tuple:
     for section in _OPTIONAL_SECTIONS:
         joined = re.sub(section.replace(" ", r"\s+"), " ", joined, flags=re.S)
     for notice in _APPLIED_NOTICES:
-        joined = notice.sub(" ", joined)
+        suffix = notice.search(joined)
+        if suffix is not None:
+            prefix = joined[:suffix.start()]
+            # This exception belongs only to an otherwise recognized Apache body.
+            # The same notice after MIT (or before added terms) is not harmless.
+            words = frozenset(_joined_words(_PLACEHOLDER.sub(" ", prefix)))
+            if match_words(words).spdx == "Apache-2.0":
+                joined = prefix
     placeholders = _PLACEHOLDER.findall(joined)
     return _PLACEHOLDER.sub(" ", joined), tuple(notices), tuple(placeholders), tuple(trailing)
 

@@ -70,6 +70,7 @@ RETRIES = 2
 RETRY_PAUSE_SECONDS = 5.0
 #: The redirects one blob read may follow.
 MAXIMUM_REDIRECTS = 3
+REDIRECT_STATUSES = (301, 302, 303, 307, 308)
 #: The reasons a read fails, from one closed vocabulary (the line's refusal reasons).
 (REGISTRY_UNREADABLE, TAG_NOT_FOUND, DOCUMENT_NOT_FOUND, DIGEST_MISMATCH, DOCUMENT_TOO_LARGE, REDIRECT_UNDECLARED,
  UNAUTHORIZED_REASON, RATE_LIMITED, DIGEST_UNSUPPORTED) = READ_FAILURES = (
@@ -171,7 +172,7 @@ class Answer:
 
 
 class _DeclaredRedirects(urllib.request.HTTPRedirectHandler):
-    """Follow a redirect only to an HTTPS address on a declared host."""
+    """Expose redirects to the reader so each hop is admitted, paced and logged."""
 
     max_redirections = MAXIMUM_REDIRECTS
 
@@ -180,19 +181,17 @@ class _DeclaredRedirects(urllib.request.HTTPRedirectHandler):
         self.hosts = frozenset(hosts)
 
     def redirect_request(self, req, fp, code, msg, headers, newurl):
-        parts = urllib.parse.urlsplit(newurl)
-        if parts.scheme != HTTPS_SCHEME or parts.hostname not in self.hosts:
-            raise urllib.error.HTTPError(newurl, code, f"{REDIRECT_UNDECLARED} {parts.hostname}", headers, fp)
-        return super().redirect_request(req, fp, code, msg, headers, newurl)
+        return None
 
 
-#: The response headers an exchange keeps; nothing that could carry a credential.
+#: Transient response headers for protocol handling. The journal keeps only allowance fields;
+#: a signed redirect Location or authentication challenge is never persisted there.
 KEPT_HEADERS = (DIGEST_HEADER, LIMIT_HEADER, REMAINING_HEADER, CHALLENGE_HEADER, RETRY_HEADER, CONTENT_TYPE_HEADER,
-                LENGTH_HEADER)
+                LENGTH_HEADER, LOCATION_HEADER)
 
 
 def urllib_transport(hosts, timeout_seconds: float = 60.0):
-    """The default transport: one request through urllib, redirects only to declared hosts, at most maximum bytes."""
+    """One physical request through urllib; the reader handles redirect policy and accounting."""
     opener = urllib.request.build_opener(_DeclaredRedirects(hosts))
 
     def send(method: str, url: str, headers: dict, credential: "str | None", maximum_bytes: int) -> Answer:
@@ -293,9 +292,9 @@ class RegistryReader:
             self.sleep(self.pause_seconds - (now - self._last))
         self._last = self.clock()
 
-    def _log(self, method: str, url: str, answer: Answer, elapsed: float, *, keep_digest: bool = True) -> None:
+    def _log(self, sequence: int, method: str, url: str, answer: Answer, elapsed: float, *, keep_digest: bool = True) -> None:
         parts = urllib.parse.urlsplit(url)
-        row = {"record_type": REQUEST_RECORD, "sequence": self.requests, "method": method, "host": parts.hostname,
+        row = {"record_type": REQUEST_RECORD, "sequence": sequence, "method": method, "host": parts.hostname,
                "path": parts.path[:300], "status": answer.status, "bytes": len(answer.body),
                "body_sha256": hashlib.sha256(answer.body).hexdigest() if keep_digest and answer.body else None,
                "final_host": answer.final_host or None, "elapsed_ms": round(elapsed * 1000, 1),
@@ -305,19 +304,43 @@ class RegistryReader:
 
     def _send(self, method: str, url: str, headers: dict, credential: "str | None", maximum_bytes: int, *,
               keep_digest: bool = True) -> Answer:
-        with self._lock:
-            self.budget.admit()
-            self._pace()
-            self.requests += 1
-        started = self.clock()
-        answer = self.transport(method, url, dict(headers, **{"User-Agent": self.user_agent}), credential,
-                                maximum_bytes)
-        with self._lock:
-            self._log(method, url, answer, self.clock() - started, keep_digest=keep_digest)
-            found = allowance(answer.headers)
-            if found:
-                self.last_allowance = found
-        return answer
+        for redirects in range(MAXIMUM_REDIRECTS + 1):
+            with self._lock:
+                self.budget.admit()
+                self._pace()
+                self.requests += 1
+                sequence = self.requests
+            started = self.clock()
+            answer = self.transport(method, url, dict(headers, **{"User-Agent": self.user_agent}), credential,
+                                    maximum_bytes)
+            with self._lock:
+                self._log(sequence, method, url, answer, self.clock() - started, keep_digest=keep_digest)
+                found = allowance(answer.headers)
+                if found:
+                    self.last_allowance = found
+            if answer.error == REDIRECT_UNDECLARED:
+                raise RegistryError(REDIRECT_UNDECLARED, "the transport refused the redirect")
+            if answer.status not in REDIRECT_STATUSES:
+                return answer
+            location = answer.headers.get(LOCATION_HEADER)
+            if redirects == MAXIMUM_REDIRECTS or not isinstance(location, str) or not 1 <= len(location) <= 4096:
+                raise RegistryError(REDIRECT_UNDECLARED, "redirect limit or missing destination")
+            destination = urllib.parse.urljoin(url, location)
+            try:
+                parts = urllib.parse.urlsplit(destination)
+                permitted = (parts.scheme == HTTPS_SCHEME and parts.hostname in self.profile.hosts()
+                             and parts.username is None and parts.password is None
+                             and parts.port in (None, 443) and not parts.fragment
+                             and not any(ord(character) < 32 for character in destination))
+            except ValueError:
+                permitted = False
+            if not permitted:
+                raise RegistryError(REDIRECT_UNDECLARED, "destination is not a declared HTTPS host")
+            # A redirect is a new physical exchange, never a new credential grant.
+            url, credential = destination, None
+            headers = {name: value for name, value in headers.items()
+                       if name.lower() not in ("authorization", "proxy-authorization", "cookie")}
+        raise RegistryError(REDIRECT_UNDECLARED, "redirect limit")
 
     def _token(self, parameters: dict, scope: str) -> "str | None":
         realm = parameters.get(REALM, "")

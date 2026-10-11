@@ -141,6 +141,20 @@ class LicenceRuleChecks(unittest.TestCase):
         result = _decide({"skills/demo/SKILL.md": support.skill("demo")}, {"LICENSE": text})
         self.assertEqual(result.decision, VERBATIM)
 
+    def test_apache_applied_notice_does_not_hide_a_conflicting_non_apache_licence(self):
+        root = Path(__file__).with_name("fixtures") / "licence-texts"
+        apache = (root / "docker-library-official-images-LICENSE.txt").read_text()
+        notice = apache.split("END OF TERMS AND CONDITIONS", 1)[1]
+        mixed = support.MIT + "\n" + notice
+        self.assertIsNone(match_licence(mixed).spdx)
+        self.assertNotEqual(_decide({"skills/demo/SKILL.md": support.skill("demo")}, {"LICENSE": mixed},
+                                   github="MIT").decision, VERBATIM)
+
+    def test_apache_applied_notice_exception_is_terminal_not_arbitrary_elision(self):
+        root = Path(__file__).with_name("fixtures") / "licence-texts"
+        apache = (root / "docker-library-official-images-LICENSE.txt").read_text()
+        self.assertIsNone(match_licence(apache + "\nYou may not distribute this work.\n").spdx)
+
     def test_a_copyright_holder_restriction_is_not_discarded_as_a_notice(self):
         text = support.MIT + "\nCopyright holders prohibit commercial redistribution.\n"
         self.assertIsNone(match_licence(text).spdx)
