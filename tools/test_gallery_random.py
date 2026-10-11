@@ -32,7 +32,7 @@ def fixture(kind="video", status="approved"):
     mime, extension = {"video": ("video/mp4", "mp4"), "music": ("audio/mpeg", "mp3"),
                        "image": ("image/png", "png")}[kind]
     row = {"id": "fixture-" + kind, "kind": kind, "title": "Test preview", "summary": "Record fixture only.",
-           "source_slug": source["slug"], "source_version": source["version"], "preview_licence": "MIT",
+           "source": {"kind": "gallery_item", "slug": source["slug"], "version": source["version"]}, "preview_licence": "MIT",
            "provenance": "Synthetic parser fixture, not playback qualification.",
            "review": {"status": status, "reference": "test-only", "reviewer": "test-fixture"},
            "preview": {"file": "fixture-" + digest[:12] + "." + extension, "sha256": digest,
@@ -51,8 +51,8 @@ class RandomGalleryTests(unittest.TestCase):
             raw.replace('"status": "approved"', '"status": "rejected", "status": "approved"'),
             raw.replace('"review": {', '"review": {"status":"pending","reference":"pending",'
                         '"reviewer":"fixture"}, "review": {'),
-            raw.replace('"record_type": "website_gallery_media/v1"',
-                        '"record_type": "website_gallery_media/v99", "record_type": "website_gallery_media/v1"'),
+            raw.replace('"record_type": "website_gallery_media/v2"',
+                        '"record_type": "website_gallery_media/v99", "record_type": "website_gallery_media/v2"'),
         )
         for text in wrong:
             with self.subTest(text=text), self.assertRaisesRegex(ValueError, "duplicate"):
@@ -64,7 +64,7 @@ class RandomGalleryTests(unittest.TestCase):
             for raw in (" " * 129, "é" * 65):
                 with self.subTest(raw=raw), self.assertRaises(ValueError):
                     media.parse_media(raw)
-        for raw in ('{"record_type":"website_gallery_media/v1","items":NaN}',
+        for raw in ('{"record_type":"website_gallery_media/v2","items":NaN}',
                     '[' * 1500 + ']' * 1500, '\ud800'):
             with self.subTest(raw=raw[:50]), self.assertRaises(ValueError):
                 media.parse_media(raw)
@@ -247,31 +247,35 @@ class RandomGalleryTests(unittest.TestCase):
                                 capture_output=True, text=True, timeout=30)
         self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
 
-    def test_packaged_population_has_exact_public_bytes_and_no_invented_music_or_video(self):
+    def test_packaged_population_has_exact_public_bytes_and_declared_reviewed_media(self):
         items = media.public_previews()
-        self.assertEqual(len(items), 329)
-        self.assertEqual(len({item["sha256"] for item in items}), 329)
-        self.assertEqual({item["kind"] for item in items}, {"image"})
+        gallery_items = [item for item in items if item["source_kind"] == "gallery_item"]
+        self.assertEqual(len(gallery_items), 329)
+        approved = [item for item in media.media_record()["items"] if item["review"]["status"] == "approved"]
+        self.assertEqual(len(items), 329 + len(approved))
+        self.assertEqual(len({item["sha256"] for item in items}), len(items))
+        self.assertTrue({row["id"] + "-" + row["preview"]["sha256"][:12] for row in approved} <= {row["id"] for row in items})
         for item in items:
             name, mime = web_pages.WEB_ASSETS[item["url"]]
             body = (ASSETS / name).read_bytes()
             self.assertEqual(hashlib.sha256(body).hexdigest(), item["sha256"])
             self.assertEqual(len(body), item["bytes"])
-            self.assertEqual(mime, "image/webp")
-            source = gallery_page.item_at(item["source_page"])
-            self.assertEqual(source["version"], item["source_version"])
-            self.assertEqual(item["source_licence"], "MIT")
-            self.assertIsNone(item["preview_licence"])
+            self.assertEqual(mime, item["media_type"])
+            if item["source_kind"] == "gallery_item":
+                source = gallery_page.item_at(item["source_page"])
+                self.assertEqual(source["version"], item["source_version"])
+                self.assertEqual(item["source_licence"], "MIT")
+                self.assertIsNone(item["preview_licence"])
 
-    def test_current_projection_is_bounded_cached_and_never_reads_source_bodies(self):
+    def test_current_projection_is_bounded_cached_and_never_reads_catalogue_bodies(self):
         names = []
         def reader(name):
             names.append(name)
             return (ASSETS / name).read_bytes()
         result = media.project(gallery_records.record(), media.media_record(), reader)
-        self.assertEqual(len(result), 329)
-        self.assertEqual(len(names), 329)
-        self.assertTrue(all(name.startswith("gallery/") and name.endswith(".webp") for name in names))
+        self.assertEqual(len(result), len(media.public_previews()))
+        self.assertTrue(all((name.startswith("gallery/") and name.endswith(".webp")) or
+                            (name.startswith("gallery-media/") and name.endswith((".mp4", ".mp3", ".zip"))) for name in names))
         self.assertIs(media.public_previews(), media.public_previews())
         with self.assertRaises(ValueError):
             media.project({"items": [{}] * 1001}, {"items": []}, reader)
@@ -309,7 +313,7 @@ class RandomGalleryTests(unittest.TestCase):
 
     def test_stale_source_missing_bytes_and_changed_bytes_are_excluded(self):
         value, extra, reader = fixture()
-        extra["items"][0]["source_version"] = "0" * 64
+        extra["items"][0]["source"]["version"] = "0" * 64
         self.assertEqual(media.project(value, media.parse_media(json.dumps(extra)), reader), ())
         value, extra, _ = fixture()
         def missing(_name):
@@ -334,8 +338,8 @@ class RandomGalleryTests(unittest.TestCase):
             lambda value: value.update(private_key="not-a-real-key"),
             lambda value: value["items"].append(copy.deepcopy(value["items"][0])),
             lambda value: value["items"][0].update(kind="document"),
-            lambda value: value["items"][0].update(source_slug="../account"),
-            lambda value: value["items"][0].update(source_version="stale"),
+            lambda value: value["items"][0]["source"].update(slug="../account"),
+            lambda value: value["items"][0]["source"].update(version="stale"),
             lambda value: value["items"][0].update(preview_licence=""),
             lambda value: value["items"][0]["review"].update(status="publisher-claims-approved"),
             lambda value: value["items"][0]["review"].update(reviewer=""),
@@ -369,7 +373,8 @@ class RandomGalleryTests(unittest.TestCase):
         value["items"][0]["preview"] = None
         self.assertEqual(media.project(value, {"items": []}, reader), ())
         for kind in ("video", "music"):
-            body = gallery_random.body(kind)
+            with patch.object(media, "public_previews", return_value=()):
+                body = gallery_random.body(kind)
             self.assertIn(f"No public {kind} previews are available.", body)
             self.assertIn('"items":[]', body)
             self.assertNotIn("data-asset-card", body)

@@ -2,8 +2,9 @@
 
 The gallery's recorded renders are already approved for public display. Their
 source-package licence does not establish separate preview reuse rights. Additional media needs
-an explicit reviewed preview record tied to a public gallery item and its exact
-version. Neither a source licence nor a paid body becomes public by inference.
+an explicit reviewed preview record tied to an exact public gallery item or a
+separately labelled original website example and its checked source-only ZIP.
+Neither a source licence nor a paid body becomes public by inference.
 This passive reader uses packaged files only, checks their bytes once, and
 never opens a catalogue, account, provider or model connection.
 """
@@ -11,17 +12,19 @@ from __future__ import annotations
 
 from functools import lru_cache
 import hashlib
+import io
 from importlib.resources import files
 import json
 import math
 from pathlib import Path, PurePosixPath
 import re
 import stat
-from zipfile import Path as ZipPath
+import struct
+from zipfile import BadZipFile, Path as ZipPath, ZipFile, ZIP_DEFLATED, ZIP_STORED
 
 from . import gallery_records as gallery
 
-RECORD_TYPE = "website_gallery_media/v1"
+RECORD_TYPE = "website_gallery_media/v2"
 FOLDER = "gallery-media"
 PREFIX = "/assets/gallery-media/"
 KINDS = ("image", "video", "music")
@@ -29,6 +32,10 @@ MAX_EXTRA_ITEMS = 64
 MAX_RECORD_BYTES = 1024 * 1024
 MAX_FILE_BYTES = 16 * 1024 * 1024
 MAX_TOTAL_BYTES = 64 * 1024 * 1024
+MAX_SOURCE_ZIP_BYTES = 256 * 1024
+MAX_SOURCE_FILES = 32
+MAX_SOURCE_FILE_BYTES = 128 * 1024
+MAX_SOURCE_UNPACKED_BYTES = 512 * 1024
 FORMATS = {
     "image/webp": ("image", "webp"), "image/png": ("image", "png"), "image/jpeg": ("image", "jpg"),
     "video/mp4": ("video", "mp4"), "video/webm": ("video", "webm"),
@@ -36,7 +43,7 @@ FORMATS = {
 }
 _SLUG = re.compile(r"[a-z0-9]+(?:-[a-z0-9]+)*\Z")
 _SHA = re.compile(r"[a-f0-9]{64}\Z")
-_FIELDS = {"id", "kind", "title", "summary", "source_slug", "source_version", "preview_licence",
+_FIELDS = {"id", "kind", "title", "summary", "source", "preview_licence",
            "provenance", "review", "preview"}
 
 
@@ -53,6 +60,50 @@ def _text(value, maximum=2000):
     except UnicodeError:
         return False
     return True
+
+
+def _source_name(name):
+    if not _text(name, 200) or not re.fullmatch(r"[A-Za-z0-9_.-]+(?:/[A-Za-z0-9_.-]+){0,4}", name):
+        return False
+    parts = name.split("/")
+    if any(part in (".", "..") or part.startswith(".") or part.lower() in ("node_modules", "__pycache__") for part in parts):
+        return False
+    return parts[-1] == "LICENSE" or PurePosixPath(name).suffix.lower() in (".md", ".txt", ".json", ".mjs", ".js", ".py", ".html", ".css")
+
+
+def _parse_source(source):
+    _require(isinstance(source, dict), "media source must be an explicit provenance record")
+    if source.get("kind") == "gallery_item":
+        _require(set(source) == {"kind", "slug", "version"} and _text(source["slug"], 160)
+                 and _SLUG.fullmatch(source["slug"]) and isinstance(source["version"], str)
+                 and _SHA.fullmatch(source["version"]), "media must name an exact gallery source")
+        return
+    _require(source.get("kind") == "website_example" and set(source) == {"kind", "identity", "version", "licence", "archive", "files"},
+             "unknown media source form")
+    _require(_text(source["identity"], 160) and re.fullmatch(r"website-example\.[a-z0-9]+(?:-[a-z0-9]+)*", source["identity"])
+             and source["licence"] == "MIT", "website examples use a distinct identity and the original-work licence")
+    archive = source["archive"]
+    _require(isinstance(archive, dict) and set(archive) == {"file", "sha256", "bytes"}
+             and isinstance(archive["sha256"], str) and _SHA.fullmatch(archive["sha256"])
+             and source["version"] == archive["sha256"] and _text(archive["file"], 200)
+             and re.fullmatch(r"[a-z0-9-]+-" + archive["sha256"][:12] + r"\.zip", archive["file"])
+             and type(archive["bytes"]) is int and 0 < archive["bytes"] <= MAX_SOURCE_ZIP_BYTES,
+             "website source archive must be bounded and content-addressed")
+    members = source["files"]
+    _require(isinstance(members, list) and 1 <= len(members) <= MAX_SOURCE_FILES, "website source file count exceeds its bound")
+    seen = set()
+    for member in members:
+        _require(isinstance(member, dict) and set(member) == {"path", "sha256", "bytes"}
+                 and _source_name(member["path"]) and member["path"].casefold() not in seen
+                 and isinstance(member["sha256"], str) and _SHA.fullmatch(member["sha256"])
+                 and type(member["bytes"]) is int and 0 < member["bytes"] <= MAX_SOURCE_FILE_BYTES,
+                 "source archive needs unique safe text files with exact digests and bounded sizes")
+        seen.add(member["path"].casefold())
+    _require(sum(member["bytes"] for member in members) <= MAX_SOURCE_UNPACKED_BYTES,
+             "unpacked source archive exceeds its byte bound")
+    _require(any(member["path"].split("/")[-1] == "LICENSE" for member in members)
+             and any(member["path"].split("/")[-1].casefold() == "readme.md" for member in members),
+             "source archive needs a licence and instructions")
 
 
 def parse_media(text: str) -> dict:
@@ -81,9 +132,9 @@ def parse_media(text: str) -> dict:
                  "media identities must be unique slugs")
         seen.add(item["id"])
         _require(item["kind"] in KINDS, "unknown media kind")
-        _require(_text(item["source_slug"], 160) and _SLUG.fullmatch(item["source_slug"])
-                 and isinstance(item["source_version"], str) and _SHA.fullmatch(item["source_version"]),
-                 "media must name an exact gallery source")
+        _parse_source(item["source"])
+        _require(item["source"]["kind"] != "website_example" or item["preview_licence"] == "MIT",
+                 "original website preview and source rights must both be explicit")
         _require(all(_text(item[key]) for key in ("title", "summary", "preview_licence", "provenance")),
                  "media descriptions, licence and provenance are required")
         review = item["review"]
@@ -174,6 +225,82 @@ def _read_asset(name):
     return _read_packaged(name, MAX_FILE_BYTES)
 
 
+def _read_source(name):
+    return _read_packaged(name, MAX_SOURCE_ZIP_BYTES)
+
+
+@lru_cache(maxsize=1)
+def _source_secret_patterns():
+    """Reuse the installed repository secret patterns; never accept patterns from an archive."""
+    resource = files("loop_engine").joinpath("forbidden_paths.json")
+    _plain_resource(resource)
+    with resource.open("rb") as stream:
+        body = stream.read(MAX_RECORD_BYTES + 1)
+    _require(len(body) <= MAX_RECORD_BYTES, "source-safety policy exceeds its byte bound")
+    return tuple(re.compile(pattern) for pattern in json.loads(body)["secret_patterns"])
+
+
+def valid_source_archive(body, source):
+    """Check a source-only ZIP without extracting or running any member.
+
+    Pattern detection does not establish the absence of every possible secret;
+    an independent source review still binds the exact archive before release.
+    """
+    archive = source["archive"]
+    if len(body) != archive["bytes"] or len(body) > MAX_SOURCE_ZIP_BYTES or hashlib.sha256(body).hexdigest() != archive["sha256"]:
+        return False
+    if not body.startswith(b"PK\x03\x04") or body[-22:-18] != b"PK\x05\x06":
+        return False
+    expected = {row["path"]: row for row in source["files"]}
+    try:
+        with ZipFile(io.BytesIO(body)) as bundle:
+            entries = bundle.infolist()
+            if len(entries) != len(expected) or len(entries) > MAX_SOURCE_FILES or bundle.comment:
+                return False
+            # A simple source ZIP has no executable prefix, extra payload, data
+            # descriptor, split disk or trailing body hidden outside its members.
+            end = struct.unpack("<4s4H2IH", body[-22:])
+            if end[1:3] != (0, 0) or end[3] != len(entries) or end[4] != len(entries) or end[7] != 0:
+                return False
+            cursor = 0
+            for entry in sorted(entries, key=lambda row: row.header_offset):
+                if entry.header_offset != cursor:
+                    return False
+                local = struct.unpack_from("<4s5H3I2H", body, cursor)
+                encoded_name = entry.filename.encode("utf-8" if entry.flag_bits & 2048 else "cp437")
+                if (local[0] != b"PK\x03\x04" or local[2] != entry.flag_bits or local[3] != entry.compress_type
+                        or local[6:9] != (entry.CRC, entry.compress_size, entry.file_size)
+                        or local[9] != len(encoded_name) or local[10] != 0
+                        or body[cursor + 30:cursor + 30 + local[9]] != encoded_name):
+                    return False
+                cursor += 30 + local[9] + entry.compress_size
+            if cursor != bundle.start_dir or end[6] != cursor or end[5] != len(body) - 22 - cursor:
+                return False
+            seen = set()
+            for entry in entries:
+                name = entry.filename
+                if name != entry.orig_filename or not _source_name(name) or name not in expected or name.casefold() in seen:
+                    return False
+                seen.add(name.casefold())
+                kind = stat.S_IFMT(entry.external_attr >> 16)
+                wanted = expected[name]
+                if (kind not in (0, stat.S_IFREG) or entry.is_dir() or entry.flag_bits & 9 or entry.comment or entry.extra
+                        or entry.compress_type not in (ZIP_STORED, ZIP_DEFLATED)):
+                    return False
+                if entry.file_size != wanted["bytes"] or entry.file_size > MAX_SOURCE_FILE_BYTES:
+                    return False
+                with bundle.open(entry) as stream:
+                    payload = stream.read(MAX_SOURCE_FILE_BYTES + 1)
+                if len(payload) != wanted["bytes"] or hashlib.sha256(payload).hexdigest() != wanted["sha256"] or b"\0" in payload:
+                    return False
+                text = payload.decode("utf-8")
+                if any(pattern.search(text) for pattern in _source_secret_patterns()) or "PRIVATE KEY-----" in text:
+                    return False
+        return True
+    except (BadZipFile, OSError, ValueError, RuntimeError, KeyError, UnicodeError, re.error, struct.error):
+        return False
+
+
 def _matching_bytes(name, preview, reader):
     try:
         body = reader(name)
@@ -182,16 +309,19 @@ def _matching_bytes(name, preview, reader):
     return len(body) == preview["bytes"] and hashlib.sha256(body).hexdigest() == preview["sha256"]
 
 
-def project(value, extra, reader):
+def project(value, extra, reader, source_reader=None):
     """Pure projection with an injected bounded asset reader for offline controls.
 
     Missing, changed, unapproved or nonpublic records are excluded. An exact
     old selection therefore becomes unavailable; it never selects a new body.
     """
+    source_reader = reader if source_reader is None else source_reader
     _require(len(value["items"]) <= 1000, "random previews use a curated gallery, not a full catalogue scan")
     sources = {item["slug"]: item for item in value["items"] if item["tier"] in gallery.PUBLIC_TIERS}
     _require(sum((item.get("preview") or {}).get("bytes", 0) for item in sources.values())
-             + sum(item["preview"]["bytes"] for item in extra["items"]) <= MAX_TOTAL_BYTES,
+             + sum(item["preview"]["bytes"] for item in extra["items"])
+             + sum(item["source"]["archive"]["bytes"] for item in extra["items"]
+                   if item["source"]["kind"] == "website_example") <= MAX_TOTAL_BYTES,
              "combined public preview inventory exceeds its byte bound")
     approved_gallery_assets = gallery.preview_assets(value)
     results = []
@@ -208,13 +338,31 @@ def project(value, extra, reader):
             "duration_seconds": None, "sha256": preview["sha256"], "preview_licence": None,
             "source_licence": item["licence"], "source_page": "/gallery/" + item["slug"],
             "source_identity": item["identity"], "source_version": item["version"],
+            "source_kind": "gallery_item",
             "provenance": "Baltor native-check render, converted to WebP. Source PNG SHA-256: "
                           + preview["source_png_sha256"],
         })
     for item in extra["items"]:
-        source = sources.get(item["source_slug"])
-        if item["review"]["status"] != "approved" or source is None or source["version"] != item["source_version"]:
+        if item["review"]["status"] != "approved":
             continue
+        origin = item["source"]
+        if origin["kind"] == "gallery_item":
+            source = sources.get(origin["slug"])
+            if source is None or source["version"] != origin["version"]:
+                continue
+            source_fields = {"source_kind": "gallery_item", "source_licence": source["licence"],
+                             "source_page": "/gallery/" + source["slug"], "source_identity": source["identity"],
+                             "source_version": source["version"]}
+        else:
+            try:
+                body = source_reader(FOLDER + "/" + origin["archive"]["file"])
+            except (OSError, gallery.GalleryRecordError):
+                continue
+            if not valid_source_archive(body, origin):
+                continue
+            source_fields = {"source_kind": "website_example", "source_licence": origin["licence"],
+                             "source_page": PREFIX + origin["archive"]["file"], "source_identity": origin["identity"],
+                             "source_version": origin["version"]}
         preview = item["preview"]
         if not _matching_bytes(FOLDER + "/" + preview["file"], preview, reader):
             continue
@@ -224,8 +372,7 @@ def project(value, extra, reader):
             "format": FORMATS[preview["media_type"]][1].upper(), "bytes": preview["bytes"],
             "width": preview["width"], "height": preview["height"], "duration_seconds": preview["duration_seconds"],
             "sha256": preview["sha256"], "preview_licence": item["preview_licence"],
-            "source_licence": source["licence"], "source_page": "/gallery/" + source["slug"],
-            "source_identity": source["identity"], "source_version": source["version"], "provenance": item["provenance"],
+            **source_fields, "provenance": item["provenance"],
         })
     _require(len({item["id"] for item in results}) == len(results), "duplicate projected media identity")
     return tuple(sorted(results, key=lambda item: item["id"]))
@@ -233,10 +380,14 @@ def project(value, extra, reader):
 
 @lru_cache(maxsize=1)
 def public_previews():
-    return project(gallery.record(), media_record(), _read_asset)
+    return project(gallery.record(), media_record(), _read_asset, _read_source)
 
 
 def media_assets():
     """Only reviewed, byte-checked companion previews enter the public asset table."""
-    return {item["url"]: (FOLDER + "/" + item["url"].rsplit("/", 1)[1], item["media_type"])
-            for item in public_previews() if item["url"].startswith(PREFIX)}
+    projected = public_previews()
+    result = {item["url"]: (FOLDER + "/" + item["url"].rsplit("/", 1)[1], item["media_type"])
+              for item in projected if item["url"].startswith(PREFIX)}
+    result.update({item["source_page"]: (FOLDER + "/" + item["source_page"].rsplit("/", 1)[1], "application/zip")
+                   for item in projected if item["source_kind"] == "website_example"})
+    return result

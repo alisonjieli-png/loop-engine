@@ -2549,7 +2549,7 @@ class ServiceHttpApplication:
         local_connections = " blob:" if creative_preview else ""
         ancestors = "'self'" if creative_preview else "'none'"
         return {"Content-Security-Policy": "default-src 'none'; script-src 'self'; style-src 'self'; font-src 'self'; img-src 'self'"
-                + local_images + "; connect-src 'self'" + local_connections + identity_origin
+                + local_images + "; media-src 'self'; connect-src 'self'" + local_connections + identity_origin
                 + "; frame-src 'self'; base-uri 'none'; frame-ancestors " + ancestors + "; form-action 'none'",
                 "Referrer-Policy": "no-referrer", "X-Frame-Options": "SAMEORIGIN" if creative_preview else "DENY",
                 "Permissions-Policy": "camera=(), microphone=(), geolocation=()"}

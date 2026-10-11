@@ -1,0 +1,14 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Copper Current: original editable loop</title>
+<style>body{margin:24px;background:#10151e;color:#f8e8d7;font:16px system-ui}canvas{width:min(100%,960px);height:auto;display:block}button{font:inherit;padding:12px;margin:16px 12px 0 0}p{max-width:60ch}button:focus-visible{outline:3px solid #ffa463}</style></head>
+<body><h1>Copper Current</h1><p>An original twelve-second mathematical loop. The revision changes the winding and ribbon count while retaining timing, canvas size and palette. No external assets.</p>
+<canvas id="picture" width="960" height="540" aria-label="Interwoven copper curves rotating over a dark background"></canvas>
+<button id="play" type="button">Pause</button><button id="revision" type="button">Show revised geometry</button>
+<p id="state" role="status">Original geometry</p><p>Source and generated media: MIT. See LICENSE. This is a website demonstration, not an admitted catalogue component.</p>
+<script type="module">import {drawOrbit,scene,revisedScene} from './orbit.mjs';
+const canvas=document.getElementById('picture');let revised=false,running=true,elapsed=0,last=0;
+function frame(now){if(last&&running)elapsed+=(now-last)/1000;last=now;drawOrbit(canvas,elapsed,revised?revisedScene:scene);requestAnimationFrame(frame)}
+document.getElementById('play').onclick=e=>{running=!running;e.target.textContent=running?'Pause':'Play'};
+document.getElementById('revision').onclick=()=>{revised=!revised;document.getElementById('state').textContent=revised?'Revised: eight ribbons, two windings':'Original: twelve ribbons, three windings'};
+requestAnimationFrame(frame);</script></body></html>

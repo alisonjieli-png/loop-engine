@@ -23,7 +23,7 @@ function start() {
   const data = document.getElementById("random-preview-data");
   if (!root || !data) return;
   const payload = JSON.parse(data.textContent);
-  if (payload.record_type !== "gallery_random_projection/v1") return;
+  if (payload.record_type !== "gallery_random_projection/v2") return;
   const items = payload.items;
   const card = root.querySelector("[data-asset-card]");
   const unavailable = root.querySelector("[data-asset-unavailable]");
@@ -76,14 +76,19 @@ function start() {
     });
     stopMedia();
     picture.replaceChildren(media);
-    set("kind", `${item.kind === "music" ? "Music" : item.kind === "video" ? "Video" : "Image"} / public preview`);
+    const website = item.source_kind === "website_example";
+    set("kind", `${item.kind === "music" ? "Music" : item.kind === "video" ? "Video" : "Image"} / ${website ? "original website demo" : "public preview"}`);
     set("title", item.title);
     set("summary", item.summary);
     let shape = item.width ? `${item.width} × ${item.height} pixels` : "Audio";
-    if (item.duration_seconds !== null) shape += ` · ${item.duration_seconds} seconds`;
+    if (item.duration_seconds !== null) shape += ` · ${item.duration_seconds.toFixed(1)} seconds`;
     set("format", `${item.format} · ${(item.bytes / 1024).toFixed(1)} KB · ${shape}`);
     set("licence", item.preview_licence || "Not separately recorded");
     set("source-licence", item.source_licence);
+    set("source-licence-label", website ? "Source licence" : "Source package licence");
+    set("version-label", website ? "Source ZIP SHA-256" : "Source version");
+    set("access", website ? "Original website demo, not a library item. The MIT licence covers this preview and its editable source. No account is needed for the source ZIP."
+      : "Public display does not grant reuse rights. Check the preview licence before reuse. Full source files use the account and plan requirements shown on the source page.");
     set("provenance", item.provenance);
     set("identity", item.source_identity);
     set("version", item.source_version);
@@ -92,7 +97,11 @@ function start() {
     download.hidden = false;
     download.href = item.url;
     download.download = item.url.split("/").pop();
-    root.querySelector("[data-asset-source]").href = item.source_page;
+    const source = root.querySelector("[data-asset-source]");
+    source.href = item.source_page;
+    source.textContent = website ? "Download editable source ZIP" : "Source and editable files";
+    if (website) source.download = item.source_page.split("/").pop();
+    else source.removeAttribute("download");
     root.querySelector("[data-asset-permalink]").href = `/random/${item.kind}?asset=${encodeURIComponent(item.id)}`;
     status.textContent = `${item.title}. ${items.length} public ${items.length === 1 ? "preview" : "previews"} in this selection.`;
     if (historyMode) {

@@ -30,10 +30,19 @@ def _facts(item):
     size = f'{item["bytes"] / 1024:.1f} KB'
     shape = f'{item["width"]} × {item["height"]} pixels' if item["width"] else "Audio"
     if item["duration_seconds"] is not None:
-        shape += f' · {item["duration_seconds"]:g} seconds'
+        shape += f' · {item["duration_seconds"]:.1f} seconds'
     return [("format", "Format", f'{item["format"]} · {size} · {shape}'),
             ("licence", "Preview reuse licence", item["preview_licence"] or "Not separately recorded"),
-            ("source-licence", "Source package licence", item["source_licence"])]
+            ("source-licence", "Source licence" if item["source_kind"] == "website_example" else "Source package licence",
+             item["source_licence"])]
+
+
+def _access_note(item):
+    if item["source_kind"] == "website_example":
+        return ("Original website demo, not a library item. The MIT licence covers this preview and its editable source. "
+                "No account is needed for the source ZIP.")
+    return ("Public display does not grant reuse rights. Check the preview licence before reuse. Full source files use "
+            "the account and plan requirements shown on the source page.")
 
 
 def body(kind="all"):
@@ -56,33 +65,36 @@ def body(kind="all"):
              'Show another</button><a class="lib-text-link" href="/gallery">Browse the full gallery</a></div>'
              '<p class="ra-status" data-selection-status role="status" aria-live="polite" aria-atomic="true"></p></div>')
     if first:
-        facts = "".join(f'<div><dt>{label}</dt><dd data-asset-{key}>{escape(value)}</dd></div>'
+        website = first["source_kind"] == "website_example"
+        facts = "".join(f'<div><dt data-asset-{key}-label>{label}</dt><dd data-asset-{key}>{escape(value)}</dd></div>'
                         for key, label, value in _facts(first))
         selection = (f'<article class="ra-card" data-asset-card hidden aria-labelledby="asset-title">'
                      f'<div class="ra-picture" data-asset-media>{_media(first)}</div><div class="ra-detail">'
-                     f'<p class="eyebrow" data-asset-kind>{LABELS[first["kind"]]} / public preview</p>'
+                     f'<p class="eyebrow" data-asset-kind>{LABELS[first["kind"]]} / '
+                     f'{"original website demo" if website else "public preview"}</p>'
                      f'<h2 id="asset-title" data-asset-title>{escape(first["title"])}</h2>'
                      f'<p data-asset-summary>{escape(first["summary"])}</p><dl class="ra-facts">{facts}</dl>'
                      f'<div class="ra-links"><a class="button secondary" data-asset-download download '
-                     f'href="{first["url"]}">Save public preview</a><a data-asset-source href="{first["source_page"]}">'
-                     f'Source and editable files</a><a data-asset-permalink href="/random/{first["kind"]}?asset={first["id"]}">'
-                     'Link to this preview</a></div><p class="ra-access">Public display does not grant reuse rights. '
-                     'Check the preview licence before reuse. Full source files use the account and plan requirements '
-                     'shown on the source page.</p>'
+                     f'href="{first["url"]}">Save public preview</a><a data-asset-source href="{first["source_page"]}"'
+                     f'{" download" if website else ""}>{"Download editable source ZIP" if website else "Source and editable files"}</a>'
+                     f'<a data-asset-permalink href="/random/{first["kind"]}?asset={first["id"]}">'
+                     f'Link to this preview</a></div><p class="ra-access" data-asset-access>{_access_note(first)}</p>'
                      '<details class="ra-provenance"><summary>Provenance and exact version</summary>'
                      f'<p data-asset-provenance>{escape(first["provenance"])}</p><dl class="ra-facts">'
                      f'<div><dt>Source identity</dt><dd><code data-asset-identity>{escape(first["source_identity"])}</code></dd></div>'
-                     f'<div><dt>Source version</dt><dd><code data-asset-version>{first["source_version"]}</code></dd></div>'
+                     f'<div><dt data-asset-version-label>{"Source ZIP SHA-256" if website else "Source version"}</dt>'
+                     f'<dd><code data-asset-version>{first["source_version"]}</code></dd></div>'
                      f'<div><dt>Preview SHA-256</dt><dd><code data-asset-digest>{first["sha256"]}</code></dd></div>'
                      '</dl></details></div></article>')
         empty = ('<section class="ra-empty" data-asset-unavailable hidden aria-labelledby="unavailable-title">'
                  '<h2 id="unavailable-title">This preview is unavailable.</h2><p>The selected preview is missing, '
                  'has changed or is no longer public. Choose another or browse the gallery.</p></section>')
         fallback = ('<noscript><section class="ra-empty" data-sample-preview aria-labelledby="sample-title">'
-                    '<h2 id="sample-title">A sample from the gallery</h2><p>Random selection and exact preview links '
+                    '<h2 id="sample-title">A sample preview</h2><p>Random selection and exact preview links '
                     'need JavaScript. This fixed sample is not the selection in your address.</p>'
                     f'<div class="ra-picture">{_media(first)}</div><p><a href="{first["source_page"]}">'
-                    f'Open {escape(first["title"])} in the gallery</a></p></section></noscript>')
+                    + ('Download the editable source ZIP' if website else f'Open {escape(first["title"])} in the gallery')
+                    + '</a></p></section></noscript>')
     else:
         selection, fallback = "", ""
         label = "media" if kind == "all" else kind
@@ -90,7 +102,7 @@ def body(kind="all"):
                  f'<h2 id="unavailable-title">No public {label} previews are available.</h2>'
                  '<p>This category has no reviewed preview to show. Nothing has been substituted for it.</p>'
                  '<a class="button secondary" href="/random/image">Explore image previews</a></section>')
-    payload = json.dumps({"record_type": "gallery_random_projection/v1", "kind": kind, "items": items},
+    payload = json.dumps({"record_type": "gallery_random_projection/v2", "kind": kind, "items": items},
                          ensure_ascii=False, separators=(",", ":")).replace("<", "\\u003c").replace("&", "\\u0026")
     return (intro + f'<div class="md-band ra-browse" data-random-discovery>{selection}{empty}{fallback}</div>'
             f'<script type="application/json" id="random-preview-data">{payload}</script>')

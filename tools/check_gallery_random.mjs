@@ -124,9 +124,11 @@ try {
   for (const kind of ["video", "music"]) {
     const response = await page.goto(base + "/random/" + kind);
     await page.waitForFunction(() => document.querySelector("[data-selection-status]").textContent.length > 0);
-    check("empty kind is honest: " + kind, response.status() === 200 && await page.locator("[data-asset-unavailable]").isVisible()
-      && await page.locator("[data-asset-media]").count() === 0 && !(await page.locator("[data-show-another]").isVisible()));
-    check("empty kind mobile layout: " + kind, layoutOkay(await page.evaluate(measured)));
+    const count = await page.locator("#random-preview-data").evaluate(node => JSON.parse(node.textContent).items.length);
+    check("category population stays explicit: " + kind, response.status() === 200 && (count > 0
+      ? await page.locator("[data-asset-card]").isVisible()
+      : await page.locator("[data-asset-unavailable]").isVisible() && !(await page.locator("[data-show-another]").isVisible())), {count});
+    check("category mobile layout: " + kind, layoutOkay(await page.evaluate(measured)));
   }
   for (const query of ["?asset=retired-version", "?asset=one&asset=two"]) {
     await page.goto(base + "/random/image" + query);

@@ -639,23 +639,31 @@ Exact query links are restored by the browser. Without JavaScript, the page
 labels its fixed gallery sample explicitly and does not show it as the chosen
 preview. The selected card stays hidden until the address is resolved.
 
-The current projection contains 329 distinct WebP renders and no video or
-music. These are previews, not 329 independently qualified creative
-capabilities. Video and music pages state their empty populations. The source
-packages declare MIT; the gallery does not separately record a reuse licence
-for the rendered previews. The page keeps those facts separate. Saving public
-preview bytes grants neither reuse rights nor access to editable source files.
+The gallery contributes 329 distinct WebP renders. These are previews, not 329
+independently qualified creative capabilities. Their source packages declare
+MIT; the gallery does not separately record a reuse licence for those renders.
 Source links retain the gallery's account and plan requirements.
+
+Two original website examples supply a twelve-second silent geometric clip,
+Copper Current, and a four-bar synthesized cue, First Light. Their separately
+reviewed source and generated previews are declared MIT. The page labels them
+as website demos, not library items. Their public source ZIP requires no
+account and grants no access to any other source. No catalogue identity,
+admission or served-file count is created. Empty categories remain explicit.
+The music review covers source, format, levels and technical playback;
+listening and professional mastering were not performed.
 
 The passive reader `gallery_media.py` checks exact preview bytes once and
 caches the finite projection. It reads no catalogue or customer state. Its
-companion record, `website_gallery_media/v1`, lives in
-`web_assets/gallery-media/media.json` under the same gallery owner. It is empty
-until a reviewer approves additional public previews. An entry names the
-public source item, exact source version, separate preview licence, provenance,
-review reference and reviewer, file digest, media type and dimensions or
-duration. Only approved entries with a current public source and matching
-packaged bytes enter the website asset registry. Unknown versions, remote
+companion record, `website_gallery_media/v2`, lives in
+`web_assets/gallery-media/media.json` under the same gallery owner. An entry
+selects one of two explicit source forms: a public gallery item at an exact version,
+or a website example with a distinct identity and source-only archive. Each
+entry records separate preview rights, provenance, review reference and
+reviewer, file digest, media type and dimensions or duration. Only approved
+entries with matching source and preview bytes enter the public asset registry.
+The earlier companion shape was not deployed and is refused, not translated.
+Unknown versions, remote
 media URLs, path traversal, unsupported formats and oversized inventories are
 refused. The reader permits at most 64 companion previews, 16 MiB per file,
 64 MiB in the companion inventory and five minutes per audio or video preview.
@@ -665,14 +673,31 @@ without extraction; linked or special files, linked directories and duplicate
 zip members are refused. These checks assume an immutable installed release,
 not a privileged concurrent writer changing its files.
 
+A website example binds its source version to the ZIP's exact digest. The ZIP
+is at most 256 KiB, with at most 32 text members, 128 KiB per member and
+512 KiB unpacked. An exact path, digest and size list binds every member. The
+reader refuses aliases, special files, traversal, duplicate case-folded names,
+binary extensions, dependency folders, NULs, non-UTF-8 text, encryption,
+unexpected ZIP prefixes/tails and extra payload. Licence and instructions are
+required. It also checks the repository's secret patterns and private-key
+headers. These detection controls do not prove the absence of every possible
+secret; the independent review still binds the full source archive. The ZIP
+is inspected without extraction or execution. Source downloads use the
+existing static asset registry and never the catalogue body reader. Both
+origin and static export allow same-origin media only through their shared
+content policy; no external media host, blob or data origin is enabled.
+
 Adding a reviewed video or music preview requires data and its exact packaged
 bytes, not a new renderer or provider connection. Approval must separately
 establish rights to the media inputs and public derivative. A source-code
 licence alone is insufficient. A small original video derivative can come from
 qualified native creative material after an independent preview review. Music
 needs an original composition or a separately cleared cue. Test tones and
-parser fixtures do not count as music. Neither path has been executed for this
-page release.
+parser fixtures do not count as music. The original source in
+`showcase/original-previews` reuses the existing showcase media tools. Native
+checks cover a meaningful geometry revision, a key/balance revision, complete
+decode and exact same-environment source reopening. The independent review
+is limited to these short website demonstrations and their exact source ZIP.
 
 Run `tools/test_gallery_random.py` with the gallery's existing tests, then
 `node --test tools/test_gallery_random.mjs`. The loopback-only browser check is
@@ -682,6 +707,15 @@ appearances, keyboard selection, exact links, empty categories, failed media,
 no-script fallback and the existing download authorization boundary. Its media
 record fixtures are not playback or rights qualification. Static export uses
 the same page renderer and public asset registry.
+`tools/test_gallery_website_examples.py` checks source-archive boundaries and
+the original source tests. `tools/check_gallery_original_media.mjs` checks
+the separately reviewed packaged MP4/MP3 and public source ZIP over a local
+service, including native browser play, exact links and mobile layout. It
+records technical playback, not listening or permission to publish.
+Rebuild the source-only ZIP with `PYTHONPATH=src:. python
+tools/build_website_example_sources.py /absolute/path/to/new.zip`. The builder
+uses the existing secret-pattern engine and a fixed source-file list, refuses
+an existing output and grants no review or publication status.
 
 ### Service checks
 

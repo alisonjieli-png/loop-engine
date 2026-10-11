@@ -1,4 +1,185 @@
 {
-  "record_type": "website_gallery_media/v1",
-  "items": []
+  "record_type": "website_gallery_media/v2",
+  "items": [
+    {
+      "id": "copper-current",
+      "kind": "video",
+      "title": "Copper Current",
+      "summary": "A twelve-second silent procedural loop of interwoven copper curves. Editable mathematical source, with a geometry revision that preserves timing and palette.",
+      "source": {
+        "kind": "website_example",
+        "identity": "website-example.original-previews",
+        "version": "9112aac67f8e4d978cb06427ded9449c463568997ea6b03c0deb7b8ceffb547c",
+        "licence": "MIT",
+        "archive": {
+          "file": "original-previews-9112aac67f8e.zip",
+          "sha256": "9112aac67f8e4d978cb06427ded9449c463568997ea6b03c0deb7b8ceffb547c",
+          "bytes": 19969
+        },
+        "files": [
+          {
+            "path": "showcase/original-previews/LICENSE",
+            "sha256": "663e093e45c8440e61d1dd5e5db8181eb1f305402aad1e91ce3765408b7a46ea",
+            "bytes": 1068
+          },
+          {
+            "path": "showcase/original-previews/README.md",
+            "sha256": "27f630dadf201f755f8713c882b6cb7b4cec0d0eb3add729f2a841a448875c5c",
+            "bytes": 3284
+          },
+          {
+            "path": "showcase/original-previews/export.mjs",
+            "sha256": "8fbfe091df1a7922ee3a1a13e110b90a4a55e0a4d4c3599ed29929c95e4bad59",
+            "bytes": 8819
+          },
+          {
+            "path": "showcase/original-previews/music.mjs",
+            "sha256": "d07c68d1c1571b7e60cd91d977f723efb0416f95a786073bdf2d3d57d0cb5129",
+            "bytes": 5963
+          },
+          {
+            "path": "showcase/original-previews/orbit.html",
+            "sha256": "fb7690f2d9d613b03186da93180dbf8cedf55c28d1ffb4e7aebf47492cfc4b58",
+            "bytes": 1753
+          },
+          {
+            "path": "showcase/original-previews/orbit.mjs",
+            "sha256": "893288e322420e6b5ffb463503150e5bf84147f9c42aec47e17e8a164a927c1c",
+            "bytes": 3888
+          },
+          {
+            "path": "showcase/original-previews/score.json",
+            "sha256": "e6bfce8d9cb8a850e187fbd06ead53455b89bf6e902b3f0f5d335dd0b64af040",
+            "bytes": 557
+          },
+          {
+            "path": "showcase/original-previews/test-originals.mjs",
+            "sha256": "7e8696ab8efd74ed6e23f8e7ac72c98a30efbc1eca54913fe5367268e0386990",
+            "bytes": 3141
+          },
+          {
+            "path": "showcase/package-lock.json",
+            "sha256": "2a2b9c81bb038e755003b562aeb5f6137bced6c5dde6aaadb35d6cd94ac6cbe8",
+            "bytes": 8380
+          },
+          {
+            "path": "showcase/package.json",
+            "sha256": "35132dddf182b380ca9dcba3001d6dd6685ea2d1ed882b702a6d625b3cf367af",
+            "bytes": 999
+          },
+          {
+            "path": "showcase/tools/media-common.mjs",
+            "sha256": "a1b19d2981ec8dd59868f80440f483dc1b20659ce3820b95a3e3994066e48578",
+            "bytes": 9090
+          }
+        ]
+      },
+      "preview_licence": "MIT",
+      "provenance": "Original Baltor website demonstration. Canvas2D renders from the bundled mathematical source, encoded with FFmpeg 7.0.2. No external images, fonts or model output. This is a short clip, not a complete film.",
+      "review": {
+        "status": "approved",
+        "reference": "website_preview_review.20261011.original_media; sha256:f8c6ccc33eccd7cee24dec8b549bcc55fb7f76f096b935ac4135283cac0387df",
+        "reviewer": "Codex separate-task reviewer, not the source producer"
+      },
+      "preview": {
+        "file": "copper-current-b9b28ecda939.mp4",
+        "sha256": "b9b28ecda939d2142a86e019b35462da09e1536b6616d39f8091e9197d073a3e",
+        "bytes": 1012778,
+        "media_type": "video/mp4",
+        "width": 960,
+        "height": 540,
+        "duration_seconds": 12
+      }
+    },
+    {
+      "id": "first-light",
+      "kind": "music",
+      "title": "First Light",
+      "summary": "An original four-bar instrumental cue with a plucked melody, voiced chords, bass and synthesized percussion. Its editable score supports a key and balance revision without changing the rhythm.",
+      "source": {
+        "kind": "website_example",
+        "identity": "website-example.original-previews",
+        "version": "9112aac67f8e4d978cb06427ded9449c463568997ea6b03c0deb7b8ceffb547c",
+        "licence": "MIT",
+        "archive": {
+          "file": "original-previews-9112aac67f8e.zip",
+          "sha256": "9112aac67f8e4d978cb06427ded9449c463568997ea6b03c0deb7b8ceffb547c",
+          "bytes": 19969
+        },
+        "files": [
+          {
+            "path": "showcase/original-previews/LICENSE",
+            "sha256": "663e093e45c8440e61d1dd5e5db8181eb1f305402aad1e91ce3765408b7a46ea",
+            "bytes": 1068
+          },
+          {
+            "path": "showcase/original-previews/README.md",
+            "sha256": "27f630dadf201f755f8713c882b6cb7b4cec0d0eb3add729f2a841a448875c5c",
+            "bytes": 3284
+          },
+          {
+            "path": "showcase/original-previews/export.mjs",
+            "sha256": "8fbfe091df1a7922ee3a1a13e110b90a4a55e0a4d4c3599ed29929c95e4bad59",
+            "bytes": 8819
+          },
+          {
+            "path": "showcase/original-previews/music.mjs",
+            "sha256": "d07c68d1c1571b7e60cd91d977f723efb0416f95a786073bdf2d3d57d0cb5129",
+            "bytes": 5963
+          },
+          {
+            "path": "showcase/original-previews/orbit.html",
+            "sha256": "fb7690f2d9d613b03186da93180dbf8cedf55c28d1ffb4e7aebf47492cfc4b58",
+            "bytes": 1753
+          },
+          {
+            "path": "showcase/original-previews/orbit.mjs",
+            "sha256": "893288e322420e6b5ffb463503150e5bf84147f9c42aec47e17e8a164a927c1c",
+            "bytes": 3888
+          },
+          {
+            "path": "showcase/original-previews/score.json",
+            "sha256": "e6bfce8d9cb8a850e187fbd06ead53455b89bf6e902b3f0f5d335dd0b64af040",
+            "bytes": 557
+          },
+          {
+            "path": "showcase/original-previews/test-originals.mjs",
+            "sha256": "7e8696ab8efd74ed6e23f8e7ac72c98a30efbc1eca54913fe5367268e0386990",
+            "bytes": 3141
+          },
+          {
+            "path": "showcase/package-lock.json",
+            "sha256": "2a2b9c81bb038e755003b562aeb5f6137bced6c5dde6aaadb35d6cd94ac6cbe8",
+            "bytes": 8380
+          },
+          {
+            "path": "showcase/package.json",
+            "sha256": "35132dddf182b380ca9dcba3001d6dd6685ea2d1ed882b702a6d625b3cf367af",
+            "bytes": 999
+          },
+          {
+            "path": "showcase/tools/media-common.mjs",
+            "sha256": "a1b19d2981ec8dd59868f80440f483dc1b20659ce3820b95a3e3994066e48578",
+            "bytes": 9090
+          }
+        ]
+      },
+      "preview_licence": "MIT",
+      "provenance": "Original Baltor website demonstration. Ninety-six scored events across six synthesized voices; no samples, lyrics, external audio or model output. The score is twelve seconds; MP3 padding adds about 0.04 seconds. Independent review covered source, native format and technical playback; listening was not performed.",
+      "review": {
+        "status": "approved",
+        "reference": "website_preview_review.20261011.original_media; sha256:f8c6ccc33eccd7cee24dec8b549bcc55fb7f76f096b935ac4135283cac0387df",
+        "reviewer": "Codex separate-task reviewer, not the source producer"
+      },
+      "preview": {
+        "file": "first-light-724f92d0c47f.mp3",
+        "sha256": "724f92d0c47f0953c86ccd39786ca96b224e66dab3b365b94d4c1784a0152802",
+        "bytes": 289739,
+        "media_type": "audio/mpeg",
+        "width": null,
+        "height": null,
+        "duration_seconds": 12.042449
+      }
+    }
+  ]
 }
