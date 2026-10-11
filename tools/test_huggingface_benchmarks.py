@@ -53,6 +53,20 @@ class HuggingFaceBenchmarkTests(unittest.TestCase):
         self.assertIsNone(item.licence)
         self.assertNotIn("metric_direction", item.facts)
 
+    def test_merged_registry_preserves_separate_public_job_and_benchmark_contracts(self):
+        local = engines.default_registry(network_allowed=False).engines
+        authorized = engines.default_registry(network_allowed=True).engines
+        contracts = records.read_contracts(CONTRACTS)
+        for engine_id, ceiling in (("greenhouse_public_jobs", 1),
+                                   ("huggingface_benchmark_leaderboard", 10)):
+            with self.subTest(engine_id=engine_id):
+                self.assertNotIn(engine_id, local)
+                self.assertIn(engine_id, authorized)
+                self.assertEqual(contracts[engine_id].maximum_requests_per_run, ceiling)
+                self.assertEqual(contracts[engine_id].republication, "live_lookup_only")
+        self.assertNotEqual(contracts["greenhouse_public_jobs"].terms_address,
+                            contracts["huggingface_benchmark_leaderboard"].terms_address)
+
     def test_hostile_dataset_and_unknown_options_fail_before_a_request(self):
         for settings in ({"dataset": "../private"}, {"dataset": "https://other.invalid/path"},
                          {"dataset": "x/y?token=example"}, {"limit": True}, {"cursor": "unbounded"}):

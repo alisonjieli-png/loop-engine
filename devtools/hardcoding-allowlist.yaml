@@ -78,8 +78,8 @@ entries:
   rationale: "Reviewed October 9, 2026: other.invalid is a reserved non-provider origin used only by a known-wrong asset-origin control. No request is dispatched to it. The browser suite requires the control to be refused and still checks the exact digest and version of allowed same-origin assets."
   created_on: '2026-10-09'
   expires_on: '2027-01-09'
-- finding_id: hardcoding.f557ca4de40e7b9382d1713d
-  owner: tools.knowledge_radar.source-contracts-v1.json:contracts[20].terms_address
+- finding_id: hardcoding.626f2467d1500896503f8111
+  owner: tools.knowledge_radar.source-contracts-v1.json:contracts[21].terms_address
   classification: STRATEGY_OR_PROVIDER_BINDING
   rationale: "Reviewed October 9, 2026: this exact terms reference is owned by the versioned Hugging Face benchmark source contract. The existing bounded transport permits only its declared host; hostile dataset paths, unknown options, refused responses and incomplete populations are tested. The contract grants live lookup only, with benchmark/result redistribution separately unqualified. This address is a policy reference, not an execution destination or credential. Changed text remains a new finding."
   created_on: '2026-10-09'

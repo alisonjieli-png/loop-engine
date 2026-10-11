@@ -817,7 +817,7 @@ again never renews it: its review date counts from the claim's own date.
 
 ## Engines behind one source edge
 
-`knowledge_radar_source/v1` has seventeen Baltor-native engines. Local
+`knowledge_radar_source/v1` has twenty-one Baltor-native engines. Local
 engines read files: `collector_state` (the source discovery collector's
 latest private exports, read only), `model_directory`,
 `endpoint_directory`, `mcp_directory` (the directory data this repository
@@ -829,8 +829,11 @@ budget and request log: `github_search`, `github_advisories`,
 radar's own read-only allow list, and `huggingface_models`,
 `huggingface_new_models`, `arxiv_listing`, `openalex_works`,
 `endoflife_calendar`, `federal_register`, `models_dev_catalogue` (models.dev,
-MIT) and `litellm_prices` (the LiteLLM price map, MIT) over HTTPS GET. No
-engine reads OpenRouter or Artificial Analysis by script: the contracts file
+MIT) and `litellm_prices` (the LiteLLM price map, MIT) over HTTPS GET.
+The network-authorized registry also installs `trendshift_signal`,
+`trendshift_public`, `greenhouse_public_jobs` and
+`huggingface_benchmark_leaderboard`, each with its own source contract and
+reuse limits. No engine reads OpenRouter or Artificial Analysis by script: the contracts file
 names both as hosts that are never read, a contract that names one is
 refused, and both appear in briefs only as attributed links a customer
 opens. The model directory's LMArena text scores (CC BY 4.0) are shown with
