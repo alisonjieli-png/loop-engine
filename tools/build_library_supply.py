@@ -33,6 +33,9 @@ build_library_supply.py
 │                    map, and one native check of every card by the same engine (tools/engine_api_cards)
 ├── kaggle-public-good  one dataset contract (schema, typed reader, tests, SDG proposal) per downloaded Kaggle
 │                    dataset whose own files grant an allowlisted licence; every other dataset inventoried and held
+├── container-image-cards  one contract card per repository and tag family of the Docker Official Images: the
+│                    registry's own digests and runtime facts per platform (no layer read), a typed run helper, and
+│                    one registry check of every card (tools/container_image_cards)
 └── report         the supply by family and form, and the projected composition
 ```
 
@@ -67,6 +70,7 @@ LICENCE_FILE = ROOT / "LICENSE"
 #: views elsewhere in the tree (a regenerated status page) do not change what a generator writes.
 GENERATOR_PATHS = ("tools/supply_lines", "tools/build_library_supply.py", "tools/licensed_import",
                    "tools/component_qualification", "tools/creative_originals", "tools/engine_api_cards",
+                   "tools/container_image_cards", "tools/candidate_review/resources/panel.json",
                    "src/loop_engine/core/library_ingestion", "src/loop_engine/core/service_runtime/catalogue_attributes.py",
                    "src/loop_engine/core/service_runtime/catalogue_packages.py", "src/loop_engine/data/library_composition.json",
                    "tools/query_multiplier/data/sdg-vocabulary-v1.json", "LICENSE")
@@ -552,6 +556,54 @@ def engine_api_cards(args) -> dict:
     unread = any(row["reason"] in line.UNREAD_REASONS for row in refusals)
     return finish(args, records.ENGINE_API_CARDS, built, refusals, {"summary": summary, **payload_counts(built)},
                   reader, facts, complete=not args.engine_class and not unread, scope=sources.state_scope)
+def container_image_cards(args) -> dict:
+    """Card every tag family of the Docker Official Images (only the repositories named, when some are): the library
+    and documentation facts from GitHub, every image document by digest from the registry, one registry check of
+    every card, and a smoke run of the families --smoke names."""
+    from container_image_cards import cards as image_cards
+    from container_image_cards import registry as registry_reader
+    from container_image_cards import smoke as smoke_run
+    from supply_lines import container_image_cards as line
+    run_folder = _outside(args.run_folder)
+    run_folder.mkdir(parents=True, exist_ok=True)
+    revision = code_revision(args.authorize_store_writes)
+    reader = FactReader(run_folder, line.GITHUB_HOSTS, maximum_requests=args.maximum_requests,
+                        pause_seconds=args.pause_seconds, maximum_bytes=64 * 1024 * 1024,
+                        user_agent=registry_reader.USER_AGENT)
+    budget = registry_reader.RequestBudget(args.maximum_registry_requests, args.maximum_pause_seconds)
+    registry = registry_reader.RegistryReader(
+        registry_reader.PROFILES[args.registry], run_folder / "registry", budget,
+        pause_seconds=args.registry_pause_seconds,
+        cache_folder=Path(args.document_cache).resolve() if args.document_cache else None)
+    try:
+        collection = line.read_collection(reader, only=tuple(args.repository or ()))
+    except line.LineStopped as error:
+        stopped = [records.refusal(records.CONTAINER_IMAGE_CARDS, error.reason, "docker-library", error.detail)]
+        return finish(args, records.CONTAINER_IMAGE_CARDS, [], stopped, {"stopped": error.reason}, reader, {},
+                      complete=False, scope=line.STATE_SCOPE)
+    progress_log = run_folder / "progress.log"
+
+    def progress(read, refused, subject):
+        with progress_log.open("a", encoding="utf-8") as stream:
+            stream.write(f"{now_utc()} read {read} refused {refused} {subject}\n")
+
+    def smoke_runner(card):
+        record = smoke_run.smoke(card.contract, card.digest, image_cards.card_module(), engine=args.smoke_engine)
+        return smoke_run.smoke_bytes(record)
+
+    built, refusals, facts, summary = line.generate(
+        collection, registry, code_revision=revision, licence_text=LICENCE_FILE.read_bytes(),
+        generated_on=now_utc()[:10], staging=run_folder / "staging", secret=line.secret_patterns(),
+        workers=args.workers, registry_workers=args.registry_workers, maximum_families=args.maximum_families,
+        smoke_runner=smoke_runner,
+        smoke_subjects=tuple(args.smoke or ()), evidence_folder=run_folder / "evidence", progress=progress)
+    (run_folder / "summary.json").write_text(json.dumps(summary, indent=1, sort_keys=True) + "\n", encoding="utf-8")
+    unread = any(row["reason"] in line.UNREAD_REASONS for row in refusals)
+    return finish(args, records.CONTAINER_IMAGE_CARDS, built, refusals, {"summary": summary, **payload_counts(built)},
+                  reader, facts, complete=not args.repository and not args.maximum_families and not unread,
+                  scope=line.STATE_SCOPE)
+
+
 def kaggle_public_good(args) -> dict:
     """Profile every dataset folder of a local Kaggle download, decide each licence from the dataset's own files,
     propose SDG goals by rule, and write one package per licensable dataset; the inventory, the held datasets and
@@ -829,6 +881,28 @@ def parser() -> argparse.ArgumentParser:
     cards_command.add_argument("--class", dest="engine_class", action="append",
                                help="only these classes (a run limited to some classes withdraws nothing)")
     cards_command.add_argument("--workers", type=int, default=8, help="package tests run at once")
+    images = commands.add_parser("container-image-cards")
+    common(images)
+    images.add_argument("--registry", choices=("docker_hub", "ecr_public"), default="docker_hub",
+                        help="where the image documents are read by digest (docker_hub: the blob endpoint, which "
+                             "counts no pull; ecr_public: the mirror docker/library); tags resolve on that registry")
+    images.add_argument("--repository", action="append", help="only these repositories of the library (a run "
+                                                              "limited to some withdraws nothing)")
+    images.add_argument("--maximum-families", type=int, default=0, help="at most this many tag families (0: all)")
+    images.add_argument("--maximum-registry-requests", type=int, default=60_000,
+                        help="the registry requests of the whole run, tokens, HEADs and reads together")
+    images.add_argument("--registry-pause-seconds", type=float, default=0.25,
+                        help="the least pause between two registry requests")
+    images.add_argument("--maximum-pause-seconds", type=float, default=1800.0,
+                        help="the longest the run waits in all for the registry's retry requests")
+    images.add_argument("--registry-workers", type=int, default=1,
+                        help="families read at once; the pause still holds between any two registry requests")
+    images.add_argument("--document-cache", help="a folder of documents kept by digest, shared by several runs")
+    images.add_argument("--smoke", action="append", help="name:tag of a family's first tag to pull and run on the "
+                                                         "local engine (a small image; each pull costs the "
+                                                         "registry's anonymous allowance)")
+    images.add_argument("--smoke-engine", choices=("docker", "podman"), default="docker")
+    images.add_argument("--workers", type=int, default=8, help="package tests run at once")
     kaggle = commands.add_parser("kaggle-public-good")
     common(kaggle, reads_network=False)
     kaggle.add_argument("--source-root", required=True,
@@ -953,6 +1027,7 @@ def main(argv=None) -> int:
      "creative-assets": creative_assets, "creative-originals": creative_originals,
      "engine-api-cards": engine_api_cards,
      "kaggle-public-good": kaggle_public_good,
+     "container-image-cards": container_image_cards,
      "report": report}[args.command](args)
     return 0
 

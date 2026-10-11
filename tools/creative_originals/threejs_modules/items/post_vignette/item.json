@@ -1,0 +1,63 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "post_vignette",
+  "title": "Aspect-aware vignette pass",
+  "purpose": "Darken or tint a three.js frame toward its edges with a smooth band between two radii, round in pixels or shaped like the frame, as a shader definition for ShaderPass or a full-screen ShaderMaterial, with an exact CPU mirror of the falloff. Use it to frame shots and pull the eye to the centre.",
+  "form": "library_module",
+  "asset_role": null,
+  "dimension": "2d",
+  "engine": {"name": "webgl2_browser", "minimum_version": "2.0", "notes": "three.js r155 or later passed in as THREE (the shader includes the colorspace_fragment chunk); only 0.186.1 was run."},
+  "tags": ["three.js", "post-processing", "vignette", "shaderpass", "glsl", "full-screen pass", "framing"],
+  "files": [
+    {"path": "README.md", "role": "other"},
+    {"path": "post_vignette.mjs", "role": "skill_asset"},
+    {"path": "test_post_vignette.mjs", "role": "executable_tool"},
+    {"path": "demo/scene.mjs", "role": "skill_asset"}
+  ],
+  "contract": {
+    "module": "post_vignette.mjs",
+    "category": "post_process_pass",
+    "language": "ECMAScript 2020 module; GLSL ES 3.00 through three.js ShaderMaterial",
+    "three": {"injected": true, "argument": "THREE", "tested_version": "0.186.1", "needed_by": ["createVignetteMaterial"]},
+    "input_texture_uniform": "tDiffuse",
+    "exports": [
+      {"name": "createVignetteShader", "kind": "function", "signature": "createVignetteShader(options = {}) -> {name, uniforms, vertexShader, fragmentShader}", "summary": "A fresh shader definition for three.js ShaderPass or ShaderMaterial; vector uniforms are plain arrays."},
+      {"name": "createVignetteMaterial", "kind": "function", "signature": "createVignetteMaterial(THREE, options = {}) -> THREE.ShaderMaterial", "summary": "The definition as a full-screen ShaderMaterial without depth test or write."},
+      {"name": "vignetteAmount", "kind": "function", "signature": "vignetteAmount(u, v, options = {}) -> number", "summary": "CPU mirror: how far the pixel at uv is mixed toward the vignette colour, from 0 to strength."},
+      {"name": "VIGNETTE_DEFAULTS", "kind": "constant", "summary": "Frozen default options."},
+      {"name": "VIGNETTE_VERTEX", "kind": "constant", "glsl": "vertex", "summary": "Full-screen vertex stage passing vUv."},
+      {"name": "VIGNETTE_FRAGMENT", "kind": "constant", "glsl": "fragment", "summary": "Fragment stage reading tDiffuse."}
+    ],
+    "options": [
+      {"name": "color", "type": "linear RGB triple", "default": [0, 0, 0], "meaning": "Colour the edges are mixed toward."},
+      {"name": "strength", "type": "number", "default": 0.65, "range": [0, 1], "meaning": "Largest mix toward the colour."},
+      {"name": "inner", "type": "number", "default": 0.45, "range": [0, 4], "meaning": "Distance where the falloff starts (0 centre, 1 middle of the top edge)."},
+      {"name": "outer", "type": "number", "default": 1.3, "range": [0, 4], "meaning": "Distance where the falloff reaches strength; not smaller than inner."},
+      {"name": "roundness", "type": "number", "default": 1, "range": [0, 1], "meaning": "1 measures distance in pixels (a round vignette), 0 stretches it with the frame."},
+      {"name": "aspect", "type": "number", "default": 1, "range": [0.01, 100], "meaning": "Frame width over height; update uAspect when the canvas is resized."}
+    ],
+    "uniforms": [
+      {"name": "tDiffuse", "type": "sampler2D", "option": null},
+      {"name": "uColor", "type": "vec3", "option": "color"},
+      {"name": "uStrength", "type": "float", "option": "strength"},
+      {"name": "uInner", "type": "float", "option": "inner"},
+      {"name": "uOuter", "type": "float", "option": "outer"},
+      {"name": "uRoundness", "type": "float", "option": "roundness"},
+      {"name": "uAspect", "type": "float", "option": "aspect"}
+    ],
+    "examples": [
+      {"call": "vignetteAmount", "args": [0.5, 0.5], "expect": 0},
+      {"call": "vignetteAmount", "args": [0, 0.5], "expect": 0.46424791369835133, "tolerance": 1e-12},
+      {"call": "vignetteAmount", "args": [0, 0.5, {"aspect": 2}], "expect": 0.65, "tolerance": 1e-12},
+      {"call": "vignetteAmount", "args": [0.25, 0.75], "expect": 0.14243471760901436, "tolerance": 1e-12},
+      {"call": "createVignetteShader", "args": [{"strength": 0.2}], "select": "uniforms.uStrength.value", "expect": 0.2},
+      {"call": "vignetteAmount", "args": [0, 0, {"strength": 3}], "throws": "RangeError"}
+    ],
+    "demo": {"file": "demo/scene.mjs", "export": "demo", "addons": []},
+    "tests": ["test_post_vignette.mjs"]
+  },
+  "limits": "A colour mix, not a lens model: no optical falloff, chromatic shift or exposure change. The pass reads one texture and writes one, so it needs a render target or an EffectComposer in front of it. uAspect is not updated by itself: set it when the canvas is resized. The output goes through three.js's output colour space conversion, so as the last pass it writes sRGB to the screen and into a linear render target it writes linear values. Only three.js 0.186.1 was run, in headless Chrome on SwiftShader WebGL 2.",
+  "related": ["post_film_grain", "post_chromatic_aberration", "post_tonemap_curves"],
+  "technique_references": ["Smoothstep falloff between two radii", "Aspect-corrected radial distance blended with frame-shaped distance"],
+  "native_checks": ["module_contract_static", "node_tests_pass", "node_tests_catch_mutants", "three_runtime_pinned", "browser_page_clean", "three_shaders_compiled", "demo_checks_passed", "render_not_uniform", "render_differs_from_baseline"]
+}

@@ -40,6 +40,9 @@ NATIVE_FORMAT = "creative_original"
 FAMILIES_ROOT = Path(__file__).resolve().parents[1] / "creative_originals"
 #: Files the line writes itself rather than copying from the repository.
 WRITTEN = (COMPONENT_NAME, EVIDENCE_PATH, PREVIEW_PATH)
+#: Root test_*.mjs files run with node and the TAP reporter, as the qualification sandbox runs them.
+NODE_TEST_SUFFIX = ".mjs"
+NODE_TEST_COMMAND = "node --test --test-reporter=tap"
 REFUSALS = {"evidence_missing": "native_evidence_missing", "evidence_stale": "native_evidence_stale",
             "native_check_failed": "native_check_failed", "preview_mismatch": "native_evidence_stale",
             "preview_unexpected": "native_evidence_stale"}
@@ -102,6 +105,10 @@ def build_item(family_directory: Path, family: dict, identity: str, *, code_revi
     key = upstream_key(CREATIVE_ORIGINALS, f"{family['family']}/{identity}")
     tests = sorted(entry.path for entry in entries if "/" not in entry.path and entry.path.startswith("test_")
                    and entry.path.endswith(".py"))
+    node_tests = sorted(entry.path for entry in entries if "/" not in entry.path and entry.path.startswith("test_")
+                        and entry.path.endswith(NODE_TEST_SUFFIX))
+    node_record = {"node_files": node_tests, "node_command": " ".join([NODE_TEST_COMMAND, *node_tests])} \
+        if node_tests else {}
     native = "not_applicable" if family["native_verifier"] is None else "passed"
     supply = SupplyPackage(
         line=CREATIVE_ORIGINALS, identity=f"{family['family']}/{identity}", key=key, kind=kind,
@@ -116,7 +123,8 @@ def build_item(family_directory: Path, family: dict, identity: str, *, code_revi
         effects=derived_effects(kind, [Entry(row.path, row.data, row.role, row.media_type or "") for row in files]),
         credentials=[],
         tests={"files": tests, "command": "python -m unittest " + " ".join(name[:-3] for name in tests),
-               "network": False, "native": native, "native_record": EVIDENCE_PATH if native == "passed" else None},
+               "network": False, "native": native, "native_record": EVIDENCE_PATH if native == "passed" else None,
+               **node_record},
         repository={"name": REPOSITORY, "revision": code_revision, "family": family["family"], "identity": identity,
                     "dimension": item["dimension"], "engine": item["engine"], "asset_role": item.get("asset_role"),
                     "tags": item["tags"], "family_version": family["generator_version"]},
@@ -163,5 +171,5 @@ def generate(*, code_revision: str, licence_text: bytes, generated_on: str, retr
 #: Refusal reasons the shared packaging may raise for one item (records.REFUSAL_REASONS lists them for the line).
 PACKAGE_REASONS = ("blocked_by_static_check", "package_above_review_bound", "package_path_invalid")
 
-__all__ = ["GENERATOR_VERSION", "REPOSITORY", "NATIVE_FORMAT", "FAMILIES_ROOT", "raw_address", "derived_effects",
-           "build_item", "generate"]
+__all__ = ["GENERATOR_VERSION", "REPOSITORY", "NATIVE_FORMAT", "FAMILIES_ROOT", "NODE_TEST_COMMAND", "raw_address",
+           "derived_effects", "build_item", "generate"]

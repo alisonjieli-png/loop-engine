@@ -1,0 +1,67 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "post_film_grain",
+  "title": "Film grain pass from an integer hash with luminance response",
+  "purpose": "Add animated film grain to a three.js frame: triangular noise per grain cell from a 32-bit integer hash of the cell, frame and seed, mono or per channel, weighted toward the mid-tones, as a ShaderPass definition or full-screen ShaderMaterial whose every grain value the CPU mirror reproduces bit for bit.",
+  "form": "library_module",
+  "asset_role": null,
+  "dimension": "2d",
+  "engine": {"name": "webgl2_browser", "minimum_version": "2.0", "notes": "three.js r155 or later passed in as THREE (GLSL ES 3.00 unsigned integer arithmetic, int uniforms and the colorspace_fragment chunk); only 0.186.1 was run."},
+  "tags": ["three.js", "post-processing", "film grain", "noise", "integer hash", "cinematic", "shaderpass", "glsl"],
+  "files": [
+    {"path": "README.md", "role": "other"},
+    {"path": "post_film_grain.mjs", "role": "skill_asset"},
+    {"path": "test_post_film_grain.mjs", "role": "executable_tool"},
+    {"path": "demo/scene.mjs", "role": "skill_asset"}
+  ],
+  "contract": {
+    "module": "post_film_grain.mjs",
+    "category": "post_process_pass",
+    "language": "ECMAScript 2020 module; GLSL ES 3.00 through three.js ShaderMaterial",
+    "three": {"injected": true, "argument": "THREE", "tested_version": "0.186.1", "needed_by": ["createFilmGrainMaterial"]},
+    "input_texture_uniform": "tDiffuse",
+    "exports": [
+      {"name": "createFilmGrainShader", "kind": "function", "signature": "createFilmGrainShader(options = {}) -> {name, uniforms, vertexShader, fragmentShader}", "summary": "A fresh shader definition for three.js ShaderPass or ShaderMaterial."},
+      {"name": "createFilmGrainMaterial", "kind": "function", "signature": "createFilmGrainMaterial(THREE, options = {}) -> THREE.ShaderMaterial", "summary": "The definition as a full-screen ShaderMaterial without depth test or write."},
+      {"name": "grainHash", "kind": "function", "signature": "grainHash(x, y, frame, seed, channel) -> integer", "summary": "CPU mirror of the shader's 32-bit cell hash."},
+      {"name": "grainValue", "kind": "function", "signature": "grainValue(x, y, options = {}) -> [r, g, b]", "summary": "CPU mirror of the triangular grain in (-1, 1) at an output pixel."},
+      {"name": "grainWeight", "kind": "function", "signature": "grainWeight(rgb, options = {}) -> number", "summary": "intensity * mix(1, 4 L (1 - L), response) for a colour."},
+      {"name": "applyGrainCpu", "kind": "function", "signature": "applyGrainCpu(rgb, x, y, options = {}) -> [r, g, b]", "summary": "CPU mirror of the whole pass for one pixel."},
+      {"name": "FILM_GRAIN_DEFAULTS", "kind": "constant", "summary": "Frozen default options."},
+      {"name": "FILM_GRAIN_HASH_GLSL", "kind": "constant", "glsl": "chunk", "summary": "GLSL chunk: grainMix, grainHash and grainNoise, reusable in other shaders."},
+      {"name": "FILM_GRAIN_VERTEX", "kind": "constant", "glsl": "vertex", "summary": "Full-screen vertex stage passing vUv."},
+      {"name": "FILM_GRAIN_FRAGMENT", "kind": "constant", "glsl": "fragment", "summary": "Fragment stage: cell, hash, response, grain."}
+    ],
+    "options": [
+      {"name": "intensity", "type": "number", "default": 0.08, "range": [0, 1], "meaning": "Grain amplitude where the response is strongest."},
+      {"name": "response", "type": "number", "default": 0.75, "range": [0, 1], "meaning": "0 gives even grain; 1 makes it follow 4 L (1 - L), strongest at mid grey and gone at black and white."},
+      {"name": "grainSize", "type": "integer", "default": 1, "range": [1, 16], "meaning": "Grain cell size in output pixels."},
+      {"name": "colored", "type": "boolean", "default": false, "meaning": "Independent grain per channel instead of mono."},
+      {"name": "frame", "type": "integer", "default": 0, "range": [0, 2147483647], "meaning": "Frame number; change it every frame for moving grain."},
+      {"name": "seed", "type": "integer", "default": 0, "range": [0, 2147483647], "meaning": "Another grain pattern for the same frame numbers."}
+    ],
+    "uniforms": [
+      {"name": "tDiffuse", "type": "sampler2D", "option": null},
+      {"name": "uIntensity", "type": "float", "option": "intensity"},
+      {"name": "uResponse", "type": "float", "option": "response"},
+      {"name": "uGrainSize", "type": "float", "option": "grainSize"},
+      {"name": "uColored", "type": "int", "option": "colored"},
+      {"name": "uFrame", "type": "int", "option": "frame"},
+      {"name": "uSeed", "type": "int", "option": "seed"}
+    ],
+    "examples": [
+      {"call": "grainHash", "args": [1, 2, 3, 4, 0], "expect": 1204710985},
+      {"call": "grainHash", "args": [100, 200, 7, 3, 2], "expect": 3906534070},
+      {"call": "grainValue", "args": [0, 0], "select": "0", "expect": -0.16457349061965942, "tolerance": 1e-15},
+      {"call": "grainWeight", "args": [[0, 0, 0]], "expect": 0.02, "tolerance": 1e-15},
+      {"call": "createFilmGrainShader", "args": [{"colored": true}], "select": "uniforms.uColored.value", "expect": 1},
+      {"call": "createFilmGrainShader", "args": [{"grainSize": 0}], "throws": "RangeError"}
+    ],
+    "demo": {"file": "demo/scene.mjs", "export": "demo", "addons": []},
+    "tests": ["test_post_film_grain.mjs"]
+  },
+  "limits": "Stylized grain, not a model of film emulsion: square cells, a triangular value distribution and a parabolic luminance response; no grain clumping, per-layer structure or sharpening. Grain is added to the linear values the pass receives, so after sRGB encoding it looks stronger in the shadows than in the highlights. The pattern is tied to output pixels and repeats only when the frame number repeats; the frame and seed are GLSL int uniforms, limited to 2147483647. Output goes through three.js's output colour space conversion. Only three.js 0.186.1 was run, in headless Chrome on SwiftShader WebGL 2.",
+  "related": ["post_vignette", "post_ordered_dither_palette", "post_chromatic_aberration"],
+  "technique_references": ["32-bit integer hash from xor-shift and multiply rounds", "Triangular distribution as the sum of two uniform draws", "Parabolic luminance response 4 L (1 - L)"],
+  "native_checks": ["module_contract_static", "node_tests_pass", "node_tests_catch_mutants", "three_runtime_pinned", "browser_page_clean", "three_shaders_compiled", "demo_checks_passed", "render_not_uniform", "render_differs_from_baseline"]
+}

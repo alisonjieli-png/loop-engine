@@ -1,0 +1,62 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "post_chromatic_aberration",
+  "title": "Radial chromatic aberration pass with dispersion",
+  "purpose": "Split a three.js frame's colour channels radially, red magnified and blue shrunk by an amount that grows with distance from a centre, with optional dispersion taps along the red-to-blue line, as a ShaderPass definition or full-screen ShaderMaterial whose sample coordinates have an exact CPU mirror.",
+  "form": "library_module",
+  "asset_role": null,
+  "dimension": "2d",
+  "engine": {"name": "webgl2_browser", "minimum_version": "2.0", "notes": "three.js r155 or later passed in as THREE (the shader includes the colorspace_fragment chunk and an int uniform); only 0.186.1 was run."},
+  "tags": ["three.js", "post-processing", "chromatic aberration", "lens", "dispersion", "shaderpass", "glsl", "full-screen pass"],
+  "files": [
+    {"path": "README.md", "role": "other"},
+    {"path": "post_chromatic_aberration.mjs", "role": "skill_asset"},
+    {"path": "test_post_chromatic_aberration.mjs", "role": "executable_tool"},
+    {"path": "demo/scene.mjs", "role": "skill_asset"}
+  ],
+  "contract": {
+    "module": "post_chromatic_aberration.mjs",
+    "category": "post_process_pass",
+    "language": "ECMAScript 2020 module; GLSL ES 3.00 through three.js ShaderMaterial",
+    "three": {"injected": true, "argument": "THREE", "tested_version": "0.186.1", "needed_by": ["createChromaticAberrationMaterial"]},
+    "input_texture_uniform": "tDiffuse",
+    "exports": [
+      {"name": "createChromaticAberrationShader", "kind": "function", "signature": "createChromaticAberrationShader(options = {}) -> {name, uniforms, vertexShader, fragmentShader}", "summary": "A fresh shader definition for three.js ShaderPass or ShaderMaterial."},
+      {"name": "createChromaticAberrationMaterial", "kind": "function", "signature": "createChromaticAberrationMaterial(THREE, options = {}) -> THREE.ShaderMaterial", "summary": "The definition as a full-screen ShaderMaterial without depth test or write."},
+      {"name": "aberrationOffset", "kind": "function", "signature": "aberrationOffset(u, v, options = {}) -> {red: [u, v], green: [u, v], blue: [u, v]}", "summary": "CPU mirror of the three-tap path: the coordinate each channel samples."},
+      {"name": "dispersionWeights", "kind": "function", "signature": "dispersionWeights(samples) -> [[red, green, blue], ...]", "summary": "Normalized per-channel weights of 2 to 8 dispersion taps from the red end to the blue end."},
+      {"name": "dispersionTaps", "kind": "function", "signature": "dispersionTaps(u, v, options = {}) -> [{uv, weights}, ...]", "summary": "CPU mirror of either path: every tap's coordinate and channel weights."},
+      {"name": "CHROMATIC_ABERRATION_DEFAULTS", "kind": "constant", "summary": "Frozen default options."},
+      {"name": "CHROMATIC_ABERRATION_VERTEX", "kind": "constant", "glsl": "vertex", "summary": "Full-screen vertex stage passing vUv."},
+      {"name": "CHROMATIC_ABERRATION_FRAGMENT", "kind": "constant", "glsl": "fragment", "summary": "Fragment stage reading tDiffuse with three or up to eight taps."}
+    ],
+    "options": [
+      {"name": "strength", "type": "number", "default": 0.012, "range": [-0.5, 0.5], "meaning": "Channel scale difference at distance 1; negative swaps the fringe colours."},
+      {"name": "power", "type": "number", "default": 1, "range": [0, 8], "meaning": "The scale grows with distance to this power; 0 is a uniform magnification difference."},
+      {"name": "center", "type": "[u, v]", "default": [0.5, 0.5], "meaning": "Optical centre in uv coordinates."},
+      {"name": "aspect", "type": "number", "default": 1, "range": [0.01, 100], "meaning": "Frame width over height, so distance is measured in pixels; update uAspect on resize."},
+      {"name": "samples", "type": "integer", "default": 1, "range": [1, 8], "meaning": "1 samples each channel once; 2 to 8 spread dispersion taps between the red and blue coordinates."}
+    ],
+    "uniforms": [
+      {"name": "tDiffuse", "type": "sampler2D", "option": null},
+      {"name": "uStrength", "type": "float", "option": "strength"},
+      {"name": "uPower", "type": "float", "option": "power"},
+      {"name": "uCenter", "type": "vec2", "option": "center"},
+      {"name": "uAspect", "type": "float", "option": "aspect"},
+      {"name": "uSamples", "type": "int", "option": "samples"}
+    ],
+    "examples": [
+      {"call": "aberrationOffset", "args": [1, 0.5, {"strength": 0.1}], "select": "red", "expect": [0.95, 0.5], "tolerance": 1e-12},
+      {"call": "aberrationOffset", "args": [1, 0.5, {"strength": 0.1}], "select": "blue", "expect": [1.05, 0.5], "tolerance": 1e-12},
+      {"call": "aberrationOffset", "args": [0.75, 0.5, {"strength": 0.1, "power": 2}], "select": "red.0", "expect": 0.74375, "tolerance": 1e-12},
+      {"call": "dispersionWeights", "args": [3], "expect": [[0.75, 0.2, 0], [0.25, 0.6, 0.25], [0, 0.2, 0.75]], "tolerance": 1e-12},
+      {"call": "aberrationOffset", "args": [0.5, 0.5, {"samples": 9}], "throws": "RangeError"}
+    ],
+    "demo": {"file": "demo/scene.mjs", "export": "demo", "addons": []},
+    "tests": ["test_post_chromatic_aberration.mjs"]
+  },
+  "limits": "A stylized model of lateral chromatic aberration: each channel is a scaled copy of the frame, not a traced lens, and there is no longitudinal (focus) aberration, distortion or vignetting. Dispersion taps blur along the radial line with fixed triangular channel weights, not a measured spectrum. Taps that land outside the frame repeat the edge pixels (clamp to edge), so strong settings smear the border. uAspect does not follow the canvas by itself. Output goes through three.js's output colour space conversion. Only three.js 0.186.1 was run, in headless Chrome on SwiftShader WebGL 2.",
+  "related": ["post_vignette", "post_film_grain", "post_gaussian_blur_separable"],
+  "technique_references": ["Wavelength-dependent radial magnification about an optical centre", "Triangular spectral weights over taps between the red and blue scales"],
+  "native_checks": ["module_contract_static", "node_tests_pass", "node_tests_catch_mutants", "three_runtime_pinned", "browser_page_clean", "three_shaders_compiled", "demo_checks_passed", "render_not_uniform", "render_differs_from_baseline"]
+}

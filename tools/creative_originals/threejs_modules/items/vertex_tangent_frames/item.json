@@ -1,0 +1,43 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "vertex_tangent_frames",
+  "title": "Vertex tangent frames for normal mapping",
+  "purpose": "Compute the vec4 tangent attribute three.js uses for normal maps from positions, normals, UVs and indices: angle-weighted tangents along increasing u, made perpendicular to the normal, with w = -1 where UVs are mirrored and a stable fallback for degenerate UVs. Use it for normal-mapped procedural and imported meshes.",
+  "form": "library_module",
+  "asset_role": null,
+  "dimension": "3d",
+  "engine": {"name": "webgl2_browser", "minimum_version": "2.0", "notes": "computeVertexTangents needs no three.js; addTangents takes three.js as THREE and sets the tangent attribute; only 0.186.1 was run."},
+  "tags": ["three.js", "geometry", "tangents", "normal mapping", "tangent space", "buffergeometry", "mirrored uvs", "typed arrays"],
+  "files": [
+    {"path": "README.md", "role": "other"},
+    {"path": "vertex_tangent_frames.mjs", "role": "skill_asset"},
+    {"path": "test_vertex_tangent_frames.mjs", "role": "executable_tool"},
+    {"path": "demo/scene.mjs", "role": "skill_asset"}
+  ],
+  "contract": {
+    "module": "vertex_tangent_frames.mjs",
+    "category": "geometry",
+    "language": "ECMAScript 2020 module",
+    "three": {"injected": true, "argument": "THREE", "tested_version": "0.186.1", "needed_by": ["addTangents"]},
+    "exports": [
+      {"name": "computeVertexTangents", "kind": "function", "signature": "computeVertexTangents(positions, normals, uvs, indices = null, options = {}) -> Float32Array", "summary": "x, y, z, w per vertex: the unit tangent along increasing u and the handedness of the bitangent."},
+      {"name": "addTangents", "kind": "function", "signature": "addTangents(THREE, geometry, options = {}) -> geometry", "summary": "Set the geometry's tangent attribute (itemSize 4) from its position, normal, uv and index."},
+      {"name": "TANGENT_FRAME_DEFAULTS", "kind": "constant", "summary": "Frozen default options ({orthogonalize: true})."}
+    ],
+    "inputs": {"positions": "x, y, z per vertex", "normals": "unit x, y, z per vertex", "uvs": "u, v per vertex", "indices": "triangle indices, or null for a triangle soup"},
+    "options": [
+      {"name": "orthogonalize", "type": "boolean", "default": true, "meaning": "Remove the normal's component from each tangent (Gram-Schmidt)."}
+    ],
+    "examples": [
+      {"call": "computeVertexTangents", "args": [[0, 0, 0, 1, 0, 0, 1, 1, 0, 0, 1, 0], [0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1], [0, 0, 1, 0, 1, 1, 0, 1], [0, 1, 2, 0, 2, 3]], "expect": [1, 0, 0, 1, 1, 0, 0, 1, 1, 0, 0, 1, 1, 0, 0, 1], "tolerance": 1e-9},
+      {"call": "computeVertexTangents", "args": [[0, 0, 0, 1, 0, 0, 1, 1, 0, 0, 1, 0], [0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1], [1, 0, 0, 0, 0, 1, 1, 1], [0, 1, 2, 0, 2, 3]], "expect": [-1, 0, 0, -1, -1, 0, 0, -1, -1, 0, 0, -1, -1, 0, 0, -1], "tolerance": 1e-9},
+      {"call": "computeVertexTangents", "args": [[0, 0, 0, 1, 0, 0, 0, 1, 0], [0, 0, 1, 0, 0, 1, 0, 0, 1], [0, 0]], "throws": "RangeError"}
+    ],
+    "demo": {"file": "demo/scene.mjs", "export": "demo", "addons": []},
+    "tests": ["test_vertex_tangent_frames.mjs"]
+  },
+  "limits": "Tangents are averaged per vertex from angle-weighted face directions; this is not the MikkTSpace algorithm, so a normal map baked in a tool that uses MikkTSpace can show faint seams or shading differences, most of all on low-poly meshes. Vertices shared across a UV seam or a mirror line average both sides; split them first (as UV seams usually already are). The handedness is per vertex, so a triangle whose corners disagree shades with a crease. Degenerate UVs get an arbitrary perpendicular. Only three.js 0.186.1 was run, in headless Chrome on SwiftShader WebGL 2.",
+  "related": ["crease_normals_welding", "heightfield_terrain_geometry", "superellipsoid_geometry"],
+  "technique_references": ["Per-triangle tangent and bitangent from UV deltas (Lengyel)", "Angle-weighted accumulation and Gram-Schmidt orthogonalization", "Bitangent handedness as the sign of cross(N, T) . B"],
+  "native_checks": ["module_contract_static", "node_tests_pass", "node_tests_catch_mutants", "three_runtime_pinned", "browser_page_clean", "three_shaders_compiled", "demo_checks_passed", "render_not_uniform", "render_differs_from_baseline"]
+}

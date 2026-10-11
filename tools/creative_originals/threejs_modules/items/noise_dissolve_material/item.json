@@ -1,0 +1,72 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "noise_dissolve_material",
+  "title": "Noise dissolve material with a burning edge",
+  "purpose": "Dissolve three.js meshes through a fractal value-noise threshold with a glowing burn front, on an integer hash so the GLSL noise and its JavaScript mirror agree, and animate it by one uniform. Use it for spawning and despawning, teleports, burning paper, magic and destruction effects.",
+  "form": "library_module",
+  "asset_role": null,
+  "dimension": "3d",
+  "engine": {"name": "webgl2_browser", "minimum_version": "2.0", "notes": "three.js r155 or later passed in as THREE under WebGL 2 (unsigned integer GLSL and the colorspace_fragment chunk); only 0.186.1 was run."},
+  "tags": ["three.js", "shader", "dissolve", "value noise", "fbm", "integer hash", "glsl", "vfx"],
+  "files": [
+    {"path": "README.md", "role": "other"},
+    {"path": "noise_dissolve_material.mjs", "role": "skill_asset"},
+    {"path": "test_noise_dissolve_material.mjs", "role": "executable_tool"},
+    {"path": "demo/scene.mjs", "role": "skill_asset"}
+  ],
+  "contract": {
+    "module": "noise_dissolve_material.mjs",
+    "category": "shader_material",
+    "language": "ECMAScript 2020 module; GLSL ES 3.00 through three.js ShaderMaterial",
+    "three": {"injected": true, "argument": "THREE", "tested_version": "0.186.1", "needed_by": ["createNoiseDissolveMaterial"]},
+    "exports": [
+      {"name": "createNoiseDissolveMaterial", "kind": "function", "signature": "createNoiseDissolveMaterial(THREE, options = {}) -> THREE.ShaderMaterial", "summary": "The double-sided dissolve material; animate uniforms.uThreshold from 0 to 1; an unknown option throws TypeError."},
+      {"name": "valueNoise3", "kind": "function", "signature": "valueNoise3(x, y, z, seed = 0) -> number", "summary": "CPU mirror of the GLSL value noise, in [0, 1)."},
+      {"name": "fbm3", "kind": "function", "signature": "fbm3(x, y, z, octaves = 4, seed = 0) -> number", "summary": "CPU mirror of the GLSL fractal sum, normalized to [0, 1)."},
+      {"name": "dissolveEdge", "kind": "function", "signature": "dissolveEdge(noise, threshold, edgeWidth) -> number", "summary": "CPU mirror of the burn edge: 1 at the front, 0 past threshold + edgeWidth, 0 while the threshold is 0."},
+      {"name": "isDissolved", "kind": "function", "signature": "isDissolved(noise, threshold) -> boolean", "summary": "Whether the shader discards a fragment with this noise value."},
+      {"name": "NOISE_DISSOLVE_DEFAULTS", "kind": "constant", "summary": "Frozen default options."},
+      {"name": "NOISE_DISSOLVE_GLSL", "kind": "constant", "glsl": "chunk", "summary": "GLSL integer hash, valueNoise3, fbm3 and dissolveEdge."},
+      {"name": "NOISE_DISSOLVE_VERTEX", "kind": "constant", "glsl": "vertex", "summary": "Vertex stage: object position and world normal, InstancedMesh aware."},
+      {"name": "NOISE_DISSOLVE_FRAGMENT", "kind": "constant", "glsl": "fragment", "summary": "Fragment stage: discard, Lambert light and the burn edge."}
+    ],
+    "options": [
+      {"name": "color", "type": "colour", "default": [0.72, 0.74, 0.78], "meaning": "Lit surface colour."},
+      {"name": "threshold", "type": "number", "default": 0.45, "range": [0, 1], "meaning": "Noise level below which fragments are discarded; 0 keeps everything, 1 removes everything."},
+      {"name": "edgeWidth", "type": "number", "default": 0.06, "range": [0, 1], "meaning": "Width of the glowing band above the threshold, in noise units."},
+      {"name": "edgeColor", "type": "colour", "default": [1, 0.42, 0.08], "meaning": "Colour of the burn front."},
+      {"name": "edgeIntensity", "type": "number", "default": 3, "range": [0, 32], "meaning": "Brightness of the front; values above 1 suit bloom."},
+      {"name": "noiseScale", "type": "number", "default": 2.5, "range": [0.001, 1000], "meaning": "Noise frequency per object-space unit."},
+      {"name": "octaves", "type": "integer", "default": 4, "range": [1, 8], "meaning": "Fractal octaves; more gives a more ragged front."},
+      {"name": "seed", "type": "integer", "default": 7, "range": [0, 16777215], "meaning": "Selects a different noise field."},
+      {"name": "lightDirection", "type": "vector3", "default": [0.4, 0.8, 0.45], "meaning": "Direction toward the light in world space; normalized."},
+      {"name": "ambient", "type": "number", "default": 0.3, "range": [0, 1], "meaning": "Share of the colour lit without the light."}
+    ],
+    "uniforms": [
+      {"name": "uColor", "type": "vec3", "option": "color"},
+      {"name": "uThreshold", "type": "float", "option": "threshold"},
+      {"name": "uEdgeWidth", "type": "float", "option": "edgeWidth"},
+      {"name": "uEdgeColor", "type": "vec3", "option": "edgeColor"},
+      {"name": "uEdgeIntensity", "type": "float", "option": "edgeIntensity"},
+      {"name": "uNoiseScale", "type": "float", "option": "noiseScale"},
+      {"name": "uOctaves", "type": "float", "option": "octaves"},
+      {"name": "uSeed", "type": "float", "option": "seed"},
+      {"name": "uLightDirection", "type": "vec3", "option": "lightDirection"},
+      {"name": "uAmbient", "type": "float", "option": "ambient"}
+    ],
+    "examples": [
+      {"call": "valueNoise3", "args": [0, 0, 0, 0], "expect": 0.3226417303085327, "tolerance": 1e-12},
+      {"call": "valueNoise3", "args": [0.5, 0.25, -1.75, 7], "expect": 0.24617859718591717, "tolerance": 1e-12},
+      {"call": "fbm3", "args": [0.3, -1.2, 2.5, 4, 7], "expect": 0.5903951430473363, "tolerance": 1e-12},
+      {"call": "dissolveEdge", "args": [0.45, 0.45, 0.06], "expect": 1, "tolerance": 1e-12},
+      {"call": "isDissolved", "args": [0.3, 0.45], "expect": true},
+      {"call": "fbm3", "args": [0, 0, 0, 9, 0], "throws": "RangeError"}
+    ],
+    "demo": {"file": "demo/scene.mjs", "export": "demo", "addons": []},
+    "tests": ["test_noise_dissolve_material.mjs"]
+  },
+  "limits": "Value noise, not gradient noise: its blobs line up with the lattice axes at low octave counts. The noise lives in object space, so the pattern sticks to the mesh and stretches with non-uniform scale; coordinates must stay below 2^20 in magnitude. Discarded fragments leave real holes, but three.js shadow maps and depth passes use their own materials and still see the whole mesh. The edge colour is plain emission, not fire or particles. Lit by one direction uniform; scene lights, shadows and fog are ignored. Requires WebGL 2 (unsigned integers in GLSL). Written for three.js r155 or later; only 0.186.1 was run, in headless Chrome on SwiftShader WebGL 2.",
+  "related": ["triplanar_mapping_material", "hologram_scanline_material", "fresnel_rim_material"],
+  "technique_references": ["Lowbias32-style 32-bit integer hash of lattice coordinates", "Value noise with quintic interpolation 6t^5 - 15t^4 + 10t^3", "Fractal Brownian motion with lacunarity 2 and gain 0.5", "Alpha-test dissolve with a smoothstep burn band"],
+  "native_checks": ["module_contract_static", "node_tests_pass", "node_tests_catch_mutants", "three_runtime_pinned", "browser_page_clean", "three_shaders_compiled", "demo_checks_passed", "render_not_uniform", "render_differs_from_baseline"]
+}

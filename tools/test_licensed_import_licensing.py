@@ -108,6 +108,31 @@ class LicenceRuleChecks(unittest.TestCase):
         self.assertIsNone(match_licence(numbered.replace("3. You must retain", "3. You must pay a monthly "
                                                                                  "subscription and retain")).spdx)
 
+    def test_an_apache_text_followed_by_its_own_notice_is_recognized_and_an_altered_notice_is_not(self):
+        # docker-library/official-images' LICENSE (blob 27448585) puts the notice the appendix prescribes right after
+        # "END OF TERMS AND CONDITIONS", with no appendix heading: until October 9, 2026 its words counted as added.
+        root = Path(__file__).with_name("fixtures") / "licence-texts"
+        raw = (root / "docker-library-official-images-LICENSE.txt").read_bytes()
+        self.assertEqual(hashlib.sha256(raw).hexdigest(),
+                         "552a739c3b25792263f731542238b92f6f8d07e9a488eae27e6c4690038a8243")
+        text = raw.decode()
+        self.assertNotIn("APPENDIX", text)
+        self.assertEqual(match_licence(text).spdx, "Apache-2.0")
+        self.assertEqual(_decide({"skills/demo/SKILL.md": support.skill("demo")}, {"LICENSE": text},
+                                 github="Apache-2.0").decision, VERBATIM)
+        # The canonical template still reproduces: the appendix section already set the notice aside there.
+        canonical = (root / "apache-2.0-canonical.txt").read_text()
+        self.assertEqual(licence_words(canonical), load_templates()["Apache-2.0"].words)
+        # Known wrong: a notice that adds a condition, or changes one, still adds words and is refused.
+        for wrong in (text.replace("except in compliance with the License.",
+                                   "except in compliance with the License and only for noncommercial purposes."),
+                      text.replace("WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND",
+                                   "WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, AND NOT FOR RESALE")):
+            self.assertNotEqual(wrong, text)
+            self.assertIsNone(match_licence(wrong).spdx)
+            self.assertNotEqual(_decide({"skills/demo/SKILL.md": support.skill("demo")}, {"LICENSE": wrong},
+                                        github="Apache-2.0").decision, VERBATIM)
+
     def test_wrapped_copyright_disclaimer_is_not_a_holder_notice(self):
         # This wrapping occurs in python-validators/validators' MIT licence.
         text = support.MIT.replace("COPYRIGHT HOLDERS", "\nCOPYRIGHT HOLDERS")
@@ -115,6 +140,20 @@ class LicenceRuleChecks(unittest.TestCase):
         self.assertEqual(match_licence(text).spdx, "MIT")
         result = _decide({"skills/demo/SKILL.md": support.skill("demo")}, {"LICENSE": text})
         self.assertEqual(result.decision, VERBATIM)
+
+    def test_apache_applied_notice_does_not_hide_a_conflicting_non_apache_licence(self):
+        root = Path(__file__).with_name("fixtures") / "licence-texts"
+        apache = (root / "docker-library-official-images-LICENSE.txt").read_text()
+        notice = apache.split("END OF TERMS AND CONDITIONS", 1)[1]
+        mixed = support.MIT + "\n" + notice
+        self.assertIsNone(match_licence(mixed).spdx)
+        self.assertNotEqual(_decide({"skills/demo/SKILL.md": support.skill("demo")}, {"LICENSE": mixed},
+                                   github="MIT").decision, VERBATIM)
+
+    def test_apache_applied_notice_exception_is_terminal_not_arbitrary_elision(self):
+        root = Path(__file__).with_name("fixtures") / "licence-texts"
+        apache = (root / "docker-library-official-images-LICENSE.txt").read_text()
+        self.assertIsNone(match_licence(apache + "\nYou may not distribute this work.\n").spdx)
 
     def test_a_copyright_holder_restriction_is_not_discarded_as_a_notice(self):
         text = support.MIT + "\nCopyright holders prohibit commercial redistribution.\n"

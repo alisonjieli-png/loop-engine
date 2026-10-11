@@ -1,0 +1,46 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "two_bone_ik_solver",
+  "title": "Analytic two-bone IK with a pole target",
+  "purpose": "Bend an arm or a leg so its end reaches a target exactly: the law of cosines places the elbow or knee in the plane that leans toward a pole, the chain straightens toward an unreachable target, and applyTwoBoneIK poses a three.js bone or Object3D chain in one call. Use it for foot placement, reaching hands and aiming.",
+  "form": "library_module",
+  "asset_role": null,
+  "dimension": "3d",
+  "engine": {"name": "webgl2_browser", "minimum_version": "2.0", "notes": "solveTwoBoneIK and rotationBetween are pure ES2020; applyTwoBoneIK takes three.js as THREE (Object3D, Vector3, Quaternion). Only three.js 0.186.1 was run."},
+  "tags": ["three.js", "inverse kinematics", "ik", "two-bone", "law of cosines", "pole vector", "animation", "skeleton"],
+  "files": [
+    {"path": "README.md", "role": "other"},
+    {"path": "two_bone_ik_solver.mjs", "role": "skill_asset"},
+    {"path": "test_two_bone_ik_solver.mjs", "role": "executable_tool"},
+    {"path": "demo/scene.mjs", "role": "skill_asset"}
+  ],
+  "contract": {
+    "module": "two_bone_ik_solver.mjs",
+    "category": "kinematics",
+    "language": "ECMAScript 2020 module",
+    "three": {"injected": true, "argument": "THREE", "tested_version": "0.186.1", "needed_by": ["applyTwoBoneIK"]},
+    "exports": [
+      {"name": "solveTwoBoneIK", "kind": "function", "signature": "solveTwoBoneIK(root, mid, end, target, pole, options = {}) -> {root, mid, end, rootRotation, midRotation, reached, distance, upperLength, lowerLength}", "summary": "New joint positions and the world-space shortest-arc rotations of the upper and lower bones."},
+      {"name": "applyTwoBoneIK", "kind": "function", "signature": "applyTwoBoneIK(THREE, upper, lower, end, target, pole, options = {}) -> solution", "summary": "Rotate a three.js chain upper -> lower -> end about the upper and lower origins so end reaches target."},
+      {"name": "rotationBetween", "kind": "function", "signature": "rotationBetween(from, to) -> [x, y, z, w]", "summary": "The shortest-arc rotation between two directions; opposite directions give a half turn."},
+      {"name": "TWO_BONE_IK_DEFAULTS", "kind": "constant", "summary": "Frozen default options."}
+    ],
+    "options": [
+      {"name": "reachMargin", "type": "number", "default": 0, "range": "0 to under 0.5", "meaning": "Keep the chain this fraction short of full extension, which avoids the snap of a locked knee."}
+    ],
+    "examples": [
+      {"call": "solveTwoBoneIK", "args": [[0, 0, 0], [0, 1, 0], [0, 2, 0], [0, 1, 1], [0, 0, 5]], "select": "mid", "expect": [0, 0, 1], "tolerance": 1e-12},
+      {"call": "solveTwoBoneIK", "args": [[0, 0, 0], [0, 1, 0], [0, 2, 0], [0, 1, 1], [0, 0, -5]], "select": "mid", "expect": [0, 1, 0], "tolerance": 1e-12},
+      {"call": "solveTwoBoneIK", "args": [[0, 0, 0], [1, 0, 0], [2, 0, 0], [0, 5, 0], [0, 0, 1]], "select": "end", "expect": [0, 2, 0], "tolerance": 1e-12},
+      {"call": "solveTwoBoneIK", "args": [[0, 0, 0], [1, 0, 0], [2, 0, 0], [0, 5, 0], [0, 0, 1]], "select": "reached", "expect": false},
+      {"call": "rotationBetween", "args": [[1, 0, 0], [0, 2, 0]], "expect": [0, 0, 0.7071067811865476, 0.7071067811865476], "tolerance": 1e-12},
+      {"call": "rotationBetween", "args": [[0, 0, 0], [1, 0, 0]], "throws": "RangeError"}
+    ],
+    "demo": {"file": "demo/scene.mjs", "export": "demo", "addons": []},
+    "tests": ["test_two_bone_ik_solver.mjs"]
+  },
+  "limits": "Two bones only, solved in closed form: no joint angle limits, no twist control beyond the pole, no stretching. The returned rotations are world-space shortest arcs, so a bone's roll about its own axis is not preserved when the bend plane turns. applyTwoBoneIK rotates the upper and lower objects about their own origins and assumes uniform scale on the chain and its parents; a skinned mesh must be posed through its bones. A target at the root of a chain with equal bones folds it toward the pole. Only three.js 0.186.1 was run, in headless Chrome on SwiftShader WebGL 2.",
+  "related": ["fabrik_chain_solver", "look_at_damped_tracker", "smooth_damp_spring"],
+  "technique_references": ["Law of cosines for the angle at the root of a two-segment chain", "Pole vector projected onto the plane perpendicular to the root-target line", "Shortest-arc quaternion between two directions"],
+  "native_checks": ["module_contract_static", "node_tests_pass", "node_tests_catch_mutants", "three_runtime_pinned", "browser_page_clean", "three_shaders_compiled", "demo_checks_passed", "render_not_uniform", "render_differs_from_baseline"]
+}

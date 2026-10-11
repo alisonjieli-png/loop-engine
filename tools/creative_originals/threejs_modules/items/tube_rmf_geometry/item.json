@@ -1,0 +1,56 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "tube_rmf_geometry",
+  "title": "Tube along a path with rotation-minimizing frames",
+  "purpose": "Sweep a circular tube along a polyline or a centripetal Catmull-Rom spline in three.js with rotation-minimizing frames, so the cross-section and its texture never spin at inflections; loops spread their twist evenly, radii vary per point and corners are mitred. Use it for cables, pipes, vines, rails and knots.",
+  "form": "library_module",
+  "asset_role": null,
+  "dimension": "3d",
+  "engine": {"name": "webgl2_browser", "minimum_version": "2.0", "notes": "sampleCentripetalCatmullRom, rotationMinimizingFrames and tubeRmfData need no three.js; createTubeRmfGeometry takes three.js as THREE; only 0.186.1 was run."},
+  "tags": ["three.js", "geometry", "tube", "rotation-minimizing frames", "catmull-rom", "sweep", "cables", "typed arrays"],
+  "files": [
+    {"path": "README.md", "role": "other"},
+    {"path": "tube_rmf_geometry.mjs", "role": "skill_asset"},
+    {"path": "test_tube_rmf_geometry.mjs", "role": "executable_tool"},
+    {"path": "demo/scene.mjs", "role": "skill_asset"}
+  ],
+  "contract": {
+    "module": "tube_rmf_geometry.mjs",
+    "category": "geometry",
+    "language": "ECMAScript 2020 module",
+    "three": {"injected": true, "argument": "THREE", "tested_version": "0.186.1", "needed_by": ["createTubeRmfGeometry"]},
+    "exports": [
+      {"name": "tubeRmfData", "kind": "function", "signature": "tubeRmfData(points, options = {}) -> {positions, normals, uvs, indices, pathLength}", "summary": "The tube as typed arrays, triangles counter-clockwise from outside, u along the path by arc length."},
+      {"name": "createTubeRmfGeometry", "kind": "function", "signature": "createTubeRmfGeometry(THREE, points, options = {}) -> THREE.BufferGeometry", "summary": "The same data in a BufferGeometry with an index and computed bounds."},
+      {"name": "sampleCentripetalCatmullRom", "kind": "function", "signature": "sampleCentripetalCatmullRom(points, samplesPerSegment = 8, closed = false) -> {points, tangents, segments, fractions}", "summary": "Samples and unit tangents of the centripetal Catmull-Rom spline through the points."},
+      {"name": "rotationMinimizingFrames", "kind": "function", "signature": "rotationMinimizingFrames(points, tangents, options = {}) -> {normals, binormals, closingAngle}", "summary": "Double-reflection frames; options closed, correctTwist and initialNormal."},
+      {"name": "TUBE_RMF_DEFAULTS", "kind": "constant", "summary": "Frozen default options."}
+    ],
+    "inputs": {"points": "array of [x, y, z]; consecutive points distinct; a closed path does not repeat its first point"},
+    "options": [
+      {"name": "radius", "type": "number", "default": 0.1, "meaning": "Tube radius when radii is null."},
+      {"name": "radii", "type": "array or null", "default": null, "meaning": "One radius per input point, interpolated along the path."},
+      {"name": "radialSegments", "type": "integer", "default": 12, "range": [3, 1024], "meaning": "Divisions around the tube."},
+      {"name": "curve", "type": "string", "default": "catmull-rom", "values": ["catmull-rom", "polyline"], "meaning": "Centripetal spline through the points, or straight segments with mitred corners."},
+      {"name": "samplesPerSegment", "type": "integer", "default": 8, "range": [1, 1024], "meaning": "Spline samples between consecutive points."},
+      {"name": "closed", "type": "boolean", "default": false, "meaning": "The path is a loop."},
+      {"name": "caps", "type": "boolean", "default": true, "meaning": "Flat caps on the ends of an open tube."},
+      {"name": "correctTwist", "type": "boolean", "default": true, "meaning": "Spread a loop's leftover twist evenly so the seam closes."},
+      {"name": "initialNormal", "type": "[x, y, z] or null", "default": null, "meaning": "Direction of the first frame's normal; null picks the axis least aligned with the first tangent."}
+    ],
+    "examples": [
+      {"call": "sampleCentripetalCatmullRom", "args": [[[0, 0, 0], [1, 0, 0], [1, 1, 0], [0, 1, 0]], 4], "select": "points.6", "expect": [1.125, 0.5, 0], "tolerance": 1e-12},
+      {"call": "sampleCentripetalCatmullRom", "args": [[[0, 0, 0], [1, 0, 0], [1, 1, 0], [0, 1, 0]], 4], "select": "points.length", "expect": 13},
+      {"call": "tubeRmfData", "args": [[[0, 0, 0], [0, 0, 2]], {"curve": "polyline", "radius": 0.5, "radialSegments": 32}], "select": "indices.length", "expect": 384},
+      {"call": "tubeRmfData", "args": [[[0, 0, 0], [0, 0, 2]], {"curve": "polyline"}], "select": "pathLength", "expect": 2, "tolerance": 1e-12},
+      {"call": "rotationMinimizingFrames", "args": [[[0, 0, 0], [0, 0, 1]], [[0, 0, 1], [0, 0, 1]], {"initialNormal": [1, 0, 0]}], "select": "normals.1", "expect": [1, 0, 0], "tolerance": 1e-12},
+      {"call": "tubeRmfData", "args": [[[0, 0, 0]]], "throws": "RangeError"}
+    ],
+    "demo": {"file": "demo/scene.mjs", "export": "demo", "addons": []},
+    "tests": ["test_tube_rmf_geometry.mjs"]
+  },
+  "limits": "Frames are rotation-minimizing only between samples (the double reflection method is a fourth-order approximation), so sparse sampling of tight curves still drifts a little. Spline samples are equally spaced in the curve parameter, not in arc length, so rings bunch where points are close. Polyline corners are mitred for straight runs; a corner sharper than about 170 degrees is capped at a 20 times stretch and pinches. The tube does not detect self-intersection where the path bends tighter than the radius. Radii vary linearly between points and normals tilt with that slope. Only three.js 0.186.1 was run, in headless Chrome on SwiftShader WebGL 2.",
+  "related": ["polyline_ribbon_geometry", "lathe_profile_geometry", "lsystem_tree_geometry"],
+  "technique_references": ["Rotation-minimizing frames by double reflection (Wang, Juttler, Zheng and Liu)", "Centripetal Catmull-Rom spline through the Barry and Goldman pyramid", "Even distribution of a closed loop's holonomy angle", "Mitre stretch by 1 / cos of the half turn"],
+  "native_checks": ["module_contract_static", "node_tests_pass", "node_tests_catch_mutants", "three_runtime_pinned", "browser_page_clean", "three_shaders_compiled", "demo_checks_passed", "render_not_uniform", "render_differs_from_baseline"]
+}

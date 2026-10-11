@@ -1,0 +1,58 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "post_gaussian_blur_separable",
+  "title": "Separable Gaussian blur pass with merged bilinear taps",
+  "purpose": "Blur a three.js frame with a normalized Gaussian in two directional passes whose neighbouring taps are merged into single bilinear fetches, from generated GLSL with constant tap arrays, plus the kernel, the tap merge and a CPU line blur for checks. Use it for glows, frosted glass, depth cues and soft UI backdrops.",
+  "form": "library_module",
+  "asset_role": null,
+  "dimension": "2d",
+  "engine": {"name": "webgl2_browser", "minimum_version": "2.0", "notes": "three.js r155 or later passed in as THREE (GLSL ES 3.00 constant arrays and the colorspace_fragment chunk); only 0.186.1 was run."},
+  "tags": ["three.js", "post-processing", "blur", "gaussian", "separable filter", "bilinear taps", "glsl", "shaderpass"],
+  "files": [
+    {"path": "README.md", "role": "other"},
+    {"path": "post_gaussian_blur_separable.mjs", "role": "skill_asset"},
+    {"path": "test_post_gaussian_blur_separable.mjs", "role": "executable_tool"},
+    {"path": "demo/scene.mjs", "role": "skill_asset"}
+  ],
+  "contract": {
+    "module": "post_gaussian_blur_separable.mjs",
+    "category": "post_process_pass",
+    "language": "ECMAScript 2020 module; GLSL ES 3.00 through three.js ShaderMaterial",
+    "three": {"injected": true, "argument": "THREE", "tested_version": "0.186.1", "needed_by": ["createGaussianBlurMaterial"]},
+    "input_texture_uniform": "tDiffuse",
+    "input_filtering": "linear (the merged taps rely on it; render targets are linear by default)",
+    "exports": [
+      {"name": "createGaussianBlurShader", "kind": "function", "signature": "createGaussianBlurShader(options = {}) -> {name, uniforms, vertexShader, fragmentShader}", "summary": "A fresh definition for one direction, for three.js ShaderPass or ShaderMaterial."},
+      {"name": "createGaussianBlurMaterial", "kind": "function", "signature": "createGaussianBlurMaterial(THREE, options = {}) -> THREE.ShaderMaterial", "summary": "The definition as a full-screen ShaderMaterial without depth test or write."},
+      {"name": "gaussianWeights", "kind": "function", "signature": "gaussianWeights(sigma, radius) -> number[]", "summary": "The one-sided kernel w0..w_radius, normalized over both sides."},
+      {"name": "linearSampledTaps", "kind": "function", "signature": "linearSampledTaps(weights) -> {offsets, weights}", "summary": "The kernel merged into bilinear taps: the centre, pairs and an unpaired last tap."},
+      {"name": "gaussianBlurFragment", "kind": "function", "glsl": "fragment", "glsl_args": [2, 6], "signature": "gaussianBlurFragment(sigma, radius) -> string", "summary": "The generated fragment stage with constant tap arrays."},
+      {"name": "blurLine", "kind": "function", "signature": "blurLine(values, weights) -> Float64Array", "summary": "CPU reference: the discrete blur of one line with clamped ends."},
+      {"name": "GAUSSIAN_BLUR_DEFAULTS", "kind": "constant", "summary": "Frozen default options."},
+      {"name": "GAUSSIAN_BLUR_VERTEX", "kind": "constant", "glsl": "vertex", "summary": "Full-screen vertex stage passing vUv."}
+    ],
+    "options": [
+      {"name": "sigma", "type": "number", "default": 2, "range": "(0, 16]", "unit": "texels", "meaning": "Standard deviation of the Gaussian."},
+      {"name": "radius", "type": "integer", "default": 6, "range": [0, 32], "unit": "texels", "meaning": "Kernel taps on each side; about 3 sigma keeps 99.7 percent of the weight before normalization."},
+      {"name": "direction", "type": "[x, y]", "default": [1, 0], "meaning": "Blur direction in texels: [1, 0] across, [0, 1] up."},
+      {"name": "resolution", "type": "[width, height]", "default": [1024, 1024], "meaning": "Input size in pixels; uTexelStep is direction divided by it."}
+    ],
+    "uniforms": [
+      {"name": "tDiffuse", "type": "sampler2D", "option": null},
+      {"name": "uTexelStep", "type": "vec2", "option": "direction and resolution"}
+    ],
+    "examples": [
+      {"call": "gaussianWeights", "args": [1, 2], "expect": [0.40261994689424746, 0.24420134200323335, 0.054488684549642945], "tolerance": 1e-12},
+      {"call": "linearSampledTaps", "args": [[0.39905027965245493, 0.24203622937611435, 0.0540055826224145, 0.004433048175243746]], "select": "offsets", "expect": [0, 1.1824255238063563, 3], "tolerance": 1e-12},
+      {"call": "blurLine", "args": [[1, 0, 0, 0], [0.40261994689424746, 0.24420134200323335, 0.054488684549642945]], "expect": [0.7013099734471238, 0.2986900265528763, 0.054488684549642945, 0], "tolerance": 1e-12},
+      {"call": "createGaussianBlurShader", "args": [{"direction": [0, 1], "resolution": [640, 480]}], "select": "uniforms.uTexelStep.value", "expect": [0, 0.0020833333333333333], "tolerance": 1e-15},
+      {"call": "gaussianWeights", "args": [0, 3], "throws": "RangeError"}
+    ],
+    "demo": {"file": "demo/scene.mjs", "export": "demo", "addons": []},
+    "tests": ["test_post_gaussian_blur_separable.mjs"]
+  },
+  "limits": "The kernel is fixed when the shader is made: changing sigma or radius needs a new material (direction and resolution are uniforms). The merged taps are exact only with linear filtering of the input; with nearest filtering they read the wrong texels. The kernel is truncated at the radius and renormalized, so a radius well under 3 sigma looks boxy. Pixels past the frame edge repeat the edge (clamp to edge), so bright edges bleed inward. Blurs of large radius cost two fetches per merged tap per pixel; downsample first for very wide blurs. Output goes through three.js's output colour space conversion. Only three.js 0.186.1 was run, in headless Chrome on SwiftShader WebGL 2.",
+  "related": ["post_depth_fog", "post_kuwahara_filter", "post_vignette"],
+  "technique_references": ["Separable convolution: a 2D Gaussian as two 1D passes", "Linear sampling: two taps merged into one bilinear fetch at the weighted offset", "Truncated Gaussian kernel renormalized over both sides"],
+  "native_checks": ["module_contract_static", "node_tests_pass", "node_tests_catch_mutants", "three_runtime_pinned", "browser_page_clean", "three_shaders_compiled", "demo_checks_passed", "render_not_uniform", "render_differs_from_baseline"]
+}

@@ -1,0 +1,52 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "cinematic_camera_path",
+  "title": "Cinematic camera path at constant speed",
+  "purpose": "Fly a three.js camera through keyframes on a centripetal Catmull-Rom spline at constant speed (an arc-length table), looking at interpolated targets, slerping quaternion keyframes or looking along the direction of travel, with an eased timeline. Use it for fly-throughs, intros, product turntables and replays.",
+  "form": "library_module",
+  "asset_role": null,
+  "dimension": "3d",
+  "engine": {"name": "node", "minimum_version": "18", "notes": "Pure ES2020, also runs in any browser; applyTo poses a three.js camera through position.set and quaternion.set (cameras look down -Z). Only three.js 0.186.1 was run."},
+  "tags": ["three.js", "camera", "camera path", "catmull-rom", "arc length", "slerp", "cinematics", "keyframes"],
+  "files": [
+    {"path": "README.md", "role": "other"},
+    {"path": "cinematic_camera_path.mjs", "role": "skill_asset"},
+    {"path": "test_cinematic_camera_path.mjs", "role": "executable_tool"},
+    {"path": "demo/scene.mjs", "role": "skill_asset"}
+  ],
+  "contract": {
+    "module": "cinematic_camera_path.mjs",
+    "category": "camera_rig",
+    "language": "ECMAScript 2020 module",
+    "three": {"injected": false, "argument": null, "tested_version": "0.186.1", "needed_by": []},
+    "exports": [
+      {"name": "CameraPath", "kind": "class", "signature": "new CameraPath(keyframes, options = {}); sampleAt(t) -> {position, quaternion, distance, segment, u}; applyTo(camera, t); pointAtDistance(distance); locate(distance) -> {segment, u}; keyframeFractions() -> number[]; length; segments; mode", "summary": "The path through keyframes {position, target?, quaternion?} with an arc-length table; t in [0, 1] runs the eased timeline at constant speed."},
+      {"name": "catmullRomPoint", "kind": "function", "signature": "catmullRomPoint(p0, p1, p2, p3, u, alpha = 0.5) -> [x, y, z]", "summary": "A point on the Catmull-Rom segment from p1 to p2 with knot spacing |dp|^alpha."},
+      {"name": "lookRotation", "kind": "function", "signature": "lookRotation(position, target, up = [0, 1, 0]) -> [x, y, z, w]", "summary": "The orientation of a camera (looking down -Z) at position looking at target."},
+      {"name": "slerpQuaternion", "kind": "function", "signature": "slerpQuaternion(a, b, u) -> [x, y, z, w]", "summary": "Spherical linear interpolation along the shorter arc."},
+      {"name": "easeTime", "kind": "function", "signature": "easeTime(t, easing = 'smoothstep') -> number", "summary": "Timeline easing: linear, smoothstep or smootherstep, t clamped to [0, 1]."},
+      {"name": "CINEMATIC_PATH_DEFAULTS", "kind": "constant", "summary": "Frozen default options."}
+    ],
+    "options": [
+      {"name": "alpha", "type": "number", "default": 0.5, "range": [0, 1], "meaning": "Knot spacing exponent: 0 uniform, 0.5 centripetal (no cusps or self-loops in a segment), 1 chordal."},
+      {"name": "closed", "type": "boolean", "default": false, "meaning": "Join the last keyframe back to the first."},
+      {"name": "samplesPerSegment", "type": "integer", "default": 64, "range": [4, 4096], "meaning": "Arc-length table resolution per segment."},
+      {"name": "easing", "type": "string", "default": "smoothstep", "meaning": "linear, smoothstep or smootherstep on the timeline."},
+      {"name": "up", "type": "vector3", "default": [0, 1, 0], "meaning": "World up for target and travel orientations."}
+    ],
+    "examples": [
+      {"call": "catmullRomPoint", "args": [[0, 0, 0], [1, 0, 0], [2, 0, 0], [3, 0, 0], 0.25], "expect": [1.25, 0, 0], "tolerance": 1e-12},
+      {"call": "catmullRomPoint", "args": [[0, 0, 0], [1, 0, 0], [1, 3, 0], [1, 3.1, 0], 0.3], "expect": [1.1614172030689374, 0.7510588835044707, 0], "tolerance": 1e-12},
+      {"call": "lookRotation", "args": [[5, 0, 0], [0, 0, 0]], "expect": [0, 0.7071067811865476, 0, 0.7071067811865476], "tolerance": 1e-12},
+      {"call": "slerpQuaternion", "args": [[0, 0, 0, 1], [0, 0.7071067811865476, 0, 0.7071067811865476], 0.5], "expect": [0, 0.3826834323650898, 0, 0.9238795325112867], "tolerance": 1e-12},
+      {"call": "easeTime", "args": [0.25, "smoothstep"], "expect": 0.15625, "tolerance": 1e-15},
+      {"call": "easeTime", "args": [0.5, "bounce"], "throws": "TypeError"}
+    ],
+    "demo": {"file": "demo/scene.mjs", "export": "demo", "addons": []},
+    "tests": ["test_cinematic_camera_path.mjs"]
+  },
+  "limits": "Constant speed comes from a piecewise-linear arc-length table: speed varies by under 2 percent with 64 samples a segment, not exactly zero. Targets are interpolated with the same spline parameter as positions; quaternion keyframes are slerped per segment, which is continuous but not smooth in angular velocity at keyframes (no squad). The orientation follows look targets with a fixed world up, so a view straight along up uses a stand-in axis and can roll there. No collision, no field-of-view or roll keys. Only three.js 0.186.1 was run, in headless Chrome on SwiftShader WebGL 2.",
+  "related": ["camera_shake_trauma", "look_at_damped_tracker", "orbit_camera_rig", "fit_camera_to_bounds"],
+  "technique_references": ["Centripetal Catmull-Rom spline (Barry and Goldman pyramidal formulation)", "Arc-length reparameterization with a cumulative chord table and binary search", "Look rotation from an orthonormal basis to a quaternion", "Quaternion slerp along the shorter arc"],
+  "native_checks": ["module_contract_static", "node_tests_pass", "node_tests_catch_mutants", "three_runtime_pinned", "browser_page_clean", "three_shaders_compiled", "demo_checks_passed", "render_not_uniform", "render_differs_from_baseline"]
+}

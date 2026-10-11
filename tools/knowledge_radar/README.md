@@ -220,6 +220,34 @@ The [qualification record](../../docs/research/KAGGLE-METADATA-CLI-QUALIFICATION
 separates transport, authentication, source evidence and rights. Offline
 checks: `PYTHONPATH=src:tools python -m unittest tools.test_kaggle_metadata`.
 
+## Structured benchmark lookups
+
+`huggingface_benchmark_leaderboard` uses the existing
+`knowledge_radar_source/v1` edge with `dataset` (one `owner/repository`
+identity) and `limit` (1 to 60). It adapts Hugging Face's documented
+[leaderboard API](https://huggingface.co/docs/hub/leaderboard-data-guide)
+instead of maintaining a second ranking system. One bounded request retains
+reported scores, ranks, source verification flags and result-file references.
+The upstream SDK was considered; the existing bounded transport keeps this
+small response within the radar's current pacing, byte and request limits.
+
+The adapter makes no local benchmark claim. Missing metric definitions,
+benchmark and harness revisions, measurement dates and reuse rights remain
+unknown. Freeform notes and author profiles are excluded. The source contract
+permits live lookup; publishing a result in a stored feed or file requires a
+separate rights qualification for the selected benchmark and result source.
+No scheduled question or public feed is enabled by installing this adapter.
+Offline fixture checks are in `tools/test_huggingface_benchmarks.py`; those
+checks do not establish a successful live read.
+
+The October 9 bounded live probe returned 67 rows. The REST API uses `modelId`
+and `pullRequest`; the documentation's Python objects expose `model_id` and
+`pull_request`. The initial parser held the ten inspected rows, and that
+failed interpretation remains in the private probe record. The corrected
+parser is checked by replaying the retained bounded public fact projection;
+it accepts the REST names and preserves a reported `lower_is_better` flag.
+Neither request ran a benchmark or qualified redistribution of its results.
+
 ## Private Trendshift reads
 
 [`tools/read_trendshift.py`](../read_trendshift.py) reads one source selection
@@ -789,7 +817,7 @@ again never renews it: its review date counts from the claim's own date.
 
 ## Engines behind one source edge
 
-`knowledge_radar_source/v1` has seventeen Baltor-native engines. Local
+`knowledge_radar_source/v1` has twenty-one Baltor-native engines. Local
 engines read files: `collector_state` (the source discovery collector's
 latest private exports, read only), `model_directory`,
 `endpoint_directory`, `mcp_directory` (the directory data this repository
@@ -801,8 +829,11 @@ budget and request log: `github_search`, `github_advisories`,
 radar's own read-only allow list, and `huggingface_models`,
 `huggingface_new_models`, `arxiv_listing`, `openalex_works`,
 `endoflife_calendar`, `federal_register`, `models_dev_catalogue` (models.dev,
-MIT) and `litellm_prices` (the LiteLLM price map, MIT) over HTTPS GET. No
-engine reads OpenRouter or Artificial Analysis by script: the contracts file
+MIT) and `litellm_prices` (the LiteLLM price map, MIT) over HTTPS GET.
+The network-authorized registry also installs `trendshift_signal`,
+`trendshift_public`, `greenhouse_public_jobs` and
+`huggingface_benchmark_leaderboard`, each with its own source contract and
+reuse limits. No engine reads OpenRouter or Artificial Analysis by script: the contracts file
 names both as hosts that are never read, a contract that names one is
 refused, and both appear in briefs only as attributed links a customer
 opens. The model directory's LMArena text scores (CC BY 4.0) are shown with

@@ -1,0 +1,52 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "look_at_damped_tracker",
+  "title": "Damped look-at tracker with yaw and pitch limits",
+  "purpose": "Turn turrets, heads, eyes, cameras and spotlights toward a moving target the way mechanisms do: yaw and pitch around a rest orientation, clamped to limits, approached with exponential smoothing and a hard cap on the angle turned per second. Deterministic, frame-rate aware and free of three.js dependencies.",
+  "form": "library_module",
+  "asset_role": null,
+  "dimension": "3d",
+  "engine": {"name": "node", "minimum_version": "18", "notes": "Pure ES2020, also runs in any browser; applyTo writes a three.js object's quaternion through quaternion.set. Only three.js 0.186.1 was run."},
+  "tags": ["three.js", "look at", "aiming", "turret", "head tracking", "damping", "rotation limits", "kinematics"],
+  "files": [
+    {"path": "README.md", "role": "other"},
+    {"path": "look_at_damped_tracker.mjs", "role": "skill_asset"},
+    {"path": "test_look_at_damped_tracker.mjs", "role": "executable_tool"},
+    {"path": "demo/scene.mjs", "role": "skill_asset"}
+  ],
+  "contract": {
+    "module": "look_at_damped_tracker.mjs",
+    "category": "kinematics",
+    "language": "ECMAScript 2020 module",
+    "three": {"injected": false, "argument": null, "tested_version": "0.186.1", "needed_by": []},
+    "exports": [
+      {"name": "LookAtTracker", "kind": "class", "signature": "new LookAtTracker(options = {}, restQuaternion = [0, 0, 0, 1]); update(position, target, deltaSeconds) -> {yaw, pitch, quaternion, clamped}; quaternion; applyTo(object); yaw; pitch", "summary": "A tracker with its own yaw and pitch that turns toward the clamped aim each update."},
+      {"name": "aimAngles", "kind": "function", "signature": "aimAngles(restQuaternion, position, target) -> {yaw, pitch}", "summary": "The unclamped aim: yaw about the rest +Y toward +X, pitch toward +Y, for the rest +Z axis."},
+      {"name": "clampAim", "kind": "function", "signature": "clampAim(angles, options = {}) -> {yaw, pitch, clamped}", "summary": "The aim clamped to the yaw and pitch limits."},
+      {"name": "orientationFromAngles", "kind": "function", "signature": "orientationFromAngles(restQuaternion, yaw, pitch) -> [x, y, z, w]", "summary": "Rest, then yaw about +Y, then pitch about +X."},
+      {"name": "stepAngles", "kind": "function", "signature": "stepAngles(current, goal, deltaSeconds, options = {}) -> {yaw, pitch}", "summary": "One smoothed, speed-capped update toward the goal."},
+      {"name": "LOOK_TRACKER_DEFAULTS", "kind": "constant", "summary": "Frozen default options."}
+    ],
+    "options": [
+      {"name": "maxSpeed", "type": "number", "default": 3, "range": "above 0", "unit": "radians per second", "meaning": "Cap on |yaw step| + |pitch step| per second, which bounds the angle actually turned."},
+      {"name": "smoothing", "type": "number", "default": 0.12, "range": [0, 60], "unit": "seconds", "meaning": "Time constant of the exponential approach; 0 jumps as far as the speed cap allows."},
+      {"name": "yawLimit", "type": "number", "default": 3.141592653589793, "range": "0 to pi", "unit": "radians", "meaning": "Largest yaw either side of rest; pi means unlimited, turning the shorter way round."},
+      {"name": "pitchMin", "type": "number", "default": -0.6, "range": "-pi/2 to pitchMax", "unit": "radians", "meaning": "Lowest pitch (negative looks down)."},
+      {"name": "pitchMax", "type": "number", "default": 1.0, "range": "pitchMin to pi/2", "unit": "radians", "meaning": "Highest pitch."}
+    ],
+    "examples": [
+      {"call": "aimAngles", "args": [[0, 0, 0, 1], [0, 0, 0], [1, 0, 1]], "expect": {"yaw": 0.7853981633974483, "pitch": 0}, "tolerance": 1e-12},
+      {"call": "aimAngles", "args": [[0, 0, 0, 1], [1, 1, 1], [1, 2, 2]], "expect": {"yaw": 0, "pitch": 0.7853981633974483}, "tolerance": 1e-12},
+      {"call": "stepAngles", "args": [{"yaw": 0, "pitch": 0}, {"yaw": 2, "pitch": 0.5}, 0.1, {"maxSpeed": 3, "smoothing": 0.12}], "expect": {"yaw": 0.24, "pitch": 0.06}, "tolerance": 1e-12},
+      {"call": "clampAim", "args": [{"yaw": 2, "pitch": -1}, {"yawLimit": 1, "pitchMin": -0.5}], "expect": {"yaw": 1, "pitch": -0.5, "clamped": true}, "tolerance": 0},
+      {"call": "orientationFromAngles", "args": [[0, 0, 0, 1], 0, 0], "expect": [0, 0, 0, 1], "tolerance": 0},
+      {"call": "clampAim", "args": [{"yaw": 0, "pitch": 0}, {"turnLimit": 1}], "throws": "TypeError"}
+    ],
+    "demo": {"file": "demo/scene.mjs", "export": "demo", "addons": []},
+    "tests": ["test_look_at_damped_tracker.mjs"]
+  },
+  "limits": "A kinematic rule, not a motor model: no inertia, torque or overshoot, and the speed cap bounds the turn per update, not angular acceleration. Yaw and pitch form a gimbal, so a target straight along the rest up axis has no defined yaw and the yaw holds where it was. Position, target and rest orientation must share one frame (usually the object's parent); applyTo writes the local quaternion and assumes that. The tracked axis is the object's +Z, as three.js Object3D.lookAt uses for non-cameras; a camera needs a rest turned half a turn about Y. Only three.js 0.186.1 was run, in headless Chrome on SwiftShader WebGL 2.",
+  "related": ["two_bone_ik_solver", "cinematic_camera_path", "smooth_damp_spring", "camera_shake_trauma"],
+  "technique_references": ["Yaw-pitch gimbal decomposition of a look direction in a rest frame", "Exponential smoothing with a frame-rate independent factor 1 - exp(-dt / tau)", "Rotation-angle bound by the L1 norm of gimbal angle steps (triangle inequality on SO(3))"],
+  "native_checks": ["module_contract_static", "node_tests_pass", "node_tests_catch_mutants", "three_runtime_pinned", "browser_page_clean", "three_shaders_compiled", "demo_checks_passed", "render_not_uniform", "render_differs_from_baseline"]
+}

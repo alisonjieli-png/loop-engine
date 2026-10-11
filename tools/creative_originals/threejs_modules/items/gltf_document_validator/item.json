@@ -1,0 +1,285 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "gltf_document_validator",
+  "title": "glTF 2.0 document validator with JSON pointers",
+  "purpose": "Check a glTF 2.0 document's structure, references, accessor layouts, mesh attributes, node forest, materials, cameras, skins and animations, and, when the binary data is at hand, its index and bound values, reporting each problem with a code and a JSON pointer. Use it as a gate in asset pipelines and importers.",
+  "form": "library_module",
+  "asset_role": null,
+  "dimension": "3d",
+  "engine": {
+    "name": "node",
+    "minimum_version": "18",
+    "notes": "Pure JavaScript on plain objects and typed arrays; also runs in browsers and workers. Checked against three.js 0.186.1 GLTFExporter output in headless Chrome."
+  },
+  "tags": [
+    "three.js",
+    "gltf",
+    "validation",
+    "json pointer",
+    "asset pipeline",
+    "accessor",
+    "scene graph",
+    "quality gate"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "role": "other"
+    },
+    {
+      "path": "gltf_document_validator.mjs",
+      "role": "skill_asset"
+    },
+    {
+      "path": "test_gltf_document_validator.mjs",
+      "role": "executable_tool"
+    },
+    {
+      "path": "demo/scene.mjs",
+      "role": "skill_asset"
+    }
+  ],
+  "contract": {
+    "module": "gltf_document_validator.mjs",
+    "category": "gltf_tool",
+    "language": "ECMAScript 2020 module",
+    "three": {
+      "injected": false,
+      "tested_version": "0.186.1",
+      "needed_by": []
+    },
+    "exports": [
+      {
+        "name": "validateGltf",
+        "kind": "function",
+        "signature": "validateGltf(document, options = {}) -> {valid, errors, warnings, truncated, counts}",
+        "summary": "Validate a glTF 2.0 JSON object; options.buffers stand for buffers by index (a GLB BIN chunk as buffers[0]); each issue is {code, pointer, message}."
+      },
+      {
+        "name": "decodeDataUri",
+        "kind": "function",
+        "signature": "decodeDataUri(uri) -> Uint8Array | null",
+        "summary": "The bytes of a base64 data URI, null for any other URI; TypeError on malformed base64."
+      },
+      {
+        "name": "GLTF_COMPONENT_TYPES",
+        "kind": "constant",
+        "summary": "Bytes per component for each accessor componentType."
+      },
+      {
+        "name": "GLTF_TYPE_COMPONENTS",
+        "kind": "constant",
+        "summary": "Components per element for each accessor type."
+      },
+      {
+        "name": "VALIDATOR_DEFAULTS",
+        "kind": "constant",
+        "summary": "Frozen default options: maxIssues 500, checkData true."
+      }
+    ],
+    "options": [
+      {
+        "name": "buffers",
+        "type": "array of ArrayBuffer or typed array",
+        "default": null,
+        "meaning": "Binary data by buffer index; base64 data URIs are decoded when absent."
+      },
+      {
+        "name": "maxIssues",
+        "type": "integer",
+        "default": 500,
+        "range": [
+          1,
+          null
+        ],
+        "meaning": "Stop collecting after this many errors and warnings (truncated is then true)."
+      },
+      {
+        "name": "checkData",
+        "type": "boolean",
+        "default": true,
+        "meaning": "Read index values and accessor bounds when the data is at hand."
+      }
+    ],
+    "error_codes": [
+      "document_not_object",
+      "not_an_array",
+      "empty_array",
+      "not_an_object",
+      "index_not_integer",
+      "index_out_of_range",
+      "duplicate_index",
+      "asset_missing",
+      "asset_version_invalid",
+      "asset_version_unsupported",
+      "asset_min_version_invalid",
+      "buffer_length_invalid",
+      "buffer_uri_missing",
+      "buffer_uri_invalid",
+      "buffer_data_too_short",
+      "buffer_view_offset_invalid",
+      "buffer_view_length_invalid",
+      "buffer_view_out_of_bounds",
+      "buffer_view_stride_invalid",
+      "buffer_view_target_invalid",
+      "accessor_component_type_invalid",
+      "accessor_type_invalid",
+      "accessor_count_invalid",
+      "accessor_normalized_invalid",
+      "accessor_offset_invalid",
+      "accessor_offset_without_view",
+      "accessor_bounds_invalid",
+      "accessor_stride_too_small",
+      "accessor_offset_unaligned",
+      "accessor_out_of_bounds",
+      "accessor_sparse_invalid",
+      "accessor_value_outside_bounds",
+      "mesh_primitives_missing",
+      "primitive_attributes_missing",
+      "primitive_mode_invalid",
+      "attribute_format_invalid",
+      "position_bounds_missing",
+      "attribute_count_mismatch",
+      "indices_format_invalid",
+      "index_value_out_of_range",
+      "primitive_count_invalid",
+      "morph_targets_invalid",
+      "morph_target_count_mismatch",
+      "node_child_self",
+      "node_multiple_parents",
+      "node_matrix_invalid",
+      "node_matrix_and_trs",
+      "node_translation_invalid",
+      "node_scale_invalid",
+      "node_rotation_invalid",
+      "node_rotation_not_unit",
+      "node_cycle",
+      "scene_node_not_root",
+      "material_factor_invalid",
+      "material_alpha_mode_invalid",
+      "sampler_value_invalid",
+      "image_source_invalid",
+      "camera_invalid",
+      "skin_joints_invalid",
+      "skin_matrices_invalid",
+      "animation_invalid",
+      "animation_interpolation_invalid",
+      "animation_input_invalid",
+      "animation_channel_invalid",
+      "animation_path_invalid",
+      "extension_required_not_used"
+    ],
+    "warning_codes": [
+      "buffer_uri_not_base64",
+      "buffer_data_unavailable",
+      "accessor_sparse_not_read",
+      "attribute_semantic_unknown",
+      "image_mime_type_unknown",
+      "extension_required_not_checked"
+    ],
+    "examples": [
+      {
+        "call": "decodeDataUri",
+        "args": [
+          "data:application/octet-stream;base64,AAEC/f7/"
+        ],
+        "expect": [
+          0,
+          1,
+          2,
+          253,
+          254,
+          255
+        ]
+      },
+      {
+        "call": "decodeDataUri",
+        "args": [
+          "textures/wood.png"
+        ],
+        "expect": null
+      },
+      {
+        "call": "validateGltf",
+        "args": [
+          {
+            "asset": {
+              "version": "2.0"
+            }
+          }
+        ],
+        "select": "valid",
+        "expect": true
+      },
+      {
+        "call": "validateGltf",
+        "args": [
+          {
+            "asset": {
+              "version": "1.0"
+            }
+          }
+        ],
+        "select": "errors.0.code",
+        "expect": "asset_version_unsupported"
+      },
+      {
+        "call": "validateGltf",
+        "args": [
+          {
+            "asset": {
+              "version": "2.0"
+            },
+            "scene": 2,
+            "scenes": [
+              {
+                "nodes": []
+              }
+            ]
+          }
+        ],
+        "select": "errors.0.pointer",
+        "expect": "/scene"
+      },
+      {
+        "call": "decodeDataUri",
+        "args": [
+          "data:;base64,QQ=A"
+        ],
+        "throws": "TypeError"
+      }
+    ],
+    "demo": {
+      "file": "demo/scene.mjs",
+      "export": "demo",
+      "addons": [
+        "GLTFExporter"
+      ]
+    },
+    "tests": [
+      "test_gltf_document_validator.mjs"
+    ]
+  },
+  "limits": "Covers the core glTF 2.0 schema rules listed in the README, not the whole specification: extension contents, sparse accessor values, matrix column padding for byte and short MAT2 and MAT3 accessors, animation output counts, morph target weights, skin joint hierarchies, image bytes and texture coordinate ranges are not checked, and only base64 data URIs are decoded (external files must be passed as options.buffers). Bounds are checked with a small relative tolerance and not for normalized accessors. It is not the Khronos reference validator and does not claim its results. Only the Node 22 tests and three.js 0.186.1 GLTFExporter output in headless Chrome were run.",
+  "related": [
+    "glb_container_codec",
+    "gltf_mesh_writer",
+    "gltf_scene_budget_report"
+  ],
+  "technique_references": [
+    "glTF 2.0 schema rules for accessors, buffer views, meshes and nodes",
+    "JSON pointer (RFC 6901) issue locations",
+    "Base64 decoding by hand (RFC 4648)"
+  ],
+  "native_checks": [
+    "module_contract_static",
+    "node_tests_pass",
+    "node_tests_catch_mutants",
+    "three_runtime_pinned",
+    "browser_page_clean",
+    "three_shaders_compiled",
+    "demo_checks_passed",
+    "render_not_uniform",
+    "render_differs_from_baseline"
+  ]
+}

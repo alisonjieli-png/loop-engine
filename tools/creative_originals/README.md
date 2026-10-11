@@ -151,9 +151,11 @@ LICENSE and ATTRIBUTION.md.
 
 The qualification sandbox imports every root-level `.py` of the package with
 `/usr/bin/python3 -E -s -B` (standard library only, no network, no engine)
-and runs its root `test_*.py` unittest modules. The mutation check then
-replaces every public function of each root module with one that raises, and
-the tests must fail. So:
+and runs its root `test_*.py` unittest modules, and runs root `test_*.mjs` files
+with `node --test --test-reporter=tap`. The mutation check then replaces every
+public function of each root Python module and every export of each root `.mjs`
+module with one that raises or throws, and the tests must fail. `check.py` runs
+both kinds of root test the same way. So:
 
 - Root modules import with the standard library alone. Code that needs `bpy`
   imports it inside the function that needs it, or lives below a folder.
@@ -186,6 +188,14 @@ Recipes measured on this host on October 9, 2026:
 - **Blender**: `--background --factory-startup --python SCRIPT -- ARGS`; read a
   printed JSON line. Blender 5.2 exports glTF as `GLB` or `GLTF_SEPARATE`
   (`GLTF_EMBEDDED` no longer exists). About 3 s per item.
+- **three.js and WebGL 2** (`threejs_modules`): headless Google Chrome 148 with
+  `--enable-unsafe-swiftshader --use-angle=swiftshader` gives a WebGL 2 context
+  on SwiftShader. Drive it over `--remote-debugging-pipe` (descriptors 3 and 4)
+  and await a promise the page sets; `--dump-dom` does not wait for dynamic
+  imports. Load modules from `file://` with `--allow-file-access-from-files`.
+  Chrome stops on a failed CHECK (SIGTRAP) when `TMPDIR` makes its socket paths
+  longer than 108 bytes, so keep the system temporary folder. three.js 0.186.1 is
+  pinned by file digests. About 2 to 4 s per item; see the family README.
 
 The evidence record binds the item digest and the verifier digest (native.py and
 every other family file outside items/ and shared/), so an edited item or an

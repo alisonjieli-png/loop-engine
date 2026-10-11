@@ -1,0 +1,249 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "gradient_ramp_texture",
+  "title": "Gradient ramp and toon gradient map textures",
+  "purpose": "Sample colour stops into an RGBA8 ramp interpolated in linear light, smooth or stepped, stored sRGB-encoded for colour or linear for data, and wrap it as a three.js DataTexture with the matching colour space and filtering, including MeshToonMaterial gradient maps. Use it for colour ramps, palettes and toon bands.",
+  "form": "library_module",
+  "asset_role": null,
+  "dimension": "2d",
+  "engine": {
+    "name": "webgl2_browser",
+    "minimum_version": "2.0",
+    "notes": "gradientRamp and sampleGradient need no three.js; the texture builders take three.js r152 or later as THREE (colorSpace); only 0.186.1 was run."
+  },
+  "tags": [
+    "three.js",
+    "texture",
+    "gradient",
+    "color ramp",
+    "toon",
+    "gradientmap",
+    "srgb",
+    "linear light"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "role": "other"
+    },
+    {
+      "path": "gradient_ramp_texture.mjs",
+      "role": "skill_asset"
+    },
+    {
+      "path": "test_gradient_ramp_texture.mjs",
+      "role": "executable_tool"
+    },
+    {
+      "path": "demo/scene.mjs",
+      "role": "skill_asset"
+    }
+  ],
+  "contract": {
+    "module": "gradient_ramp_texture.mjs",
+    "category": "procedural_texture",
+    "language": "ECMAScript 2020 module",
+    "three": {
+      "injected": true,
+      "argument": "THREE",
+      "tested_version": "0.186.1",
+      "needed_by": [
+        "createGradientTexture",
+        "createToonGradientMap"
+      ]
+    },
+    "exports": [
+      {
+        "name": "gradientRamp",
+        "kind": "function",
+        "signature": "gradientRamp(stops, options = {}) -> Uint8Array",
+        "summary": "RGBA8 bytes, width texels, texel i at t = (i + 0.5) / width."
+      },
+      {
+        "name": "sampleGradient",
+        "kind": "function",
+        "signature": "sampleGradient(stops, t, options = {}) -> [r, g, b, a]",
+        "summary": "The gradient at t as linear light."
+      },
+      {
+        "name": "createGradientTexture",
+        "kind": "function",
+        "signature": "createGradientTexture(THREE, stops, options = {}) -> THREE.DataTexture",
+        "summary": "width x 1 texture; SRGBColorSpace or NoColorSpace by encoding; NearestFilter when stepped."
+      },
+      {
+        "name": "createToonGradientMap",
+        "kind": "function",
+        "signature": "createToonGradientMap(THREE, levels) -> THREE.DataTexture",
+        "summary": "MeshToonMaterial.gradientMap with one nearest-filtered texel per linear level."
+      },
+      {
+        "name": "srgbToLinear",
+        "kind": "function",
+        "signature": "srgbToLinear(value) -> number",
+        "summary": "sRGB-encoded component to linear light."
+      },
+      {
+        "name": "linearToSrgb",
+        "kind": "function",
+        "signature": "linearToSrgb(value) -> number",
+        "summary": "Linear light to an sRGB-encoded component."
+      },
+      {
+        "name": "GRADIENT_DEFAULTS",
+        "kind": "constant",
+        "summary": "Frozen default options: width 256, mode smooth, input srgb, encoding srgb."
+      }
+    ],
+    "stops": "[{position: 0..1 (not decreasing), color: 0xRRGGBB or [r, g, b] or [r, g, b, a] in 0..1}]",
+    "options": [
+      {
+        "name": "width",
+        "type": "integer",
+        "default": 256,
+        "range": [
+          1,
+          4096
+        ],
+        "meaning": "Texels in the ramp."
+      },
+      {
+        "name": "mode",
+        "type": "string",
+        "default": "smooth",
+        "values": [
+          "smooth",
+          "stepped"
+        ],
+        "meaning": "Interpolate between stops, or hold each stop until the next."
+      },
+      {
+        "name": "input",
+        "type": "string",
+        "default": "srgb",
+        "values": [
+          "srgb",
+          "linear"
+        ],
+        "meaning": "How stop colours are read: sRGB-encoded (as colour pickers and hex numbers give them) or already linear."
+      },
+      {
+        "name": "encoding",
+        "type": "string",
+        "default": "srgb",
+        "values": [
+          "srgb",
+          "linear"
+        ],
+        "meaning": "How bytes are stored: sRGB for colour textures, linear for gradient maps and data."
+      }
+    ],
+    "examples": [
+      {
+        "call": "srgbToLinear",
+        "args": [
+          0.5
+        ],
+        "expect": 0.21404114048223255,
+        "tolerance": 1e-15
+      },
+      {
+        "call": "linearToSrgb",
+        "args": [
+          0.5
+        ],
+        "expect": 0.7353569830524495,
+        "tolerance": 1e-15
+      },
+      {
+        "call": "gradientRamp",
+        "args": [
+          [
+            {
+              "position": 0,
+              "color": 0
+            },
+            {
+              "position": 1,
+              "color": 16777215
+            }
+          ],
+          {
+            "width": 3
+          }
+        ],
+        "select": "4",
+        "expect": 188
+      },
+      {
+        "call": "sampleGradient",
+        "args": [
+          [
+            {
+              "position": 0,
+              "color": [
+                0,
+                0,
+                0
+              ]
+            },
+            {
+              "position": 1,
+              "color": [
+                1,
+                1,
+                1
+              ]
+            }
+          ],
+          0.25
+        ],
+        "expect": [
+          0.25,
+          0.25,
+          0.25,
+          1
+        ],
+        "tolerance": 1e-12
+      },
+      {
+        "call": "gradientRamp",
+        "args": [
+          []
+        ],
+        "throws": "RangeError"
+      }
+    ],
+    "demo": {
+      "file": "demo/scene.mjs",
+      "export": "demo",
+      "addons": []
+    },
+    "tests": [
+      "test_gradient_ramp_texture.mjs"
+    ]
+  },
+  "limits": "Piecewise linear interpolation in linear-light sRGB: no perceptual spaces such as OKLab, no easing between stops and no dithering, so long dark ramps can band in 8 bits. Alpha is interpolated linearly and stored unpremultiplied. The input setting applies to hex numbers and arrays alike. The textures are one texel high, without mipmaps. MeshToonMaterial reads only the red channel of a gradient map. Only three.js 0.186.1 was run, in headless Chrome on SwiftShader WebGL 2.",
+  "related": [
+    "toon_band_material",
+    "normal_map_from_height",
+    "tileable_noise_texture",
+    "post_color_lut_strip"
+  ],
+  "technique_references": [
+    "sRGB transfer functions (IEC 61966-2-1)",
+    "Interpolation in linear light",
+    "Step gradient maps for toon shading"
+  ],
+  "native_checks": [
+    "module_contract_static",
+    "node_tests_pass",
+    "node_tests_catch_mutants",
+    "three_runtime_pinned",
+    "browser_page_clean",
+    "three_shaders_compiled",
+    "demo_checks_passed",
+    "render_not_uniform",
+    "render_differs_from_baseline"
+  ]
+}

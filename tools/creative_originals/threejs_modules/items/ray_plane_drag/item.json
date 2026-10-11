@@ -1,0 +1,50 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "ray_plane_drag",
+  "title": "Pointer rays and plane dragging",
+  "purpose": "Turn pointer positions into world rays for perspective and orthographic three.js cameras, intersect rays with planes, and drag objects across a plane keeping the grab offset, with optional grid snapping laid in the plane. Use it for editors, board games and placement tools.",
+  "form": "library_module",
+  "asset_role": null,
+  "dimension": "3d",
+  "engine": {"name": "node", "minimum_version": "18", "notes": "No three.js needed: pass camera.projectionMatrixInverse.elements and camera.matrixWorld.elements. The demo was rendered with three.js 0.186.1 in headless Chrome."},
+  "tags": ["three.js", "picking", "raycast", "drag and drop", "pointer", "unproject", "editor", "grid snapping"],
+  "files": [
+    {"path": "README.md", "role": "other"},
+    {"path": "ray_plane_drag.mjs", "role": "skill_asset"},
+    {"path": "test_ray_plane_drag.mjs", "role": "executable_tool"},
+    {"path": "demo/scene.mjs", "role": "skill_asset"}
+  ],
+  "contract": {
+    "module": "ray_plane_drag.mjs",
+    "category": "picking_interaction",
+    "language": "ECMAScript 2020 module",
+    "three": {"injected": false, "tested_version": "0.186.1", "needed_by": []},
+    "exports": [
+      {"name": "ndcFromPointer", "kind": "function", "signature": "ndcFromPointer(clientX, clientY, rect) -> [x, y]", "summary": "Normalized device coordinates from a pointer over an element's bounding rectangle; +y up."},
+      {"name": "rayFromCamera", "kind": "function", "signature": "rayFromCamera(ndcX, ndcY, inverseProjection, cameraWorld, nearDepth = -1) -> {origin, direction}", "summary": "The world ray under a point, origin on the near plane, unit direction; perspective or orthographic."},
+      {"name": "intersectRayPlane", "kind": "function", "signature": "intersectRayPlane(origin, direction, normal, constant) -> t | null", "summary": "Distance along the ray to normal . p + constant = 0, or null when parallel or behind."},
+      {"name": "planeFromNormalAndPoint", "kind": "function", "signature": "planeFromNormalAndPoint(normal, point) -> {normal, constant}", "summary": "The plane through a point, with a unit normal."},
+      {"name": "invertMatrix", "kind": "function", "signature": "invertMatrix(matrix) -> Float64Array(16)", "summary": "Inverse of a column-major 4 x 4 matrix; singular throws RangeError."},
+      {"name": "PlaneDrag", "kind": "class", "signature": "new PlaneDrag(options); begin(ray, objectPosition) -> boolean; move(ray) -> [x, y, z] | null; end(); hit(ray); snapToGrid(position); active", "summary": "Drag controller that keeps the grab offset and snaps to a grid in the plane."},
+      {"name": "PLANE_DRAG_DEFAULTS", "kind": "constant", "summary": "Frozen default options: normal, constant, snap."}
+    ],
+    "options": [
+      {"name": "normal", "type": "vector3", "default": [0, 1, 0], "meaning": "Plane normal (normalized by the controller)."},
+      {"name": "constant", "type": "number", "default": 0, "meaning": "Plane constant in normal . p + constant = 0."},
+      {"name": "snap", "type": "number", "default": 0, "meaning": "Grid step in the plane; 0 for no snapping."}
+    ],
+    "examples": [
+      {"call": "ndcFromPointer", "args": [110, 70, {"left": 10, "top": 20, "width": 200, "height": 100}], "expect": [0, 0]},
+      {"call": "intersectRayPlane", "args": [[0, 5, 0], [0, -1, 0], [0, 1, 0], 0], "expect": 5},
+      {"call": "rayFromCamera", "args": [0.5, -0.5, [2, 0, 0, 0, 0, 1, 0, 0, 0, 0, -4.95, 0, 0, 0, -5.05, 1], [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]], "expect": {"origin": [1, -0.5, -0.1], "direction": [0, 0, -1]}, "tolerance": 1e-12},
+      {"call": "planeFromNormalAndPoint", "args": [[0, 2, 0], [3, 1.5, -2]], "expect": {"normal": [0, 1, 0], "constant": -1.5}},
+      {"call": "invertMatrix", "args": [[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]], "throws": "RangeError"}
+    ],
+    "demo": {"file": "demo/scene.mjs", "export": "demo", "addons": []},
+    "tests": ["test_ray_plane_drag.mjs"]
+  },
+  "limits": "Planes only: no dragging along a surface, an axis gizmo or a sphere. A drag whose ray runs parallel to the plane or points away from it returns null, so very flat camera angles over a ground plane lose the drag until the pointer comes back. Snapping rounds in the plane's own two-axis grid, which for tilted planes is not the world grid. Rays start on the near plane; for a WebGPU projection pass nearDepth 0. No pointer capture or event wiring is included. Only three.js 0.186.1 was run for the demo, in headless Chrome on SwiftShader WebGL 2.",
+  "related": ["gpu_id_picking", "triangle_bvh_raycast", "orbit_camera_rig"],
+  "technique_references": ["Unprojecting clip-space points through the inverse projection and camera world matrices", "Ray and plane intersection t = -(n . o + c) / (n . d)", "Adjugate matrix inverse by cofactors", "Grid snapping in an orthonormal basis of the plane"],
+  "native_checks": ["module_contract_static", "node_tests_pass", "node_tests_catch_mutants", "three_runtime_pinned", "browser_page_clean", "three_shaders_compiled", "demo_checks_passed", "render_not_uniform", "render_differs_from_baseline"]
+}

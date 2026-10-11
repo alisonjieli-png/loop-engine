@@ -1,0 +1,54 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "superellipsoid_geometry",
+  "title": "Superellipsoid geometry with analytic normals",
+  "purpose": "Build Barr superellipsoids for three.js, from rounded cubes and cushions through ellipsoids to octahedra and star prisms, with three radii, two shape exponents, analytic normals, UVs, the inside-outside function and the exact volume, from a typed-array generator that also runs in Node.",
+  "form": "library_module",
+  "asset_role": null,
+  "dimension": "3d",
+  "engine": {"name": "webgl2_browser", "minimum_version": "2.0", "notes": "superellipsoidData, superellipsoidVolume and superellipsoidImplicit need no three.js; createSuperellipsoidGeometry takes three.js as THREE; only 0.186.1 was run."},
+  "tags": ["three.js", "geometry", "superellipsoid", "superquadric", "primitive", "buffergeometry", "typed arrays", "procedural"],
+  "files": [
+    {"path": "README.md", "role": "other"},
+    {"path": "superellipsoid_geometry.mjs", "role": "skill_asset"},
+    {"path": "test_superellipsoid_geometry.mjs", "role": "executable_tool"},
+    {"path": "demo/scene.mjs", "role": "skill_asset"}
+  ],
+  "contract": {
+    "module": "superellipsoid_geometry.mjs",
+    "category": "geometry",
+    "language": "ECMAScript 2020 module",
+    "three": {"injected": true, "argument": "THREE", "tested_version": "0.186.1", "needed_by": ["createSuperellipsoidGeometry"]},
+    "exports": [
+      {"name": "superellipsoidData", "kind": "function", "signature": "superellipsoidData(options = {}) -> {positions, normals, uvs, indices}", "summary": "The superellipsoid as typed arrays on a latitude-longitude grid, triangles counter-clockwise from outside."},
+      {"name": "createSuperellipsoidGeometry", "kind": "function", "signature": "createSuperellipsoidGeometry(THREE, options = {}) -> THREE.BufferGeometry", "summary": "The same data in a BufferGeometry with an index and computed bounds."},
+      {"name": "superellipsoidVolume", "kind": "function", "signature": "superellipsoidVolume(radiusX, radiusY, radiusZ, exponentY, exponentXZ) -> number", "summary": "Exact volume 2 a b c e1 e2 B(e1/2 + 1, e1) B(e2/2, e2/2)."},
+      {"name": "superellipsoidImplicit", "kind": "function", "signature": "superellipsoidImplicit(x, y, z, options = {}) -> number", "summary": "Barr's inside-outside function: below 1 inside, 1 on the surface, above 1 outside."},
+      {"name": "SUPERELLIPSOID_DEFAULTS", "kind": "constant", "summary": "Frozen default options."}
+    ],
+    "options": [
+      {"name": "radiusX", "type": "number", "default": 1, "unit": "scene units", "meaning": "Half size along X."},
+      {"name": "radiusY", "type": "number", "default": 1, "unit": "scene units", "meaning": "Half size along Y (north-south)."},
+      {"name": "radiusZ", "type": "number", "default": 1, "unit": "scene units", "meaning": "Half size along Z."},
+      {"name": "exponentY", "type": "number", "default": 0.5, "range": [0.02, 4], "meaning": "Barr's epsilon 1, the north-south roundness: near 0 square, 1 round, 2 pointed, above 2 pinched."},
+      {"name": "exponentXZ", "type": "number", "default": 0.5, "range": [0.02, 4], "meaning": "Barr's epsilon 2, the east-west roundness of the horizontal cross-section."},
+      {"name": "widthSegments", "type": "integer", "default": 48, "range": [3, 1024], "meaning": "Divisions around Y."},
+      {"name": "heightSegments", "type": "integer", "default": 32, "range": [2, 1024], "meaning": "Divisions from pole to pole."}
+    ],
+    "outputs": {"vertices": "(widthSegments + 1) * (heightSegments + 1)", "indices": "6 * widthSegments * (heightSegments - 1)", "index_type": "Uint16Array up to 65535 vertices, else Uint32Array"},
+    "examples": [
+      {"call": "superellipsoidVolume", "args": [1, 2, 3, 1, 1], "expect": 25.132741228718345, "tolerance": 1e-9},
+      {"call": "superellipsoidVolume", "args": [1, 2, 3, 2, 2], "expect": 8, "tolerance": 1e-9},
+      {"call": "superellipsoidVolume", "args": [1, 1, 1, 0.5, 0.5], "expect": 6.4819873517863815, "tolerance": 1e-9},
+      {"call": "superellipsoidData", "args": [{}], "select": "indices.length", "expect": 8928},
+      {"call": "superellipsoidImplicit", "args": [1, 0, 0], "expect": 1, "tolerance": 1e-12},
+      {"call": "superellipsoidData", "args": [{"exponentY": 5}], "throws": "RangeError"}
+    ],
+    "demo": {"file": "demo/scene.mjs", "export": "demo", "addons": []},
+    "tests": ["test_superellipsoid_geometry.mjs"]
+  },
+  "limits": "A latitude-longitude grid: vertices crowd at the poles and the seam and pole rows repeat for UVs, as in SphereGeometry. Very small exponents bunch the grid against the box edges, so near-cubes need many segments. Exponents above 2 make concave shapes with cusps where the surface has no normal; there the ellipsoid normal of the point is used, which is an approximation. UVs follow the angles, not arc length, so textures stretch on boxy shapes. The mesh volume is slightly under superellipsoidVolume for convex shapes. Only three.js 0.186.1 was run, in headless Chrome on SwiftShader WebGL 2.",
+  "related": ["rounded_box_geometry", "lathe_profile_geometry", "marching_tetrahedra_isosurface"],
+  "technique_references": ["Barr superquadric ellipsoid with signed-power trigonometric parametrization", "Analytic normal from the dual exponents 2 - e", "Volume through Beta functions, with log-gamma from Stirling's series"],
+  "native_checks": ["module_contract_static", "node_tests_pass", "node_tests_catch_mutants", "three_runtime_pinned", "browser_page_clean", "three_shaders_compiled", "demo_checks_passed", "render_not_uniform", "render_differs_from_baseline"]
+}

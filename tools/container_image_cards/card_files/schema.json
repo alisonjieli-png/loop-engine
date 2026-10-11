@@ -1,0 +1,235 @@
+{
+ "title": "container_image_contract/v1",
+ "description": "One tag family of one container image repository, pinned to its image index digest: its platforms with their manifest and config digests, its inputs and outputs as the registry states them, and the documentation facts beside them.",
+ "type": "object",
+ "additionalProperties": false,
+ "required": ["record_type", "image", "family", "runtime", "inputs", "outputs", "platforms", "documentation", "compatibility"],
+ "properties": {
+  "record_type": {"const": "container_image_contract/v1"},
+  "image": {
+   "type": "object",
+   "additionalProperties": false,
+   "required": ["registry", "repository", "name", "collection", "reference", "tags", "shared_tags", "resolved_tag", "index", "page"],
+   "properties": {
+    "registry": {"type": "string", "minLength": 1},
+    "repository": {"type": "string", "pattern": "^[a-z0-9]+(?:[._/-][a-z0-9]+)*$"},
+    "name": {"type": "string", "pattern": "^[a-z0-9]+(?:[._-][a-z0-9]+)*$"},
+    "collection": {"type": "string", "minLength": 1},
+    "reference": {"type": "string", "pattern": "^[^@\\s]+@sha256:[0-9a-f]{64}$"},
+    "tags": {"$ref": "#/$defs/tags", "minItems": 1},
+    "shared_tags": {"$ref": "#/$defs/tags"},
+    "resolved_tag": {"$ref": "#/$defs/tag"},
+    "index": {"$ref": "#/$defs/descriptor"},
+    "page": {"type": "string", "pattern": "^https://"}
+   }
+  },
+  "family": {
+   "type": "object",
+   "additionalProperties": false,
+   "required": ["identity", "declared_architectures", "library", "source"],
+   "properties": {
+    "identity": {"type": "string", "pattern": "^(context|tag):.+$"},
+    "declared_architectures": {"type": "array", "items": {"type": "string", "minLength": 1}, "minItems": 1},
+    "library": {
+     "type": "object",
+     "additionalProperties": false,
+     "required": ["repository", "path", "commit"],
+     "properties": {
+      "repository": {"type": "string", "minLength": 1},
+      "path": {"type": "string", "minLength": 1},
+      "commit": {"$ref": "#/$defs/commit"}
+     }
+    },
+    "source": {
+     "type": "object",
+     "additionalProperties": false,
+     "required": ["git_repository", "git_fetch", "git_commit", "directory", "file", "builder", "constraints", "architecture_overrides"],
+     "properties": {
+      "git_repository": {"type": "string", "minLength": 1},
+      "git_fetch": {"type": "string"},
+      "git_commit": {"type": "string"},
+      "directory": {"type": "string"},
+      "file": {"type": "string"},
+      "builder": {"type": "string"},
+      "constraints": {"type": "array", "items": {"type": "string"}},
+      "architecture_overrides": {"type": "object", "additionalProperties": {"type": "object", "additionalProperties": {"type": "string"}}}
+     }
+    }
+   }
+  },
+  "runtime": {
+   "type": "object",
+   "additionalProperties": false,
+   "required": ["entrypoint", "command", "working_dir", "user", "stop_signal", "shell", "healthcheck", "on_build", "labels", "varies_by_platform"],
+   "properties": {
+    "entrypoint": {"$ref": "#/$defs/strings_or_null"},
+    "command": {"$ref": "#/$defs/strings_or_null"},
+    "working_dir": {"type": ["string", "null"]},
+    "user": {"type": ["string", "null"]},
+    "stop_signal": {"type": ["string", "null"]},
+    "shell": {"$ref": "#/$defs/strings_or_null"},
+    "healthcheck": {"$ref": "#/$defs/healthcheck"},
+    "on_build": {"$ref": "#/$defs/strings_or_null"},
+    "labels": {"type": ["object", "null"], "additionalProperties": {"type": "string"}},
+    "varies_by_platform": {"type": "array", "items": {"enum": ["entrypoint", "command", "working_dir", "user", "stop_signal", "shell", "healthcheck", "on_build", "labels"]}, "uniqueItems": true}
+   }
+  },
+  "inputs": {
+   "type": "object",
+   "additionalProperties": false,
+   "required": ["environment", "ports", "volumes"],
+   "properties": {
+    "environment": {
+     "type": "array",
+     "items": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "set_by_image", "value", "withheld", "varies_by_platform", "documented", "evidence"],
+      "properties": {
+       "name": {"type": "string", "pattern": "^[A-Za-z_][A-Za-z0-9_.-]*$"},
+       "set_by_image": {"type": "boolean"},
+       "value": {"type": ["string", "null"]},
+       "withheld": {"type": "boolean"},
+       "varies_by_platform": {"type": "boolean"},
+       "documented": {"type": "boolean"},
+       "evidence": {"type": "array", "items": {"enum": ["image_config", "documentation_heading", "documentation_example"]}, "minItems": 1, "uniqueItems": true}
+      }
+     }
+    },
+    "ports": {"$ref": "#/$defs/ports"},
+    "volumes": {"$ref": "#/$defs/paths"}
+   }
+  },
+  "outputs": {
+   "type": "object",
+   "additionalProperties": false,
+   "required": ["logs", "exit_status", "listening_ports", "state_volumes", "health"],
+   "properties": {
+    "logs": {"const": "standard_output_and_standard_error"},
+    "exit_status": {"const": "main_process_exit_status"},
+    "listening_ports": {"$ref": "#/$defs/ports"},
+    "state_volumes": {"$ref": "#/$defs/paths"},
+    "health": {"enum": ["healthcheck_status", "not_declared"]}
+   }
+  },
+  "platforms": {
+   "type": "array",
+   "minItems": 1,
+   "items": {
+    "type": "object",
+    "additionalProperties": false,
+    "required": ["platform", "os", "architecture", "variant", "os_version", "os_features", "bashbrew_arch", "manifest", "config", "layers", "foreign_layers", "compressed_bytes", "created", "version", "revision", "source", "base", "differences"],
+    "properties": {
+     "platform": {"type": "string", "pattern": "^[a-z0-9]+/[a-z0-9_]+(/[a-z0-9]+)?$"},
+     "os": {"type": "string", "minLength": 1},
+     "architecture": {"type": "string", "minLength": 1},
+     "variant": {"type": ["string", "null"]},
+     "os_version": {"type": ["string", "null"]},
+     "os_features": {"type": "array", "items": {"type": "string"}},
+     "bashbrew_arch": {"type": ["string", "null"]},
+     "manifest": {"$ref": "#/$defs/descriptor"},
+     "config": {"$ref": "#/$defs/descriptor"},
+     "layers": {"type": "integer", "minimum": 0},
+     "foreign_layers": {"type": "integer", "minimum": 0},
+     "compressed_bytes": {"type": "integer", "minimum": 0},
+     "created": {"type": ["string", "null"]},
+     "version": {"type": ["string", "null"]},
+     "revision": {"type": ["string", "null"]},
+     "source": {"type": ["string", "null"]},
+     "base": {
+      "type": ["object", "null"],
+      "additionalProperties": false,
+      "required": ["name", "digest"],
+      "properties": {"name": {"type": ["string", "null"]}, "digest": {"type": ["string", "null"]}}
+     },
+     "differences": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+       "runtime": {"type": "object"},
+       "environment": {"type": "object", "additionalProperties": {"type": ["string", "null"]}},
+       "ports": {"$ref": "#/$defs/ports"},
+       "volumes": {"$ref": "#/$defs/paths"}
+      }
+     }
+    }
+   }
+  },
+  "documentation": {
+   "type": "object",
+   "additionalProperties": false,
+   "required": ["summary", "summary_source", "categories", "software_licence_links", "source_repository", "docs"],
+   "properties": {
+    "summary": {"type": ["string", "null"], "maxLength": 200},
+    "summary_source": {"type": ["string", "null"]},
+    "categories": {"type": "array", "items": {"type": "string"}},
+    "software_licence_links": {"type": "array", "items": {"type": "string", "pattern": "^https?://"}},
+    "source_repository": {"type": ["string", "null"]},
+    "docs": {
+     "type": "object",
+     "additionalProperties": false,
+     "required": ["repository", "path", "commit"],
+     "properties": {
+      "repository": {"type": "string", "minLength": 1},
+      "path": {"type": "string", "minLength": 1},
+      "commit": {"$ref": "#/$defs/commit"}
+     }
+    }
+   }
+  },
+  "compatibility": {
+   "type": "object",
+   "additionalProperties": false,
+   "required": ["operating_systems", "declared_not_published", "notes"],
+   "properties": {
+    "operating_systems": {"type": "array", "items": {"type": "string"}, "minItems": 1},
+    "declared_not_published": {"type": "array", "items": {"type": "string"}},
+    "notes": {"type": "array", "items": {"enum": ["runs_as_root", "runs_as_user", "declares_volumes", "no_default_command", "healthcheck_declared", "on_build_triggers", "windows_containers", "architectures_declared_not_published"]}, "uniqueItems": true}
+   }
+  }
+ },
+ "$defs": {
+  "tag": {"type": "string", "pattern": "^[A-Za-z0-9_][A-Za-z0-9_.-]{0,127}$"},
+  "tags": {"type": "array", "items": {"$ref": "#/$defs/tag"}, "uniqueItems": true},
+  "commit": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+  "digest": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+  "descriptor": {
+   "type": "object",
+   "additionalProperties": false,
+   "required": ["digest", "media_type", "size"],
+   "properties": {
+    "digest": {"$ref": "#/$defs/digest"},
+    "media_type": {"type": "string", "minLength": 1},
+    "size": {"type": "integer", "minimum": 0}
+   }
+  },
+  "strings_or_null": {"type": ["array", "null"], "items": {"type": "string"}},
+  "healthcheck": {
+   "type": ["object", "null"],
+   "additionalProperties": false,
+   "required": ["test", "interval_ns", "timeout_ns", "start_period_ns", "start_interval_ns", "retries"],
+   "properties": {
+    "test": {"type": "array", "items": {"type": "string"}},
+    "interval_ns": {"type": ["integer", "null"], "minimum": 0},
+    "timeout_ns": {"type": ["integer", "null"], "minimum": 0},
+    "start_period_ns": {"type": ["integer", "null"], "minimum": 0},
+    "start_interval_ns": {"type": ["integer", "null"], "minimum": 0},
+    "retries": {"type": ["integer", "null"], "minimum": 0}
+   }
+  },
+  "ports": {
+   "type": "array",
+   "uniqueItems": true,
+   "items": {
+    "type": "object",
+    "additionalProperties": false,
+    "required": ["port", "protocol"],
+    "properties": {
+     "port": {"type": "integer", "minimum": 1, "maximum": 65535},
+     "protocol": {"enum": ["tcp", "udp", "sctp"]}
+    }
+   }
+  },
+  "paths": {"type": "array", "items": {"type": "string", "minLength": 1}, "uniqueItems": true}
+ }
+}

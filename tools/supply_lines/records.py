@@ -45,10 +45,10 @@ RUN_RECORD_TYPE = "library_supply_run/v1"
 #: (a statistical series, a database release), where data_tables reads a GitHub file.
 (MCP_REGISTRY, OPENAPI_OPERATIONS, PROGRAM_INSTALLS, DATA_TABLES, FUNCTION_EXTRACTS, JSON_SCHEMAS,
  MANIM_SCENES, API_TOOL_SERVERS, PUBLISHER_TABLES, CREATIVE_ASSETS, CREATIVE_ORIGINALS, ENGINE_API_CARDS,
- KAGGLE_PUBLIC_GOOD) = LINES = (
+ KAGGLE_PUBLIC_GOOD, CONTAINER_IMAGE_CARDS) = LINES = (
     "mcp_registry", "openapi_operations", "program_installs", "data_tables", "function_extracts", "json_schemas",
     "manim_scenes", "api_tool_servers", "publisher_tables", "creative_assets", "creative_originals",
-    "engine_api_cards", "kaggle_public_good")
+    "engine_api_cards", "kaggle_public_good", "container_image_cards")
 #: How the text of every supply package was authored, and the review profile it needs. The panel has no such
 #: profile yet (tools/candidate_review reads original and imported packages only), so an export holds these.
 AUTHORING = "generated_from_licensed_facts"
@@ -63,7 +63,9 @@ ORIGINS = {"mcp_official_registry": "registry.modelcontextprotocol.io", "github_
            "our_world_in_data": "ourworldindata.org",
            "poly_haven_api": "api.polyhaven.com", "ambientcg_api": "ambientcg.com",
            # A dataset downloaded from Kaggle and read locally: its address is where the bytes came from.
-           "kaggle_dataset": "www.kaggle.com"}
+           "kaggle_dataset": "www.kaggle.com",
+           # A container image read from Docker Hub's registry: its tags by HEAD, its documents by digest.
+           "docker_hub_registry": "registry-1.docker.io"}
 #: What one fact source is to the package. A notice file is an upstream repository's NOTICE, carried verbatim
 #: under that repository's licence (Apache-2.0 section 4(d)); it is neither a licence text nor a fact the
 #: generator read to write code. Terms of use are the published terms under which facts were read (an API's terms
@@ -165,6 +167,21 @@ REFUSAL_REASONS = {
                          "licence_mixed_terms", "licence_permission_required", "declared_decision_stale",
                          "licence_text_missing", "no_table", "table_unreadable", "blocked_by_static_check",
                          "generated_test_failed", "package_above_review_bound", "package_path_invalid"),
+    # A tag family of a container image (tools/supply_lines/container_image_cards.py): an unreadable library file or
+    # documentation folder, a licence the line cannot use, a registry that did not give a document by its digest (or
+    # gave other bytes), a document the card format cannot describe, a credential-shaped value outside an
+    # environment value, a run's request ceiling, registry evidence that does not hold for the card's bytes, a failed
+    # smoke run, a card the writer could not write, a failing package test, and the shared packaging refusals.
+    CONTAINER_IMAGE_CARDS: ("source_unreadable", "licence_not_on_allowlist", "licence_signals_disagree",
+                            "licence_unknown", "library_entry_invalid", "tag_not_found", "registry_unreadable",
+                            "registry_unauthorized", "registry_rate_limited", "registry_redirect_undeclared",
+                            "document_not_found", "document_digest_mismatch", "document_too_large",
+                            "digest_unsupported", "manifest_unsupported", "config_unreadable", "no_platform",
+                            "platform_mismatch", "credential_shaped_value_in_image", "request_ceiling_reached",
+                            "native_evidence_missing", "native_evidence_stale", "native_evidence_invalid",
+                            "native_check_failed", "smoke_check_failed", "card_not_written",
+                            "generated_test_failed", "blocked_by_static_check", "package_above_review_bound",
+                            "package_path_invalid"),
 }
 #: The forms each line may declare, and the harness kind it serves them as.
 LINE_FORMS = {MCP_REGISTRY: {"mcp_server": "protocol_server_configuration"},
@@ -195,7 +212,10 @@ LINE_FORMS = {MCP_REGISTRY: {"mcp_server": "protocol_server_configuration"},
               # renames), served as the contract schema a harness reads before writing code against the class.
               ENGINE_API_CARDS: {"schema": "contract_schema"},
               # A Kaggle dataset's schema contract and typed reader: a reference data table, as the other table lines.
-              KAGGLE_PUBLIC_GOOD: {"data_table": "code_module"}}
+              KAGGLE_PUBLIC_GOOD: {"data_table": "code_module"},
+              # A card is the contract of one tag family of a container image (its inputs, outputs and digests per
+              # platform), served as the contract schema a harness reads before running the image.
+              CONTAINER_IMAGE_CARDS: {"schema": "contract_schema"}}
 CANDIDATE_FIELDS = ("record_type", "record_id", "upstream_key", "line", "kind", "native_format", "component_form",
                     "name", "description", "package", "package_digest", "files", "licence", "provenance",
                     "placements", "declared_effects", "effect_evidence", "credentials", "tests", "findings",
@@ -286,7 +306,10 @@ STATE_SCOPES = ("", "apis_guru_directory", "google_discovery", "api_components",
                 "polyhaven", "ambientcg", "godot_demo_projects",
                 # The engine API card line keeps one state per engine and API version, so a complete run of one
                 # release never withdraws the cards of another.
-                "godot_4_7", "threejs_r186", "babylonjs_9_30")
+                "godot_4_7", "threejs_r186", "babylonjs_9_30",
+                # The container image card line keeps one state per collection of images (the Docker Official
+                # Images now), so a complete run of one collection never withdraws another's cards.
+                "docker_official_images")
 
 
 def state_record_id(line: str, scope: str = "") -> str:

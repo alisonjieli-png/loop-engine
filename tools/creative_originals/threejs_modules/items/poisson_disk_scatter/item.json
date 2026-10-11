@@ -1,0 +1,59 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "poisson_disk_scatter",
+  "title": "Poisson disk scatter with instance matrices",
+  "purpose": "Scatter blue-noise points in a rectangle with a guaranteed minimum spacing (Bridson's algorithm), an optional mask with restarts for separate regions and density thinning, and turn them into seeded yaw and scale instance matrices for three.js InstancedMesh. Use it for forests, rocks, crowds, props and decals.",
+  "form": "library_module",
+  "asset_role": null,
+  "dimension": "2.5d",
+  "engine": {"name": "node", "minimum_version": "18", "notes": "No three.js needed: points and matrices are typed arrays to copy into InstancedMesh.instanceMatrix.array. The demo was rendered with three.js 0.186.1 in headless Chrome."},
+  "tags": ["three.js", "scatter", "poisson disk", "blue noise", "instancing", "procedural", "foliage", "bridson"],
+  "files": [
+    {"path": "README.md", "role": "other"},
+    {"path": "poisson_disk_scatter.mjs", "role": "skill_asset"},
+    {"path": "test_poisson_disk_scatter.mjs", "role": "executable_tool"},
+    {"path": "demo/scene.mjs", "role": "skill_asset"}
+  ],
+  "contract": {
+    "module": "poisson_disk_scatter.mjs",
+    "category": "instancing_scatter",
+    "language": "ECMAScript 2020 module",
+    "three": {"injected": false, "tested_version": "0.186.1", "needed_by": []},
+    "exports": [
+      {"name": "poissonDiskPoints", "kind": "function", "signature": "poissonDiskPoints(options = {}) -> Float32Array [x0, y0, x1, y1, ...]", "summary": "Points with at least minDistance between any two, inside the rectangle and the mask, thinned by density; deterministic for a seed."},
+      {"name": "toInstanceMatrices", "kind": "function", "signature": "toInstanceMatrices(points, options = {}) -> Float32Array (16 per point, column-major)", "summary": "Matrices that place, spin and scale a model at each point on the XZ or XY plane."},
+      {"name": "POISSON_DISK_DEFAULTS", "kind": "constant", "summary": "Frozen default options of poissonDiskPoints."},
+      {"name": "INSTANCE_MATRIX_DEFAULTS", "kind": "constant", "summary": "Frozen default options of toInstanceMatrices."}
+    ],
+    "options": [
+      {"name": "width", "type": "number", "default": 10, "meaning": "Field size along x."},
+      {"name": "height", "type": "number", "default": 10, "meaning": "Field size along y (z on the ground plane)."},
+      {"name": "originX", "type": "number", "default": 0, "meaning": "Field corner x."},
+      {"name": "originY", "type": "number", "default": 0, "meaning": "Field corner y."},
+      {"name": "minDistance", "type": "number", "default": 1, "meaning": "Smallest allowed distance between two points."},
+      {"name": "attempts", "type": "integer", "default": 30, "range": [1, 1000], "meaning": "Candidates tried around each active point before it retires."},
+      {"name": "seed", "type": "integer", "default": 1, "meaning": "Seed of the point sequence."},
+      {"name": "maxPoints", "type": "integer", "default": 100000, "meaning": "Stop after this many points."},
+      {"name": "mask", "type": "function or null", "default": null, "meaning": "mask(x, y) truthy keeps a candidate."},
+      {"name": "density", "type": "function or null", "default": null, "meaning": "density(x, y) in [0, 1] is the chance a finished point is kept."},
+      {"name": "plane", "type": "string", "default": "xz", "meaning": "toInstanceMatrices: 'xz' ground plane spinning about +Y, or 'xy' spinning about +Z."},
+      {"name": "offset", "type": "number", "default": 0, "meaning": "toInstanceMatrices: height above the plane."},
+      {"name": "scale", "type": "number", "default": 1, "meaning": "toInstanceMatrices: base uniform scale."},
+      {"name": "scaleJitter", "type": "number", "default": 0, "range": [0, 1], "meaning": "toInstanceMatrices: scale varies by up to this fraction either way."},
+      {"name": "yawJitter", "type": "number", "default": 6.283185307179586, "unit": "radians", "meaning": "toInstanceMatrices: spin is uniform in [0, yawJitter)."}
+    ],
+    "examples": [
+      {"call": "poissonDiskPoints", "args": [{"width": 1, "height": 1, "minDistance": 2, "seed": 3}], "select": "length", "expect": 2},
+      {"call": "toInstanceMatrices", "args": [{"$typed": "Float32Array", "values": [4, 5]}, {"plane": "xy", "yawJitter": 0, "offset": -1}], "expect": [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 4, 5, -1, 1]},
+      {"call": "toInstanceMatrices", "args": [{"$typed": "Float32Array", "values": [2, 3]}, {"scale": 2, "yawJitter": 0}], "expect": [2, 0, 0, 0, 0, 2, 0, 0, 0, 0, 2, 0, 2, 0, 3, 1]},
+      {"call": "poissonDiskPoints", "args": [{"minDistance": 0}], "throws": "RangeError"},
+      {"call": "toInstanceMatrices", "args": [{"$typed": "Float32Array", "values": [1]}], "throws": "RangeError"}
+    ],
+    "demo": {"file": "demo/scene.mjs", "export": "demo", "addons": []},
+    "tests": ["test_poisson_disk_scatter.mjs"]
+  },
+  "limits": "One minimum distance for the whole field: no variable radius. Density thins finished points, which keeps the spacing but loses the even blue-noise look where density is low. Restarts after the frontier stops find separate mask regions by random tries, so a very small region can be missed. The mask is a callback run for every candidate, so a slow mask slows sampling. The field is a rectangle; points lie in float32. Matrices spin about one axis with uniform scale; no tilt to a slope. Only three.js 0.186.1 was run for the demo, in headless Chrome on SwiftShader WebGL 2.",
+  "related": ["mesh_surface_scatter", "frustum_instance_culling", "heightfield_terrain_geometry"],
+  "technique_references": ["Bridson fast Poisson disk sampling with a background grid of cell size r / sqrt(2)", "Uniform sampling of the annulus [r, 2r] by area", "Random sequential packing density as a plausibility band"],
+  "native_checks": ["module_contract_static", "node_tests_pass", "node_tests_catch_mutants", "three_runtime_pinned", "browser_page_clean", "three_shaders_compiled", "demo_checks_passed", "render_not_uniform", "render_differs_from_baseline"]
+}

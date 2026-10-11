@@ -1,0 +1,76 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "foliage_wind_material",
+  "title": "Foliage wind sway material with gusts",
+  "purpose": "Make grass, crops, reeds and foliage sway in the wind on the GPU: blades bend along the wind more with height (roots stay put), from travelling layered sines plus integer-hash gusts phased by each instance's position, with a root-to-tip colour ramp. Works on InstancedMesh; the wind has an exact CPU mirror.",
+  "form": "library_module",
+  "asset_role": null,
+  "dimension": "3d",
+  "engine": {"name": "webgl2_browser", "minimum_version": "2.0", "notes": "three.js r155 or later passed in as THREE (GLSL ES 3.00 uint arithmetic; the fragment stage includes the tonemapping_fragment and colorspace_fragment chunks); only 0.186.1 was run."},
+  "tags": ["three.js", "shader", "wind", "grass", "foliage", "vertex animation", "instancing", "shadermaterial"],
+  "files": [
+    {"path": "README.md", "role": "other"},
+    {"path": "foliage_wind_material.mjs", "role": "skill_asset"},
+    {"path": "test_foliage_wind_material.mjs", "role": "executable_tool"},
+    {"path": "demo/scene.mjs", "role": "skill_asset"}
+  ],
+  "contract": {
+    "module": "foliage_wind_material.mjs",
+    "category": "shader_material",
+    "language": "ECMAScript 2020 module; GLSL ES 3.00 through three.js ShaderMaterial",
+    "three": {"injected": true, "argument": "THREE", "tested_version": "0.186.1", "needed_by": ["createFoliageWindMaterial", "foliageWindUniforms"]},
+    "exports": [
+      {"name": "createFoliageWindMaterial", "kind": "function", "signature": "createFoliageWindMaterial(THREE, options = {}) -> THREE.ShaderMaterial", "summary": "The double-sided foliage material; set uniforms.uTime.value every frame."},
+      {"name": "foliageWindUniforms", "kind": "function", "signature": "foliageWindUniforms(THREE, options = {}) -> uniforms", "summary": "The uniform values, to share the wind with another material or a probe."},
+      {"name": "windOffset", "kind": "function", "signature": "windOffset(position, anchor, time, options = {}) -> [x, y, z]", "summary": "CPU mirror: the world offset of an object-space vertex on a blade standing at a world anchor."},
+      {"name": "windGustNoise", "kind": "function", "signature": "windGustNoise(x) -> number in [0, 1]", "summary": "CPU mirror of the gust value noise (integer hash, smoothstep between cells)."},
+      {"name": "FOLIAGE_WIND_DEFAULTS", "kind": "constant", "summary": "Frozen default options."},
+      {"name": "FOLIAGE_WIND_UNIFORMS_GLSL", "kind": "constant", "glsl": "chunk", "summary": "The wind uniform declarations."},
+      {"name": "FOLIAGE_WIND_GLSL", "kind": "constant", "glsl": "chunk", "summary": "GLSL windHash, windGust and vec3 windOffset(vec3 position, vec3 anchor, float time)."},
+      {"name": "FOLIAGE_WIND_VERTEX", "kind": "constant", "glsl": "vertex", "summary": "Vertex stage with the wind, InstancedMesh aware."},
+      {"name": "FOLIAGE_WIND_FRAGMENT", "kind": "constant", "glsl": "fragment", "summary": "Root-to-tip colour with two-sided light."}
+    ],
+    "options": [
+      {"name": "direction", "type": "[x, z]", "default": [1, 0.35], "meaning": "Wind direction on the ground plane; normalized."},
+      {"name": "strength", "type": "number", "default": 0.18, "range": [0, 100], "unit": "world units", "meaning": "Largest sideways tip offset of the sway."},
+      {"name": "frequency", "type": "number", "default": 1.6, "range": [0, 100], "unit": "radians per second", "meaning": "Sway speed."},
+      {"name": "spatialFrequency", "type": "number", "default": 0.45, "range": [0, 100], "unit": "radians per world unit", "meaning": "How fast the sway's phase changes along the wind, so waves travel across a field."},
+      {"name": "gustStrength", "type": "number", "default": 0.6, "range": [0, 10], "meaning": "Gusts add up to this fraction of strength, always downwind."},
+      {"name": "gustScale", "type": "number", "default": 0.18, "range": [0, 100], "unit": "cells per world unit", "meaning": "Gust size along the wind."},
+      {"name": "gustSpeed", "type": "number", "default": 0.9, "range": [0, 100], "unit": "cells per second", "meaning": "How fast gusts travel."},
+      {"name": "height", "type": "number", "default": 1, "range": [0.001, 10000], "unit": "object units", "meaning": "Blade height in the geometry: y = 0 is the root, y = height the tip."},
+      {"name": "stiffness", "type": "number", "default": 2, "range": [0.5, 8], "meaning": "Exponent of the height weighting; higher keeps the lower blade straighter."},
+      {"name": "rootColor", "type": "linear RGB triple", "default": [0.04, 0.16, 0.035], "meaning": "Colour at the root."},
+      {"name": "tipColor", "type": "linear RGB triple", "default": [0.42, 0.72, 0.18], "meaning": "Colour at the tip."},
+      {"name": "lightDirection", "type": "vector3", "default": [0.4, 1, 0.3], "meaning": "Direction toward the light for the simple two-sided shading."}
+    ],
+    "uniforms": [
+      {"name": "uTime", "type": "float", "option": null},
+      {"name": "uWindDirection", "type": "vec2", "option": "direction"},
+      {"name": "uWindStrength", "type": "float", "option": "strength"},
+      {"name": "uWindFrequency", "type": "float", "option": "frequency"},
+      {"name": "uSpatialFrequency", "type": "float", "option": "spatialFrequency"},
+      {"name": "uGustStrength", "type": "float", "option": "gustStrength"},
+      {"name": "uGustScale", "type": "float", "option": "gustScale"},
+      {"name": "uGustSpeed", "type": "float", "option": "gustSpeed"},
+      {"name": "uBladeHeight", "type": "float", "option": "height"},
+      {"name": "uStiffness", "type": "float", "option": "stiffness"},
+      {"name": "uRootColor", "type": "vec3", "option": "rootColor"},
+      {"name": "uTipColor", "type": "vec3", "option": "tipColor"},
+      {"name": "uLightDirection", "type": "vec3", "option": "lightDirection"}
+    ],
+    "examples": [
+      {"call": "windGustNoise", "args": [0], "expect": 0.20343191926447488, "tolerance": 1e-12},
+      {"call": "windGustNoise", "args": [2.5], "expect": 0.35402834784566156, "tolerance": 1e-12},
+      {"call": "windOffset", "args": [[0, 1, 0], [2, 0, -1], 3.7], "expect": [-0.03412905249140244, -0.0006537396356980567, -0.01194516837199085], "tolerance": 1e-12},
+      {"call": "windOffset", "args": [[0.05, 0, 0.01], [2, 0, -1], 3.7], "expect": [0, 0, 0], "tolerance": 0},
+      {"call": "windOffset", "args": [[0, 1, 0], [0, 0, 0], 1, {"direction": [0, 0]}], "throws": "TypeError"}
+    ],
+    "demo": {"file": "demo/scene.mjs", "export": "demo", "addons": []},
+    "tests": ["test_foliage_wind_material.mjs"]
+  },
+  "limits": "Stylized, not a physical simulation: no blade collision, no recovery dynamics, and the bend is a shear of each vertex, not a rotation, so strong wind stretches blades slightly (the drop keeps the length only to first order). Shading is a simple two-sided term with one light direction; three.js lights, shadows and fog are ignored. Geometry must stand on y = 0 with its tip at y = height in object space; instance scale stretches the blade but the wind offset is in world units. Normals are not bent with the blade. Only three.js 0.186.1 was run, in headless Chrome on SwiftShader WebGL 2.",
+  "related": ["terrain_splat_material", "heightfield_terrain_geometry", "poisson_disk_scatter", "mesh_surface_scatter"],
+  "technique_references": ["Height-weighted vertex displacement for vegetation", "Travelling layered sine waves along the wind direction", "1D value noise on PCG-style integer hashes for gusts", "Second-order length-preserving drop of a sheared tip"],
+  "native_checks": ["module_contract_static", "node_tests_pass", "node_tests_catch_mutants", "three_runtime_pinned", "browser_page_clean", "three_shaders_compiled", "demo_checks_passed", "render_not_uniform", "render_differs_from_baseline"]
+}

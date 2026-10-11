@@ -499,6 +499,24 @@
    "republication": "live_lookup_only",
    "excluded_upstreams": [],
    "excluded_publishers": []
+  },
+  {
+   "record_type": "knowledge_radar_source_contract/v1",
+   "engine_id": "huggingface_benchmark_leaderboard",
+   "parser_version": "1.0.0",
+   "access_method": "https_get",
+   "hosts": ["huggingface.co"],
+   "permitted_uses": "Bounded public benchmark leaderboard lookup: model and dataset identities, reported score and rank, source verification flag and evaluation file references. Source reports remain distinct from local measurements.",
+   "never_used": "Model or dataset bodies, model card prose, freeform notes, author profiles, credential values, unreported metric directions or dates. No benchmark/result redistribution before its rights are separately qualified.",
+   "attribution": "Hugging Face public benchmark leaderboard API; retain the exact benchmark dataset and source address.",
+   "terms_address": "https://huggingface.co/terms-of-service",
+   "minimum_seconds_between_requests": 1.0,
+   "maximum_requests_per_run": 10,
+   "maximum_response_bytes": 1048576,
+   "failure_policy": "A refused, failed, malformed or incomplete lookup does not renew earlier evidence. No pagination, retry or alternate provider is dispatched automatically.",
+   "republication": "live_lookup_only",
+   "excluded_upstreams": [],
+   "excluded_publishers": []
   }
  ]
 }

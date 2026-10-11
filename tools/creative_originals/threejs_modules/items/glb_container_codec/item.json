@@ -1,0 +1,376 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "glb_container_codec",
+  "title": "Strict GLB container reader and writer",
+  "purpose": "Read and write the binary glTF 2.0 container (header, JSON chunk, optional BIN chunk) with strict checks that name the reason for every refusal, on ArrayBuffers and typed arrays with no three.js. Use it to inspect, repack or validate .glb files in pipelines, workers and loaders.",
+  "form": "library_module",
+  "asset_role": null,
+  "dimension": "3d",
+  "engine": {
+    "name": "node",
+    "minimum_version": "18",
+    "notes": "Pure JavaScript with TextEncoder and TextDecoder; also runs in browsers and workers. The demo loads its output with three.js 0.186.1 GLTFLoader."
+  },
+  "tags": [
+    "three.js",
+    "gltf",
+    "glb",
+    "binary",
+    "container",
+    "parser",
+    "writer",
+    "validation",
+    "pipeline"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "role": "other"
+    },
+    {
+      "path": "glb_container_codec.mjs",
+      "role": "skill_asset"
+    },
+    {
+      "path": "test_glb_container_codec.mjs",
+      "role": "executable_tool"
+    },
+    {
+      "path": "demo/scene.mjs",
+      "role": "skill_asset"
+    }
+  ],
+  "contract": {
+    "module": "glb_container_codec.mjs",
+    "category": "gltf_tool",
+    "language": "ECMAScript 2020 module",
+    "three": {
+      "injected": false,
+      "tested_version": "0.186.1",
+      "needed_by": []
+    },
+    "exports": [
+      {
+        "name": "parseGlb",
+        "kind": "function",
+        "signature": "parseGlb(data) -> {json, binary, version, byteLength, chunks}",
+        "summary": "Read a GLB from an ArrayBuffer or typed array; binary is a Uint8Array view of the BIN chunk or null; throws GlbError with a reason code."
+      },
+      {
+        "name": "encodeGlb",
+        "kind": "function",
+        "signature": "encodeGlb(json, binary = null) -> Uint8Array",
+        "summary": "Write a GLB: JSON padded with spaces, BIN padded with zeros; buffers[0] must match the binary."
+      },
+      {
+        "name": "isGlb",
+        "kind": "function",
+        "signature": "isGlb(data) -> boolean",
+        "summary": "True when the data starts with a glTF 2.0 binary header; never throws."
+      },
+      {
+        "name": "GlbError",
+        "kind": "class",
+        "signature": "new GlbError(code, message)",
+        "summary": "The refusal error; code is a stable reason such as magic, version, length_mismatch or chunk_truncated."
+      },
+      {
+        "name": "GLB_FORMAT",
+        "kind": "constant",
+        "summary": "Frozen container constants: magic, version, chunk types, header sizes and alignment."
+      }
+    ],
+    "refusal_codes": [
+      "too_short",
+      "magic",
+      "version",
+      "length_mismatch",
+      "length_unaligned",
+      "chunk_truncated",
+      "chunk_unaligned",
+      "first_chunk_not_json",
+      "json_not_utf8",
+      "json_bom",
+      "json_invalid",
+      "json_not_object",
+      "second_json_chunk",
+      "bin_chunk_not_second",
+      "bin_without_buffer",
+      "bin_length_mismatch",
+      "buffer_without_bin",
+      "buffer_binding"
+    ],
+    "examples": [
+      {
+        "call": "isGlb",
+        "args": [
+          {
+            "$typed": "Uint8Array",
+            "values": [
+              103,
+              108,
+              84,
+              70,
+              2,
+              0,
+              0,
+              0,
+              48,
+              0,
+              0,
+              0,
+              28,
+              0,
+              0,
+              0,
+              74,
+              83,
+              79,
+              78,
+              123,
+              34,
+              97,
+              115,
+              115,
+              101,
+              116,
+              34,
+              58,
+              123,
+              34,
+              118,
+              101,
+              114,
+              115,
+              105,
+              111,
+              110,
+              34,
+              58,
+              34,
+              50,
+              46,
+              48,
+              34,
+              125,
+              125,
+              32
+            ]
+          }
+        ],
+        "expect": true
+      },
+      {
+        "call": "parseGlb",
+        "args": [
+          {
+            "$typed": "Uint8Array",
+            "values": [
+              103,
+              108,
+              84,
+              70,
+              2,
+              0,
+              0,
+              0,
+              48,
+              0,
+              0,
+              0,
+              28,
+              0,
+              0,
+              0,
+              74,
+              83,
+              79,
+              78,
+              123,
+              34,
+              97,
+              115,
+              115,
+              101,
+              116,
+              34,
+              58,
+              123,
+              34,
+              118,
+              101,
+              114,
+              115,
+              105,
+              111,
+              110,
+              34,
+              58,
+              34,
+              50,
+              46,
+              48,
+              34,
+              125,
+              125,
+              32
+            ]
+          }
+        ],
+        "select": "json.asset.version",
+        "expect": "2.0"
+      },
+      {
+        "call": "parseGlb",
+        "args": [
+          {
+            "$typed": "Uint8Array",
+            "values": [
+              103,
+              108,
+              84,
+              70,
+              2,
+              0,
+              0,
+              0,
+              48,
+              0,
+              0,
+              0,
+              28,
+              0,
+              0,
+              0,
+              74,
+              83,
+              79,
+              78,
+              123,
+              34,
+              97,
+              115,
+              115,
+              101,
+              116,
+              34,
+              58,
+              123,
+              34,
+              118,
+              101,
+              114,
+              115,
+              105,
+              111,
+              110,
+              34,
+              58,
+              34,
+              50,
+              46,
+              48,
+              34,
+              125,
+              125,
+              32
+            ]
+          }
+        ],
+        "select": "byteLength",
+        "expect": 48
+      },
+      {
+        "call": "encodeGlb",
+        "args": [
+          {
+            "asset": {
+              "version": "2.0"
+            }
+          }
+        ],
+        "select": "length",
+        "expect": 48
+      },
+      {
+        "call": "parseGlb",
+        "args": [
+          {
+            "$typed": "Uint8Array",
+            "values": [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ]
+          }
+        ],
+        "throws": "GlbError"
+      },
+      {
+        "call": "encodeGlb",
+        "args": [
+          {
+            "asset": {
+              "version": "2.0"
+            },
+            "buffers": [
+              {
+                "byteLength": 4
+              }
+            ]
+          }
+        ],
+        "throws": "GlbError"
+      }
+    ],
+    "demo": {
+      "file": "demo/scene.mjs",
+      "export": "demo",
+      "addons": [
+        "GLTFExporter",
+        "GLTFLoader"
+      ]
+    },
+    "tests": [
+      "test_glb_container_codec.mjs"
+    ]
+  },
+  "limits": "A container codec only: it checks the header, the chunk layout and the binding of buffers[0] to the BIN chunk, not the glTF document inside (accessors, meshes and references are left to a document validator). The returned binary is a view into the input, so changing the input changes it. Chunks of unknown types after the first two are listed and skipped, as the specification asks; their contents are not read. Writing keeps the JSON as JSON.stringify gives it. Only the Node 22 tests and three.js 0.186.1 GLTFExporter and GLTFLoader in headless Chrome were run.",
+  "related": [
+    "gltf_document_validator",
+    "gltf_mesh_writer",
+    "gltf_scene_budget_report"
+  ],
+  "technique_references": [
+    "glTF 2.0 binary container: 12-byte header, 8-byte chunk headers, 4-byte alignment",
+    "UTF-8 JSON chunk padded with spaces, BIN chunk padded with zeros"
+  ],
+  "native_checks": [
+    "module_contract_static",
+    "node_tests_pass",
+    "node_tests_catch_mutants",
+    "three_runtime_pinned",
+    "browser_page_clean",
+    "three_shaders_compiled",
+    "demo_checks_passed",
+    "render_not_uniform",
+    "render_differs_from_baseline"
+  ]
+}

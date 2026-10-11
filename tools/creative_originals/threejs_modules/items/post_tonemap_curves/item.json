@@ -1,0 +1,61 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "post_tonemap_curves",
+  "title": "Tone mapping curves pass: clamp, Reinhard, ACES fit and Hable",
+  "purpose": "Bring a three.js HDR frame into [0, 1] with exposure and a curve chosen at run time (clamp, extended Reinhard with a white point, the Narkowicz ACES fit or the Hable filmic curve), as a ShaderPass definition or full-screen ShaderMaterial with an exact CPU mirror of every curve.",
+  "form": "library_module",
+  "asset_role": null,
+  "dimension": "2d",
+  "engine": {"name": "webgl2_browser", "minimum_version": "2.0", "notes": "three.js r155 or later passed in as THREE (the shader includes the colorspace_fragment chunk and an int uniform); only 0.186.1 was run."},
+  "tags": ["three.js", "post-processing", "tone mapping", "hdr", "aces", "reinhard", "filmic", "shaderpass"],
+  "files": [
+    {"path": "README.md", "role": "other"},
+    {"path": "post_tonemap_curves.mjs", "role": "skill_asset"},
+    {"path": "test_post_tonemap_curves.mjs", "role": "executable_tool"},
+    {"path": "demo/scene.mjs", "role": "skill_asset"}
+  ],
+  "contract": {
+    "module": "post_tonemap_curves.mjs",
+    "category": "post_process_pass",
+    "language": "ECMAScript 2020 module; GLSL ES 3.00 through three.js ShaderMaterial",
+    "three": {"injected": true, "argument": "THREE", "tested_version": "0.186.1", "needed_by": ["createTonemapMaterial"]},
+    "input_texture_uniform": "tDiffuse",
+    "renderer_setting": "renderer.toneMapping = THREE.NoToneMapping, so the curve is applied once",
+    "exports": [
+      {"name": "createTonemapShader", "kind": "function", "signature": "createTonemapShader(options = {}) -> {name, uniforms, vertexShader, fragmentShader}", "summary": "A fresh shader definition for three.js ShaderPass or ShaderMaterial."},
+      {"name": "createTonemapMaterial", "kind": "function", "signature": "createTonemapMaterial(THREE, options = {}) -> THREE.ShaderMaterial", "summary": "The definition as a full-screen ShaderMaterial without depth test, depth write or three.js tone mapping."},
+      {"name": "tonemapValue", "kind": "function", "signature": "tonemapValue(value, options = {}) -> number", "summary": "CPU mirror for one channel: exposure, curve, clamp to [0, 1]."},
+      {"name": "tonemapColor", "kind": "function", "signature": "tonemapColor(rgb, options = {}) -> [r, g, b]", "summary": "CPU mirror for a colour."},
+      {"name": "hableCurve", "kind": "function", "signature": "hableCurve(x) -> number", "summary": "Hable's filmic curve before normalization by its white point."},
+      {"name": "TONEMAP_OPERATORS", "kind": "constant", "summary": "Frozen curve table: clamp 0, reinhard 1, aces 2, hable 3."},
+      {"name": "TONEMAP_DEFAULTS", "kind": "constant", "summary": "Frozen default options."},
+      {"name": "TONEMAP_VERTEX", "kind": "constant", "glsl": "vertex", "summary": "Full-screen vertex stage passing vUv."},
+      {"name": "TONEMAP_FRAGMENT", "kind": "constant", "glsl": "fragment", "summary": "Fragment stage: exposure, curve, clamp, output colour space."}
+    ],
+    "options": [
+      {"name": "operator", "type": "string", "default": "aces", "values": ["clamp", "reinhard", "aces", "hable"], "meaning": "The curve."},
+      {"name": "exposure", "type": "number", "default": 1, "range": "(0, 64]", "meaning": "Linear multiplier applied before the curve."},
+      {"name": "whitePoint", "type": "number", "default": 4, "range": [1, 64], "meaning": "Extended Reinhard: the exposed value that maps to 1."}
+    ],
+    "uniforms": [
+      {"name": "tDiffuse", "type": "sampler2D", "option": null},
+      {"name": "uExposure", "type": "float", "option": "exposure"},
+      {"name": "uOperator", "type": "int", "option": "operator"},
+      {"name": "uWhitePoint", "type": "float", "option": "whitePoint"}
+    ],
+    "examples": [
+      {"call": "tonemapValue", "args": [1, {"operator": "reinhard"}], "expect": 0.53125, "tolerance": 1e-12},
+      {"call": "tonemapValue", "args": [1, {"operator": "aces"}], "expect": 0.8037974683544302, "tolerance": 1e-12},
+      {"call": "tonemapValue", "args": [2, {"operator": "hable"}], "expect": 0.49291854599116447, "tolerance": 1e-12},
+      {"call": "tonemapColor", "args": [[0.5, 1, 4], {"operator": "reinhard"}], "expect": [0.34375, 0.53125, 1], "tolerance": 1e-12},
+      {"call": "hableCurve", "args": [1], "expect": 0.22065727699530524, "tolerance": 1e-12},
+      {"call": "tonemapValue", "args": [1, {"operator": "agx"}], "throws": "TypeError"}
+    ],
+    "demo": {"file": "demo/scene.mjs", "export": "demo", "addons": []},
+    "tests": ["test_post_tonemap_curves.mjs"]
+  },
+  "limits": "Each curve acts on every channel separately, so saturated highlights shift hue toward the primaries; there is no luminance-only mode, gamut mapping or AgX. The ACES curve is Narkowicz's single rational fit, not the full ACES reference rendering transform, and no 0.6 input scale is applied (use exposure). The Hable parameters are fixed at the published values. The input must keep values above 1 (a HalfFloat or Float target) and three.js's own tone mapping must be off, or the curve applies twice. Output goes through three.js's output colour space conversion. Only three.js 0.186.1 was run, in headless Chrome on SwiftShader WebGL 2.",
+  "related": ["post_color_lut_strip", "post_film_grain", "post_vignette"],
+  "technique_references": ["Extended Reinhard operator with a white point", "Narkowicz 2015 rational fit of the ACES filmic curve", "Hable filmic curve (shoulder, linear section, toe) normalized by its white point"],
+  "native_checks": ["module_contract_static", "node_tests_pass", "node_tests_catch_mutants", "three_runtime_pinned", "browser_page_clean", "three_shaders_compiled", "demo_checks_passed", "render_not_uniform", "render_differs_from_baseline"]
+}

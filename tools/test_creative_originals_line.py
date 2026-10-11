@@ -80,6 +80,25 @@ class CreativeOriginalsLineTests(unittest.TestCase):
         media = {row["path"]: row["media_type"] for row in payload["files"]}
         self.assertEqual(media["preview.png"], "image/png")
 
+    def test_node_tests_are_declared_beside_the_python_tests(self):
+        payload, _bodies = self.generate()[0][0]
+        self.assertNotIn("node_files", payload["tests"], "a package without node tests declares none")
+        item = self.family / "items" / "square_item"
+        (item / "double.mjs").write_text("export function double(value) { return 2 * value; }\n")
+        (item / "test_double.mjs").write_text("import test from 'node:test';\nimport assert from 'node:assert/strict';\n"
+                                              "import {double} from './double.mjs';\n"
+                                              "test('doubles', () => { assert.equal(double(2), 4); });\n")
+        value = json.loads((item / "item.json").read_text())
+        value["files"] += [{"path": "double.mjs", "role": "skill_asset"},
+                           {"path": "test_double.mjs", "role": "executable_tool"}]
+        (item / "item.json").write_text(json.dumps(value))
+        with redirect_stdout(io.StringIO()):
+            verify.main(["--family", "demo_family", "--root", str(self.families), "--output", str(self.evidence)])
+        payload, _bodies = self.generate()[0][0]
+        self.assertEqual(payload["tests"]["node_files"], ["test_double.mjs"])
+        self.assertEqual(payload["tests"]["node_command"], f"{line.NODE_TEST_COMMAND} test_double.mjs")
+        self.assertEqual(payload["tests"]["files"], ["test_package.py"])
+
     def test_every_static_check_passes_on_the_stored_bytes(self):
         built, _refused, _facts, _summary = self.generate()
         component = self.component(built[0])

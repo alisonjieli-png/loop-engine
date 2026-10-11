@@ -1,0 +1,56 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "mesh_surface_scatter",
+  "title": "Area-weighted mesh surface scatter",
+  "purpose": "Scatter points uniformly over any triangle mesh or BufferGeometry: triangles picked by area with a Vose alias table, uniform barycentric placement, optional per-vertex density, interpolated normals and matrices that stand models on the surface. Use it for grass, spikes, moss and debris on meshes.",
+  "form": "library_module",
+  "asset_role": null,
+  "dimension": "3d",
+  "engine": {"name": "node", "minimum_version": "18", "notes": "No three.js needed: it reads typed arrays or a BufferGeometry's attribute arrays and returns typed arrays. The demo was rendered with three.js 0.186.1 in headless Chrome."},
+  "tags": ["three.js", "scatter", "surface sampling", "alias method", "barycentric", "instancing", "procedural", "buffergeometry"],
+  "files": [
+    {"path": "README.md", "role": "other"},
+    {"path": "mesh_surface_scatter.mjs", "role": "skill_asset"},
+    {"path": "test_mesh_surface_scatter.mjs", "role": "executable_tool"},
+    {"path": "demo/scene.mjs", "role": "skill_asset"}
+  ],
+  "contract": {
+    "module": "mesh_surface_scatter.mjs",
+    "category": "instancing_scatter",
+    "language": "ECMAScript 2020 module",
+    "three": {"injected": false, "tested_version": "0.186.1", "needed_by": []},
+    "exports": [
+      {"name": "scatterOnSurface", "kind": "function", "signature": "scatterOnSurface(positions, indices = null, options = {}) -> {positions, normals, triangles, barycentrics}", "summary": "count points uniform by area or by interpolated per-vertex weight, with unit normals, triangle ids and barycentrics."},
+      {"name": "scatterOnGeometry", "kind": "function", "signature": "scatterOnGeometry(geometry, options = {}) -> samples", "summary": "The same on a BufferGeometry's position, index and normal attributes."},
+      {"name": "surfaceMatrices", "kind": "function", "signature": "surfaceMatrices(samples, options = {}) -> Float32Array (16 per sample)", "summary": "Matrices with model +Y along each normal, seeded spin and scale, lifted by an offset."},
+      {"name": "triangleAreas", "kind": "function", "signature": "triangleAreas(positions, indices = null) -> Float64Array", "summary": "The area of every triangle."},
+      {"name": "buildAliasTable", "kind": "function", "signature": "buildAliasTable(weights) -> {probability, alias}", "summary": "Vose's alias table for constant-time weighted sampling."},
+      {"name": "sampleAlias", "kind": "function", "signature": "sampleAlias(table, first, second) -> index", "summary": "One draw from an alias table with two uniform numbers in [0, 1)."},
+      {"name": "SURFACE_SCATTER_DEFAULTS", "kind": "constant", "summary": "Frozen default options of scatterOnSurface."},
+      {"name": "SURFACE_MATRIX_DEFAULTS", "kind": "constant", "summary": "Frozen default options of surfaceMatrices."}
+    ],
+    "options": [
+      {"name": "count", "type": "integer", "default": 1000, "meaning": "Number of samples."},
+      {"name": "seed", "type": "integer", "default": 1, "meaning": "Seed of the sample sequence."},
+      {"name": "weights", "type": "per-vertex array or null", "default": null, "meaning": "Relative density at each vertex, interpolated across triangles by rejection."},
+      {"name": "normals", "type": "per-vertex array or null", "default": null, "meaning": "Normals to interpolate; null uses face normals (scatterOnGeometry reads the normal attribute)."},
+      {"name": "scale", "type": "number", "default": 1, "meaning": "surfaceMatrices: base uniform scale."},
+      {"name": "scaleJitter", "type": "number", "default": 0, "range": [0, 1], "meaning": "surfaceMatrices: scale varies by up to this fraction either way."},
+      {"name": "spin", "type": "boolean", "default": true, "meaning": "surfaceMatrices: seeded spin about the normal."},
+      {"name": "offset", "type": "number", "default": 0, "meaning": "surfaceMatrices: lift along the normal."}
+    ],
+    "examples": [
+      {"call": "triangleAreas", "args": [{"$typed": "Float32Array", "values": [0, 0, 0, 1, 0, 0, 0, 1, 0, 2, 0, 0, 5, 0, 0, 2, 1, 0]}], "expect": [0.5, 1.5], "tolerance": 1e-12},
+      {"call": "buildAliasTable", "args": [[1, 1, 1, 1]], "select": "probability", "expect": [1, 1, 1, 1]},
+      {"call": "sampleAlias", "args": [{"probability": [1, 0], "alias": [0, 0]}, 0.75, 0.5], "expect": 0},
+      {"call": "scatterOnSurface", "args": [{"$typed": "Float32Array", "values": [0, 0, 0, 1, 0, 0, 0, 1, 0]}, null, {"count": 3, "seed": 1}], "select": "normals", "expect": [0, 0, 1, 0, 0, 1, 0, 0, 1]},
+      {"call": "buildAliasTable", "args": [[0, 0]], "throws": "RangeError"}
+    ],
+    "demo": {"file": "demo/scene.mjs", "export": "demo", "addons": []},
+    "tests": ["test_mesh_surface_scatter.mjs"]
+  },
+  "limits": "Samples are independent: points can land very close together (no minimum spacing; use Poisson disk scatter for that on flat ground). Per-vertex weights are interpolated linearly across each triangle, so density follows the mesh resolution. Skinned or morph-animated meshes are sampled in their rest pose. Interleaved attributes are copied out first. Matrices stand models along the normal with uniform scale; no tangent alignment. Only three.js 0.186.1 was run for the demo, in headless Chrome on SwiftShader WebGL 2.",
+  "related": ["poisson_disk_scatter", "frustum_instance_culling", "triangle_bvh_raycast"],
+  "technique_references": ["Vose's alias method", "Uniform barycentric sampling with the square-root of a uniform number", "Rejection sampling against a per-triangle envelope for per-vertex density", "Shortest-arc quaternion from +Y to a normal"],
+  "native_checks": ["module_contract_static", "node_tests_pass", "node_tests_catch_mutants", "three_runtime_pinned", "browser_page_clean", "three_shaders_compiled", "demo_checks_passed", "render_not_uniform", "render_differs_from_baseline"]
+}

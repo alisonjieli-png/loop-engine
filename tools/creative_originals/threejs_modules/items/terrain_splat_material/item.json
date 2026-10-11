@@ -1,0 +1,79 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "terrain_splat_material",
+  "title": "Height and slope terrain splat material",
+  "purpose": "Paint a three.js terrain mesh with sand, grass, rock and snow chosen per pixel from world height and slope, with smooth bands, noise-jittered boundaries and procedural colours, and an exact CPU mirror of the four weights. Use it for islands, mountains and procedural landscapes without splat maps.",
+  "form": "library_module",
+  "asset_role": null,
+  "dimension": "3d",
+  "engine": {"name": "webgl2_browser", "minimum_version": "2.0", "notes": "three.js r155 or later passed in as THREE under WebGL 2 (unsigned integer GLSL and the colorspace_fragment chunk); only 0.186.1 was run."},
+  "tags": ["three.js", "shader", "terrain", "splat", "procedural", "landscape", "value noise", "glsl"],
+  "files": [
+    {"path": "README.md", "role": "other"},
+    {"path": "terrain_splat_material.mjs", "role": "skill_asset"},
+    {"path": "test_terrain_splat_material.mjs", "role": "executable_tool"},
+    {"path": "demo/scene.mjs", "role": "skill_asset"}
+  ],
+  "contract": {
+    "module": "terrain_splat_material.mjs",
+    "category": "shader_material",
+    "language": "ECMAScript 2020 module; GLSL ES 3.00 through three.js ShaderMaterial",
+    "three": {"injected": true, "argument": "THREE", "tested_version": "0.186.1", "needed_by": ["createTerrainSplatMaterial"]},
+    "exports": [
+      {"name": "createTerrainSplatMaterial", "kind": "function", "signature": "createTerrainSplatMaterial(THREE, options = {}) -> THREE.ShaderMaterial", "summary": "The terrain material; heights are world y; an unknown option throws TypeError."},
+      {"name": "splatWeights", "kind": "function", "signature": "splatWeights(height, slope, settings = {}, noiseValue = 0.5) -> [sand, grass, rock, snow]", "summary": "CPU mirror of the layer weights, which sum to 1; slope is 1 - normal.y."},
+      {"name": "valueNoise2", "kind": "function", "signature": "valueNoise2(x, z, seed = 0) -> number", "summary": "CPU mirror of the GLSL 2D value noise in [0, 1)."},
+      {"name": "TERRAIN_SPLAT_DEFAULTS", "kind": "constant", "summary": "Frozen default options."},
+      {"name": "TERRAIN_SPLAT_GLSL", "kind": "constant", "glsl": "chunk", "summary": "GLSL integer hash, valueNoise2 and splatWeights."},
+      {"name": "TERRAIN_SPLAT_VERTEX", "kind": "constant", "glsl": "vertex", "summary": "Vertex stage: world position and normal, InstancedMesh aware."},
+      {"name": "TERRAIN_SPLAT_FRAGMENT", "kind": "constant", "glsl": "fragment", "summary": "Fragment stage: weights, procedural layer colours and Lambert light."}
+    ],
+    "options": [
+      {"name": "sandLevel", "type": "number", "default": 0.15, "unit": "world height", "meaning": "Height where sand gives way to grass; below snowLevel."},
+      {"name": "snowLevel", "type": "number", "default": 1.6, "unit": "world height", "meaning": "Height where snow takes over."},
+      {"name": "band", "type": "number", "default": 0.12, "unit": "world height", "meaning": "Half width of each height transition."},
+      {"name": "rockSlope", "type": "number", "default": 0.45, "range": [0, 1], "meaning": "Slope (1 - normal.y) where rock takes over."},
+      {"name": "slopeBand", "type": "number", "default": 0.08, "range": [0, 1], "meaning": "Half width of the rock transition."},
+      {"name": "jitter", "type": "number", "default": 0.25, "unit": "world height", "meaning": "How far noise moves the height boundaries."},
+      {"name": "noiseScale", "type": "number", "default": 1.5, "range": [0.0001, 10000], "meaning": "Noise frequency per world unit."},
+      {"name": "seed", "type": "integer", "default": 11, "range": [0, 16777215], "meaning": "Selects a different noise field."},
+      {"name": "sandColor", "type": "colour", "default": [0.76, 0.66, 0.46], "meaning": "Sand colour."},
+      {"name": "grassColor", "type": "colour", "default": [0.22, 0.42, 0.15], "meaning": "Grass colour."},
+      {"name": "rockColor", "type": "colour", "default": [0.38, 0.35, 0.33], "meaning": "Rock colour."},
+      {"name": "snowColor", "type": "colour", "default": [0.93, 0.95, 0.98], "meaning": "Snow colour."},
+      {"name": "detail", "type": "number", "default": 0.18, "range": [0, 1], "meaning": "Brightness variation of each layer from finer noise."},
+      {"name": "lightDirection", "type": "vector3", "default": [0.5, 0.8, 0.3], "meaning": "Direction toward the light; normalized."},
+      {"name": "ambient", "type": "number", "default": 0.35, "range": [0, 1], "meaning": "Share of the colour lit without the light."}
+    ],
+    "uniforms": [
+      {"name": "uSandLevel", "type": "float", "option": "sandLevel"},
+      {"name": "uSnowLevel", "type": "float", "option": "snowLevel"},
+      {"name": "uBand", "type": "float", "option": "band"},
+      {"name": "uRockSlope", "type": "float", "option": "rockSlope"},
+      {"name": "uSlopeBand", "type": "float", "option": "slopeBand"},
+      {"name": "uJitter", "type": "float", "option": "jitter"},
+      {"name": "uNoiseScale", "type": "float", "option": "noiseScale"},
+      {"name": "uSeed", "type": "float", "option": "seed"},
+      {"name": "uSandColor", "type": "vec3", "option": "sandColor"},
+      {"name": "uGrassColor", "type": "vec3", "option": "grassColor"},
+      {"name": "uRockColor", "type": "vec3", "option": "rockColor"},
+      {"name": "uSnowColor", "type": "vec3", "option": "snowColor"},
+      {"name": "uDetail", "type": "float", "option": "detail"},
+      {"name": "uLightDirection", "type": "vec3", "option": "lightDirection"},
+      {"name": "uAmbient", "type": "float", "option": "ambient"}
+    ],
+    "examples": [
+      {"call": "splatWeights", "args": [0, 0], "expect": [1, 0, 0, 0], "tolerance": 1e-12},
+      {"call": "splatWeights", "args": [0.8, 0.45], "expect": [0, 0.5, 0.5, 0], "tolerance": 1e-12},
+      {"call": "splatWeights", "args": [1.6, 0.2, {}, 0.9], "expect": [0, 0.01967592592592593, 0, 0.9803240740740741], "tolerance": 1e-12},
+      {"call": "valueNoise2", "args": [-2.5, 3.25, 11], "expect": 0.4779092353419401, "tolerance": 1e-12},
+      {"call": "splatWeights", "args": [0, 0, {"treeLine": 1}], "throws": "TypeError"}
+    ],
+    "demo": {"file": "demo/scene.mjs", "export": "demo", "addons": []},
+    "tests": ["test_terrain_splat_material.mjs"]
+  },
+  "limits": "Procedural colours, not textured layers: there are no albedo, normal or roughness maps per layer, so close-ups look flat. Weights depend only on height, slope and noise, not on curvature, moisture, flow or painted masks. Heights are world y, so moving the mesh up or down moves the bands. The slope comes from vertex normals, so faceted or unsmoothed meshes paint in facets. Lit by one direction uniform; scene lights, shadows and fog are ignored. Requires WebGL 2 for unsigned integers in GLSL. Written for three.js r155 or later; only 0.186.1 was run, in headless Chrome on SwiftShader WebGL 2.",
+  "related": ["triplanar_mapping_material", "gerstner_wave_water_material", "gradient_sky_dome_material"],
+  "technique_references": ["Height and slope layer weights with smoothstep bands", "Value noise boundary jitter on a 32-bit integer hash", "Renormalized four-layer splat (sand, grass, rock, snow)"],
+  "native_checks": ["module_contract_static", "node_tests_pass", "node_tests_catch_mutants", "three_runtime_pinned", "browser_page_clean", "three_shaders_compiled", "demo_checks_passed", "render_not_uniform", "render_differs_from_baseline"]
+}

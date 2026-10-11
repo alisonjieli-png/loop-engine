@@ -1,0 +1,257 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "gltf_mesh_writer",
+  "title": "glTF 2.0 writer for typed-array meshes",
+  "purpose": "Write typed-array meshes (positions, normals, uvs, vertex colours, indices) and a node hierarchy as a glTF 2.0 document with one embedded base64 buffer or as a GLB, with aligned buffer views, POSITION bounds and a metallic-roughness material per mesh. Use it to export procedural geometry without GLTFExporter.",
+  "form": "library_module",
+  "asset_role": null,
+  "dimension": "3d",
+  "engine": {
+    "name": "node",
+    "minimum_version": "18",
+    "notes": "Pure JavaScript; also runs in browsers and workers. Output checked by loading it with three.js 0.186.1 GLTFLoader in headless Chrome."
+  },
+  "tags": [
+    "three.js",
+    "gltf",
+    "glb",
+    "exporter",
+    "writer",
+    "typed arrays",
+    "procedural geometry",
+    "base64"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "role": "other"
+    },
+    {
+      "path": "gltf_mesh_writer.mjs",
+      "role": "skill_asset"
+    },
+    {
+      "path": "test_gltf_mesh_writer.mjs",
+      "role": "executable_tool"
+    },
+    {
+      "path": "demo/scene.mjs",
+      "role": "skill_asset"
+    }
+  ],
+  "contract": {
+    "module": "gltf_mesh_writer.mjs",
+    "category": "gltf_tool",
+    "language": "ECMAScript 2020 module",
+    "three": {
+      "injected": false,
+      "tested_version": "0.186.1",
+      "needed_by": []
+    },
+    "exports": [
+      {
+        "name": "writeGltf",
+        "kind": "function",
+        "signature": "writeGltf({meshes, nodes?}, options = {}) -> object",
+        "summary": "A glTF 2.0 document (JSON.stringify it for a .gltf file) with one base64 data URI buffer."
+      },
+      {
+        "name": "writeGlb",
+        "kind": "function",
+        "signature": "writeGlb({meshes, nodes?}, options = {}) -> Uint8Array",
+        "summary": "The same scene as a GLB container."
+      },
+      {
+        "name": "meshFromBufferGeometry",
+        "kind": "function",
+        "signature": "meshFromBufferGeometry(geometry, extra = {}) -> mesh",
+        "summary": "Copy a BufferGeometry's position, normal, uv, color and index into a writer mesh; refuses interleaved or normalized attributes."
+      },
+      {
+        "name": "encodeBase64",
+        "kind": "function",
+        "signature": "encodeBase64(bytes: Uint8Array) -> string",
+        "summary": "RFC 4648 base64 with padding, written by hand."
+      },
+      {
+        "name": "GLTF_WRITER_DEFAULTS",
+        "kind": "constant",
+        "summary": "Frozen default options: generator and sceneName."
+      }
+    ],
+    "inputs": {
+      "mesh": "{positions: Float32Array xyz, normals?: Float32Array xyz, uvs?: Float32Array uv, colors?: Float32Array rgb or rgba, indices?: Uint8Array | Uint16Array | Uint32Array, name?, material?: {color: [r, g, b, a] linear, metallic, roughness, emissive: [r, g, b], doubleSided, name}}",
+      "node": "{mesh?, translation?: [x, y, z], rotation?: unit quaternion [x, y, z, w], scale?: [x, y, z], children?: node indices, name?}"
+    },
+    "options": [
+      {
+        "name": "generator",
+        "type": "string",
+        "default": "Baltor gltf_mesh_writer 1.0",
+        "meaning": "asset.generator of the document."
+      },
+      {
+        "name": "sceneName",
+        "type": "string",
+        "default": "Scene",
+        "meaning": "Name of the single scene."
+      }
+    ],
+    "examples": [
+      {
+        "call": "encodeBase64",
+        "args": [
+          {
+            "$typed": "Uint8Array",
+            "values": [
+              0,
+              1,
+              2,
+              253,
+              254,
+              255
+            ]
+          }
+        ],
+        "expect": "AAEC/f7/"
+      },
+      {
+        "call": "encodeBase64",
+        "args": [
+          {
+            "$typed": "Uint8Array",
+            "values": [
+              65
+            ]
+          }
+        ],
+        "expect": "QQ=="
+      },
+      {
+        "call": "writeGltf",
+        "args": [
+          {
+            "meshes": [
+              {
+                "positions": {
+                  "$typed": "Float32Array",
+                  "values": [
+                    0,
+                    0,
+                    0,
+                    1,
+                    0,
+                    0,
+                    0,
+                    1,
+                    0
+                  ]
+                }
+              }
+            ]
+          }
+        ],
+        "select": "buffers.0.byteLength",
+        "expect": 36
+      },
+      {
+        "call": "writeGltf",
+        "args": [
+          {
+            "meshes": [
+              {
+                "positions": {
+                  "$typed": "Float32Array",
+                  "values": [
+                    0,
+                    0,
+                    0,
+                    1,
+                    0,
+                    0,
+                    0,
+                    1,
+                    0
+                  ]
+                }
+              }
+            ]
+          }
+        ],
+        "select": "accessors.0.max",
+        "expect": [
+          1,
+          1,
+          0
+        ]
+      },
+      {
+        "call": "writeGlb",
+        "args": [
+          {
+            "meshes": [
+              {
+                "positions": {
+                  "$typed": "Float32Array",
+                  "values": [
+                    0,
+                    0,
+                    0,
+                    1,
+                    0,
+                    0,
+                    0,
+                    1,
+                    0
+                  ]
+                },
+                "indices": {
+                  "$typed": "Uint16Array",
+                  "values": [
+                    0,
+                    1,
+                    3
+                  ]
+                }
+              }
+            ]
+          }
+        ],
+        "throws": "RangeError"
+      }
+    ],
+    "demo": {
+      "file": "demo/scene.mjs",
+      "export": "demo",
+      "addons": [
+        "GLTFLoader"
+      ]
+    },
+    "tests": [
+      "test_gltf_mesh_writer.mjs"
+    ]
+  },
+  "limits": "Writes triangle lists only (mode 4), one primitive per mesh, one buffer, FLOAT attributes and unsigned indices: no textures, images, samplers, skins, morph targets, animations, cameras, lights, extensions or sparse or quantized accessors. Materials are plain metallic-roughness factors. Each mesh gets its own material even when two are equal. The data URI form grows the payload by a third over the binary; use writeGlb for large meshes. Only the Node 22 tests and three.js 0.186.1 GLTFLoader in headless Chrome on SwiftShader WebGL 2 were run.",
+  "related": [
+    "glb_container_codec",
+    "gltf_document_validator",
+    "gltf_scene_budget_report",
+    "rounded_box_geometry"
+  ],
+  "technique_references": [
+    "glTF 2.0 accessors, buffer views and buffers with 4-byte alignment",
+    "RFC 4648 base64 data URIs",
+    "GLB container with a JSON and a BIN chunk"
+  ],
+  "native_checks": [
+    "module_contract_static",
+    "node_tests_pass",
+    "node_tests_catch_mutants",
+    "three_runtime_pinned",
+    "browser_page_clean",
+    "three_shaders_compiled",
+    "demo_checks_passed",
+    "render_not_uniform",
+    "render_differs_from_baseline"
+  ]
+}

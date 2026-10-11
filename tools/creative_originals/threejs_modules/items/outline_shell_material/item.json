@@ -1,0 +1,57 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "outline_shell_material",
+  "title": "Inverted-hull outline with constant pixel width",
+  "purpose": "Draw ink outlines around three.js meshes: a shell that shares the mesh's geometry renders only back faces, each vertex pushed along its projected normal by a fixed number of pixels in clip space, so the outline keeps its width at any distance and works on InstancedMesh. Use it for toon, comic and selection looks.",
+  "form": "library_module",
+  "asset_role": null,
+  "dimension": "3d",
+  "engine": {"name": "webgl2_browser", "minimum_version": "2.0", "notes": "three.js r155 or later passed in as THREE (the fragment stage includes the colorspace_fragment chunk); only 0.186.1 was run."},
+  "tags": ["three.js", "shader", "outline", "inverted hull", "toon", "npr", "shadermaterial", "selection"],
+  "files": [
+    {"path": "README.md", "role": "other"},
+    {"path": "outline_shell_material.mjs", "role": "skill_asset"},
+    {"path": "test_outline_shell_material.mjs", "role": "executable_tool"},
+    {"path": "demo/scene.mjs", "role": "skill_asset"}
+  ],
+  "contract": {
+    "module": "outline_shell_material.mjs",
+    "category": "shader_material",
+    "language": "ECMAScript 2020 module; GLSL ES 3.00 through three.js ShaderMaterial",
+    "three": {"injected": true, "argument": "THREE", "tested_version": "0.186.1", "needed_by": ["createOutlineMaterial", "createOutlineShell"]},
+    "exports": [
+      {"name": "createOutlineShell", "kind": "function", "signature": "createOutlineShell(THREE, mesh, options = {}) -> THREE.Mesh | THREE.InstancedMesh", "summary": "A hull that shares the mesh's geometry (and instance matrices), added as a child of the mesh and ignored by raycasting."},
+      {"name": "createOutlineMaterial", "kind": "function", "signature": "createOutlineMaterial(THREE, options = {}) -> THREE.ShaderMaterial", "summary": "The back-face hull material with uColor, uWidth, uOpacity and uResolution."},
+      {"name": "setOutlineResolution", "kind": "function", "signature": "setOutlineResolution(material, width, height) -> material", "summary": "Update the drawing buffer size in pixels, for example on resize."},
+      {"name": "outlineClipOffset", "kind": "function", "signature": "outlineClipOffset(clipPosition, clipNormal, widthPixels, resolution) -> [x, y, z, w]", "summary": "CPU mirror of the GLSL chunk: the clip position pushed widthPixels along the normal's direction in pixels."},
+      {"name": "OUTLINE_SHELL_DEFAULTS", "kind": "constant", "summary": "Frozen default options."},
+      {"name": "OUTLINE_GLSL", "kind": "constant", "glsl": "chunk", "summary": "GLSL function vec4 outlineClipOffset(vec4 clipPosition, vec4 clipNormal, float widthPixels, vec2 resolution)."},
+      {"name": "OUTLINE_VERTEX", "kind": "constant", "glsl": "vertex", "summary": "Hull vertex stage, InstancedMesh aware."},
+      {"name": "OUTLINE_FRAGMENT", "kind": "constant", "glsl": "fragment", "summary": "Flat outline colour in the output colour space."}
+    ],
+    "options": [
+      {"name": "color", "type": "linear RGB triple", "default": [0.02, 0.02, 0.03], "meaning": "Outline colour."},
+      {"name": "width", "type": "number", "default": 3, "range": [0, 256], "unit": "pixels", "meaning": "Outline width in drawing-buffer pixels."},
+      {"name": "opacity", "type": "number", "default": 1, "range": [0, 1], "meaning": "Outline opacity; below 1 the material is transparent."},
+      {"name": "resolution", "type": "[width, height]", "default": [1024, 1024], "unit": "pixels", "meaning": "Drawing buffer size; keep it in step with the renderer."}
+    ],
+    "uniforms": [
+      {"name": "uColor", "type": "vec3", "option": "color"},
+      {"name": "uWidth", "type": "float", "option": "width"},
+      {"name": "uOpacity", "type": "float", "option": "opacity"},
+      {"name": "uResolution", "type": "vec2", "option": "resolution"}
+    ],
+    "examples": [
+      {"call": "outlineClipOffset", "args": [[0, 0, 0, 2], [1, 0, 0, 0], 2, [200, 100]], "expect": [0.04, 0, 0, 2], "tolerance": 1e-15},
+      {"call": "outlineClipOffset", "args": [[0.2, 0.1, 0.5, 1], [0, 0, 1, 0], 3, [100, 100]], "expect": [0.2, 0.1, 0.5, 1], "tolerance": 0},
+      {"call": "outlineClipOffset", "args": [[0, 0, 0.3, 1], [1, 1, 0, 0], 2, [200, 100]], "expect": [0.017888543819998316, 0.017888543819998316, 0.3, 1], "tolerance": 1e-15},
+      {"call": "outlineClipOffset", "args": [[0, 0, 0], [1, 0, 0, 0], 1, [10, 10]], "throws": "TypeError"}
+    ],
+    "demo": {"file": "demo/scene.mjs", "export": "demo", "addons": []},
+    "tests": ["test_outline_shell_material.mjs"]
+  },
+  "limits": "Stylized. The hull follows smooth vertex normals: on hard-edged meshes with split normals the shell tears open at creases, so weld normals first (or use a smoothed normal attribute). Inner creases and intersections get no line; only silhouettes do. Width is in drawing-buffer pixels, so uResolution must follow the renderer on resize and pixel ratio changes. Skinned and morphed meshes are not followed. Each outline is a second draw call. Only three.js 0.186.1 was run, in headless Chrome on SwiftShader WebGL 2.",
+  "related": ["toon_band_material", "post_sobel_edges", "gpu_id_picking"],
+  "technique_references": ["Inverted hull (back-face shell) outlining", "Clip-space vertex offset by a projected normal for a constant screen-space width", "Inverse-transpose normal matrix for non-uniform scale"],
+  "native_checks": ["module_contract_static", "node_tests_pass", "node_tests_catch_mutants", "three_runtime_pinned", "browser_page_clean", "three_shaders_compiled", "demo_checks_passed", "render_not_uniform", "render_differs_from_baseline"]
+}

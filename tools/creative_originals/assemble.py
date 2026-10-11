@@ -18,19 +18,25 @@ from __future__ import annotations
 
 import hashlib
 import json
+import os
+import re
 import shutil
 import subprocess
 from dataclasses import dataclass
 from pathlib import Path, PurePosixPath
 
 from .media import media_type, refuse_unsupported
-from .records import (COMPONENT_NAME, COMPONENT_RECORD, EVIDENCE_PATH, FORM_KINDS, PREVIEW_PATH, CreativeRecordError,
-                      read_evidence, read_family, read_item)
+from .records import (COMPONENT_NAME, COMPONENT_RECORD, EVIDENCE_PATH, FAILED, FORM_KINDS, PASSED, PREVIEW_PATH,
+                      CreativeRecordError, read_evidence, read_family, read_item)
 
 LINE = "creative_originals"
 REPOSITORY = "alisonjieli-png/loop-engine"
 #: The interpreter and flags the qualification sandbox uses (tools/component_qualification/sandbox.py).
 SANDBOX_PYTHON = "/usr/bin/python3"
+#: The JavaScript runtimes the sandbox looks for, in order (sandbox.NODE_CANDIDATES), for root test_*.mjs files.
+SANDBOX_NODE_CANDIDATES = ("/usr/bin/node", "/usr/local/bin/node")
+#: The summary lines node --test prints with the TAP reporter (sandbox.parse_tap reads the same lines).
+TAP_COUNT = re.compile(r"^# (tests|suites|pass|fail|cancelled|skipped|todo) (\d+)\s*$", re.MULTILINE)
 
 
 @dataclass(frozen=True)
@@ -183,24 +189,60 @@ def write_package(directory: Path, entries: list, licence: "bytes | None" = None
     return directory
 
 
+def sandbox_node() -> "str | None":
+    """The first JavaScript runtime the sandbox would use, or None when none is installed."""
+    return next((path for path in SANDBOX_NODE_CANDIDATES if os.path.isfile(path) and os.access(path, os.X_OK)), None)
+
+
+def tap_counts(stdout: str) -> dict:
+    counts = {"tests": 0, "pass": 0, "fail": 0, "cancelled": 0, "skipped": 0, "todo": 0}
+    for name, value in TAP_COUNT.findall(stdout):
+        if name in counts:
+            counts[name] = int(value)
+    return counts
+
+
 def run_package_tests(directory: Path, *, timeout: int = 300, python: str = SANDBOX_PYTHON,
-                      settings: SandboxEnvironment = LOCAL_SANDBOX_ENVIRONMENT) -> dict:
-    """Run the package's root test_*.py modules the way the sandbox does: isolated interpreter, package root as cwd.
+                      settings: SandboxEnvironment = LOCAL_SANDBOX_ENVIRONMENT, node: "str | None" = None) -> dict:
+    """Run the package's root tests the way the sandbox does, with the package root as the working folder: the
+    test_*.py modules with the isolated interpreter, then the test_*.mjs files with ``node --test`` and the TAP
+    reporter. Node tests pass like the sandbox's: exit 0, at least one passing test, none failed or cancelled.
 
     This is not the sandbox (no namespace, network or resource isolation); it shows a family author whether the
     tests the sandbox will run pass on the exact package bytes."""
     directory = Path(directory)
     tests = sorted(path.stem for path in directory.glob("test_*.py"))
-    if not tests:
-        return {"state": "failed", "reason": "no_root_test_modules", "tests": []}
+    node_tests = sorted(path.name for path in directory.glob("test_*.mjs"))
+    if not tests and not node_tests:
+        return {"state": FAILED, "reason": "no_root_test_modules", "tests": []}
     environment = settings.variables(directory)
-    try:
-        completed = subprocess.run([python, "-E", "-s", "-B", "-m", "unittest", "-v", *tests], cwd=directory,
-                                   env=environment, capture_output=True, text=True, timeout=timeout)
-    except subprocess.TimeoutExpired:
-        return {"state": "failed", "reason": "tests_timed_out", "tests": tests}
-    return {"state": "passed" if completed.returncode == 0 else "failed", "returncode": completed.returncode,
-            "tests": tests, "output_tail": completed.stderr[-4000:]}
+    result, tails = {"state": PASSED, "tests": tests}, []
+    if tests:
+        try:
+            completed = subprocess.run([python, "-E", "-s", "-B", "-m", "unittest", "-v", *tests], cwd=directory,
+                                       env=environment, capture_output=True, text=True, timeout=timeout)
+        except subprocess.TimeoutExpired:
+            return {"state": FAILED, "reason": "tests_timed_out", "tests": tests}
+        result["returncode"] = completed.returncode
+        tails.append(completed.stderr[-4000:])
+        if completed.returncode != 0:
+            result["state"] = FAILED
+    if node_tests:
+        runtime = node or sandbox_node()
+        if runtime is None:
+            return {"state": FAILED, "reason": "node_unavailable", "tests": tests, "node_tests": node_tests}
+        try:
+            completed = subprocess.run([runtime, "--test", "--test-reporter=tap", *node_tests], cwd=directory,
+                                       env=environment, capture_output=True, text=True, timeout=timeout)
+        except subprocess.TimeoutExpired:
+            return {"state": FAILED, "reason": "node_tests_timed_out", "tests": tests, "node_tests": node_tests}
+        counts = tap_counts(completed.stdout)
+        result.update({"node_tests": node_tests, "node_returncode": completed.returncode, "node_counts": counts})
+        if completed.returncode != 0 or counts["fail"] or counts["cancelled"] or counts["pass"] < 1:
+            result["state"] = FAILED
+            tails.append((completed.stdout + completed.stderr)[-4000:])
+    result["output_tail"] = "\n".join(tails)[-4000:]
+    return result
 
 
 def assemble_and_test(family_directory: Path, identity: str, destination: Path, *, evidence: "bytes | None" = None,
@@ -226,5 +268,5 @@ def repository_licence() -> bytes:
 
 
 __all__ = ["Entry", "LINE", "REPOSITORY", "json_bytes", "source_files", "item_digest", "verifier_digest", "component_card",
-           "package_entries", "write_package", "run_package_tests", "assemble_and_test", "repository_root",
-           "repository_licence"]
+           "package_entries", "write_package", "sandbox_node", "tap_counts", "run_package_tests", "assemble_and_test",
+           "repository_root", "repository_licence"]

@@ -1,0 +1,68 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "triplanar_mapping_material",
+  "title": "Triplanar texture mapping material",
+  "purpose": "Texture three.js meshes that have poor or no UVs by projecting one texture, or a built-in checker, along the three axes in world or object space and blending the projections by the normal raised to a sharpness power. Use it for terrain, rocks, cliffs, scaled level blocks and generated geometry.",
+  "form": "library_module",
+  "asset_role": null,
+  "dimension": "3d",
+  "engine": {"name": "webgl2_browser", "minimum_version": "2.0", "notes": "three.js r155 or later passed in as THREE (the shader includes the colorspace_fragment chunk); only 0.186.1 was run."},
+  "tags": ["three.js", "shader", "triplanar", "texture mapping", "shadermaterial", "glsl", "terrain", "level design"],
+  "files": [
+    {"path": "README.md", "role": "other"},
+    {"path": "triplanar_mapping_material.mjs", "role": "skill_asset"},
+    {"path": "test_triplanar_mapping_material.mjs", "role": "executable_tool"},
+    {"path": "demo/scene.mjs", "role": "skill_asset"}
+  ],
+  "contract": {
+    "module": "triplanar_mapping_material.mjs",
+    "category": "shader_material",
+    "language": "ECMAScript 2020 module; GLSL ES 3.00 through three.js ShaderMaterial",
+    "three": {"injected": true, "argument": "THREE", "tested_version": "0.186.1", "needed_by": ["createTriplanarMaterial"]},
+    "exports": [
+      {"name": "createTriplanarMaterial", "kind": "function", "signature": "createTriplanarMaterial(THREE, options = {}) -> THREE.ShaderMaterial", "summary": "The triplanar material; map is a THREE.Texture or null for the built-in checker; an unknown option throws TypeError."},
+      {"name": "triplanarWeights", "kind": "function", "signature": "triplanarWeights(normal, sharpness) -> [x, y, z]", "summary": "CPU mirror of the blend weights: |n|^sharpness normalized to sum to 1."},
+      {"name": "triplanarCoordinates", "kind": "function", "signature": "triplanarCoordinates(position, normal, scale) -> [[u, v], [u, v], [u, v]]", "summary": "CPU mirror of the three planar coordinates seen along X, Y and Z, oriented so no projection is mirrored."},
+      {"name": "triplanarChecker", "kind": "function", "signature": "triplanarChecker(u, v) -> 0 | 1", "summary": "CPU mirror of the built-in checker."},
+      {"name": "TRIPLANAR_DEFAULTS", "kind": "constant", "summary": "Frozen default options."},
+      {"name": "TRIPLANAR_GLSL", "kind": "constant", "glsl": "chunk", "summary": "GLSL triplanarWeights, triplanarCoordinates and triplanarChecker."},
+      {"name": "TRIPLANAR_VERTEX", "kind": "constant", "glsl": "vertex", "summary": "Vertex stage: world and object position and normal, InstancedMesh aware."},
+      {"name": "TRIPLANAR_FRAGMENT", "kind": "constant", "glsl": "fragment", "summary": "Fragment stage: three projections blended by the normal, Lambert light, tone mapping and output colour space."}
+    ],
+    "options": [
+      {"name": "map", "type": "THREE.Texture or null", "default": null, "meaning": "Texture to project; give it RepeatWrapping. null uses the built-in checker."},
+      {"name": "scale", "type": "number", "default": 1, "range": "above 0 to 1000", "meaning": "Texture repeats per scene unit."},
+      {"name": "sharpness", "type": "number", "default": 4, "range": [1, 32], "meaning": "Blend exponent; higher gives narrower blend zones between projections."},
+      {"name": "space", "type": "string", "default": "world", "values": ["world", "object"], "meaning": "world keeps the texture fixed in the scene; object moves and scales it with the mesh."},
+      {"name": "checkerColors", "type": "two colours", "default": [[0.85, 0.82, 0.75], [0.16, 0.2, 0.28]], "meaning": "The two checker colours when map is null."},
+      {"name": "tint", "type": "colour", "default": [1, 1, 1], "meaning": "Multiplies the projected colour."},
+      {"name": "lightDirection", "type": "vector3", "default": [0.45, 0.8, 0.4], "meaning": "Direction toward the light in world space; normalized."},
+      {"name": "ambient", "type": "number", "default": 0.35, "range": [0, 1], "meaning": "Share of the colour lit without the light."}
+    ],
+    "uniforms": [
+      {"name": "uMap", "type": "sampler2D", "option": "map"},
+      {"name": "uHasMap", "type": "float", "option": "map"},
+      {"name": "uScale", "type": "float", "option": "scale"},
+      {"name": "uSharpness", "type": "float", "option": "sharpness"},
+      {"name": "uObjectSpace", "type": "float", "option": "space"},
+      {"name": "uCheckerA", "type": "vec3", "option": "checkerColors"},
+      {"name": "uCheckerB", "type": "vec3", "option": "checkerColors"},
+      {"name": "uTint", "type": "vec3", "option": "tint"},
+      {"name": "uLightDirection", "type": "vec3", "option": "lightDirection"},
+      {"name": "uAmbient", "type": "float", "option": "ambient"}
+    ],
+    "examples": [
+      {"call": "triplanarWeights", "args": [[0.6, 0.8, 0], 1], "expect": [0.4285714285714286, 0.5714285714285715, 0], "tolerance": 1e-12},
+      {"call": "triplanarWeights", "args": [[0, -1, 0], 4], "expect": [0, 1, 0], "tolerance": 1e-12},
+      {"call": "triplanarCoordinates", "args": [[1, 2, 3], [1, 0, 0], 2], "expect": [[-6, 4], [2, -6], [2, 4]], "tolerance": 1e-12},
+      {"call": "triplanarChecker", "args": [-0.5, 0.5], "expect": 1},
+      {"call": "triplanarWeights", "args": [[1, 0, 0], 0.5], "throws": "RangeError"}
+    ],
+    "demo": {"file": "demo/scene.mjs", "export": "demo", "addons": []},
+    "tests": ["test_triplanar_mapping_material.mjs"]
+  },
+  "limits": "Three texture reads per pixel instead of one. Blend zones show a soft mix of two or three projections, which reads as smearing on textures with strong directional features (planks, text). Projections are axis aligned: a surface at 45 degrees gets an even mix, not a texture aligned to the face. There is no normal or tangent mapping. The checker is not filtered, so it shimmers in the distance. In object space the texture follows each instance's local coordinates. Lit by one direction uniform; three.js scene lights, shadows and fog are ignored. Written for three.js r155 or later; only 0.186.1 was run, in headless Chrome on SwiftShader WebGL 2.",
+  "related": ["terrain_splat_material", "noise_dissolve_material", "rounded_box_geometry"],
+  "technique_references": ["Triplanar projection blended by |n|^k weights", "Sign flip per projection to avoid mirrored faces", "Parity checker floor(u) + floor(v) mod 2"],
+  "native_checks": ["module_contract_static", "node_tests_pass", "node_tests_catch_mutants", "three_runtime_pinned", "browser_page_clean", "three_shaders_compiled", "demo_checks_passed", "render_not_uniform", "render_differs_from_baseline"]
+}

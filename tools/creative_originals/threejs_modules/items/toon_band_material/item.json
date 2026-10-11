@@ -1,0 +1,69 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "toon_band_material",
+  "title": "Toon band shading material",
+  "purpose": "Cel-shade three.js meshes with a fixed number of soft-edged light bands, a hard specular spot and a lit-side rim through one ShaderMaterial whose band math has an exact CPU mirror. Use it for stylized characters, props and game scenes.",
+  "form": "library_module",
+  "asset_role": null,
+  "dimension": "3d",
+  "engine": {"name": "webgl2_browser", "minimum_version": "2.0", "notes": "three.js r155 or later passed in as THREE (the shader includes the colorspace_fragment chunk); only 0.186.1 was run."},
+  "tags": ["three.js", "shader", "toon", "cel shading", "stylized", "shadermaterial", "glsl", "npr"],
+  "files": [
+    {"path": "README.md", "role": "other"},
+    {"path": "toon_band_material.mjs", "role": "skill_asset"},
+    {"path": "test_toon_band_material.mjs", "role": "executable_tool"},
+    {"path": "demo/scene.mjs", "role": "skill_asset"}
+  ],
+  "contract": {
+    "module": "toon_band_material.mjs",
+    "category": "shader_material",
+    "language": "ECMAScript 2020 module; GLSL ES 3.00 through three.js ShaderMaterial",
+    "three": {"injected": true, "argument": "THREE", "tested_version": "0.186.1"},
+    "exports": [
+      {"name": "createToonBandMaterial", "kind": "function", "signature": "createToonBandMaterial(THREE, options = {}) -> THREE.ShaderMaterial", "summary": "The toon material; options are the keys of TOON_BAND_DEFAULTS and an unknown key throws TypeError."},
+      {"name": "toonBandLevel", "kind": "function", "signature": "toonBandLevel(nDotL, bands, softness) -> number", "summary": "CPU mirror of the shader band function: the lit level in [0, 1] for a Lambert term in [-1, 1]."},
+      {"name": "toonLightDirection", "kind": "function", "signature": "toonLightDirection(lightPosition, targetPosition = [0, 0, 0]) -> [x, y, z]", "summary": "Unit vector from the target toward the light, for uLightDirection."},
+      {"name": "TOON_BAND_DEFAULTS", "kind": "constant", "summary": "Frozen default options; colours are linear RGB triples."},
+      {"name": "TOON_BAND_GLSL", "kind": "constant", "glsl": "chunk", "summary": "GLSL function float toonBandLevel(float nDotL, float bands, float softness)."},
+      {"name": "TOON_BAND_VERTEX", "kind": "constant", "glsl": "vertex", "summary": "Vertex stage: world normal and position, InstancedMesh aware."},
+      {"name": "TOON_BAND_FRAGMENT", "kind": "constant", "glsl": "fragment", "summary": "Fragment stage: bands, specular spot, rim, tone mapping and output colour space."}
+    ],
+    "options": [
+      {"name": "color", "type": "colour", "default": [0.85, 0.42, 0.26], "meaning": "Lit colour (linear RGB triple, hex number, CSS string or THREE.Color)."},
+      {"name": "shadowColor", "type": "colour", "default": [0.16, 0.11, 0.2], "meaning": "Colour of the unlit band."},
+      {"name": "bands", "type": "integer", "default": 3, "range": [1, 16], "meaning": "Lit bands above the shadow."},
+      {"name": "softness", "type": "number", "default": 0.03, "range": [0, 0.5], "meaning": "Half width of each band edge in Lambert units."},
+      {"name": "lightDirection", "type": "vector3", "default": [0.55, 0.75, 0.35], "meaning": "Direction toward the light in world space; normalized by the builder."},
+      {"name": "specularColor", "type": "colour", "default": [1, 0.97, 0.9], "meaning": "Colour added by the specular spot."},
+      {"name": "specularSize", "type": "number", "default": 0.06, "range": [0, 1], "meaning": "Spot size as 1 - cos of its angular radius; 0 turns it off."},
+      {"name": "rimColor", "type": "colour", "default": [1, 0.88, 0.76], "meaning": "Colour of the rim."},
+      {"name": "rimWidth", "type": "number", "default": 0.22, "range": [0, 1], "meaning": "Rim width in facing-ratio units."},
+      {"name": "rimStrength", "type": "number", "default": 0.55, "range": [0, 4], "meaning": "Rim intensity; 0 turns it off."}
+    ],
+    "uniforms": [
+      {"name": "uColor", "type": "vec3", "option": "color"},
+      {"name": "uShadowColor", "type": "vec3", "option": "shadowColor"},
+      {"name": "uBands", "type": "float", "option": "bands"},
+      {"name": "uSoftness", "type": "float", "option": "softness"},
+      {"name": "uLightDirection", "type": "vec3", "option": "lightDirection"},
+      {"name": "uSpecularColor", "type": "vec3", "option": "specularColor"},
+      {"name": "uSpecularSize", "type": "float", "option": "specularSize"},
+      {"name": "uRimColor", "type": "vec3", "option": "rimColor"},
+      {"name": "uRimWidth", "type": "float", "option": "rimWidth"},
+      {"name": "uRimStrength", "type": "float", "option": "rimStrength"}
+    ],
+    "examples": [
+      {"call": "toonBandLevel", "args": [0.5, 3, 0], "expect": 0.6666666666666666, "tolerance": 1e-12},
+      {"call": "toonBandLevel", "args": [0, 3, 0.1], "expect": 0.16666666666666666, "tolerance": 1e-12},
+      {"call": "toonBandLevel", "args": [-0.4, 4, 0.05], "expect": 0, "tolerance": 0},
+      {"call": "toonLightDirection", "args": [[3, 4, 0], [0, 0, 0]], "expect": [0.6, 0.8, 0], "tolerance": 1e-12},
+      {"call": "toonBandLevel", "args": [0.5, 0, 0], "throws": "RangeError"}
+    ],
+    "demo": {"file": "demo/scene.mjs", "export": "demo", "addons": []},
+    "tests": ["test_toon_band_material.mjs"]
+  },
+  "limits": "Stylized, not physically based. One directional light given as a direction uniform: three.js scene lights, shadows, fog and environment maps are ignored. Specular and rim are thresholded tricks without energy conservation. Skinned and morphed meshes are not deformed (the vertex stage reads position and normal only); InstancedMesh works. Normals use an inverse-transpose per vertex so non-uniform scale shades correctly, at the cost of a matrix inverse per vertex. Written for three.js r155 or later; only 0.186.1 was run, in headless Chrome on SwiftShader WebGL 2. Hardware GPUs, other browsers and WebGPU were not run.",
+  "related": ["gooch_shading_material", "outline_shell_material", "gradient_ramp_texture"],
+  "technique_references": ["Lambert term quantized into bands with smoothstep edges", "Blinn half-vector specular thresholded into a spot", "Facing-ratio rim mask"],
+  "native_checks": ["module_contract_static", "node_tests_pass", "node_tests_catch_mutants", "three_runtime_pinned", "browser_page_clean", "three_shaders_compiled", "demo_checks_passed", "render_not_uniform", "render_differs_from_baseline"]
+}

@@ -1,0 +1,82 @@
+{
+  "record_type": "creative_original_item/v1",
+  "identity": "stateless_gpu_particles",
+  "title": "Stateless GPU particle fountain",
+  "purpose": "Run thousands of looping particles in three.js with no per-frame buffer updates: the vertex stage computes each particle from its seed and birth attributes and the time (cone launch, speed, spawn disc, gravity, swirl, size and fade over life) with integer-hash randoms that an exact CPU mirror reproduces.",
+  "form": "library_module",
+  "asset_role": null,
+  "dimension": "3d",
+  "engine": {"name": "webgl2_browser", "minimum_version": "2.0", "notes": "three.js r155 or later passed in as THREE (GLSL ES 3.00 uint arithmetic; the fragment stage includes the colorspace_fragment chunk); only 0.186.1 was run."},
+  "tags": ["three.js", "shader", "particles", "points", "gpu", "vfx", "fountain", "deterministic"],
+  "files": [
+    {"path": "README.md", "role": "other"},
+    {"path": "stateless_gpu_particles.mjs", "role": "skill_asset"},
+    {"path": "test_stateless_gpu_particles.mjs", "role": "executable_tool"},
+    {"path": "demo/scene.mjs", "role": "skill_asset"}
+  ],
+  "contract": {
+    "module": "stateless_gpu_particles.mjs",
+    "category": "shader_material",
+    "language": "ECMAScript 2020 module; GLSL ES 3.00 through three.js ShaderMaterial",
+    "three": {"injected": true, "argument": "THREE", "tested_version": "0.186.1", "needed_by": ["createParticleGeometry", "createParticleMaterial", "createParticlePoints"]},
+    "exports": [
+      {"name": "createParticlePoints", "kind": "function", "signature": "createParticlePoints(THREE, options = {}) -> THREE.Points", "summary": "The geometry and the material in one Points object; set material.uniforms.uTime.value every frame."},
+      {"name": "createParticleGeometry", "kind": "function", "signature": "createParticleGeometry(THREE, options = {}) -> THREE.BufferGeometry", "summary": "count particles: a zero position attribute, aSeed = index, aBirth, and a bounding sphere that holds every path."},
+      {"name": "createParticleMaterial", "kind": "function", "signature": "createParticleMaterial(THREE, options = {}) -> THREE.ShaderMaterial", "summary": "The additive Points material."},
+      {"name": "particleState", "kind": "function", "signature": "particleState(index, time, options = {}) -> {position, life, size, alpha, cycle}", "summary": "CPU mirror of the vertex stage for one particle."},
+      {"name": "particleBirth", "kind": "function", "signature": "particleBirth(index, lifetime = 2.5) -> number", "summary": "fract(index * golden ratio) * lifetime, rounded to float32 as the attribute stores it."},
+      {"name": "GPU_PARTICLES_DEFAULTS", "kind": "constant", "summary": "Frozen default options."},
+      {"name": "PARTICLE_UNIFORMS_GLSL", "kind": "constant", "glsl": "chunk", "summary": "The motion uniform declarations."},
+      {"name": "PARTICLE_GLSL", "kind": "constant", "glsl": "chunk", "summary": "GLSL particlePcg, particleRandom, vec4 particleState(float seed, float birth, float time) and particleAlpha(float life)."},
+      {"name": "PARTICLE_VERTEX", "kind": "constant", "glsl": "vertex", "summary": "Points vertex stage with distance-attenuated size."},
+      {"name": "PARTICLE_FRAGMENT", "kind": "constant", "glsl": "fragment", "summary": "Soft round sprite coloured over life."}
+    ],
+    "options": [
+      {"name": "count", "type": "integer", "default": 2000, "range": [1, 4194304], "meaning": "Particles in the geometry."},
+      {"name": "lifetime", "type": "number", "default": 2.5, "range": [0.01, 10000], "unit": "seconds", "meaning": "Length of one loop."},
+      {"name": "coneAngle", "type": "number", "default": 0.35, "range": "0 to pi", "unit": "radians", "meaning": "Half angle of the launch cone around +Y; directions are uniform over the cap."},
+      {"name": "speedMin", "type": "number", "default": 1.8, "range": "0 to speedMax", "unit": "units per second", "meaning": "Slowest launch."},
+      {"name": "speedMax", "type": "number", "default": 3.2, "range": "speedMin to 10000", "unit": "units per second", "meaning": "Fastest launch."},
+      {"name": "gravity", "type": "vector3", "default": [0, -2.4, 0], "unit": "units per second squared", "meaning": "Constant acceleration."},
+      {"name": "swirl", "type": "number", "default": 0.8, "range": [-100, 100], "unit": "radians per second", "meaning": "Rotation of each particle's position about the Y axis with age."},
+      {"name": "emitterRadius", "type": "number", "default": 0.15, "range": [0, 10000], "unit": "units", "meaning": "Spawn points are uniform over a disc of this radius on y = 0."},
+      {"name": "startSize", "type": "number", "default": 0.18, "range": [0, 10000], "unit": "units", "meaning": "Size at birth."},
+      {"name": "endSize", "type": "number", "default": 0.04, "range": [0, 10000], "unit": "units", "meaning": "Size at the end of life."},
+      {"name": "fadeIn", "type": "number", "default": 0.08, "range": [0.001, 1], "meaning": "Fraction of life spent fading in."},
+      {"name": "fadeOut", "type": "number", "default": 0.35, "range": [0.001, 1], "meaning": "Fraction of life spent fading out."},
+      {"name": "startColor", "type": "linear RGB triple", "default": [1.0, 0.72, 0.3], "meaning": "Colour at birth."},
+      {"name": "endColor", "type": "linear RGB triple", "default": [0.85, 0.18, 0.28], "meaning": "Colour at the end of life."},
+      {"name": "pointScale", "type": "number", "default": 600, "range": [0.001, 1000000], "unit": "pixels", "meaning": "Drawing-buffer height / (2 tan(fov / 2)), so sizes are in world units."}
+    ],
+    "uniforms": [
+      {"name": "uTime", "type": "float", "option": null},
+      {"name": "uLifetime", "type": "float", "option": "lifetime"},
+      {"name": "uConeAngle", "type": "float", "option": "coneAngle"},
+      {"name": "uSpeedMin", "type": "float", "option": "speedMin"},
+      {"name": "uSpeedMax", "type": "float", "option": "speedMax"},
+      {"name": "uGravity", "type": "vec3", "option": "gravity"},
+      {"name": "uSwirl", "type": "float", "option": "swirl"},
+      {"name": "uEmitterRadius", "type": "float", "option": "emitterRadius"},
+      {"name": "uFadeIn", "type": "float", "option": "fadeIn"},
+      {"name": "uFadeOut", "type": "float", "option": "fadeOut"},
+      {"name": "uStartSize", "type": "float", "option": "startSize"},
+      {"name": "uEndSize", "type": "float", "option": "endSize"},
+      {"name": "uPointScale", "type": "float", "option": "pointScale"},
+      {"name": "uStartColor", "type": "vec3", "option": "startColor"},
+      {"name": "uEndColor", "type": "vec3", "option": "endColor"}
+    ],
+    "examples": [
+      {"call": "particleBirth", "args": [1], "expect": 1.5450849533081055, "tolerance": 0},
+      {"call": "particleState", "args": [0, 1.0], "select": "position", "expect": [-0.8669949992680486, 1.2927800923030561, 0.24379187461596064], "tolerance": 1e-12},
+      {"call": "particleState", "args": [17, 0.4], "select": "cycle", "expect": -1},
+      {"call": "particleState", "args": [1000, 12.0], "select": "alpha", "expect": 0.7432340462295789, "tolerance": 1e-12},
+      {"call": "particleState", "args": [0, 0, {"fadeIn": 0}], "throws": "RangeError"}
+    ],
+    "demo": {"file": "demo/scene.mjs", "export": "demo", "addons": []},
+    "tests": ["test_stateless_gpu_particles.mjs"]
+  },
+  "limits": "Particles are stateless, so nothing can collide, react to the scene, be spawned at an event or change course mid-flight; motion is a closed form of time (ballistic flight plus a swirl about the Y axis). Particles are not sorted; additive blending hides that, other blending would show it. Size uses gl_PointSize, which WebGL caps at an implementation limit (often 64 to 1024 pixels). GPU and CPU agree within float32 error except at the instant a particle loops, where float32 rounding can put it in the next loop. Only three.js 0.186.1 was run, in headless Chrome on SwiftShader WebGL 2; frame time was not measured.",
+  "related": ["force_field_ripple_material", "foliage_wind_material", "post_film_grain"],
+  "technique_references": ["Stateless particle evaluation from seed, birth time and a time uniform", "PCG-style integer hash for per-loop random numbers", "Uniform directions on a spherical cap from a uniform cosine", "Golden-ratio low-discrepancy birth offsets"],
+  "native_checks": ["module_contract_static", "node_tests_pass", "node_tests_catch_mutants", "three_runtime_pinned", "browser_page_clean", "three_shaders_compiled", "demo_checks_passed", "render_not_uniform", "render_differs_from_baseline"]
+}
