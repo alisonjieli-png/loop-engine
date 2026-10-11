@@ -3,7 +3,7 @@
 Kind: generated view. Do not edit by hand. The only task authority is
 [roadmap.yaml](roadmap.yaml); change it, then run
 `PYTHONPATH=src:tools .venv/bin/python tools/build_development_tracker.py`.
-Source fingerprint: `sha256:9954737f681d11a7bd49ca22f22732e1ea32ae6bd77d8b7ead45d72d62d26cbb`.
+Source fingerprint: `sha256:6e1a86150a2aed0d7a000531adcbc5e7ff041bed722f1c9f4f5a6aef19722f61`.
 
 ## Where things stand
 
@@ -73,7 +73,7 @@ Next eligible subtask: S-6.35.05: Add random asset discovery with provenance and
 |---:|---|---|---|---|
 | 1 | [x] S-6.35.03: Integrate the new design and interrupted fixes into the live website | published | published | Preserve the deployed design and finish the scoped documentation loading-state follow-up; the owner price change is now recorded in S-6.35.04. |
 | 2 | [x] S-6.35.04: Apply the owner's monthly Basic, Pro and Max prices | published | published | Keep both accepted Price identities during any rollback and preserve existing subscriptions, grants and free preview terms. |
-| 3 | [ ] S-6.35.05: Add random asset discovery with provenance and use details | building | published | Implement the bounded discovery view in the existing website owner; inventory eligible video/music assets instead of assuming those categories are populated. |
+| 3 | [ ] S-6.35.05: Add random asset discovery with provenance and use details | offline_verified | published | Finish exact integrated release gates, deploy the four discovery routes and inspect live media, source ZIP, stable links and authorization. |
 | 4 | [ ] S-6.35.06: Qualify distinct product brands on the shared service | proposed | live_qualified | Complete the offering audit and a bounded same-offer experiment design before building or launching another website. Keep the current release and catalogue work moving independently. |
 | 5 | [x] S-6.12.04: Separate three product cards from the introductory hero | live_qualified | live_qualified | Keep the three visible offerings consistent while the separate billing and hosted-service work proceeds. |
 | 6 | [x] S-6.35.01: Release reviewed main and verify it live | published | published | Keep application deployment and catalogue publication from overlapping. |
@@ -81,7 +81,7 @@ Next eligible subtask: S-6.35.05: Add random asset discovery with provenance and
 | 8 | [x] S-6.215.02: Qualify the retained API-contract population | offline_verified | offline_verified | Carry only the 31,459 qualified packages into admission. |
 | 9 | [x] S-6.215.03: Admit the qualified contract batch | offline_verified | offline_verified | Build the admitted additions bundle. |
 | 10 | [x] S-6.215.04: Build the additions bundle | offline_verified | offline_verified | Use bundle 26c50a60 in the preservation check. |
-| 11 | [x] S-6.215.05: Check retrieval and grant preservation | offline_verified | offline_verified | Perform exact metadata and body reconciliation. |
+| 11 | [x] S-6.215.05: Check retrieval and grant preservation | offline_verified | offline_verified | Use the completed October 11 combined consequence report for the exact additive publication; rebase if the live pointer changes. |
 | 12 | [x] S-6.215.06: Reconcile the complete release and its bodies | offline_verified | offline_verified | Use the exact completed proof for the next guarded publication after the prioritized website release. |
 | 13 | [x] S-6.215.07: Publish the reconciled contract delta | published | published | Publish the next qualified delta against the release live at that time, with the publisher that stages objects as the service user. |
 | 14 | [x] S-6.215.08: Verify the new catalogue as a customer | live_qualified | live_qualified | Repeat for each later publication with one new and one earlier package. |
@@ -89,7 +89,7 @@ Next eligible subtask: S-6.35.05: Add random asset discovery with provenance and
 | 16 | [x] S-6.215.10: Complete the repaired case-generation pilot | offline_verified | offline_verified | Qualify and globally deduplicate the completed pilot. |
 | 17 | [x] S-6.215.11: Qualify and admit the new case groups | offline_verified | offline_verified | Regroup the 1,983 non-overlapping jobs held in 376 groups and qualify the 379-group pilot separately before the next case publication. |
 | 18 | [x] S-6.215.12: Publish the qualified case delta | published | published | Publish later case cohorts against the release live at that time. |
-| 19 | [ ] S-6.215.13: Measure and broaden production capacity | building | offline_verified | Integrate the retained-record repair into the release owner's next application release. Prepare a fresh bounded recovery with updated exclusions and enough disk headroom for generation, qualification and publication. Preserve the old failed journal and keep Claude's creative lane separate. |
+| 19 | [ ] S-6.215.13: Measure and broaden production capacity | building | offline_verified | Qualify explicitly selected four-process verification on a full run and design bounded metadata streaming before larger catalogue growth. The residual API-atom pilot needs a new-run range selector and preserved exclusions before dispatch. |
 | 20 | [ ] S-6.214.01: Define canonical source counting | ready | offline_verified | Write and test the source-counting rules in the existing source owner. |
 | 21 | [ ] S-6.214.02: Build the source coverage census | ready | offline_verified | Waiting on S-6.214.01 |
 | 22 | [ ] S-6.214.03: Normalize the supplied provider operations | building | offline_verified | Waiting on S-6.214.01 |
@@ -180,7 +180,7 @@ Comment: Prices are monthly standard rates, not evidence that paid Feeds or Max 
 
 ### S-6.35.05 Add random asset discovery with provenance and use details
 
-Owner step: S-6.35. State: building. Completion requires: published.
+Owner step: S-6.35. State: offline_verified. Completion requires: published.
 
 Acceptance: A visitor can request another eligible image, video or music preview, inspect its source and licence, and reach a stable asset reference without bypassing download authorization.
 
@@ -189,11 +189,11 @@ Acceptance: A visitor can request another eligible image, video or music preview
 3. Test invalid and empty categories, missing assets, repeat avoidance, keyboard/mobile behavior and the public-preview versus authenticated-download boundary.
 4. Deploy the exact checked revision and verify the new routes live.
 
-Evidence: October 11 owner requests pages returning a random image, video or music asset with details. Implementation is assigned to an isolated detached worktree; no new route or media publication is yet claimed.
+Evidence: October 11 local integration has /random and image/video/music views with 329 existing image previews, one original twelve-second video and one original music cue. Separate source/media review reproduced four original/revised files; separate schema/HTTP review cleared c8f33cf2 after two ZIP-stream defects were fixed. Independent checks include 34 owning tests, five stream controls, 22 resource/HTTP checks and 34 media-browser checks; the earlier 125-view selection checks also passed. Source ZIP 9112aac6 is distinct from catalogue admission. No deployment or served-file count increase yet.
 
-Next: Implement the bounded discovery view in the existing website owner; inventory eligible video/music assets instead of assuming those categories are populated.
+Next: Finish exact integrated release gates, deploy the four discovery routes and inspect live media, source ZIP, stable links and authorization.
 
-Comment: Random selection uses ordinary code, not a model. Source listings, copyrighted references and private/paid bodies do not become public previews.
+Comment: Selection is client-side ordinary code, not a model or a compact random-asset API. The two website examples have explicit MIT preview/source rights; existing image previews do not inherit reuse rights from their source packages. Technical music checks did not include listening or mastering review.
 
 ### S-6.35.06 Qualify distinct product brands on the shared service
 
@@ -320,9 +320,9 @@ Acceptance: No judged prior retrieval or supplied Public Good grant is lost.
 2. Compare all previous item versions.
 3. Calculate new digests and check the supplied access policy.
 
-Evidence: 354 judged queries passed the conservative check; 218,151 prior items and 448 grants preserved; 120,036 new digests.
+Evidence: October 11 combined three-queue report preserves all 256,380 baseline item versions and 448 Public Good grants, with no replacements or withdrawals. The 354-query bank contains 107 queries with a baseline expected hit; none lost its expected identity. 176 result lists changed. Metadata predicts 341,902 new digests; this is not 354 accepted customer tasks.
 
-Next: Perform exact metadata and body reconciliation.
+Next: Use the completed October 11 combined consequence report for the exact additive publication; rebase if the live pointer changes.
 
 Comment: Coverage is the stated query population, not every possible query.
 
@@ -336,11 +336,11 @@ Acceptance: Produce a complete segmented baseline with unchanged prior versions 
 2. Preserve every previous body root and version.
 3. Record the result digest and predicted release without activating it.
 
-Evidence: Reconciliation completed from 609640a4: 249,610 items, all 1,353,029 baseline bodies verified, 120,036 new bodies. Bundle fac04d122bbed261c773023ad715f61d11f17ee243d9a7663e8f1710fc060a2c; proof d0caea32e34604dee5100ee197a1db13b503b9c3e713eb48d7ae0e28338cba1f. Not published.
+Evidence: October 11 reconciliation from frozen 70b36d57 completed: 281,517 items, all 1,560,856 baseline bodies verified, 341,902 new bodies and 478,052,332 new bytes. Bundle e4696017f2124955da5970c332c2df5f9ee70e593d23f4df64e800ed70f12a34; proof 856830630bb2f5bd19225654f401bd2021999d31a44cea52382a5353607832a0. Existing native publisher dry-run separately reverified complete baseline/candidate bytes and the proof, with 25,586 new segment/item objects. Nothing uploaded or activated.
 
 Next: Use the exact completed proof for the next guarded publication after the prioritized website release.
 
-Comment: Large outputs use the existing offload volume. The local memory cap was measured and raised from 10 to 14 GiB; no checks were removed.
+Comment: The failed 12 GiB attempt is retained. After removing duplicate composition and releasing construction state, the separate 20 GiB run completed in 24m40s with 14,535,568 KiB maximum process RSS and no swap. The serial publisher dry-run took 27m35s with 12,880,224 KiB maximum RSS. No valid speed comparison is claimed against the failed run.
 
 ### S-6.215.07 Publish the reconciled contract delta
 
@@ -448,9 +448,9 @@ Acceptance: A frozen production plan measures candidate yield, accepted yield, t
 2. Select licensed data tables, executable utilities, harness templates and editable creative materials.
 3. Reuse unchanged implementations and allocate bounded cohorts with explicit stops.
 
-Evidence: October 9: 19 of 92 ranges completed before a private diagnostic record reached 22,313 JSON values while using only 424,336 of its 4 MiB allowance. The decoder incorrectly shared the served-file 20,000-value limit. The repair has a separate bounded control-record traversal profile and preserves served limits. A fresh committed-source pilot at 059e5659 completes the formerly failing parent with three cases, 15 distinct payloads and unchanged inputs; it is not admitted or published. Construction findings now separate missing baseline members from unavailable probe candidates; a fixed 64-parent comparison retains all 496 case jobs. Larger recovery is not running while publication consumes the constrained disk headroom.
+Evidence: October 11 root integrated all thirteen retained supply commits plus the licence/redirect/concurrent-journal repair. The completed 392-shard campaign is exhausted; 5,389 unprocessed API atoms are a research frontier, not qualified cases or a file forecast, and five uncertain boundary atoms remain held. An opt-in clean-spawn verifier passes 111 owning tests, eleven removed-guard controls and 32 conformance gates. Nine final-code sample runs over 46,538 files and 224,074,942 bytes give serial/four/eight-worker medians 6.133/3.863/3.896 seconds; aggregate CPU rises to 15.321/26.674 seconds for the parallel choices. Only baseline/update body verification selects workers; publisher and other phases stay serial. Full-run speed and new production yield remain unmeasured.
 
-Next: Integrate the retained-record repair into the release owner's next application release. Prepare a fresh bounded recovery with updated exclusions and enough disk headroom for generation, qualification and publication. Preserve the old failed journal and keep Claude's creative lane separate.
+Next: Qualify explicitly selected four-process verification on a full run and design bounded metadata streaming before larger catalogue growth. The residual API-atom pilot needs a new-run range selector and preserved exclusions before dispatch.
 
 Comment: Common-word and parameter combinations are research dimensions, not automatically useful files.
 

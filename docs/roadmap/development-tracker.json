@@ -52,15 +52,15 @@
   },
   {
    "acceptance": "A visitor can request another eligible image, video or music preview, inspect its source and licence, and reach a stable asset reference without bypassing download authorization.",
-   "comment": "Random selection uses ordinary code, not a model. Source listings, copyrighted references and private/paid bodies do not become public previews.",
+   "comment": "Selection is client-side ordinary code, not a model or a compact random-asset API. The two website examples have explicit MIT preview/source rights; existing image previews do not inherit reuse rights from their source packages. Technical music checks did not include listening or mastering review.",
    "complete": false,
    "completion_status": "published",
    "depends_on": [
     "S-6.35.03"
    ],
-   "evidence": "October 11 owner requests pages returning a random image, video or music asset with details. Implementation is assigned to an isolated detached worktree; no new route or media publication is yet claimed.",
+   "evidence": "October 11 local integration has /random and image/video/music views with 329 existing image previews, one original twelve-second video and one original music cue. Separate source/media review reproduced four original/revised files; separate schema/HTTP review cleared c8f33cf2 after two ZIP-stream defects were fixed. Independent checks include 34 owning tests, five stream controls, 22 resource/HTTP checks and 34 media-browser checks; the earlier 125-view selection checks also passed. Source ZIP 9112aac6 is distinct from catalogue admission. No deployment or served-file count increase yet.",
    "id": "S-6.35.05",
-   "next_action": "Implement the bounded discovery view in the existing website owner; inventory eligible video/music assets instead of assuming those categories are populated.",
+   "next_action": "Finish exact integrated release gates, deploy the four discovery routes and inspect live media, source ZIP, stable links and authorization.",
    "owner_step": "S-6.35",
    "procedure": [
     "Reuse the existing gallery and rights-qualified public preview metadata; do not scan the whole catalogue per request.",
@@ -68,7 +68,7 @@
     "Test invalid and empty categories, missing assets, repeat avoidance, keyboard/mobile behavior and the public-preview versus authenticated-download boundary.",
     "Deploy the exact checked revision and verify the new routes live."
    ],
-   "status": "building",
+   "status": "offline_verified",
    "title": "Add random asset discovery with provenance and use details",
    "waiting_on": []
   },
@@ -224,9 +224,9 @@
    "depends_on": [
     "S-6.215.04"
    ],
-   "evidence": "354 judged queries passed the conservative check; 218,151 prior items and 448 grants preserved; 120,036 new digests.",
+   "evidence": "October 11 combined three-queue report preserves all 256,380 baseline item versions and 448 Public Good grants, with no replacements or withdrawals. The 354-query bank contains 107 queries with a baseline expected hit; none lost its expected identity. 176 result lists changed. Metadata predicts 341,902 new digests; this is not 354 accepted customer tasks.",
    "id": "S-6.215.05",
-   "next_action": "Perform exact metadata and body reconciliation.",
+   "next_action": "Use the completed October 11 combined consequence report for the exact additive publication; rebase if the live pointer changes.",
    "owner_step": "S-6.215",
    "procedure": [
     "Run the stored judged queries against the old and proposed catalogue.",
@@ -239,13 +239,13 @@
   },
   {
    "acceptance": "Produce a complete segmented baseline with unchanged prior versions and verified body references.",
-   "comment": "Large outputs use the existing offload volume. The local memory cap was measured and raised from 10 to 14 GiB; no checks were removed.",
+   "comment": "The failed 12 GiB attempt is retained. After removing duplicate composition and releasing construction state, the separate 20 GiB run completed in 24m40s with 14,535,568 KiB maximum process RSS and no swap. The serial publisher dry-run took 27m35s with 12,880,224 KiB maximum RSS. No valid speed comparison is claimed against the failed run.",
    "complete": true,
    "completion_status": "offline_verified",
    "depends_on": [
     "S-6.215.05"
    ],
-   "evidence": "Reconciliation completed from 609640a4: 249,610 items, all 1,353,029 baseline bodies verified, 120,036 new bodies. Bundle fac04d122bbed261c773023ad715f61d11f17ee243d9a7663e8f1710fc060a2c; proof d0caea32e34604dee5100ee197a1db13b503b9c3e713eb48d7ae0e28338cba1f. Not published.",
+   "evidence": "October 11 reconciliation from frozen 70b36d57 completed: 281,517 items, all 1,560,856 baseline bodies verified, 341,902 new bodies and 478,052,332 new bytes. Bundle e4696017f2124955da5970c332c2df5f9ee70e593d23f4df64e800ed70f12a34; proof 856830630bb2f5bd19225654f401bd2021999d31a44cea52382a5353607832a0. Existing native publisher dry-run separately reverified complete baseline/candidate bytes and the proof, with 25,586 new segment/item objects. Nothing uploaded or activated.",
    "id": "S-6.215.06",
    "next_action": "Use the exact completed proof for the next guarded publication after the prioritized website release.",
    "owner_step": "S-6.215",
@@ -391,9 +391,9 @@
    "depends_on": [
     "S-6.215.08"
    ],
-   "evidence": "October 9: 19 of 92 ranges completed before a private diagnostic record reached 22,313 JSON values while using only 424,336 of its 4 MiB allowance. The decoder incorrectly shared the served-file 20,000-value limit. The repair has a separate bounded control-record traversal profile and preserves served limits. A fresh committed-source pilot at 059e5659 completes the formerly failing parent with three cases, 15 distinct payloads and unchanged inputs; it is not admitted or published. Construction findings now separate missing baseline members from unavailable probe candidates; a fixed 64-parent comparison retains all 496 case jobs. Larger recovery is not running while publication consumes the constrained disk headroom.",
+   "evidence": "October 11 root integrated all thirteen retained supply commits plus the licence/redirect/concurrent-journal repair. The completed 392-shard campaign is exhausted; 5,389 unprocessed API atoms are a research frontier, not qualified cases or a file forecast, and five uncertain boundary atoms remain held. An opt-in clean-spawn verifier passes 111 owning tests, eleven removed-guard controls and 32 conformance gates. Nine final-code sample runs over 46,538 files and 224,074,942 bytes give serial/four/eight-worker medians 6.133/3.863/3.896 seconds; aggregate CPU rises to 15.321/26.674 seconds for the parallel choices. Only baseline/update body verification selects workers; publisher and other phases stay serial. Full-run speed and new production yield remain unmeasured.",
    "id": "S-6.215.13",
-   "next_action": "Integrate the retained-record repair into the release owner's next application release. Prepare a fresh bounded recovery with updated exclusions and enough disk headroom for generation, qualification and publication. Preserve the old failed journal and keep Claude's creative lane separate.",
+   "next_action": "Qualify explicitly selected four-process verification on a full run and design bounded metadata streaming before larger catalogue growth. The residual API-atom pilot needs a new-run range selector and preserved exclusions before dispatch.",
    "owner_step": "S-6.215",
    "procedure": [
     "Measure the completed batch rather than extrapolating from file placements.",
@@ -6934,7 +6934,7 @@
  ],
  "record_type": "development_tracker/v2",
  "source": "docs/roadmap/roadmap.yaml",
- "source_fingerprint": "sha256:9954737f681d11a7bd49ca22f22732e1ea32ae6bd77d8b7ead45d72d62d26cbb",
+ "source_fingerprint": "sha256:6e1a86150a2aed0d7a000531adcbc5e7ff041bed722f1c9f4f5a6aef19722f61",
  "working_schedule": {
   "blocks": [
    {

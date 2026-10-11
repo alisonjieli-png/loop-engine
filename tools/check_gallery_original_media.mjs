@@ -13,7 +13,7 @@ if(!process.argv[2]||existsSync(output))throw Error("A new report directory is r
 mkdirSync(output,{mode:0o700});
 const checks=[],errors=[],blocked=[];
 const check=(name,passed,detail={})=>checks.push({name,passed:passed===true,detail});
-const sourceDigests=Object.fromEntries(["gallery_media.py","gallery_random.py","web_assets/gallery-random.js","web_assets/gallery-media/media.json"].map(name=>
+const sourceDigests=Object.fromEntries(["gallery_media.py","gallery_random.py","web_assets/gallery-random.js","web_assets/gallery-random.css","web_assets/gallery-media/media.json"].map(name=>
   [name,createHash("sha256").update(readFileSync(resolve(root,"src/loop_engine/core/service_runtime",name))).digest("hex")]));
 const SCRIPT=`from contextlib import ExitStack
 from pathlib import Path
@@ -65,6 +65,17 @@ try {
         &&(await page.locator("[data-asset-access]").textContent()).includes("not a library item"),where);
       check("only preview is not falsely randomized",await page.locator("[data-show-another]").isDisabled(),where);
       check("media does not autoplay",await page.locator(tag).evaluate(node=>node.paused&&!node.autoplay),where);
+      if(kind==="music") {
+        const compactAudio=()=>{
+          const panel=document.querySelector("[data-asset-media]").getBoundingClientRect();
+          const control=document.querySelector("[data-asset-media] audio").getBoundingClientRect();
+          return panel.height<=160&&control.height>0&&control.top>=panel.top&&control.bottom<=panel.bottom;
+        };
+        check("audio controls do not reserve an empty image-sized panel",await page.evaluate(compactAudio),where);
+        const prior=await page.locator("[data-asset-media]").evaluate(node=>{const old=node.style.cssText;node.style.height="400px";return old;});
+        check("audio layout check rejects an oversized blank panel",!(await page.evaluate(compactAudio)),where);
+        await page.locator("[data-asset-media]").evaluate((node,old)=>{node.style.cssText=old;},prior);
+      }
       await page.locator(tag).evaluate(node=>{node.muted=true;}); // Technical playback, not a listening review.
       const box=await page.locator(tag).boundingBox();
       await page.locator(tag).click({position:{x:Math.min(30,box.width/2),y:Math.max(10,box.height-20)}});

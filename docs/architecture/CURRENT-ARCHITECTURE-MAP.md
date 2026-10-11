@@ -147,13 +147,19 @@ checks. No new cloud resource is activated by this placement decision.
 [Containers limits](https://developers.cloudflare.com/containers/platform/limits/)
 
 Local parallel verification is under qualification. Threads were slower in
-the tested samples. A clean-spawn process experiment over 46,538 files and
-224,074,942 bytes had median wall times of 4.140s with one process, 2.776s with
-four and 2.894s with eight, including startup and shutdown. This small sample
-does not establish full-catalogue speed. The proposed opt-in engine sends
+the tested samples. The final-code experiment over 46,538 files and
+224,074,942 bytes had median wall times of 6.133s in process, 3.863s with
+four workers and 3.896s with eight, including startup and shutdown. Aggregate
+CPU times were 6.037s, 15.321s and 26.674s respectively. The existing cache and
+concurrent host load were uncontrolled; this sample does not establish
+full-catalogue speed. The explicit opt-in engine sends
 bounded digest/size batches and explicit roots to workers, keeps payload bytes
 out of results, preserves deterministic refusal order and retains serial
-verification as the default until the complete path is qualified.
+verification as the default until the complete path is qualified. Only
+baseline/update body checks opt into processes. New-payload collection,
+writing, final metadata/proof validation and the publisher remain serial.
+The final metadata reread is not a second full payload verification pass.
+Streaming or disk-backed operator metadata remains a separate scaling task.
 
 ### Separate product brands: proposed, not deployed
 
