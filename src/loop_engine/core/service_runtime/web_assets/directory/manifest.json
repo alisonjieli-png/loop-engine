@@ -1,7 +1,7 @@
 {
  "record_type": "mcp_directory_manifest/v1",
- "generated_at": "2026-10-11T13:32:47Z",
- "row_count": 41337,
+ "generated_at": "2026-10-12T16:09:24Z",
+ "row_count": 41917,
  "columns": [
   "id",
   "name",
@@ -28,68 +28,68 @@
  "parts": [
   {
    "address": "/assets/directory/rows-0.json",
-   "rows": 5244,
-   "sha256": "c676d896e847366da4cafbce2cf348c0de1180a743a8476a4be6f3d9f8d3a4bb",
-   "bytes": 1422836
+   "rows": 5312,
+   "sha256": "f64ca4ec9368e6ba35b6d0bfedebbffcdd06089c2bc95a6d2b5ac0c9e595224b",
+   "bytes": 1441624
   },
   {
    "address": "/assets/directory/rows-1.json",
-   "rows": 5115,
-   "sha256": "2bfd4b98150e8e2c4c3608fc8aa5a41688d24e6d73b624826292915bbc9a4543",
-   "bytes": 1393931
+   "rows": 5197,
+   "sha256": "29e8143888ed980ff4c9ee6a8d5f657b3ea2bdaa387df4879a4eb3a31e782d7d",
+   "bytes": 1416046
   },
   {
    "address": "/assets/directory/rows-2.json",
-   "rows": 5178,
-   "sha256": "0e6c0cd83c0423819ffcd09ba3da5a8c676e43c8d702229d005e24c4a81fab0d",
-   "bytes": 1410781
+   "rows": 5245,
+   "sha256": "7d72ff24363ad124af732e6767383fa5911ce4b04aea0743a13d6a2d109da72b",
+   "bytes": 1430486
   },
   {
    "address": "/assets/directory/rows-3.json",
-   "rows": 5140,
-   "sha256": "8b0ae681120471d6633de52a94eb13c392e5fcc0fa2ce8f6485218a74bd2413e",
-   "bytes": 1403162
+   "rows": 5209,
+   "sha256": "14331362f65620b35c2ef12e7d7dfaea1dc37139ba336ae9253f7b2d15625399",
+   "bytes": 1422761
   },
   {
    "address": "/assets/directory/rows-4.json",
-   "rows": 5146,
-   "sha256": "534bf65db517a91708861e22a3b6629b7c6e9333b6f10b5dfcd4c8a747bd8f9f",
-   "bytes": 1402640
+   "rows": 5207,
+   "sha256": "6f41ff7ef9def26d236c88b63f06c6c748d2b3b852bf97eca41e61059b4b27ba",
+   "bytes": 1419344
   },
   {
    "address": "/assets/directory/rows-5.json",
-   "rows": 5201,
-   "sha256": "bf9f1ef375ffbd3c5f98c09cef70f3f887cb8a0a4ef827fe3311f556dba5d902",
-   "bytes": 1417686
+   "rows": 5278,
+   "sha256": "d606f95058b1cf0bf8944cb487c293b6f27db58e5665af223b98572a8035ddd3",
+   "bytes": 1439336
   },
   {
    "address": "/assets/directory/rows-6.json",
-   "rows": 5187,
-   "sha256": "74c427df50cc8c520248cac2bdc34c0f0ef84583564a73ac099bebabdb695511",
-   "bytes": 1408273
+   "rows": 5268,
+   "sha256": "ab6ec7d84b0249ba81ef1b75376ba3f924bfe5ecd2d191820f8d175816255478",
+   "bytes": 1430638
   },
   {
    "address": "/assets/directory/rows-7.json",
-   "rows": 5126,
-   "sha256": "025d6bd92e954ac5a697497ccf3a12489bc14b1ddf30601bdffcbbb0962a45fe",
-   "bytes": 1401305
+   "rows": 5201,
+   "sha256": "5a9ca29ea9d7214acfcc4319f3f87ddcd3a7645f0c42cbd63ae3351dc3a41490",
+   "bytes": 1422369
   }
  ],
  "categories": [
   {
    "id": "developer-tools",
    "label": "Developer tools",
-   "rows": 3371
+   "rows": 3405
   },
   {
    "id": "databases",
    "label": "Databases and storage",
-   "rows": 833
+   "rows": 849
   },
   {
    "id": "search-web",
    "label": "Search and web data",
-   "rows": 1171
+   "rows": 1190
   },
   {
    "id": "browser",
@@ -99,112 +99,112 @@
   {
    "id": "cloud",
    "label": "Cloud and infrastructure",
-   "rows": 1543
+   "rows": 1557
   },
   {
    "id": "observability",
    "label": "Monitoring and observability",
-   "rows": 677
+   "rows": 692
   },
   {
    "id": "security",
    "label": "Security",
-   "rows": 707
+   "rows": 714
   },
   {
    "id": "documents",
    "label": "Documents and files",
-   "rows": 1438
+   "rows": 1463
   },
   {
    "id": "productivity",
    "label": "Notes and productivity",
-   "rows": 780
+   "rows": 803
   },
   {
    "id": "communication",
    "label": "Communication",
-   "rows": 1462
+   "rows": 1496
   },
   {
    "id": "project-management",
    "label": "Project management",
-   "rows": 733
+   "rows": 750
   },
   {
    "id": "business",
    "label": "Sales, marketing and commerce",
-   "rows": 2940
+   "rows": 2996
   },
   {
    "id": "finance",
    "label": "Finance and payments",
-   "rows": 2294
+   "rows": 2342
   },
   {
    "id": "crypto",
    "label": "Crypto and blockchain",
-   "rows": 1653
+   "rows": 1677
   },
   {
    "id": "ai-models",
    "label": "AI models and prompts",
-   "rows": 1076
+   "rows": 1086
   },
   {
    "id": "agents",
    "label": "Agent tools and marketplaces",
-   "rows": 824
+   "rows": 828
   },
   {
    "id": "media",
    "label": "Media and design",
-   "rows": 1704
+   "rows": 1725
   },
   {
    "id": "knowledge",
    "label": "Knowledge and memory",
-   "rows": 1141
+   "rows": 1151
   },
   {
    "id": "data",
    "label": "Data and analytics",
-   "rows": 850
+   "rows": 860
   },
   {
    "id": "maps-travel",
    "label": "Maps, travel and weather",
-   "rows": 1103
+   "rows": 1121
   },
   {
    "id": "science-health",
    "label": "Science, health and education",
-   "rows": 805
+   "rows": 827
   },
   {
    "id": "legal-public",
    "label": "Legal, government and public data",
-   "rows": 1211
+   "rows": 1235
   },
   {
    "id": "devices-home",
    "label": "Devices and home",
-   "rows": 332
+   "rows": 335
   },
   {
    "id": "games-entertainment",
    "label": "Games and entertainment",
-   "rows": 462
+   "rows": 470
   },
   {
    "id": "utilities",
    "label": "Utilities and reference",
-   "rows": 1491
+   "rows": 1504
   },
   {
    "id": "other",
    "label": "Other",
-   "rows": 10380
+   "rows": 10485
   }
  ],
  "location_kinds": [
@@ -248,6 +248,7 @@
  },
  "licences": [
   "",
+  "0BSD",
   "AGPL-3.0",
   "AGPL-3.0-only",
   "AGPL-3.0-or-later",
@@ -262,8 +263,10 @@
   "GPL-2.0",
   "GPL-3.0",
   "ISC",
+  "LGPL-2.1",
   "LGPL-3.0",
   "MIT",
+  "MIT-0",
   "MPL-2.0",
   "Other",
   "PostgreSQL",
@@ -284,8 +287,8 @@
   {
    "id": "registry",
    "bit": 1,
-   "rows": 41073,
-   "checked": "2026-10-11"
+   "rows": 41653,
+   "checked": "2026-10-12"
   },
   {
    "id": "codex",
@@ -302,14 +305,14 @@
   {
    "id": "github",
    "bit": 8,
-   "rows": 394,
-   "checked": "2026-10-11"
+   "rows": 421,
+   "checked": "2026-10-12"
   },
   {
    "id": "docker",
    "bit": 16,
    "rows": 311,
-   "checked": "2026-10-11"
+   "checked": "2026-10-12"
   }
  ],
  "commercial_relationship_schema": "directory_commercial_relationship/v1",
