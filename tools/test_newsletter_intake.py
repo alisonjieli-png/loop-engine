@@ -48,7 +48,8 @@ class NewsletterIntakeTests(unittest.TestCase):
         self.store = CommunityStore(self.root, writes_allowed=True)
 
     def test_strict_recipient_version_time_and_raw_limits(self):
-        for changes in ({"recipient": "support@baltor.ai"}, {"recipient": intake.RECIPIENT.upper()},
+        for changes in ({"recipient": "support@baltor.ai"}, {"recipient": "newsletters@inbox.agentfeeds.si"},
+                        {"recipient": intake.RECIPIENT.upper()},
                         {"record_type": "newsletter_email/v0"}, {"raw": b""}, {"raw": b"a" * (intake.MAXIMUM_RAW + 1)},
                         {"received_at": "yesterday"}, {"envelope_sender": "publisher@example.org\n"},
                         {"delivery_id": "../escape"}, {"ingress": "sender_says_verified"}):

@@ -26,7 +26,7 @@ from .community_intake import public_url
 from .community_store import CommunityStore
 
 VERSION = "newsletter_email/v1"
-RECIPIENT = "newsletters@inbox.agentfeeds.si"
+RECIPIENT = "newsletters@agentfeeds.si"
 MAXIMUM_RAW = 2 * 1024 * 1024
 MAXIMUM_WIRE = 4 * ((MAXIMUM_RAW + 2) // 3) + 4096
 MAXIMUM_HEADERS = 64 * 1024

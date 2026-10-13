@@ -45,7 +45,8 @@ function message(bytes = raw, changes = {}) {
 }
 
 test('exact recipient and sender reject before any storage', async () => {
-  for (const changes of [{to: 'support@baltor.ai'}, {to: RECIPIENT.toUpperCase()}, {from: 'sender@example.org\n'}]) {
+  for (const changes of [{to: 'support@baltor.ai'}, {to: 'newsletters@inbox.agentfeeds.si'},
+    {to: RECIPIENT.toUpperCase()}, {from: 'sender@example.org\n'}]) {
     const bucket = new Bucket(), mail = message(raw, changes);
     await receive(mail, environment(bucket), clock);
     assert.ok(mail.rejection); assert.equal(bucket.calls.length, 0);

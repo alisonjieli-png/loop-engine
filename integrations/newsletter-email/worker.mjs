@@ -1,5 +1,5 @@
 // Private email ingress only. No fetch handler, forwarding, reply or models.
-export const RECIPIENT = 'newsletters@inbox.agentfeeds.si';
+export const RECIPIENT = 'newsletters@agentfeeds.si';
 export const MAXIMUM_RAW = 2 * 1024 * 1024;
 export const PREFIX = 'newsletter-email/v1/';
 const address = /^[A-Za-z0-9.!#$%&'*+/=?^_`{|}~-]{1,64}@[A-Za-z0-9](?:[A-Za-z0-9.-]{0,251}[A-Za-z0-9])?$/;

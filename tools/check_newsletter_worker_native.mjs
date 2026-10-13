@@ -33,7 +33,7 @@ const options = {
   modules: [{type: 'ESModule', path: path.join(root, 'native-fixture.mjs'), contents: fixture},
     ...['cloudflare.mjs', 'worker.mjs', 'quota.mjs'].map(name => ({type: 'ESModule', path: path.join(root, name)}))],
   compatibilityDate: '2026-05-01',
-  bindings: {NEWSLETTER_RECIPIENT: 'newsletters@inbox.agentfeeds.si'},
+  bindings: {NEWSLETTER_RECIPIENT: 'newsletters@agentfeeds.si'},
   durableObjects: {NEWSLETTER_ADMISSION: {className: 'NewsletterAdmission', useSQLite: true}},
   durableObjectsPersist: path.join(output, 'durable'), r2Persist: path.join(output, 'r2'),
   r2Buckets: ['NEWSLETTER_QUARANTINE'],

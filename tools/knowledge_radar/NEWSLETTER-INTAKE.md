@@ -3,7 +3,7 @@
 This adapter preserves one email's bytes and a managed receipt for private
 research. Every accepted message stays quarantined. It does not subscribe to
 newsletters, confirm subscriptions, follow links, call a model or publish
-content. `newsletters@inbox.agentfeeds.si` is the exact proposed recipient;
+content. `newsletters@agentfeeds.si` is the exact selected recipient;
 source code and local tests do not establish that the address receives mail.
 
 The owner can use the local importer for an exported `.eml` file. A deployment
@@ -251,13 +251,15 @@ provides conditional writes and digest validation. Only those documented
 interfaces informed the original adapter; no third-party implementation or
 newsletter content is copied into the source.
 
-[Cloudflare's subdomain documentation](https://developers.cloudflare.com/email-service/configuration/subdomains/)
-supports a literal address on a subdomain. Subdomain catch-all routing is not
-used. The documented subdomain onboarding flow is in the dashboard. The public
-DNS-enable API's optional `name` field does not, by itself, establish the
-subdomain semantics. Preserve the existing zone records and verify the exact
-onboarding path before enabling mail. A registered domain or source-level
-recipient constant is not evidence that an address receives messages.
+The selected address uses the owned AgentFeeds apex domain. The operator
+preflight found no existing MX records or mail routing on that domain. This
+keeps the inbox on the documented
+[zone DNS-enable API](https://developers.cloudflare.com/api/resources/email_routing/subresources/dns/methods/create/)
+instead of depending on a subdomain onboarding operation whose current API
+semantics have not been verified. Only the literal `newsletters` address routes
+to this Worker; catch-all remains disabled. Preserve all existing web and
+certificate records. A registered domain or source-level recipient constant
+is not evidence that an address receives messages.
 
 The reader uses the documented
 [R2 object listing](https://developers.cloudflare.com/api/resources/r2/subresources/buckets/subresources/objects/methods/list/)
