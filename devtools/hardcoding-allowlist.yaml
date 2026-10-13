@@ -1,5 +1,245 @@
 schema: hardcoding_allowlist/v1
 entries:
+- finding_id: hardcoding.4477d5c0eea7bce620767e02
+  owner: "docs.research.FEED-WATCH-COOLDOWNS-AND-SOURCES-2026-10-13.json:references[0].url"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed October 13, 2026: Dated evidence records RFC 9110 Retry-After section cited by the dated transport review. This passive research file is not runtime configuration or authority to fetch, schedule or republish content; changing the literal would change the historical observation."
+  created_on: '2026-10-13'
+  expires_on: '2027-01-13'
+- finding_id: hardcoding.8f33791cca41aab11288504a
+  owner: "docs.research.FEED-WATCH-COOLDOWNS-AND-SOURCES-2026-10-13.json:references[1].url"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed October 13, 2026: Dated evidence records RFC 6585 rate-limit semantics cited by the dated transport review. This passive research file is not runtime configuration or authority to fetch, schedule or republish content; changing the literal would change the historical observation."
+  created_on: '2026-10-13'
+  expires_on: '2027-01-13'
+- finding_id: hardcoding.01a9dd206e0dd308f6293839
+  owner: "docs.research.FEED-WATCH-COOLDOWNS-AND-SOURCES-2026-10-13.json:references[2].url"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed October 13, 2026: Dated evidence records urllib3 retry-policy reference considered and not adopted by the dated implementation review. This passive research file is not runtime configuration or authority to fetch, schedule or republish content; changing the literal would change the historical observation."
+  created_on: '2026-10-13'
+  expires_on: '2027-01-13'
+- finding_id: hardcoding.5874dd757a1ec9cf403d05bb
+  owner: "docs.research.FEED-WATCH-COOLDOWNS-AND-SOURCES-2026-10-13.json:references[3].url"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed October 13, 2026: Dated evidence records Godot website licence reference; the record explicitly does not infer article or media reuse rights. This passive research file is not runtime configuration or authority to fetch, schedule or republish content; changing the literal would change the historical observation."
+  created_on: '2026-10-13'
+  expires_on: '2027-01-13'
+- finding_id: hardcoding.46397c2ce26b9dcdef25847e
+  owner: "docs.research.FEED-WATCH-COOLDOWNS-AND-SOURCES-2026-10-13.json:references[4].url"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed October 13, 2026: Dated evidence records Hugging Face source-terms reference; the record refuses any blanket redistribution inference. This passive research file is not runtime configuration or authority to fetch, schedule or republish content; changing the literal would change the historical observation."
+  created_on: '2026-10-13'
+  expires_on: '2027-01-13'
+- finding_id: hardcoding.b2a4199858fcbc687ff743db
+  owner: "docs.research.FEED-WATCH-COOLDOWNS-AND-SOURCES-2026-10-13.json:sources[0].rights_reference"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed October 13, 2026: Dated evidence records Godot website licence provenance attached to the exact observed feed. This passive research file is not runtime configuration or authority to fetch, schedule or republish content; changing the literal would change the historical observation."
+  created_on: '2026-10-13'
+  expires_on: '2027-01-13'
+- finding_id: hardcoding.6a2ac336efa353995d5e8044
+  owner: "docs.research.FEED-WATCH-COOLDOWNS-AND-SOURCES-2026-10-13.json:sources[0].sample_references[0].url"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed October 13, 2026: Dated evidence records first observed Godot article identity with its source publication time and digest. This passive research file is not runtime configuration or authority to fetch, schedule or republish content; changing the literal would change the historical observation."
+  created_on: '2026-10-13'
+  expires_on: '2027-01-13'
+- finding_id: hardcoding.7e2380074af15f562e884b4f
+  owner: "docs.research.FEED-WATCH-COOLDOWNS-AND-SOURCES-2026-10-13.json:sources[0].sample_references[1].url"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed October 13, 2026: Dated evidence records second observed Godot article identity with its source publication time and digest. This passive research file is not runtime configuration or authority to fetch, schedule or republish content; changing the literal would change the historical observation."
+  created_on: '2026-10-13'
+  expires_on: '2027-01-13'
+- finding_id: hardcoding.ed600ccbced770002f923c14
+  owner: "docs.research.FEED-WATCH-COOLDOWNS-AND-SOURCES-2026-10-13.json:sources[0].sample_references[2].url"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed October 13, 2026: Dated evidence records third observed Godot article identity with its source publication time and digest. This passive research file is not runtime configuration or authority to fetch, schedule or republish content; changing the literal would change the historical observation."
+  created_on: '2026-10-13'
+  expires_on: '2027-01-13'
+- finding_id: hardcoding.31a2777ed5752c069635720c
+  owner: "docs.research.FEED-WATCH-COOLDOWNS-AND-SOURCES-2026-10-13.json:sources[0].source_reference"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed October 13, 2026: Dated evidence records publisher's Godot blog reference identifying the observed RSS source. This passive research file is not runtime configuration or authority to fetch, schedule or republish content; changing the literal would change the historical observation."
+  created_on: '2026-10-13'
+  expires_on: '2027-01-13'
+- finding_id: hardcoding.04ee72e961c37bb830821128
+  owner: "docs.research.FEED-WATCH-COOLDOWNS-AND-SOURCES-2026-10-13.json:sources[0].url"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed October 13, 2026: Dated evidence records exact Godot RSS endpoint read by the recorded four-request qualification. This passive research file is not runtime configuration or authority to fetch, schedule or republish content; changing the literal would change the historical observation."
+  created_on: '2026-10-13'
+  expires_on: '2027-01-13'
+- finding_id: hardcoding.abe7fb3a85e11bfeb69b9ff0
+  owner: "docs.research.FEED-WATCH-COOLDOWNS-AND-SOURCES-2026-10-13.json:sources[1].rights_reference"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed October 13, 2026: Dated evidence records Hugging Face terms provenance attached to the exact observed feed. This passive research file is not runtime configuration or authority to fetch, schedule or republish content; changing the literal would change the historical observation."
+  created_on: '2026-10-13'
+  expires_on: '2027-01-13'
+- finding_id: hardcoding.777299c1bea3b6b9e73585e7
+  owner: "docs.research.FEED-WATCH-COOLDOWNS-AND-SOURCES-2026-10-13.json:sources[1].sample_references[0].url"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed October 13, 2026: Dated evidence records first observed Hugging Face article identity with source publication time and digest. This passive research file is not runtime configuration or authority to fetch, schedule or republish content; changing the literal would change the historical observation."
+  created_on: '2026-10-13'
+  expires_on: '2027-01-13'
+- finding_id: hardcoding.c4c331e0b44b812ab725b69b
+  owner: "docs.research.FEED-WATCH-COOLDOWNS-AND-SOURCES-2026-10-13.json:sources[1].sample_references[1].url"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed October 13, 2026: Dated evidence records second observed Hugging Face article identity with source publication time and digest. This passive research file is not runtime configuration or authority to fetch, schedule or republish content; changing the literal would change the historical observation."
+  created_on: '2026-10-13'
+  expires_on: '2027-01-13'
+- finding_id: hardcoding.f8e2014e8b1440521e3f8fc7
+  owner: "docs.research.FEED-WATCH-COOLDOWNS-AND-SOURCES-2026-10-13.json:sources[1].sample_references[2].url"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed October 13, 2026: Dated evidence records third observed Hugging Face article identity with source publication time and digest. This passive research file is not runtime configuration or authority to fetch, schedule or republish content; changing the literal would change the historical observation."
+  created_on: '2026-10-13'
+  expires_on: '2027-01-13'
+- finding_id: hardcoding.d22d4f592c076344f28ff07f
+  owner: "docs.research.FEED-WATCH-COOLDOWNS-AND-SOURCES-2026-10-13.json:sources[1].source_reference"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed October 13, 2026: Dated evidence records publisher's Hugging Face blog reference identifying the observed aggregate feed. This passive research file is not runtime configuration or authority to fetch, schedule or republish content; changing the literal would change the historical observation."
+  created_on: '2026-10-13'
+  expires_on: '2027-01-13'
+- finding_id: hardcoding.8de8a82e5ef7823907c3c663
+  owner: "docs.research.FEED-WATCH-COOLDOWNS-AND-SOURCES-2026-10-13.json:sources[1].url"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed October 13, 2026: Dated evidence records exact Hugging Face RSS endpoint read by the recorded four-request qualification. This passive research file is not runtime configuration or authority to fetch, schedule or republish content; changing the literal would change the historical observation."
+  created_on: '2026-10-13'
+  expires_on: '2027-01-13'
+- finding_id: hardcoding.edb2aa247616397c831438e5
+  owner: "loop_engine.core.harness_process:_run_harness_process"
+  classification: DEPLOYMENT_CONFIGURATION
+  rationale: "Reviewed October 13, 2026: The existing validated process_isolation selector is now in the private runner after the public wrapper split. trusted_process remains explicit and reports no OS sandbox; the separate workspace-tools boundary rejects it before launch. This exact branch does not enable fallback from failed confinement."
+  created_on: '2026-10-13'
+  expires_on: '2027-01-13'
+- finding_id: hardcoding.fc4eeb895f56f1a8cfacd5b6
+  owner: "loop_engine.core.opencode_customer_recipe:extract_customer_output"
+  classification: CLOSED_CONTROLLED_VOCABULARY
+  rationale: "Reviewed October 13, 2026: OpenCode 1.17.9's native stop terminal reason is required together with the exact expected final text. This adapter-specific wire value is not a generic completion policy; malformed, error and nonterminal outputs are refused by focused controls."
+  created_on: '2026-10-13'
+  expires_on: '2027-01-13'
+- finding_id: hardcoding.15ba7869c139637de49f4bf6
+  owner: "loop_engine.core.opencode_customer_recipe:prepare_customer_recipe"
+  classification: DEPLOYMENT_CONFIGURATION
+  rationale: "Reviewed October 13, 2026: The native OPENCODE_DISABLE_PROJECT_CONFIG and OPENCODE_DISABLE_DEFAULT_PLUGINS switches use the vendor's true spelling. These are fixed isolation requirements, not operator preferences. The recipe disables project configuration, default plugins, updating and sharing; its confined actual-binary proof separately checks absent host secrets and outside network."
+  created_on: '2026-10-13'
+  expires_on: '2027-01-13'
+- finding_id: hardcoding.d3c2cead5927dcb25b1bbf06
+  owner: "loop_engine.core.opencode_customer_recipe:prepare_customer_recipe"
+  classification: DEPLOYMENT_CONFIGURATION
+  rationale: "Reviewed October 13, 2026: The native OPENCODE_DISABLE_PROJECT_CONFIG and OPENCODE_DISABLE_DEFAULT_PLUGINS switches use the vendor's true spelling. These are fixed isolation requirements, not operator preferences. The recipe disables project configuration, default plugins, updating and sharing; its confined actual-binary proof separately checks absent host secrets and outside network."
+  created_on: '2026-10-13'
+  expires_on: '2027-01-13'
+- finding_id: hardcoding.03594e065b6de3c03a8e1723
+  owner: "loop_engine.core.opencode_customer_recipe:prepare_customer_recipe"
+  classification: DEPLOYMENT_CONFIGURATION
+  rationale: "Reviewed October 13, 2026: The native OPENCODE_DISABLE_AUTOUPDATE and OPENCODE_DISABLE_SHARE switches use the vendor's true spelling. These are fixed isolation requirements, not operator preferences. The recipe disables project configuration, default plugins, updating and sharing; its confined actual-binary proof separately checks absent host secrets and outside network."
+  created_on: '2026-10-13'
+  expires_on: '2027-01-13'
+- finding_id: hardcoding.87ade1a61d1ffe1226586c6e
+  owner: "loop_engine.core.opencode_customer_recipe:prepare_customer_recipe"
+  classification: DEPLOYMENT_CONFIGURATION
+  rationale: "Reviewed October 13, 2026: The native OPENCODE_DISABLE_AUTOUPDATE and OPENCODE_DISABLE_SHARE switches use the vendor's true spelling. These are fixed isolation requirements, not operator preferences. The recipe disables project configuration, default plugins, updating and sharing; its confined actual-binary proof separately checks absent host secrets and outside network."
+  created_on: '2026-10-13'
+  expires_on: '2027-01-13'
+- finding_id: hardcoding.932e726e04c42b38e9b9ab74
+  owner: "loop_engine.core.opencode_customer_recipe:prepare_customer_recipe"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed October 13, 2026: The credential-free MCP listener is fixed to IPv4 loopback inside the isolated network namespace, using the already validated dynamic relay port. It is not the public Baltor or model provider endpoint. The parent owns all authenticated external requests; invalid relay origins are refused."
+  created_on: '2026-10-13'
+  expires_on: '2027-01-13'
+- finding_id: hardcoding.d6c5df9a1b5a0dcc81349399
+  owner: "loop_engine.core.opencode_customer_recipe:prepare_customer_recipe"
+  classification: DEPLOYMENT_CONFIGURATION
+  rationale: "Reviewed October 13, 2026: XDG_DATA_HOME names the recipe-owned directory inside the bounded /work tmpfs. The recipe checks the actual mount and ceiling before copying declared seed files. It is not a host home or configurable customer path; fresh namespace and scratch-cap controls cover it."
+  created_on: '2026-10-13'
+  expires_on: '2027-01-13'
+- finding_id: hardcoding.0a8a8df5c7a84cadeacb8aea
+  owner: "tools.check_opencode_customer_offline:run"
+  classification: CLOSED_CONTROLLED_VOCABULARY
+  rationale: "Reviewed October 13, 2026: The closed use/revise/recover vocabulary selects the first-phase expected arithmetic result in an explicit offline verifier. It never routes production work. The report declares scripted responses and zero external service/model requests, and independently checks preserved downloaded bytes and revised/recovered results."
+  created_on: '2026-10-13'
+  expires_on: '2027-01-13'
+- finding_id: hardcoding.96b47a5b4e270d3ae2417f61
+  owner: "tools.check_opencode_customer_offline:run"
+  classification: CLOSED_CONTROLLED_VOCABULARY
+  rationale: "Reviewed October 13, 2026: The closed use/revise/recover vocabulary limits the secret/network assertions to the phase that emits those measurements in an explicit offline verifier. It never routes production work. The report declares scripted responses and zero external service/model requests, and independently checks preserved downloaded bytes and revised/recovered results."
+  created_on: '2026-10-13'
+  expires_on: '2027-01-13'
+- finding_id: hardcoding.576a2bd0e0656febfcc85b86
+  owner: "tools.check_opencode_customer_offline:run.fixture_model"
+  classification: CLOSED_CONTROLLED_VOCABULARY
+  rationale: "Reviewed October 13, 2026: The closed use/revise/recover vocabulary selects the first scripted search response in an explicit offline verifier. It never routes production work. The report declares scripted responses and zero external service/model requests, and independently checks preserved downloaded bytes and revised/recovered results."
+  created_on: '2026-10-13'
+  expires_on: '2027-01-13'
+- finding_id: hardcoding.d0cb0b5dca385c1f243faace
+  owner: "tools.check_opencode_customer_offline:run.fixture_model"
+  classification: CLOSED_CONTROLLED_VOCABULARY
+  rationale: "Reviewed October 13, 2026: The closed use/revise/recover vocabulary selects the scripted first-use tool response count in an explicit offline verifier. It never routes production work. The report declares scripted responses and zero external service/model requests, and independently checks preserved downloaded bytes and revised/recovered results."
+  created_on: '2026-10-13'
+  expires_on: '2027-01-13'
+- finding_id: hardcoding.7b274a3ff1a64a129fe683a0
+  owner: "tools.check_opencode_customer_resources:run"
+  classification: CLOSED_CONTROLLED_VOCABULARY
+  rationale: "Reviewed October 13, 2026: The scratch_many_files negative-control selector chooses a 512 MiB cgroup while filling the independently fixed 256 MiB workspace tmpfs. This isolates ENOSPC from the separate memory-pressure control; it is verifier setup, not a runtime default or production exemption."
+  created_on: '2026-10-13'
+  expires_on: '2027-01-13'
+- finding_id: hardcoding.cb13fe78a8d769df1145c85c
+  owner: "tools.check_opencode_customer_resources:run"
+  classification: CLOSED_CONTROLLED_VOCABULARY
+  rationale: "Reviewed October 13, 2026: The wall negative-control selector assigns a two-second runtime ceiling to a ten-second sleeper. Other independently named controls receive five seconds. This is deliberate bounded test construction, not a production timeout policy."
+  created_on: '2026-10-13'
+  expires_on: '2027-01-13'
+- finding_id: hardcoding.8f57210b9cfdd4915cc95856
+  owner: "tools.component_qualification.checks:SecretsCheck.run"
+  classification: CLOSED_CONTROLLED_VOCABULARY
+  rationale: "Reviewed October 13, 2026: The video/mp4 media type selects additional MP4 binary-string and container-metadata secret scanning. It narrows no existing text checks and grants no publication by itself; malformed containers remain separately refused by ParseCheck."
+  created_on: '2026-10-13'
+  expires_on: '2027-01-13'
+- finding_id: hardcoding.e928669977721ca596d00157
+  owner: "tools.component_qualification.checks:_binary_findings"
+  classification: CLOSED_CONTROLLED_VOCABULARY
+  rationale: "Reviewed October 13, 2026: The video/mp4 media type selects the explicitly opted-in MP4 decoder adapter. Exact .mp4 suffix, source manifest, pinned tools and successful full decode remain required; unknown binary formats are still refused. This protocol dispatch literal is not a codec preference or provider binding."
+  created_on: '2026-10-13'
+  expires_on: '2027-01-13'
+- finding_id: hardcoding.595998b5301cb730fd7a4ee9
+  owner: "tools.component_qualification.media_validation:run_decoder"
+  classification: DEPLOYMENT_CONFIGURATION
+  rationale: "Reviewed October 13, 2026: An empty environment is mandatory before the absolute Bubblewrap launcher starts. It prevents inherited host credentials and loader settings from reaching the launcher; only declared descriptors and in-sandbox LANG are supplied. Making this a mutable deployment preference would weaken the tested isolation boundary."
+  created_on: '2026-10-13'
+  expires_on: '2027-01-13'
+- finding_id: hardcoding.4ea6b5cfb2ec4a2fc11bbe1e
+  owner: "tools.knowledge_radar.community-watch-v1.json:sources[10].terms_url"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed October 13, 2026: The versioned community source registry owns Godot's publisher policy reference. Bounded transport enforces public HTTPS and explicit source identity; managed cooldown and partial-parse controls remain in force. Selected use is internal link discovery only, with no redistribution grant, schedule installation or request-ceiling increase."
+  created_on: '2026-10-13'
+  expires_on: '2027-01-13'
+- finding_id: hardcoding.e8545fb122fc8bf3f3ea5ca1
+  owner: "tools.knowledge_radar.community-watch-v1.json:sources[10].url"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed October 13, 2026: The versioned community source registry owns Godot's exact public RSS endpoint. Bounded transport enforces public HTTPS and explicit source identity; managed cooldown and partial-parse controls remain in force. Selected use is internal link discovery only, with no redistribution grant, schedule installation or request-ceiling increase."
+  created_on: '2026-10-13'
+  expires_on: '2027-01-13'
+- finding_id: hardcoding.14b93f16e33b82dd2963f360
+  owner: "tools.knowledge_radar.community-watch-v1.json:sources[11].terms_url"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed October 13, 2026: The versioned community source registry owns Hugging Face's source-terms reference. Bounded transport enforces public HTTPS and explicit source identity; managed cooldown and partial-parse controls remain in force. Selected use is internal link discovery only, with no redistribution grant, schedule installation or request-ceiling increase."
+  created_on: '2026-10-13'
+  expires_on: '2027-01-13'
+- finding_id: hardcoding.e5197f6744535d2c455f20f0
+  owner: "tools.knowledge_radar.community-watch-v1.json:sources[11].url"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed October 13, 2026: The versioned community source registry owns Hugging Face's exact public aggregate-feed endpoint. Bounded transport enforces public HTTPS and explicit source identity; managed cooldown and partial-parse controls remain in force. Selected use is internal link discovery only, with no redistribution grant, schedule installation or request-ceiling increase."
+  created_on: '2026-10-13'
+  expires_on: '2027-01-13'
+- finding_id: hardcoding.84dc47ce11df28d9256b9c23
+  owner: "tools.supply_lines.packaging:require_review_bounds"
+  classification: CLOSED_CONTROLLED_VOCABULARY
+  rationale: "Reviewed October 13, 2026: Only declared creative_originals video/mp4 bytes may use the existing catalogue per-file bound instead of the text review bound. The exact resource manifest and total package bounds are still checked; this branch prepares a candidate and does not waive native qualification or admission."
+  created_on: '2026-10-13'
+  expires_on: '2027-01-13'
+- finding_id: hardcoding.aa80fc9ce4057d96b9615b99
+  owner: "tools.supply_lines.packaging:require_review_bounds"
+  classification: CLOSED_CONTROLLED_VOCABULARY
+  rationale: "Reviewed October 13, 2026: The video/mp4 exclusion from the text-only byte subtotal preserves the original text review cap for every other file while retaining the catalogue whole-package cap. Unsupported media types get no exception; the separate MP4 manifest and decoder controls remain required."
+  created_on: '2026-10-13'
+  expires_on: '2027-01-13'
 - finding_id: hardcoding.a819ea9ec25b680082ee2534
   owner: "loop_engine.core.service_runtime.agentafk_pages"
   classification: STRATEGY_OR_PROVIDER_BINDING
