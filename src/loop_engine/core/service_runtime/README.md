@@ -1573,6 +1573,13 @@ frozen in `profile.json`; `READING.md` carries the corresponding reading guide.
 Both files use the existing `CataloguePackage` digest and file metadata.
 The label is data, not authenticated agent identity.
 
+The compiler also accepts an optional trusted `origin` from the HTTP host or
+local operator. It adds the exact HTTPS source-directory and collection URLs
+to `READING.md` while keeping `profile.json` and its version-2 schema unchanged.
+Native package digests cover the resulting guide bytes. The guide grants no
+network access. Folder validation requires the same explicitly expected origin;
+it never learns a trusted host from downloaded prose.
+
 `feed_profile_web.py` owns the bounded stateless export at
 `POST /api/v1/feeds/profile`. It uses the host's UTC date, requires the displayed
 directory digest, returns exact UTF-8 files and keeps no settings. Anonymous

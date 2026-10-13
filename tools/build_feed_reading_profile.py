@@ -37,6 +37,7 @@ def main(argv=None):
     parser.add_argument("--on-stale", choices=STALE_POLICIES, help="Default refuse; hold permits a profile that still needs source-documentation review.")
     parser.add_argument("--on-partial", choices=PARTIAL_POLICIES, help="Default refuse; disclose explicitly permits a bounded subset.")
     parser.add_argument("--as-of", default=datetime.now(timezone.utc).date().isoformat(), help="Reference date; defaults to today's UTC date and does not refresh evidence.")
+    parser.add_argument("--source-origin", help="Exact expected HTTPS source-service origin for the reading guide; passive connection data, not network permission. Also accepted with --check.")
     parser.add_argument("--output-root", type=Path, help="Existing local folder; only a new named child may be created.")
     parser.add_argument("--name", help="New child folder name, lowercase letters/digits/hyphens.")
     parser.add_argument("--authorize-local-writes", action="store_true")
@@ -46,18 +47,19 @@ def main(argv=None):
                                     or any(value is not None for value in build_options)):
         parser.error("listing/checking cannot also build or write a profile")
     if args.authorize_local_writes and not (args.output_root and args.name):parser.error("writes require --output-root and --name")
+    if args.list and args.source_origin:parser.error("listing does not use a source origin")
     if bool(args.output_root) != bool(args.name):parser.error("--output-root and --name go together")
     try:
         if args.list:report = inventory()
-        elif args.check:report = check_folder(args.check, as_of=args.as_of)
+        elif args.check:report = check_folder(args.check, as_of=args.as_of, origin=args.source_origin)
         else:
             if not args.agent_label:parser.error("building needs --agent-label and a collection or topic")
             request = ProfileRequest(args.agent_label, tuple(args.collection), tuple(args.topic), args.report_format or "markdown",
                 args.mode or "both", 20 if args.max_items is None else args.max_items, 32768 if args.max_bytes is None else args.max_bytes,
                 30 if args.max_age_days is None else args.max_age_days, args.on_stale or "refuse", args.on_partial or "refuse", args.as_of,
                 tuple(args.source), tuple(args.exclude_source), 1440 if args.poll_minutes is None else args.poll_minutes)
-            profile, bodies, native = compile_files(request)
-            output = write_new(args.output_root, args.name, bodies, authorized=True) if args.authorize_local_writes else None
+            profile, bodies, native = compile_files(request, origin=args.source_origin)
+            output = write_new(args.output_root, args.name, bodies, authorized=True, origin=args.source_origin) if args.authorize_local_writes else None
             report = {"record_type": "agent_feed_profile_build/v2", "status": "written" if output else "validated_only",
                 "profile_digest": profile["profile_digest"], "directory": profile["source_directory"], "coverage": profile["coverage"],
                 "freshness": profile["freshness"], "native_package": native, "output": str(output) if output else None,

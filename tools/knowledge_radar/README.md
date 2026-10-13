@@ -409,7 +409,14 @@ Checks never renew dates or silently add newly listed sources. An authorized
 remote collection response must also match the pinned digest and data scope.
 
 Profiles contain registry IDs and supported relative collection paths, not
-external URLs, credentials or permission grants. Metadata is screened for
+external URLs, credentials or permission grants. To make the reading guide
+usable by a fresh harness, supply `--source-origin https://agentfeeds.si`
+when building it. This records absolute source-directory and collection URLs
+in `READING.md`, without changing `profile.json`. Use that same option with
+`--check` for an origin-bound download. A different or omitted expected origin
+refuses the guide; a host in downloaded prose never becomes trusted input.
+The origin is passive connection data and grants no network access.
+Metadata is screened for
 common secret and instruction-steering patterns; this is not a complete
 semantic classifier. Source descriptions are untrusted data. No tool runs,
 timer, telemetry, subscription, billing change, hosted setting or push delivery

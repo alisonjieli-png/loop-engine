@@ -146,6 +146,23 @@ class ProfileTests(unittest.TestCase):
 
 
 class FileTests(unittest.TestCase):
+    def test_origin_bound_downloads_require_the_same_explicit_origin_to_validate(self):
+        origin = "https://agentfeeds.si"
+        bodies = compile_files(request(), origin=origin)[1]
+        with TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            with self.assertRaisesRegex(profiles.FeedProfileError, "instructions_changed"):
+                write_new(root, "unbound", bodies, authorized=True)
+            folder = write_new(root, "downloaded", bodies, authorized=True, origin=origin)
+            self.assertEqual(check_folder(folder, as_of=TODAY, origin=origin)["status"], "validated_source_profile")
+            for wrong in (None, "https://another.example"):
+                with self.subTest(wrong=wrong), self.assertRaisesRegex(profiles.FeedProfileError, "instructions_changed"):
+                    check_folder(folder, as_of=TODAY, origin=wrong)
+            with redirect_stdout(io.StringIO()):
+                self.assertEqual(main(["--check", str(folder), "--as-of", TODAY, "--source-origin", origin]), 0)
+                self.assertEqual(main(["--check", str(folder), "--as-of", TODAY]), 1)
+            self.assertEqual({name: (folder/name).read_bytes() for name in bodies}, bodies)
+
     def test_confined_create_and_check_keep_two_profiles_separate(self):
         with TemporaryDirectory() as temporary:
             root = Path(temporary);one = compile_files(request())[1]

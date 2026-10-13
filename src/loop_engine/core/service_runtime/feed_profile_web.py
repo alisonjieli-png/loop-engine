@@ -19,7 +19,7 @@ _FIELDS = frozenset(("record_type", "directory_digest", "agent_label", "collecti
     "source_ids", "excluded_source_ids", "report_format", "requested_poll_interval_minutes"))
 
 
-def export(fields, *, directory=None, today=None):
+def export(fields, *, directory=None, today=None, origin=None):
     """Compile bounded files; date injection is for checks, never a request field."""
     if type(fields) is not dict or set(fields) != _FIELDS or fields.get("record_type") != REQUEST:
         raise profiles.FeedProfileError("feed_profile_export_contract")
@@ -31,7 +31,7 @@ def export(fields, *, directory=None, today=None):
         **{key: fields[key] for key in _FIELDS - {"record_type", "directory_digest"}},
         "mode": "both", "max_items": 128, "max_bytes": profiles.MAXIMUM_BYTES,
         "max_age_days": 30, "on_stale": "hold", "on_partial": "refuse", "as_of": day})
-    profile, bodies, native = profiles.compile_files(request, data)
+    profile, bodies, native = profiles.compile_files(request, data, origin=origin)
     result = {"record_type": RESULT, "profile": profile, "native_package": native,
         "files": [{"path": path, "content": body.decode("utf-8"), "sha256": sha256(body).hexdigest(),
                    "size_bytes": len(body), "media_type": "application/json" if path.endswith(".json") else "text/markdown"}

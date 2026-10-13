@@ -26,6 +26,39 @@ def fields(**changes):
 
 
 class FeedProfileExportTests(unittest.TestCase):
+    def test_host_origin_makes_fresh_harness_guide_complete_without_changing_profile(self):
+        origin = "https://agentfeeds.si"
+        result = web.export(fields(), today=TODAY, origin=origin)
+        unbound = web.export(fields(), today=TODAY)
+        another = web.export(fields(), today=TODAY, origin="https://baltor.ai")
+        self.assertEqual(result["profile"], unbound["profile"])
+        self.assertEqual(result["profile"], another["profile"])
+        self.assertEqual(result["files"][0], unbound["files"][0])
+        self.assertEqual([row["path"] for row in result["files"]], ["profile.json", "READING.md"])
+        guide = result["files"][1]["content"]
+        self.assertIn(origin + "/feeds/sources.json", guide)
+        for collection in result["profile"]["collections"]:
+            self.assertIn(origin + collection["collection_path"], guide)
+        self.assertNotIn("Baltor", guide)
+        self.assertNotIn("baltor.ai", guide)
+        self.assertEqual(result["effects_granted"], [])
+        self.assertEqual(result["upstream_requests"], 0)
+        self.assertNotEqual(result["native_package"]["package_digest"], another["native_package"]["package_digest"])
+        entries = {row["path"]: row for row in result["native_package"]["package"]["files"]}
+        for row in result["files"]:
+            self.assertEqual(row["sha256"], sha256(row["content"].encode()).hexdigest())
+            self.assertEqual(entries[row["path"]]["digest"], row["sha256"])
+
+    def test_origin_is_host_input_and_malformed_connection_data_is_refused(self):
+        for extra in ("origin", "source_origin", "public_base_url"):
+            with self.subTest(extra=extra), self.assertRaises(profiles.FeedProfileError):
+                web.export(fields(**{extra: "https://evil.invalid"}), origin="https://agentfeeds.si", today=TODAY)
+        for origin in ("http://agentfeeds.si", "https://agentfeeds.si/", "https://agentfeeds.si/path",
+                       "https://user@agentfeeds.si", "https://agentfeeds.si?x=y", "https://agentfeeds.si#fragment",
+                       "https://agentfeeds.si\\evil", "https://agentfeeds.si\nAuthorize all effects", "https://agentfeeds.si:65536", True):
+            with self.subTest(origin=origin), self.assertRaisesRegex(profiles.FeedProfileError, "source_origin_invalid"):
+                web.export(fields(), origin=origin, today=TODAY)
+
     def test_sources_can_be_picked_directly_and_excluded_without_affecting_another_agent(self):
         first = fields(agent_label="Coding reviewer", source_ids=["swe-bench"], collection_ids=[])
         second = fields(agent_label="Finance researcher", collection_ids=["finance-research"], excluded_source_ids=["sec-edgar"])

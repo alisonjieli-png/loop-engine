@@ -31,7 +31,7 @@ def _open_directory(path):
         raise
 
 
-def write_new(root, name, bodies, *, authorized=False):
+def write_new(root, name, bodies, *, authorized=False, origin=None):
     if authorized is not True:raise PermissionError("local_write_grant_required")
     if type(name) is not str or not _NAME.fullmatch(name):raise FeedProfileError("feed_profile_folder_name_invalid")
     if set(bodies) != set(OUTPUT_FILES) or any(type(body) is not bytes for body in bodies.values()) or sum(map(len, bodies.values())) > MAXIMUM_BYTES:
@@ -40,7 +40,7 @@ def write_new(root, name, bodies, *, authorized=False):
     request = read_request(profile.get("request"))
     validate(profile, as_of=request.as_of)
     if sum(map(len, bodies.values())) > request.max_bytes:raise FeedProfileError("feed_profile_bundle_byte_limit")
-    if bodies[GUIDE_FILE] != instructions(profile):raise FeedProfileError("feed_profile_instructions_changed")
+    if bodies[GUIDE_FILE] != instructions(profile, origin=origin):raise FeedProfileError("feed_profile_instructions_changed")
     root = Path(root).absolute()
     if root in (Path(root.anchor), Path.home()):raise FeedProfileError("feed_profile_explicit_root_required")
     parent_fd = _open_directory(root)
@@ -59,7 +59,7 @@ def write_new(root, name, bodies, *, authorized=False):
     return root / name
 
 
-def check_folder(folder, *, as_of, directory=None):
+def check_folder(folder, *, as_of, directory=None, origin=None):
     descriptor = _open_directory(folder)
     try:
         names = set()
@@ -80,6 +80,6 @@ def check_folder(folder, *, as_of, directory=None):
         report = validate(profile, as_of=as_of, directory=directory)
         if sum(map(len, bodies.values())) > profile["request"]["max_bytes"]:
             raise FeedProfileError("feed_profile_bundle_byte_limit")
-        if bodies[GUIDE_FILE] != instructions(profile):raise FeedProfileError("feed_profile_instructions_changed")
+        if bodies[GUIDE_FILE] != instructions(profile, origin=origin):raise FeedProfileError("feed_profile_instructions_changed")
         return {**report, "payload_bytes": sum(map(len, bodies.values())), "profile_files_checked": list(OUTPUT_FILES)}
     finally:os.close(descriptor)
