@@ -2,7 +2,7 @@
 
 This is a release-curated website projection, not a source collector, a new
 knowledge store or a qualification result. It reads only the packaged directory
-and returns source references in JSON Feed or Markdown. No upstream request,
+and returns source references in JSON Feed, RSS or Markdown. No upstream request,
 account access, installation or model call happens while rendering a collection.
 Its digest changes with the directory bytes; a request never invents freshness.
 """
@@ -24,7 +24,8 @@ RECORD_TYPE = "agent_feed_source_directory/v1"
 COLLECTION_RECORD_TYPE = "agent_feed_source_collection/v1"
 SOURCE_RECORD_TYPE = "agent_feed_source_reference/v1"
 FEED_VERSION = "https://jsonfeed.org/version/1.1"
-JSON_MEDIA_TYPE, MARKDOWN_MEDIA_TYPE = "application/feed+json", "text/markdown"
+JSON_MEDIA_TYPE, MARKDOWN_MEDIA_TYPE, RSS_MEDIA_TYPE = "application/feed+json", "text/markdown", "application/rss+xml"
+REPRESENTATIONS = ((".json", JSON_MEDIA_TYPE), (".md", MARKDOWN_MEDIA_TYPE), (".rss", RSS_MEDIA_TYPE))
 DIRECTORY_PATH = "/feeds/sources"
 COLLECTION_PREFIX = "/feeds/collections/"
 CACHE_CONTROL = "public, max-age=300"
@@ -179,25 +180,26 @@ def handles(path):
     """Classify a route without loading content or depending on directory health."""
     if not isinstance(path, str):
         return False
-    if path in (DIRECTORY_PATH + ".json", DIRECTORY_PATH + ".md"):
+    if path in tuple(DIRECTORY_PATH + extension for extension, _media in REPRESENTATIONS):
         return True
     if not path.startswith(COLLECTION_PREFIX):
         return False
     name, separator, extension = path[len(COLLECTION_PREFIX):].rpartition(".")
-    return bool(separator and extension in ("json", "md") and _SLUG.fullmatch(name))
+    return bool(separator and "." + extension in dict(REPRESENTATIONS) and _SLUG.fullmatch(name))
 
 
 def formats():
     paths = (DIRECTORY_PATH, *(COLLECTION_PREFIX + item.id for item in directory().collections))
     return {path + extension: media for path in paths
-            for extension, media in ((".json", JSON_MEDIA_TYPE), (".md", MARKDOWN_MEDIA_TYPE))}
+            for extension, media in REPRESENTATIONS}
 
 
 def _selection(path):
     _require(path in formats(), "feed_source_format_unknown")
     data = directory()
-    selected = tuple(item for item in data.collections if path == DIRECTORY_PATH + ".json"
-                     or path == DIRECTORY_PATH + ".md" or path.rsplit(".", 1)[0] == COLLECTION_PREFIX + item.id)
+    address = path.rsplit(".", 1)[0]
+    selected = tuple(item for item in data.collections if address == DIRECTORY_PATH
+                     or address == COLLECTION_PREFIX + item.id)
     selected_ids = {source_id for item in selected for source_id in item.source_ids}
     return data, selected, tuple(source for source in data.sources if source.id in selected_ids)
 
@@ -205,6 +207,37 @@ def _selection(path):
 def _base(origin):
     _require(isinstance(origin, str) and re.fullmatch(r"https://[a-z0-9.-]+(?::[0-9]{1,5})?", origin) is not None)
     return origin
+
+
+def _xml_text(value):
+    """Escape plain metadata, refusing characters XML 1.0 cannot represent."""
+    _require(all(character in "\t\n\r" or 0x20 <= ord(character) <= 0xD7FF
+                 or 0xE000 <= ord(character) <= 0xFFFD or 0x10000 <= ord(character) <= 0x10FFFF
+                 for character in value))
+    return escape(value)
+
+
+def _rss(data, collections, sources, base, title):
+    """RSS describes the same source references, with no invented article dates."""
+    context = ["Curated source collection, not a live research digest.",
+               f"Source documentation checked: {data.source_docs_checked_on} (UTC). Directory digest: {data.digest}.",
+               *data.limitations]
+    for item in collections:
+        context.extend((item.title, item.purpose, "Decision question: " + item.decision_question,
+                        "When to revisit: " + item.review_trigger, "Agent research task: " + item.agent_task,
+                        "Compare: " + "; ".join(item.compare_fields)))
+    # RSS descriptions may be read as HTML after XML decoding. Keep source
+    # metadata plain text through both parsers, including literal markup.
+    rows = ['<?xml version="1.0" encoding="UTF-8"?>', '<rss version="2.0"><channel>',
+            "<title>" + _xml_text(title) + "</title>",
+            "<link>" + _xml_text(base + "/feeds#source-collections") + "</link>",
+            "<description>" + _xml_text(escape("\n\n".join(context))) + "</description><language>en</language>"]
+    for source in sources:
+        rows.extend(("<item><guid isPermaLink=\"false\">" + _xml_text(source.id) + "</guid>",
+                     "<title>" + _xml_text(source.name) + "</title><link>" + _xml_text(source.url) + "</link>",
+                     "<description>" + _xml_text(escape(" ".join((source.description, source.access, source.reuse))))
+                     + "</description></item>"))
+    return "\n".join((*rows, "</channel></rss>", ""))
 
 
 def render(path, origin):
@@ -220,10 +253,12 @@ def render(path, origin):
                                 "refresh_mode": "release_curated", "data_scope": "source_descriptions_only",
                                 "limitations": list(data.limitations),
                                 "collections": [item.record() for item in collections]},
-                    "items": [{"id": f"{source.id}:{data.digest}", "url": source.url, "title": source.name,
+                    "items": [{"id": source.id, "url": source.url, "title": source.name,
                                "content_text": " ".join((source.description, source.access, source.reuse)),
                                "_baltor": source.record()} for source in sources]}
         text = json.dumps(document, ensure_ascii=False, separators=(",", ":")) + "\n"
+    elif path.endswith(".rss"):
+        text = _rss(data, collections, sources, base, title)
     else:
         text = (f"# {title}\n\nCurated source collection, not a live research digest.\n\n"
                 f"Source documentation checked: {data.source_docs_checked_on} (UTC). Directory digest: `{data.digest}`.\n\n"
@@ -255,7 +290,8 @@ def page_section():
             f'<p class="md-reading">Source documentation checked <time datetime="{data.source_docs_checked_on}">'
             f'{data.source_docs_checked_on}</time> (UTC). Updates follow website releases; no daily refresh is promised.</p>'
             '<div class="md-actions"><a class="button secondary" href="/feeds/sources.json">All sources as JSON Feed</a>'
-            '<a class="button secondary" href="/feeds/sources.md">All sources as Markdown</a></div>'
+            '<a class="button secondary" href="/feeds/sources.md">All sources as Markdown</a>'
+            '<a class="button secondary" href="/feeds/sources.rss">All sources as RSS</a></div>'
             '<nav class="md-contents" aria-label="Source collection groups">')
     groups = tuple(dict.fromkeys(item.group for item in data.collections))
     body += "".join(f'<a href="#source-group-{index}">{escape(group)}</a>' for index, group in enumerate(groups))
@@ -275,7 +311,9 @@ def page_section():
                      f'<a class="button secondary" href="{COLLECTION_PREFIX}{item.id}.json" '
                      f'aria-label="{escape(item.title)} as JSON Feed">JSON Feed</a>'
                      f'<a class="button secondary" href="{COLLECTION_PREFIX}{item.id}.md" '
-                     f'aria-label="{escape(item.title)} as Markdown">Markdown</a></div></li>')
+                     f'aria-label="{escape(item.title)} as Markdown">Markdown</a>'
+                     f'<a class="button secondary" href="{COLLECTION_PREFIX}{item.id}.rss" '
+                     f'aria-label="{escape(item.title)} as RSS">RSS</a></div></li>')
         body += '</ul>'
     return body + ('<p class="md-reading">Source links do not authorize copying, installing, connecting accounts or sending '
                    'messages. Review each provider\'s terms and each item\'s licence. Product Hunt commercial API ingestion '

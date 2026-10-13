@@ -2,11 +2,13 @@
 from dataclasses import FrozenInstanceError
 import ast
 import hashlib
+from html import unescape
 import json
 from pathlib import Path
 from tempfile import TemporaryDirectory
 import unittest
 from unittest import mock
+from xml.etree import ElementTree
 
 from loop_engine.core.service_runtime import catalogue_feed, feed_source_collections as sources
 from loop_engine.core.service_runtime import static_site_export
@@ -23,6 +25,86 @@ class FeedSourceCollectionsTests(unittest.TestCase):
         with self.assertRaises(ServiceRuntimeError) as failure:
             sources.parse_directory(json.dumps(data).encode())
         self.assertEqual(failure.exception.code, "feed_source_directory_invalid")
+
+    def test_source_identity_survives_content_and_unrelated_directory_edits(self):
+        original = sources.directory()
+        data = self.source_record()
+        data["sources"][0]["description"] += " One source description was revised."
+        data["collections"][-1]["review_trigger"] += " Recheck a changed requirement."
+        changed = sources.parse_directory(json.dumps(data).encode())
+        self.assertNotEqual(original.digest, changed.digest)
+        versions = []
+        for directory in (original, changed):
+            with mock.patch.object(sources, "directory", return_value=directory):
+                versions.append(json.loads(sources.render("/feeds/sources.json", "https://feed.example.invalid")[0]))
+        before, after = versions
+        self.assertNotEqual(before["_baltor"]["directory_digest"], after["_baltor"]["directory_digest"])
+        self.assertNotEqual(before["items"][0]["content_text"], after["items"][0]["content_text"])
+        self.assertEqual({item["_baltor"]["id"]: item["id"] for item in before["items"]},
+                         {item["_baltor"]["id"]: item["id"] for item in after["items"]})
+        # A directory snapshot used as item identity repeats even unchanged sources.
+        wrong = {item["_baltor"]["id"]: item["id"] + ":" + changed.digest for item in after["items"]}
+        self.assertNotEqual({item["_baltor"]["id"]: item["id"] for item in before["items"]}, wrong)
+
+    def test_rss_preserves_selected_sources_rights_and_decision_context_without_article_dates(self):
+        origin = "https://feed.example.invalid"
+        data = self.source_record()
+        collection = next(item for item in data["collections"] if item["id"] == "finance-research")
+        collection["title"] = 'Research <markets> & "evidence"'
+        collection["decision_question"] = "What changed <before> & after?"
+        source = next(item for item in data["sources"] if item["id"] == collection["source_ids"][0])
+        source["name"] = 'Source <one> & "two"'
+        source["access"] = 'Read terms <before> collecting & keep limits. <script>alert("untrusted")</script>'
+        changed = sources.parse_directory(json.dumps(data).encode())
+        with mock.patch.object(sources, "directory", return_value=changed):
+            body, media = sources.render("/feeds/collections/finance-research.rss", origin)
+            json_body = json.loads(sources.render("/feeds/collections/finance-research.json", origin)[0])
+        self.assertEqual(media, "application/rss+xml")
+        root = ElementTree.fromstring(body)
+        self.assertEqual((root.tag, root.attrib), ("rss", {"version": "2.0"}))
+        channel = root.find("channel")
+        self.assertEqual(channel.findtext("title"), collection["title"])
+        self.assertEqual(channel.findtext("link"), origin + "/feeds#source-collections")
+        description = unescape(channel.findtext("description"))
+        for value in (changed.source_docs_checked_on, changed.digest, collection["decision_question"],
+                      collection["review_trigger"], collection["agent_task"], *collection["compare_fields"],
+                      *changed.limitations):
+            self.assertIn(value, description)
+        self.assertEqual(channel.findtext("language"), "en")
+        rows = channel.findall("item")
+        self.assertEqual(len(rows), len(json_body["items"]))
+        for row, expected in zip(rows, json_body["items"]):
+            self.assertEqual(row.findtext("guid"), expected["id"])
+            self.assertEqual(row.find("guid").get("isPermaLink"), "false")
+            self.assertEqual(row.findtext("link"), expected["url"])
+            self.assertEqual(row.findtext("title"), expected["title"])
+            self.assertEqual(unescape(row.findtext("description")), expected["content_text"])
+            self.assertNotIn("<script>", row.findtext("description"))
+        self.assertIn("&lt;script&gt;", rows[0].findtext("description"))
+        self.assertNotIn(b"<pubDate>", body)
+        self.assertNotIn(b"<lastBuildDate>", body)
+        self.assertNotIn(b"<script>", body)
+
+    def test_rss_refuses_unrepresentable_xml_and_oversize_output_before_delivery(self):
+        for character in ("\ufffe", "\uffff", "\ud800"):
+            data = self.source_record()
+            data["sources"][0]["name"] = "Source " + character
+            changed = sources.parse_directory(json.dumps(data).encode())
+            with self.subTest(character=repr(character)), mock.patch.object(sources, "directory", return_value=changed):
+                with self.assertRaises(ServiceRuntimeError) as failure:
+                    sources.render("/feeds/sources.rss", "https://feed.example.invalid")
+                self.assertEqual(failure.exception.code, "feed_source_directory_invalid")
+        with mock.patch.object(sources, "MAXIMUM_OUTPUT_BYTES", 64):
+            with self.assertRaises(ServiceRuntimeError):
+                sources.render("/feeds/sources.rss", "https://feed.example.invalid")
+        data = self.source_record()
+        data["sources"][0]["name"] = "Source \uffff"
+        changed = sources.parse_directory(json.dumps(data).encode())
+        with mock.patch.object(sources, "directory", return_value=changed), \
+                mock.patch.object(sources, "_xml_text", side_effect=sources.escape):
+            body, _media = sources.render("/feeds/sources.rss", "https://feed.example.invalid")
+            with self.assertRaises(ElementTree.ParseError):
+                ElementTree.fromstring(body)
 
     def test_complete_directory_is_immutable_has_exact_references_and_useful_jobs(self):
         directory = sources.directory()
@@ -104,9 +186,9 @@ class FeedSourceCollectionsTests(unittest.TestCase):
         with self.assertRaises(ServiceRuntimeError):
             sources.parse_directory(b" " * (sources.MAXIMUM_DIRECTORY_BYTES + 1))
 
-    def test_every_collection_has_deterministic_bounded_json_and_markdown_without_false_dates(self):
+    def test_every_collection_has_deterministic_bounded_formats_without_false_dates(self):
         paths = sources.formats()
-        self.assertEqual(len(paths), 2 * (len(sources.directory().collections) + 1))
+        self.assertEqual(len(paths), 3 * (len(sources.directory().collections) + 1))
         for path, media in paths.items():
             with self.subTest(path=path):
                 body, actual = sources.render(path, "https://feed.example.invalid")
@@ -121,6 +203,13 @@ class FeedSourceCollectionsTests(unittest.TestCase):
                         self.assertNotIn("date_published", item)
                         self.assertNotIn("date_modified", item)
                         self.assertEqual(item["_baltor"]["record_type"], sources.SOURCE_RECORD_TYPE)
+                elif path.endswith(".rss"):
+                    channel = ElementTree.fromstring(body).find("channel")
+                    self.assertTrue(channel.findall("item"))
+                    self.assertIn("not a live research digest", channel.findtext("description"))
+                    self.assertIsNone(channel.find("lastBuildDate"))
+                    for item in channel.findall("item"):
+                        self.assertIsNone(item.find("pubDate"))
                 else:
                     self.assertIn(b"not a live research digest", body)
                     self.assertIn(b"Agent research task:", body)
@@ -132,7 +221,7 @@ class FeedSourceCollectionsTests(unittest.TestCase):
         record = json.loads(body)
         self.assertEqual([item["_baltor"]["id"] for item in record["items"]], ["sec-edgar", "fred"])
         self.assertEqual([item["id"] for item in record["_baltor"]["collections"]], ["finance-research"])
-        for path in ("/feeds/collections/missing.json", "/feeds/collections/../founder-stack.json", "/feeds/sources.rss"):
+        for path in ("/feeds/collections/missing.json", "/feeds/collections/../founder-stack.json", "/feeds/sources.atom"):
             with self.assertRaises(ServiceRuntimeError):
                 sources.render(path, "https://feed.example.invalid")
         with self.assertRaises(ServiceRuntimeError):
@@ -177,10 +266,14 @@ class FeedSourceCollectionsTests(unittest.TestCase):
                             head = client.head(path)
                             self.assertEqual(head.content, b"")
                             self.assertEqual(int(head.headers["content-length"]), len(answer.content))
-                    for path in ("/feeds/sources.json?source=https://private.invalid/", "/feeds/collections/finance-research.md?account=other"):
-                        self.assertEqual(client.get(path).status_code, 400)
-                    self.assertEqual(client.post("/feeds/sources.json", content=b"{}").status_code, 400)
+                    for path in ("/feeds/sources.json?source=https://private.invalid/", "/feeds/collections/finance-research.md?account=other",
+                                 "/feeds/sources.rss?source=other", "/feeds/collections/finance-research.rss?account=other"):
+                        for method in ("GET", "HEAD"):
+                            self.assertEqual(client.request(method, path, headers={"If-None-Match": "*"}).status_code, 400)
+                    for path in ("/feeds/sources.json", "/feeds/sources.rss"):
+                        self.assertEqual(client.post(path, content=b"{}").status_code, 400)
                     self.assertEqual(client.get("/feeds/collections/missing.json").status_code, 404)
+                    self.assertEqual(client.get("/feeds/collections/missing.rss").status_code, 404)
                     with mock.patch.object(sources, "render", side_effect=ServiceRuntimeError("feed_source_directory_invalid")):
                         failed = client.get("/feeds/sources.json")
                         self.assertEqual(failed.status_code, 503)
@@ -200,10 +293,10 @@ class FeedSourceCollectionsTests(unittest.TestCase):
 
     def test_route_classification_does_not_read_the_directory(self):
         with mock.patch.object(sources, "directory", side_effect=ServiceRuntimeError("feed_source_directory_invalid")) as reader:
-            for path in ("/feeds/sources.json", "/feeds/sources.md", "/feeds/collections/finance-research.json",
-                         "/feeds/collections/not-in-directory.md"):
+            for path in ("/feeds/sources.json", "/feeds/sources.md", "/feeds/sources.rss", "/feeds/collections/finance-research.json",
+                         "/feeds/collections/not-in-directory.md", "/feeds/collections/finance-research.rss"):
                 self.assertTrue(sources.handles(path))
-            for path in ("/", "/api/v1/health", "/api/v1/session", "/feeds/sources.rss",
+            for path in ("/", "/api/v1/health", "/api/v1/session", "/feeds/sources.atom",
                          "/feeds/collections/../account.json", "/feeds/collections/name.json/extra", None):
                 self.assertFalse(sources.handles(path))
             reader.assert_not_called()
@@ -227,7 +320,8 @@ class FeedSourceCollectionsTests(unittest.TestCase):
                         self.assertEqual(answer.status_code, status, path)
                         self.assertEqual(answer.headers["cache-control"], "no-store")
                     for method in ("GET", "HEAD"):
-                        for path in ("/feeds", "/feeds/sources.json", "/feeds/collections/hardware-fit.md"):
+                        for path in ("/feeds", "/feeds/sources.json", "/feeds/collections/hardware-fit.md", "/feeds/sources.rss",
+                                     "/feeds/collections/hardware-fit.rss"):
                             answer = client.request(method, path)
                             self.assertEqual(answer.status_code, 503, (method, path))
                             self.assertEqual(answer.headers["cache-control"], "no-store")
