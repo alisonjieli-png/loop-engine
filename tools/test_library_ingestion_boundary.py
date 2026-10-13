@@ -26,6 +26,8 @@ STANDARD = {"__future__", "base64", "collections", "copy", "dataclasses", "datet
             "itertools", "json", "os", "pathlib", "re", "shutil", "subprocess", "tempfile", "time", "urllib"}
 #: Optional or base libraries, each allowed only in the modules that adopt it.
 LIBRARY_OWNERS = {"datasketch": {"near_duplicate_datasketch.py"}, "skills_ref": {"format_skills_ref.py"},
+                  # Finite timing and RFC HTTP-date parsing belong to the bounded transport.
+                  "math": {"https_transport.py"}, "email": {"https_transport.py"},
                   "jsonschema": {"format_json_schema.py"},
                   "tomllib": {"format_connection.py", "format_json_schema.py"},
                   "tomli": {"format_connection.py", "format_json_schema.py"},

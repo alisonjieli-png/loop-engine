@@ -9,7 +9,9 @@ from __future__ import annotations
 
 import fcntl
 import hashlib
+import math
 import os
+import time
 from datetime import datetime, timedelta, timezone
 from urllib.parse import parse_qsl, urlsplit
 
@@ -52,7 +54,7 @@ def network_for(registry, request_log):
     accept = "application/rss+xml, application/atom+xml, application/xml"
     for source_id, contract in contracts.items():
         network.transports[(source_id, accept)] = HttpsGetTransport(contract.hosts, network.budget, request_log,
-            timeout_seconds=15, maximum_bytes=contract.maximum_response_bytes, accept=accept)
+            timeout_seconds=15, maximum_bytes=contract.maximum_response_bytes, accept=accept, retry_rate_limit=False)
     return network
 
 
@@ -76,21 +78,31 @@ def ingest(store, scheduler, series, leads, now, loop_id):
     return {"added": added, "changed": changed, "work_queued": queued}
 
 
-def scan_feeds(registry, store, scheduler, series, network, now, *, force=False):
+def scan_feeds(registry, store, scheduler, series, network, now, *, force=False, started_at=None):
     checks = []
+    started = time.monotonic() if started_at is None else started_at
     for source in registry["sources"]:
         if not source["enabled"]:
             continue
         identity = "community.source." + source["id"]
         previous = store.get(identity)
         document = previous["document"] if previous else None
-        if not force and not due(document, now):
-            checks.append({"source": source["id"], "status": "not_due"})
-            continue
         old = document["data"] if document else {}
         binding = hashlib.sha256((source["engine"] + ":" + source["url"]).encode()).hexdigest()
         if old.get("binding_digest") != binding:
             old = {}
+        # A forced refresh may skip our normal cadence, never a provider's
+        # bound cooldown. Unknown clock-range outcomes require record review.
+        if old.get("retry_after_requires_review"):
+            checks.append({"source": source["id"], "status": "provider_hold", "reason": "retry_after_requires_review"})
+            continue
+        if old.get("retry_after_not_before", "") > now:
+            checks.append({"source": source["id"], "status": "provider_cooldown",
+                           "retry_after_not_before": old["retry_after_not_before"]})
+            continue
+        if not force and old and not due({"data": old}, now):
+            checks.append({"source": source["id"], "status": "not_due"})
+            continue
         state = {**old, "last_attempted_at": now, "next_check_at": later(now, source["interval_seconds"])}
         state["binding_digest"] = binding
         part = urlsplit(source["url"])
@@ -106,6 +118,17 @@ def scan_feeds(registry, store, scheduler, series, network, now, *, force=False)
                     raise ValueError("unbound_304")
                 return {"status": "not_modified"}
             if response.status != 200:
+                wait = response.retry_after
+                if type(wait) in (int, float) and math.isfinite(wait) and wait >= 0:
+                    try:
+                        # Include elapsed collection time, round up rather than
+                        # schedule before the provider's minimum waiting time.
+                        elapsed = max(0.0, time.monotonic() - started)
+                        # The tick's UTC observation is recorded to whole
+                        # seconds, so retain a one-second precision margin.
+                        state["retry_after_not_before"] = later(now, math.ceil(elapsed + wait) + 1)
+                    except (OverflowError, ValueError):
+                        state["retry_after_requires_review"] = True
                 raise ValueError("source_http_" + str(response.status))
             leads, coverage = parse_feed(response.body, source, registry)
             counts = ingest(store, scheduler, series, leads, now, active.loop_id)
@@ -120,11 +143,18 @@ def scan_feeds(registry, store, scheduler, series, network, now, *, force=False)
                 "community_source_read/v1", "community_source_result/v1", ("reads_fs", "writes_fs", "network"),
                 "Read one declared feed and queue its metadata.", "community_source_failed"), collect))
             state.update(last_successful_at=now, failures=0)
+            state.pop("retry_after_not_before", None)
+            state.pop("retry_after_requires_review", None)
         except Exception as error:  # noqa: BLE001 - isolate external engine failure without marking success
             # No raw body, credential or source instruction enters the diagnostic.
             result["reason"] = str(error)[:120] if isinstance(error, ValueError) else type(error).__name__
             state["failures"] = min(10, old.get("failures", 0) + 1)
             state["next_check_at"] = later(now, min(86400, source["interval_seconds"] * 2 ** state["failures"]))
+            if state.get("retry_after_not_before"):
+                state["next_check_at"] = max(state["next_check_at"], state["retry_after_not_before"])
+                result["retry_after_not_before"] = state["retry_after_not_before"]
+            if state.get("retry_after_requires_review"):
+                result["retry_after_requires_review"] = True
         finally:
             network.conditional = {}
         state["status"] = result["status"]
@@ -199,11 +229,12 @@ def tick(registry, root, *, network_allowed=False, writes_allowed=False, native_
         except BlockingIOError:
             return {"record_type": "community_watch_run/v1", "status": "already_running"}
         moment = now or clock()
+        started = time.monotonic()
         scheduler, series = open_queue(store)
         reconciliation = reconcile_definition(store, scheduler, series, moment)
         request_log = RequestLog()
         source_network = network or network_for(registry, request_log)
-        checks = scan_feeds(registry, store, scheduler, series, source_network, moment, force=force)
+        checks = scan_feeds(registry, store, scheduler, series, source_network, moment, force=force, started_at=started)
         research_result = {"status": "not_authorized"}
         if native_research_allowed:
             from .community_harness import research
@@ -212,7 +243,8 @@ def tick(registry, root, *, network_allowed=False, writes_allowed=False, native_
             except Exception as error:  # noqa: BLE001 - keep successful feed work when the external harness fails
                 research_result = {"status": "failed", "reason": type(error).__name__}
         work = work_once(store, scheduler, series, moment, maximum=registry["maximum_work_items_per_tick"])
-        partial = any(row["status"] == "failed" for row in checks) or research_result["status"] in ("failed", "unavailable")
+        partial = any(row["status"] in ("failed", "provider_cooldown", "provider_hold")
+                      or row.get("coverage", {}).get("truncated", False) for row in checks) or research_result["status"] in ("failed", "unavailable")
         report = {"record_type": "community_watch_run/v1", "run_id": store.run_id, "at": moment, "status": "partial" if partial else "complete",
                   "sources": checks, "requests": request_log.summary(), "research": research_result,
                   "compiler_reconciliation": reconciliation,

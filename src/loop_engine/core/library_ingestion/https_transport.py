@@ -2,9 +2,10 @@
 
 The transport sends only GET requests, only to hosts the caller declared,
 follows no redirect, reads at most a declared number of bytes within a
-declared time and never sends a credential. A 429 answer with a Retry-After
-time pauses through the run's budget, within its declared bound, and is
-tried once more. Every request is admitted by the budget and recorded in
+declared time and never sends a credential. By default a 429 answer with a
+Retry-After time pauses through the run's budget, within its declared bound,
+and is tried once more. A durable watcher can disable that inline retry and
+persist the waiting time instead. Every request is admitted by the budget and recorded in
 the run's request log. The official Model Context Protocol registry reader
 and the package checks use it.
 
@@ -16,9 +17,13 @@ component builds or reads, and the network gate names a single file.
 from __future__ import annotations
 
 import time
+import math
+import re
 import urllib.error
 import urllib.request
 from dataclasses import dataclass
+from datetime import timezone
+from email.utils import parsedate_to_datetime
 from urllib.parse import quote, unquote, urlencode, urlsplit, urlunsplit
 
 from .record_rules import now_utc
@@ -64,11 +69,48 @@ class _NoRedirect(urllib.request.HTTPRedirectHandler):
         return None
 
 
-def _retry_after(headers) -> "float | None":
-    value = (headers or {}).get("Retry-After") if headers is not None else None
+def _http_date(value):
+    if not isinstance(value, str) or len(value) > 200 or any(ord(c) < 32 for c in value):
+        return None
     try:
-        return max(0.0, float(value)) if value is not None else None
-    except (TypeError, ValueError):
+        stamp = parsedate_to_datetime(value)
+        if stamp.tzinfo is None:
+            # HTTP's obsolete asctime format has implicit GMT. Other
+            # timezone-less email dates are not HTTP-date values.
+            if not re.fullmatch(r"[A-Za-z]{3} [A-Za-z]{3} [ 0-9][0-9] [0-9]{2}:[0-9]{2}:[0-9]{2} [0-9]{4}", value):
+                return None
+            stamp = stamp.replace(tzinfo=timezone.utc)
+        return stamp if stamp.utcoffset().total_seconds() == 0 else None
+    except (TypeError, ValueError, OverflowError, AttributeError):
+        return None
+
+
+def _retry_after(headers, *, now=None) -> "float | None":
+    """Read HTTP delay-seconds or an HTTP-date; never shorten a valid delay.
+
+    A source Date header can conservatively extend a date-based delay when
+    the local clock is ahead. Invalid, non-finite and non-HTTP-date values
+    are not converted into a claimed provider deadline.
+    """
+    value = (headers or {}).get("Retry-After") if headers is not None else None
+    if not isinstance(value, str) or len(value) > 200 or any(ord(c) < 32 and c != "\t" for c in value):
+        return None
+    value = value.strip(" \t")
+    if value.isascii() and value.isdigit():
+        return float(int(value))
+    try:
+        stamp = _http_date(value)
+        if stamp is None:
+            return None
+        moment = time.time() if now is None else float(now)
+        if not math.isfinite(moment):
+            return None
+        delay = max(0.0, stamp.timestamp() - moment)
+        source = _http_date((headers or {}).get("Date"))
+        if source is not None:
+            delay = max(delay, (stamp - source).total_seconds())
+        return delay
+    except (TypeError, ValueError, OverflowError, AttributeError):
         return None
 
 
@@ -79,7 +121,9 @@ class HttpsGetTransport:
 
     def __init__(self, hosts, budget: RequestBudget, log: RequestLog, *, timeout_seconds: float = 30.0,
                  maximum_bytes: int = 8 * 1024 * 1024, accept: str = "application/json",
-                 user_agent: str = _USER_AGENT) -> None:
+                 user_agent: str = _USER_AGENT, retry_rate_limit: bool = True) -> None:
+        if type(retry_rate_limit) is not bool:
+            raise ValueError("retry_rate_limit must be a boolean")
         self.hosts = frozenset(hosts)
         self.budget, self.log = budget, log
         self.timeout_seconds, self.maximum_bytes = timeout_seconds, maximum_bytes
@@ -88,6 +132,9 @@ class HttpsGetTransport:
         # A source whose terms ask every call to name the software making it (Poly Haven's API terms, 2.4) is read
         # with that name; every other caller keeps the component's own.
         self.user_agent = user_agent
+        # Durable watchers persist a cooldown instead of sleeping or making a
+        # second physical request within their one-read source allocation.
+        self.retry_rate_limit = retry_rate_limit
         self._opener = urllib.request.build_opener(_NoRedirect)
 
     def get(self, host: str, path: str, query: "dict | None" = None, *,
@@ -101,7 +148,7 @@ class HttpsGetTransport:
         target = urlunsplit((HTTPS_SCHEME, host, path, urlencode(query or {}), ""))
         conditions = _conditions(validators)
         response = self._send(host, target, conditions)
-        if response.status == 429 and response.retry_after is not None:
+        if self.retry_rate_limit and response.status == 429 and response.retry_after is not None:
             self.budget.pause(response.retry_after + 1.0, f"{host} asked to retry later")
             response = self._send(host, target, conditions)
         return response
@@ -116,7 +163,7 @@ class HttpsGetTransport:
             with self._opener.open(request, timeout=self.timeout_seconds) as answer:
                 status, body, headers = answer.status, answer.read(self.maximum_bytes + 1), answer.headers
         except urllib.error.HTTPError as error:
-            status, retry, headers = error.code, _retry_after(error.headers), error.headers
+            status, retry, headers = error.code, _retry_after(error.headers, now=self.budget.clock()), error.headers
             try:
                 body = error.read(self.maximum_bytes + 1)
             except OSError:

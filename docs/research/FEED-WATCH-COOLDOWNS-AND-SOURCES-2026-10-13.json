@@ -1,0 +1,193 @@
+{
+  "record_type": "feed_watch_qualification/v1",
+  "observed_on": "2026-10-13",
+  "source_baseline_revision": "046bfb4e930379ab9befba20b66d9857b8fdf5b5",
+  "verification": {
+    "owning_regression_tests_passed": 176,
+    "focused_cooldown_tests_included": 16,
+    "library_source_self_tests_passed": 28,
+    "component_guide_findings": 0,
+    "retained_failed_attempt": "The first 176-test run had one import-boundary failure because math and email were not declared. Exact ownership for those standard-library utilities was added only for https_transport.py; the complete 176-test rerun passed.",
+    "negative_control": "Restoring the original inline-retry behavior reproduces PauseExceedsBound and loses the 48-hour provider cooldown before managed state can preserve it."
+  },
+  "scope": "Bounded source reads and offline reliability checks. Registry configuration is not an installed schedule, a maintained public feed or publication approval.",
+  "owners": {
+    "transport": "src/loop_engine/core/library_ingestion/https_transport.py",
+    "watch": "tools/knowledge_radar/community_watch.py",
+    "registry": "tools/knowledge_radar/community-watch-v1.json",
+    "records": "tools/knowledge_radar/community_store.py",
+    "scheduler": "src/loop_engine/core/reactive_scheduler.py"
+  },
+  "reproduced_failure": {
+    "network": "fixture only",
+    "status": 429,
+    "provider_delay_seconds": 172800,
+    "attempt_at": "2026-09-29T12:00:00Z",
+    "prior_next_check_at": "2026-09-29T16:00:00Z",
+    "early_repeat_at": "2026-09-29T17:00:00Z",
+    "early_repeat_count": 1,
+    "second_failure": "The transport's inline pause raises PauseExceedsBound with the watch's zero-pause budget before the response delay reaches managed source state."
+  },
+  "decision": "Keep the existing transport, request accounting, source edge and managed state. Let the watch disable inline rate-limit retry and persist the source cooldown. Never use forced cadence to bypass that minimum. Preserve last successful observations and validators.",
+  "references": [
+    {
+      "url": "https://www.rfc-editor.org/rfc/rfc9110.html#name-retry-after",
+      "finding": "Retry-After accepts nonnegative integer delay-seconds or HTTP-date. The delay begins after the response is received."
+    },
+    {
+      "url": "https://www.rfc-editor.org/rfc/rfc6585.html#section-4",
+      "finding": "429 denotes rate limiting and can provide Retry-After. Rate accounting can cover a resource, server or group; this URL-bound watch state is not a replacement for account-wide quota accounting."
+    },
+    {
+      "url": "https://urllib3.readthedocs.io/en/stable/reference/urllib3.util.html",
+      "finding": "Reviewed its explicit retry policy and Retry-After support. Did not replace the existing transport or adopt a retry-delay cap that could schedule before a longer source-requested delay."
+    },
+    {
+      "url": "https://github.com/godotengine/godot-website/blob/master/LICENSE.txt",
+      "finding": "The website repository labels its code MIT. This check does not establish rights for all article text, third-party art or media; no such content is republished."
+    },
+    {
+      "url": "https://huggingface.co/terms-of-service",
+      "finding": "Content access and reuse remain subject to the source terms and any accompanying licence. The selected feed is a publisher-hosted aggregate that includes community authors; it is not uniform official advice or a blanket redistribution licence."
+    }
+  ],
+  "live_probe": {
+    "started_at": "2026-10-13T21:36:48Z",
+    "finished_at": "2026-10-13T21:36:54Z",
+    "physical_requests": 4,
+    "maximum_requests": 4,
+    "maximum_bytes_per_response": 2097152,
+    "source_bodies_retained": false,
+    "private_leads_written": 0,
+    "model_calls": 0,
+    "scheduled_jobs_changed": 0,
+    "published": 0
+  },
+  "sources": [
+    {
+      "id": "godot_news",
+      "url": "https://godotengine.org/rss.xml",
+      "host": "godotengine.org",
+      "path": "/rss.xml",
+      "source_reference": "https://godotengine.org/blog/",
+      "rights_reference": "https://github.com/godotengine/godot-website/blob/master/LICENSE.txt",
+      "selected_use": "internal_link_discovery_only",
+      "public_redistribution_qualified": false,
+      "status": 200,
+      "body_size": 247308,
+      "body_sha256": "8561183a356da22d8e604646136b7c7545126251f49ba86d838cb650492d182b",
+      "observed_at": "2026-10-13T21:36:49Z",
+      "parser": "knowledge_radar.community_intake.parse_feed",
+      "coverage": {
+        "entries_seen": 15,
+        "entries_considered": 15,
+        "irrelevant_or_refused": 1,
+        "truncated": false,
+        "historical_coverage": "latest_feed_window_only",
+        "absence_is_not_deletion": true
+      },
+      "retained_lead_count": 14,
+      "latest_retained_publication": "2026-09-29T12:00:00Z",
+      "sample_references": [
+        {
+          "url": "https://godotengine.org/article/dev-snapshot-godot-4-8-dev-7/",
+          "source_published_at": "2026-09-29T12:00:00Z",
+          "digest": "aea086690fa832793b05e2817f8e362af078b856e5eacedbf65409c557a32a21"
+        },
+        {
+          "url": "https://godotengine.org/article/dev-snapshot-godot-4-8-dev-6/",
+          "source_published_at": "2026-09-15T20:00:00Z",
+          "digest": "d45aecb12589cadac23af887bf51a0f8691bbe4a214a86cc050e28b6474660d6"
+        },
+        {
+          "url": "https://godotengine.org/article/rendering-cpu-optimizations/",
+          "source_published_at": "2026-09-15T17:00:00Z",
+          "digest": "1880361a1ec195c3a71e95d708d1c60031489abe6e785e6d375695c244497f41"
+        }
+      ],
+      "validators": {
+        "etag": "\"3c60c-65ca768a52cb9\"",
+        "last_modified": "Tue, 29 Sep 2026 23:19:05 GMT"
+      },
+      "conditional": {
+        "status": 304,
+        "body_size": 0,
+        "body_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "observed_at": "2026-10-13T21:36:51Z",
+        "same_body_if_200": false
+      }
+    },
+    {
+      "id": "huggingface_blog",
+      "url": "https://huggingface.co/blog/feed.xml",
+      "host": "huggingface.co",
+      "path": "/blog/feed.xml",
+      "source_reference": "https://huggingface.co/blog",
+      "rights_reference": "https://huggingface.co/terms-of-service",
+      "selected_use": "internal_link_discovery_only",
+      "public_redistribution_qualified": false,
+      "status": 200,
+      "body_size": 258599,
+      "body_sha256": "097963ebb1bc4c5971d13e18692cd610a07f2faefd7d2715be4dfbe0f084e658",
+      "observed_at": "2026-10-13T21:36:52Z",
+      "parser": "knowledge_radar.community_intake.parse_feed",
+      "coverage": {
+        "entries_seen": 876,
+        "entries_considered": 40,
+        "irrelevant_or_refused": 30,
+        "truncated": true,
+        "historical_coverage": "latest_feed_window_only",
+        "absence_is_not_deletion": true
+      },
+      "retained_lead_count": 10,
+      "latest_retained_publication": "2026-10-03T22:56:48Z",
+      "sample_references": [
+        {
+          "url": "https://huggingface.co/blog/microsoft/thinkingbox",
+          "source_published_at": "2026-10-03T22:56:48Z",
+          "digest": "3f30d5c0a62b009524a7caf650235cb0de468980097b331ae800fa03dede135c"
+        },
+        {
+          "url": "https://huggingface.co/blog/MultiverseComputingCAI/getting-the-source-right-not-just-the-fact-source",
+          "source_published_at": "2026-09-29T13:07:00Z",
+          "digest": "79164b60f6b4553ae4d0a0dc7d64c69c60ed57bc35fec3b8ec2bae08ffd1b294"
+        },
+        {
+          "url": "https://huggingface.co/blog/evaleval-aisi",
+          "source_published_at": "2026-09-22T00:00:00Z",
+          "digest": "89f8c6a46e9a9144314b4334e692b73af2d03bac861aef4f82fdaa94e3ba4858"
+        }
+      ],
+      "validators": {
+        "etag": "W/\"3f227-ZnhwcS/n40VEzGl8IBH5umTV/3Q\""
+      },
+      "conditional": {
+        "status": 304,
+        "body_size": 0,
+        "body_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "observed_at": "2026-10-13T21:36:54Z",
+        "same_body_if_200": false
+      }
+    }
+  ],
+  "limits": [
+    "Only the declared latest feed windows were inspected. Source publication dates, HTTP observation dates and current customer applicability are different.",
+    "Hugging Face returned 876 entries but only the first 40 were considered. A one-off conditional 304 proves server validator handling, not complete parsing or prospective freshness. The watch does not retain a conditional validator after such a partial parse.",
+    "Godot's latest retained publication was September 29 and Hugging Face's was October 3. Neither date is relabeled as fresh October 13 news.",
+    "The watch has twelve configured feeds after the addition and retains its twelve-request tick ceiling. This does not increase the sixty-source public AgentFeeds directory or establish twelve scheduled collectors.",
+    "Blender development-blog discovery returned an access refusal in the research tool; no workaround, adapter activation or source addition was attempted."
+  ],
+  "consumer_use": {
+    "value": "Avoid hammering a throttled source, keep the last successful evidence honest, and give agents direct release and model/tool research leads.",
+    "needed_information": [
+      "Pinned project/tool/model versions and target environment",
+      "Original source reference and publication date",
+      "Current coverage, last success and provider cooldown",
+      "Source-specific access/reuse rights and explicit effect limits"
+    ],
+    "next_action": "Use a discovered Godot release or model-method post as a bounded verification question. Check primary changes and run an authorized environment-specific test before recommending adoption.",
+    "runtime_and_records": "Existing canonical source-read Loop, CommunityStore records, reactive work orders and local watch command. No new scheduler, queue, model engine, file format or public endpoint.",
+    "recovery": "Inspect the existing --list source mode without network. Wait for finite cooldown expiry. An unrepresentable delay requires verified provider/time evidence and an authorized managed-record correction; force does not clear it.",
+    "improvement_path": "Qualify a pinned scheduled pilot and trace its actual observations into independently reviewed decision material. Add coverage only for missed useful questions; do not equate a source entry with accepted customer work."
+  }
+}

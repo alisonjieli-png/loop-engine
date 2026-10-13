@@ -620,7 +620,7 @@ public-result rule.
 ## Bounded community watch
 
 `tools/watch_community_workflows.py` adds a separate acquisition path to this
-component. Its `community-watch-v1.json` declares six public forum feeds and
+component. Its `community-watch-v1.json` declares twelve public feeds and
 bounded research topics. Direct Reddit feeds and APIs are not enabled. An
 optional native Codex invocation uses the existing ChatGPT login and native
 web search to research one topic; it is not a substitute Reddit API or an
@@ -649,6 +649,52 @@ compiler has a new source digest, requeues saved leads and defers old briefs;
 bounded reconciliation reports incomplete coverage instead of claiming a full
 backfill. Per-run identifiers remain unique even within the same second.
 The persisted scheduler journal is not a complete native model transcript.
+
+Each selected feed makes at most one physical request per tick. Its transport returns
+a rate-limited response without sleeping or retrying inside that request.
+The existing managed source record keeps a valid `Retry-After` as
+`retry_after_not_before`. The next check is no earlier than either that time
+or the ordinary failure backoff, even when `--force-feed-check` is selected.
+Delay-seconds and HTTP-date forms are supported. Date-based waits use the
+source's `Date` conservatively when the local clock is ahead; elapsed tick
+time and a one-second timestamp margin prevent an early retry. A delay beyond
+the representable clock range sets `retry_after_requires_review`, without
+truncating the requested wait. Missing or malformed values keep the ordinary
+failure backoff and never turn a refused request into a successful check.
+
+For the consuming agent, a cooldown means the source was not checked again.
+Keep its prior observations and their original dates. Do not treat silence as
+no change, renew a recommendation, or claim the whole source is current.
+The run reports `partial` while a provider cooldown or review hold prevents a
+read. A source with more entries than the configured limit also leaves the
+run partial and keeps no conditional validator for that incomplete window.
+
+The publisher feeds include Godot release and development news and the
+Hugging Face blog aggregate. Hugging Face's aggregate includes community
+authors; hosting does not turn every article into an official provider claim.
+Both use the same six-hour cadence, forty-entry limit and internal-link-only
+use rule as the existing owner. Their
+[qualification record](../../docs/research/FEED-WATCH-COOLDOWNS-AND-SOURCES-2026-10-13.json)
+separates the four observed HTTP requests, source dates, partial coverage and
+rights limits. An enabled registry row is not an installed timer or a new
+public AgentFeeds collection.
+
+An agent evaluating a Godot upgrade can use a discovered release link to ask
+which changes affect its pinned renderer and export target. It then needs the
+original change evidence, its project constraints and an authorized test
+before changing the project. A Hugging Face post can supply a lead for a model
+or evaluation method, not a measured recommendation. The existing lead and
+work-order records name the next verification task; this collector installs
+nothing and produces no approved component by itself.
+
+To inspect a stalled source without another read, use the existing command's
+`--list source` mode and the same private `--library` directory. Check the
+source binding, last successful time, failure status and cooldown fields.
+Wait for a finite cooldown to expire. An unrepresentable wait needs verified
+provider/time evidence and an authorized managed-record correction; a forced
+tick does not clear it. A later successful read or bound `304` clears an
+expired cooldown while preserving the existing validator rules. Source rights
+and complete downstream usefulness still need their own qualification.
 
 Dismissed leads stay dismissed when source metadata changes or the compiler
 is replaced. Admission skips them, and a worker rechecks the current managed
