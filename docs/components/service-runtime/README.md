@@ -38,6 +38,15 @@ its own OAuth issuer, MCP resource and consent address over the same admitted
 accounts. Authorization handles from another issuer are unknown; PKCE,
 callback allowlists and same-origin consent checks remain required. OAuth's
 process request limits remain shared. Browser storage stays origin-local.
+AgentFeeds collection cards can save a local selection. The `/saved` page
+uses versioned, bounded browser preferences and filters obsolete identifiers
+against the current source directory. It can hand several collections to the
+existing reading-profile builder. Storage failures remain visible and do not
+report a successful save. Clear resets the selection; no preference is sent
+to an account or another brand, and no hosted feed or schedule is created.
+`tools/check_agentfeeds.mjs` checks the real local HTTP path, reload persistence,
+multi-collection selection, corrupt data and refused browser storage.
+
 Paid checkout and portal creation are unavailable on standalone brands until a
 qualified return-URL policy exists; this changes no existing subscription,
 customer identity, price or grant. Domain, sender and live customer qualification

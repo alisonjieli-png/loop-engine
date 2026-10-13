@@ -82,6 +82,20 @@ class AgentFeedsPagesTests(unittest.TestCase):
         self.assertIn('/assets/feed-profile.js?v=', html)
         self.assertNotIn('type="password"', html)
 
+    def test_saved_collections_are_browser_local_and_reuse_current_directory(self):
+        data = feed_profiles.current_directory()
+        body = pages.render('/saved')[0].decode()
+        self.assertIn('not synced to an account', body)
+        self.assertIn('no hosted feed or schedule', body)
+        self.assertIn('id="saved-clear"', body)
+        self.assertIn('id="saved-status" role="status"', body)
+        for item in data.collections:
+            self.assertIn('data-save-collection="' + item.id + '"', body)
+        smaller = pages.render('/saved', directory=replace(data, collections=data.collections[:1]))[0].decode()
+        self.assertEqual(smaller.count('data-save-collection='), 1)
+        self.assertNotIn('failure modes prevented', body)
+        self.assertNotIn('Score ', body)
+
     def test_approved_legal_articles_are_reused_exactly(self):
         source = read_packaged_asset('index.html').decode()
         for path, article in (('/privacy', 'privacy-notice'), ('/terms', 'terms-of-service')):

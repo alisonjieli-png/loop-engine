@@ -48,13 +48,13 @@ try{
   const context=await browser.newContext({viewport,acceptDownloads:true,reducedMotion:'reduce'});
   await context.route('**/*',serviceRoute);
   const page=await context.newPage();page.on('pageerror',error=>errors.push(error.message));
-  for(const path of ['/','/collections','/collections/coding-benchmarks','/build','/connect','/pricing','/help','/privacy','/terms','/login','/oauth/consent']){
+  for(const path of ['/','/saved','/collections','/collections/coding-benchmarks','/build','/connect','/pricing','/help','/privacy','/terms','/login','/oauth/consent']){
    const response=await page.goto(base+path);await page.locator('h1').waitFor();
    check('page '+path+' '+viewport.width,response.status()===200&&await page.locator('h1:visible').count()===1);
    check('brand canonical '+path+' '+viewport.width,await page.locator('link[rel=canonical]').getAttribute('href')===base+path);
    check('no overflow '+path+' '+viewport.width,await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1));
    check('independent navigation '+path+' '+viewport.width,await page.locator('header a,footer a').evaluateAll(links=>links.every(link=>!['baltor.ai','www.baltor.ai'].includes(new URL(link.href).hostname)&&!['/library','/gallery','/overnight'].includes(new URL(link.href).pathname))));
-   if(['/', '/build','/collections','/login'].includes(path))await page.screenshot({path:resolve(output,(path==='/'?'home':path.slice(1))+'-'+viewport.width+'.png'),fullPage:true});
+   if(['/', '/saved','/build','/collections','/login'].includes(path))await page.screenshot({path:resolve(output,(path==='/'?'home':path.slice(1))+'-'+viewport.width+'.png'),fullPage:true});
   }
   await page.goto(base+'/collections/coding-benchmarks');
   const formats=await page.evaluate(async()=>{
@@ -73,6 +73,33 @@ try{
   check('required third-party notices '+viewport.width,notices.status===200&&notices.body>0,notices);
   await page.goto(base+'/collections');await page.locator('#collection-search').fill('no-such-topic');check('empty collection state '+viewport.width,await page.locator('#collection-empty').isVisible());
   await page.locator('#collection-search').fill('coding');check('collection search '+viewport.width,await page.locator('[data-collection]:visible').count()>0);
+  await page.locator('#collection-search').fill('');
+  const savedIds=await page.locator('[data-save-collection]').evaluateAll(buttons=>buttons.slice(0,2).map(button=>button.dataset.saveCollection));
+  for(const id of savedIds)await page.locator('[data-save-collection="'+id+'"]').click();
+  await page.goto(base+'/saved');
+  check('saved selections survive navigation '+viewport.width,await page.locator('#saved-collections [data-collection]:visible').count()===2);
+  check('saved selection has accessible pressed state '+viewport.width,await page.locator('#saved-collections [aria-pressed=true]').count()===2);
+  await page.screenshot({path:resolve(output,'saved-selected-'+viewport.width+'.png'),fullPage:true});
+  await page.locator('#saved-build').click();
+  await page.waitForURL('**/build?*');await page.waitForLoadState('load');
+  const selectedSaved=await page.locator('[name=collection_ids]:checked').evaluateAll(fields=>fields.map(field=>field.value));
+  check('multiple saved collections preselect builder '+viewport.width,JSON.stringify(selectedSaved.sort())===JSON.stringify([...savedIds].sort()),{selected:selectedSaved,expected:savedIds,url:page.url()});
+  await page.goto(base+'/saved');
+  await page.locator('[data-save-collection="'+savedIds[0]+'"]').click();
+  check('remove saves exact remaining collection '+viewport.width,await page.locator('#saved-collections [data-collection]:visible').count()===1);
+  await page.evaluate(()=>localStorage.setItem('agentfeeds.saved-collections.v1',JSON.stringify({version:1,collectionIds:['missing-collection']})));
+  await page.reload();
+  check('obsolete saved IDs cannot become active builder selection '+viewport.width,await page.locator('#saved-empty').isVisible()&&await page.locator('#saved-build').getAttribute('href')==='/build');
+  await page.evaluate(()=>localStorage.setItem('agentfeeds.saved-collections.v1','<img src=x onerror=alert(1)>'));
+  await page.reload();
+  check('corrupt local storage is reported and not rendered '+viewport.width,(await page.locator('#saved-status').innerText()).includes('could not be read')&&await page.locator('#saved-empty').isVisible());
+  await page.locator('#saved-clear').click();
+  check('clear repairs invalid saved storage '+viewport.width,await page.evaluate(()=>JSON.parse(localStorage.getItem('agentfeeds.saved-collections.v1')).collectionIds.length===0));
+  await page.goto(base+'/collections');
+  await page.evaluate(()=>{Storage.prototype.setItem=function(){throw new DOMException('Blocked','QuotaExceededError');};});
+  await page.locator('[data-save-collection="'+savedIds[0]+'"]').click();
+  check('storage refusal never claims successful save '+viewport.width,(await page.locator('#saved-status').innerText()).includes('Could not save this change')&&await page.locator('[data-save-collection="'+savedIds[0]+'"]').getAttribute('aria-pressed')==='false');
+  await page.reload();
   if(viewport.width===390){await page.locator('.menu-button').click();check('phone menu expanded',await page.locator('.menu-button').getAttribute('aria-expanded')==='true');await page.keyboard.press('Escape');check('escape restores menu focus',await page.locator('.menu-button').evaluate(node=>document.activeElement===node&&node.getAttribute('aria-expanded')==='false'));}
   await page.goto(base+'/build?collection=coding-benchmarks');
   check('detail preselects existing collection '+viewport.width,await page.locator('[name=collection_ids][value=coding-benchmarks]').isChecked());

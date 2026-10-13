@@ -16,7 +16,7 @@ from .web_pages import read_packaged_asset
 ORIGIN = "https://agentfeeds.si"
 ASSET_PREFIX = "/assets/agentfeeds/"
 ASSETS = {"site.css": "text/css", "site.js": "text/javascript", "account.js": "text/javascript", "mark.svg": "image/svg+xml"}
-ROUTES = ("/", "/collections", "/feeds", "/build", "/connect", "/feeds/setup", "/pricing", "/help", "/docs",
+ROUTES = ("/", "/collections", "/saved", "/feeds", "/build", "/connect", "/feeds/setup", "/pricing", "/help", "/docs",
           "/login", "/signup", "/get-started", "/account", "/auth/confirm", "/auth/callback", "/oauth/consent", "/privacy", "/terms", "/status", "/support")
 ACCOUNT_ROUTES = frozenset(("/login", "/signup", "/get-started", "/account", "/auth/confirm", "/auth/callback", "/oauth/consent"))
 SITE_FILES = ("/robots.txt", "/sitemap.xml", "/llms.txt")
@@ -47,7 +47,19 @@ def _card(item, number):
     return (f'<article class="collection" data-collection data-search="{escape((item.title + " " + item.group).lower(), quote=True)}">'
             f'<p class="collection-meta"><span>{number:02}</span>{escape(item.group)}</p>'
             f'<h2>{_link("/collections/" + item.id, item.title)}</h2><p>{escape(item.decision_question)}</p>'
-            f'<div class="collection-foot"><span>{len(item.source_ids)} sources</span>{_link("/collections/" + item.id, "Open collection →")}</div></article>')
+            f'<div class="collection-foot"><span>{len(item.source_ids)} sources</span>{_link("/collections/" + item.id, "Open collection →")}</div>'
+            f'<button type="button" class="button secondary save-collection" data-save-collection="{escape(item.id, quote=True)}" aria-pressed="false">Save collection</button></article>')
+
+
+def _saved(data):
+    return (_intro("On this browser", "Your saved collections", "Keep useful collections together, then build a reading profile for your agent.")
+            + '<p class="quiet">Selections stay in this browser on this website. They are not synced to an account, and saving creates no hosted feed or schedule.</p>'
+            '<div class="actions"><a id="saved-build" class="button primary" href="/build">Build a reading profile</a>'
+            '<button id="saved-clear" type="button" class="button secondary">Clear saved collections</button></div>'
+            '<p id="saved-empty">No collections saved here yet. <a href="/collections">Browse collections</a> to choose some.</p>'
+            '<div id="saved-collections" class="collection-grid">'
+            + "".join(_card(item, index + 1) for index, item in enumerate(data.collections))
+            + '</div><noscript><p>Saved selections need JavaScript. The collection links above still work.</p></noscript>')
 
 
 def _home(data):
@@ -267,6 +279,8 @@ def render(path, *, origin=ORIGIN, directory=None, allow_loopback=False):
         body = _home(data)
     elif path in ('/collections', '/feeds'):
         body, title = _collections(data), 'Collections'
+    elif path == '/saved':
+        body, title = _saved(data), 'Saved collections'
     elif item:
         body, title = _detail(item, data, origin), item.title
     elif path == '/build':
@@ -283,7 +297,7 @@ def render(path, *, origin=ORIGIN, directory=None, allow_loopback=False):
         body, title = _intro('Service status', 'Check the connection.', 'Current reachability is read from the shared service.') + '<p data-service-status role="status">Checking service availability…</p>', 'Status'
     else:
         body, title = _help(), 'Help'
-    nav = ''.join(_link(href, label, 'active' if path == href else '') for href, label in (('/collections', 'Collections'), ('/build', 'Build a feed'), ('/connect', 'Connect'), ('/pricing', 'Pricing'), ('/help', 'Help')))
+    nav = ''.join(_link(href, label, 'active' if path == href else '') for href, label in (('/collections', 'Collections'), ('/saved', 'Saved'), ('/build', 'Build a feed'), ('/connect', 'Connect'), ('/pricing', 'Pricing'), ('/help', 'Help')))
     css = _versioned(ASSET_PREFIX + 'site.css', _asset('site.css'))
     js = _versioned(ASSET_PREFIX + 'site.js', _asset('site.js'))
     mark = _versioned(ASSET_PREFIX + 'mark.svg', _asset('mark.svg'))
@@ -307,7 +321,7 @@ def render(path, *, origin=ORIGIN, directory=None, allow_loopback=False):
             f'<img src="{mark}" width="32" height="32" alt=""><span>Agent<span class="brand-light">Feeds</span></span></a>'
             '<button class="menu-button" type="button" aria-expanded="false" aria-controls="site-nav">Menu</button><nav id="site-nav" aria-label="Main navigation">'
             + nav + '</nav><a class="header-account" href="/login">Sign in <span aria-hidden="true">↗</span></a></header>'
-            '<main id="main" tabindex="-1">' + body + '</main><footer class="site-footer"><div><a class="brand" href="/">Agent<span class="brand-light">Feeds</span></a>'
+            '<main id="main" tabindex="-1">' + body + '<p id="saved-status" role="status" aria-live="polite"></p></main><footer class="site-footer"><div><a class="brand" href="/">Agent<span class="brand-light">Feeds</span></a>'
             '<p>A reading plan for the decisions ahead.</p></div><nav aria-label="Footer"><a href="/connect">Setup</a><a href="/help">Help</a><a href="/status">Status</a><a href="/privacy">Privacy</a><a href="/terms">Terms</a><a href="/assets/third-party-notices.txt">Open-source notices</a></nav>'
             '<p class="operator">Operated by Baltor.AI · 1428 Bryn Mawr St, Saxton, PA 16678</p></footer></body></html>')
     return html.encode('utf-8'), 'text/html'
