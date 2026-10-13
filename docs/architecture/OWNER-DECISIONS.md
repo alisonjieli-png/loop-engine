@@ -123,11 +123,12 @@ available account.
 
 The owner also wants a registered-domain address for subscribing to AI
 newsletters and using their content as raw information and research triggers.
-Use the owned AgentFeeds domain, with a dedicated intake subdomain separate
-from customer support. The proposed address is
-`newsletters@inbox.agentfeeds.si`; configuration and actual mail delivery must
-be verified before calling it available. No additional domain purchase is
-needed for this design.
+Use the owned AgentFeeds domain with a dedicated address separate from
+customer support. Engineering selects `newsletters@agentfeeds.si` for the first
+profile: the domain has no existing incoming-mail records, and Cloudflare's
+documented API supports its setup. The earlier intake-subdomain proposal is
+not configured. Verify configuration and actual mail delivery before calling
+the selected address available. No additional domain purchase is needed.
 
 Incoming mail is private source material. Preserve exact message bytes,
 delivery identity, sender-authentication evidence, source dates and duplicate
