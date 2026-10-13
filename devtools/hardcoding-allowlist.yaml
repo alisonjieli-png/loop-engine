@@ -1,5 +1,59 @@
 schema: hardcoding_allowlist/v1
 entries:
+- finding_id: hardcoding.a819ea9ec25b680082ee2534
+  owner: "loop_engine.core.service_runtime.agentafk_pages"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed October 13, 2026: owner-selected inert AgentAFK renderer origin. Production supplies the exact admitted host profile; this pure renderer opens no network connection. Origin refusal and real standalone HTTP boundary tests cover the binding. Another hostname requires a new review."
+  created_on: '2026-10-13'
+  expires_on: '2027-01-13'
+- finding_id: hardcoding.11a880f46f263d2fcf8d0010
+  owner: "loop_engine.core.service_runtime.agentafk_pages"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed October 13, 2026: a passive link to this repository's existing overnight queue guide, not a model or provider endpoint. The independent preview explains the actual local worker and its limits; clicking documentation grants no execution authority. The destination is fixed to the owning public repository."
+  created_on: '2026-10-13'
+  expires_on: '2027-01-13'
+- finding_id: hardcoding.0e31e8e7b7872a11adbe3afb
+  owner: "loop_engine.core.service_runtime.agentafk_pages:render"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed October 13, 2026: HTTPS syntax check following the existing origin validator, matching the established AgentFeeds renderer guard. Insecure production origins and unsupported ports are refused; only explicitly permitted loopback is exempt. No outbound request occurs."
+  created_on: '2026-10-13'
+  expires_on: '2027-01-13'
+- finding_id: hardcoding.ad0bbd53aaa4f1ecc485fa79
+  owner: "loop_engine.core.service_runtime.agentfoundry_pages"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed October 13, 2026: owner-selected inert AgentFoundry renderer origin. The HTTP owner supplies its admitted origin in production; the renderer only creates same-origin pages and client configuration. Focused origin, account and protocol metadata tests preserve this boundary."
+  created_on: '2026-10-13'
+  expires_on: '2027-01-13'
+- finding_id: hardcoding.33f71931d729acff07ecfd88
+  owner: "loop_engine.core.service_runtime.meatproxy_pages"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed October 13, 2026: the owner's confirmed campaign domain is an inert renderer default. Exact host admission supplies production origins. The public-only transport refuses account, OAuth, MCP and OpenAPI effects; this renderer makes no network call."
+  created_on: '2026-10-13'
+  expires_on: '2027-01-13'
+- finding_id: hardcoding.a7242f0cf3c2e84084c4308d
+  owner: "loop_engine.core.service_runtime.meatproxy_pages"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed October 13, 2026: the owner explicitly requested this campaign as a funnel into AgentFeeds. This fixed destination produces visible collection/profile links and passive reading instructions, not hidden requests, tracking or execution. Campaign tests bind links to actual packaged collection IDs."
+  created_on: '2026-10-13'
+  expires_on: '2027-01-13'
+- finding_id: hardcoding.a6dedec5fb2a79aea0d9fefc
+  owner: "loop_engine.core.service_runtime.web_assets.meatproxy.site.js:url"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed October 13, 2026: passive Markdown reading instruction for the owner's AgentFeeds funnel. The rendered selector contains four packaged collection IDs; its syntax guard permits only lowercase letters, digits and hyphens. Code does not fetch, schedule or execute the instruction. The four selections and copy failure fallback have browser coverage."
+  created_on: '2026-10-13'
+  expires_on: '2027-01-13'
+- finding_id: hardcoding.97ff9e69ea4f7dafeeefe883
+  owner: "loop_engine.core.service_runtime.web_assets.meatproxy.site.js:url"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed October 13, 2026: explicit collection link from the separate campaign to its owner-selected AgentFeeds destination. The selector renders four packaged collections and the syntax check refuses path separators. The hostname stays fixed; no telemetry request or provider operation occurs."
+  created_on: '2026-10-13'
+  expires_on: '2027-01-13'
+- finding_id: hardcoding.98afb3dd35800c6238ef5062
+  owner: "loop_engine.core.service_runtime.web_assets.meatproxy.site.js:url"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed October 13, 2026: visible AgentFeeds reading-profile call to action for the owner's campaign. The query selects an existing collection only; it does not create an account, save hosted settings, collect personal data or activate a schedule. Browser checks verify each selected link."
+  created_on: '2026-10-13'
+  expires_on: '2027-01-13'
 - finding_id: hardcoding.879c94ff14b20ac16f80cc38
   owner: "loop_engine.core.service_runtime.agentfeeds_pages"
   classification: STRATEGY_OR_PROVIDER_BINDING

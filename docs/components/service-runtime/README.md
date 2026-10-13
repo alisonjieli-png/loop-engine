@@ -17,8 +17,9 @@ adapter used by a Loop. It is not another runtime type.
 ## Host-specific website presentation
 
 The HTTP configuration can declare `brand_profiles`, each carrying an explicit
-`service_brand_profile/v1` record for AgentFeeds, its exact origin and display
-name. The same origin and Host must also appear in the host's transport
+`service_brand_profile/v1` record for AgentFeeds, AgentFoundry, AgentAFK or
+the Don't be a meat proxy campaign, with its exact origin and display name.
+The same origin and Host must also appear in the host's transport
 allowlists. Unsupported profiles, duplicate hosts and undeclared origins are
 refused before serving. Existing Baltor hosts keep their existing behavior.
 
@@ -26,20 +27,30 @@ Each request selects a lightweight presentation after checking its exact Host
 and Origin. Presentations share one runtime, catalogue view, account and
 entitlement store, billing customer adapter, worker pool, request counters,
 email limits and lifecycle. They do not reconstruct the catalogue or start
-another service. The pure AgentFeeds page renderer supplies its own pages and
-assets; the identity SDK, consent controller, reading-profile controller and
-fonts are reused. Unknown AgentFeeds pages do not fall through to Baltor HTML.
+another service. A closed selector chooses the packaged pure page renderer
+for that brand. Each renderer supplies its own pages and assets; qualified
+identity, profile, local Run Desk and catalogue-preview assets are reused
+through explicit asset paths, never a wildcard directory grant. Unknown brand
+pages do not fall through to Baltor HTML or another brand's assets.
 
-Signup and recovery messages return to the selected origin. Each origin has
+AgentFeeds and AgentFoundry signup and recovery messages return to the selected origin. Each has
 its own OAuth issuer, MCP resource and consent address over the same admitted
 accounts. Authorization handles from another issuer are unknown; PKCE,
 callback allowlists and same-origin consent checks remain required. OAuth's
 process request limits remain shared. Browser storage stays origin-local.
-Paid checkout and portal creation are unavailable on AgentFeeds until a
+Paid checkout and portal creation are unavailable on standalone brands until a
 qualified return-URL policy exists; this changes no existing subscription,
 customer identity, price or grant. Domain, sender and live customer qualification
 remain deployment work. `tools/test_brand_presentations.py` checks the shared
 state and the refused Host, Origin, callback, resource and replay cases.
+
+AgentAFK's browser-local preview and the campaign are public-only views. They
+expose exact page/assets and read-only health, not account, OAuth, MCP or
+OpenAPI operations. The transport refuses other service requests before body
+parsing, authentication or a provider call, and installs no protocol managers
+for those views. The underlying service state remains shared.
+`tools/test_standalone_brand_boundaries.py` includes real HTTP refusal checks
+and a removed-public-only-guard control.
 
 ## Runtime classification
 

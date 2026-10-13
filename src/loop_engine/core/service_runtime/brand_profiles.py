@@ -8,6 +8,8 @@ from dataclasses import dataclass
 from .http_auth import validate_public_origin
 
 BRAND_PROFILE_VERSION = "service_brand_profile/v1"
+BRAND_NAMES = {"agentfeeds": "AgentFeeds", "agentfoundry": "AgentFoundry",
+               "agentafk": "AgentAFK", "meatproxy": "Don't be a meat proxy"}
 
 
 @dataclass(frozen=True)
@@ -18,9 +20,9 @@ class ServiceBrandProfile:
     record_type: str = BRAND_PROFILE_VERSION
 
     def __post_init__(self):
-        if self.record_type != BRAND_PROFILE_VERSION or self.brand != "agentfeeds":
+        if self.record_type != BRAND_PROFILE_VERSION or self.brand not in BRAND_NAMES:
             raise ValueError("unsupported service brand profile")
-        if self.display_name != "AgentFeeds":
+        if self.display_name != BRAND_NAMES[self.brand]:
             raise ValueError("the qualified brand requires its exact display name")
         # Whether local HTTP is permitted is independently checked against
         # the containing host configuration before an application is built.
@@ -29,6 +31,11 @@ class ServiceBrandProfile:
     @property
     def host(self):
         return self.public_base_url.split("://", 1)[1]
+
+    @property
+    def public_only(self):
+        """These presentations have no account UI or provider-effect surface."""
+        return self.brand in ("agentafk", "meatproxy")
 
     @classmethod
     def from_host(cls, value):

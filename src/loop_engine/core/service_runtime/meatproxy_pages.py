@@ -6,7 +6,6 @@ schedules. Its links hand the visitor to AgentFeeds explicitly.
 from hashlib import sha256
 from html import escape
 from importlib.resources import files
-from urllib.parse import urlsplit
 
 from . import feed_profiles
 from .agentfeeds_pages import _legal
@@ -126,7 +125,7 @@ def _questions():
 def render(path, *, origin=ORIGIN, allow_loopback=False):
     """Render an exact public route without network calls or customer effects."""
     validate_public_origin(origin, permit_loopback=allow_loopback)
-    if not (allow_loopback and is_loopback_url(origin)) and urlsplit(origin).port is not None:
+    if not (allow_loopback and is_loopback_url(origin)) and ':' in origin.split('://', 1)[1]:
         raise ValueError("campaign pages require an exact HTTPS public origin without a port")
     if path.startswith(ASSET_PREFIX):
         name = path[len(ASSET_PREFIX):]

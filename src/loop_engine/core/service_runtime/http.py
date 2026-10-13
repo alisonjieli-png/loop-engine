@@ -994,13 +994,17 @@ class ServiceHttpApplication:
             shown.configuration = replace(self.configuration, public_base_url=profile.public_base_url,
                 display_name=profile.display_name, allowed_hosts=(profile.host,),
                 allowed_origins=(profile.public_base_url,), brand_profiles=(), openai_apps_challenge="")
-            if self.account_email is not None:
+            if profile.public_only:
+                shown.account_email = None
+                shown.oauth_authorization = None
+                shown.oauth_http = None
+            elif self.account_email is not None:
                 from .account_email import AccountEmailAdapter
                 if not isinstance(self.account_email, AccountEmailAdapter):
                     raise ValueError("brand email presentation requires the qualified account email adapter")
                 shown.account_email = self.account_email.for_presentation(public_base_url=profile.public_base_url,
                                                                           display_name=profile.display_name)
-            if self.oauth_authorization is not None:
+            if self.oauth_authorization is not None and not profile.public_only:
                 policy = replace(self.oauth_authorization.policy, issuer_url=profile.public_base_url,
                     resource_url=profile.public_base_url + "/mcp", consent_url=profile.public_base_url + "/oauth/consent")
                 shown.oauth_authorization = OAuthAuthorizationProvider(self.runtime, policy)
@@ -2382,6 +2386,9 @@ class ServiceHttpApplication:
         presentations.update({view.configuration.public_base_url: (view, view.configuration) for view in profiles.values()})
         manager_sets = {}
         for origin, (view, config) in presentations.items():
+            if view.brand_profile is not None and view.brand_profile.public_only:
+                manager_sets[origin] = {}
+                continue
             security = TransportSecuritySettings(allowed_hosts=list(config.allowed_hosts),
                                                  allowed_origins=list(config.allowed_origins))
             manager_sets[origin] = {
@@ -2441,6 +2448,15 @@ class ServiceHttpApplication:
                         raise ServiceHttpError("invalid_origin", 403)
                 elif sent_origins and (origin is None or origin not in config.allowed_origins):
                     raise ServiceHttpError("invalid_origin", 403)
+                # A public campaign or local planner cannot advertise or start
+                # account/OAuth workflows whose return UI it does not supply.
+                # Refuse before body parsing, authentication or provider work.
+                if application.brand_profile is not None and application.brand_profile.public_only:
+                    public_health = request.url.path == "/api/v1/health" and request.method == "GET"
+                    if (request.method not in ("GET", "HEAD") or
+                            ((request.url.path in API_ROUTES or request.url.path == PROTOCOL_PATH or open_surface)
+                             and not public_health)):
+                        raise ServiceHttpError("route_unavailable", 404)
                 if request.method == "OPTIONS" and open_surface:
                     try:
                         accepted = openapi_tool_server.preflight(
@@ -2629,9 +2645,10 @@ class ServiceHttpApplication:
         if self.brand_profile is not None:
             if path in catalogue_feed.FORMATS:
                 raise ServiceHttpError("route_unavailable", 404)
-            from . import agentfeeds_pages
-            asset = (agentfeeds_pages.render(path, origin=self.configuration.public_base_url,
-                                            allow_loopback=self.configuration.allow_loopback_http)
+            from .brand_pages import renderer_for, shared_assets
+            renderer = renderer_for(self.brand_profile.brand)
+            asset = (renderer.render(path, origin=self.configuration.public_base_url,
+                                     allow_loopback=self.configuration.allow_loopback_http)
                      if method in ("GET", "HEAD") else None)
             if asset is not None:
                 body, media_type = asset
@@ -2643,9 +2660,10 @@ class ServiceHttpApplication:
                 return Response(b"" if method == "HEAD" else body, media_type=media_type, headers=headers)
             # Never fall through to Baltor's HTML, navigation or public assets.
             # Qualified unchanged client libraries and fonts serve both presentations.
-            shared_assets = {"/assets/supabase-client.js", "/assets/oauth-consent.js", "/assets/feed-profile.js",
-                             "/assets/geist.woff2", "/assets/geist-mono.woff2", "/assets/third-party-notices.txt"}
-            if (path not in API_ROUTES and path not in shared_assets and path not in catalogue_feed.FORMATS
+            admitted_assets = shared_assets(renderer)
+            if self.brand_profile.public_only and path not in admitted_assets and path != "/api/v1/health":
+                raise ServiceHttpError("route_unavailable", 404)
+            if (path not in API_ROUTES and path not in admitted_assets and path not in catalogue_feed.FORMATS
                     and not feed_source_collections.handles(path)):
                 raise ServiceHttpError("route_unavailable", 404)
         if path in catalogue_feed.FORMATS or feed_source_collections.handles(path):
