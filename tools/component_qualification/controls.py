@@ -16,7 +16,7 @@ The secret-shaped control value is assembled at run time, so no key-shaped text 
 """
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 import hashlib
 import json
 from types import MappingProxyType
@@ -633,6 +633,12 @@ def self_test(context, revision: str) -> dict:
         wrong.append(row)
         if not row["refused"]:
             failures.append(f"duplicates did not refuse its control {row['control_id']}")
+    if context.media_tools is not None:
+        media_good, media_wrong = _media_controls(context, fixtures["code"])
+        good.extend(media_good)
+        wrong.extend(media_wrong)
+        if any(row["status"] != checks.PASSED for row in media_good) or any(not row["refused"] for row in media_wrong):
+            failures.append("parse did not qualify its configured native media controls")
     covered = {row["check_id"] for row in wrong}
     for check in checks.CHECKS:
         if check.check_id not in covered:
@@ -644,3 +650,35 @@ def self_test(context, revision: str) -> dict:
     if failures:
         raise SelfTestFailed("; ".join(failures[:6]))
     return record
+
+
+def _media_controls(context, base):
+    """The opt-in decoder proves a real good MP4 and a corrupt packet on each run."""
+    from .media_validation import MANIFEST_NAME, MANIFEST_VERSION
+    path = context.repository / "src/loop_engine/core/service_runtime/web_assets/gallery-media/copper-current-b9b28ecda939.mp4"
+    body = path.read_bytes()
+    expected = "b9b28ecda939d2142a86e019b35462da09e1536b6616d39f8091e9197d073a3e"
+    if hashlib.sha256(body).hexdigest() != expected:
+        raise SelfTestFailed("native media control bytes changed")
+    def fixture(data):
+        source = base.payloads["README.md"]
+        manifest = {"record_type": MANIFEST_VERSION, "resources": [{"path": "clip.mp4",
+            "sha256": hashlib.sha256(data).hexdigest(), "role": "original", "original": None,
+            "source_files": [{"path": "README.md", "sha256": hashlib.sha256(source).hexdigest()}]}]}
+        result = _rebind(base, dict(base.payloads) | {"clip.mp4": data, MANIFEST_NAME: json.dumps(manifest).encode()})
+        package = CataloguePackage(tuple(replace(entry, media_type="video/mp4") if entry.path == "clip.mp4" else entry
+                                         for entry in result.package.files), result.package.body_form)
+        return GeneratedComponent(result.identity, result.record_version,
+            MappingProxyType(dict(result.candidate) | {"line": "creative_originals"}), package, result.payloads)
+    good = fixture(body)
+    result = checks.ParseCheck().run(good, context)
+    good_rows = [{"fixture": "native_mp4", "check_id": "parse", "status": result.status,
+                  "findings": [code for code, _detail in result.findings]}]
+    offset = body.index(b"mdat") + 4
+    bad = fixture(body[:offset] + b"\x7f\xff\xff\xff" + body[offset + 4:])
+    result = checks.ParseCheck().run(bad, context)
+    codes = [code for code, _detail in result.findings]
+    wrong_rows = [{"control_id": "corrupt_native_mp4", "check_id": "parse", "package_digest": bad.package.package_digest,
+                   "expected_code": "binary_media_refused", "refused": result.status == checks.REFUSED and
+                   "binary_media_refused" in codes, "codes": codes}]
+    return good_rows, wrong_rows

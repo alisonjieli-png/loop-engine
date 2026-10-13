@@ -59,9 +59,9 @@ def qualifier_changed(repository: Path) -> bool:
     return done.returncode != 0 or bool(done.stdout.strip())
 
 
-def _init_worker(repository, store_root, sandbox_settings, work_root, reuse, check_ids=None):
+def _init_worker(repository, store_root, sandbox_settings, work_root, reuse, check_ids=None, media_tools=None):
     _WORKER["context"] = checks.QualificationContext.load(Path(repository), sandbox_settings=sandbox_settings,
-                                                          work_root=work_root)
+                                                          work_root=work_root, media_tools=media_tools)
     _WORKER["bodies"] = body_store(store_root)
     _WORKER["store_root"] = store_root
     _WORKER["reader"] = None
@@ -106,6 +106,14 @@ def reusable(record: "dict | None", row: dict, revision: str, *, check_ids=None)
     execution checks that the caller explicitly requested."""
     if not isinstance(record, dict):
         return False
+    # A configured native-media pass cannot become default-mode authority via
+    # --reuse. The note guard also covers early records without this marker.
+    if "media_decoder" in record or not isinstance(record.get("checks"), list):
+        return False
+    for check in record["checks"]:
+        if not isinstance(check, dict) or not isinstance(check.get("notes", []), list) or \
+                any("component_media_decode/" in str(note) for note in check.get("notes", [])):
+            return False
     required = set(check_ids if check_ids is not None else FAST_CHECKS) - {"duplicates"}
     # v1 does not bind a reused sandbox result to interpreter, dependency and
     # sandbox image digests. Re-run execution until that environment is named.
@@ -143,6 +151,15 @@ def _check_one(row: dict) -> dict:
         return {"identity": row["record_id"], "unreadable": error.code, "seconds": 0.0,
                 "line": row.get("line") or row.get("payload", {}).get("line", "")}
     earlier = _WORKER["reuse"].get(component.identity)
+    media_present = any(entry.media_type == "video/mp4" for entry in component.package.files)
+    if media_present:
+        # Inspect actual package metadata even if an old receipt omitted its marker.
+        earlier = None
+        from .media_validation import PROFILE
+        configured = context.media_tools
+        media_binding = {"profile": PROFILE, "configured": configured is not None, "reuse_allowed": False,
+            "ffmpeg_sha256": configured.ffmpeg_sha256 if configured else None,
+            "ffprobe_sha256": configured.ffprobe_sha256 if configured else None}
     if earlier is not None:
         return {"identity": component.identity, "record_version": component.record_version,
                 "package_digest": component.package.package_digest, "batch": component.batch,
@@ -171,6 +188,7 @@ def _check_one(row: dict) -> dict:
             "form": component.form, "kind": component.kind, "licence_expression": component.licence_expression,
             "declared_effects": list(component.candidate.get("declared_effects", [])),
             "generator": component.generator, "checks": results, **_comparison(component, context.policy),
+            **({"media_decoder": media_binding} if media_present else {}),
             "seconds": round(time.monotonic() - started, 3)}
 
 
@@ -272,18 +290,20 @@ def load_reuse(paths, revision: str, environment_findings=()) -> dict:
 
 
 def qualify_rows(rows, *, repository: Path, store_root: Path, sandbox_settings, work_root: Path, workers: int,
-                 known_digests=None, output: Path, progress=None, reuse_paths=(), check_ids=None) -> dict:
+                 known_digests=None, output: Path, progress=None, reuse_paths=(), check_ids=None, media_tools=None) -> dict:
     """Qualify the named store rows; write one JSON line per component and return the run summary."""
     repository, work_root = Path(repository), Path(work_root)
     work_root.mkdir(parents=True, exist_ok=True)
     revision = code_revision(repository)
     uncommitted = qualifier_changed(repository)
-    context = checks.QualificationContext.load(repository, sandbox_settings=sandbox_settings, work_root=work_root)
+    context = checks.QualificationContext.load(repository, sandbox_settings=sandbox_settings, work_root=work_root,
+                                               media_tools=media_tools)
     started = time.monotonic()
     test_record = self_test(context, revision)
     self_test_seconds = round(time.monotonic() - started, 1)
     environment_findings = tuple(context.policy["environment_findings"])
-    earlier = load_reuse(reuse_paths, revision, environment_findings) if not uncommitted else {}
+    # Native decoder evidence is tied to this run's tools and limits, not just the qualifier revision.
+    earlier = load_reuse(reuse_paths, revision, environment_findings) if not uncommitted and media_tools is None else {}
     reuse = {row["record_id"]: earlier[row["record_id"]] for row in rows
              if reusable(earlier.get(row["record_id"]), row, revision, check_ids=check_ids)}
     output = Path(output)
@@ -306,7 +326,7 @@ def qualify_rows(rows, *, repository: Path, store_root: Path, sandbox_settings, 
                 with multiprocessing.get_context("fork").Pool(
                         processes=max(1, workers), initializer=_init_worker,
                         initargs=(str(repository), str(store_root), sandbox_settings, str(work_root), reuse,
-                                  check_ids)) as pool:
+                                  check_ids, media_tools)) as pool:
                     for number, row in enumerate(pool.imap_unordered(_check_one, rows, chunksize=4), 1):
                         if "unreadable" in row:
                             unreadable.append(row)
@@ -352,6 +372,11 @@ def qualify_rows(rows, *, repository: Path, store_root: Path, sandbox_settings, 
                        "components_per_day_at_this_rate": int(len(rows) / pool_seconds * 86400) if pool_seconds
                        else None},
         "records": str(output), "records_sha256": _file_sha256(output)}
+    if media_tools is not None:
+        from .media_validation import PROFILE
+        summary["media_decoder"] = {"profile": PROFILE, "ffmpeg_sha256": media_tools.ffmpeg_sha256,
+            "ffprobe_sha256": media_tools.ffprobe_sha256, "reuse_disabled": True,
+            "qualified_by_format_only": False}
     return summary
 
 
@@ -388,6 +413,8 @@ def _write_records(rows, output: Path, duplicates: dict, context, revision: str,
                       "self_test_sha256": test_record["sha256"],
                       "qualified_at": row.get("reused_from") or stamp, "checked_in_run": stamp,
                       "reused": "reused_from" in row, "seconds": row["seconds"]}
+            if "media_decoder" in row:
+                record["media_decoder"] = row["media_decoder"]
             stream.write(json.dumps(record, sort_keys=True) + "\n")
             counts[(row["batch"], row["line"], row["form"], outcome)] += 1
             environment_refused += bool(environment_codes({"checks": check_rows}, environment_findings))

@@ -169,7 +169,8 @@ def generate(*, code_revision: str, licence_text: bytes, generated_on: str, retr
 
 
 #: Refusal reasons the shared packaging may raise for one item (records.REFUSAL_REASONS lists them for the line).
-PACKAGE_REASONS = ("blocked_by_static_check", "package_above_review_bound", "package_path_invalid")
+PACKAGE_REASONS = ("blocked_by_static_check", "package_above_review_bound", "package_path_invalid",
+                   "media_resource_manifest_invalid")
 
 __all__ = ["GENERATOR_VERSION", "REPOSITORY", "NATIVE_FORMAT", "FAMILIES_ROOT", "NODE_TEST_COMMAND", "raw_address",
            "derived_effects", "build_item", "generate"]

@@ -45,15 +45,25 @@ def _sandbox(options) -> SandboxSettings:
     return SandboxSettings(engine=options.engine, python=options.python)
 
 
+def _media_tools(options):
+    path = getattr(options, "media_tools", None)
+    if path is None:
+        return None
+    from tools.component_qualification.media_validation import MediaTools
+    return MediaTools.read(path)
+
+
 def _check_ids(mode):
     """Which per-component checks this run applies.
 
-    ``fast`` is the default and runs the eight checks that read the bytes already on disk: manifest, licence,
+    ``fast`` is the default and runs the eight checks over the bytes already on disk: manifest, licence,
     parse, schema, effects, safety, secrets and duplicates. ``all`` adds the two that execute a component's own
     code, a sandbox and a mutation, and costs a sandbox per component. The owner, September 29, 2026, asked for
     the cheap set on every component and for a component that turns out to be broken to be reported after it is
     served rather than held back before it is. Sampled review reads selected bytes; execution requires
-    an explicit all-checks run. Neither a feedback report nor a model verdict proves that tests ran.
+    an explicit all-checks run. The separate --media-tools opt-in runs pinned native media decoders inside
+    their bounded sandbox, including in fast mode; it never runs package code. Neither a feedback report
+    nor a model verdict proves that tests ran.
     """
     from tools.component_qualification import qualify
     modes = {"fast": qualify.FAST_CHECKS, "all": tuple(check.check_id for check in checks.CHECKS)}
@@ -84,7 +94,8 @@ def _known_case_exclusions(paths) -> tuple:
 
 
 def command_self_test(options) -> dict:
-    context = checks.QualificationContext.load(ROOT, sandbox_settings=_sandbox(options), work_root=options.work_root)
+    context = checks.QualificationContext.load(ROOT, sandbox_settings=_sandbox(options), work_root=options.work_root,
+                                               media_tools=_media_tools(options))
     record = controls.self_test(context, qualify.code_revision(ROOT))
     options.output.write_text(json.dumps(record, indent=1, sort_keys=True) + "\n")
     return {"passed": record["passed"], "known_wrong_controls": len(record["known_wrong"]),
@@ -124,7 +135,8 @@ def command_qualify(options) -> dict:
                                    sandbox_settings=_sandbox(options), work_root=options.work_root,
                                    workers=options.workers, known_digests=known,
                                    output=folder / "qualification.jsonl", progress=progress,
-                                   reuse_paths=options.reuse, check_ids=_check_ids(options.checks))
+                                   reuse_paths=options.reuse, check_ids=_check_ids(options.checks),
+                                   media_tools=_media_tools(options))
     summary["known_case_exclusion_snapshots"] = exclusion_bindings
     (folder / "run.json").write_text(json.dumps(summary, indent=1, sort_keys=True) + "\n")
     return {key: summary[key] for key in ("components", "qualified", "refused", "unreadable", "reused", "seconds",
@@ -178,6 +190,8 @@ def main(argv=None) -> int:
         command = commands.add_parser(name)
         command.add_argument("--engine", choices=ENGINES, default="bwrap_rlimits")
         command.add_argument("--python", default="/usr/bin/python3", help="The interpreter inside the sandbox.")
+        command.add_argument("--media-tools", type=Path,
+                             help="Explicit digest-pinned native decoder configuration for bounded MP4 qualification; no unsandboxed fallback.")
         command.add_argument("--work-root", type=Path, required=True,
                              help="Where each package is written for its sandbox run; emptied after each run.")
         if name == "self-test":
@@ -189,7 +203,7 @@ def main(argv=None) -> int:
             command.add_argument("--limit", type=int)
             command.add_argument("--workers", type=int, default=qualify.default_workers())
             command.add_argument("--checks", choices=("fast", "all"), default="fast",
-                                 help="fast runs the eight checks that read the bytes on disk; all also runs each "
+                                 help="fast runs eight qualification checks (plus explicitly configured native media decoding); all also runs each "
                                       "component's own code in a sandbox, which costs a sandbox per component.")
             command.add_argument("--known-bundle", type=Path,
                                  help="A release bundle whose served digests count as existing components.")

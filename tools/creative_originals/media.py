@@ -2,8 +2,9 @@
 
 Qualification reads a file as text when its media type starts with ``text/`` or is in its text list, and refuses a
 binary file it cannot verify. Every suffix here is therefore either a UTF-8 text format or a binary format with a
-strict verifier (PNG, through pngio). Opaque binaries (.blend, .fbx, .exr, .jpg, audio) are refused by name: a
-family ships the script that rebuilds them instead.
+strict verifier (PNG through pngio, or the explicitly configured self-contained H.264/AAC MP4 profile).
+Other opaque binaries (.blend, .fbx, .exr, .jpg, audio) are refused by name: a family ships the script
+that rebuilds them instead. Naming MP4 does not waive its resource manifest or decoder qualification.
 """
 from __future__ import annotations
 
@@ -19,12 +20,12 @@ MEDIA_TYPES = {
     ".mtl": "model/mtl", ".svg": "image/svg+xml", ".png": "image/png", ".csv": "text/csv", ".toml": "application/toml",
     ".yaml": "application/yaml", ".yml": "application/yaml", ".xml": "application/xml", ".urdf": "application/xml",
     ".glsl": "text/x-glsl", ".wgsl": "text/x-wgsl", ".mjs": "text/javascript", ".js": "text/javascript",
-    ".html": "text/html", ".css": "text/css", ".gpl": "text/x-gimp-palette", ".scad": "text/x-openscad",
+    ".html": "text/html", ".css": "text/css", ".gpl": "text/x-gimp-palette", ".scad": "text/x-openscad", ".mp4": "video/mp4",
     ".osl": "text/x-osl", ".ase": None, ".blend": None, ".fbx": None, ".exr": None, ".hdr": None, ".jpg": None,
     ".jpeg": None, ".webp": None, ".wav": None, ".ogg": None, ".mp3": None, ".glb": None, ".ttf": None, ".otf": None,
 }
 #: Binary media types that have a strict verifier in the line and in qualification.
-VERIFIED_BINARY = ("image/png",)
+VERIFIED_BINARY = ("image/png", "video/mp4")
 #: Text media types that do not start with "text/"; qualification's text list must hold each of them.
 TEXT_TYPES_OUTSIDE_TEXT_PREFIX = ("application/json", "model/gltf+json", "model/obj", "model/mtl", "image/svg+xml",
                                   "application/toml", "application/yaml", "application/xml")

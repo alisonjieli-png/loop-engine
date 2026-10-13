@@ -96,7 +96,9 @@ class RecordsTest(unittest.TestCase):
         self.assertIn("ATTRIBUTION.md", {entry["path"] for entry in payload["package"]["files"]})
         self.assertEqual(set(bodies), {entry["digest"] for entry in payload["package"]["files"]})
         attribution = next(data for data in bodies.values() if data.startswith(b"# Attribution"))
-        self.assertIn(b"No model wrote any of it.", attribution)
+        self.assertIn(b"This packaging step makes no model call.", attribution)
+        self.assertIn(b"Source authorship, including any AI assistance", attribution)
+        self.assertNotIn(b"No model wrote any of it.", attribution)
         self.assertIn(b"https://example.org/spec.json", attribution)
 
         def mutated(change):

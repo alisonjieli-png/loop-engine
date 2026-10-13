@@ -174,6 +174,98 @@ each verdict's body digest. Equal batch counts do not establish the same
 population. Version 1 review records cannot admit material through this path;
 rerun review rather than retroactively attaching a population claim.
 
+## Small video resources
+
+The optional `self_contained_h264_aac_mp4/v2` profile lets a customer retrieve
+an actual small video alongside its editable source and checks. It does not
+turn a file download into a successful import, render or customer outcome.
+Text and strictly decoded PNG files keep their existing qualification route.
+
+This profile admits only self-contained MP4 with one progressive H.264
+`yuv420p` video stream and, optionally, one AAC-LC audio stream at 44.1 or
+48 kHz with one or two channels. Video is constant frame rate, no more than
+60 frames per second or 120 seconds. Each dimension is at most 1,920 pixels;
+the image contains no more than 1,920 × 1,080 pixels. Portrait 1,080 × 1,920
+therefore fits. Subtitle/data tracks, fragments, external references,
+unsupported metadata and formats outside this profile are refused.
+
+The existing catalogue ceilings remain 8 MiB per file and 32 MiB per package.
+Only exact manifest-declared MP4 bodies in the `creative_originals` line may
+use those limits at candidate packaging. Non-video files retain the 256 KiB
+file bound and 2 MiB combined text-review bound. Other supply lines keep their
+original bounds. A candidate is not admission.
+
+Every MP4 package contains `resource-media.json`, a
+`component_media_resources/v1` record with a `resources` array. Each row has
+exactly `path`, `sha256`, `role`, `original` and `source_files`. `role` is
+`original` or `derivative`. An original has `original: null`; a derivative
+names an original MP4 in the same package through `{path, sha256}`. Each
+`source_files` entry also uses `{path, sha256}` and refers to exact non-media
+source bytes in that package. Missing, duplicate or mismatched bindings refuse.
+An unpublished large original cannot be relabelled as a delivered preview.
+External-original linkage and large-media streaming remain unavailable.
+
+These bindings prove which bytes the record names. They do not prove that a
+renderer produced the video from those sources. Retain the actual render,
+revision and clean-reopen evidence separately, with per-file rights and the
+consumer's required tools and actions. State whether each resource is ready
+to use, a preview or unavailable. A useful README explains import, use,
+revision, reopening, recovery and what outcome the checks actually establish.
+3D models, Godot projects and reusable templates remain distinct resource
+families; a video preview does not count as an editable 3D asset.
+
+The operator explicitly supplies `--media-tools FILE` to `self-test` or
+`qualify`. The strict `component_media_tools/v1` JSON record names `ffmpeg`,
+`ffmpeg_sha256`, `ffprobe`, `ffprobe_sha256` and `bwrap`; all tool paths are
+absolute, and `bwrap` must be the qualified `/usr/bin/bwrap` launcher, not a
+substitute program that claims to isolate execution. Use reviewed, statically
+linked FFmpeg and FFprobe binaries. The
+Linux Python build must expose sealed `memfd_create` support, and bubblewrap
+must support read-only data descriptors and isolated namespaces. Missing
+capabilities refuse; there is no unsandboxed fallback or implicit download.
+The observed local Python 3.10 build lacks sealed descriptors; the observed
+system Python 3.14 build supports this profile. That is a build-capability
+distinction, not a claim that every Python 3.10 installation lacks it.
+
+Before each configured qualification run, a known-good repository MP4 must
+decode and a corrupt-packet control must refuse. Each candidate then passes
+bounded container checks, metadata validation and complete frame/audio
+decoding. Sealed snapshots pin executable and input bytes against later path
+replacement. The sandbox has no network or host home files. Each decoder gets
+35 CPU seconds before the soft signal and a 40-second hard CPU limit, a
+45-second wall limit, 768 MiB address space, a 2 MiB combined
+output ceiling and an 8 MiB temporary filesystem. Raising the media duration
+does not raise these execution limits. This adapter does not apply a cgroup
+process-count limit; the report does not claim one. Every decoded frame must retain its
+declared dimensions, pixel format and timing; partial decoding is not a pass.
+
+The qualification report records the profile, exact decoder digests, media
+digest, dimensions, duration, frame count, limits and completion state.
+Native-media records never reuse earlier qualification results, including
+when a later caller omits the decoder configuration. Actual MP4 package
+metadata independently disables a markerless cached result. Licences,
+provenance, secret scans (including allowed metadata and raw binary strings),
+effects and duplicate checks still apply. Format validity is not permission
+to redistribute footage or a visual/listening review.
+
+Run the focused native controls without a model or provider call:
+
+```sh
+PYTHONPATH=.:src:tools python tools/test_component_media_validation.py --media-tools MEDIA_TOOLS_JSON -v
+```
+
+On refusal, preserve the original and its report. Correct the exact bound,
+input or declared configuration, or leave the resource held. Do not rename an
+unsupported binary, silently remove a track, lower quality without recording
+the derivative, or skip frames to obtain a passing result.
+
+The FFmpeg adapter follows its documented
+[external-track controls](https://ffmpeg.org/ffmpeg-formats.html#mov_002fmp4_002f3gp),
+[protocol whitelist](https://ffmpeg.org/ffmpeg-protocols.html#Protocol-Options)
+and [error handling](https://ffmpeg.org/ffmpeg.html#Advanced-options). Those
+upstream controls supplement the local structure checks and isolation; they
+do not replace them.
+
 ## What the reviewer is sent
 
 Each sampled package reaches the reviewer through the native package prompt:

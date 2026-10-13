@@ -150,7 +150,7 @@ REFUSAL_REASONS = {
     # check has no record, a record for other bytes, or a failed check, and the shared packaging refusals.
     CREATIVE_ORIGINALS: ("family_invalid", "item_invalid", "native_evidence_missing", "native_evidence_stale",
                          "native_check_failed", "blocked_by_static_check", "package_above_review_bound",
-                         "package_path_invalid"),
+                         "package_path_invalid", "media_resource_manifest_invalid"),
     # Version-pinned engine API cards (tools/engine_api_cards): an unreadable fact, a licence the line cannot copy,
     # a build that is not the release's, a class the reference cannot describe, native evidence that does not hold
     # for the card's bytes, a failing package test, and the shared packaging refusals.

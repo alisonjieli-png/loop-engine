@@ -30,8 +30,9 @@ Qualification of one generated component (every check runs; any refusal refuses 
     └── duplicates: exact package or distinctive-content copies, and near copies (population-level)
 ```
 
-A check reads the component's exact bytes and record; only the sandbox check executes anything, inside
-the sandbox. A passed check approves nothing.
+A check reads the component's exact bytes and record. The sandbox check executes component code; the
+explicitly configured media profile also runs pinned native decoders inside its own networkless sandbox.
+A passed check approves nothing.
 """
 from __future__ import annotations
 
@@ -67,7 +68,7 @@ TEXT_MEDIA = frozenset({"application/json", "application/schema+json", "applicat
                         "application/x-sh", "application/xml", "application/sql", "application/x-python",
                         "model/gltf+json", "model/obj", "model/mtl", "image/svg+xml"})
 #: Binary media a strict decoder can verify end to end; every other binary file stays binary_file_unverified.
-VERIFIED_BINARY_MEDIA = ("image/png",)
+VERIFIED_BINARY_MEDIA = ("image/png", "video/mp4")
 #: Markup a document may not carry: an entity or document type declaration can expand without bound or reach a file.
 _XML_DECLARATIONS = re.compile(r"<!(?:DOCTYPE|ENTITY)", re.IGNORECASE)
 _HEX40 = re.compile(r"[0-9a-f]{40}")
@@ -107,13 +108,16 @@ class QualificationContext:
     revisions: dict = field(default_factory=dict)
     _static: object = None
     _patterns: tuple = ()
+    media_tools: object = None
 
     @classmethod
-    def load(cls, repository: Path, *, sandbox_settings=None, work_root=None, policy_path: Path = POLICY_PATH):
+    def load(cls, repository: Path, *, sandbox_settings=None, work_root=None, policy_path: Path = POLICY_PATH,
+             media_tools=None):
         policy = json.loads(Path(policy_path).read_text(encoding="utf-8"))
         if policy.get("record_type") != "component_qualification_policy/v1":
             raise ValueError("the qualification policy has another record type")
-        return cls(policy, Path(repository), sandbox_settings, Path(work_root) if work_root else None)
+        return cls(policy, Path(repository), sandbox_settings, Path(work_root) if work_root else None,
+                   media_tools=media_tools)
 
     @property
     def static_checks(self):
@@ -439,11 +443,26 @@ def _strict_json(text: str):
     return json.loads(text, object_pairs_hook=pairs, parse_constant=constant)
 
 
-def _binary_findings(entry, data) -> list:
+def _binary_findings(entry, data, *, component=None, context=None, notes=None) -> list:
     """A binary file passes only when its media type has a strict decoder and its bytes decode under it.
 
     A PNG must carry the PNG suffix and media type and pass tools/creative_originals/pngio.decode: signature, every
-    chunk CRC, chunk order, the exact inflated length and every row filter. Any other binary stays unverified."""
+    chunk CRC, chunk order, the exact inflated length and every row filter. MP4 additionally requires the
+    opt-in pinned decoder configuration and exact resource/source binding. Other binary formats stay unverified."""
+    if entry.media_type == "video/mp4":
+        from .media_validation import MediaValidationError, manifest_binding, validate
+        if PurePosixPath(entry.path).suffix.lower() != ".mp4" or not isinstance(data, bytes) \
+                or component is None or context is None or context.media_tools is None:
+            return [("binary_file_unverified", entry.path)]
+        try:
+            binding = manifest_binding(component, entry.path)
+            evidence = validate(data, context.media_tools)
+            evidence.update(path=entry.path, role=binding["role"], original=binding["original"])
+            if notes is not None:
+                notes.append(json.dumps(evidence, sort_keys=True, separators=(",", ":")))
+        except MediaValidationError as error:
+            return [("binary_media_refused", f"{entry.path}: {error.reason}")]
+        return []
     if entry.media_type not in VERIFIED_BINARY_MEDIA or PurePosixPath(entry.path).suffix.lower() != ".png" \
             or not isinstance(data, (bytes, bytearray)):
         return [("binary_file_unverified", entry.path)]
@@ -471,10 +490,11 @@ class ParseCheck:
     check_id, kind, dimension = "parse", "format", IMPLEMENTATION
 
     def run(self, component, context) -> CheckResult:
-        findings = []
+        findings, notes = [], []
         for entry in component.package.files:
             if not is_text(entry):
-                findings += _binary_findings(entry, component.payloads.get(entry.path))
+                findings += _binary_findings(entry, component.payloads.get(entry.path),
+                                             component=component, context=context, notes=notes)
                 continue
             text = component.text(entry.path)
             if text is None:
@@ -496,7 +516,7 @@ class ParseCheck:
                 findings.append(("python_syntax_error", f"{entry.path}:{error.lineno}"))
             except (ValueError, tomllib.TOMLDecodeError, csv.Error, RecursionError) as error:
                 findings.append(("document_does_not_parse", f"{entry.path}: {type(error).__name__}"))
-        return _result(self, findings)
+        return _result(self, findings, notes)
 
 
 class SchemaCheck:
@@ -830,6 +850,18 @@ class SecretsCheck:
     def run(self, component, context) -> CheckResult:
         findings = []
         places = [(entry.path, component.text(entry.path)) for entry in component.package.files]
+        for entry in component.package.files:
+            if entry.media_type == "video/mp4":
+                from .media_validation import MediaValidationError, mp4_structure
+                data = component.payloads.get(entry.path)
+                if isinstance(data, bytes):
+                    places.append((entry.path + " binary strings", data.decode("latin-1")))
+                try:
+                    text = "\n".join(mp4_structure(data)["text_metadata"])
+                    places.append((entry.path + " container metadata", text))
+                except MediaValidationError:
+                    # ParseCheck records the closed structural refusal independently.
+                    pass
         places.append(("candidate record", json.dumps(dict(component.candidate), sort_keys=True)))
         for place, text in places:
             if text is None:

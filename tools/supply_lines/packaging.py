@@ -17,12 +17,14 @@ from __future__ import annotations
 
 import re
 from dataclasses import dataclass, field
+from pathlib import PurePosixPath
 
 from loop_engine.core.library_ingestion.duplicates import normalized
 from loop_engine.core.library_ingestion.record_rules import bytes_digest
 from loop_engine.core.service_runtime.catalogue_attributes import FORM_DECLARED, component_form_record
 from loop_engine.core.service_runtime.catalogue_packages import (
-    EXECUTABLE_EFFECT, EXECUTABLE_ROLES, PACKAGE_BODY, CataloguePackage, CataloguePackageFile)
+    EXECUTABLE_EFFECT, EXECUTABLE_ROLES, MAXIMUM_FILE_BYTES, MAXIMUM_PACKAGE_BYTES,
+    PACKAGE_BODY, CataloguePackage, CataloguePackageFile)
 
 from loop_engine.core.service_runtime.records import ServiceRuntimeError
 
@@ -64,8 +66,8 @@ def notice_files(notices) -> tuple:
 #: The refusal code of a package whose file path the catalogue package refuses.
 PACKAGE_PATH_INVALID = "package_path_invalid"
 UPSTREAM_LICENCE_NAME = "UPSTREAM-LICENSE"
-#: The review panel reads files up to these bounds (tools/licensed_import/review_export.py); a package above them
-#: could never be reviewed, so a line refuses it before it is stored.
+#: Text review bounds. The explicit creative MP4 resource profile uses the existing catalogue byte bounds
+#: for its declared binary bodies only; its text, provenance and native evidence remain separately reviewed.
 MAXIMUM_REVIEW_FILE_BYTES = 256 * 1024
 MAXIMUM_REVIEW_PACKAGE_BYTES = 2 * 1024 * 1024
 _CHECKS = None
@@ -122,8 +124,9 @@ def attribution_text(package: SupplyPackage, rows) -> bytes:
     generator = package.provenance["generator"]
     lines = ["# Attribution", "",
              f"Baltor's deterministic generator `{generator['identity']}` version {generator['version']} "
-             f"(code revision {generator['code_revision']}) wrote this package on {package.generated_on} from the "
-             "facts listed below. No model wrote any of it.", "",
+             f"(code revision {generator['code_revision']}) assembled this package on {package.generated_on} from the "
+             "facts listed below. This packaging step makes no model call. Source authorship, including any "
+             "AI assistance, remains part of the source provenance and is not inferred from deterministic packaging.", "",
              f"Package licence: {package.licence_expression}.", "",
              "## Facts", "", "| Source | Role | Retrieved | SHA-256 | Licence |", "|---|---|---|---|---|"]
     for fact in package.provenance["facts"]:
@@ -140,6 +143,35 @@ def _entry(path: str, data: bytes, role: str, declared: "str | None" = None) -> 
     return CataloguePackageFile(path, bytes_digest(data), len(data), declared or media_type(path), role)
 
 
+def require_review_bounds(package: SupplyPackage, files: list) -> None:
+    """Only exact declared creative MP4 resources use catalogue body bounds.
+
+    Text review bounds and every other supply line remain unchanged. This
+    permits candidate preparation, not admission or a native decode claim.
+    """
+    video = [row for row in files if row.media_type == "video/mp4"]
+    if package.line != "creative_originals" or not video:
+        if any(len(row.data) > MAXIMUM_REVIEW_FILE_BYTES for row in files) or \
+                sum(len(row.data) for row in files) > MAXIMUM_REVIEW_PACKAGE_BYTES:
+            raise SupplyRecordError("package_above_review_bound", package.name)
+        return
+    from types import SimpleNamespace
+    from tools.component_qualification.media_validation import MediaValidationError, manifest_binding
+    if any(len(row.data) > (MAXIMUM_FILE_BYTES if row.media_type == "video/mp4" else MAXIMUM_REVIEW_FILE_BYTES)
+           for row in files) or sum(len(row.data) for row in files) > MAXIMUM_PACKAGE_BYTES or \
+            sum(len(row.data) for row in files if row.media_type != "video/mp4") > MAXIMUM_REVIEW_PACKAGE_BYTES:
+        raise SupplyRecordError("package_above_review_bound", package.name)
+    try:
+        component = SimpleNamespace(line=package.line, package=SimpleNamespace(files=files),
+                                    payloads={row.path: row.data for row in files})
+        for row in video:
+            if PurePosixPath(row.path).suffix.lower() != ".mp4":
+                raise MediaValidationError("media_path_mime_mismatch")
+            manifest_binding(component, row.path)
+    except MediaValidationError as error:
+        raise SupplyRecordError("media_resource_manifest_invalid", error.reason) from None
+
+
 def build(package: SupplyPackage, *, check: bool = True) -> tuple:
     """(payload, bodies) of one package, or raise SupplyRecordError with a refusal reason."""
     if not licence_allowed(package.licence_expression):
@@ -154,9 +186,7 @@ def build(package: SupplyPackage, *, check: bool = True) -> tuple:
     rows = [(row.path, row.origin, bytes_digest(row.data)) for row in files]
     attribution = attribution_text(package, rows)
     files.append(PackageFile(ATTRIBUTION_NAME, attribution, "other", ATTRIBUTION))
-    if any(len(row.data) > MAXIMUM_REVIEW_FILE_BYTES for row in files) or \
-            sum(len(row.data) for row in files) > MAXIMUM_REVIEW_PACKAGE_BYTES:
-        raise SupplyRecordError("package_above_review_bound", package.name)
+    require_review_bounds(package, files)
     try:
         entries = [_entry(row.path, row.data, row.role, row.media_type) for row in files]
     except ServiceRuntimeError as error:
