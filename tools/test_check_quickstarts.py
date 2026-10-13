@@ -16,6 +16,7 @@ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 import json
 from pathlib import Path
 import re
+import subprocess
 import sys
 import tempfile
 import threading
@@ -864,6 +865,153 @@ class QuickstartCheckTests(unittest.TestCase):
         with self.assertRaises(SystemExit) as refused:
             tool.main(["--origin", "http://127.0.0.1:8080"])
         self.assertEqual(refused.exception.code, 2)
+
+
+class OpenCodeBootstrapTests(unittest.TestCase):
+    """Run the documented shell with local curl fixtures and a private home mapping."""
+
+    def setUp(self):
+        self.folder = tempfile.TemporaryDirectory(prefix="opencode-bootstrap-")
+        self.addCleanup(self.folder.cleanup)
+        self.root = Path(self.folder.name)
+        self.project, self.user_home = self.root / "project", self.root / "test-user-home"
+        self.project.mkdir()
+        self.user_home.mkdir()
+        self.bin = self.root / "bin"
+        self.bin.mkdir()
+        self.fixture = self.root / "responses"
+        self.fixture.mkdir()
+        source = ROOT / "src/loop_engine/core/service_runtime/web_assets/baltor-library"
+        self.names = ("SKILL.md", "LICENSE", "scripts/baltor.py", "references/client.md",
+                      "assets/client.example.json", "verification/test_client.py", "SHA256SUMS")
+        for name in self.names:
+            target = self.fixture / name
+            target.parent.mkdir(parents=True, exist_ok=True)
+            target.write_bytes((source / (name + ".txt")).read_bytes())
+        # This executable never performs network I/O. No real credential or
+        # environment is inherited by the shell fixture.
+        curl = self.bin / "curl"
+        curl.write_text('''#!/usr/bin/python3
+import os
+from pathlib import Path
+import sys
+args = sys.argv[1:]
+url = next(value for value in args if value.startswith("https://"))
+prefix = "https://baltor.ai/assets/baltor-library/"
+assert url.startswith(prefix)
+name = url[len(prefix):]
+with open(os.environ["BOOTSTRAP_LOG"], "a") as log:
+    log.write(name + "\\n")
+mode = os.environ["BOOTSTRAP_MODE"]
+if mode == "curl_failure" and name == "scripts/baltor.py":
+    raise SystemExit(22)
+if mode == "concurrent_target" and name == "SKILL.md":
+    target = Path(os.environ["BOOTSTRAP_TARGET"])
+    target.mkdir()
+    (target / "keep.txt").write_text("concurrent work")
+data = (Path(os.environ["BOOTSTRAP_FIXTURE"]) / name).read_bytes()
+if mode == "bad_digest" and name == "SKILL.md":
+    data += b"unexpected change"
+if mode == "outside_manifest" and name == "SHA256SUMS":
+    data = data.replace(b"  LICENSE", b"  ../outside")
+destination = Path(args[args.index("-o") + 1])
+destination.parent.mkdir(parents=True, exist_ok=True)
+destination.write_bytes(data)
+''', encoding="utf-8")
+        curl.chmod(0o700)
+        page = (ROOT / "docs/guides/quickstart-opencode.md").read_text()
+        self.script = next(body for language, body in tool.fenced_blocks(page)
+                           if language == "bash" and body.startswith("# Stage and verify the bootstrap"))
+        self.assertEqual(self.script.count("$HOME"), 1)
+        # Substitute only the home-root placeholder. Never repurpose the
+        # workstation HOME or allow the fixture to write its configuration.
+        self.script = self.script.replace("$HOME", "$TEST_USER_HOME")
+        self.target = self.project / ".opencode/skills/baltor-library"
+        self.configuration = self.user_home / ".config/baltor/client.json"
+
+    def execute(self, mode="good", script=None):
+        return subprocess.run(["/bin/bash", "--noprofile", "--norc", "-c", script or self.script],
+            cwd=self.project, env={"PATH": str(self.bin) + ":/usr/bin:/bin", "LANG": "C.UTF-8",
+                "TEST_USER_HOME": str(self.user_home), "BOOTSTRAP_FIXTURE": str(self.fixture),
+                "BOOTSTRAP_LOG": str(self.root / "curl.log"), "BOOTSTRAP_MODE": mode,
+                "BOOTSTRAP_TARGET": str(self.target)},
+            capture_output=True, text=True, timeout=15)
+
+    def test_exact_bytes_are_verified_before_install_and_configuration(self):
+        result = self.execute()
+        self.assertEqual(result.returncode, 0, result.stderr)
+        for name in self.names:
+            self.assertEqual((self.target / name).read_bytes(), (self.fixture / name).read_bytes())
+        self.assertEqual(self.configuration.read_bytes(), (self.fixture / "assets/client.example.json").read_bytes())
+        self.assertEqual(result.stdout.count(": OK"), 12)
+        self.assertEqual(len(list(self.target.parent.glob(".baltor-library-stage.*"))), 1)
+
+    def test_failed_curl_cannot_publish_partial_skill_or_configuration(self):
+        result = self.execute("curl_failure")
+        self.assertNotEqual(result.returncode, 0)
+        self.assertFalse(self.target.exists())
+        self.assertFalse(self.configuration.exists())
+        self.assertEqual((self.root / "curl.log").read_text().splitlines(), ["SKILL.md", "LICENSE", "scripts/baltor.py"])
+
+    def test_wrong_digest_cannot_publish(self):
+        result = self.execute("bad_digest")
+        self.assertNotEqual(result.returncode, 0)
+        self.assertFalse(self.target.exists())
+        self.assertFalse(self.configuration.exists())
+
+    def test_manifest_cannot_name_outside_bootstrap_files(self):
+        result = self.execute("outside_manifest")
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("exactly the six bootstrap files", result.stderr)
+        self.assertFalse(self.target.exists())
+
+    def test_existing_skill_is_preserved_before_any_download(self):
+        self.target.mkdir(parents=True)
+        (self.target / "keep.txt").write_text("user work")
+        result = self.execute()
+        self.assertNotEqual(result.returncode, 0)
+        self.assertEqual((self.target / "keep.txt").read_text(), "user work")
+        self.assertFalse((self.root / "curl.log").exists())
+
+    def test_concurrent_destination_creation_is_not_overwritten(self):
+        result = self.execute("concurrent_target")
+        self.assertNotEqual(result.returncode, 0)
+        self.assertEqual((self.target / "keep.txt").read_text(), "concurrent work")
+        self.assertFalse((self.target / "SKILL.md").exists())
+        self.assertFalse(self.configuration.exists())
+
+    def test_existing_configuration_is_not_replaced(self):
+        self.configuration.parent.mkdir(parents=True)
+        self.configuration.write_text('{"existing":"configuration"}')
+        result = self.execute()
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual(self.configuration.read_text(), '{"existing":"configuration"}')
+        self.assertIn("Existing client.json retained", result.stdout)
+
+    def test_configuration_symlink_target_is_not_written(self):
+        self.configuration.parent.mkdir(parents=True)
+        outside = self.root / "outside-config.json"
+        self.configuration.symlink_to(outside)
+        result = self.execute()
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertTrue(self.configuration.is_symlink())
+        self.assertFalse(outside.exists())
+
+    def test_skill_parent_symlink_is_refused(self):
+        outside = self.root / "outside-skills"
+        outside.mkdir()
+        (self.project / ".opencode").symlink_to(outside)
+        result = self.execute()
+        self.assertNotEqual(result.returncode, 0)
+        self.assertEqual(list(outside.iterdir()), [])
+        self.assertFalse((self.root / "curl.log").exists())
+
+    def test_known_wrong_removed_fail_fast_continues_after_failed_download(self):
+        result = self.execute("curl_failure", self.script.replace("set -eu", "set -u", 1))
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertTrue(self.target.exists())
+        self.assertFalse((self.target / "scripts/baltor.py").exists())
+        self.assertTrue(self.configuration.exists())
 
 
 if __name__ == "__main__":

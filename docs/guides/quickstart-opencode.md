@@ -9,8 +9,15 @@ One page from an account to a checked download. Every address, field and command
 - A [Baltor account](https://app.baltor.ai/get-started). Public Good files are free with an account; Pro adds the full library.
 - A Baltor key from [your account page](https://app.baltor.ai/account), under Your Baltor keys. The service shows it once.
 - OpenCode 1.x installed. Check the version with `opencode --version`. OpenCode 2.x uses a different configuration layout, and this page does not cover it.
+- A model connection that already works in OpenCode, using your own provider account, subscription or local endpoint. Baltor library access does not supply model access or pay that provider's charges.
 - A terminal where the token is set, because the entry reads it from the environment.
 - Python 3.10 or newer, `curl` and `sha256sum`, for the Baltor library skill that places downloaded files.
+
+Before configuring Baltor, start OpenCode in your project and ask it a short
+question without using tools. Confirm that your chosen model answers. If that
+fails, fix the OpenCode model connection first. A working model connection and
+a valid Baltor library token are separate prerequisites; neither verifies the
+other.
 
 ## Set the token
 
@@ -80,17 +87,82 @@ OpenCode calls `intelligence_search` with your words as the `query`. The tool an
 Files reach your project through a command that writes their exact bytes, never through the model retyping them. A model that retypes a file can change it: a customer run on September 27, 2026 found every line break of a downloaded skill written as the two characters `\n`. The command is the client of the Baltor library skill. Install the skill once in this project and check each file against the digests the website publishes:
 
 ```bash
-mkdir -p .opencode/skills/baltor-library && cd .opencode/skills/baltor-library
-for file in SKILL.md LICENSE scripts/baltor.py references/client.md assets/client.example.json verification/test_client.py; do
-  curl -fsSL --create-dirs "https://baltor.ai/assets/baltor-library/$file" -o "$file"
-done
-curl -fsSL https://baltor.ai/assets/baltor-library/SHA256SUMS | sha256sum -c -
-cd -
-mkdir -p ~/.config/baltor
-cp -n .opencode/skills/baltor-library/assets/client.example.json ~/.config/baltor/client.json
+# Stage and verify the bootstrap before creating the installed skill.
+(
+  set -eu
+  umask 077
+  target="$PWD/.opencode/skills/baltor-library"
+  for parent in .opencode .opencode/skills; do
+    if [ -L "$parent" ] || { [ -e "$parent" ] && [ ! -d "$parent" ]; }; then
+      printf '%s\n' "Refusing non-directory or symbolic-link parent: $parent" >&2
+      exit 1
+    fi
+  done
+  if [ -e "$target" ] || [ -L "$target" ]; then
+    printf '%s\n' "Existing skill retained: $target. Inspect it before installing another copy." >&2
+    exit 1
+  fi
+  mkdir -p .opencode/skills
+  staging=$(mktemp -d "$PWD/.opencode/skills/.baltor-library-stage.XXXXXXXX")
+  printf 'Staging directory retained for inspection: %s\n' "$staging"
+  cd "$staging"
+  for file in SKILL.md LICENSE scripts/baltor.py references/client.md assets/client.example.json verification/test_client.py SHA256SUMS; do
+    curl -fsS --proto '=https' --max-time 30 --create-dirs \
+      "https://baltor.ai/assets/baltor-library/$file" -o "$file"
+  done
+  python3 - <<'PY'
+import re
+from pathlib import Path
+expected = {"SKILL.md", "LICENSE", "scripts/baltor.py", "references/client.md",
+            "assets/client.example.json", "verification/test_client.py"}
+lines = Path("SHA256SUMS").read_text(encoding="utf-8").splitlines()
+matches = [re.fullmatch(r"[0-9a-f]{64}  (.+)", line) for line in lines]
+if len(lines) != len(expected) or any(match is None for match in matches):
+    raise SystemExit("Checksum manifest shape refused")
+if {match.group(1) for match in matches} != expected:
+    raise SystemExit("Checksum manifest must name exactly the six bootstrap files")
+PY
+  sha256sum --strict -c SHA256SUMS
+  mkdir "$target"
+  cp -R -n "$staging/." "$target/"
+  cd "$target"
+  sha256sum --strict -c SHA256SUMS
+  python3 - "$HOME/.config/baltor" <<'PY'
+import os
+from pathlib import Path
+import sys
+folder = Path(sys.argv[1])
+if any(parent.is_symlink() for parent in (folder.parent, folder)):
+    raise SystemExit("Existing symbolic-link configuration directory retained; inspect it manually")
+folder.mkdir(parents=True, exist_ok=True, mode=0o700)
+try:
+    descriptor = os.open(folder / "client.json", os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
+except FileExistsError:
+    print("Existing client.json retained. Check its origin, token variable and declared effects before use.")
+else:
+    with os.fdopen(descriptor, "wb") as output:
+        output.write(Path("assets/client.example.json").read_bytes())
+    print("Created client.json without replacing existing configuration.")
+PY
+)
 ```
 
-`sha256sum -c` prints `OK` for each of the six files. The client needs Python 3.10 or newer. Its configuration, `~/.config/baltor/client.json`, names the token variable and the same four effects as the `Baltor-Step-Effects` header above; it never holds the token. OpenCode lists the skill from its next session.
+Run the block from the project folder in Bash. It stops on a failed download,
+unexpected checksum path or wrong digest before creating the installed skill.
+It does not overwrite an existing skill, configuration file or symbolic-link
+target. The six files must print `OK` both in staging and after copying. The
+staging folder remains available for inspection; no cleanup command deletes it
+or other work automatically. A failed copy can leave a partial new skill
+folder, which the next attempt refuses. Inspect and move that partial folder
+aside yourself before another attempt; do not remove a folder of unknown origin.
+
+The client needs Python 3.10 or newer. A newly created
+`~/.config/baltor/client.json` names the token variable and the same four
+effects as the `Baltor-Step-Effects` header above; it never holds the token.
+If configuration already existed, the block preserves it and asks you to
+check its origin, token variable and effects. OpenCode lists the skill from
+its next session. This bootstrap places a skill, not arbitrary plugins or
+tools, and does not establish that a model has used it successfully.
 
 ## Your first download
 

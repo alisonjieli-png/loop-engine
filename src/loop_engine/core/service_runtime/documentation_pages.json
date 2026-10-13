@@ -69,13 +69,13 @@
   },
   "quickstart-opencode": {
    "body_address": "/assets/docs/quickstart-opencode.html",
-   "body_digest": "5fbe919052804928691e2b864a3c4c27042e00872bb11face01e14a3f954fad9",
+   "body_digest": "c161a236dadc5133ab5909a60dff23a462998f3d3252cdb936d92d4c33e9c807",
    "heading": "OpenCode quickstart",
    "id": "quickstart-opencode",
    "kind_line": "Kind: customer quickstart for OpenCode 1.x. It repeats the connection entry that Get set up publishes for OpenCode and adds the first search, the first download and the check that it worked.",
    "record_type": "website_documentation_page/v1",
    "repository_path": "docs/guides/quickstart-opencode.md",
-   "source_digest": "8c56653e786214b0d3ee09bbfb236926d9931ed244861d4964f27b6a76fba858",
+   "source_digest": "966843f95a7a5ea29d9342a3f92cf364e67c50aa090e6f0ff60529d92b0baba8",
    "title": "OpenCode quickstart"
   },
   "quickstart-pi": {
