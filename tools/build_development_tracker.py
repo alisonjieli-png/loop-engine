@@ -1,7 +1,7 @@
 """Write the development tracker from the roadmap, the one source of task truth.
 
-The tracker is a short, human view of docs/roadmap/roadmap.yaml: what is being
-built now, what can start next, what is blocked, what only the owner can do,
+The tracker is a short, human view of docs/roadmap/roadmap.yaml: recorded work
+in progress, what can start next, what is blocked, what only the owner can do,
 the launch gates, and every delivery package with its progress. It never holds
 state of its own. Change the roadmap, then run this command; `--check` fails
 when the committed tracker no longer matches the roadmap.
@@ -36,7 +36,7 @@ WAITING = ("proposed",)
 BLOCKED = ("blocked",)
 RETIRED = ("superseded",)
 LANES = (
-    ("now", "Being built now"),
+    ("now", "Recorded work in progress"),
     ("next", "Can start next"),
     ("waiting", "Waiting on earlier work"),
     ("blocked", "Blocked"),
@@ -145,6 +145,17 @@ def _execution(roadmap, by_id):
         if rows[name]["complete"] and rows[name]["waiting_on"]:
             raise TrackerError("a completed subtask cannot have an unfinished required dependency")
     return [rows[name] for name in order]
+
+
+def ordered_subtasks(roadmap: dict) -> list[dict]:
+    """Validate the recorded subtask graph and return its declared execution order."""
+    return _execution(roadmap, _steps(roadmap))
+
+
+def next_eligible_subtask(execution: list[dict]) -> dict | None:
+    """Select from validated recorded tasks, without starting work or granting effects."""
+    return next((row for row in execution if not row["complete"] and not row["waiting_on"]
+                 and row["status"] not in BLOCKED + RETIRED), None)
 
 
 def build(raw: bytes) -> dict:
@@ -274,6 +285,8 @@ def render(tracker: dict) -> str:
         "",
         "## Where things stand",
         "",
+        "Statuses are recorded planning state, not live worker telemetry.",
+        "",
         "| Lane | Steps |",
         "|---|---:|",
     ]
@@ -281,9 +294,9 @@ def render(tracker: dict) -> str:
         lines.append(f"| {title} | {tracker['counts'][key]} |")
     schedule = tracker.get("working_schedule")
     if schedule:
-        lines += ["", "## Active working window", "", schedule["note"], "",
+        lines += ["", "## Recorded planning window", "", schedule["note"], "",
                   "The bars are planned work windows. Completion comes only from each task's acceptance and evidence.", "",
-                  "```mermaid", "gantt", "    title Current delivery window in UTC", "    dateFormat YYYY-MM-DDTHH:mm:ssZ",
+                  "```mermaid", "gantt", "    title Recorded planning window in UTC", "    dateFormat YYYY-MM-DDTHH:mm:ssZ",
                   "    axisFormat %d %H:%M"]
         owners = []
         for block in schedule["blocks"]:
@@ -294,16 +307,15 @@ def render(tracker: dict) -> str:
             for index, block in enumerate(schedule["blocks"]):
                 if block["owner"] != owner:
                     continue
-                tag = "done, " if block["complete"] else "active, " if block["status"] == "building" else ""
+                tag = "done, " if block["complete"] else ""
                 title = _cell(block["title"]).replace(":", " ").replace(";", " ")
                 lines.append(f"    {title} :{tag}work{index}, {block['starts_at']}, {block['duration_hours']}h")
-        lines += ["```", "", "| Task | Owner | Planned start UTC | Planned end UTC | Actual state |", "|---|---|---|---|---|"]
+        lines += ["```", "", "| Task | Owner | Planned start UTC | Planned end UTC | Recorded state |", "|---|---|---|---|---|"]
         for block in schedule["blocks"]:
             lines.append(f"| {block['task']} | {_cell(block['owner'])} | {block['starts_at']} | {block['ends_at']} | {block['status']} |")
     if tracker["execution"]:
         tasks = tracker["execution"]
-        next_task = next((row for row in tasks if not row["complete"] and not row["waiting_on"]
-                          and row["status"] not in BLOCKED + RETIRED), None)
+        next_task = next_eligible_subtask(tasks)
         lines += ["", "## Ordered task checklist", "",
             "Each subtask lives in its owning step in roadmap.yaml. A local check does not complete a task that requires publication.", "",
             f"Completed within their stated scope: {tracker['execution_counts']['complete']} of {tracker['execution_counts']['total']} subtasks.", "",

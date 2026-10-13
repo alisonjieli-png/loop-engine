@@ -15,6 +15,8 @@ from pathlib import Path
 
 import yaml
 
+import build_development_tracker as development_tracker
+
 ROOT = Path(__file__).resolve().parents[1]
 ROADMAP = ROOT / "docs/roadmap/roadmap.yaml"
 
@@ -198,6 +200,7 @@ def validate_delivery_plan(plan, steps):
 
 
 def eligible_steps(data: dict, *, track: str = "launch") -> list[dict]:
+    """Legacy parent selection, used by views only when the roadmap has no subtasks."""
     by_id = validate(data)
     plan = data["continuation"]
     decisions = {row["id"]: row for row in plan["decisions"]}
@@ -221,6 +224,19 @@ def eligible_steps(data: dict, *, track: str = "launch") -> list[dict]:
             continue
         chosen.append(step)
     return chosen
+
+
+def next_work(data: dict) -> dict[str, list[dict]]:
+    """Use the tracker's ordered subtask selection, or parent tracks when none exist."""
+    validate(data)
+    try:
+        tasks = development_tracker.ordered_subtasks(data)
+    except development_tracker.TrackerError as error:
+        raise PlanError(str(error)) from error
+    if tasks:
+        selected = development_tracker.next_eligible_subtask(tasks)
+        return {"subtasks": [selected] if selected is not None else []}
+    return {track: eligible_steps(data, track=track) for track in ("launch", "improvement")}
 
 
 def gate_status(data: dict, gate: dict) -> str:
@@ -261,12 +277,18 @@ def render(data: dict, digest: str, root: Path = ROOT) -> str:
              link("docs/guides/launch-owner-checklist.md", "Owner checklist") + " | " +
              link("docs/guides/product-style-guide.md", "Style guide"), "",
              "## Next eligible work", ""]
-    for track in ("launch", "improvement"):
-        eligible = eligible_steps(data, track=track)
-        summary = "; ".join(f"{s['id']}: {s['title']}" for s in eligible)
-        lines.append(f"- {track.capitalize()}: {summary or 'none currently ready; review dependencies and authority'}.")
-    lines.extend(["", "## Work in progress", "",
-                  "These steps are already being built. They are not completed dependencies or permission to deploy.", "",
+    selection = next_work(data)
+    if "subtasks" in selection:
+        selected = selection["subtasks"]
+        lines.append("Next eligible subtask: " + selected[0]["id"] + ": " + cell(selected[0]["title"])
+                     if selected else "No eligible subtask is recorded.")
+    else:
+        for track, eligible in selection.items():
+            summary = "; ".join(f"{s['id']}: {s['title']}" for s in eligible)
+            lines.append(f"- {track.capitalize()}: {summary or 'none currently ready; review dependencies and authority'}.")
+    lines.extend(["", "## Recorded work in progress", "",
+                  "These steps have a recorded building status. This is planning state, not live worker telemetry, "
+                  "completed dependencies or permission to deploy.", "",
                   "| Step | Current evidence | Next local work |", "|---|---|---|"])
     active = [by_id[identity] for identity in plan["launch_order"] + plan["improvement_order"]
               if by_id[identity]["status"] == "building"]
@@ -274,7 +296,7 @@ def render(data: dict, digest: str, root: Path = ROOT) -> str:
         lines.append(f"| {step['id']} | {cell(step.get('evidence') or 'No evidence recorded')} | "
                      f"{cell(step.get('next_local_work') or 'Continue the declared acceptance checks')} |")
     if not active:
-        lines.append("| none | No active implementation recorded | Select authorized eligible work |")
+        lines.append("| none | No step has a recorded building status | Select authorized eligible work |")
     lines.extend(["", "## Release gates", "",
                   "A completed planning task, import, or published module does not establish a release gate.", "",
                   "| Gate | State | Required steps |", "|---|---|---|"])
@@ -341,15 +363,14 @@ def main(argv=None) -> int:
     parser.add_argument("--roadmap", type=Path, default=ROADMAP)
     parser.add_argument("--output", type=Path)
     parser.add_argument("--check", action="store_true")
-    parser.add_argument("--next", action="store_true")
+    parser.add_argument("--next", action="store_true", help="Print the next ordered subtask, or eligible parent tracks when no subtasks exist.")
     args = parser.parse_args(argv)
     raw = args.roadmap.read_bytes()
     try:
         data = yaml.safe_load(raw)
         validate(data)
         if args.next:
-            print(json.dumps({track: [s["id"] for s in eligible_steps(data, track=track)]
-                              for track in ("launch", "improvement")}))
+            print(json.dumps({scope: [row["id"] for row in rows] for scope, rows in next_work(data).items()}))
             return 0
         text = render(data, hashlib.sha256(raw).hexdigest())
     except (PlanError, KeyError, TypeError, yaml.YAMLError) as exc:

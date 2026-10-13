@@ -30,6 +30,10 @@ class DevelopmentTrackerTests(unittest.TestCase):
         rendered = tool.render(tracker)
         self.assertIn("```mermaid\ngantt", rendered)
         self.assertIn("planned work windows", rendered)
+        self.assertTrue("## Recorded planning window" in rendered)
+        self.assertTrue("Recorded work in progress" in rendered)
+        self.assertTrue("not live worker telemetry" in rendered)
+        self.assertNotIn("Being built now", rendered)
 
     def test_schedule_refuses_unknown_duplicate_or_out_of_window_tasks(self):
         original = yaml.safe_load(tool.ROADMAP.read_bytes())

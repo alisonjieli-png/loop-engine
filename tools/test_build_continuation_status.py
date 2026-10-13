@@ -2,6 +2,9 @@
 from __future__ import annotations
 
 import copy
+from contextlib import redirect_stdout
+import io
+import json
 import sys
 import tempfile
 import unittest
@@ -11,6 +14,7 @@ import yaml
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import build_continuation_status as tool
+import build_development_tracker as tracker_tool
 
 
 class ContinuationTests(unittest.TestCase):
@@ -19,6 +23,85 @@ class ContinuationTests(unittest.TestCase):
 
     def step(self, identity):
         return next(row for row in self.data["steps"] if row["id"] == identity)
+
+    def subtask_plan(self):
+        self.data["continuation"].pop("working_schedule", None)
+        for step in self.data["steps"]:
+            step.pop("subtasks", None)
+        tasks = []
+        for parent_id, suffix in (("S-6.4", "first"), ("S-6.5", "second")):
+            parent = self.step(parent_id)
+            parent.update(status="ready", depends_on=[], authority_requirements=[])
+            row = {"id": parent_id + "." + suffix, "title": "Check " + suffix, "status": "ready",
+                   "completion_status": "offline_verified", "depends_on": [], "acceptance": "A recorded check passes.",
+                   "procedure": ["Run the scoped check."], "next_action": "Run the scoped check.",
+                   "evidence": "", "comment": "A planning record, not a running worker."}
+            parent["subtasks"] = [row]
+            tasks.append(row)
+        # The ordered subtasks deliberately disagree with eligible parent order.
+        self.data["continuation"]["execution_order"] = [row["id"] for row in reversed(tasks)]
+        return tasks
+
+    def next_output(self):
+        with tempfile.TemporaryDirectory() as directory:
+            roadmap = Path(directory) / "roadmap.yaml"
+            roadmap.write_text(yaml.safe_dump(self.data, sort_keys=False), encoding="utf-8")
+            output = io.StringIO()
+            with redirect_stdout(output):
+                self.assertEqual(tool.main(["--roadmap", str(roadmap), "--next"]), 0)
+            return json.loads(output.getvalue())
+
+    def test_views_and_next_choose_the_same_subtask_despite_opposing_parent_order(self):
+        first, second = self.subtask_plan()
+        parents = [row["id"] for row in tool.eligible_steps(self.data)]
+        self.assertLess(parents.index("S-6.4"), parents.index("S-6.5"))
+        expected = "Next eligible subtask: " + second["id"] + ": " + second["title"]
+        tracker = tracker_tool.build(yaml.safe_dump(self.data).encode())
+        self.assertTrue(expected in tracker_tool.render(tracker), "tracker ignored the declared subtask order")
+        self.assertTrue(expected in tool.render(self.data, "fixture"), "continuation selected a parent instead of the ordered subtask")
+        self.assertEqual(self.next_output(), {"subtasks": [second["id"]]})
+        self.assertNotEqual(self.next_output(), {"subtasks": [first["id"]]})
+
+    def test_blocked_or_retired_subtasks_do_not_fall_back_to_ready_parents(self):
+        first, second = self.subtask_plan()
+        for status in ("blocked", "superseded"):
+            second["status"] = status
+            self.assertEqual(self.next_output(), {"subtasks": [first["id"]]})
+            first["status"] = status
+            self.assertEqual(self.next_output(), {"subtasks": []})
+            self.assertTrue("No eligible subtask is recorded." in tool.render(self.data, "fixture"))
+            first["status"] = "ready"
+
+    def test_parent_selection_is_used_only_without_any_subtasks(self):
+        self.subtask_plan()
+        for step in self.data["steps"]:
+            step.pop("subtasks", None)
+        self.data["continuation"]["execution_order"] = []
+        expected = {track: [row["id"] for row in tool.eligible_steps(self.data, track=track)]
+                    for track in ("launch", "improvement")}
+        self.assertEqual(self.next_output(), expected)
+        self.assertIn("- Launch: S-6.4:", tool.render(self.data, "fixture"))
+
+    def test_subtask_next_waits_for_exact_completion_and_never_reopens_completed_work(self):
+        first, second = self.subtask_plan()
+        first.update(status="offline_verified", completion_status="published", evidence="Local checks passed.")
+        second["depends_on"] = [first["id"]]
+        self.assertEqual(self.next_output(), {"subtasks": [first["id"]]})
+        first["status"] = "published"
+        self.assertEqual(self.next_output(), {"subtasks": [second["id"]]})
+        second.update(status="offline_verified", evidence="Scoped result verified.")
+        self.assertEqual(self.next_output(), {"subtasks": []})
+
+    def test_invalid_subtask_graph_refuses_instead_of_selecting_a_parent(self):
+        _first, second = self.subtask_plan()
+        second["depends_on"] = ["S-missing.task"]
+        with self.assertRaises(tool.PlanError):
+            tool.next_work(self.data)
+
+    def test_recorded_work_is_not_labelled_as_live_worker_telemetry(self):
+        rendered = tool.render(self.data, "fixture")
+        self.assertTrue("## Recorded work in progress" in rendered)
+        self.assertTrue("not live worker telemetry" in rendered)
 
     def test_real_plan_preserves_every_initiative_and_has_valid_dependencies(self):
         rows = tool.validate(self.data)
@@ -99,14 +182,14 @@ class ContinuationTests(unittest.TestCase):
         self.step("S-6.4").update(status="building", evidence="Local store proof only",
                                 next_local_work="Verify restore before hosted qualification")
         rendered = tool.render(self.data, "fixture")
-        active = rendered.split("## Work in progress", 1)[1].split("## Release gates", 1)[0]
+        active = rendered.split("## Recorded work in progress", 1)[1].split("## Release gates", 1)[0]
         self.assertIn("| S-6.4 | Local store proof only | Verify restore before hosted qualification |", active)
         self.assertNotIn("S-6.4", [row["id"] for row in tool.eligible_steps(self.data)])
         self.assertIn("Not verified", rendered)
 
     def test_completed_work_is_not_presented_as_active(self):
         self.step("S-6.4").update(status="offline_verified", evidence="A local fixture")
-        active = tool.render(self.data, "fixture").split("## Work in progress", 1)[1].split("## Release gates", 1)[0]
+        active = tool.render(self.data, "fixture").split("## Recorded work in progress", 1)[1].split("## Release gates", 1)[0]
         self.assertNotIn("| S-6.4 |", active)
 
     def test_delivery_packages_expand_existing_work_without_accepting_claims(self):
