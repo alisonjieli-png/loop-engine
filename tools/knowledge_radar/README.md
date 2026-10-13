@@ -643,6 +643,13 @@ bounded reconciliation reports incomplete coverage instead of claiming a full
 backfill. Per-run identifiers remain unique even within the same second.
 The persisted scheduler journal is not a complete native model transcript.
 
+Dismissed leads stay dismissed when source metadata changes or the compiler
+is replaced. Admission skips them, and a worker rechecks the current managed
+lead before compilation so a dismissal after admission cancels that pending
+activation with `LEAD_DISMISSED`. Its historical input and canceled activation
+remain recorded; no new work order is produced. Reopening a lead requires a
+separate authorized managed-record state change.
+
 Example, with a private directory chosen by the operator:
 
 ```bash

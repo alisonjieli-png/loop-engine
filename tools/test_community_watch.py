@@ -20,9 +20,11 @@ from knowledge_radar.community_intake import (
 )
 from knowledge_radar.community_store import CommunityStore
 from knowledge_radar.community_watch import tick
+from knowledge_radar.community_work import open_queue, queue_lead, work_once
 
 from loop_engine.core.library_ingestion.https_transport import HttpsResponse
 from loop_engine.core.library_ingestion.processes import CommandResult
+from loop_engine.loop.reactive_activation import ActivationStatus
 
 NOW = "2026-09-29T12:00:00Z"
 RSS = b'''<?xml version="1.0"?><rss><channel><item>
@@ -205,6 +207,78 @@ class CommunityWatchTests(unittest.TestCase):
         store = CommunityStore(self.root)
         self.assertEqual(len(store.query(kind="research_brief", state="deferred")), 1)
         self.assertEqual(len(store.query(kind="research_brief", state="needs_research")), 1)
+
+    def test_dismissed_lead_is_not_admitted(self):
+        self.assertFalse(queue_lead(None, None, "fixture", "1",
+            {"state": "dismissed", "data": {"priority": 100}}, NOW, "fixture"))
+
+    def test_changed_compiler_does_not_reopen_dismissed_lead(self):
+        tick(self.registry, self.root, network_allowed=True, writes_allowed=True,
+             network=Network(HttpsResponse(200, RSS)), now=NOW)
+        store = CommunityStore(self.root, writes_allowed=True)
+        lead = store.query(kind="lead")[0]
+        store.put(lead["identity"], "lead", lead["document"]["source_id"], "dismissed",
+                  lead["document"]["data"], expected=lead)
+        with mock.patch("knowledge_radar.community_work.definition_digest", return_value="e" * 64):
+            result = tick(self.registry, self.root, network_allowed=True, writes_allowed=True,
+                          network=Network(HttpsResponse(200, RSS)), now="2026-09-29T12:01:00Z")
+        self.assertEqual(result["compiler_reconciliation"]["requeued"], 0)
+        self.assertEqual(result["work_orders_compiled"], 0)
+        self.assertEqual(store.get(lead["identity"])["document"]["state"], "dismissed")
+        self.assertEqual(len(store.query(kind="research_brief")), 1)
+
+    def test_pending_lead_dismissal_cancels_work_and_keeps_other_work_eligible(self):
+        store = CommunityStore(self.root, writes_allowed=True)
+        scheduler, series = open_queue(store)
+        self.addCleanup(scheduler.close)
+        lead = parse_feed(RSS, self.source, self.registry)[0][0]
+        version = store.put(lead.identity, "lead", lead.source_id, "recorded", lead.to_dict())
+        historical = store.get(lead.identity, version)
+        self.assertTrue(queue_lead(scheduler, series, lead.identity, version,
+                                  historical["document"], NOW, "fixture"))
+        dismissed_version = store.put(lead.identity, "lead", lead.source_id, "dismissed",
+                                      historical["document"]["data"], expected=historical)
+        other = make_lead("test_forum", "https://forum.example/t/rig/11",
+                          "Godot scene workflow", "Blender mesh", "", self.registry)
+        other_version = store.put(other.identity, "lead", other.source_id, "recorded", other.to_dict())
+        self.assertTrue(queue_lead(scheduler, series, other.identity, other_version,
+                                  store.get(other.identity)["document"], NOW, "fixture"))
+        with mock.patch.object(scheduler, "terminal", wraps=scheduler.terminal) as terminal:
+            results = work_once(store, scheduler, series, NOW)
+        self.assertEqual(len(results), 1)
+        cancellations = [call.args[0] for call in terminal.call_args_list
+                         if call.args[0].status == ActivationStatus.CANCELED]
+        self.assertEqual(len(cancellations), 1)
+        canceled = scheduler.get_activation(cancellations[0].activation_id)
+        self.assertEqual(canceled.failure_code, "LEAD_DISMISSED")
+        self.assertEqual(canceled.candidate_refs, ())
+        self.assertEqual(store.get(lead.identity)["version"], dismissed_version)
+        self.assertEqual(store.get(lead.identity, version), historical)
+        briefs = store.query(kind="research_brief")
+        self.assertEqual(len(briefs), 1)
+        self.assertEqual(briefs[0]["document"]["data"]["source_url"], other.url)
+
+    def test_source_changes_do_not_clear_dismissal_or_create_new_work(self):
+        tick(self.registry, self.root, network_allowed=True, writes_allowed=True,
+             network=Network(HttpsResponse(200, RSS)), now=NOW)
+        store = CommunityStore(self.root, writes_allowed=True)
+        lead = store.query(kind="lead")[0]
+        dismissed_version = store.put(lead["identity"], "lead", lead["document"]["source_id"], "dismissed",
+                                      lead["document"]["data"], expected=lead)
+        for body, changed in ((RSS, 0), (RSS.replace(b"Fix the mesh", b"Revise the mesh"), 1)):
+            with self.subTest(changed=changed):
+                result = tick(self.registry, self.root, network_allowed=True, writes_allowed=True,
+                    network=Network(HttpsResponse(200, body)), now="2026-09-29T15:00:00Z", force=True)
+                self.assertEqual(result["sources"][0]["changed"], changed)
+                self.assertEqual(result["sources"][0]["work_queued"], 0)
+                self.assertEqual(result["work_orders_compiled"], 0)
+                current = store.get(lead["identity"])
+                self.assertEqual(current["document"]["state"], "dismissed")
+                if changed:
+                    self.assertNotEqual(current["version"], dismissed_version)
+                    self.assertNotEqual(current["document"]["data"]["content_digest"],
+                                        lead["document"]["data"]["content_digest"])
+        self.assertEqual(len(store.query(kind="research_brief")), 1)
 
     def test_symlink_state_is_refused_before_a_backend_opens(self):
         self.root.symlink_to(Path(self.temporary.name), target_is_directory=True)

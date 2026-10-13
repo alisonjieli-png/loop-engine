@@ -66,7 +66,8 @@ def ingest(store, scheduler, series, leads, now, loop_id):
         else:
             data = {**lead.to_dict(), "first_observed_at": previous["document"]["data"]["first_observed_at"] if previous else now,
                     "observed_at": now}
-            version = store.put(lead.identity, "lead", lead.source_id, "recorded", data, expected=previous)
+            state = "dismissed" if previous and previous["document"]["state"] == "dismissed" else "recorded"
+            version = store.put(lead.identity, "lead", lead.source_id, state, data, expected=previous)
             held = store.get(lead.identity, version)["document"]
             added += not bool(previous)
             changed += bool(previous)

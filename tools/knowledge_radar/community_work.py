@@ -77,6 +77,10 @@ def definition_digest():
 
 
 def queue_lead(scheduler, series, identity, version, document, now, loop_id):
+    # A compiler update or repeated source observation cannot reopen a lead
+    # that the managed-record owner dismissed.
+    if document.get("state") == "dismissed":
+        return False
     # A metadata-only source explicitly lacks the task evidence needed by
     # component research. Reconciliation cannot turn its title into duties.
     if document["data"].get("task_evidence") == "not_collected":
@@ -161,6 +165,15 @@ def work_once(store, scheduler, series, now, *, maximum=20):
         value = LoopValue.create(held["document"], LoopValueCreateRequest(INPUT_CONTRACT, "community_lead", "verify", "community.intake/v1"))
         if value.content_digest != activation.input_ref.content_digest or activation.loop_definition_ref != series.loop_definition_ref:
             raise ValueError("research_input_or_definition_mismatch")
+        # Admission binds the historical evidence, but dismissal may have
+        # happened while this activation waited. Recheck the current managed
+        # state before compiling, retaining the canceled activation as evidence.
+        current = store.get(identity)
+        if current["document"]["state"] == "dismissed":
+            scheduler.terminal(ActivationTerminalRequest(activation.activation_id, claim.lease.lease_id,
+                claim.lease.fencing_token, ActivationStatus.CANCELED, now,
+                failure_code="LEAD_DISMISSED", worker_id="community.compiler"))
+            continue
         definition = series.loop_definition_ref.content_digest
         brief_id = "community.brief." + hashlib.sha256((value.content_digest + definition).encode()).hexdigest()
 
