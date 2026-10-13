@@ -35,7 +35,7 @@ RECORD_FOUND, RECORD_NOT_FOUND = "found", "not_found"
 SCHEMA = {"type": "object", "additionalProperties": False,
           "required": ["record_type", "kind", "source_id", "state", "data"], "properties": {
               "record_type": {"const": DOCUMENT_VERSION},
-              "kind": {"enum": ["source", "lead", "research_brief", "run", "harness_budget"]},
+              "kind": {"enum": ["source", "lead", "research_brief", "run", "harness_budget", "email_receipt"]},
               "source_id": {"type": "string", "maxLength": 160},
               "state": {"enum": ["recorded", "queued", "needs_research", "dismissed", "deferred", "failed", "complete"]},
               "data": {"type": "object"}}}
