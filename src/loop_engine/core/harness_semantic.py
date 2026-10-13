@@ -599,9 +599,12 @@ class GatewayHarnessProcessAdapter:
     spec: object
 
     def __post_init__(self):
-        from .harness_process import HarnessProcessSpec
+        from .harness_process import HarnessProcessError, HarnessProcessSpec
+        from .harness_recipes import TEXT_RESPONSE_VARIANT
         if not isinstance(self.spec, HarnessProcessSpec):
             raise TypeError('a process harness requires a pinned HarnessProcessSpec')
+        if self.spec.recipe.variant != TEXT_RESPONSE_VARIANT:
+            raise HarnessProcessError('text_response_recipe_required')
 
     def info(self):
         return HarnessAdapterInfo(

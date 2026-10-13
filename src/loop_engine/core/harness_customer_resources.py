@@ -69,7 +69,7 @@ class CustomerResourceScope:
                 "--property=RuntimeMaxSec=" + str(timeout_seconds), "--property=KillMode=control-group", "--",
                 # The user manager supplies its own ambient environment. Scrub
                 # at execve *before* Bubblewrap becomes namespace PID 1: its
-                # --clearenv switch alone clears only the final child, leaving
+                # --clearenv switch alone clears only the final process, leaving
                 # the supervisor's initial environ visible through /proc.
                 "/usr/bin/env", "-i", "PATH=/usr/bin:/bin", *command]
 

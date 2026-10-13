@@ -4,6 +4,28 @@ Kind: current product direction. Updated October 13, 2026 to record the owner's 
 
 ## Current direction
 
+The owner's latest October 13 direction makes consumer value the test for
+every step, component and engine: who needs it, when it helps, the information
+and files needed to use it, the next permitted action, an observable result,
+failure recovery and a way to revise it. Internal research and generation
+must lead to that complete path, not stop at collected material or larger
+inventories. The [current owner decisions](OWNER-DECISIONS.md#consumer-value-and-resource-goals)
+record the exact resource goals, private session-review scope and evaluation
+requirements.
+
+The scale targets are ten million distinct harness files, one million feed
+items, one million photos and 200,000 audio resources. 3D, Godot, video,
+2D/2.5D design and editable templates have their own measured inventories and
+coverage goals. Targets, collected originals, derivatives, qualified candidates,
+published resources and accepted customer work remain separate counts.
+
+Baltor and the standalone offerings have independent customer-facing identities
+over the shared backend. AgentMedia is a working creative-offering name;
+`agentmedia.si` is explicitly a placeholder, not an owned or launched domain.
+Common-operator disclosures remain accurate. Difficult Kaggle and competition
+trials are another end-to-end proof target, with reproducibility, rule checks
+and matched comparisons through existing harness and benchmark owners.
+
 Baltor gives people and their chosen agents a head start through maintained
 external knowledge and reusable working material. A person can begin with an
 idea, compare suitable approaches, obtain an implementation and revise the

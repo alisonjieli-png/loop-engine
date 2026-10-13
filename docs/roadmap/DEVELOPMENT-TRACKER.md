@@ -3,7 +3,7 @@
 Kind: generated view. Do not edit by hand. The only task authority is
 [roadmap.yaml](roadmap.yaml); change it, then run
 `PYTHONPATH=src:tools .venv/bin/python tools/build_development_tracker.py`.
-Source fingerprint: `sha256:f618e066e95604ad297504079c54780ef127a6d6843a33c993514905b23623ed`.
+Source fingerprint: `sha256:96616fdc6f8241f264c809a5abdd584e2d36d695fe5501f3207870365b633047`.
 
 ## Where things stand
 
@@ -67,7 +67,7 @@ gantt
 
 Each subtask lives in its owning step in roadmap.yaml. A local check does not complete a task that requires publication.
 
-Completed within their stated scope: 21 of 72 subtasks.
+Completed within their stated scope: 21 of 73 subtasks.
 
 Next eligible subtask: S-6.35.06: Qualify AgentFeeds, AgentFoundry and AgentAFK on the shared service
 
@@ -145,6 +145,7 @@ Next eligible subtask: S-6.35.06: Qualify AgentFeeds, AgentFoundry and AgentAFK 
 | 70 | [x] S-6.217.01: Reconcile recent prompts and action history | offline_verified | offline_verified | Carry the retained obligation groups into their existing owners; the October 13 brand launch belongs to S-6.35.06, maintained feeds to S-6.214 and raw-data task prioritization to S-6.24.03. |
 | 71 | [ ] S-6.215.14: Reach two million useful served files | proposed | published | Waiting on S-6.215.13 |
 | 72 | [ ] S-6.214.08: Reach ten thousand active qualified sources | proposed | live_qualified | Waiting on S-6.214.07 |
+| 73 | [ ] S-6.35.08: Design the independent creative offering | proposed | live_qualified | Use the reviewed creative resource inventory to design an independent consumer journey; the final domain is not selected. |
 
 ## Subtask procedures and evidence
 
@@ -1321,6 +1322,23 @@ Evidence: Not yet recorded.
 Next: Do not count untested directory matches toward this milestone.
 
 Comment: Refresh frequency can differ by source; the target does not imply ten thousand daily paid calls.
+
+### S-6.35.08 Design the independent creative offering
+
+Owner step: S-6.35. State: proposed. Completion requires: live_qualified.
+
+Acceptance: A designer-focused presentation supports actual creative discovery, previews, compatibility, retrieval and revision while preserving shared backend access and truthful operator disclosure.
+
+1. Treat AgentMedia and agentmedia.si as working placeholders, with no domain purchase or hosting change inferred.
+2. Develop distinct navigation, visual language and onboarding for game, visual, media and audio designers.
+3. Reuse exact catalogue identities, account boundaries and native preview/delivery engines.
+4. Qualify real asset selection, download, edit and reopen journeys before live capability claims.
+
+Evidence: October 13 owner says Baltor is a separate offering over the same backend and sites should look like separate businesses. The owner explicitly clarifies AgentMedia.si is an idea placeholder and may be bought later.
+
+Next: Use the reviewed creative resource inventory to design an independent consumer journey; the final domain is not selected.
+
+Comment: Separate presentation does not claim unrelated ownership or require another backend.
 
 ## Recorded work in progress
 

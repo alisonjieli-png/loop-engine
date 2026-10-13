@@ -1,6 +1,6 @@
 # Baltor delivery and business plan
 
-Kind: current execution order. Updated October 9, 2026. The
+Kind: current execution order. Updated October 13, 2026. The
 [roadmap](roadmap.yaml) owns task status, the [north star](../architecture/NORTH-STAR.md)
 owns product direction, and [AGENTS.md](../../AGENTS.md#commit-push-and-release-authority)
 owns authority. This page orders that work and states what each stage must prove.
@@ -14,6 +14,13 @@ evidence, a comment, a next action and the exact completion scope. The tracker
 refuses a completed task with an unfinished prerequisite. Publishing an
 artifact does not substitute for testing its live behavior.
 
+The latest October 13 priority is the ordinary customer journey, especially
+native OpenCode with Baltor: connect, discover, retrieve, use, revise and
+recover in a clean supported workspace. Installed binaries and plain protocol
+checks do not close this gate. Preserve sandbox, credential, effect and budget
+controls while qualifying native tools. Finish this usable path before scaling
+new model-backed benchmark or session-mining campaigns.
+
 Current milestone: two million useful served harness component files, then
 the longer-term ten-million target. The last live observation, on October 9
 after the creative publication, is 1,560,856 distinct files in 256,380 packages
@@ -22,16 +29,117 @@ after the creative publication, is 1,560,856 distinct files in 256,380 packages
 Public Good grants, passed ordinary-account retrieval checks and are mirrored
 to R2. That leaves 439,144 files to the next milestone.
 
-Release 83 completes the owner's three-offering presentation priority.
-Pricing sits outside the hero in its own section, with
-separate Agent Feeds, Harness Files and Overnight / AFK Work cards on both the
-homepage and pricing page. Current checkout remains $29 while new billing and
-hosted execution are qualified. Usable local overnight tools have their own
-Preview card and setup route; they do not imply an active paid hosted service.
-The live layout matrix passed 483 checks and independent ten-host review
-passed 426. All 2,544 edge-export files match exact bytes and headers.
+Release 91 serves Baltor and the separate AgentFeeds, AgentFoundry, AgentAFK
+and campaign websites. The [current deployment](../architecture/MVP-CLIENT-SERVER.md#current-deployment)
+owns source, images, eighteen-host scope, live checks and the retained
+browser-accounting limit. The current monthly price direction is $9/$49/$99;
+new Pro checkout selects $49 while existing subscriptions retain their prices.
+AgentAFK remains a local Preview, not an active paid hosted execution service.
+Each standalone offering keeps its own presentation over the shared backend.
+AgentMedia is a proposed creative presentation with a placeholder domain.
 The next catalogue publication must preserve the current baseline and remain
 separate from any further application deployment.
+
+### Resource goals and the path to value
+
+The [owner decisions](../architecture/OWNER-DECISIONS.md#consumer-value-and-resource-goals)
+set ten million distinct harness files, one million feed items, one million
+photos and 200,000 audio resources as targets. Record 3D, Godot, video and
+editable template populations independently. A file can have several facets;
+that does not duplicate its identity or establish a distinct capability.
+
+Every selected package and engine needs an answer to these questions, in its
+existing contract card, README, examples and verification evidence:
+
+| Consumer question | Required material or observation |
+|---|---|
+| Who needs this and when? | Intended consumer, task, use condition and cases where it should not be selected. |
+| What result does it provide? | Typed inputs/outputs, scope and an observable acceptance condition. |
+| What is needed to use it? | Exact files, supported runtime/engine, dependency versions, assets, credentials by reference, effects and cost assumptions. |
+| What should the person or agent do first? | A working example, supported command or interface action and expected output. |
+| How is the result checked? | Functional and known-wrong checks, actual compatibility evidence and explicit untested scope. |
+| How can it be repaired or revised? | Useful error states, safe recovery, editable parameters/source and a checked revision/reopen path. |
+| What should improve next? | Consented outcome feedback, failure classification, unmet demand and a bounded next-work proposal. |
+
+Use the existing package and engine owners. Do not create a second component
+registry or infer execution authority from a recommendation. Apply the same
+questions to internal ingestion, ranking, generation, qualification and release
+steps: each output needs a named consumer and a supported next action.
+
+For feeds, keep evidence, freshness, importance, urgency, applicability,
+uncertainty and actionability separate. Version ranking and evaluation rubrics;
+do not turn popularity or a model's confidence into verified correctness.
+Qualify compact cards, exact revisions, change cursors, source retrieval,
+expiry handling and agent feedback before claiming maintained personalized
+delivery. Measure correct decisions and useful actions as well as retrieval.
+
+For creative resources, retain original/derivative links and rights. Qualify
+native import, decode/render, meaningful revision and clean reopen according
+to the resource's claim. A preview is not delivery of the original master.
+Large-media delivery remains a separate capability gate; do not evade it by
+raising limits or anonymously exposing account-gated library bodies.
+
+Private session review uses source/turn-bound questions across intent,
+mechanism, evidence, missing prerequisites, failures, reusable outputs and
+micro/meso/macro implications. Keep the question bank, applied questions,
+answers, proposed work and published components as different records. Reuse
+unchanged answers when their evidence and question versions are unchanged.
+Provider access, prompt bytes, calls, tokens, retries and total run time all
+need bounded accounting before a model-backed review starts.
+
+The competition proof uses a difficult but bounded Kaggle/OpenML or hackathon
+task. Check event rules and available compute first; preserve held-out
+evaluation and failed attempts. Compare the same native harness and model
+budget with and without Baltor, then inspect the actual retrieved material
+and resulting work. Official submission and publication are separate effects.
+
+### Engineering and design task portfolio
+
+Use one benchmark programme with different task families. The following are
+candidate outcomes and acceptance measures, not completed benchmark results.
+Each selected run freezes the data rights, exact source, runtime, baseline,
+task population, limits and independent scoring procedure before generation.
+
+| Problem family | Useful output | Main acceptance measures |
+|---|---|---|
+| Record linkage and entity resolution | Explainable matches, clusters, uncertain pairs and a review queue | Pair/cluster precision and recall, false merges, abstention and sensitivity to corruption. |
+| Private-information detection | Labeled spans, confidence tied to evidence and a reviewable report | Per-type recall/precision, missed identifiers, false positives and multilingual coverage. |
+| De-identification | A transformed dataset with an explicit privacy policy and retained analytical utility | Residual identifying information, linkage risk, policy violations and utility loss; masking alone is not proof of anonymity. |
+| Recommendations and ranking | Reproducible candidate generation, ranking and cold-start handling | Temporal held-out ranking metrics, coverage, calibration, latency and exposure effects. |
+| Time series and anomaly detection | Forecasts, intervals, alerts and retraining conditions | Rolling-origin error, interval coverage, false alerts, drift and leakage controls. |
+| Data engineering and quality | Tested ingestion, schema mapping, validation, lineage and incremental updates | Correctness, idempotency, late data, recovery, throughput and bounded cost. |
+| Search and retrieval | Indexed sources, supported answers and abstention | Judged retrieval relevance, source fidelity, freshness, unsupported claims and query latency. |
+| Advertising and marketing experiments | Offline allocation proposals, experiment designs and causal analyses | Holdout quality, calibration, incremental lift evidence, confounding and spend constraints; no automatic live spend. |
+| Language-model safety and red teaming | Authorized test cases, reproducible findings and regression guards | Attack success and defense coverage on declared tests, benign-use retention and evaluator error. |
+| Language-model optimization | Measured serving, prompting, retrieval or adaptation configuration | Task quality under fixed constraints, latency, throughput, memory, cost and regression rate. |
+| Reinforcement learning and planning | A policy and reproducible environment with bounded actions | Held-out return, constraint violations, seed variance, sample efficiency and transfer limits. |
+| Software engineering and infrastructure | Tested repairs, migrations, performance work and deployment recipes | Hidden tests, security and compatibility, recovery, resource use and maintainability. |
+| Documents and multimodal extraction | Structured records with source locations and unresolved fields | Field accuracy, provenance, layout variation, uncertainty and privacy. |
+| Operations and constrained optimization | Feasible schedules, routes, allocations or inventory plans | Feasibility, objective gap, uncertainty, resource constraints and robustness. |
+| Creative and game production | Editable scenes, motion, interfaces, audio and playable projects | Requirement coverage, native execution, visual/listening review, usability, revision and clean reopen. |
+
+Start with the source-reviewed difficult competition trial, a privacy/record
+linkage task on safe data, and the current editable creative project. Expand
+after the execution and scoring loop works. Use plain deterministic baselines
+and the same native harness without Baltor; add feed-only, component-only and
+combined ablations only when a declared budget supports the full population.
+Do not tune on hidden labels or present leaderboard probing as held-out skill.
+
+Existing candidates for source review include the
+[Presidio privacy tooling](https://microsoft.github.io/presidio/text_anonymization/),
+[RecBole recommendation library](https://github.com/RUCAIBox/RecBole),
+[GIFT-Eval forecasting benchmark](https://github.com/SalesforceAIResearch/gift-eval)
+and [Gymnasium environment interface](https://github.com/Farama-Foundation/Gymnasium).
+These were inspected as possible tools or baselines, not installed or qualified
+engines. Pin code, data licences and dependencies separately before adoption.
+The [Kaggle competition guide](https://www.kaggle.com/docs/competitions) is an
+entry route; the selected event's own rules decide its permitted workflow.
+
+Each attempt should leave useful reusable material even when its score is
+poor: task cards, data validation, baselines, feature or model pipelines,
+evaluators, experiment records, error analyses, setup profiles and tested
+repairs. Keep failed approaches and limitations. Promote only material with
+cleared reuse rights and the existing qualification evidence.
 
 The repaired case pilot processed all 381 parents and produced 1,686 case
 files in 379 groups, with 2,999 distinct candidate payloads. These counts
@@ -85,11 +193,10 @@ deprecated listings and account-selling advertisements. Preserve findings,
 but do not admit an offering from its listing, popularity score or compliance
 claim alone.
 
-The latest repeated owner instruction selects Agent Feeds at $4.99 per month,
-free through December 31, 2026 Eastern with explicit paid opt-in. This replaces
-the earlier $14.99 target for Feeds. The library and upper-tier targets remain
-$29.99 and $49.99; existing subscriptions and free grants are preserved.
-Current checkout is still $29. Hosted tools and supervision are not sold until
+The October 11 owner instruction sets Basic/Pro/Max monthly prices at
+$9/$49/$99. Feeds remains free through December 31, 2026 Eastern with explicit
+paid opt-in; existing subscriptions and free grants are preserved.
+New Pro checkout selects $49. Hosted tools and supervision are not sold until
 their delivered scope, costs, entitlements and customer journey are qualified.
 
 ### Procedure after each subtask

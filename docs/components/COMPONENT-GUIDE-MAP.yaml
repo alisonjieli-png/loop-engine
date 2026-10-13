@@ -87,6 +87,8 @@ guides:
     Structural admission of a model response before it is used.
   docs/components/core-architecture/OPENTELEMETRY.md:
     Exporting Run History as spans without exporting secrets.
+  docs/components/core-architecture/OPENCODE-CUSTOMER-PROFILE.md:
+    Confined native OpenCode workspace tools, host-owned access and selected artifact recovery.
   docs/components/core-architecture/SEARCH-AND-STORAGE.md:
     The retrieval backends and where intelligence bodies live.
   docs/components/core-architecture/WORKSPACE-BACKENDS.md:

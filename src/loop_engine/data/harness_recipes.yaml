@@ -167,6 +167,35 @@ recipes:
     native_controls: *owning_loop
     distribution: {kind: binary, version: 1.17.9, sha256: null}
   - record_type: harness_recipe/v1
+    style: opencode_customer
+    variant: workspace_tools
+    module: opencode_customer_recipe
+    prepare_function: prepare_customer_recipe
+    extract_function: extract_customer_output
+    module_sha256: ee044784e9daa6311301dc8b1c3d481eb42365d06b8257db73f97ac27514527d
+    wire_protocols: [openai_chat_completions]
+    instruction_style: standard
+    requires_context_capacity: true
+    sandbox_environment: []
+    native_controls:
+      ownership:
+        goal_management: owning_loop
+        planning_and_continuation: delegated_within_authority
+        tool_and_resource_use: supervised_native
+        retry_and_fallback: supervised_native
+        context_and_session_state: delegated_within_authority
+        steering_and_queued_work: disabled
+        pause_cancellation_and_shutdown: owning_loop
+        completion_and_output_publication: owning_loop
+      reasons:
+        planning_and_continuation: Native planning is bounded by the shared request and time ceilings.
+        tool_and_resource_use: Native tools run in a confined memory workspace; host callbacks own account and model access.
+        retry_and_fallback: Every physical call requires a host reservation; unknown outcomes hold and no provider fallback is admitted.
+        context_and_session_state: Each process receives a fresh private home and only explicitly selected snapshots.
+        steering_and_queued_work: No native queued work or external steering is exposed by this profile.
+        completion_and_output_publication: Only an independent host check can accept the selected output bytes after confirmed cleanup.
+    distribution: {kind: binary, version: 1.17.9, sha256: null}
+  - record_type: harness_recipe/v1
     style: mini_swe_agent
     variant: text_response
     module: harness_mini_swe_recipe

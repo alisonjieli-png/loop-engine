@@ -24,7 +24,7 @@ continuation:
       - {task: S-6.217.01, owner: History and evidence, offset_hours: 0, duration_hours: 3}
       - {task: S-6.204.02, owner: Launch and funding, offset_hours: 3, duration_hours: 5}
       - {task: S-6.204.01, owner: Customer outcomes, offset_hours: 6, duration_hours: 4}
-  execution_order: ["S-6.35.03","S-6.35.04","S-6.35.05","S-6.35.07","S-6.35.06","S-6.12.04","S-6.35.01","S-6.215.01","S-6.215.02","S-6.215.03","S-6.215.04","S-6.215.05","S-6.215.06","S-6.215.07","S-6.215.08","S-6.215.09","S-6.215.10","S-6.215.11","S-6.215.12","S-6.215.13","S-6.214.01","S-6.214.02","S-6.214.03","S-6.214.04","S-6.214.13","S-6.214.05","S-6.214.06","S-6.214.15","S-6.214.07","S-6.214.09","S-6.214.12","S-6.214.10","S-6.214.11","S-6.214.14","S-6.207.01","S-6.207.02","S-6.207.03","S-6.207.04","S-6.207.05","S-6.218.01","S-6.218.02","S-6.218.03","S-6.218.04","S-6.218.05","S-6.218.06","S-6.218.07","S-6.218.08","S-6.218.09","S-6.218.10","S-6.13.01","S-6.13.02","S-6.13.03","S-6.12.01","S-6.12.02","S-6.12.03","S-6.24.01","S-6.24.02","S-6.24.03","S-6.201.01","S-6.201.02","S-6.201.03","S-6.201.04","S-6.102.01","S-6.102.02","S-6.204.01","S-6.204.02","S-6.216.01","S-6.67.01","S-6.35.02","S-6.217.01","S-6.215.14","S-6.214.08"]
+  execution_order: ["S-6.35.03","S-6.35.04","S-6.35.05","S-6.35.07","S-6.35.06","S-6.12.04","S-6.35.01","S-6.215.01","S-6.215.02","S-6.215.03","S-6.215.04","S-6.215.05","S-6.215.06","S-6.215.07","S-6.215.08","S-6.215.09","S-6.215.10","S-6.215.11","S-6.215.12","S-6.215.13","S-6.214.01","S-6.214.02","S-6.214.03","S-6.214.04","S-6.214.13","S-6.214.05","S-6.214.06","S-6.214.15","S-6.214.07","S-6.214.09","S-6.214.12","S-6.214.10","S-6.214.11","S-6.214.14","S-6.207.01","S-6.207.02","S-6.207.03","S-6.207.04","S-6.207.05","S-6.218.01","S-6.218.02","S-6.218.03","S-6.218.04","S-6.218.05","S-6.218.06","S-6.218.07","S-6.218.08","S-6.218.09","S-6.218.10","S-6.13.01","S-6.13.02","S-6.13.03","S-6.12.01","S-6.12.02","S-6.12.03","S-6.24.01","S-6.24.02","S-6.24.03","S-6.201.01","S-6.201.02","S-6.201.03","S-6.201.04","S-6.102.01","S-6.102.02","S-6.204.01","S-6.204.02","S-6.216.01","S-6.67.01","S-6.35.02","S-6.217.01","S-6.215.14","S-6.214.08","S-6.35.08"]
   title: First release and continued system development
   started_at: "2026-09-19T14:12:54Z"
   target_at: "2026-09-20T14:12:54Z"
@@ -2824,6 +2824,16 @@ steps:
         next_action: "Keep application deployment and catalogue publication from overlapping."
         evidence: "Release 91 from b500149c: exact CI38461710945 passed twenty jobs, guarded deployment38463481427 succeeded, gate closed, image34f939fa7cdc. Local self-tests3949/3949, workspace browser1003/1003 plus197controls, AgentFeeds browser128, focused67plus26, conformance32, documentation58, installed-wheel858 and pristine regeneration passed. Live AgentFeeds414/414, existing-host456/456 over68views, offering497/497, exact edge3281/3281 and final pulse50/50 passed. All new sites are publicly available with1814/1814 functional assertions and1556exact-source GET checks; the strict aggregate remains false for four secondary body-accounting errors, retained alongside all earlier failures in pilot-release-91.json."
         comment: "Rollback image90 requires restoring /data/host-before-standalone-sites-20261013.json first. This preserves AgentFeeds and withdraws the three new presentations. No catalogue, price, subscription, R2 or model change occurred; standard deployment grant reconciliation and the three DNS transitions are recorded separately."
+      - id: "S-6.35.08"
+        title: "Design the independent creative offering"
+        status: "proposed"
+        completion_status: "live_qualified"
+        depends_on: []
+        acceptance: "A designer-focused presentation supports actual creative discovery, previews, compatibility, retrieval and revision while preserving shared backend access and truthful operator disclosure."
+        procedure: ["Treat AgentMedia and agentmedia.si as working placeholders, with no domain purchase or hosting change inferred.","Develop distinct navigation, visual language and onboarding for game, visual, media and audio designers.","Reuse exact catalogue identities, account boundaries and native preview/delivery engines.","Qualify real asset selection, download, edit and reopen journeys before live capability claims."]
+        next_action: "Use the reviewed creative resource inventory to design an independent consumer journey; the final domain is not selected."
+        evidence: "October 13 owner says Baltor is a separate offering over the same backend and sites should look like separate businesses. The owner explicitly clarifies AgentMedia.si is an idea placeholder and may be bought later."
+        comment: "Separate presentation does not claim unrelated ownership or require another backend."
       - id: "S-6.35.02"
         title: "Publish a progress checkpoint after every completed subtask"
         status: "building"

@@ -21,13 +21,8 @@ from loop_engine.core.harness_customer_resources import CustomerResourceScope
 
 
 def fixture_catalog():
-    value = release_recipe_catalog().to_dict()
-    original = next(row for row in value["recipes"] if row["style"] == "opencode")
-    module = Path(customer.__file__).with_name("opencode_customer_recipe.py")
-    value["recipes"].append({**original, "style": "opencode_customer", "variant": "workspace_tools",
-        "module": "opencode_customer_recipe", "module_sha256": hashlib.sha256(module.read_bytes()).hexdigest(),
-        "prepare_function": "prepare_customer_recipe", "extract_function": "extract_customer_output"})
-    return HarnessRecipeCatalog.from_dict(value, module_directory=Path(customer.__file__).parent)
+    """Exercise the release registration, not a self-digested test-only recipe."""
+    return release_recipe_catalog()
 
 
 def model_request(name="read"):
@@ -45,6 +40,26 @@ def response(content="ready", calls=None):
 
 
 class CustomerBoundaryTests(unittest.TestCase):
+    def test_release_recipe_keeps_native_ownership_and_exact_module_binding(self):
+        catalog = fixture_catalog()
+        recipe = catalog.recipe("opencode_customer")
+        self.assertEqual(recipe.variant, "workspace_tools")
+        self.assertEqual(recipe.distribution.version, "1.17.9")
+        self.assertEqual(recipe.native_controls.to_dict()["ownership"]["completion_and_output_publication"], "owning_loop")
+        self.assertEqual(recipe.native_controls.to_dict()["ownership"]["tool_and_resource_use"], "supervised_native")
+        self.assertEqual([module.module for module in catalog.mounted_modules(recipe)], ["opencode_customer_recipe"])
+
+    def test_workspace_recipe_cannot_advertise_the_text_only_semantic_adapter(self):
+        from loop_engine.core.harness_semantic import GatewayHarnessProcessAdapter
+        with tempfile.TemporaryDirectory() as folder:
+            software = Path(folder) / "software"
+            software.mkdir()
+            (software / "fixture.txt").write_text("passive fixture")
+            spec = HarnessProcessSpec("customer.fixture", "1.17.9", (sys.executable,),
+                                      (str(software),), "opencode_customer")
+            with self.assertRaisesRegex(HarnessProcessError, "text_response_recipe_required"):
+                GatewayHarnessProcessAdapter(spec)
+
     def boundary(self, **changes):
         return customer.OpenCodeCustomerBoundary(customer.CustomerOperationBudget(2, 4, 20),
             lambda method, params: {"result": {}}, customer.EFFECTS, **changes)
@@ -67,7 +82,7 @@ class CustomerBoundaryTests(unittest.TestCase):
         with self.assertRaisesRegex(HarnessProcessError, "model_budget_exhausted"):
             boundary.admit(body, request)
         self.assertEqual(boundary.budget.model_requests, 2)
-        self.assertEqual(boundary.budget.receipts[0]["outcome"], "unknown_or_refused")
+        self.assertEqual(boundary.budget.attempts[0]["outcome"], "unknown_or_refused")
 
     def test_cancel_or_expired_operation_admits_no_request(self):
         for expired in (False, True):
@@ -125,7 +140,7 @@ class CustomerBoundaryTests(unittest.TestCase):
             with self.assertRaises(HarnessProcessError):
                 boundary.observe(body, result)
             boundary.failed(body, "negative_control")
-            self.assertEqual(boundary.budget.receipts[0]["outcome"], "unknown_or_refused")
+            self.assertEqual(boundary.budget.attempts[0]["outcome"], "unknown_or_refused")
 
     def test_orphan_and_duplicate_tool_results_refuse(self):
         for messages in ([{"role": "tool", "tool_call_id": "never-issued", "content": "pretend success"}],
@@ -133,7 +148,7 @@ class CustomerBoundaryTests(unittest.TestCase):
             with self.assertRaises(HarnessProcessError):
                 customer.validate_native_request({**model_request(), "messages": messages}, "fixture")
 
-    def test_shared_budget_is_atomic_and_receipts_finish_by_identity(self):
+    def test_shared_budget_is_atomic_and_attempts_finish_by_identity(self):
         budget = customer.CustomerOperationBudget(4, 4, 20)
         def reserve(index):
             try:
@@ -146,8 +161,8 @@ class CustomerBoundaryTests(unittest.TestCase):
             answers = list(pool.map(reserve, range(32)))
         self.assertEqual(len(set(answers) - {None}), 4)
         self.assertEqual(budget.model_requests, 4)
-        self.assertEqual([item["sequence"] for item in budget.receipts], [1, 2, 3, 4])
-        self.assertTrue(all(item["outcome"] == "answered" for item in budget.receipts))
+        self.assertEqual([item["sequence"] for item in budget.attempts], [1, 2, 3, 4])
+        self.assertTrue(all(item["outcome"] == "answered" for item in budget.attempts))
         boundary = self.boundary()
         with boundary.operation(), self.assertRaisesRegex(HarnessProcessError, "already_in_use"):
             with boundary.operation():
@@ -333,7 +348,7 @@ raise SystemExit(1)
             self.assertFalse(boundary.resources.cleanup_confirmed)
             with self.assertRaisesRegex(HarnessProcessError, "previous_cleanup_unconfirmed"):
                 with boundary.operation():
-                    self.fail("uncertain child cannot start again")
+                    self.fail("uncertain process cannot start again")
 
     def test_unconfirmed_cleanup_refuses_artifact_capture(self):
         with tempfile.TemporaryDirectory() as folder:

@@ -73,7 +73,7 @@ class CustomerOperationBudget:
     model_requests: int = 0
     mcp_requests: int = 0
     cancelled: Event = field(default_factory=Event, repr=False)
-    receipts: list = field(default_factory=list, repr=False)
+    attempts: list = field(default_factory=list, repr=False)
     lock: Lock = field(default_factory=Lock, repr=False)
 
     def __post_init__(self):
@@ -94,16 +94,16 @@ class CustomerOperationBudget:
             if getattr(self, field_name) >= getattr(self, "maximum_" + field_name):
                 raise HarnessProcessError("customer_" + kind + "_budget_exhausted")
             setattr(self, field_name, getattr(self, field_name) + 1)
-            sequence = len(self.receipts) + 1
-            self.receipts.append({"record_type": "customer_broker_attempt/v1", "kind": kind,
+            sequence = len(self.attempts) + 1
+            self.attempts.append({"record_type": "customer_broker_attempt/v1", "kind": kind,
                                   "sequence": sequence, "request_digest": _digest(body), "outcome": "reserved"})
             return sequence
 
     def finish(self, sequence, **values):
         with self.lock:
-            record = self.receipts[sequence - 1]
+            record = self.attempts[sequence - 1]
             if record["sequence"] != sequence or record["outcome"] != "reserved":
-                raise HarnessProcessError("customer_receipt_already_finished")
+                raise HarnessProcessError("customer_attempt_already_finished")
             record.update(values)
 
 
@@ -212,7 +212,7 @@ class OpenCodeCustomerBoundary:
     effect declarations, request identities and durable quota before dispatch.
     They must hold an unknown external outcome for explicit reconciliation:
     neither this boundary nor its client automatically retries that outcome.
-    Neither callback credential nor provider credential enters the child.
+    Neither callback credential nor provider credential enters the sandboxed process.
     """
     budget: CustomerOperationBudget
     mcp: object = field(repr=False)
@@ -223,7 +223,7 @@ class OpenCodeCustomerBoundary:
     http: object = field(default=None, repr=False)
     origin: str = "https://baltor.ai"
     captured: list = field(default_factory=list, init=False, repr=False)
-    active_receipt: int | None = field(default=None, init=False, repr=False)
+    active_attempt: int | None = field(default=None, init=False, repr=False)
     lease: Lock = field(default_factory=Lock, init=False, repr=False)
     resource_limits: CustomerResourceLimits = CustomerResourceLimits()
     resources: object = field(default=None, init=False, repr=False)
@@ -324,7 +324,7 @@ class OpenCodeCustomerBoundary:
             target.chmod(0o600)
 
     def admit(self, body, request):
-        self.active_receipt = None
+        self.active_attempt = None
         if "_workspace_artifacts" in body:
             if set(body) != {"_workspace_artifacts"} or self.pending_artifacts is not None:
                 raise HarnessProcessError("customer_artifact_export_duplicate_or_mixed")
@@ -337,7 +337,7 @@ class OpenCodeCustomerBoundary:
                     or (value["method"] == "GET" and value["payload"] is not None)
                     or (value["method"] == "POST" and not isinstance(value["payload"], dict))):
                 raise HarnessProcessError("customer_http_scope_refused")
-            self.active_receipt = self.budget.admit("mcp", value)
+            self.active_attempt = self.budget.admit("mcp", value)
         elif "_workspace_mcp" in body:
             if set(body) != {"_workspace_mcp"}:
                 raise HarnessProcessError("customer_mcp_envelope_refused")
@@ -349,10 +349,10 @@ class OpenCodeCustomerBoundary:
             if message["method"] == "tools/call" and (not isinstance(message.get("params", {}).get("name"), str)
                                                      or message["params"]["name"] not in MCP_TOOLS):
                 raise HarnessProcessError("customer_mcp_tool_refused")
-            self.active_receipt = self.budget.admit("mcp", message)
+            self.active_attempt = self.budget.admit("mcp", message)
         else:
             validate_native_request(body, request.model)
-            self.active_receipt = self.budget.admit("model", body)
+            self.active_attempt = self.budget.admit("model", body)
 
     def invoke_service(self, body):
         if "_workspace_artifacts" in body:
@@ -406,14 +406,14 @@ class OpenCodeCustomerBoundary:
             if not message.get("tool_calls") and not message.get("content"):
                 raise HarnessProcessError("customer_empty_native_response")
             is_model = True
-        self.budget.finish(self.active_receipt, outcome="answered", response_digest=_digest(response))
-        self.active_receipt = None
+        self.budget.finish(self.active_attempt, outcome="answered", response_digest=_digest(response))
+        self.active_attempt = None
         return is_model
 
     def failed(self, body, code):
-        if self.active_receipt is not None:
-            self.budget.finish(self.active_receipt, outcome="unknown_or_refused", error_code=code)
-            self.active_receipt = None
+        if self.active_attempt is not None:
+            self.budget.finish(self.active_attempt, outcome="unknown_or_refused", error_code=code)
+            self.active_attempt = None
         if code.startswith("customer_") and ("budget_exhausted" in code or "expired" in code):
             self.budget.cancelled.set()
 

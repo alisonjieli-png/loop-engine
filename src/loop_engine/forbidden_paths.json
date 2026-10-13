@@ -37,9 +37,11 @@
     "generation/__init__.py",
     "templates/__init__.py",
     "core/harness_process_relay.py",
-    "core/harness_recipes.py"
+    "core/harness_recipes.py",
+    "core/opencode_customer_recipe.py"
   ],
   "dynamic_import_allowed_modules_reasons": {
+    "core/opencode_customer_recipe.py": "Loads only the host-snapshotted published library client mounted read-only at a fixed sandbox path, to inject its explicit credential-free opener. No task-selected module or path is loaded and no plugin is registered. Exact source bytes are bound in process identity; native confinement and integrity controls are in tools/test_opencode_customer.py.",
     "__init__.py": "the package's documented public surface (from loop_engine import PractitionerLoop) resolved LAZILY, so importing the package stays cheap and no import cycle is created. This is a re-export of the canonical runtime, NOT the registration bypass the gate exists to catch: it registers nothing, and every name resolves to an already-mapped module.",
     "architecture_contract.py": "resolves the canonical runtime class declared in architecture.yaml",
     "backend_isolation.py": "proves the base package imports without optional backends",
@@ -163,6 +165,8 @@
     "core/external_harness_adapters.py",
     "core/harness_process.py",
     "core/harness_process_relay.py",
+    "core/opencode_customer.py",
+    "core/opencode_customer_recipe.py",
     "core/harness_additional_recipes.py",
     "core/harness_cline_kilo_recipes.py",
     "core/harness_goose_recipe.py",
@@ -229,6 +233,8 @@
     "Project-owned uv-cache and npm-cache directories contain downloaded dependency archives, not first-party source terminology. They are excluded from the prose nomenclature scan; import/runtime source and adapter controls remain scanned. workspace_docker_cleanup_checks declares subprocess solely for its explicit opt-in container lifetime qualification; its folded self-test uses injected local fixtures.",
     "The pure harness recipe helpers listed in network_allowed_modules use urllib.parse solely to refuse non-loopback configuration addresses or translate protocol fields. On September 30, 2026 harness_baltor_recipe was added as the first-party native client: it accepts only the private 127.0.0.1 broker, refuses redirects and sends no provider credential. Its positive native-turn and adversarial origin tests are tools/test_harness_baltor_recipe.py. External provider transport remains in the canonical gateway adapters.",
     "harness_process and harness_process_relay are declared internal CLI adapters: the only socket paths are private Unix IPC and sandbox-local HTTP. External model requests remain with the supplied canonical gateway broker. Pinned software, private configuration, request limits, process-tree cancellation and denial of native tools are tested separately from model quality; no public solve realization is enabled by listing these mechanics.",
+    "opencode_customer and opencode_customer_recipe use urllib.parse only to validate the fixed host-brokered origin and isolated loopback relay. They open no external network connection. The optional published-client opener reaches only the explicit host callback through private Unix IPC; credential, TLS, physical-effect accounting and request policy stay host-owned.",
+    "harness_customer_resources is the declared process-confinement adapter for the explicit workspace-tools profile. Its fixed systemd-run/systemctl operations own bounded transient units, verify cgroup memory/swap/process/CPU/time controls and confirm cleanup. It accepts no task-selected launcher or provider command. The owning slots remain step_executor/process_confinement; tools/check_opencode_customer_resources.py exercises actual limits and tools/test_opencode_customer.py covers refusal controls.",
     "network_allowed: HTTP happens ONLY in a declared provider adapter (ollama_client, mistral_client, openrouter_client, openai_responses_client, and custom_endpoint, which is the ONE parameterised adapter for user-supplied OpenAI-compatible servers rather than a per-server module) or a declared server/demo module; everything else asks the directory. Amended 2026-08-24: the rule was written when one provider existed and said 'the ONE place'. Provider plurality is now a requirement, not a convenience — a single provider's 429 stopped a whole campaign — so the invariant is 'only in a declared adapter', and each adapter is listed above. Adding a provider means adding its adapter here with its reason, never relaxing the rule.",
     "subprocess_allowed: opencode_client is the declared coding-worker adapter; mcp_sdk_transport may start an explicitly registered stdio MCP server; workspace_local runs an explicitly authorized argv inside one restricted root; workspace_optional runs Docker with explicit policy and request authority; smoke_ladder.submit_to_kaggle is a declared external effect; ontology_change.open_ontologies_engine starts only the pinned Open Ontologies v2.0.1 binary and its oo-cert checker, each after its published SHA-256 matches, inside bubblewrap with every namespace unshared, a read-only system, one disposable writable folder, a cleared environment, an address-space limit, a time limit and an output ceiling; _conformance_scan.scan_min_python_syntax invokes an older interpreter because a newer parser cannot prove the declared Python floor.",
     "eval/exec: never — logic_ast interprets a closed operator set instead.",
@@ -563,6 +569,7 @@
     "core/differential_verification.py",
     "core/harness_process.py",
     "core/harness_process_relay.py",
+    "core/harness_customer_resources.py",
     "core/mcp_sdk_transport.py",
     "core/opencode_client.py",
     "core/opencode_harness_adapter.py",

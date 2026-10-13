@@ -106,6 +106,7 @@ These pages document the mechanics:
 - [Context artifacts](CONTEXT-ARTIFACTS.md)
 - [OpenTelemetry export](OPENTELEMETRY.md)
 - [External harness adapters](EXTERNAL-HARNESS-ADAPTERS.md)
+- [Confined OpenCode customer profile](OPENCODE-CUSTOMER-PROFILE.md)
 - [Per-step harness recovery](HARNESS-FALLBACK.md)
 - [Layered harness wrappers and native control](../../architecture/LAYERED-HARNESS-WRAPPERS-AND-NATIVE-CONTROL.md), a design consideration
 

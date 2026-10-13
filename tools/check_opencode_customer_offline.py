@@ -168,7 +168,7 @@ scope={}; exec((p/'stage/body').read_bytes(),scope)
                     check("per-unit environment and proc canary absent", result_value["canary_leaked"] is False)
                     check("outside network unavailable", result_value["outside_network"] is False)
                 prior = tuple(CustomerFile(path, body) for path, body in files.items())
-        evidence["budget_receipts"] = budget.receipts
+        evidence["budget_attempts"] = budget.attempts
         evidence["passed"] = True
     except Exception as error:
         evidence["passed"] = False

@@ -1564,11 +1564,31 @@
    "waiting_on": [
     "S-6.214.07"
    ]
+  },
+  {
+   "acceptance": "A designer-focused presentation supports actual creative discovery, previews, compatibility, retrieval and revision while preserving shared backend access and truthful operator disclosure.",
+   "comment": "Separate presentation does not claim unrelated ownership or require another backend.",
+   "complete": false,
+   "completion_status": "live_qualified",
+   "depends_on": [],
+   "evidence": "October 13 owner says Baltor is a separate offering over the same backend and sites should look like separate businesses. The owner explicitly clarifies AgentMedia.si is an idea placeholder and may be bought later.",
+   "id": "S-6.35.08",
+   "next_action": "Use the reviewed creative resource inventory to design an independent consumer journey; the final domain is not selected.",
+   "owner_step": "S-6.35",
+   "procedure": [
+    "Treat AgentMedia and agentmedia.si as working placeholders, with no domain purchase or hosting change inferred.",
+    "Develop distinct navigation, visual language and onboarding for game, visual, media and audio designers.",
+    "Reuse exact catalogue identities, account boundaries and native preview/delivery engines.",
+    "Qualify real asset selection, download, edit and reopen journeys before live capability claims."
+   ],
+   "status": "proposed",
+   "title": "Design the independent creative offering",
+   "waiting_on": []
   }
  ],
  "execution_counts": {
   "complete": 21,
-  "total": 72
+  "total": 73
  },
  "lanes": {
   "blocked": [
@@ -7006,7 +7026,7 @@
  ],
  "record_type": "development_tracker/v2",
  "source": "docs/roadmap/roadmap.yaml",
- "source_fingerprint": "sha256:f618e066e95604ad297504079c54780ef127a6d6843a33c993514905b23623ed",
+ "source_fingerprint": "sha256:96616fdc6f8241f264c809a5abdd584e2d36d695fe5501f3207870365b633047",
  "working_schedule": {
   "blocks": [
    {

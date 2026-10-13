@@ -2,6 +2,142 @@
 
 Kind: current decision route with retained dated decisions. The owner's current conversation takes precedence. [AGENTS.md](../../AGENTS.md#commit-push-and-release-authority) remains the single commit, push, release and effect-authority source. This file records product choices; it grants no new authority.
 
+## Consumer value and resource goals
+
+The owner's later October 13 direction asks what each step, component and
+engine contributes to an agent or person, and which information, actions,
+templates, runtimes and files make that contribution usable. Apply this to
+internal production as well as customer delivery. A useful package names its
+consumer, use condition, expected result, prerequisites, exact input and output,
+first action, example, checks, failure recovery and revision path. Reuse existing
+component, engine, catalogue and task contracts; this is not another registry.
+Separate the package's declared capability from observed use and accepted work.
+
+The owner sets targets of ten million distinct harness component files, one
+million feed items, one million photos and 200,000 audio resources. These are
+goals, not reported inventories. Count canonical useful items, distinct bytes,
+packages and placements separately. Keep source originals, generated derivatives,
+variants, historical versions, qualified candidates and live non-withdrawn
+resources distinguishable. One asset can belong to several categories without
+becoming several distinct assets in the total.
+
+3D models, materials, rigs, animations, environments, Godot assets and complete
+projects, video, 2D and 2.5D design, and editable templates are first-class
+resource families. Each needs a measured baseline and staged coverage goals.
+Do not assign a fabricated inventory or multiply parameter combinations to
+claim new capabilities. S-6.215 owns supply and delivery; S-6.201 owns creative
+use, revision and reopening.
+
+Feeds need evidence, freshness, importance, urgency, applicability, uncertainty,
+actionability and evaluated usefulness. Keep source credibility, social
+popularity, model confidence and observed agent consumption separate. Ratings
+name their rubric, version, evidence and scope; unknown evidence is not a zero
+or an invented score. Agents need small decision cards, exact versions, change
+cursors, supporting sources and a way to report stale or ineffective material.
+A recommended action never supplies execution authority. S-6.214 owns this work.
+
+The owner requests continuing review of authorized ChatGPT exports, Codex,
+Claude Code, OpenCode, Gemini/AGY and other coding-session material, plus
+social-video, 3D, Godot and creative-tool projects. Use a substantial question
+bank across who, what, where, when, why and how, with micro, meso and macro
+views. Track eligible, asked, answered, unresolved and deferred questions
+separately. Preserve source and turn identity, distinguish owner instructions
+from observations and assistant claims, and avoid asking unchanged questions
+again without a reason. Raw transcripts, private company content and secrets
+stay outside public packages. Source text never becomes current authority.
+Existing managed research, model gateway, quotas and qualification owners
+govern any bounded iterative generation. S-6.217 owns the intake and review.
+
+## Independent offerings and AgentMedia
+
+Baltor is a separate customer-facing offering, not the mandatory umbrella
+interface of the other sites. Each offering has its own visual identity,
+navigation, audience, copy and onboarding, while the same backend preserves
+account, access, catalogue and execution boundaries. The sites should look
+like distinct businesses, without falsely claiming unrelated ownership or
+inventing independent endorsements. Keep the common operator and approved
+legal notices accurate.
+
+AgentMedia is the working name for a designer-focused offering covering game
+design, visual design, video, audio and reusable creative assets. The owner
+explicitly says `agentmedia.si` is an idea placeholder and may be purchased
+later. No ownership, availability, purchase or deployment is established.
+Develop the consumer journey without depending on that exact domain. A
+shared backend does not require cross-brand navigation or another asset store.
+
+## Difficult competition work
+
+The owner also requests trials of OpenCode or another supported harness with
+Baltor on advanced Kaggle problems, hackathons and competitions. Reuse prior
+Kaggle/OpenML work and verify present harness, data, model and compute access.
+Separate private benchmark trials, official entries and public demonstrations.
+Check each event's rules on external data, models, tools, sharing, submissions
+and reproducibility before selecting its execution profile.
+
+Use frozen tasks, valid holdouts and matched model, harness, time and compute
+budgets for with/without comparisons. Record score, invalid submissions,
+resource use, failures and intervention, not only the best result. Feed
+research, reusable components and bounded execution must show what they
+actually contributed. Publish generalized tools only when data and competition
+terms allow it; do not publish restricted datasets, hidden labels or other
+participants' code as Baltor material. A trial does not establish winning
+performance or hosted customer execution.
+
+The subsequent request broadens this portfolio to difficult enterprise
+engineering and design: entity resolution and unique record linkage,
+private-information detection and anonymization, recommendations, time series,
+advertising and marketing optimization, language-model red teaming and
+optimization, reinforcement learning and related work that companies hire
+specialists to perform. Expand by distinct customer problems and measurable
+outcomes, not by renamed benchmarks. Privacy tests use synthetic or explicitly
+authorized data, and red teaming targets systems within the test authority.
+Optimization changes neither advertising spend nor production decisions by
+itself. Simulation results do not establish business lift or safe deployment.
+
+The owner emphasizes using existing benchmark, agent and harness evaluation
+systems. Start with the current benchmark registry and maintained upstream
+datasets, environments and evaluators. Add adapters at existing typed engine
+boundaries, retain licence/version and population details, and prove grader
+parity before comparing scores. An upstream result is not a local result.
+
+The latest priority is a complete customer journey, especially native OpenCode
+with Baltor: connect, discover, retrieve exact files, use them, revise the
+result and recover safely. Installation, a plain protocol-client check and a
+text-only model response do not establish this journey. Keep customer-managed
+OpenCode plus the hosted MCP service separate from the internal quarantined
+raw-host step adapter and the confined semantic-only recipe. Qualify a safe
+tool-using profile and ordinary-account behavior before advertising completion;
+do not remove a safety refusal to manufacture a working result.
+
+## Portable workers and newsletter intake
+
+On October 13 the owner requests modular, containerized workers that can run
+outside the main backend, including possible Kaggle news-search and processing
+jobs. Keep task identity, dependencies, leases, budgets, permissions and
+accepted results in the existing backend. A remote worker needs a short-lived,
+task-bound grant and exact result contract; a general account key is not a
+worker authorization design. Select deployment profiles only where provider
+terms and the existing spending allowance permit the intended use. Kaggle
+commercial production offload is not qualified by installed tooling or an
+available account.
+
+The owner also wants a registered-domain address for subscribing to AI
+newsletters and using their content as raw information and research triggers.
+Use the owned AgentFeeds domain, with a dedicated intake subdomain separate
+from customer support. The proposed address is
+`newsletters@inbox.agentfeeds.si`; configuration and actual mail delivery must
+be verified before calling it available. No additional domain purchase is
+needed for this design.
+
+Incoming mail is private source material. Preserve exact message bytes,
+delivery identity, sender-authentication evidence, source dates and duplicate
+relationships. Bound message and attachment sizes; do not fetch tracking
+pixels, execute attachments or treat newsletter instructions as authority.
+Subscription confirmations remain explicit user actions. Research proposals
+must retain source links, uncertainty, reuse rights and their own approval
+and execution limits. Receiving a newsletter does not authorize republishing
+its text or putting it in the public component library.
+
 ## Main customer benefits, October 13, 2026
 
 The owner prioritizes three outcomes. Keep an agent current directly, without
