@@ -1,5 +1,113 @@
 schema: hardcoding_allowlist/v1
 entries:
+- finding_id: hardcoding.003f0276af9b716f654b1c3c
+  owner: "integrations.newsletter-email.quota.mjs:url"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed October 13, 2026: A source comment cites Cloudflare's transaction API used by this adapter. It is implementation provenance, not a runtime request target or authority to access an account."
+  created_on: '2026-10-13'
+  expires_on: '2027-01-13'
+- finding_id: hardcoding.5d429d450f95262df09f8f62
+  owner: "integrations.newsletter-email.quota.mjs:url"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed October 13, 2026: The exact .invalid URL is the closed internal Durable Object reservation route. quotaFetch accepts only this POST path and JSON shape; no public networking, endpoint selection, reset or refund path is introduced."
+  created_on: '2026-10-13'
+  expires_on: '2027-01-13'
+- finding_id: hardcoding.3e7619c26cb7f2ebaea85b1c
+  owner: "integrations.newsletter-email.worker.mjs:url"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed October 13, 2026: The Worker sends the fixed reservation route through its explicitly bound NEWSLETTER_ADMISSION object, not global fetch or a mail-supplied destination. One accepted reservation precedes raw storage; negative quota/response controls preserve that ordering."
+  created_on: '2026-10-13'
+  expires_on: '2027-01-13'
+- finding_id: hardcoding.acb3f8ebfcf10947f363a1fd
+  owner: "tools.check_newsletter_worker_native.mjs:url"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed October 13, 2026: An initial local Miniflare dispatch uses the reserved .invalid fixture origin. The real Worker classes run against local SQLite/R2 bindings while outboundService rejects and counts external requests; this is not an SMTP or live-provider operation."
+  created_on: '2026-10-13'
+  expires_on: '2027-01-13'
+- finding_id: hardcoding.9b937e8c70310adc5998b5ce
+  owner: "tools.check_newsletter_worker_native.mjs:url"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed October 13, 2026: An exact replay of the local .invalid fixture dispatch checks immutable storage reuse. It uses Miniflare's internal dispatch, never a public endpoint, and the proof explicitly checks zero external fetches."
+  created_on: '2026-10-13'
+  expires_on: '2027-01-13'
+- finding_id: hardcoding.8afdc80d0c52e75115038dbf
+  owner: "tools.check_newsletter_worker_native.mjs:url"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed October 13, 2026: The local native control submits 120 concurrent requests to the fixed Durable Object reservation route, proving the daily limit transaction. The .invalid identity is internal to the object stub and cannot select external infrastructure."
+  created_on: '2026-10-13'
+  expires_on: '2027-01-13'
+- finding_id: hardcoding.d7a975ec62ced6d0af9d5174
+  owner: "tools.check_newsletter_worker_native.mjs:url"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed October 13, 2026: The local fixture's over-limit query chooses a deterministic test delivery identity. It is dispatched only to Miniflare and verifies refusal with no additional R2 objects; no mail-controlled or provider URL is fetched."
+  created_on: '2026-10-13'
+  expires_on: '2027-01-13'
+- finding_id: hardcoding.9c017eed4cc94063fb89550f
+  owner: "tools.check_newsletter_worker_native.mjs:url"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed October 13, 2026: After reopening the same local workerd storage, this fixed internal reservation request verifies the persisted quota refuses another delivery. No new namespace, external request or limit reset occurs."
+  created_on: '2026-10-13'
+  expires_on: '2027-01-13'
+- finding_id: hardcoding.5c7ae50684471c7bd91f43de
+  owner: "tools.check_newsletter_worker_native.mjs:url"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed October 13, 2026: The reopened local Durable Object receives an exact previously admitted identity to verify duplicate reservations remain readable without charging again. The route is the owning internal protocol, not a deployment endpoint."
+  created_on: '2026-10-13'
+  expires_on: '2027-01-13'
+- finding_id: hardcoding.591d01c2b9121c61657f600e
+  owner: "tools.knowledge_radar.endoflife_cycles:EndOfLifeRequest.endpoint_url"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed October 13, 2026: The HTTPS scheme joins the adapter-owned endoflife.date host and validated product slug in an inert request plan. The offline capture reader dispatches no network, grants no effects, and does not infer missing support dates."
+  created_on: '2026-10-13'
+  expires_on: '2027-01-13'
+- finding_id: hardcoding.576fc05d33fc857fdf5f9558
+  owner: "tools.knowledge_radar.newsletter_intake:inspect_mime"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed October 13, 2026: This is a bounded HTTPS-candidate regex over a capped plain-text preview, not a provider address. Each match must pass the existing public URL guard; query-bearing action/tracking links are omitted. At most ten references are retained without any fetch or publication."
+  created_on: '2026-10-13'
+  expires_on: '2027-01-13'
+- finding_id: hardcoding.da399f8e1e60181eec508510
+  owner: "tools.knowledge_radar.newsletter_reader"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed October 13, 2026: Cloudflare's fixed management origin belongs to this R2 read-only adapter. The host separately binds validated account and private bucket identifiers; mail cannot replace origin, path, credential or method. Bounded GET, TLS, no-redirect and no-proxy controls remain enforced."
+  created_on: '2026-10-13'
+  expires_on: '2027-01-13'
+- finding_id: hardcoding.0a7ad033a4550fa98b356ba4
+  owner: "tools.knowledge_radar.newsletter_reader:NewsletterReaderBinding.__post_init__"
+  classification: CLOSED_CONTROLLED_VOCABULARY
+  rationale: "Reviewed October 13, 2026: newsletter_reader_binding/v1 is the exact typed host-file discriminator. Refusing unsupported versions before reads is the contract guard, not configurable business vocabulary; account and bucket shape checks remain independent."
+  created_on: '2026-10-13'
+  expires_on: '2027-01-13'
+- finding_id: hardcoding.0b46511b1ceb957e2651cc6b
+  owner: "tools.knowledge_radar.newsletter_reader:network_read"
+  classification: DEPLOYMENT_CONFIGURATION
+  rationale: "Reviewed October 13, 2026: C.UTF-8 is the fixed locale in the isolated host transport's minimal environment. Credentials pass only over stdin, never environment or command arguments; the parent enforces one hard deadline and no retry. This is confinement setup, not an operator locale preference."
+  created_on: '2026-10-13'
+  expires_on: '2027-01-13'
+- finding_id: hardcoding.d8784adf3415e75bea36cfe4
+  owner: "tools.knowledge_radar.newsletter_reader:network_read"
+  classification: DEPLOYMENT_CONFIGURATION
+  rationale: "Reviewed October 13, 2026: The minimal /usr/bin:/bin PATH accompanies an explicit Python executable and isolated -I transport entry. It does not inherit host credential/proxy environment or search customer directories. Secret-stdin and timeout controls exercise this exact boundary."
+  created_on: '2026-10-13'
+  expires_on: '2027-01-13'
+- finding_id: hardcoding.240fa9751535dd284853d92d
+  owner: "tools.knowledge_radar.newsletter_reader:private_mail_view"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed October 13, 2026: This bounded HTTPS regex identifies links for an inert private reading view. The manual-link guard validates them, retains at most 32, and warns that confirmation/action tokens remain private. The parser neither renders HTML nor opens, follows or publishes a link."
+  created_on: '2026-10-13'
+  expires_on: '2027-01-13'
+- finding_id: hardcoding.44b3fa0659079d6c66a53256
+  owner: "tools.knowledge_radar.osv_advisories"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed October 13, 2026: The OSV querybatch endpoint is owned by this source-specific offline capture adapter, not selected by a planner or tenant. Plans disclose zero dispatched requests; parsing returns advisory references and pagination, not full advisories, a clean-security claim or authority to act."
+  created_on: '2026-10-13'
+  expires_on: '2027-01-13'
+- finding_id: hardcoding.f0871b266df325582e6c7abf
+  owner: "tools.knowledge_radar.pypi_releases:PyPIRequest.endpoint_url"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed October 13, 2026: The HTTPS scheme joins the adapter-owned pypi.org host with a normalized validated project name to describe the Simple JSON request. This offline plan/capture parser performs no installation or network request and keeps version/file identity separate."
+  created_on: '2026-10-13'
+  expires_on: '2027-01-13'
 - finding_id: hardcoding.4477d5c0eea7bce620767e02
   owner: "docs.research.FEED-WATCH-COOLDOWNS-AND-SOURCES-2026-10-13.json:references[0].url"
   classification: STRATEGY_OR_PROVIDER_BINDING
