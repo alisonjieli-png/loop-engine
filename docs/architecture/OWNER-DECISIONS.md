@@ -52,11 +52,17 @@ and `getagentfoundry.si`.
 The [architecture map](CURRENT-ARCHITECTURE-MAP.md#separate-product-brands)
 and roadmap subtask S-6.35.06 own implementation and qualification. Current
 Baltor feeds, library access and customer-controlled queue tools remain
-available; hosted execution remains unfinished. Release 90 adds the independent
-AgentFeeds site at `agentfeeds.si` and `www.agentfeeds.si`, with Cloudflare
-nameservers and direct Fly HTTPS serving. The owner explicitly authorized DNS
-management and the nameserver change. The existing registrar records remain
-preserved; `getagentfoundry.si` and `agentafk.si` are still parked and unchanged.
+available; hosted execution remains unfinished. AgentFeeds launched in release
+90. Release 91 serves the separate AgentFoundry and AgentAFK sites at
+`getagentfoundry.si` and `agentafk.si`, each with its `www` hostname. All are
+live for public review; remaining measurement and customer-journey limits
+are recorded separately. All use
+Cloudflare nameservers and direct Fly HTTPS serving. The owner explicitly
+authorized DNS management and the nameserver transitions; existing registrar
+records remain preserved. AgentFoundry reuses existing account and MCP access
+but offers no new checkout. AgentAFK has a browser-local Preview and refuses
+account and provider-effect routes. The adaptive queue, cloud supervision
+and fully hosted execution remain separate qualification work.
 The [deployment record](MVP-CLIENT-SERVER.md#current-deployment) owns the exact
 live verification and rollback. This direction changes neither current
 prices nor existing subscriptions, grants or free preview terms; the proposed
@@ -66,9 +72,11 @@ $400 hosted computer is not a live offer.
 
 The owner also identifies a separate "don't be a meat proxy" website as a
 funnel for AgentFeeds. Engineering verified `dontbeameatproxy.si` in the
-Namecheap account. Its current records still forward the apex to a parked
-www hostname; no campaign site is deployed. This fourth domain is an
-acquisition channel for AgentFeeds, not a fourth product or another backend.
+Namecheap account. Release 91 serves its live campaign at the apex and `www`
+hostnames, with Cloudflare DNS and direct Fly HTTPS serving. Its selectors
+and instructions lead to verified AgentFeeds destinations. This fourth domain
+is an acquisition channel for AgentFeeds, not a fourth product or another
+backend. Its account and provider-effect routes are refused.
 
 The campaign should explain the human relay problem in the owner's language:
 reading newsletters or social posts only to paste anecdotal information into
@@ -77,7 +85,8 @@ builder. Preserve common-operator disclosure and describe the current curated
 references accurately; do not imply live personalized research delivery.
 Use existing permitted aggregate link measurement, with no new personal-data
 collection, third-party advertising tracker or advertising spend. S-6.35.07
-owns implementation; the domain inventory alone is not a launch.
+owns the public funnel qualification; domain ownership alone does not prove
+site availability, useful agent reads or customer activation.
 
 ## Task intake and prioritization within AgentAFK, October 13, 2026
 

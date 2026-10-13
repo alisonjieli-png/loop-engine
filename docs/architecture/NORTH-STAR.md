@@ -34,8 +34,12 @@ AgentAFK combines local and cloud execution, including the proposed hosted
 computer; AgentComputer is not a separate brand. The owner confirms purchasing
 `agentfeeds.si` and `agentafk.si` and selects `getagentfoundry.si` for AgentFoundry,
 replacing the working name AgentKits. Engineering verified all three domains
-in the registrar account. AgentFeeds is deployed independently in release 90;
-AgentFoundry and AgentAFK remain parked. A Baltor subdomain does not satisfy this direction.
+in the registrar account. AgentFeeds launched independently in release 90.
+Release 91 serves the separate AgentFoundry and AgentAFK sites, both live for
+public review. The release record preserves the remaining measurement limits. AgentFoundry
+uses the existing component account and connection boundaries. AgentAFK is a
+browser-local Preview, not hosted execution or the adaptive queue. A Baltor
+subdomain does not satisfy this direction.
 The [owner decisions](OWNER-DECISIONS.md#separate-product-brands-october-13-2026)
 record the separate acquisition channels, shared operator, current availability
 and unchanged prices.
@@ -43,7 +47,8 @@ and unchanged prices.
 The owner also identifies the Don't be a meat proxy AgentFeeds acquisition
 site. Engineering confirmed its domain, `dontbeameatproxy.si`. It is a
 campaign funnel for the direct-agent-updates value proposition,
-not a fourth product. Its domain is verified but still parked. The
+not a fourth product. Its separate campaign presentation is live in release 91,
+with verified paths into AgentFeeds collections and reading profiles. The
 [campaign decision](OWNER-DECISIONS.md#agentfeeds-campaign-funnel-october-13-2026)
 and S-6.35.07 preserve its delivery work separately from the live AgentFeeds site.
 

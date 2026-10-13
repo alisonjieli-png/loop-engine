@@ -1,0 +1,259 @@
+{
+  "record_type": "pilot_release_record/v1",
+  "release": 91,
+  "app": "baltor-pilot",
+  "source_revision": "b500149c5cfdebc2ee1bf5ee05b5fba4b7052ec2",
+  "image": "registry.fly.io/baltor-pilot@sha256:34f939fa7cdceb200063a74ed5a01747d5e9a1f9bfd9eea3534d56e54f944a13",
+  "rollback_release": 90,
+  "rollback_image": "registry.fly.io/baltor-pilot@sha256:7dd98fd2a54ecfa1aa4392e8d242525ec0f4b1b71d803d5a91a3f3bcf76a7b29",
+  "owner_local_date": "2026-10-13",
+  "deployed_at": "2026-10-13T20:34:40Z",
+  "ci_run": 38461710945,
+  "ci_conclusion": "success",
+  "ci_successful_jobs": 20,
+  "deploy_run": 38463481427,
+  "deploy_workflow_conclusion": "success",
+  "deployment_gate_after": false,
+  "qualification_state": "public_review_sites_live_with_retained_instrumentation_limit",
+  "catalogue": {
+    "release_id": "29a2bc33c3132a97466e79c18350f3574624f2ef7967b07241029e269b92e742",
+    "packages": 256380,
+    "distinct_files": 1560856,
+    "state_revision": 41,
+    "changed_by_this_application_release": false
+  },
+  "changes": [
+    "Independent AgentFoundry component examples, public discovery, same-origin account and MCP setup over the existing service",
+    "Independent AgentAFK browser-local Preview for arranging work and exporting a bounded local-run plan; no hosted execution or adaptive ranking",
+    "Don't be a meat proxy campaign funnel into the live AgentFeeds collections and reading-profile builder",
+    "Exact-origin brand selection and shared backend reuse, with account and provider-effect routes refused on public-only AgentAFK and campaign hosts",
+    "Six additional direct-Fly HTTPS origins with separate presentation and approved common-operator legal text"
+  ],
+  "billing": {
+    "price_or_subscription_mutations": 0,
+    "payments_executed_by_engineering": 0,
+    "existing_entitlements_preserved": true,
+    "deployment_grant_reconciliation": "Existing standard release workflow ran its normal grant reconciliation; no price, subscription or catalogue policy change.",
+    "standalone_checkout": "Not offered. AgentFoundry billing return paths remain unqualified; AgentAFK and campaign reject account/provider effects."
+  },
+  "host_transition": {
+    "changed_fields": [
+      "allowed_hosts",
+      "allowed_origins",
+      "brand_profiles"
+    ],
+    "existing_agentfeeds_profiles_preserved": 2,
+    "added_profiles": 6,
+    "backup_path": "/data/host-before-standalone-sites-20261013.json",
+    "backup_sha256": "33bb6e2bd929741bbc9a081a8b03d80b45e76415d7a365899e834b7031d7b64d",
+    "staged_sha256": "ed23fffd71d4a48cf8c09f4cf239695fe7cf105278ef25be8a78d29e9a140cb6",
+    "owner_and_mode_preserved": true,
+    "database_writes": 0,
+    "rollback_order": "Restore the exact standalone-site backup before starting image90: its brand enum rejects the new values. This rollback retains AgentFeeds but withdraws AgentFoundry, AgentAFK and the campaign. Reconcile their domain/customer impact, preserve DNS resources and old registrar records, and never replay completed operators."
+  },
+  "cloudflare": {
+    "worker": "baltor-web-edge",
+    "export_id": "f69adc4be69749a8e9e8f080dbebadd6ff607cbd94af862941c5a98feb86c9b7",
+    "worker_deployment": "a6df5253-910d-4bef-abf4-775193cb3341",
+    "worker_version": "7a20ffdf-62e2-43c0-9df1-12e1131fba56",
+    "static_files": 3281,
+    "static_bytes": 89426338,
+    "origin_mode": "all",
+    "production_routes_changed": false,
+    "rollback_export_id": "87a8f0d7558670a37effba8ad9b4cc1613a48d39d12ddcbb73882e9771eb3699",
+    "rollback_worker_deployment": "82f9b12e-5884-48bf-bac8-b0333ee78425",
+    "rollback_worker_version": "26f794b0-d5cd-4941-9798-62ae38c4478d",
+    "scope": "Existing nine Baltor hosts only. All standalone SI hosts use Cloudflare DNS and direct Fly HTTPS. Public file count excludes the control-index asset.",
+    "qualification": "Provider identity confirmed; all3281 public files passed exact body/header/export readback. The extra control-index asset is excluded from the public-file count."
+  },
+  "standalone_dns": {
+    "authority": "The owner explicitly authorized domain/DNS management and Cloudflare nameservers, then requested parallel implementation and live review sites.",
+    "domains": [
+      "dontbeameatproxy.si",
+      "getagentfoundry.si",
+      "agentafk.si"
+    ],
+    "nameservers": [
+      "dana.ns.cloudflare.com",
+      "nile.ns.cloudflare.com"
+    ],
+    "free_zones_created": 3,
+    "zone_ids": {
+      "dontbeameatproxy.si": "6c79279733f12b3b35574d52af20242a",
+      "getagentfoundry.si": "2734d9589bf56794847123e5d5395686",
+      "agentafk.si": "fa578136d03f5be78d31c37a8bc748b7"
+    },
+    "zone_monthly_price_usd": 0,
+    "records_per_zone": 6,
+    "records_proxied": false,
+    "delegation_changes_executed": 3,
+    "certificates_ready": 6,
+    "maximum_incremental_certificate_cost_usd_per_month": 0.6,
+    "new_applications": 0,
+    "new_databases": 0,
+    "old_registrar_records_preserved": true,
+    "serving": "Each apex CNAME targets yj0ooj6.baltor-pilot.fly.dev; each www CNAME targets its apex. Four certificate/ownership records per zone. All six roots returned exact-source HTML through ordinary public DNS and verified TLS before the full live matrix.",
+    "zone_status": "All three active, freshly read at20:55UTC on October13."
+  },
+  "checks": {
+    "self_tests": {
+      "passed": 3949,
+      "total": 3949,
+      "provider_calls": 0
+    },
+    "local_browser": {
+      "passed": 1003,
+      "total": 1003,
+      "mutants_detected": 197,
+      "mutants_total": 197
+    },
+    "local_agentfeeds_browser": {
+      "passed": 128,
+      "total": 128
+    },
+    "local_new_site_browsers": {
+      "campaign": 101,
+      "agentfoundry": 110,
+      "agentafk": 86
+    },
+    "focused": {
+      "passed": 67,
+      "followup_passed": 26
+    },
+    "conformance": {
+      "passed": 32,
+      "total": 32
+    },
+    "documentation": {
+      "passed": 58,
+      "total": 58
+    },
+    "clean_installed_wheel": {
+      "renders_passed": 858,
+      "total": 858
+    },
+    "pristine_committed_regeneration": "All owned views identical for exact deployed revision.",
+    "provider_readback": {
+      "release_status": "complete",
+      "machine_state": "started",
+      "fresh_machine_health_passed": true
+    },
+    "live_new_sites": {
+      "state": "public_review_available_instrumentation_incomplete",
+      "attempt": "new-sites-live-03",
+      "completed_all_six_origins": true,
+      "hostnames": 6,
+      "functional_assertions": {
+        "passed": 1814,
+        "total": 1814,
+        "failed": 0
+      },
+      "exact_source_get_responses": 1556,
+      "strict_aggregate_passed": false,
+      "secondary_body_accounting_errors": 4,
+      "api_requests": 1656,
+      "browser_requests": 912,
+      "total_requests": 2568,
+      "accounted_response_bytes": 29446706,
+      "byte_accounting_complete": false,
+      "finished_at": "2026-10-13T20:57:12.084Z",
+      "qualification_limit": "One account identity configuration body and one halftone-print preview body could not be read back through the secondary Chrome DevTools measurement on each Foundry hostname. All functional assertions and six-origin coverage completed. Native streaming of Public Good GET is not qualified because versions2and3 buffered its actual live same-origin response unchanged for instrumentation. No failures were ignored; no further retry was run."
+    },
+    "live_agentfeeds": {
+      "passed": 414,
+      "total": 414,
+      "hostnames": 2,
+      "errors": 0,
+      "api_requests": 348,
+      "started_at": "2026-10-13T20:39:10.238Z",
+      "finished_at": "2026-10-13T20:40:18.101Z",
+      "scope": "Ordinary DNS and verified TLS, exact public source bytes, conditional feeds, two anonymous profiles per origin and real browser downloads/layout. No live account or model effects."
+    },
+    "live_offering_matrix": {
+      "passed": 497,
+      "total": 497,
+      "errors": 0,
+      "attempt": "live-offering-02"
+    },
+    "independent_live_checks": {
+      "passed": 456,
+      "total": 456,
+      "hostnames": 10,
+      "views": 68,
+      "browser_errors": 0,
+      "attempt": "live-independent91/attempt-02"
+    },
+    "edge_readback": {
+      "passed": 3281,
+      "total": 3281,
+      "unresolved": 0,
+      "scope": "Exact bodies, required headers and source-bound export identity."
+    },
+    "pulse": {
+      "reads": 50,
+      "problems": 0,
+      "slow": 0,
+      "identity_provider_health": 200,
+      "registration_available": true,
+      "passed": true,
+      "attempt": "live-pulse-02"
+    }
+  },
+  "retained_failed_attempts": [
+    "conformance-01 found an unnecessary urllib import and one-line module context; repaired without a new network exemption. conformance-02 passed all32.",
+    "selftest-01 retained two source-scan findings and Unix-socket/path fixture failures in the run using a long temporary path. After source repairs, the full selftest-02 run using a short owned temporary directory passed3949/3949. This records the observed fixture relation, not a universal diagnosis of temporary-directory failures.",
+    "workspace-browser-01 stopped at Chrome SIGTRAP before the journey in the run using a long temporary path. The complete unchanged browser check passed1003/1003 and197/197 controls in the run using short owned temporary storage. These observations do not establish the precise cause of the Chrome failure.",
+    "hardcoding-01 used an incorrect environment/module/flag invocation. Audit02 identified nine exact static origin/reference bindings; reviewed entries and audit03 left no new high findings.",
+    "AFK browser01 found privacy-table overflow at two phone widths. The CSS repair passed all86 checks in browser02; the original failed report is retained.",
+    "new-sites-live-01 retained876 passing assertions, no failed assertions, then three secondary browser body-accounting errors and a Public Good response.json extraction error. Its incomplete coverage was not promoted. The separately saved correction buffered only the actual same-origin Public Good GET response for measurement.",
+    "new-sites-live-02 completed1814/1814 functional assertions but retained four secondary Chrome DevTools body-accounting errors, so its strict aggregate remained false.",
+    "new-sites-live-03 added network-idle waits and complete pending-measurement drains before navigation/close. All1814 functional assertions and1556 exact-source GET responses passed across all six origins, but four secondary identity/halftone response-body accounting errors remained. The aggregate is false and the29,446,706-byte total is partial. This proves public-review availability, not an entirely passing instrumentation run; no further retry was made.",
+    "live-offering-01 passed104 of105 assertions before a completed-matrix failure on a library navigation timeout. The full unchanged live-offering-02 passed497/497 with no browser errors.",
+    "live-independent91/attempt-01 retained393 of395 passing assertions and transport failures. The complete second run passed456/456 across ten hosts and68 desktop/phone views with no browser errors.",
+    "live-pulse-01 retained a status.baltor.ai health transport failure and a17-second examples.baltor.ai health read. The full second pulse passed50/50 with no problems or slow reads, registration available and identity-provider health200."
+  ],
+  "private_evidence_root": "standalone-sites-20261013-uEN6nc",
+  "private_evidence": [
+    "RELEASE-READY.json",
+    "release91-deployment-01.json",
+    "host-standalone-before-01.json",
+    "host-standalone-staged-01.json",
+    "operator-review-01.json",
+    "edge91-operator-review-01.json",
+    "cloudflare-release91-01/events.jsonl",
+    "cloudflare-release91-01/current-deployments.json",
+    "cloudflare-release91-01/current-settings.json",
+    "certificates-after-delegation-02.json",
+    "dontbeameatproxy.si-delegation-readback.json",
+    "getagentfoundry.si-delegation-readback.json",
+    "agentafk.si-delegation-readback.json",
+    "live-manifest-01.json",
+    "dontbeameatproxy.si-zone-active.json",
+    "getagentfoundry.si-zone-active.json",
+    "agentafk.si-zone-active.json",
+    "cloudflare-release91-readback-01.json",
+    "agentfeeds-live-01/report.json",
+    "new-sites-live-01/report.json",
+    "new-sites-live-02/report.json",
+    "new-sites-live-03/report.json",
+    "new-sites-live-checker-diagnosis-02.json",
+    "new-sites-live-checker-diagnosis-03.json",
+    "new-sites-live-review-03.json",
+    "live-offering-01/report.json",
+    "live-offering-02/report.json",
+    "live-independent91/attempt-01/report.json",
+    "live-independent91/attempt-02/report.json",
+    "live-pulse-01.json",
+    "live-pulse-02.json"
+  ],
+  "limits": [
+    "Public-review availability is fulfilled for all websites. The new-site strict aggregate remains false for four secondary browser-body accounting errors; byte totals are partial, and buffered Public Good instrumentation does not qualify native streaming transport.",
+    "Live public checks are anonymous and use emulated viewports. Local identity fixtures do not establish real new-domain sign-up, confirmation email, consent or payment journeys.",
+    "AgentFoundry reuses existing component access. Its previews and downloads do not prove automatic agent assembly, successful installation or accepted customer work.",
+    "AgentAFK is a browser-local Preview and export workflow, not hosted execution, an operating cloud supervisor or an adaptive self-learning queue.",
+    "The campaign is an AgentFeeds acquisition channel, not a fourth product. No new trackers or personal-data collection were added.",
+    "No model calls, token-savings benchmark, catalogue publication, R2 migration, subscription or price change is established by this release.",
+    "Campaign task S-6.35.07 is live_qualified. Combined standalone task S-6.35.06 remains building for real authenticated/acquisition outcomes and remaining instrumentation qualification; it does not mean any selected domain is still waiting to launch."
+  ],
+  "deployed_at_basis": "Fly release CreatedAt, not the guarded workflow completion timestamp."
+}

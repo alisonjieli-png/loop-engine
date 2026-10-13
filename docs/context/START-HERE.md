@@ -21,12 +21,21 @@ two defects that were found and fixed after the first claims of correctness.
 
 ## Current context route
 
+Read the [October 13 release 91 checkpoint](SESSION-HANDOFF-2026-10-13-RELEASE91.md)
+first for the separate AgentFoundry and AgentAFK presentations and the
+Don't be a meat proxy campaign. All websites are live for public review;
+the application, DNS transitions and release checks are complete. The record
+preserves the new-site run's strict-false secondary body-accounting result,
+current Preview limits, shared backend boundaries and the exact
+configuration-aware rollback. The workstation pointer names the current
+editor and evidence; preserve shared work and never replay completed operators.
+
 Read the [October 13 release 90 checkpoint](SESSION-HANDOFF-2026-10-13-RELEASE90.md)
-first for the live standalone AgentFeeds site, completed Cloudflare nameserver
-transition, exact live checks and configuration-aware rollback. It also records
+for the earlier AgentFeeds launch, completed Cloudflare nameserver transition,
+exact live checks and configuration-aware rollback. It also records
 the owner's three main customer benefits and adaptive AgentAFK queue direction.
-The two other standalone domains remain parked. The workstation pointer names
-the current editor and private 72-hour session review; preserve shared work.
+Its parked-domain observations are historical. The workstation pointer names
+the private 72-hour session review; preserve that evidence.
 
 Read the [October 13 release 89 checkpoint](SESSION-HANDOFF-2026-10-13-RELEASE89.md)
 for the earlier random-media and documentation-readiness release, separate

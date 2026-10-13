@@ -5,7 +5,7 @@ Kind: generated planning artifact.
 Source: `roadmap.yaml`. Regenerate with
 `python tools/build_continuation_status.py`; `--check` rejects a stale view.
 
-Plan fingerprint: `db142e4af60fa64498298e85fd5cf1d6e4b1e9c26c69cdb569b83cdbe1f3b2c9`.
+Plan fingerprint: `f618e066e95604ad297504079c54780ef127a6d6843a33c993514905b23623ed`.
 
 Started: 2026-09-19T14:12:54Z. Historical target: 2026-09-20T14:12:54Z. This is not a release forecast.
 
@@ -15,7 +15,7 @@ A subscription website and dashboard with payments, all intelligence layers and 
 
 ## Next eligible work
 
-Next eligible subtask: S-6.35.07: Launch the Don't be a meat proxy campaign funnel for AgentFeeds
+Next eligible subtask: S-6.35.06: Qualify AgentFeeds, AgentFoundry and AgentAFK on the shared service
 
 ## Recorded work in progress
 

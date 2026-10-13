@@ -3,7 +3,7 @@
 Kind: generated view. Do not edit by hand. The only task authority is
 [roadmap.yaml](roadmap.yaml); change it, then run
 `PYTHONPATH=src:tools .venv/bin/python tools/build_development_tracker.py`.
-Source fingerprint: `sha256:db142e4af60fa64498298e85fd5cf1d6e4b1e9c26c69cdb569b83cdbe1f3b2c9`.
+Source fingerprint: `sha256:f618e066e95604ad297504079c54780ef127a6d6843a33c993514905b23623ed`.
 
 ## Where things stand
 
@@ -19,7 +19,7 @@ Statuses are recorded planning state, not live worker telemetry.
 
 ## Recorded planning window
 
-Retained October 9 planning window, not an active-worker inventory. October 13 release 90 delivers the separate AgentFeeds site; remaining standalone brands and maintained feeds follow the current execution order. The earlier twelve-hour factory was a bounded attempt, not a publication claim. Only qualified, admitted, reconciled and actually served distinct digests count toward the ten-million target. Consult the workstation coordination record for current writers.
+Retained October 9 planning window, not an active-worker inventory. October 13 release 91 serves all standalone websites for public review. The campaign funnel is live-qualified; the combined standalone task retains real authenticated/acquisition outcomes and secondary browser-body accounting qualification. No selected domain is still waiting to launch. Maintained feeds and customer task outcomes remain separate work. The earlier twelve-hour factory was a bounded attempt, not a publication claim. Only qualified, admitted, reconciled and actually served distinct digests count toward the ten-million target. Consult the workstation coordination record for current writers.
 
 The bars are planned work windows. Completion comes only from each task's acceptance and evidence.
 
@@ -67,17 +67,17 @@ gantt
 
 Each subtask lives in its owning step in roadmap.yaml. A local check does not complete a task that requires publication.
 
-Completed within their stated scope: 20 of 72 subtasks.
+Completed within their stated scope: 21 of 72 subtasks.
 
-Next eligible subtask: S-6.35.07: Launch the Don't be a meat proxy campaign funnel for AgentFeeds
+Next eligible subtask: S-6.35.06: Qualify AgentFeeds, AgentFoundry and AgentAFK on the shared service
 
 | Order | Task | State | Completion required | Next action or dependency |
 |---:|---|---|---|---|
 | 1 | [x] S-6.35.03: Integrate the new design and interrupted fixes into the live website | published | published | Preserve the deployed design and release-89 documentation readiness repair while implementing the separate branded sites in S-6.35.06. The owner price change remains recorded in S-6.35.04. |
 | 2 | [x] S-6.35.04: Apply the owner's monthly Basic, Pro and Max prices | published | published | Keep both accepted Price identities during any rollback and preserve existing subscriptions, grants and free preview terms. |
 | 3 | [x] S-6.35.05: Add random asset discovery with provenance and use details | published | published | Preserve the qualified routes and expand useful rights-qualified media through the component intake and portable customer proof in S-6.201.04. |
-| 4 | [ ] S-6.35.07: Launch the Don't be a meat proxy campaign funnel for AgentFeeds | ready | live_qualified | Build and qualify the focused campaign presentation, then deploy it and verify the owned domain before continuing the larger standalone-product sites. |
-| 5 | [ ] S-6.35.06: Qualify AgentFeeds, AgentFoundry and AgentAFK on the shared service | building | live_qualified | Preserve the independent AgentFeeds launch and qualify separate AgentFoundry and AgentAFK presentations on their confirmed domains. Reuse the shared brand boundary, preserve DNS records and verify each actual domain before a launch claim. |
+| 4 | [x] S-6.35.07: Launch the Don't be a meat proxy campaign funnel for AgentFeeds | live_qualified | live_qualified | Retain the verified public funnel and review agent feedback. Measure useful AgentFeeds activation under the existing consent and measurement rules without turning public website availability into a claim of customer outcomes. |
+| 5 | [ ] S-6.35.06: Qualify AgentFeeds, AgentFoundry and AgentAFK on the shared service | building | live_qualified | All selected websites are live for public review. Qualify real authenticated/acquisition journeys and resolve secondary browser-body measurement gaps; preserve the independent interfaces while maintained feeds, portable component use, adaptive ranking and hosted execution proceed through their owning tasks. |
 | 6 | [x] S-6.12.04: Separate three product cards from the introductory hero | live_qualified | live_qualified | Keep the three visible offerings consistent while the separate billing and hosted-service work proceeds. |
 | 7 | [x] S-6.35.01: Release reviewed main and verify it live | published | published | Keep application deployment and catalogue publication from overlapping. |
 | 8 | [x] S-6.215.01: Record the current live file baseline | offline_verified | offline_verified | Use this exact baseline for reconciliation. |
@@ -202,7 +202,7 @@ Comment: Selection is client-side ordinary code, not a model or a compact random
 
 ### S-6.35.07 Launch the Don't be a meat proxy campaign funnel for AgentFeeds
 
-Owner step: S-6.35. State: ready. Completion requires: live_qualified.
+Owner step: S-6.35. State: live_qualified. Completion requires: live_qualified.
 
 Acceptance: The owned dontbeameatproxy.si domain serves a tested desktop/mobile campaign page with verified HTTPS and a clear working path into AgentFeeds collections or profile building, accurate current capabilities and common-operator disclosure.
 
@@ -212,11 +212,11 @@ Acceptance: The owned dontbeameatproxy.si domain serves a tested desktop/mobile 
 4. Test every campaign link, viewport, canonical address and actual AgentFeeds destination, without claiming hosted personalized delivery or starting model work.
 5. Use only the existing permitted aggregate link measurement; do not add personal-data collection, advertising trackers or advertising spend.
 
-Evidence: October 13 owner status question explicitly identifies a Don't be a meat proxy website as an AgentFeeds funnel. Fresh registrar inventory confirms dontbeameatproxy.si. Its basic Namecheap nameservers retain one www parking CNAME and an apex forwarding record; public HTTP returns a Namecheap 302 and the HTTPS probe did not complete. No campaign source or deployed site was found in the release checkout. The domain was omitted from the earlier launch inventory and is now tracked explicitly.
+Evidence: Release 91 from b500149c serves the live campaign after exact CI38461710945 and guarded deployment38463481427; the gate is closed. Its active free Cloudflare zone has six DNS-only records, and both direct-Fly certificates are ready. The local campaign browser passed101 checks. The full six-origin live run completed1814/1814 functional assertions and1556exact-source GET responses, including campaign desktop/phone layout, selectors, copied instructions or explicit copy fallback, same-origin refusals and actual AgentFeeds destinations. Its strict aggregate remains false for four secondary body-accounting errors on the separate Foundry hosts, not failed campaign assertions. The funnel's stated public acceptance is met; pilot-release-91.json retains every attempt and limit.
 
-Next: Build and qualify the focused campaign presentation, then deploy it and verify the owned domain before continuing the larger standalone-product sites.
+Next: Retain the verified public funnel and review agent feedback. Measure useful AgentFeeds activation under the existing consent and measurement rules without turning public website availability into a claim of customer outcomes.
 
-Comment: AgentFeeds itself is already live. This narrower acquisition page can follow it independently of unfinished AgentFoundry/AgentAFK presentations. No domain purchase or DNS mutation occurred during this status check.
+Comment: The campaign is an AgentFeeds acquisition channel, not a fourth product. It directs visitors to existing collections and profile building, refuses account and provider effects, and adds no advertising tracker, paid advertising or hosted personalized-feed claim.
 
 ### S-6.35.06 Qualify AgentFeeds, AgentFoundry and AgentAFK on the shared service
 
@@ -232,11 +232,11 @@ Acceptance: Baltor.ai retains all three offerings while AgentFeeds, AgentFoundry
 6. Measure useful activation, retention and support cost for each acquisition channel; compare the same offer and acquisition cohort when testing presentation, and label different products or audiences as different experiments.
 7. Disclose common ownership where material; do not fabricate independent competitors, endorsements, customer counts or market share, and do not treat a footer as curing a misleading claim.
 
-Evidence: Release 90 from 67875526 deploys the independent AgentFeeds UI on the shared backend. Both AgentFeeds origins serve ordinary public HTTPS after the owner-authorized Cloudflare nameserver transition; pilot-release-90.json binds exact checks and rollback. All three selected domains were verified in the registrar account. AgentFoundry at getagentfoundry.si and AgentAFK at agentafk.si remain parked and unchanged, so this combined subtask stays building. Baltor.ai retains all three offerings; a Baltor subdomain is not a substitute. Brand selection does not grant account, model or payment authority.
+Evidence: Release 91 from b500149c serves independent AgentFoundry and AgentAFK presentations after exact CI38461710945 and guarded deployment38463481427; gate closed. All four standalone domains and www hostnames are live, with active free DNS zones and direct Fly HTTPS. The six new origins completed1814/1814 functional assertions and1556exact-source GET checks, but four secondary Foundry body-accounting errors keep the strict aggregate false and byte accounting partial. Public Good instrumentation buffers real responses and does not qualify native streaming. AgentFeeds passed414/414; existing-host456/456, offering497/497, edge3281/3281 and pulse50/50 passed. This combined task stays building for real authenticated/acquisition outcomes and remaining instrumentation qualification, not an unlaunched domain. See pilot-release-91.json.
 
-Next: Preserve the independent AgentFeeds launch and qualify separate AgentFoundry and AgentAFK presentations on their confirmed domains. Reuse the shared brand boundary, preserve DNS records and verify each actual domain before a launch claim.
+Next: All selected websites are live for public review. Qualify real authenticated/acquisition journeys and resolve secondary browser-body measurement gaps; preserve the independent interfaces while maintained feeds, portable component use, adaptive ranking and hosted execution proceed through their owning tasks.
 
-Comment: Baltor's existing feeds, library access and customer-controlled queue tools remain available; hosted execution remains unfinished. The $9/$49/$99 monthly direction, existing subscriptions, grants and free preview terms remain unchanged; the $400 hosted computer is still a proposal within AgentAFK. Advertising spend stays with the owner.
+Comment: This task qualifies the current standalone website scope, not complete customer outcomes. AgentFoundry reuses account/MCP access and offers no new checkout; AFK is a browser-local Preview with account/provider effects refused, not hosted execution or adaptive ranking. S-6.214, S-6.201.04 and S-6.24.03 retain the respective remaining work. The $9/$49/$99 direction, existing subscriptions, grants and free preview terms remain unchanged; advertising spend stays with the owner.
 
 ### S-6.12.04 Separate three product cards from the introductory hero
 
@@ -264,11 +264,11 @@ Acceptance: The exact CI-passed revision is deployed through the guarded workflo
 2. Dispatch the guarded deployment once and reconcile the remote result.
 3. Close the deployment gate; record image, revision, rollback and all-host checks.
 
-Evidence: Release 90 from 67875526: exact CI 38444338553, guarded deployment 38446304065, gate closed, image 7dd98fd2a54e. Live offering 497/497, independent checks 456/456 over the ten existing hosts, exact Cloudflare readback 3281/3281 and final pulse 50/50 passed. AgentFeeds domain checks and retained failed attempts are bound by pilot-release-90.json.
+Evidence: Release 91 from b500149c: exact CI38461710945 passed twenty jobs, guarded deployment38463481427 succeeded, gate closed, image34f939fa7cdc. Local self-tests3949/3949, workspace browser1003/1003 plus197controls, AgentFeeds browser128, focused67plus26, conformance32, documentation58, installed-wheel858 and pristine regeneration passed. Live AgentFeeds414/414, existing-host456/456 over68views, offering497/497, exact edge3281/3281 and final pulse50/50 passed. All new sites are publicly available with1814/1814 functional assertions and1556exact-source GET checks; the strict aggregate remains false for four secondary body-accounting errors, retained alongside all earlier failures in pilot-release-91.json.
 
 Next: Keep application deployment and catalogue publication from overlapping.
 
-Comment: Rollback image 89 requires restoring the exact pre-brand host configuration first. No catalogue, billing, R2 or subscription mutation occurred; the AgentFeeds DNS transition is recorded separately.
+Comment: Rollback image90 requires restoring /data/host-before-standalone-sites-20261013.json first. This preserves AgentFeeds and withdraws the three new presentations. No catalogue, price, subscription, R2 or model change occurred; standard deployment grant reconciliation and the three DNS transitions are recorded separately.
 
 ### S-6.215.01 Record the current live file baseline
 

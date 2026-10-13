@@ -177,15 +177,26 @@ S-6.35.06 in the [roadmap](../roadmap/roadmap.yaml) owns implementation and
 qualification. The owner confirms purchasing `agentfeeds.si` and `agentafk.si`
 through Namecheap and selects `getagentfoundry.si` for AgentFoundry, replacing
 the working name AgentKits. Engineering verified all three domains in the
-registrar account. Release 90 serves AgentFeeds on `agentfeeds.si` and
-`www.agentfeeds.si`, with its own presentation and same-origin connections to
-the shared backend. Cloudflare owns DNS; these two hosts serve directly from
-Fly rather than the Baltor static Worker. AgentFoundry and AgentAFK remain
-parked. A Baltor subdomain does not satisfy the owner's direction. Baltor serves
-feeds, library access and customer-controlled queue tools; hosted execution
-remains unfinished.
+registrar account. AgentFeeds launched in release 90. Release 91 serves
+AgentFoundry on `getagentfoundry.si`, AgentAFK on `agentafk.si` and the
+Don't be a meat proxy campaign on `dontbeameatproxy.si`, each with its `www`
+hostname. All are live for public review. The new-site run passed every
+functional assertion but retained four secondary browser-body accounting
+errors; the release record preserves that instrumentation limit rather than
+calling the strict aggregate successful.
+Each presentation uses the shared backend without joining another brand's
+navigation. Cloudflare owns DNS; these eight hosts serve directly from Fly
+rather than the Baltor static Worker. A Baltor subdomain does not satisfy
+the owner's direction.
+
+AgentFoundry has component previews, public collection search, existing
+account access and MCP setup. Its checkout return path remains unqualified.
+AgentAFK exposes a browser-local Preview; hosted execution and learned queue
+ranking remain unfinished. AgentAFK and the campaign refuse account and
+provider-effect routes. The campaign leads to AgentFeeds, not another product
+or backend. Baltor retains the combined offerings.
 The [current deployment](MVP-CLIENT-SERVER.md#current-deployment) binds the
-AgentFeeds launch checks and its configuration-aware rollback.
+eighteen-host release checks and configuration-aware rollback.
 
 Keep these identities separate:
 

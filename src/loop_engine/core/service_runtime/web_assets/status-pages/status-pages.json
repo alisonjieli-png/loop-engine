@@ -5,6 +5,20 @@
   "releases": [
    {
     "kind": "service",
+    "number": 91,
+    "at": "2026-10-13T20:34:40Z",
+    "lines": [
+     "Independent AgentFoundry component examples, public discovery, same-origin account and MCP setup over the existing service.",
+     "Independent AgentAFK browser-local Preview for arranging work and exporting a bounded local-run plan; no hosted execution or adaptive ranking.",
+     "Don't be a meat proxy campaign funnel into the live AgentFeeds collections and reading-profile builder.",
+     "Exact-origin brand selection and shared backend reuse, with account and provider-effect routes refused on public-only AgentAFK and campaign hosts.",
+     "Six additional direct-Fly HTTPS origins with separate presentation and approved common-operator legal text."
+    ],
+    "seen_after_release": "",
+    "not_shown": 0
+   },
+   {
+    "kind": "service",
     "number": 90,
     "at": "2026-10-13T18:26:16Z",
     "lines": [
