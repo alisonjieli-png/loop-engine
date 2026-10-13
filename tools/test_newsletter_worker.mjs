@@ -148,3 +148,18 @@ test('reservation is before raw storage and is not refunded after unknown write'
   await assert.rejects(receive(message(), env, clock));
   assert.deepEqual(sequence, ['reserve', 'put']);
 });
+test('admission response has a strict streamed size and closed fields', async () => {
+  for (const mutate of [value => ({...value, extra: 'unqualified'}),
+    value => ({...value, raw_sha256: '0'.repeat(64)}), value => ({...value, reservation_bytes: 1})]) {
+    const bucket = new Bucket(), env = environment(bucket);
+    const held = env.NEWSLETTER_ADMISSION.getByName('newsletter-admission-v1');
+    env.NEWSLETTER_ADMISSION = {getByName: () => ({fetch: async (...args) =>
+      Response.json(mutate(await (await held.fetch(...args)).json()))})};
+    await assert.rejects(receive(message(), env, clock), /admission_response_refused/);
+    assert.equal(bucket.calls.length, 0);
+  }
+  const bucket = new Bucket(), env = environment(bucket);
+  env.NEWSLETTER_ADMISSION = {getByName: () => ({fetch: async () => new Response(' '.repeat(4097))})};
+  await assert.rejects(receive(message(), env, clock), /admission_response_refused/);
+  assert.equal(bucket.calls.length, 0);
+});

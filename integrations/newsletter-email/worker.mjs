@@ -65,11 +65,31 @@ async function reserveAdmission(env, message, deliveryId, rawSha256) {
     return false;
   }
   if (reply.status !== 200) throw new Error('newsletter_admission_refused');
-  const body = await reply.text();
-  if (body.length > 4096) throw new Error('newsletter_admission_response_refused');
+  if (!reply.body) throw new Error('newsletter_admission_response_refused');
+  const reader = reply.body.getReader(), chunks = [];
+  let count = 0;
+  try {
+    while (true) {
+      const {done, value} = await reader.read();
+      if (done) break;
+      if (!(value instanceof Uint8Array) || count + value.byteLength > 4096)
+        throw new Error('newsletter_admission_response_refused');
+      count += value.byteLength; chunks.push(value);
+    }
+  } catch (error) {await reader.cancel(); throw error;}
+  finally {reader.releaseLock();}
+  const bytes = new Uint8Array(count);
+  let offset = 0;
+  for (const chunk of chunks) {bytes.set(chunk, offset); offset += chunk.byteLength;}
+  let body;
+  try {body = new TextDecoder('utf-8', {fatal: true}).decode(bytes);}
+  catch {throw new Error('newsletter_admission_response_refused');}
   let held;
   try {held = JSON.parse(body);} catch {throw new Error('newsletter_admission_response_refused');}
-  if (!held || held.record_type !== 'newsletter_admission_result/v1' || held.accepted !== true ||
+  const fields = ['record_type', 'accepted', 'delivery_id', 'raw_sha256', 'raw_bytes',
+    'reservation_bytes', 'recorded_at', 'duplicate'].sort().join(',');
+  if (!held || typeof held !== 'object' || Array.isArray(held) || Object.keys(held).sort().join(',') !== fields ||
+      JSON.stringify(held) !== body || held.record_type !== 'newsletter_admission_result/v1' || held.accepted !== true ||
       held.delivery_id !== deliveryId || held.raw_sha256 !== rawSha256 || held.raw_bytes !== message.rawSize ||
       held.reservation_bytes !== message.rawSize + 8192 || typeof held.duplicate !== 'boolean' ||
       typeof held.recorded_at !== 'string' || !Number.isFinite(Date.parse(held.recorded_at)))

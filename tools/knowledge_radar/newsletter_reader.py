@@ -12,11 +12,13 @@ from email import policy
 from email.parser import BytesParser
 from html.parser import HTMLParser
 import ipaddress
+import http.client
 import json
 import os
 from pathlib import Path
 import re
 import subprocess
+import ssl
 import sys
 from urllib.parse import urlencode, urlsplit, urlunsplit
 
@@ -98,32 +100,46 @@ def _request(binding, operation, selection, maximum_bytes):
     raise NewsletterRefusal("newsletter_reader_operation_refused")
 
 
-def bounded_get(url, token, maximum_bytes, *, transport=None):
+def bounded_get(url, token, maximum_bytes, *, connection_factory=http.client.HTTPSConnection):
     """One bounded request; parent process supplies the hard wall deadline."""
-    import httpx
+    parsed = urlsplit(url)
+    if (parsed.scheme != "https" or parsed.netloc != "api.cloudflare.com"
+            or not parsed.path.startswith("/client/v4/accounts/") or parsed.fragment):
+        raise NewsletterRefusal("newsletter_reader_origin_refused")
+    connection = None
     try:
-        with httpx.Client(follow_redirects=False, trust_env=False, timeout=10, transport=transport) as client:
-            with client.stream("GET", url, headers={"Authorization": "Bearer " + token,
-                               "Accept-Encoding": "identity"}) as response:
-                if response.status_code != 200 or response.headers.get("content-encoding", "identity") != "identity":
-                    raise NewsletterRefusal("newsletter_reader_provider_refused")
-                length = response.headers.get("content-length")
-                if length is not None and (not length.isdecimal() or int(length) > maximum_bytes):
-                    raise NewsletterRefusal("newsletter_reader_response_size_refused")
-                body = bytearray()
-                for chunk in response.iter_raw(chunk_size=16384):
-                    if len(body) + len(chunk) > maximum_bytes:
-                        raise NewsletterRefusal("newsletter_reader_response_size_refused")
-                    body.extend(chunk)
-                if length is not None and len(body) != int(length):
-                    raise NewsletterRefusal("newsletter_reader_response_size_refused")
-                return bytes(body)
+        # http.client does not consult HTTP_PROXY/HTTPS_PROXY and does not
+        # follow redirects. The default context verifies certificate and host.
+        connection = connection_factory("api.cloudflare.com", port=443, timeout=10, context=ssl.create_default_context())
+        target = parsed.path + ("?" + parsed.query if parsed.query else "")
+        connection.request("GET", target, headers={"Authorization": "Bearer " + token,
+                           "Accept-Encoding": "identity"})
+        response = connection.getresponse()
+        if response.status != 200 or response.getheader("content-encoding", "identity") != "identity":
+            raise NewsletterRefusal("newsletter_reader_provider_refused")
+        length = response.getheader("content-length")
+        if length is not None and (not length.isdecimal() or int(length) > maximum_bytes):
+            raise NewsletterRefusal("newsletter_reader_response_size_refused")
+        body = bytearray()
+        while True:
+            chunk = response.read(min(16384, maximum_bytes + 1 - len(body)))
+            if not chunk:
+                break
+            if len(body) + len(chunk) > maximum_bytes:
+                raise NewsletterRefusal("newsletter_reader_response_size_refused")
+            body.extend(chunk)
+        if length is not None and len(body) != int(length):
+            raise NewsletterRefusal("newsletter_reader_response_size_refused")
+        return bytes(body)
     except NewsletterRefusal:
         raise
     except Exception:
         # Provider error documents, request objects and token-bearing exception
         # text never cross the transport boundary.
         raise NewsletterRefusal("newsletter_reader_transport_unknown") from None
+    finally:
+        if connection is not None:
+            connection.close()
 
 
 def network_read(binding, operation, selection, maximum_bytes, token):

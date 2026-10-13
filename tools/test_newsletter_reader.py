@@ -8,8 +8,7 @@ import sys
 import tempfile
 import unittest
 from unittest import mock
-
-import httpx
+import ssl
 
 from knowledge_radar import newsletter_reader as reader
 from knowledge_radar.newsletter_intake import NewsletterEmail, NewsletterObjectRead, NewsletterRefusal, RECIPIENT, read_private_receipt
@@ -29,6 +28,28 @@ def receipt():
     return {**value, "raw_bytes": len(RAW), "raw_key": RAW_KEY,
             "source_semantics": "private_email_not_public_feed", "disposition": "quarantined",
             "sender_authentication": "not_verified", "publication_approved": False}
+
+
+class Connection:
+    def __init__(self, *, status=200, body=b"", headers=None):
+        self.status, self.body, self.headers = status, body, headers or {}
+        self.requests, self.closed = [], False
+
+    def request(self, *args, **kwargs):
+        self.requests.append((args, kwargs))
+
+    def getresponse(self):
+        return self
+
+    def getheader(self, name, default=None):
+        return self.headers.get(name, default)
+
+    def read(self, size):
+        body, self.body = self.body[:size], self.body[size:]
+        return body
+
+    def close(self):
+        self.closed = True
 
 
 class ReaderTests(unittest.TestCase):
@@ -117,28 +138,36 @@ class ReaderTests(unittest.TestCase):
             held(NewsletterObjectRead(BINDING.bucket, RAW_KEY, 2 * 1024 * 1024))
 
     def test_http_transport_is_fixed_get_no_redirect_and_no_error_body_disclosure(self):
-        requests = []
-        def answer(request):
-            requests.append(request)
-            return httpx.Response(302, headers={"location": "https://evil.example/"}, content=b"PRIVATE_PROVIDER_BODY")
+        connection = Connection(status=302, headers={"location": "https://evil.example/"}, body=b"PRIVATE_PROVIDER_BODY")
+        factory = mock.Mock(return_value=connection)
         url = reader._request(BINDING, "get", KEY, 4096)
         with self.assertRaisesRegex(NewsletterRefusal, "provider_refused") as raised:
-            reader.bounded_get(url, "offline-fixture", 4096, transport=httpx.MockTransport(answer))
-        self.assertEqual(len(requests), 1)
-        self.assertEqual(requests[0].method, "GET")
-        self.assertEqual(requests[0].headers["accept-encoding"], "identity")
+            reader.bounded_get(url, "offline-fixture", 4096, connection_factory=factory)
+        self.assertEqual(len(connection.requests), 1)
+        self.assertEqual(connection.requests[0][0][0], "GET")
+        self.assertEqual(connection.requests[0][1]["headers"]["Accept-Encoding"], "identity")
+        self.assertEqual(factory.call_args.args, ("api.cloudflare.com",))
+        self.assertEqual(factory.call_args.kwargs["context"].verify_mode, ssl.CERT_REQUIRED)
+        self.assertTrue(factory.call_args.kwargs["context"].check_hostname)
+        self.assertTrue(connection.closed)
+        self.assertEqual(connection.body, b"PRIVATE_PROVIDER_BODY")
         self.assertNotIn("PRIVATE_PROVIDER_BODY", str(raised.exception))
 
     def test_http_stream_cap_and_encoding_are_checked_without_trusting_size(self):
-        class Stream(httpx.SyncByteStream):
-            def __iter__(self):
-                yield b"A" * 5000
-        for response in (lambda: httpx.Response(200, stream=Stream()),
-                         lambda: httpx.Response(200, headers={"content-encoding": "gzip"}, stream=Stream()),
-                         lambda: httpx.Response(200, headers={"content-length": "5000"}, stream=Stream())):
+        for headers in ({}, {"content-encoding": "gzip"}, {"content-length": "5000"}):
+            connection = Connection(body=b"A" * 5000, headers=headers)
             with self.assertRaises(NewsletterRefusal):
                 reader.bounded_get(reader._request(BINDING, "get", KEY, 4096), "fixture", 4096,
-                                   transport=httpx.MockTransport(lambda _: response()))
+                                   connection_factory=lambda *args, **kwargs: connection)
+            self.assertTrue(connection.closed)
+
+    def test_reader_refuses_unexpected_origin_before_transport(self):
+        factory = mock.Mock()
+        for url in ("http://api.cloudflare.com/client/v4/accounts/x", "https://evil.example/client/v4/accounts/x",
+                    "https://api.cloudflare.com:443/client/v4/accounts/x", "https://api.cloudflare.com/client/v4/accounts/x#secret"):
+            with self.assertRaises(NewsletterRefusal):
+                reader.bounded_get(url, "fixture", 4096, connection_factory=factory)
+        factory.assert_not_called()
 
     def test_parent_passes_secret_only_on_stdin_and_uses_hard_deadline(self):
         result = subprocess.CompletedProcess([], 0, json.dumps({"body_base64": base64.b64encode(b"data").decode()}).encode(), b"")
