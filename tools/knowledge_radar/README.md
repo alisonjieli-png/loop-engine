@@ -66,6 +66,55 @@ file are different records. None is counted as the next simply because it
 exists on disk. Preserve their source relationships when moving one qualified
 capability into the existing library.
 
+## Offline package and lifecycle captures
+
+Three commands inspect saved source responses without dispatching network
+requests or writing results:
+
+```bash
+PYTHONPATH=src:tools python3 tools/read_pypi_releases.py --project pydantic
+PYTHONPATH=src:tools python3 tools/read_osv_advisories.py --pin PyPI:pydantic@2.9.2
+PYTHONPATH=src:tools python3 tools/read_endoflife_cycles.py --product python --pinned-cycle 3.13
+```
+
+Without `--input-capture`, each command prints a request plan. To inspect a
+saved response, pass that flag and its capture date: `--observed-on YYYY-MM-DD`
+for PyPI and OSV, or `--as-of YYYY-MM-DD` for lifecycle data. The local reader
+refuses symlinks, non-regular files and oversized captures before parsing.
+Malformed or unsupported input produces a refusal, not a clean bill of health.
+
+The PyPI projection separates newly observed versions from additional files
+for a known version when a caller supplies a baseline. Its bounded lexical
+selection is not a newest-version ranking. Platform-tag candidates do not
+prove Python, ABI or system compatibility. A version change is not evidence
+of a new capability. The [Simple repository API](https://packaging.python.org/en/latest/specifications/simple-repository-api/)
+does not promise array order; these tools do not infer chronology from it.
+
+The [OSV batch API](https://google.github.io/osv.dev/post-v1-querybatch/)
+returns identifiers and modification timestamps. This reader retains those
+references and per-query pagination. Full advisory details, withdrawal status,
+affected ranges and remedial versions need a separate verified read. An empty
+partial page is not an unaffected package, and even a complete empty query is
+not a security certificate.
+
+The lifecycle reader accepts the bound product shape from
+[endoflife.date v1](https://endoflife.date/docs/api/v1/). Missing support
+information stays unknown; an expired active-support date does not prove that
+security support exists. Check the publisher's policy before taking action.
+The capture date must match the snapshot being interpreted, especially when
+the source supplies current boolean status without a dated boundary.
+
+These are offline helpers within the existing source-intake owner, adapted
+from the October 13 Antigravity candidate. They are not registered network
+engines, recurring workers or public feed items. Source access, shared quotas,
+managed records, follow-up task admission and publication remain separate.
+Existing `feed_profile_files` directory confinement is reused. No new store,
+scheduler, model call or automatic installation is introduced.
+
+```bash
+PYTHONPATH=src:tools python3 -m unittest tools.test_pypi_osv_eol_readers tools.test_feed_reader_review
+```
+
 ## Open-source project discovery feed
 
 The existing community RSS adapter also lists
