@@ -73,6 +73,29 @@
    "waiting_on": []
   },
   {
+   "acceptance": "The owned dontbeameatproxy.si domain serves a tested desktop/mobile campaign page with verified HTTPS and a clear working path into AgentFeeds collections or profile building, accurate current capabilities and common-operator disclosure.",
+   "comment": "AgentFeeds itself is already live. This narrower acquisition page can follow it independently of unfinished AgentFoundry/AgentAFK presentations. No domain purchase or DNS mutation occurred during this status check.",
+   "complete": false,
+   "completion_status": "live_qualified",
+   "depends_on": [
+    "S-6.214.12"
+   ],
+   "evidence": "October 13 owner status question explicitly identifies a Don't be a meat proxy website as an AgentFeeds funnel. Fresh registrar inventory confirms dontbeameatproxy.si. Its basic Namecheap nameservers retain one www parking CNAME and an apex forwarding record; public HTTP returns a Namecheap 302 and the HTTPS probe did not complete. No campaign source or deployed site was found in the release checkout. The domain was omitted from the earlier launch inventory and is now tracked explicitly.",
+   "id": "S-6.35.07",
+   "next_action": "Build and qualify the focused campaign presentation, then deploy it and verify the owned domain before continuing the larger standalone-product sites.",
+   "owner_step": "S-6.35",
+   "procedure": [
+    "Reuse the current service and qualified brand/host boundary; this is an AgentFeeds acquisition channel, not another product or backend.",
+    "Explain the owner's human-relay problem with newsletters, social posts and anecdotal recommendations, then show the actual agent reading workflow.",
+    "Use the confirmed registrar account and preserve existing records before any authorized DNS transition; record certificates, nameservers and rollback.",
+    "Test every campaign link, viewport, canonical address and actual AgentFeeds destination, without claiming hosted personalized delivery or starting model work.",
+    "Use only the existing permitted aggregate link measurement; do not add personal-data collection, advertising trackers or advertising spend."
+   ],
+   "status": "ready",
+   "title": "Launch the Don't be a meat proxy campaign funnel for AgentFeeds",
+   "waiting_on": []
+  },
+  {
    "acceptance": "Baltor.ai retains all three offerings while AgentFeeds, AgentFoundry and AgentAFK have separate branded domains and tested acquisition paths, truthful operator and billing information, isolated origin handling and attributable results, reusing the existing product contracts and entitlements.",
    "comment": "Baltor's existing feeds, library access and customer-controlled queue tools remain available; hosted execution remains unfinished. The $9/$49/$99 monthly direction, existing subscriptions, grants and free preview terms remain unchanged; the $400 hosted computer is still a proposal within AgentAFK. Advertising spend stays with the owner.",
    "complete": false,
@@ -80,9 +103,9 @@
    "depends_on": [
     "S-6.35.03"
    ],
-   "evidence": "The owner's October 13 direction establishes separate branded domains as customer acquisition channels, with baltor.ai retaining all three offerings. The final names are AgentFeeds, AgentFoundry and AgentAFK over the shared backend and operator. AgentFoundry replaces the working name AgentKits; the owner selects getagentfoundry.si after reporting agentkits.si and agentfoundry.si taken and rejecting agentkit.si as too expensive. The owner confirms purchasing agentfeeds.si and agentafk.si through Namecheap. The owner completed native Namecheap authorization on October 13 and a fresh connection check passed; registrar account inventory remains unverified. Public DNS and HTTP reads for agentfeeds.si and agentafk.si show registrar nameservers and redirects to each www hostname; no separately branded Baltor deployment is verified. AgentAFK combines local and cloud execution, including the proposed hosted computer; AgentComputer is not a separate brand. A Baltor subdomain is not an accepted substitute. Current site map and shared page shell still serve the existing Baltor hostnames.",
+   "evidence": "Release 90 from 67875526 deploys the independent AgentFeeds UI on the shared backend. Both AgentFeeds origins serve ordinary public HTTPS after the owner-authorized Cloudflare nameserver transition; pilot-release-90.json binds exact checks and rollback. All three selected domains were verified in the registrar account. AgentFoundry at getagentfoundry.si and AgentAFK at agentafk.si remain parked and unchanged, so this combined subtask stays building. Baltor.ai retains all three offerings; a Baltor subdomain is not a substitute. Brand selection does not grant account, model or payment authority.",
    "id": "S-6.35.06",
-   "next_action": "Prepare separate branded sites for AgentFeeds at agentfeeds.si, AgentFoundry at getagentfoundry.si and AgentAFK at agentafk.si; verify their registrar settings through the authorized connection. Keep Baltor.ai as the combined site and preserve the current release and catalogue work.",
+   "next_action": "Preserve the independent AgentFeeds launch and qualify separate AgentFoundry and AgentAFK presentations on their confirmed domains. Reuse the shared brand boundary, preserve DNS records and verify each actual domain before a launch claim.",
    "owner_step": "S-6.35",
    "procedure": [
     "Implement the owner's standing October 13 direction: baltor.ai combines all three offerings and AgentFeeds, AgentFoundry and AgentAFK have distinct brands and separate domains as additional customer acquisition channels. Baltor subdomains do not satisfy that direction.",
@@ -118,11 +141,11 @@
   },
   {
    "acceptance": "The exact CI-passed revision is deployed through the guarded workflow, with the gate closed and rollback recorded.",
-   "comment": "The final fifty-read pulse passed with no slow response. Release 88 preserves the Claude design and updates prices without migrating existing subscriptions. It publishes no catalogue additions. The blank documentation loading state and checker's readiness race remain scoped follow-ups.",
+   "comment": "Rollback image 89 requires restoring the exact pre-brand host configuration first. No catalogue, billing, R2 or subscription mutation occurred; the AgentFeeds DNS transition is recorded separately.",
    "complete": true,
    "completion_status": "published",
    "depends_on": [],
-   "evidence": "Release 88 from ab1f658b: exact CI 38164365328, guarded deployment 38165025109, gate closed, image f4ff046ec571, rollback release 87 image 7e8d6a5df6d9. Live offering 497/497, independent checks 456/456 over ten hosts and exact Cloudflare readback 3273/3273. The 293-view full audit retained one asynchronous heading failure; three isolated live repeats and controlled diagnosis are recorded separately.",
+   "evidence": "Release 90 from 67875526: exact CI 38444338553, guarded deployment 38446304065, gate closed, image 7dd98fd2a54e. Live offering 497/497, independent checks 456/456 over the ten existing hosts, exact Cloudflare readback 3281/3281 and final pulse 50/50 passed. AgentFeeds domain checks and retained failed attempts are bound by pilot-release-90.json.",
    "id": "S-6.35.01",
    "next_action": "Keep application deployment and catalogue publication from overlapping.",
    "owner_step": "S-6.35",
@@ -638,12 +661,12 @@
   {
    "acceptance": "A customer chooses collections, includes and excludes individual sources, sets a reading interval, and downloads exact JSON and Markdown for each agent through the live website.",
    "comment": "Profiles are customer-owned files. Hosted saved assignments, opt-in private scopes and personalized event delivery remain in S-6.214.10 and S-6.214.11.",
-   "complete": false,
+   "complete": true,
    "completion_status": "live_qualified",
    "depends_on": [],
-   "evidence": "53 focused tests, 26 HTTP web checks and 21 browser checks passed in the source worktree. Root's merged feed/delivery check population passed 71 tests.",
+   "evidence": "Release 90 is live. AgentFeeds passed 414 ordinary-public-DNS checks across both origins, including two independent anonymous profiles per origin, source-origin reading guides, exact file hashes, desktop/phone browser downloads and invalidation after edits. Local AgentFeeds browser 128/128 and existing full browser 1003/1003 with 197 negative controls passed. The release record preserves scope and failures; no hosted schedule was activated.",
    "id": "S-6.214.12",
-   "next_action": "Integrate the checked builder with the new design, deploy and verify both agents' downloaded files against their selections.",
+   "next_action": "Preserve exact per-agent export behavior while implementing saved assignments and maintained delivery through their separate owning subtasks.",
    "owner_step": "S-6.214",
    "procedure": [
     "Compile the website and CLI through one versioned profile contract pinned to the source directory.",
@@ -652,7 +675,7 @@
     "Test malformed input, changed directory, two-agent isolation and desktop/mobile interactions.",
     "Deploy and repeat the real customer download path; distinguish a requested interval from an activated scheduler."
    ],
-   "status": "building",
+   "status": "live_qualified",
    "title": "Let customers build a distinct reading profile for each agent",
    "waiting_on": []
   },
@@ -1231,24 +1254,25 @@
    "waiting_on": []
   },
   {
-   "acceptance": "A customer reviews source-linked tasks with applicability, dependencies, priority reasons and holds, then admits only authorized bounded work; measured accepted outcomes exceed or match a simple ordering control.",
-   "comment": "The current keyword score and manifest order are baselines, not measured task value. Feeds supplies evidence; AgentAFK owns task intake, ordering and execution.",
+   "acceptance": "A customer inspects and customizes source-linked task graphs, dependencies, priority reasons and holds, then admits only authorized ready work. A versioned adaptive ranking engine is qualified against fixed rules and simple ordering on held-out outcomes, with shadow evaluation, reversible selection and no permission expansion.",
+   "comment": "The owner's later October 13 direction requests a customized self-learning system like Airflow for agents, with prioritization, dependencies and graph-based tasks. Current keyword scoring and manifest order remain baselines, not measured task value or an adaptive customer service. Feeds supplies evidence; AgentFoundry supplies components; AgentAFK owns task intake, ordering and execution. No token-savings benchmark gates this delivery.",
    "complete": false,
    "completion_status": "live_qualified",
    "depends_on": [],
    "evidence": "October 13 owner direction places Queue within AgentAFK. Existing source intake, managed records, priority aging and unapproved work compilation were inspected. A reproduced defect reopened dismissed work after compiler or source changes; the repair preserves dismissal and cancels stale admitted work. 140 related tests and three removed-guard controls passed in the isolated worktree; customer queue delivery and comparative prioritization remain unqualified.",
    "id": "S-6.24.03",
-   "next_action": "Expose a passive inspectable candidate-task projection with priority contributions and hold reasons, then qualify the customer admission path.",
+   "next_action": "Expose a passive inspectable task graph and rules-based queue with priority contributions and hold reasons, then qualify customer admission and collect outcome feedback before promoting learned ranking.",
    "owner_step": "S-6.24",
    "procedure": [
-    "Reuse CommunityStore, RecordOperationService, the research-work compiler and reactive scheduler; do not create another task registry or runtime.",
-    "Keep raw evidence, inferred task, ranking, admission and execution as separate states with exact source revisions.",
-    "Respect duplicates, dismissed and superseded work, missing task evidence, failed sources, deadlines, dependencies and remaining budgets.",
-    "Compare declared priority rules and the ordinary model/harness workflow on independently labeled relevant, irrelevant, duplicate, keep and abstain cases.",
-    "Connect admitted task files to the bounded overnight queue only under explicit execution authority; retain every failed or unknown attempt."
+    "Reuse CommunityStore, RecordOperationService, the research-work compiler, solution-graph contracts and reactive scheduler; do not create another task registry or runtime.",
+    "Keep raw evidence, inferred task, dependency readiness, ranking, admission and execution as separate states with exact source and graph revisions.",
+    "Respect duplicates, dismissed and superseded work, missing task evidence, failed sources, deadlines, resource pools, dependency failures and remaining budgets; detect cycles in prerequisite graphs and represent bounded iterative work within the existing Loop contract.",
+    "Record checked outcomes, elapsed time, usage, failures, intervention and customer preferences as scoped feedback; keep tenant data isolated and priority contributions explainable.",
+    "Compare selectable ranking engines with fixed rules, first-in-first-out ordering and the ordinary model/harness workflow on held-out cases; shadow a learned challenger before bounded promotion and preserve the deterministic fallback.",
+    "Connect admitted task files to the bounded overnight queue only under explicit execution authority; retain every failed or unknown attempt and reconcile before replay."
    ],
    "status": "building",
-   "title": "Turn raw evidence into a prioritized AgentAFK task queue",
+   "title": "Build an adaptive AgentAFK task queue with dependencies and outcome feedback",
    "waiting_on": []
   },
   {
@@ -1543,8 +1567,8 @@
   }
  ],
  "execution_counts": {
-  "complete": 19,
-  "total": 71
+  "complete": 20,
+  "total": 72
  },
  "lanes": {
   "blocked": [
@@ -6982,7 +7006,7 @@
  ],
  "record_type": "development_tracker/v2",
  "source": "docs/roadmap/roadmap.yaml",
- "source_fingerprint": "sha256:fd5527a21233498f24548408a9d6325e55d7c214c30a88d4233efc35ac75b91a",
+ "source_fingerprint": "sha256:db142e4af60fa64498298e85fd5cf1d6e4b1e9c26c69cdb569b83cdbe1f3b2c9",
  "working_schedule": {
   "blocks": [
    {
@@ -7008,13 +7032,13 @@
     "title": "Review the complete public page and design surface"
    },
    {
-    "complete": false,
+    "complete": true,
     "duration_hours": 3,
     "ends_at": "2026-10-09T23:09:03+00:00",
     "offset_hours": 0,
     "owner": "Customer feeds",
     "starts_at": "2026-10-09T20:09:03+00:00",
-    "status": "building",
+    "status": "live_qualified",
     "task": "S-6.214.12",
     "title": "Let customers build a distinct reading profile for each agent"
    },
@@ -7108,7 +7132,7 @@
    }
   ],
   "horizon_hours": 12,
-  "note": "October 9 active iteration. The new design is the first release priority. Parallel work has one named owner per boundary. The twelve-hour factory is a bounded production attempt toward one million additional useful files; only qualified, admitted, reconciled and actually served distinct digests count toward the ten-million target. Dates are planning windows, not promises of publication.",
+  "note": "Retained October 9 planning window, not an active-worker inventory. October 13 release 90 delivers the separate AgentFeeds site; remaining standalone brands and maintained feeds follow the current execution order. The earlier twelve-hour factory was a bounded attempt, not a publication claim. Only qualified, admitted, reconciled and actually served distinct digests count toward the ten-million target. Consult the workstation coordination record for current writers.",
   "record_type": "development_working_schedule/v1",
   "starts_at": "2026-10-09T20:09:03Z"
  }

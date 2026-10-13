@@ -48,25 +48,40 @@ section. Update this section in the same change that records a new release.
 Public registration is enabled. The site offers the existing monthly plan;
 these deployment checks alone do not establish a fully qualified paid service.
 
-The running image is Fly release 89, from
-`f3d546a2aa362ac4598b14fd2b2cc6c37c758d30`, image
-`sha256:4a5feebb1ed8067c0cd2d98ca6d038850672e5e2b866c5559cc2a60865521e28`.
-Exact CI `38280082619` and guarded deployment `38351699133` passed; the gate
-is closed. The exact local browser suite passed 1,003 checks and all 197 mutants.
-Independent read-only review passed 456 checks across 68 desktop/phone views
-on all ten hosts. The final all-host pulse passed fifty reads without slow
-responses. The live offering matrix passed 497 checks. The full route audit
-covered 75 pages, 309 views and 815 links. Its 31 initial entries were
-reconciled through 15 targeted checks and eleven public destination checks:
-the private checker blocked intended outbound redirects, one cached link read
-failed and one page had a load/capture timeout. The original report remains
-failed; the follow-ups leave no unresolved entry. The documentation loading
-state and bounded readiness repair are now live, with no observed readiness
-timeouts. Native media checks passed 48 assertions on desktop and phone,
-including muted playback, exact source downloads, stable links and layout.
-These checks cover their stated routes and states, not every authenticated
-journey or marketing claim. Failed checks and their diagnoses remain in the
-[release record](../../artifacts/architecture-audit-2026-09-19/pilot-release-89.json).
+The running image is Fly release 90, from
+`6787552603b020d7b13ecc7fe6f80c7a83c7aaa0`, image
+`sha256:7dd98fd2a54ecfa1aa4392e8d242525ec0f4b1b71d803d5a91a3f3bcf76a7b29`.
+Exact CI `38444338553` and guarded deployment `38446304065` passed; the gate
+is closed. Local qualification passed 3,949 self-tests, 1,003 browser checks
+and all 197 negative controls, plus 128 AgentFeeds browser checks, 767 service
+checks and 32 conformance gates. Live regression checks passed 456 assertions
+across 68 desktop/phone views on the ten existing Baltor/Fly hosts, the full
+497-check offering matrix and a final fifty-read pulse. The original offering
+and pulse transport failures remain preserved beside the passing full reruns.
+The [release record](../../artifacts/architecture-audit-2026-09-19/pilot-release-90.json)
+binds exact populations, failures and limits. Earlier release 89 route and
+native-media qualification remains historical evidence for unchanged features,
+not a new execution of those checks under release 90.
+
+AgentFeeds now has independent navigation, design, onboarding and account
+presentation at `https://agentfeeds.si` and `https://www.agentfeeds.si`, sharing
+the service, identity and entitlement boundaries. The owner-authorized
+nameserver transition uses Cloudflare's free zone with six DNS-only records.
+The .si parent publishes `dana.ns.cloudflare.com` and `nile.ns.cloudflare.com`;
+both website names serve HTTPS directly from Fly, not through the Baltor
+Worker. Normal public HTTPS reached both hosts after cached parking answers
+expired on October 13. Together with the ten existing hostnames listed below,
+these two domains are in the live release-check scope. `getagentfoundry.si`
+and `agentafk.si` are confirmed in the registrar account but remain parked.
+The separate AgentFeeds campaign domain `dontbeameatproxy.si` is also confirmed
+but still uses Namecheap parking/forwarding. It is not a deployed funnel.
+
+AgentFeeds passed 414 live assertions: 212 exact public responses, 122
+conditional feed reads, 44 desktop/phone views, same-origin protocol metadata,
+untrusted-origin and other-product refusals, two independent anonymous reading
+profiles per origin and real browser downloads. This establishes the public
+site and profile export, not live authenticated email/payment journeys,
+fresh-harness task success or maintained personalized research delivery.
 
 Release 87 serves the Claude-export design, Basic/Pro/Max plan presentation,
 native-render gallery, local Run Desk preview, per-agent reading-profile
@@ -81,11 +96,12 @@ readiness repair, reviewed source/supply follow-ups and directory refreshes.
 The original video and music examples and their source archive are website
 materials, separate from catalogue admission. No listening review is claimed.
 
-All nine product hostnames now serve public assets through Cloudflare and
+All nine existing Baltor product hostnames serve public assets through Cloudflare and
 forward dynamic requests to Fly. The technical Fly hostname remains a direct
-fallback. Export `e20b299bee981d479a4fa9dffebfa066189a00892e68ce2b12a5acee5e7d39d7` contains 3,248 files, all verified on
-`baltor.ai` against their exact bodies and required headers across an initial
-3,237-file pass and eleven targeted transport-error rechecks. It is refreshed
+fallback. Export `87a8f0d7558670a37effba8ad9b4cc1613a48d39d12ddcbb73882e9771eb3699`
+contains 3,281 files and 89,425,253 public-file bytes, all verified on
+`baltor.ai` against their exact bodies and required headers in one complete
+3,281-file pass. It is refreshed
 from the deployed revision after each catalogue publication, so the homepage
 shows the 1,560,856 files served now. The October 13 capabilities read confirms
 that population. Disable proxying on the saved DNS
@@ -107,12 +123,17 @@ cancellation. The amendment alone changes no subscription price.
 Curated decision-source collections and a live catalogue specimen are available. Local per-agent
 reading profiles are live; hosted saved preferences, agent assignments
 and personalized research delivery remain unfinished. Hosted supervised
-execution is not active. The [release record](../../artifacts/architecture-audit-2026-09-19/pilot-release-89.json)
+execution is not active. The [release record](../../artifacts/architecture-audit-2026-09-19/pilot-release-90.json)
 binds the application, public export, live checks and separate follow-ups.
-Release 88 is the compatible image rollback, at
-`sha256:f4ff046ec5712d75fe7d0f09b3f712047fdf1075b0beb65360aea9d2ad7db833`,
-with export `d6693af2c644819bfd5ba164993e584326446dc385ebd32554941db9f4a7d052`
-as the edge rollback. Retain both accepted Pro Price identities and the
+Release 89 is the image rollback, at
+`sha256:4a5feebb1ed8067c0cd2d98ca6d038850672e5e2b866c5559cc2a60865521e28`,
+with export `e20b299bee981d479a4fa9dffebfa066189a00892e68ce2b12a5acee5e7d39d7`
+as the edge rollback. Before starting image 89, restore the exact
+`/data/host-before-agentfeeds-20261013.json` configuration: its parser rejects
+the new `brand_profiles` field. The backup hash and restoration order are in
+the release record. An old-image rollback also withdraws AgentFeeds serving;
+reconcile DNS and communicate that effect before choosing it. Preserve the
+Cloudflare zone and old registrar records; do not delete either. Retain both accepted Pro Price identities and the
 v2-capable billing reader; never restore an old-only entitlement policy. A
 checkout-selection rollback also needs matching public copy. Later directory
 refreshes on main go out with the next

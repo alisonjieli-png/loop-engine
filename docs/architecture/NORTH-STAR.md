@@ -9,6 +9,17 @@ external knowledge and reusable working material. A person can begin with an
 idea, compare suitable approaches, obtain an implementation and revise the
 result without rediscovering every prerequisite.
 
+The owner's October 13 priorities are direct agent updates, ready-to-use
+agent setup and working components, and long-horizon overnight work with
+inexpensive models. People should not need to relay newsletters and social
+posts to keep an agent informed or assemble every file, skill, harness setting
+and tool connection themselves. Cloud supervision and fully hosted execution
+are part of the intended execution offering, with availability qualified
+separately from local tools. Token savings remain a longer-term measurement
+goal, not a launch requirement or the primary customer promise. The
+[current benefit decision](OWNER-DECISIONS.md#main-customer-benefits-october-13-2026)
+owns that ordering.
+
 Agent Feeds supplies dated capabilities, comparisons, requirements, prices,
 benchmarks and methods. Harness Files supplies instructions, code, tools,
 checks, assets and editable native projects. Customer-authorized live execution
@@ -22,11 +33,19 @@ AgentFeeds, AgentFoundry and AgentAFK as additional customer acquisition channel
 AgentAFK combines local and cloud execution, including the proposed hosted
 computer; AgentComputer is not a separate brand. The owner confirms purchasing
 `agentfeeds.si` and `agentafk.si` and selects `getagentfoundry.si` for AgentFoundry,
-replacing the working name AgentKits. Engineering's registrar account
-verification remains pending. A Baltor subdomain does not satisfy this direction.
+replacing the working name AgentKits. Engineering verified all three domains
+in the registrar account. AgentFeeds is deployed independently in release 90;
+AgentFoundry and AgentAFK remain parked. A Baltor subdomain does not satisfy this direction.
 The [owner decisions](OWNER-DECISIONS.md#separate-product-brands-october-13-2026)
 record the separate acquisition channels, shared operator, current availability
 and unchanged prices.
+
+The owner also identifies the Don't be a meat proxy AgentFeeds acquisition
+site. Engineering confirmed its domain, `dontbeameatproxy.si`. It is a
+campaign funnel for the direct-agent-updates value proposition,
+not a fourth product. Its domain is verified but still parked. The
+[campaign decision](OWNER-DECISIONS.md#agentfeeds-campaign-funnel-october-13-2026)
+and S-6.35.07 preserve its delivery work separately from the live AgentFeeds site.
 
 The owner's October 13 media direction makes the existing prompts, tools,
 templates, images, videos, image and video generators, audio and editable
@@ -57,6 +76,13 @@ reasons for priority. A recommendation does not authorize execution. The
 [owner decision](OWNER-DECISIONS.md#task-intake-and-prioritization-within-agentafk-october-13-2026)
 and S-6.24.03 separate existing internal queues from the customer product and
 its required comparison against simple ordering and ordinary agent work.
+
+AgentAFK also owns the requested customized, self-learning task queue:
+dependency graphs, readiness, prioritization, bounded execution and outcome
+feedback. Build on the existing managed task and solution-graph contracts.
+Keep learned ranking behind a selectable engine, evaluate it against fixed
+rules, and preserve resource limits, dismissal and effect authority. A task
+graph is useful even when no model is called to choose its next ready task.
 
 Maintain a prioritized research frontier: source discoveries and observed
 failures can suggest further questions, with shared finite budgets and explicit

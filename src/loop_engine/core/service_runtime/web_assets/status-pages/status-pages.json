@@ -5,6 +5,21 @@
   "releases": [
    {
     "kind": "service",
+    "number": 90,
+    "at": "2026-10-13T18:26:16Z",
+    "lines": [
+     "Independent AgentFeeds presentation at agentfeeds.si and www.agentfeeds.si over the existing service, identity and entitlement boundaries.",
+     "Trusted exact-host brand selection, same-origin account and OAuth presentation, isolated navigation and refusal of other product routes.",
+     "Stable curated source identities and RSS alongside JSON and Markdown; 19 collections and 60 source references, not maintained news streams.",
+     "Anonymous per-agent profile exports with usable source-origin reading instructions and invalidation after edits.",
+     "Dismissed research leads remain dismissed across source/compiler changes and stale queued activations are canceled.",
+     "Reviewed common roadmap selection and a documentation-route check that ignores non-route string literals."
+    ],
+    "seen_after_release": "",
+    "not_shown": 0
+   },
+   {
+    "kind": "service",
     "number": 89,
     "at": "2026-10-13T05:33:14Z",
     "lines": [

@@ -21,8 +21,15 @@ two defects that were found and fixed after the first claims of correctness.
 
 ## Current context route
 
+Read the [October 13 release 90 checkpoint](SESSION-HANDOFF-2026-10-13-RELEASE90.md)
+first for the live standalone AgentFeeds site, completed Cloudflare nameserver
+transition, exact live checks and configuration-aware rollback. It also records
+the owner's three main customer benefits and adaptive AgentAFK queue direction.
+The two other standalone domains remain parked. The workstation pointer names
+the current editor and private 72-hour session review; preserve shared work.
+
 Read the [October 13 release 89 checkpoint](SESSION-HANDOFF-2026-10-13-RELEASE89.md)
-first for the live random-media and documentation-readiness release, separate
+for the earlier random-media and documentation-readiness release, separate
 AgentFeeds/AgentFoundry/AgentAFK brands, connected Namecheap authorization and
 the owner's portable Kaggle media-production requirement. The shared checkout
 and separate media projects have active concurrent owners; preserve their work.

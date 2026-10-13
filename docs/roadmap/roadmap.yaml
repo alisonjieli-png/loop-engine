@@ -11,7 +11,7 @@ continuation:
     record_type: development_working_schedule/v1
     starts_at: '2026-10-09T20:09:03Z'
     horizon_hours: 12
-    note: 'October 9 active iteration. The new design is the first release priority. Parallel work has one named owner per boundary. The twelve-hour factory is a bounded production attempt toward one million additional useful files; only qualified, admitted, reconciled and actually served distinct digests count toward the ten-million target. Dates are planning windows, not promises of publication.'
+    note: 'Retained October 9 planning window, not an active-worker inventory. October 13 release 90 delivers the separate AgentFeeds site; remaining standalone brands and maintained feeds follow the current execution order. The earlier twelve-hour factory was a bounded attempt, not a publication claim. Only qualified, admitted, reconciled and actually served distinct digests count toward the ten-million target. Consult the workstation coordination record for current writers.'
     blocks:
       - {task: S-6.35.03, owner: Website and release, offset_hours: 0, duration_hours: 3}
       - {task: S-6.67.01, owner: Website and release, offset_hours: 0, duration_hours: 3}
@@ -24,7 +24,7 @@ continuation:
       - {task: S-6.217.01, owner: History and evidence, offset_hours: 0, duration_hours: 3}
       - {task: S-6.204.02, owner: Launch and funding, offset_hours: 3, duration_hours: 5}
       - {task: S-6.204.01, owner: Customer outcomes, offset_hours: 6, duration_hours: 4}
-  execution_order: ["S-6.35.03","S-6.35.04","S-6.35.05","S-6.35.06","S-6.12.04","S-6.35.01","S-6.215.01","S-6.215.02","S-6.215.03","S-6.215.04","S-6.215.05","S-6.215.06","S-6.215.07","S-6.215.08","S-6.215.09","S-6.215.10","S-6.215.11","S-6.215.12","S-6.215.13","S-6.214.01","S-6.214.02","S-6.214.03","S-6.214.04","S-6.214.13","S-6.214.05","S-6.214.06","S-6.214.15","S-6.214.07","S-6.214.09","S-6.214.12","S-6.214.10","S-6.214.11","S-6.214.14","S-6.207.01","S-6.207.02","S-6.207.03","S-6.207.04","S-6.207.05","S-6.218.01","S-6.218.02","S-6.218.03","S-6.218.04","S-6.218.05","S-6.218.06","S-6.218.07","S-6.218.08","S-6.218.09","S-6.218.10","S-6.13.01","S-6.13.02","S-6.13.03","S-6.12.01","S-6.12.02","S-6.12.03","S-6.24.01","S-6.24.02","S-6.24.03","S-6.201.01","S-6.201.02","S-6.201.03","S-6.201.04","S-6.102.01","S-6.102.02","S-6.204.01","S-6.204.02","S-6.216.01","S-6.67.01","S-6.35.02","S-6.217.01","S-6.215.14","S-6.214.08"]
+  execution_order: ["S-6.35.03","S-6.35.04","S-6.35.05","S-6.35.07","S-6.35.06","S-6.12.04","S-6.35.01","S-6.215.01","S-6.215.02","S-6.215.03","S-6.215.04","S-6.215.05","S-6.215.06","S-6.215.07","S-6.215.08","S-6.215.09","S-6.215.10","S-6.215.11","S-6.215.12","S-6.215.13","S-6.214.01","S-6.214.02","S-6.214.03","S-6.214.04","S-6.214.13","S-6.214.05","S-6.214.06","S-6.214.15","S-6.214.07","S-6.214.09","S-6.214.12","S-6.214.10","S-6.214.11","S-6.214.14","S-6.207.01","S-6.207.02","S-6.207.03","S-6.207.04","S-6.207.05","S-6.218.01","S-6.218.02","S-6.218.03","S-6.218.04","S-6.218.05","S-6.218.06","S-6.218.07","S-6.218.08","S-6.218.09","S-6.218.10","S-6.13.01","S-6.13.02","S-6.13.03","S-6.12.01","S-6.12.02","S-6.12.03","S-6.24.01","S-6.24.02","S-6.24.03","S-6.201.01","S-6.201.02","S-6.201.03","S-6.201.04","S-6.102.01","S-6.102.02","S-6.204.01","S-6.204.02","S-6.216.01","S-6.67.01","S-6.35.02","S-6.217.01","S-6.215.14","S-6.214.08"]
   title: First release and continued system development
   started_at: "2026-09-19T14:12:54Z"
   target_at: "2026-09-20T14:12:54Z"
@@ -51,24 +51,24 @@ continuation:
   schedule_status: historical_target_not_a_release_forecast
   delivery_planning_note: These packages expand existing steps into implementation and verification work. They are not another status authority, runtime scheduler, permission grant, or completion percentage. Dependencies apply to acceptance; independent local work can proceed earlier.
   launch_benefits:
+    - id: direct_updates
+      title: Keep your agent current without relaying the news
+      draft: Give your agent dated sources and relevant updates directly instead of reading newsletters and social posts to paste information into it.
+      state: draft_requires_qualification
+      steps: [S-6.214, S-6.4, S-6.7]
+      evidence_needed: Useful agent reads with source provenance, freshness, corrections and explicit coverage; distinguish the live curated directory from maintained decision streams and saved delivery schedules.
+    - id: ready_components
+      title: Start with working agent components
+      draft: Obtain the files, skills, harness setup, tools and qualified API connections needed for useful work instead of assembling every prerequisite yourself.
+      state: draft_requires_qualification
+      steps: [S-6.201, S-6.215, S-6.24]
+      evidence_needed: Clean-environment retrieval, installation, useful execution, revision and reopening with exact dependencies and rights. Qualify each cloud tool separately; a download is not a completed setup.
     - id: overnight
-      title: Put your models to work overnight
-      draft: Give a complex task time to make progress with models running on your own machine, within the limits you set.
+      title: Put inexpensive models to work overnight
+      draft: Make progress on long-horizon tasks with inexpensive models, using a local worker with cloud supervision or qualified fully hosted execution within the limits you set.
       state: draft_requires_qualification
       steps: [S-6.8, S-6.9, S-6.24]
-      evidence_needed: A declared long-running local-model task population, exact hardware and models, restart and cancellation tests, independent task checks, and a useful morning report. Local execution alone does not prove local inference or completion by morning.
-    - id: tokens
-      title: Spend fewer tokens on repeated work
-      draft: Reuse suitable code and pass relevant information to each step instead of regenerating everything or resending the whole history.
-      state: draft_requires_qualification
-      steps: [S-6.3, S-6.6, S-6.11, S-6.19]
-      evidence_needed: Matched task comparisons with a quality floor, complete input and output accounting including retries and helpers, failures, cache categories, and total cost. No significant or percentage savings claim before measured results.
-    - id: expertise
-      title: Give each step the expertise it needs
-      draft: Select useful guidance, tools and past findings for the work at hand, and request more information when a gap appears.
-      state: draft_requires_qualification
-      steps: [S-6.4, S-6.7, S-6.9, S-6.10]
-      evidence_needed: Reviewed domain material, permission and compatibility checks, actual loading evidence, and independent outcomes against absent, excessive, stale and misleading context. Right-sized does not mean always minimal or always correct.
+      evidence_needed: A declared long-running task population, exact models and execution profile, restart and cancellation tests, independent task checks and a useful morning report. Local execution alone does not prove local inference or completion by morning. Hosted supervision and hosted execution require their own qualification; token-savings proof is not a launch gate.
   delivery_batches:
     - id: D-01
       title: Freeze the handoff and repair release blockers
@@ -2635,15 +2635,15 @@ steps:
         evidence: ""
         comment: "A successful metadata request is not a completed harness task."
       - id: "S-6.24.03"
-        title: "Turn raw evidence into a prioritized AgentAFK task queue"
+        title: "Build an adaptive AgentAFK task queue with dependencies and outcome feedback"
         status: "building"
         completion_status: "live_qualified"
         depends_on: []
-        acceptance: "A customer reviews source-linked tasks with applicability, dependencies, priority reasons and holds, then admits only authorized bounded work; measured accepted outcomes exceed or match a simple ordering control."
-        procedure: ["Reuse CommunityStore, RecordOperationService, the research-work compiler and reactive scheduler; do not create another task registry or runtime.","Keep raw evidence, inferred task, ranking, admission and execution as separate states with exact source revisions.","Respect duplicates, dismissed and superseded work, missing task evidence, failed sources, deadlines, dependencies and remaining budgets.","Compare declared priority rules and the ordinary model/harness workflow on independently labeled relevant, irrelevant, duplicate, keep and abstain cases.","Connect admitted task files to the bounded overnight queue only under explicit execution authority; retain every failed or unknown attempt."]
-        next_action: "Expose a passive inspectable candidate-task projection with priority contributions and hold reasons, then qualify the customer admission path."
+        acceptance: "A customer inspects and customizes source-linked task graphs, dependencies, priority reasons and holds, then admits only authorized ready work. A versioned adaptive ranking engine is qualified against fixed rules and simple ordering on held-out outcomes, with shadow evaluation, reversible selection and no permission expansion."
+        procedure: ["Reuse CommunityStore, RecordOperationService, the research-work compiler, solution-graph contracts and reactive scheduler; do not create another task registry or runtime.","Keep raw evidence, inferred task, dependency readiness, ranking, admission and execution as separate states with exact source and graph revisions.","Respect duplicates, dismissed and superseded work, missing task evidence, failed sources, deadlines, resource pools, dependency failures and remaining budgets; detect cycles in prerequisite graphs and represent bounded iterative work within the existing Loop contract.","Record checked outcomes, elapsed time, usage, failures, intervention and customer preferences as scoped feedback; keep tenant data isolated and priority contributions explainable.","Compare selectable ranking engines with fixed rules, first-in-first-out ordering and the ordinary model/harness workflow on held-out cases; shadow a learned challenger before bounded promotion and preserve the deterministic fallback.","Connect admitted task files to the bounded overnight queue only under explicit execution authority; retain every failed or unknown attempt and reconcile before replay."]
+        next_action: "Expose a passive inspectable task graph and rules-based queue with priority contributions and hold reasons, then qualify customer admission and collect outcome feedback before promoting learned ranking."
         evidence: "October 13 owner direction places Queue within AgentAFK. Existing source intake, managed records, priority aging and unapproved work compilation were inspected. A reproduced defect reopened dismissed work after compiler or source changes; the repair preserves dismissal and cancels stale admitted work. 140 related tests and three removed-guard controls passed in the isolated worktree; customer queue delivery and comparative prioritization remain unqualified."
-        comment: "The current keyword score and manifest order are baselines, not measured task value. Feeds supplies evidence; AgentAFK owns task intake, ordering and execution."
+        comment: "The owner's later October 13 direction requests a customized self-learning system like Airflow for agents, with prioritization, dependencies and graph-based tasks. Current keyword scoring and manifest order remain baselines, not measured task value or an adaptive customer service. Feeds supplies evidence; AgentFoundry supplies components; AgentAFK owns task intake, ordering and execution. No token-savings benchmark gates this delivery."
     title: Deliver client, authentication, endpoint-based model and native-harness onboarding
     status: building
     depends_on: [S-6.5, S-6.9, S-6.12]
@@ -2794,6 +2794,16 @@ steps:
         next_action: "Preserve the qualified routes and expand useful rights-qualified media through the component intake and portable customer proof in S-6.201.04."
         evidence: "Release 89 from f3d546a2 is live on October 13 after exact CI 38280082619 and guarded deployment 38351699133; gate closed. The /random and image/video/music views provide 329 existing image previews, one original twelve-second video and one music cue with source ZIP 9112aac6. Fresh local browser 1003/1003 and 197/197 negative controls passed. Final native live media checks passed 48/48 on desktop and phone, including muted decode/playback, exact archive/media bytes, MIME/HEAD, stable links and compact layout. Earlier helper scope, transport, header-validation and late-read failures remain preserved in pilot-release-89.json. Source/media qualification is separate from catalogue admission; no served-file count increase occurred."
         comment: "Selection is client-side ordinary code, not a model or a compact random-asset API. The two website examples have explicit MIT preview/source rights; existing image previews do not inherit reuse rights from their source packages. Technical music checks did not include listening or mastering review."
+      - id: "S-6.35.07"
+        title: "Launch the Don't be a meat proxy campaign funnel for AgentFeeds"
+        status: "ready"
+        completion_status: "live_qualified"
+        depends_on: ["S-6.214.12"]
+        acceptance: "The owned dontbeameatproxy.si domain serves a tested desktop/mobile campaign page with verified HTTPS and a clear working path into AgentFeeds collections or profile building, accurate current capabilities and common-operator disclosure."
+        procedure: ["Reuse the current service and qualified brand/host boundary; this is an AgentFeeds acquisition channel, not another product or backend.","Explain the owner's human-relay problem with newsletters, social posts and anecdotal recommendations, then show the actual agent reading workflow.","Use the confirmed registrar account and preserve existing records before any authorized DNS transition; record certificates, nameservers and rollback.","Test every campaign link, viewport, canonical address and actual AgentFeeds destination, without claiming hosted personalized delivery or starting model work.","Use only the existing permitted aggregate link measurement; do not add personal-data collection, advertising trackers or advertising spend."]
+        next_action: "Build and qualify the focused campaign presentation, then deploy it and verify the owned domain before continuing the larger standalone-product sites."
+        evidence: "October 13 owner status question explicitly identifies a Don't be a meat proxy website as an AgentFeeds funnel. Fresh registrar inventory confirms dontbeameatproxy.si. Its basic Namecheap nameservers retain one www parking CNAME and an apex forwarding record; public HTTP returns a Namecheap 302 and the HTTPS probe did not complete. No campaign source or deployed site was found in the release checkout. The domain was omitted from the earlier launch inventory and is now tracked explicitly."
+        comment: "AgentFeeds itself is already live. This narrower acquisition page can follow it independently of unfinished AgentFoundry/AgentAFK presentations. No domain purchase or DNS mutation occurred during this status check."
       - id: "S-6.35.06"
         title: "Qualify AgentFeeds, AgentFoundry and AgentAFK on the shared service"
         status: "building"
@@ -2801,8 +2811,8 @@ steps:
         depends_on: ["S-6.35.03"]
         acceptance: "Baltor.ai retains all three offerings while AgentFeeds, AgentFoundry and AgentAFK have separate branded domains and tested acquisition paths, truthful operator and billing information, isolated origin handling and attributable results, reusing the existing product contracts and entitlements."
         procedure: ["Implement the owner's standing October 13 direction: baltor.ai combines all three offerings and AgentFeeds, AgentFoundry and AgentAFK have distinct brands and separate domains as additional customer acquisition channels. Baltor subdomains do not satisfy that direction.","Map each brand's audience, accepted outcome, variable cost, support burden and current delivery evidence; AgentFoundry covers component building and reusable working material, and AgentAFK includes local and cloud execution and the proposed hosted computer without implying hosted availability.","Verify registrar control and existing DNS/redirect settings for owner-reported agentfeeds.si, getagentfoundry.si and agentafk.si before a domain change.","Define brand, product, plan, tenant and experiment identities separately; preserve exact content identities, shared qualification and existing grants.","Qualify approved hostname routing, brand-specific static exports, OAuth redirects, cookies, caches, canonical URLs, support and billing descriptions without cross-brand privilege or data leakage.","Measure useful activation, retention and support cost for each acquisition channel; compare the same offer and acquisition cohort when testing presentation, and label different products or audiences as different experiments.","Disclose common ownership where material; do not fabricate independent competitors, endorsements, customer counts or market share, and do not treat a footer as curing a misleading claim."]
-        next_action: "Prepare separate branded sites for AgentFeeds at agentfeeds.si, AgentFoundry at getagentfoundry.si and AgentAFK at agentafk.si; verify their registrar settings through the authorized connection. Keep Baltor.ai as the combined site and preserve the current release and catalogue work."
-        evidence: "The owner's October 13 direction establishes separate branded domains as customer acquisition channels, with baltor.ai retaining all three offerings. The final names are AgentFeeds, AgentFoundry and AgentAFK over the shared backend and operator. AgentFoundry replaces the working name AgentKits; the owner selects getagentfoundry.si after reporting agentkits.si and agentfoundry.si taken and rejecting agentkit.si as too expensive. The owner confirms purchasing agentfeeds.si and agentafk.si through Namecheap. The owner completed native Namecheap authorization on October 13 and a fresh connection check passed; registrar account inventory remains unverified. Public DNS and HTTP reads for agentfeeds.si and agentafk.si show registrar nameservers and redirects to each www hostname; no separately branded Baltor deployment is verified. AgentAFK combines local and cloud execution, including the proposed hosted computer; AgentComputer is not a separate brand. A Baltor subdomain is not an accepted substitute. Current site map and shared page shell still serve the existing Baltor hostnames."
+        next_action: "Preserve the independent AgentFeeds launch and qualify separate AgentFoundry and AgentAFK presentations on their confirmed domains. Reuse the shared brand boundary, preserve DNS records and verify each actual domain before a launch claim."
+        evidence: "Release 90 from 67875526 deploys the independent AgentFeeds UI on the shared backend. Both AgentFeeds origins serve ordinary public HTTPS after the owner-authorized Cloudflare nameserver transition; pilot-release-90.json binds exact checks and rollback. All three selected domains were verified in the registrar account. AgentFoundry at getagentfoundry.si and AgentAFK at agentafk.si remain parked and unchanged, so this combined subtask stays building. Baltor.ai retains all three offerings; a Baltor subdomain is not a substitute. Brand selection does not grant account, model or payment authority."
         comment: "Baltor's existing feeds, library access and customer-controlled queue tools remain available; hosted execution remains unfinished. The $9/$49/$99 monthly direction, existing subscriptions, grants and free preview terms remain unchanged; the $400 hosted computer is still a proposal within AgentAFK. Advertising spend stays with the owner."
       - id: "S-6.35.01"
         title: "Release reviewed main and verify it live"
@@ -2812,8 +2822,8 @@ steps:
         acceptance: "The exact CI-passed revision is deployed through the guarded workflow, with the gate closed and rollback recorded."
         procedure: ["Freeze the candidate and finish its owning checks and exact CI.","Dispatch the guarded deployment once and reconcile the remote result.","Close the deployment gate; record image, revision, rollback and all-host checks."]
         next_action: "Keep application deployment and catalogue publication from overlapping."
-        evidence: "Release 88 from ab1f658b: exact CI 38164365328, guarded deployment 38165025109, gate closed, image f4ff046ec571, rollback release 87 image 7e8d6a5df6d9. Live offering 497/497, independent checks 456/456 over ten hosts and exact Cloudflare readback 3273/3273. The 293-view full audit retained one asynchronous heading failure; three isolated live repeats and controlled diagnosis are recorded separately."
-        comment: "The final fifty-read pulse passed with no slow response. Release 88 preserves the Claude design and updates prices without migrating existing subscriptions. It publishes no catalogue additions. The blank documentation loading state and checker's readiness race remain scoped follow-ups."
+        evidence: "Release 90 from 67875526: exact CI 38444338553, guarded deployment 38446304065, gate closed, image 7dd98fd2a54e. Live offering 497/497, independent checks 456/456 over the ten existing hosts, exact Cloudflare readback 3281/3281 and final pulse 50/50 passed. AgentFeeds domain checks and retained failed attempts are bound by pilot-release-90.json."
+        comment: "Rollback image 89 requires restoring the exact pre-brand host configuration first. No catalogue, billing, R2 or subscription mutation occurred; the AgentFeeds DNS transition is recorded separately."
       - id: "S-6.35.02"
         title: "Publish a progress checkpoint after every completed subtask"
         status: "building"
@@ -5251,13 +5261,13 @@ steps:
         comment: "Receiving a feed never grants permission to execute it."
       - id: "S-6.214.12"
         title: "Let customers build a distinct reading profile for each agent"
-        status: "building"
+        status: "live_qualified"
         completion_status: "live_qualified"
         depends_on: []
         acceptance: "A customer chooses collections, includes and excludes individual sources, sets a reading interval, and downloads exact JSON and Markdown for each agent through the live website."
         procedure: ["Compile the website and CLI through one versioned profile contract pinned to the source directory.","Keep source selection independent between agents and invalidate downloads after edits.","Bound input size, preserve source rights and freshness labels, and verify file digests in the browser.","Test malformed input, changed directory, two-agent isolation and desktop/mobile interactions.","Deploy and repeat the real customer download path; distinguish a requested interval from an activated scheduler."]
-        next_action: "Integrate the checked builder with the new design, deploy and verify both agents' downloaded files against their selections."
-        evidence: "53 focused tests, 26 HTTP web checks and 21 browser checks passed in the source worktree. Root's merged feed/delivery check population passed 71 tests."
+        next_action: "Preserve exact per-agent export behavior while implementing saved assignments and maintained delivery through their separate owning subtasks."
+        evidence: "Release 90 is live. AgentFeeds passed 414 ordinary-public-DNS checks across both origins, including two independent anonymous profiles per origin, source-origin reading guides, exact file hashes, desktop/phone browser downloads and invalidation after edits. Local AgentFeeds browser 128/128 and existing full browser 1003/1003 with 197 negative controls passed. The release record preserves scope and failures; no hosted schedule was activated."
         comment: "Profiles are customer-owned files. Hosted saved assignments, opt-in private scopes and personalized event delivery remain in S-6.214.10 and S-6.214.11."
       - id: "S-6.214.13"
         title: "Bound and prioritize follow-up research initiatives"

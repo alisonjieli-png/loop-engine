@@ -176,13 +176,16 @@ preview terms.
 S-6.35.06 in the [roadmap](../roadmap/roadmap.yaml) owns implementation and
 qualification. The owner confirms purchasing `agentfeeds.si` and `agentafk.si`
 through Namecheap and selects `getagentfoundry.si` for AgentFoundry, replacing
-the working name AgentKits. Engineering's registrar account verification
-remains pending.
-A Baltor subdomain does not satisfy the owner's direction. Current Baltor
-hostnames select pages within one site map and shared page shell. Baltor serves
+the working name AgentKits. Engineering verified all three domains in the
+registrar account. Release 90 serves AgentFeeds on `agentfeeds.si` and
+`www.agentfeeds.si`, with its own presentation and same-origin connections to
+the shared backend. Cloudflare owns DNS; these two hosts serve directly from
+Fly rather than the Baltor static Worker. AgentFoundry and AgentAFK remain
+parked. A Baltor subdomain does not satisfy the owner's direction. Baltor serves
 feeds, library access and customer-controlled queue tools; hosted execution
 remains unfinished.
-Engineering has not verified a separately branded deployment.
+The [current deployment](MVP-CLIENT-SERVER.md#current-deployment) binds the
+AgentFeeds launch checks and its configuration-aware rollback.
 
 Keep these identities separate:
 

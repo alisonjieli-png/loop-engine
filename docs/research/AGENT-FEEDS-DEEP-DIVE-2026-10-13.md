@@ -231,3 +231,31 @@ Saved account feeds, maintained decision streams, prospective coverage,
 customer task-priority benefit and creative portability remain separate
 acceptance work. This record adds no blanket claim about frontier agents and
 does not convert the supplied history audit into complete account evidence.
+
+## Owner clarification after launch preparation
+
+Later on October 13 the owner prioritized keeping agents current directly,
+providing ready-to-use agent files and tools, and inexpensive long-horizon
+overnight work. Token savings are a longer-term measurement concern, not a
+launch gate. The comparison methods above remain useful for later claims;
+they must not delay publishing a useful source directory or working profile.
+
+The owner also requested customized self-learning AgentAFK queues, with
+graph-based dependencies and priorities, comparable to Airflow for agents.
+Airflow's documented dependency graphs, priority strategies and resource pools
+are useful scheduling references. They do not themselves establish learned
+task value or acceptance of an agent result. Reuse the current task store and
+scheduler first, and qualify a replacement behind the existing typed edge.
+[Airflow task dependencies](https://airflow.apache.org/docs/apache-airflow/stable/core-concepts/dags.html),
+[priority strategies](https://airflow.apache.org/docs/apache-airflow/stable/administration-and-deployment/priority-weight.html),
+[resource pools](https://airflow.apache.org/docs/apache-airflow/stable/administration-and-deployment/pools.html).
+
+Separate the prerequisite graph from the execution graph. Readiness enforces
+dependencies and declared effects before a ranking engine orders eligible
+tasks. Bounded research and revision stay within the existing Loop behavior;
+new task discoveries create reviewable graph revisions. Learn from independently
+checked outcomes, cost, elapsed time and intervention rather than rewarding
+raw activity or the agent's own completion claim. Version the policy, retain
+customer preferences and dismissal, evaluate held-out cases, run challengers
+in shadow and preserve a deterministic fallback. S-6.24.03 owns this work;
+an adaptive customer queue is not part of the AgentFeeds launch claim.

@@ -2,6 +2,29 @@
 
 Kind: current decision route with retained dated decisions. The owner's current conversation takes precedence. [AGENTS.md](../../AGENTS.md#commit-push-and-release-authority) remains the single commit, push, release and effect-authority source. This file records product choices; it grants no new authority.
 
+## Main customer benefits, October 13, 2026
+
+The owner prioritizes three outcomes. Keep an agent current directly, without
+requiring its user to read newsletters or social posts and paste anecdotal
+information into the agent. Provide the files, skills, harness configuration,
+working components and qualified cloud tools or endpoints needed to use an
+agent instead of assembling everything manually. Support long-horizon work
+overnight with inexpensive models, with cloud supervision or fully hosted
+execution where that execution profile is qualified.
+
+AgentFeeds, AgentFoundry and AgentAFK own these respective outcomes while
+Baltor offers them together. Shared backend components do not imply shared
+navigation or a connected customer interface on the standalone sites.
+Current availability still follows the deployment record: downloadable
+material and local tools do not establish hosted execution or maintained
+personalized feeds.
+
+Token savings remain a longer-term measurement goal, not a launch gate or
+the main value proposition. Continue recording model usage and operating
+cost without delaying useful releases for a large savings benchmark. Any
+future savings claim must describe its measured population and quality;
+the owner sets no minimum call count that a release must reach.
+
 ## Separate product brands, October 13, 2026
 
 The owner's standing direction keeps `baltor.ai` as the combined site for all
@@ -20,8 +43,8 @@ billing accurate under the existing architecture boundaries.
 
 The owner confirms purchasing `agentfeeds.si` and `agentafk.si` through
 Namecheap and selects `getagentfoundry.si` for AgentFoundry, stating "I went
-with getagentfoundry.si". These are owner-reported choices; engineering has
-not yet verified the registrar account. Earlier alternatives `agentkits.si`
+with getagentfoundry.si". Engineering verified all three domains in the
+authorized registrar account on October 13. Earlier alternatives `agentkits.si`
 and `agentfoundry.si` were reported taken, and the owner rejected `agentkit.si`
 as too expensive. The selected component brand and domain are AgentFoundry
 and `getagentfoundry.si`.
@@ -29,10 +52,32 @@ and `getagentfoundry.si`.
 The [architecture map](CURRENT-ARCHITECTURE-MAP.md#separate-product-brands)
 and roadmap subtask S-6.35.06 own implementation and qualification. Current
 Baltor feeds, library access and customer-controlled queue tools remain
-available; hosted execution remains unfinished. Engineering has not verified
-a separately branded deployment. This direction changes neither current
+available; hosted execution remains unfinished. Release 90 adds the independent
+AgentFeeds site at `agentfeeds.si` and `www.agentfeeds.si`, with Cloudflare
+nameservers and direct Fly HTTPS serving. The owner explicitly authorized DNS
+management and the nameserver change. The existing registrar records remain
+preserved; `getagentfoundry.si` and `agentafk.si` are still parked and unchanged.
+The [deployment record](MVP-CLIENT-SERVER.md#current-deployment) owns the exact
+live verification and rollback. This direction changes neither current
 prices nor existing subscriptions, grants or free preview terms; the proposed
 $400 hosted computer is not a live offer.
+
+## AgentFeeds campaign funnel, October 13, 2026
+
+The owner also identifies a separate "don't be a meat proxy" website as a
+funnel for AgentFeeds. Engineering verified `dontbeameatproxy.si` in the
+Namecheap account. Its current records still forward the apex to a parked
+www hostname; no campaign site is deployed. This fourth domain is an
+acquisition channel for AgentFeeds, not a fourth product or another backend.
+
+The campaign should explain the human relay problem in the owner's language:
+reading newsletters or social posts only to paste anecdotal information into
+an agent. Send visitors to a useful AgentFeeds collection or reading-profile
+builder. Preserve common-operator disclosure and describe the current curated
+references accurately; do not imply live personalized research delivery.
+Use existing permitted aggregate link measurement, with no new personal-data
+collection, third-party advertising tracker or advertising spend. S-6.35.07
+owns implementation; the domain inventory alone is not a launch.
 
 ## Task intake and prioritization within AgentAFK, October 13, 2026
 
@@ -55,6 +100,25 @@ prioritization quality remain separate qualification work in S-6.24.03. The
 owner's criticism of frontier-model prioritization is the motivation for a
 comparison, not an established benchmark result. Include simple ordering and
 the existing model/harness workflow as controls.
+
+The owner's subsequent October 13 direction adds a customized, self-learning
+queue, comparable in purpose to Airflow for agents: graph-based tasks,
+dependencies and prioritization. Reuse the existing solution-graph contracts,
+managed task records and reactive scheduler. Keep task planning, dependency
+readiness, ranking, admission and execution separate; every executable graph
+vertex remains a Loop. A queue entry or dependency edge is not itself a model
+call. Research and revision may produce a new bounded graph revision without
+silently changing an executing graph or replaying an uncertain effect.
+
+Learn from checked outcomes, actual duration and cost, failures, interventions
+and explicit customer preferences. A versioned ranking engine must explain
+its priority contributions, honor prerequisites, deadlines, resource limits
+and dismissal, and retain an ordinary rules-based fallback. Compare a
+challenger against fixed rules and first-in-first-out ordering on held-out
+work, then shadow it before bounded adoption. Keep tenant feedback isolated
+and make the selected policy reversible. Learning never expands execution
+permissions or spending authority. This is implementation direction, not a
+claim that adaptive customer scheduling is already live.
 
 ## Portable media production, October 13, 2026
 

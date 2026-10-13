@@ -5,7 +5,7 @@ Kind: generated planning artifact.
 Source: `roadmap.yaml`. Regenerate with
 `python tools/build_continuation_status.py`; `--check` rejects a stale view.
 
-Plan fingerprint: `fd5527a21233498f24548408a9d6325e55d7c214c30a88d4233efc35ac75b91a`.
+Plan fingerprint: `db142e4af60fa64498298e85fd5cf1d6e4b1e9c26c69cdb569b83cdbe1f3b2c9`.
 
 Started: 2026-09-19T14:12:54Z. Historical target: 2026-09-20T14:12:54Z. This is not a release forecast.
 
@@ -15,7 +15,7 @@ A subscription website and dashboard with payments, all intelligence layers and 
 
 ## Next eligible work
 
-Next eligible subtask: S-6.35.06: Qualify AgentFeeds, AgentFoundry and AgentAFK on the shared service
+Next eligible subtask: S-6.35.07: Launch the Don't be a meat proxy campaign funnel for AgentFeeds
 
 ## Recorded work in progress
 
@@ -1044,29 +1044,29 @@ Verification cases are required evidence, not recorded passes.
 
 These are proposed messages, not qualified performance claims.
 
-### Put your models to work overnight
+### Keep your agent current without relaying the news
 
-Give a complex task time to make progress with models running on your own machine, within the limits you set.
+Give your agent dated sources and relevant updates directly instead of reading newsletters and social posts to paste information into it.
 
-Required evidence: A declared long-running local-model task population, exact hardware and models, restart and cancellation tests, independent task checks, and a useful morning report. Local execution alone does not prove local inference or completion by morning.
+Required evidence: Useful agent reads with source provenance, freshness, corrections and explicit coverage; distinguish the live curated directory from maintained decision streams and saved delivery schedules.
+
+Owning steps: S-6.214, S-6.4, S-6.7.
+
+### Start with working agent components
+
+Obtain the files, skills, harness setup, tools and qualified API connections needed for useful work instead of assembling every prerequisite yourself.
+
+Required evidence: Clean-environment retrieval, installation, useful execution, revision and reopening with exact dependencies and rights. Qualify each cloud tool separately; a download is not a completed setup.
+
+Owning steps: S-6.201, S-6.215, S-6.24.
+
+### Put inexpensive models to work overnight
+
+Make progress on long-horizon tasks with inexpensive models, using a local worker with cloud supervision or qualified fully hosted execution within the limits you set.
+
+Required evidence: A declared long-running task population, exact models and execution profile, restart and cancellation tests, independent task checks and a useful morning report. Local execution alone does not prove local inference or completion by morning. Hosted supervision and hosted execution require their own qualification; token-savings proof is not a launch gate.
 
 Owning steps: S-6.8, S-6.9, S-6.24.
-
-### Spend fewer tokens on repeated work
-
-Reuse suitable code and pass relevant information to each step instead of regenerating everything or resending the whole history.
-
-Required evidence: Matched task comparisons with a quality floor, complete input and output accounting including retries and helpers, failures, cache categories, and total cost. No significant or percentage savings claim before measured results.
-
-Owning steps: S-6.3, S-6.6, S-6.11, S-6.19.
-
-### Give each step the expertise it needs
-
-Select useful guidance, tools and past findings for the work at hand, and request more information when a gap appears.
-
-Required evidence: Reviewed domain material, permission and compatibility checks, actual loading evidence, and independent outcomes against absent, excessive, stale and misleading context. Right-sized does not mean always minimal or always correct.
-
-Owning steps: S-6.4, S-6.7, S-6.9, S-6.10.
 
 ## Original planning windows
 
