@@ -88,6 +88,17 @@ class NewsletterIntakeTests(unittest.TestCase):
         self.assertIn("text_encoding_unreadable", result["findings"])
         self.assertEqual(result["plain_text_preview"], "")
 
+    def test_multipart_attachment_descendants_are_not_preview_or_research_links(self):
+        raw = (b'Content-Type: multipart/mixed; boundary=outer\r\n\r\n--outer\r\n'
+               b'Content-Type: multipart/mixed; boundary=inner\r\n'
+               b'Content-Disposition: attachment; filename="attached.mime"\r\n\r\n'
+               b'--inner\r\nContent-Type: text/plain\r\n\r\n'
+               b'ATTACHMENT_SECRET https://example.org/attached\r\n--inner--\r\n--outer--\r\n')
+        result = intake.inspect_mime(raw)
+        self.assertEqual(result["plain_text_preview"], "")
+        self.assertEqual(result["candidate_public_links"], [])
+        self.assertGreater(result["nonplain_parts_not_extracted"], 0)
+
     def test_typed_wire_requires_exact_fields_digest_and_unique_keys(self):
         data = message().wire()
         self.assertEqual(intake.decode_delivery(json.dumps(data).encode()), message())
@@ -222,7 +233,12 @@ const raw = new Uint8Array(Buffer.from(process.argv[1], 'base64')), held = new M
 const bucket = {put: async (key, bytes) => {held.set(key, new Uint8Array(bytes)); return {key, size:bytes.byteLength};}};
 const message = {to:RECIPIENT, from:'publisher@example.org', rawSize:raw.byteLength,
  raw:new ReadableStream({start(c) {c.enqueue(raw); c.close();}}), setReject() {throw Error('unexpected rejection');}};
-const ack = await receive(message, {NEWSLETTER_RECIPIENT:RECIPIENT, NEWSLETTER_QUARANTINE:bucket},
+const admission = {getByName:()=>({fetch:async (_url, request)=>{
+ const value=JSON.parse(request.body);
+ return Response.json({...value,record_type:'newsletter_admission_result/v1',accepted:true,
+ reservation_bytes:value.raw_bytes+8192,recorded_at:'2026-10-13T23:00:00Z',duplicate:false});
+}})};
+const ack = await receive(message, {NEWSLETTER_RECIPIENT:RECIPIENT, NEWSLETTER_QUARANTINE:bucket, NEWSLETTER_ADMISSION:admission},
  {identity:()=> 'cross-runtime', now:()=>new Date('2026-10-13T23:00:00Z')});
 console.log(JSON.stringify({key:ack.receipt_key, objects:Object.fromEntries([...held].map(([key,value])=>[key,Buffer.from(value).toString('base64')]))}));
 """

@@ -23,7 +23,20 @@ class Bucket {
     return bytes ? {size: bytes.byteLength, arrayBuffer: async () => bytes.slice().buffer} : null;
   }
 }
-const environment = bucket => ({NEWSLETTER_RECIPIENT: RECIPIENT, NEWSLETTER_QUARANTINE: bucket});
+function admission() {
+  return {getByName(name) {
+    assert.equal(name, 'newsletter-admission-v1');
+    return {async fetch(url, request) {
+      assert.equal(url, 'https://newsletter-admission.invalid/reserve');
+      assert.equal(request.method, 'POST');
+      const value = JSON.parse(request.body);
+      return Response.json({...value, record_type: 'newsletter_admission_result/v1', accepted: true,
+        reservation_bytes: value.raw_bytes + 8192, recorded_at: '2026-10-13T23:00:00Z', duplicate: false});
+    }};
+  }};
+}
+const environment = bucket => ({NEWSLETTER_RECIPIENT: RECIPIENT, NEWSLETTER_QUARANTINE: bucket,
+  NEWSLETTER_ADMISSION: admission()});
 function message(bytes = raw, changes = {}) {
   return {to: RECIPIENT, from: 'sender@example.org', rawSize: bytes.byteLength,
     raw: new ReadableStream({start(controller) {controller.enqueue(bytes); controller.close();}}),
@@ -105,4 +118,33 @@ test('receipt and raw keys do not accept caller path fragments', async () => {
   const bucket = new Bucket();
   await assert.rejects(receive(message(), environment(bucket), {...clock, identity: () => '../escape'}), /delivery_id/);
   assert.equal(bucket.calls.length, 0);
+});
+
+test('atomic admission limit rejects before any object write', async () => {
+  const bucket = new Bucket(), mail = message(), env = environment(bucket);
+  env.NEWSLETTER_ADMISSION = {getByName: () => ({fetch: async () => new Response('{}', {status: 429})})};
+  await receive(mail, env, clock);
+  assert.equal(mail.rejection, 'newsletter_admission_limit');
+  assert.equal(bucket.calls.length, 0);
+});
+test('unknown or mismatched admission never writes or retries', async () => {
+  for (const result of [() => {throw Error('unknown reservation');},
+    () => Response.json({accepted: true}), () => new Response('{}', {status: 503})]) {
+    const bucket = new Bucket(), env = environment(bucket);
+    let calls = 0;
+    env.NEWSLETTER_ADMISSION = {getByName: () => ({fetch: async () => {calls++; return result();}})};
+    await assert.rejects(receive(message(), env, clock));
+    assert.equal(calls, 1);
+    assert.equal(bucket.calls.length, 0);
+  }
+});
+test('reservation is before raw storage and is not refunded after unknown write', async () => {
+  const bucket = new Bucket(), env = environment(bucket), sequence = [];
+  const held = env.NEWSLETTER_ADMISSION.getByName('newsletter-admission-v1');
+  env.NEWSLETTER_ADMISSION = {getByName: () => ({fetch: async (...args) => {
+    sequence.push('reserve'); return held.fetch(...args);
+  }})};
+  bucket.put = async () => {sequence.push('put'); throw Error('unknown write');};
+  await assert.rejects(receive(message(), env, clock));
+  assert.deepEqual(sequence, ['reserve', 'put']);
 });

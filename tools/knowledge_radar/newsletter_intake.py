@@ -180,7 +180,8 @@ def inspect_mime(raw: bytes) -> dict:
             if isinstance(children, list):
                 if len(children) + len(pending) + parts > MAXIMUM_PARTS:
                     raise NewsletterRefusal("newsletter_mime_structure_refused")
-                if part.get_content_maintype() != "multipart":
+                if (part.get_content_maintype() != "multipart"
+                        or part.get_content_disposition() == "attachment" or part.get_filename()):
                     read_text = False
                     attachments += 1
                 pending.extend((child, depth + 1, read_text) for child in children)
@@ -250,7 +251,7 @@ def _private_root(store, digest):
 def quarantine(store: CommunityStore, message: NewsletterEmail, *, ingress_provenance="local_operator_import") -> dict:
     """Commit a bounded private receipt; never queue or approve its contents.
 
-    Cloudflare envelopes require the signature-checking handler below. Local
+    Cloudflare envelopes require host-verified transport provenance. Local
     imports cannot assert sender authentication. Distinct delivery identities
     share exact raw bytes but retain separate managed receipt records.
     """
@@ -296,8 +297,8 @@ class NewsletterObjectRead:
     maximum_bytes: int
 
 
-def import_private_receipt(store, receipt_key, read_object, *, bucket):
-    """Import one named Worker receipt through a host-owned private reader.
+def read_private_receipt(receipt_key, read_object, *, bucket):
+    """Validate and read one named Worker receipt without local mutations.
 
     ``read_object(NewsletterObjectRead)`` must bind its authenticated account
     and bucket, refuse redirects, and enforce the byte bound while streaming.
@@ -333,7 +334,12 @@ def import_private_receipt(store, receipt_key, read_object, *, bucket):
     raw = read_object(NewsletterObjectRead(bucket, value["raw_key"], value["raw_bytes"]))
     if type(raw) is not bytes or len(raw) != value["raw_bytes"] or _sha(raw) != value["raw_sha256"]:
         raise NewsletterRefusal("newsletter_raw_digest_mismatch")
-    message = NewsletterEmail(value["delivery_id"], value["recipient"], value["envelope_sender"], value["received_at"], raw, value["ingress"])
+    return NewsletterEmail(value["delivery_id"], value["recipient"], value["envelope_sender"], value["received_at"], raw, value["ingress"])
+
+
+def import_private_receipt(store, receipt_key, read_object, *, bucket):
+    """Import one exact validated receipt into the existing private store."""
+    message = read_private_receipt(receipt_key, read_object, bucket=bucket)
     return quarantine(store, message, ingress_provenance="host_authenticated_private_object_read")
 
 
