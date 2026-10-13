@@ -1,6 +1,6 @@
 # Baltor north star
 
-Kind: current product direction. Updated October 11, 2026 under the owner's request to deploy the new interface, expand qualified supply and improve Feeds. The [roadmap](../roadmap/roadmap.yaml) is the task authority. [AGENTS.md](../../AGENTS.md#commit-push-and-release-authority) governs authority.
+Kind: current product direction. Updated October 13, 2026 to record the owner's brand and domain direction alongside the request to deploy the new interface, expand qualified supply and improve Feeds. The [roadmap](../roadmap/roadmap.yaml) is the task authority. [AGENTS.md](../../AGENTS.md#commit-push-and-release-authority) governs authority.
 
 ## Current direction
 
@@ -15,6 +15,18 @@ checks, assets and editable native projects. Customer-authorized live execution
 is a separate capability. Private project access is not a prerequisite for
 useful public research. Engineering, business operations and creative production
 share this foundation.
+
+The owner's standing October 13 direction keeps `baltor.ai` as the combined
+site for all three offerings and requires separate branded domains for
+AgentFeeds, AgentFoundry and AgentAFK as additional customer acquisition channels.
+AgentAFK combines local and cloud execution, including the proposed hosted
+computer; AgentComputer is not a separate brand. The owner confirms purchasing
+`agentfeeds.si` and `agentafk.si` and selects `getagentfoundry.si` for AgentFoundry,
+replacing the working name AgentKits. Engineering's registrar account
+verification remains pending. A Baltor subdomain does not satisfy this direction.
+The [owner decisions](OWNER-DECISIONS.md#separate-product-brands-october-13-2026)
+record the separate acquisition channels, shared operator, current availability
+and unchanged prices.
 
 The [current architecture map](CURRENT-ARCHITECTURE-MAP.md) separates public
 service, customer execution, internal hosted operations and internal production.

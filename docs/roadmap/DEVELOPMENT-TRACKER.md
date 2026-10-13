@@ -3,7 +3,7 @@
 Kind: generated view. Do not edit by hand. The only task authority is
 [roadmap.yaml](roadmap.yaml); change it, then run
 `PYTHONPATH=src:tools .venv/bin/python tools/build_development_tracker.py`.
-Source fingerprint: `sha256:6e1a86150a2aed0d7a000531adcbc5e7ff041bed722f1c9f4f5a6aef19722f61`.
+Source fingerprint: `sha256:228afc4c78c7fb9b5ee7aeb263b60b737c4f68260e07a6d0b161ac92609955ef`.
 
 ## Where things stand
 
@@ -74,7 +74,7 @@ Next eligible subtask: S-6.35.05: Add random asset discovery with provenance and
 | 1 | [x] S-6.35.03: Integrate the new design and interrupted fixes into the live website | published | published | Preserve the deployed design and finish the scoped documentation loading-state follow-up; the owner price change is now recorded in S-6.35.04. |
 | 2 | [x] S-6.35.04: Apply the owner's monthly Basic, Pro and Max prices | published | published | Keep both accepted Price identities during any rollback and preserve existing subscriptions, grants and free preview terms. |
 | 3 | [ ] S-6.35.05: Add random asset discovery with provenance and use details | offline_verified | published | Finish exact integrated release gates, deploy the four discovery routes and inspect live media, source ZIP, stable links and authorization. |
-| 4 | [ ] S-6.35.06: Qualify distinct product brands on the shared service | proposed | live_qualified | Complete the offering audit and a bounded same-offer experiment design before building or launching another website. Keep the current release and catalogue work moving independently. |
+| 4 | [ ] S-6.35.06: Qualify AgentFeeds, AgentFoundry and AgentAFK on the shared service | building | live_qualified | Prepare separate branded sites for AgentFeeds at agentfeeds.si, AgentFoundry at getagentfoundry.si and AgentAFK at agentafk.si; verify their registrar settings through the authorized connection. Keep Baltor.ai as the combined site and preserve the current release and catalogue work. |
 | 5 | [x] S-6.12.04: Separate three product cards from the introductory hero | live_qualified | live_qualified | Keep the three visible offerings consistent while the separate billing and hosted-service work proceeds. |
 | 6 | [x] S-6.35.01: Release reviewed main and verify it live | published | published | Keep application deployment and catalogue publication from overlapping. |
 | 7 | [x] S-6.215.01: Record the current live file baseline | offline_verified | offline_verified | Use this exact baseline for reconciliation. |
@@ -195,24 +195,25 @@ Next: Finish exact integrated release gates, deploy the four discovery routes an
 
 Comment: Selection is client-side ordinary code, not a model or a compact random-asset API. The two website examples have explicit MIT preview/source rights; existing image previews do not inherit reuse rights from their source packages. Technical music checks did not include listening or mastering review.
 
-### S-6.35.06 Qualify distinct product brands on the shared service
+### S-6.35.06 Qualify AgentFeeds, AgentFoundry and AgentAFK on the shared service
 
-Owner step: S-6.35. State: proposed. Completion requires: live_qualified.
+Owner step: S-6.35. State: building. Completion requires: live_qualified.
 
-Acceptance: A separately branded offering has its own tested customer promise and presentation, truthful operator and billing information, isolated origin handling and attributable experiments while reusing the existing product contracts and entitlements.
+Acceptance: Baltor.ai retains all three offerings while AgentFeeds, AgentFoundry and AgentAFK have separate branded domains and tested acquisition paths, truthful operator and billing information, isolated origin handling and attributable results, reusing the existing product contracts and entitlements.
 
-1. Audit Agent Feeds, Harness Files, Max and the proposed persistent desktop by audience, accepted outcome, variable cost, support burden and current delivery evidence.
-2. Start with an Agent Feeds brand hypothesis; verify domain control before DNS, certificates or deployment and keep domain purchases outside this research task.
-3. Define brand, product, plan, tenant and experiment identities separately; preserve exact content identities, shared qualification and existing grants.
-4. Qualify approved hostname routing, brand-specific static exports, OAuth redirects, cookies, caches, canonical URLs, support and billing descriptions without cross-brand privilege or data leakage.
-5. Compare the same offer and acquisition cohort when testing presentation; label different products or audiences as different experiments and measure useful activation, retention and support cost.
-6. Disclose common ownership where material; do not fabricate independent competitors, endorsements, customer counts or market share, and do not treat a footer as curing a misleading claim.
+1. Implement the owner's standing October 13 direction: baltor.ai combines all three offerings and AgentFeeds, AgentFoundry and AgentAFK have distinct brands and separate domains as additional customer acquisition channels. Baltor subdomains do not satisfy that direction.
+2. Map each brand's audience, accepted outcome, variable cost, support burden and current delivery evidence; AgentFoundry covers component building and reusable working material, and AgentAFK includes local and cloud execution and the proposed hosted computer without implying hosted availability.
+3. Verify registrar control and existing DNS/redirect settings for owner-reported agentfeeds.si, getagentfoundry.si and agentafk.si before a domain change.
+4. Define brand, product, plan, tenant and experiment identities separately; preserve exact content identities, shared qualification and existing grants.
+5. Qualify approved hostname routing, brand-specific static exports, OAuth redirects, cookies, caches, canonical URLs, support and billing descriptions without cross-brand privilege or data leakage.
+6. Measure useful activation, retention and support cost for each acquisition channel; compare the same offer and acquisition cohort when testing presentation, and label different products or audiences as different experiments.
+7. Disclose common ownership where material; do not fabricate independent competitors, endorsements, customer counts or market share, and do not treat a footer as curing a misleading claim.
 
-Evidence: October 11 owner proposes agentfeeds.io and other distinct brands using the same backend. Current site map and shared page shell support several Baltor hostnames, not independently configured brands. Domain ownership is unverified. Cloudflare documents multiple Worker Custom Domains; Stripe warns that separate businesses need separate accounts and that confusing public billing information can cause disputes. No new domain, account, checkout, tracking permission or public brand has been created.
+Evidence: The owner's October 13 direction establishes separate branded domains as customer acquisition channels, with baltor.ai retaining all three offerings. The final names are AgentFeeds, AgentFoundry and AgentAFK over the shared backend and operator. AgentFoundry replaces the working name AgentKits; the owner selects getagentfoundry.si after reporting agentkits.si and agentfoundry.si taken and rejecting agentkit.si as too expensive. The owner confirms purchasing agentfeeds.si and agentafk.si through Namecheap. Registrar account verification remains pending because the existing connection requires authentication. Public DNS and HTTP reads for agentfeeds.si and agentafk.si show registrar nameservers and redirects to each www hostname; no separately branded Baltor deployment is verified. AgentAFK combines local and cloud execution, including the proposed hosted computer; AgentComputer is not a separate brand. A Baltor subdomain is not an accepted substitute. Current site map and shared page shell still serve the existing Baltor hostnames.
 
-Next: Complete the offering audit and a bounded same-offer experiment design before building or launching another website. Keep the current release and catalogue work moving independently.
+Next: Prepare separate branded sites for AgentFeeds at agentfeeds.si, AgentFoundry at getagentfoundry.si and AgentAFK at agentafk.si; verify their registrar settings through the authorized connection. Keep Baltor.ai as the combined site and preserve the current release and catalogue work.
 
-Comment: This is a product and architecture research task. The $9/$49/$99 monthly direction and existing free-preview terms remain unchanged; the $400 desktop is still a proposal. Advertising spend stays with the owner.
+Comment: Baltor's existing feeds, library access and customer-controlled queue tools remain available; hosted execution remains unfinished. The $9/$49/$99 monthly direction, existing subscriptions, grants and free preview terms remain unchanged; the $400 hosted computer is still a proposal within AgentAFK. Advertising spend stays with the owner.
 
 ### S-6.12.04 Separate three product cards from the introductory hero
 

@@ -161,13 +161,28 @@ writing, final metadata/proof validation and the publisher remain serial.
 The final metadata reread is not a second full payload verification pass.
 Streaming or disk-backed operator metadata remains a separate scaling task.
 
-### Separate product brands: proposed, not deployed
+### Separate product brands
 
-The owner's October 11 proposal is to test distinct websites, beginning with
-Agent Feeds, over the same services. S-6.35.06 in the
-[roadmap](../roadmap/roadmap.yaml) owns this investigation. Domain control has
-not been verified. Current hostnames select pages within one Baltor site map
-and shared page shell; a display-name substitution is not a separate brand.
+The owner's standing October 13 direction keeps `baltor.ai` as the combined
+site for all three offerings, with separate branded domains as additional
+customer acquisition channels. AgentFeeds covers maintained information and
+decision guidance, AgentFoundry covers component building and reusable working
+material, and AgentAFK covers local and cloud AFK execution. AgentAFK includes the proposed hosted
+computer; AgentComputer is not a separate brand. The
+[owner decisions](OWNER-DECISIONS.md#separate-product-brands-october-13-2026)
+record the separate acquisition channels and existing prices, grants and
+preview terms.
+
+S-6.35.06 in the [roadmap](../roadmap/roadmap.yaml) owns implementation and
+qualification. The owner confirms purchasing `agentfeeds.si` and `agentafk.si`
+through Namecheap and selects `getagentfoundry.si` for AgentFoundry, replacing
+the working name AgentKits. Engineering's registrar account verification
+remains pending.
+A Baltor subdomain does not satisfy the owner's direction. Current Baltor
+hostnames select pages within one site map and shared page shell. Baltor serves
+feeds, library access and customer-controlled queue tools; hosted execution
+remains unfinished.
+Engineering has not verified a separately branded deployment.
 
 Keep these identities separate:
 

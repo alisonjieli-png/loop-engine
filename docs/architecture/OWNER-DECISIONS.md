@@ -2,6 +2,38 @@
 
 Kind: current decision route with retained dated decisions. The owner's current conversation takes precedence. [AGENTS.md](../../AGENTS.md#commit-push-and-release-authority) remains the single commit, push, release and effect-authority source. This file records product choices; it grants no new authority.
 
+## Separate product brands, October 13, 2026
+
+The owner's standing direction keeps `baltor.ai` as the combined site for all
+three offerings and gives each product a separate brand and domain as another
+customer acquisition channel. AgentFeeds covers maintained information and
+decision guidance. AgentFoundry is the selected name for intelligent component
+building and reusable tools, templates, instructions and working files,
+replacing the working name AgentKits. AgentAFK covers local and cloud AFK
+execution, including the proposed hosted computer. AgentComputer is not a
+separate brand.
+
+Implement distinct product names, sites, presentation and acquisition channels
+over the shared backend. A Baltor subdomain does not satisfy this direction.
+The brands share the same operator; keep legal notices, account boundaries and
+billing accurate under the existing architecture boundaries.
+
+The owner confirms purchasing `agentfeeds.si` and `agentafk.si` through
+Namecheap and selects `getagentfoundry.si` for AgentFoundry, stating "I went
+with getagentfoundry.si". These are owner-reported choices; engineering has
+not yet verified the registrar account. Earlier alternatives `agentkits.si`
+and `agentfoundry.si` were reported taken, and the owner rejected `agentkit.si`
+as too expensive. The selected component brand and domain are AgentFoundry
+and `getagentfoundry.si`.
+
+The [architecture map](CURRENT-ARCHITECTURE-MAP.md#separate-product-brands)
+and roadmap subtask S-6.35.06 own implementation and qualification. Current
+Baltor feeds, library access and customer-controlled queue tools remain
+available; hosted execution remains unfinished. Engineering has not verified
+a separately branded deployment. This direction changes neither current
+prices nor existing subscriptions, grants or free preview terms; the proposed
+$400 hosted computer is not a live offer.
+
 ## Current prices, October 11, 2026
 
 The owner states: "We need to raise the prices, 9 for the feed, 49 dollars for
