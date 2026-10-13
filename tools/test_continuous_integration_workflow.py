@@ -169,6 +169,38 @@ class RetiredLanguageGuardTests(WorkflowGuardTestCase):
                 self.assertNotEqual(self.run_script(self.guard).returncode, 0)
             path.unlink()
 
+    @unittest.skipUnless(shutil.which("rg"), "the real source scan requires ripgrep")
+    def test_launch_renderer_syntax_has_exact_exceptions_without_excluding_adjacent_prose(self):
+        for name in ("README.md", "CHANGELOG.md", "humanizer-context.md"):
+            (self.workdir / name).write_text("Current documentation.\n")
+        for name in ("docs", "examples", "case-studies", "benchmarks", "showcase"):
+            (self.workdir / name).mkdir()
+        launch = self.workdir / "showcase/marketing/launch91"
+        launch.mkdir(parents=True)
+        for name in ("style.css", "world.mjs"):
+            shutil.copyfile(ROOT / "showcase/marketing/launch91" / name, launch / name)
+        finished = self.run_script(self.guard)
+        self.assertEqual(finished.returncode, 0, finished.stdout + finished.stderr)
+        for name in ("style.css", "world.mjs"):
+            exclusion = f"--glob '!showcase/marketing/launch91/{name}'"
+            self.assertIn(exclusion, self.guard)
+            without_exclusion = "\n".join(line for line in self.guard.splitlines()
+                                          if exclusion not in line)
+            with self.subTest(removed_exception=name):
+                self.assertNotEqual(self.run_script(without_exclusion).returncode, 0)
+        for name in ("README.md", "index.html", "scene.mjs", "another.css"):
+            path = launch / name
+            path.write_text("A root loop creates child nodes.\n")
+            with self.subTest(adjacent_prose=name):
+                self.assertNotEqual(self.run_script(self.guard).returncode, 0)
+            path.unlink()
+        # Neither exact renderer exception applies to the first vocabulary scan.
+        with (launch / "world.mjs").open("a") as output:
+            output.write("\nconst copy = 'A new receipt';\n")
+        finished = self.run_script(self.guard)
+        self.assertNotEqual(finished.returncode, 0)
+        self.assertIn("Retired public language found", finished.stdout)
+
 
 class ArchitectureDiagramGuardTests(WorkflowGuardTestCase):
     """An extraction that produced nothing must not look like a rendered check."""

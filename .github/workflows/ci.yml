@@ -106,6 +106,10 @@ jobs:
           # :nth-child selectors, not runtime topology or customer prose.
           # Its README, HTML and JavaScript remain in this scan; a real-rg
           # regression check proves that retired prose there is still refused.
+          # The launch film's two renderer files likewise contain CSS selectors
+          # and Three.js Group.children, not Loop relationships. Only those
+          # exact code paths are exempt here; adjacent README/HTML/scene prose
+          # and the first vocabulary scan remain covered by real-rg controls.
           refuse_language \
             "Retired topology or decision language found. Use Starting, Spawned by, Queried by, Retrieved by, Connected from, or select next action." \
             --hidden -n -i \
@@ -113,6 +117,8 @@ jobs:
             --glob '!docs/verification/**' \
             --glob '!showcase/assets/**' \
             --glob '!examples/32_creative_arena/arena.css' \
+            --glob '!showcase/marketing/launch91/style.css' \
+            --glob '!showcase/marketing/launch91/world.mjs' \
             --glob '!showcase/node_modules/**' --glob '!**/.cache/**' \
             '\bchild(?:ren)?\b|\broot[[:space:]_-]+loop\b|what[[:space:]_-]*is[[:space:]_-]*next|what[[:space:]_-]+next|whats[[:space:]_-]*next|whatnext' \
             README.md CHANGELOG.md humanizer-context.md docs examples \
