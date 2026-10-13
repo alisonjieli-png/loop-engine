@@ -28,6 +28,21 @@ The [owner decisions](OWNER-DECISIONS.md#separate-product-brands-october-13-2026
 record the separate acquisition channels, shared operator, current availability
 and unchanged prices.
 
+The owner's October 13 media direction makes the existing prompts, tools,
+templates, images, videos, image and video generators, audio and editable
+projects part of the integration scope. Media feeds guide method and tool
+selection; AgentFoundry delivers the exact reusable files and executable
+components. Preserve concurrent OpenCode and Codex production and review their
+completed outputs through the existing owners.
+
+The portability proof starts with a fresh Kaggle instance, OpenCode or another
+supported harness and authenticated Baltor or AgentFoundry access. Retrieve,
+generate, revise and reopen one useful media project using declared model and
+tool access. Record exact assets and dependencies, environment assumptions,
+usage, intervention and failures. Inventory and download counts do not prove
+this workflow. [Owner decisions](OWNER-DECISIONS.md#portable-media-production-october-13-2026)
+and S-6.201.04 preserve this requirement and the account-scoped intake boundary.
+
 The [current architecture map](CURRENT-ARCHITECTURE-MAP.md) separates public
 service, customer execution, internal hosted operations and internal production.
 The deployment record identifies their actual placement. A Cloudflare product

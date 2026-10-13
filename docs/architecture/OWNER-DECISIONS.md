@@ -34,6 +34,37 @@ a separately branded deployment. This direction changes neither current
 prices nor existing subscriptions, grants or free preview terms; the proposed
 $400 hosted computer is not a live offer.
 
+## Portable media production, October 13, 2026
+
+The owner wants existing media-generation work integrated into Baltor and
+AgentFoundry: prompts, harness instructions, tools, templates, images, videos,
+image and video generators, editable projects, audio and their checks. Media
+feeds supply current methods and tool choices; the component library supplies
+the exact working materials. Preserve complete projects as well as small
+reusable files, their dependencies, source identity and use conditions.
+
+The intended customer workflow starts in a fresh Kaggle instance with OpenCode
+or another supported harness, authenticates against Baltor or the AgentFoundry
+offering, retrieves the needed material and produces useful media. Qualification
+requires actual generation, a meaningful revision and a clean reopen, with
+the environment, models, usage, manual repairs and failed attempts recorded.
+An inventory, finished local video or successful download does not establish
+that portable workflow. The selected domain remains `getagentfoundry.si`.
+
+OpenCode and Codex are developing media tools and assets concurrently in
+separate active projects. Preserve their working files and integration notes;
+review completed source and evidence before selecting changes for this
+repository. Inventory privately first. Personal assets and project access stay
+within their authorized account scope; public library admission remains a
+separate reviewed action. Reuse the existing catalogue, code-asset, engine-slot
+and harness contracts rather than importing another runtime or registry.
+
+Roadmap tasks S-6.117 and S-6.201.04 own integration and the portable customer
+proof. Browser, Kaggle, paired-computer and hosted execution profiles retain
+their separate capabilities, model access, budgets and effect authority.
+This is an implementation requirement, not a claim that the whole collection
+or the Kaggle workflow is already served and qualified.
+
 ## Current prices, October 11, 2026
 
 The owner states: "We need to raise the prices, 9 for the feed, 49 dollars for

@@ -1,0 +1,67 @@
+{
+  "record_type": "pilot_release_record/v1",
+  "release": 89,
+  "app": "baltor-pilot",
+  "source_revision": "f3d546a2aa362ac4598b14fd2b2cc6c37c758d30",
+  "image": "registry.fly.io/baltor-pilot@sha256:4a5feebb1ed8067c0cd2d98ca6d038850672e5e2b866c5559cc2a60865521e28",
+  "rollback_release": 88,
+  "rollback_image": "registry.fly.io/baltor-pilot@sha256:f4ff046ec5712d75fe7d0f09b3f712047fdf1075b0beb65360aea9d2ad7db833",
+  "owner_local_date": "2026-10-13",
+  "deployed_at": "2026-10-13T05:33:14Z",
+  "ci_run": 38280082619,
+  "ci_conclusion": "success",
+  "deploy_run": 38351699133,
+  "deploy_workflow_conclusion": "success",
+  "deployment_gate_after": false,
+  "catalogue": {"release_id": "29a2bc33c3132a97466e79c18350f3574624f2ef7967b07241029e269b92e742", "packages": 256380, "distinct_files": 1560856, "changed_by_this_application_release": false},
+  "changes": [
+    "Public random image, video and music discovery with stable asset links and provenance",
+    "One original twelve-second video and one music cue with an exact downloadable source ZIP, separate from catalogue admission",
+    "Visible documentation loading state and bounded content-readiness checks",
+    "Reviewed source-watch, private supply qualification and directory refresh follow-ups already committed on main"
+  ],
+  "billing": {"price_or_subscription_mutations": 0, "payments_executed_by_engineering": 0, "existing_entitlements_preserved": true, "rollback_requirement": "Retain both accepted Pro Price identities and the v2-capable billing reader; current prices and free-preview terms remain unchanged."},
+  "cloudflare": {
+    "worker": "baltor-web-edge",
+    "export_id": "e20b299bee981d479a4fa9dffebfa066189a00892e68ce2b12a5acee5e7d39d7",
+    "worker_deployment": "27c45c01-a435-4676-91fb-9279bd31993d",
+    "worker_version": "31316ce2-1a3e-4afb-add0-d9d4f8a0dc93",
+    "static_files": 3248,
+    "static_bytes": 88827399,
+    "origin_mode": "all",
+    "production_routes_changed": false,
+    "rollback_export_id": "d6693af2c644819bfd5ba164993e584326446dc385ebd32554941db9f4a7d052",
+    "rollback_worker_deployment": "ad8d0bfa-840d-47a2-ab25-aa39bdb11513",
+    "rollback_worker_version": "f1eea1c6-00f2-49af-a392-8cc5677a5a65",
+    "identity_note": "Deployment and version IDs are separately read from the deployments response. Earlier release records labelled the upload response's version identifier as worker_deployment; their original bytes remain preserved."
+  },
+  "checks": {
+    "local_browser": {"passed": 1003, "total": 1003, "mutants_detected": 197, "mutants_total": 197},
+    "local_offering_matrix": {"passed": 497, "total": 497},
+    "local_service": {"passed": 767, "total": 767},
+    "focused_tests": 82,
+    "conformance": "all 32 gates passed",
+    "live_offering_matrix": {"passed": 497, "total": 497},
+    "independent_live_checks": {"passed": 456, "total": 456, "hostnames": 10, "views": 68, "browser_errors": 0},
+    "edge_readback": {"initial_passed": 3237, "total": 3248, "initial_transport_failures": 11, "targeted_recheck_passed": 11, "combined_unique_verified": 3248, "unresolved": 0, "scope": "Exact bodies, required headers and export identity across two observations; original initial failure preserved."},
+    "live_full_public_route_map": {"pages": 75, "views": 309, "hostnames": 9, "links_checked": 815, "initial_problem_entries": 31, "initial_passed": false, "targeted_followup_passed": 15, "targeted_followup_total": 15, "external_destinations_passed": 11, "unresolved_problem_entries": 0, "documentation_readiness_timeouts": 0},
+    "media": {"product_assertions_passed": 48, "product_assertions_total": 48, "final_helper_passed": true, "final_attempt": "random-native-03", "requests": 216, "application_body_bytes": 17167452, "blocked_requests": 0, "errors": 0, "listening_performed": false, "playback_muted": true},
+    "pulse": {"reads": 50, "problems": 0, "slow": 0, "identity_provider_health": 200, "passed": true},
+    "provider_readback": {"release_status": "complete", "machine_state": "started", "health_passed": true}
+  },
+  "retained_failed_attempts": [
+    "The first exact edge readback had eleven transport exceptions, with no received body/header mismatch. One selected-path recheck verified all eleven; the original report remains failed.",
+    "The full public route audit retained 31 entries: 22 references to eleven outbound destinations blocked by the private checker's origin scope, six references to one failed Kaggle-demo read, and three load/capture errors on one desktop Top MCPs view. Exact redirect mappings, all eleven public destinations and the two affected routes passed targeted follow-up. The original report remains failed.",
+    "Random-media helper attempt 01 omitted the public capabilities GET needed by the page shell. Later serial HTTPS attempts retained startup/deadline failures; they did not establish media failure or a particular external network cause.",
+    "The first native-media helper had an incorrect decimal Content-Length expression. Its corrected attempt passed all 48 product assertions but retained one late request failure. Both original reports are preserved; the final attempt waits for pending reads before its final error assertion.",
+    "The first roadmap regeneration refused a new subtask absent from execution_order. Its owning order was corrected and regeneration repeated."
+  ],
+  "private_evidence_root": "continuous-improvement-20261013-R2bGym",
+  "private_evidence": ["exact-ci-01.json", "workspace-browser-01.json", "local-offering-01/report.json", "service-smoke-01.log", "focused-01.log", "conformance-01.log", "release89-deployment-01.json", "release89-provider-readback.json", "cloudflare-release89-01/events.jsonl", "cloudflare-release89-readback-01.json", "cloudflare-release89-failed-paths-01.json", "live-offering-01/report.json", "live-independent89/attempt-01/report.json", "live-routes-01/report.json", "route-followup-01.json", "outbound-targets-01.json", "media-observations-01.json", "random-native-03/report.json", "BROWSER-QUALIFICATION-HANDOFF.json", "live-pulse-01.json"],
+  "limits": [
+    "Public checks use unauthenticated contexts and emulated viewports; they do not qualify every account or paid customer journey.",
+    "Muted media playback and screenshots do not establish listening, mastering or aesthetic acceptance.",
+    "Website examples are separate from admitted catalogue files; no catalogue, R2, billing, DNS or new-brand deployment was performed.",
+    "AgentFeeds, AgentFoundry and AgentAFK standalone sites and authenticated Kaggle media production remain implementation work."
+  ]
+}

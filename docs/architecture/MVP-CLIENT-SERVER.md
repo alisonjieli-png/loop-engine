@@ -48,22 +48,25 @@ section. Update this section in the same change that records a new release.
 Public registration is enabled. The site offers the existing monthly plan;
 these deployment checks alone do not establish a fully qualified paid service.
 
-The running image is Fly release 88, from
-`ab1f658b3c03cc5e993c1b73ea9c9527665349c1`, image
-`sha256:f4ff046ec5712d75fe7d0f09b3f712047fdf1075b0beb65360aea9d2ad7db833`.
-Exact CI `38164365328` and guarded deployment `38165025109` passed; the gate
-is closed. The exact local browser suite passed 980 checks and all 197 mutants.
+The running image is Fly release 89, from
+`f3d546a2aa362ac4598b14fd2b2cc6c37c758d30`, image
+`sha256:4a5feebb1ed8067c0cd2d98ca6d038850672e5e2b866c5559cc2a60865521e28`.
+Exact CI `38280082619` and guarded deployment `38351699133` passed; the gate
+is closed. The exact local browser suite passed 1,003 checks and all 197 mutants.
 Independent read-only review passed 456 checks across 68 desktop/phone views
 on all ten hosts. The final all-host pulse passed fifty reads without slow
 responses. The live offering matrix passed 497 checks. The full route audit
-covered 71 pages, 293 views and 801 links but recorded one asynchronous
-documentation heading missing at its fixed observation time. Three isolated
-live repeats passed; delayed-response and missing-heading controls established
-a checker readiness race. A visible loading state and bounded readiness check
-remain follow-ups; the original report remains failed.
+covered 75 pages, 309 views and 815 links. Its 31 initial entries were
+reconciled through 15 targeted checks and eleven public destination checks:
+the private checker blocked intended outbound redirects, one cached link read
+failed and one page had a load/capture timeout. The original report remains
+failed; the follow-ups leave no unresolved entry. The documentation loading
+state and bounded readiness repair are now live, with no observed readiness
+timeouts. Native media checks passed 48 assertions on desktop and phone,
+including muted playback, exact source downloads, stable links and layout.
 These checks cover their stated routes and states, not every authenticated
 journey or marketing claim. Failed checks and their diagnoses remain in the
-[release record](../../artifacts/architecture-audit-2026-09-19/pilot-release-88.json).
+[release record](../../artifacts/architecture-audit-2026-09-19/pilot-release-89.json).
 
 Release 87 serves the Claude-export design, Basic/Pro/Max plan presentation,
 native-render gallery, local Run Desk preview, per-agent reading-profile
@@ -73,13 +76,18 @@ Release 88 adds the owner price change, refuses unavailable checkout plans
 before provider effects, and includes the bounded job-board metadata adapter,
 source-identity cleanup and expanded revision watch. These acquisition tools
 do not establish completed job-derived production or recurring source success.
+Release 89 adds random image, video and music discovery, the documentation
+readiness repair, reviewed source/supply follow-ups and directory refreshes.
+The original video and music examples and their source archive are website
+materials, separate from catalogue admission. No listening review is claimed.
 
 All nine product hostnames now serve public assets through Cloudflare and
 forward dynamic requests to Fly. The technical Fly hostname remains a direct
-fallback. Export `d6693af2c644819bfd5ba164993e584326446dc385ebd32554941db9f4a7d052` contains 3,273 files, all verified on
-`baltor.ai` against their exact bodies and required headers. It is refreshed
+fallback. Export `e20b299bee981d479a4fa9dffebfa066189a00892e68ce2b12a5acee5e7d39d7` contains 3,248 files, all verified on
+`baltor.ai` against their exact bodies and required headers across an initial
+3,237-file pass and eleven targeted transport-error rechecks. It is refreshed
 from the deployed revision after each catalogue publication, so the homepage
-shows the 1,560,856 files served now. The October 11 capabilities read confirms
+shows the 1,560,856 files served now. The October 13 capabilities read confirms
 that population. Disable proxying on the saved DNS
 records to recover the direct paths; do not delete the routes or resources.
 
@@ -99,11 +107,11 @@ cancellation. The amendment alone changes no subscription price.
 Curated decision-source collections and a live catalogue specimen are available. Local per-agent
 reading profiles are live; hosted saved preferences, agent assignments
 and personalized research delivery remain unfinished. Hosted supervised
-execution is not active. The [release record](../../artifacts/architecture-audit-2026-09-19/pilot-release-88.json)
+execution is not active. The [release record](../../artifacts/architecture-audit-2026-09-19/pilot-release-89.json)
 binds the application, public export, live checks and separate follow-ups.
-Release 87 is the compatible image rollback, at
-`sha256:7e8d6a5df6d9d3be2afa3417a14a134fae2d36a3923df786b5910e4d32a453bf`,
-with export `15780d0e2e5e1e275afd26471b37ce6ca6a5037d04820f44f898f600d59a5624`
+Release 88 is the compatible image rollback, at
+`sha256:f4ff046ec5712d75fe7d0f09b3f712047fdf1075b0beb65360aea9d2ad7db833`,
+with export `d6693af2c644819bfd5ba164993e584326446dc385ebd32554941db9f4a7d052`
 as the edge rollback. Retain both accepted Pro Price identities and the
 v2-capable billing reader; never restore an old-only entitlement policy. A
 checkout-selection rollback also needs matching public copy. Later directory

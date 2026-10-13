@@ -21,8 +21,14 @@ two defects that were found and fixed after the first claims of correctness.
 
 ## Current context route
 
-Read the [October 11 release 88 checkpoint](SESSION-HANDOFF-2026-10-11-RELEASE88.md)
-first: the Claude-export design and owner price increase are live, while the
+Read the [October 13 release 89 checkpoint](SESSION-HANDOFF-2026-10-13-RELEASE89.md)
+first for the live random-media and documentation-readiness release, separate
+AgentFeeds/AgentFoundry/AgentAFK brands, connected Namecheap authorization and
+the owner's portable Kaggle media-production requirement. The shared checkout
+and separate media projects have active concurrent owners; preserve their work.
+
+The [October 11 release 88 checkpoint](SESSION-HANDOFF-2026-10-11-RELEASE88.md)
+records the Claude-export design and owner price increase, while the
 catalogue remains below two million distinct files. It records the selected
 48-hour history reconciliation and the documentation loading check's limit.
 The [earlier October 11 checkpoint](SESSION-HANDOFF-2026-10-11.md) preserves

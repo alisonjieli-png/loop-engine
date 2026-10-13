@@ -3,7 +3,7 @@
 Kind: generated view. Do not edit by hand. The only task authority is
 [roadmap.yaml](roadmap.yaml); change it, then run
 `PYTHONPATH=src:tools .venv/bin/python tools/build_development_tracker.py`.
-Source fingerprint: `sha256:228afc4c78c7fb9b5ee7aeb263b60b737c4f68260e07a6d0b161ac92609955ef`.
+Source fingerprint: `sha256:477c6c8d57b11a9141318e5727165ababbb0192533f8ccf392e2ec1c0a6e9450`.
 
 ## Where things stand
 
@@ -65,15 +65,15 @@ gantt
 
 Each subtask lives in its owning step in roadmap.yaml. A local check does not complete a task that requires publication.
 
-Completed within their stated scope: 18 of 69 subtasks.
+Completed within their stated scope: 19 of 70 subtasks.
 
-Next eligible subtask: S-6.35.05: Add random asset discovery with provenance and use details
+Next eligible subtask: S-6.35.06: Qualify AgentFeeds, AgentFoundry and AgentAFK on the shared service
 
 | Order | Task | State | Completion required | Next action or dependency |
 |---:|---|---|---|---|
-| 1 | [x] S-6.35.03: Integrate the new design and interrupted fixes into the live website | published | published | Preserve the deployed design and finish the scoped documentation loading-state follow-up; the owner price change is now recorded in S-6.35.04. |
+| 1 | [x] S-6.35.03: Integrate the new design and interrupted fixes into the live website | published | published | Preserve the deployed design and release-89 documentation readiness repair while implementing the separate branded sites in S-6.35.06. The owner price change remains recorded in S-6.35.04. |
 | 2 | [x] S-6.35.04: Apply the owner's monthly Basic, Pro and Max prices | published | published | Keep both accepted Price identities during any rollback and preserve existing subscriptions, grants and free preview terms. |
-| 3 | [ ] S-6.35.05: Add random asset discovery with provenance and use details | offline_verified | published | Finish exact integrated release gates, deploy the four discovery routes and inspect live media, source ZIP, stable links and authorization. |
+| 3 | [x] S-6.35.05: Add random asset discovery with provenance and use details | published | published | Preserve the qualified routes and expand useful rights-qualified media through the component intake and portable customer proof in S-6.201.04. |
 | 4 | [ ] S-6.35.06: Qualify AgentFeeds, AgentFoundry and AgentAFK on the shared service | building | live_qualified | Prepare separate branded sites for AgentFeeds at agentfeeds.si, AgentFoundry at getagentfoundry.si and AgentAFK at agentafk.si; verify their registrar settings through the authorized connection. Keep Baltor.ai as the combined site and preserve the current release and catalogue work. |
 | 5 | [x] S-6.12.04: Separate three product cards from the introductory hero | live_qualified | live_qualified | Keep the three visible offerings consistent while the separate billing and hosted-service work proceeds. |
 | 6 | [x] S-6.35.01: Release reviewed main and verify it live | published | published | Keep application deployment and catalogue publication from overlapping. |
@@ -89,7 +89,7 @@ Next eligible subtask: S-6.35.05: Add random asset discovery with provenance and
 | 16 | [x] S-6.215.10: Complete the repaired case-generation pilot | offline_verified | offline_verified | Qualify and globally deduplicate the completed pilot. |
 | 17 | [x] S-6.215.11: Qualify and admit the new case groups | offline_verified | offline_verified | Regroup the 1,983 non-overlapping jobs held in 376 groups and qualify the 379-group pilot separately before the next case publication. |
 | 18 | [x] S-6.215.12: Publish the qualified case delta | published | published | Publish later case cohorts against the release live at that time. |
-| 19 | [ ] S-6.215.13: Measure and broaden production capacity | building | offline_verified | Qualify explicitly selected four-process verification on a full run and design bounded metadata streaming before larger catalogue growth. The residual API-atom pilot needs a new-run range selector and preserved exclusions before dispatch. |
+| 19 | [ ] S-6.215.13: Measure and broaden production capacity | building | offline_verified | Preserve the completed four-process qualification; do not replay it. Design bounded metadata streaming before larger catalogue growth. The residual API-atom pilot needs a new-run range selector and preserved exclusions before dispatch. |
 | 20 | [ ] S-6.214.01: Define canonical source counting | ready | offline_verified | Write and test the source-counting rules in the existing source owner. |
 | 21 | [ ] S-6.214.02: Build the source coverage census | ready | offline_verified | Waiting on S-6.214.01 |
 | 22 | [ ] S-6.214.03: Normalize the supplied provider operations | building | offline_verified | Waiting on S-6.214.01 |
@@ -130,16 +130,17 @@ Next eligible subtask: S-6.35.05: Add random asset discovery with provenance and
 | 57 | [ ] S-6.201.01: Recover the authorized TensorArt asset history | blocked | offline_verified | Resolve the missing target-account access without forwarding cookies to third parties. |
 | 58 | [ ] S-6.201.02: Complete one editable creative project and revision | ready | offline_verified | Select a small end-to-end creative proof rather than expanding untested templates. |
 | 59 | [ ] S-6.201.03: Produce a rights-cleared product demonstration | proposed | published | Waiting on S-6.201.02 |
-| 60 | [ ] S-6.102.01: Package and test the ChatGPT and Codex plugin | building | offline_verified | Release the integration, then run tools/check_chatgpt_app_live.py with --expect-presentation and --screens as a fresh account, confirm the authorization server metadata advertises authorization_response_iss_parameter_supported, and keep the report with the release record. The remaining steps for each directory and client are in docs/guides/chatgpt-app.md. |
-| 61 | [ ] S-6.102.02: Complete plugin review and release prerequisites | proposed | published | Waiting on S-6.102.01 |
-| 62 | [ ] S-6.204.01: Measure onboarding and product use | ready | live_qualified | Use measured activation and usefulness to guide the next batch and marketing. |
-| 63 | [ ] S-6.204.02: Prepare launch, funding and startup-credit material | ready | offline_verified | Prioritize the infrastructure already used and the next customer proof. |
-| 64 | [ ] S-6.216.01: Expand useful SDG and competition-derived materials | ready | published | Choose unmet SDG jobs from measured coverage rather than multiplying labels. |
-| 65 | [ ] S-6.67.01: Review the complete public page and design surface | ready | live_qualified | Run the owning browser checks for each visible release and verify the live result. |
-| 66 | [ ] S-6.35.02: Publish a progress checkpoint after every completed subtask | building | offline_verified | Complete the first canonical subtask checklist and then advance it one result at a time. |
-| 67 | [x] S-6.217.01: Reconcile recent prompts and action history | offline_verified | offline_verified | Carry the 25 obligation groups into their existing owners, including unfinished shareable-draft cleanup; append newer owner requests without claiming inaccessible history was audited. |
-| 68 | [ ] S-6.215.14: Reach two million useful served files | proposed | published | Waiting on S-6.215.13 |
-| 69 | [ ] S-6.214.08: Reach ten thousand active qualified sources | proposed | live_qualified | Waiting on S-6.214.07 |
+| 60 | [ ] S-6.201.04: Create and revise media from a fresh Kaggle harness through Baltor | building | live_qualified | Waiting on S-6.201.02 |
+| 61 | [ ] S-6.102.01: Package and test the ChatGPT and Codex plugin | building | offline_verified | Release the integration, then run tools/check_chatgpt_app_live.py with --expect-presentation and --screens as a fresh account, confirm the authorization server metadata advertises authorization_response_iss_parameter_supported, and keep the report with the release record. The remaining steps for each directory and client are in docs/guides/chatgpt-app.md. |
+| 62 | [ ] S-6.102.02: Complete plugin review and release prerequisites | proposed | published | Waiting on S-6.102.01 |
+| 63 | [ ] S-6.204.01: Measure onboarding and product use | ready | live_qualified | Use measured activation and usefulness to guide the next batch and marketing. |
+| 64 | [ ] S-6.204.02: Prepare launch, funding and startup-credit material | ready | offline_verified | Prioritize the infrastructure already used and the next customer proof. |
+| 65 | [ ] S-6.216.01: Expand useful SDG and competition-derived materials | ready | published | Choose unmet SDG jobs from measured coverage rather than multiplying labels. |
+| 66 | [ ] S-6.67.01: Review the complete public page and design surface | ready | live_qualified | Run the owning browser checks for each visible release and verify the live result. |
+| 67 | [ ] S-6.35.02: Publish a progress checkpoint after every completed subtask | building | offline_verified | Complete the first canonical subtask checklist and then advance it one result at a time. |
+| 68 | [x] S-6.217.01: Reconcile recent prompts and action history | offline_verified | offline_verified | Carry the 25 obligation groups into their existing owners, including unfinished shareable-draft cleanup; append newer owner requests without claiming inaccessible history was audited. |
+| 69 | [ ] S-6.215.14: Reach two million useful served files | proposed | published | Waiting on S-6.215.13 |
+| 70 | [ ] S-6.214.08: Reach ten thousand active qualified sources | proposed | live_qualified | Waiting on S-6.214.07 |
 
 ## Subtask procedures and evidence
 
@@ -157,7 +158,7 @@ Acceptance: The new shared design, plan labels, gallery, connection workflow and
 
 Evidence: Release 87 from 9d7b7e50 is live on Fly and Cloudflare. Exact CI 38156437645 and guarded deployment 38157179704 passed, gate closed. Local browser 979/979 and 197/197 wrong controls, design 144/144. Live offering matrix 483/483; independent review 456/456 across ten hosts and 68 views; all 3,273 edge files match. Full route audit: 71 pages, 293 views, 830 links, zero problems. See pilot-release-87.json for limits and retained failed attempts.
 
-Next: Preserve the deployed design and finish the scoped documentation loading-state follow-up; the owner price change is now recorded in S-6.35.04.
+Next: Preserve the deployed design and release-89 documentation readiness repair while implementing the separate branded sites in S-6.35.06. The owner price change remains recorded in S-6.35.04.
 
 Comment: Basic, Pro and Max are plan names; Agent Feeds, Harness Files and Overnight / AFK Work remain features. Max's scoped public preview does not claim hosted execution or activate a paid checkout. The owner explicitly prioritizes the design release over the longer migration and factory programme.
 
@@ -180,7 +181,7 @@ Comment: Prices are monthly standard rates, not evidence that paid Feeds or Max 
 
 ### S-6.35.05 Add random asset discovery with provenance and use details
 
-Owner step: S-6.35. State: offline_verified. Completion requires: published.
+Owner step: S-6.35. State: published. Completion requires: published.
 
 Acceptance: A visitor can request another eligible image, video or music preview, inspect its source and licence, and reach a stable asset reference without bypassing download authorization.
 
@@ -189,9 +190,9 @@ Acceptance: A visitor can request another eligible image, video or music preview
 3. Test invalid and empty categories, missing assets, repeat avoidance, keyboard/mobile behavior and the public-preview versus authenticated-download boundary.
 4. Deploy the exact checked revision and verify the new routes live.
 
-Evidence: October 11 local integration has /random and image/video/music views with 329 existing image previews, one original twelve-second video and one original music cue. Separate source/media review reproduced four original/revised files; separate schema/HTTP review cleared c8f33cf2 after two ZIP-stream defects were fixed. Independent checks include 34 owning tests, five stream controls, 22 resource/HTTP checks and 34 media-browser checks; the earlier 125-view selection checks also passed. Source ZIP 9112aac6 is distinct from catalogue admission. No deployment or served-file count increase yet.
+Evidence: Release 89 from f3d546a2 is live on October 13 after exact CI 38280082619 and guarded deployment 38351699133; gate closed. The /random and image/video/music views provide 329 existing image previews, one original twelve-second video and one music cue with source ZIP 9112aac6. Fresh local browser 1003/1003 and 197/197 negative controls passed. Final native live media checks passed 48/48 on desktop and phone, including muted decode/playback, exact archive/media bytes, MIME/HEAD, stable links and compact layout. Earlier helper scope, transport, header-validation and late-read failures remain preserved in pilot-release-89.json. Source/media qualification is separate from catalogue admission; no served-file count increase occurred.
 
-Next: Finish exact integrated release gates, deploy the four discovery routes and inspect live media, source ZIP, stable links and authorization.
+Next: Preserve the qualified routes and expand useful rights-qualified media through the component intake and portable customer proof in S-6.201.04.
 
 Comment: Selection is client-side ordinary code, not a model or a compact random-asset API. The two website examples have explicit MIT preview/source rights; existing image previews do not inherit reuse rights from their source packages. Technical music checks did not include listening or mastering review.
 
@@ -209,7 +210,7 @@ Acceptance: Baltor.ai retains all three offerings while AgentFeeds, AgentFoundry
 6. Measure useful activation, retention and support cost for each acquisition channel; compare the same offer and acquisition cohort when testing presentation, and label different products or audiences as different experiments.
 7. Disclose common ownership where material; do not fabricate independent competitors, endorsements, customer counts or market share, and do not treat a footer as curing a misleading claim.
 
-Evidence: The owner's October 13 direction establishes separate branded domains as customer acquisition channels, with baltor.ai retaining all three offerings. The final names are AgentFeeds, AgentFoundry and AgentAFK over the shared backend and operator. AgentFoundry replaces the working name AgentKits; the owner selects getagentfoundry.si after reporting agentkits.si and agentfoundry.si taken and rejecting agentkit.si as too expensive. The owner confirms purchasing agentfeeds.si and agentafk.si through Namecheap. Registrar account verification remains pending because the existing connection requires authentication. Public DNS and HTTP reads for agentfeeds.si and agentafk.si show registrar nameservers and redirects to each www hostname; no separately branded Baltor deployment is verified. AgentAFK combines local and cloud execution, including the proposed hosted computer; AgentComputer is not a separate brand. A Baltor subdomain is not an accepted substitute. Current site map and shared page shell still serve the existing Baltor hostnames.
+Evidence: The owner's October 13 direction establishes separate branded domains as customer acquisition channels, with baltor.ai retaining all three offerings. The final names are AgentFeeds, AgentFoundry and AgentAFK over the shared backend and operator. AgentFoundry replaces the working name AgentKits; the owner selects getagentfoundry.si after reporting agentkits.si and agentfoundry.si taken and rejecting agentkit.si as too expensive. The owner confirms purchasing agentfeeds.si and agentafk.si through Namecheap. The owner completed native Namecheap authorization on October 13 and a fresh connection check passed; registrar account inventory remains unverified. Public DNS and HTTP reads for agentfeeds.si and agentafk.si show registrar nameservers and redirects to each www hostname; no separately branded Baltor deployment is verified. AgentAFK combines local and cloud execution, including the proposed hosted computer; AgentComputer is not a separate brand. A Baltor subdomain is not an accepted substitute. Current site map and shared page shell still serve the existing Baltor hostnames.
 
 Next: Prepare separate branded sites for AgentFeeds at agentfeeds.si, AgentFoundry at getagentfoundry.si and AgentAFK at agentafk.si; verify their registrar settings through the authorized connection. Keep Baltor.ai as the combined site and preserve the current release and catalogue work.
 
@@ -449,9 +450,9 @@ Acceptance: A frozen production plan measures candidate yield, accepted yield, t
 2. Select licensed data tables, executable utilities, harness templates and editable creative materials.
 3. Reuse unchanged implementations and allocate bounded cohorts with explicit stops.
 
-Evidence: October 11 root integrated all thirteen retained supply commits plus the licence/redirect/concurrent-journal repair. The completed 392-shard campaign is exhausted; 5,389 unprocessed API atoms are a research frontier, not qualified cases or a file forecast, and five uncertain boundary atoms remain held. An opt-in clean-spawn verifier passes 111 owning tests, eleven removed-guard controls and 32 conformance gates. Nine final-code sample runs over 46,538 files and 224,074,942 bytes give serial/four/eight-worker medians 6.133/3.863/3.896 seconds; aggregate CPU rises to 15.321/26.674 seconds for the parallel choices. Only baseline/update body verification selects workers; publisher and other phases stay serial. Full-run speed and new production yield remain unmeasured.
+Evidence: October 11 root integrated all thirteen retained supply commits plus the licence/redirect/concurrent-journal repair. The completed 392-shard campaign is exhausted; 5,389 unprocessed API atoms are a research frontier, not qualified cases or a file forecast, and five uncertain boundary atoms remain held. An opt-in clean-spawn verifier passes 111 owning tests, eleven removed-guard controls and 32 conformance gates. Nine final-code sample runs over 46,538 files and 224,074,942 bytes give serial/four/eight-worker medians 6.133/3.863/3.896 seconds; aggregate CPU rises to 15.321/26.674 seconds for the parallel choices. Only baseline/update body verification selects workers; publisher and other phases stay serial. The full four-process qualification completed on October 11 at 21:49:56 UTC with unchanged inputs and exact serial result parity: 1,560,856 base bodies verified and 341,902 new bodies, yielding a private candidate with 1,902,758 distinct files. No publication occurred. Different cache and concurrent load prevent a controlled full-run speed comparison; new production yield remains unmeasured.
 
-Next: Qualify explicitly selected four-process verification on a full run and design bounded metadata streaming before larger catalogue growth. The residual API-atom pilot needs a new-run range selector and preserved exclusions before dispatch.
+Next: Preserve the completed four-process qualification; do not replay it. Design bounded metadata streaming before larger catalogue growth. The residual API-atom pilot needs a new-run range selector and preserved exclusions before dispatch.
 
 Comment: Common-word and parameter combinations are research dimensions, not automatically useful files.
 
@@ -1100,6 +1101,25 @@ Evidence: Not yet recorded.
 Next: Use the accepted creative proof and recorded customer outcomes.
 
 Comment: Preview clips are labelled as previews; no fabricated before/after result.
+
+### S-6.201.04 Create and revise media from a fresh Kaggle harness through Baltor
+
+Owner step: S-6.201. State: building. Completion requires: live_qualified.
+
+Acceptance: A fresh supported Kaggle instance running OpenCode or another qualified harness authenticates, retrieves exact media components and assets, produces a useful editable result, makes a meaningful revision and reopens it cleanly.
+
+1. Preserve active OpenCode and Codex work; inventory completed source, prompts, templates, images, videos, generators, audio and verification evidence privately.
+2. Map reusable material to the existing catalogue, code-asset, engine-slot and harness boundaries, with exact dependencies, provenance, rights and account scope.
+3. Select a small complete project and prepare an environment profile with explicit CPU/GPU, runtime, renderer, network, model access and storage requirements.
+4. Use an ordinary authenticated account to retrieve the necessary files into a fresh Kaggle instance with OpenCode or another supported harness; verify bytes and setup without importing workstation caches or credentials.
+5. Generate the media, revise timing/text/assets or aspect ratio, and reopen it in a clean supported environment; record outputs, model usage, time, interventions and failures.
+6. Check missing dependencies, wrong file digests, unavailable tools and insufficient authority; separate technical decode, visual inspection, listening and user acceptance.
+
+Evidence: October 13 owner requests all existing media prompts, assets, tools, templates and image/video generation work through Baltor and AgentFoundry, including media feeds and harness component files. The intended customer uses a Kaggle instance with OpenCode or another authenticated harness. A screenshot shows another session's local media/source/QA outputs, but this session has not yet reproduced the Kaggle workflow or admitted that collection.
+
+Next: Review the completed media project's integration notes and choose one portable end-to-end slice before broad publication. Coordinate the parallel producers and preserve their active files.
+
+Comment: The domain remains getagentfoundry.si. A separate brand, local render or library download does not establish portable execution, public reuse rights or hosted AFK availability.
 
 ### S-6.102.01 Package and test the ChatGPT and Codex plugin
 

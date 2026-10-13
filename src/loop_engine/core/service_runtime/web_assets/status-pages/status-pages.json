@@ -5,6 +5,19 @@
   "releases": [
    {
     "kind": "service",
+    "number": 89,
+    "at": "2026-10-13T05:33:14Z",
+    "lines": [
+     "Public random image, video and music discovery with stable asset links and provenance.",
+     "One original twelve-second video and one music cue with an exact downloadable source ZIP, separate from catalogue admission.",
+     "Visible documentation loading state and bounded content-readiness checks.",
+     "Reviewed source-watch, private supply qualification and directory refresh follow-ups already committed on main."
+    ],
+    "seen_after_release": "",
+    "not_shown": 0
+   },
+   {
+    "kind": "service",
     "number": 88,
     "at": "2026-10-11T18:46:53Z",
     "lines": [
