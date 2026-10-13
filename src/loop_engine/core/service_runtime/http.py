@@ -9,7 +9,8 @@ from __future__ import annotations
 import asyncio
 import base64
 from concurrent.futures import ThreadPoolExecutor
-from contextlib import asynccontextmanager
+from contextlib import AsyncExitStack, asynccontextmanager
+from copy import copy
 from dataclasses import dataclass, field, replace
 import json
 import math
@@ -30,6 +31,7 @@ from .http_auth import (
     HttpAuthenticationError, ServiceHttpAuthentication, ServiceHttpAuthenticator, validate_public_url,
     EXTERNAL_JWT_AUTHENTICATION,
 )
+from .brand_profiles import ServiceBrandProfile
 from .list_paging import (JSON_ENCODING, PROTOCOL_ENCODING, ListCursors, ListPageRequest, list_page,
                           paging_request, paging_schema_properties)
 from .observability import (
@@ -333,6 +335,7 @@ class ServiceHttpConfiguration:
     openai_oauth_redirect_uris: tuple[str, ...] = field(default=(), kw_only=True)
     #: The address that reaches Baltor support, shown on /support once mail to it is delivered; empty shows none.
     support_email: str = field(default="", kw_only=True)
+    brand_profiles: tuple[ServiceBrandProfile, ...] = field(default=(), kw_only=True)
     request_timeout_seconds: float = 30.0
     allow_loopback_http: bool = False
     request_limits: ServiceRequestLimits = ServiceRequestLimits()
@@ -401,6 +404,17 @@ class ServiceHttpConfiguration:
         # The declared public service origin owns the packaged browser client.
         # Other origins still require an exact host configuration entry.
         object.__setattr__(self, "allowed_origins", tuple(dict.fromkeys((base.rstrip("/"), *origins))))
+        if not isinstance(self.brand_profiles, (tuple, list)) or len(self.brand_profiles) > 8:
+            raise ValueError("brand profiles require a bounded explicit list")
+        profiles = tuple(ServiceBrandProfile.from_host(value) for value in self.brand_profiles)
+        if len({profile.host for profile in profiles}) != len(profiles):
+            raise ValueError("brand presentation hosts must be distinct")
+        for profile in profiles:
+            validate_public_url(profile.public_base_url, permit_loopback=self.allow_loopback_http)
+            if (profile.host == urlsplit(base).netloc or profile.host not in hosts
+                    or profile.public_base_url not in self.allowed_origins):
+                raise ValueError("brand origin must be a distinct explicitly allowed Host and Origin")
+        object.__setattr__(self, "brand_profiles", profiles)
 
     @property
     def maximum_concurrent_operations_for_each_tenant(self):
@@ -898,6 +912,7 @@ class ServiceHttpApplication:
     #: stopped with it. None serves the catalogue loaded at start unchanged.
     catalogue_refresher: object | None = field(default=None, repr=False)
     oauth_authorization: object | None = field(default=None, repr=False)
+    brand_profile: ServiceBrandProfile | None = field(default=None, init=False, repr=False)
 
     def __post_init__(self):
         from .runtime import ServiceRuntime
@@ -964,6 +979,42 @@ class ServiceHttpApplication:
         self.failure_journal = ServiceFailureJournal(self.runtime.config, DECLARED_ROUTES,
                                                      policy=self.observability)
 
+    def brand_presentations(self):
+        """Cheap transport views; never run application setup or clone service state.
+
+        The same runtime, catalogue binding, identity admission, billing
+        customer, queues, counters and lifecycle remain owned by this object.
+        Only immutable presentation and issuer-bound protocol adapters vary.
+        """
+        from .oauth_authorization import OAuthAuthorizationProvider
+        presentations = {}
+        for profile in self.configuration.brand_profiles:
+            shown = copy(self)
+            shown.brand_profile = profile
+            shown.configuration = replace(self.configuration, public_base_url=profile.public_base_url,
+                display_name=profile.display_name, allowed_hosts=(profile.host,),
+                allowed_origins=(profile.public_base_url,), brand_profiles=(), openai_apps_challenge="")
+            if self.account_email is not None:
+                from .account_email import AccountEmailAdapter
+                if not isinstance(self.account_email, AccountEmailAdapter):
+                    raise ValueError("brand email presentation requires the qualified account email adapter")
+                shown.account_email = self.account_email.for_presentation(public_base_url=profile.public_base_url,
+                                                                          display_name=profile.display_name)
+            if self.oauth_authorization is not None:
+                policy = replace(self.oauth_authorization.policy, issuer_url=profile.public_base_url,
+                    resource_url=profile.public_base_url + "/mcp", consent_url=profile.public_base_url + "/oauth/consent")
+                shown.oauth_authorization = OAuthAuthorizationProvider(self.runtime, policy)
+                shown.oauth_http = self.oauth_http.for_provider(shown.oauth_authorization, documentation_path="/connect")
+            if EXTERNAL_JWT_AUTHENTICATION in self.authentication.modes:
+                shown.authentication = replace(self.authentication, audience=profile.public_base_url + "/mcp")
+            shown.authenticator = ServiceHttpAuthenticator(self.runtime, shown.authentication,
+                browser_identity=self.browser_identity, oauth_authorization=shown.oauth_authorization)
+            # JWK material is issuer-bound, not audience-bound; use its one
+            # cache/refresh limiter even when audience validation differs.
+            shown.authenticator._keys = self.authenticator._keys
+            presentations[profile.host] = shown
+        return presentations
+
     def registration_available(self):
         """True when a visitor can create an account on this service today.
 
@@ -1013,7 +1064,8 @@ class ServiceHttpApplication:
 
     def capabilities(self):
         from importlib.metadata import version
-        session_options = self.billing_sessions.options() if self.billing_sessions is not None else {}
+        session_options = (self.billing_sessions.options() if self.billing_sessions is not None
+                           and self.brand_profile is None else {})
         # Capture one view so the package and file populations cannot describe
         # different releases when a background refresh swaps the active view.
         population = None
@@ -1803,7 +1855,7 @@ class ServiceHttpApplication:
 
     def _session_options(self, context):
         from .stripe_sessions import SESSION_OPTIONS_VERSION
-        if self.billing_sessions is None:
+        if self.billing_sessions is None or self.brand_profile is not None:
             return {"record_type": SESSION_OPTIONS_VERSION, "policy_digest": None,
                     "checkout_available": False, "portal_available": False, "plans": [],
                     "unavailable_reason": "billing_sessions_not_installed"}
@@ -1818,7 +1870,7 @@ class ServiceHttpApplication:
         from .stripe_sessions import BillingSessionError, SESSION_UNCERTAINTY_VERSION
         current = self.authenticator.revalidate(context)
         self._require_scope(current, BILLING_MANAGE_SCOPE)
-        if self.billing_sessions is None:
+        if self.billing_sessions is None or self.brand_profile is not None:
             raise ServiceHttpError("billing_sessions_not_installed", 501)
         try:
             result = self.billing_sessions.create(current.principal, request, authorization_expires_at=current.expires_at)
@@ -2320,15 +2372,25 @@ class ServiceHttpApplication:
         from starlette.routing import Mount
         from mcp.server.streamable_http_manager import StreamableHTTPSessionManager
         from mcp.server.transport_security import TransportSecuritySettings
-        config = self.configuration
-        security = TransportSecuritySettings(allowed_hosts=list(config.allowed_hosts),
-                                             allowed_origins=list(config.allowed_origins))
-        manager = StreamableHTTPSessionManager(self._sdk_server(), stateless=True,
-            security_settings=security, max_request_body_size=config.maximum_request_bytes)
-        # One endpoint, two presentations of the same tools: the harness presentation, and the one an OpenAI host
-        # reads (`chatgpt_app`). Each request is routed after it is authenticated, by its OAuth client or header.
-        managers = {"": manager, chatgpt_app.PROFILE: StreamableHTTPSessionManager(self._openai_sdk_server(),
-            stateless=True, security_settings=security, max_request_body_size=config.maximum_request_bytes)}
+        profiles = self.brand_presentations()
+        brand_hosts = set(profiles)
+        brand_origins = {value.configuration.public_base_url for value in profiles.values()}
+        base_config = replace(self.configuration, brand_profiles=(),
+            allowed_hosts=tuple(host for host in self.configuration.allowed_hosts if host not in brand_hosts),
+            allowed_origins=tuple(origin for origin in self.configuration.allowed_origins if origin not in brand_origins))
+        presentations = {base_config.public_base_url: (self, base_config)}
+        presentations.update({view.configuration.public_base_url: (view, view.configuration) for view in profiles.values()})
+        manager_sets = {}
+        for origin, (view, config) in presentations.items():
+            security = TransportSecuritySettings(allowed_hosts=list(config.allowed_hosts),
+                                                 allowed_origins=list(config.allowed_origins))
+            manager_sets[origin] = {
+                "": StreamableHTTPSessionManager(view._sdk_server(), stateless=True,
+                    security_settings=security, max_request_body_size=config.maximum_request_bytes),
+                chatgpt_app.PROFILE: StreamableHTTPSessionManager(view._openai_sdk_server(), stateless=True,
+                    security_settings=security, max_request_body_size=config.maximum_request_bytes)}
+        # These are small protocol/HTTP presentations of the same runtime.
+        # The root lifespan below starts shared schedules and the catalogue once.
 
         @asynccontextmanager
         async def lifespan(_app):
@@ -2337,7 +2399,11 @@ class ServiceHttpApplication:
             renewal.start()
             self.public_links.start()
             try:
-                async with manager.run(), managers[chatgpt_app.PROFILE].run(), self._catalogue_refresh():
+                async with AsyncExitStack() as stack:
+                    for managers in manager_sets.values():
+                        for manager in managers.values():
+                            await stack.enter_async_context(manager.run())
+                    await stack.enter_async_context(self._catalogue_refresh())
                     yield
             finally:
                 await schedule.stop()
@@ -2347,6 +2413,9 @@ class ServiceHttpApplication:
 
         async def transport(scope, receive, send):
             request = Request(scope, receive)
+            application = profiles.get(request.headers.get("host"), self)
+            config = application.configuration if application is not self else base_config
+            managers = manager_sets[config.public_base_url]
             # Every request is named before any work, so a refusal raised at the
             # very first check still carries an identity the operator can find.
             reference = new_request_reference()
@@ -2389,7 +2458,7 @@ class ServiceHttpApplication:
                         "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
                         "Access-Control-Allow-Headers": "Authorization, Content-Type, MCP-Protocol-Version, Stripe-Signature"})
                 elif request.url.path == PROTOCOL_PATH:
-                    context = await self._authenticated(request)
+                    context = await application._authenticated(request)
                     try:
                         profile = chatgpt_app.selected_profile(getattr(context, "client_profile", ""), request.headers)
                     except chatgpt_app.ProfileRequestError:
@@ -2399,7 +2468,7 @@ class ServiceHttpApplication:
                         # service keeps no session, so there is no stream to
                         # open with GET and no session to end with DELETE.
                         raise ServiceHttpError("protocol_method_not_allowed", 405, headers={"Allow": "POST"})
-                    body = await self._body(request)
+                    body = await application._body(request)
                     payload = _parse_json(body) if body else {}
                     if not isinstance(payload, dict):
                         raise ServiceHttpError("object_required")
@@ -2437,7 +2506,7 @@ class ServiceHttpApplication:
                     await managers[profile].handle_request(scope, replay, protocol_send)
                     return
                 else:
-                    response = await self._web_route(request, Response, JSONResponse)
+                    response = await application._web_route(request, Response, JSONResponse)
                     response.headers.update(cors)
             except Exception as error:
                 status, code = _status(error)
@@ -2452,7 +2521,7 @@ class ServiceHttpApplication:
                     details = {"record_type":"public_good_limit_refusal/v1", "retry_after_seconds":error.retry_after_seconds}
                 # The record is committed before the customer is told its name,
                 # so a reference in a refusal is one an operator can search for.
-                await self._record_failure(scope, request, code, status)
+                await application._record_failure(scope, request, code, status)
                 # A reader who arrived in a browser needs a sentence and a way
                 # back. A record shape is the right answer to a program and the
                 # wrong answer to a person. The page names no address and
@@ -2467,7 +2536,7 @@ class ServiceHttpApplication:
                     response = Response(
                         missing_address_page(config.display_name),
                         status_code=404, media_type=HTML_MEDIA_TYPE,
-                        headers={**cors, **self._page_headers()})
+                        headers={**cors, **application._page_headers()})
                 elif status >= 500 and "text/html" in request.headers.get("accept", ""):
                     # A failure on this side, met by a person in a browser: the
                     # same two sentences and the same reference the record
@@ -2476,12 +2545,12 @@ class ServiceHttpApplication:
                     response = Response(
                         server_error_page(config.display_name, status, message, next_action, reference.value),
                         status_code=status, media_type=HTML_MEDIA_TYPE,
-                        headers={**cors, **self._page_headers(), **(added or {})})
+                        headers={**cors, **application._page_headers(), **(added or {})})
                 else:
                     response = JSONResponse(_error_record(code, status, details, reference.value),
                                             status_code=status, headers={**cors, **(added or {})})
                 if status == 401 or code == "insufficient_scope":
-                    response.headers["WWW-Authenticate"] = self._oauth_challenge(code)
+                    response.headers["WWW-Authenticate"] = application._oauth_challenge(code)
             cacheable_asset = (response.status_code in (200, 304) and request.method in ("GET", "HEAD")
                                and (request.url.path in CACHEABLE_WEB_ASSETS or request.url.path in catalogue_feed.FORMATS
                                     or feed_source_collections.handles(request.url.path)))
@@ -2557,13 +2626,33 @@ class ServiceHttpApplication:
     async def _web_route(self, request, Response, JSONResponse):
         path, method, status_code = request.url.path, request.method, 200
         completions = []
+        if self.brand_profile is not None:
+            from . import agentfeeds_pages
+            asset = (agentfeeds_pages.render(path, origin=self.configuration.public_base_url)
+                     if method in ("GET", "HEAD") else None)
+            if asset is not None:
+                body, media_type = asset
+                headers = {**self._page_headers(), "ETag": asset_etag(body)}
+                if validator_matches(request.headers.get("if-none-match", ""), headers["ETag"]):
+                    return Response(status_code=304, headers=headers)
+                if method == "HEAD":
+                    headers["Content-Length"] = str(len(body))
+                return Response(b"" if method == "HEAD" else body, media_type=media_type, headers=headers)
+            # Never fall through to Baltor's HTML, navigation or public assets.
+            # Qualified unchanged client libraries and fonts serve both presentations.
+            shared_assets = {"/assets/supabase-client.js", "/assets/oauth-consent.js", "/assets/feed-profile.js",
+                             "/assets/geist.woff2", "/assets/geist-mono.woff2"}
+            if (path not in API_ROUTES and path not in shared_assets and path not in catalogue_feed.FORMATS
+                    and not feed_source_collections.handles(path)):
+                raise ServiceHttpError("route_unavailable", 404)
         if path in catalogue_feed.FORMATS or feed_source_collections.handles(path):
             if method not in ("GET", "HEAD") or request.url.query:
                 raise ServiceHttpError("invalid_feed_request", 400)
             try:
                 from .web_pages import packaged_site_map
                 from .model_directory_pages import canonical
-                origin = canonical(packaged_site_map(), "")
+                origin = (self.configuration.public_base_url if self.brand_profile is not None
+                          else canonical(packaged_site_map(), ""))
                 if path in catalogue_feed.FORMATS:
                     view = self.provisioning.current_view()
                     record = await self._work(lambda: catalogue_feed.snapshot(self.runtime, view))
@@ -2706,8 +2795,9 @@ class ServiceHttpApplication:
                 return JSONResponse({"resource": self.oauth_authorization.policy.resource_url,
                     "authorization_servers": [self.oauth_authorization.policy.issuer_url],
                     "scopes_supported": list(self.oauth_authorization.policy.allowed_scopes),
-                    "bearer_methods_supported": ["header"], "resource_name": "Baltor library",
-                    "resource_documentation": self.configuration.public_base_url + "/docs/searching-and-retrieving"})
+                    "bearer_methods_supported": ["header"], "resource_name": self.configuration.display_name + " library",
+                    "resource_documentation": self.configuration.public_base_url
+                        + ("/connect" if self.brand_profile is not None else "/docs/searching-and-retrieving")})
             if EXTERNAL_JWT_AUTHENTICATION not in self.authentication.modes:
                 raise ServiceHttpError("external_authorization_not_configured", 404)
             from .records import SCOPES

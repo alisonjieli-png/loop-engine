@@ -311,6 +311,14 @@ class OAuthAuthorizationProvider:
 
     def _read(self, store, kind, identity):
         row = self.catalog.read(store, kind, identity)
+        if (row is not None and isinstance(row.get("payload"), dict)
+                and isinstance(row["payload"].get("policy_id"), str)
+                and re.fullmatch(r"[0-9a-f]{64}", row["payload"]["policy_id"])
+                and row["payload"]["policy_id"] != self.policy_id):
+            # Other configured issuers use the same store, not the same
+            # delegation. Treat their random handles as unknown. Returning
+            # no guardable prior also prevents registration overwriting one.
+            return None, None
         return row, self._payload(row, kind)
 
     def _commit(self, store, records, guards, *, new_records=0, new_clients=0):

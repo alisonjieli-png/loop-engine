@@ -545,6 +545,23 @@ class AccountEmailAdapter:
 
     protocol_version = "account_email/v1"
 
+    def for_presentation(self, *, public_base_url, display_name):
+        """Change trusted message presentation, sharing admission and every limiter.
+
+        Only the HTTP host's validated passive profile calls this method.
+        Customer request fields cannot select an origin or a sender address.
+        """
+        from copy import copy
+        from dataclasses import replace
+        origin = validate_public_url(public_base_url, permit_loopback=self.configuration.allow_loopback)
+        if urlsplit(origin).path:
+            raise ServiceRuntimeError("account_email_origin_required")
+        presentation = copy(self)
+        presentation.public_base_url = origin
+        presentation.display_name = text(display_name, "the service display name")
+        presentation.configuration = replace(self.configuration, sender_name=display_name)
+        return presentation
+
     def __init__(self, configuration, secret_resolver, *, public_base_url, address_limits, display_name,
                  identity_transport=None, mail_transport=None, account_origins=None):
         if not isinstance(configuration, AccountEmailConfiguration) or not callable(secret_resolver):

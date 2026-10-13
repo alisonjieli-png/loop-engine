@@ -117,12 +117,22 @@ def _request(request, body):
 class OAuthHttp:
     def __init__(self, provider):
         self.provider = provider
+        self.documentation_path = "/docs/searching-and-retrieving"
         self.registration = ClientRegistrationOptions(enabled=True,
             valid_scopes=list(provider.policy.allowed_scopes), default_scopes=list(provider.policy.allowed_scopes))
         client = ClientAuthenticator(provider)
         self.handlers = {AUTHORIZE_PATH:AuthorizationHandler(provider), TOKEN_PATH:TokenHandler(provider, client),
             REGISTER_PATH:RegistrationHandler(provider, self.registration), REVOKE_PATH:RevocationHandler(provider, client)}
         self._attempts, self._attempt_lock = OrderedDict(), threading.Lock()
+
+    def for_provider(self, provider, *, documentation_path="/docs/searching-and-retrieving"):
+        """Bind handlers to one issuer while retaining the process-wide ceilings."""
+        presentation = OAuthHttp(provider)
+        if documentation_path not in ("/docs/searching-and-retrieving", "/connect"):
+            raise ValueError("OAuth documentation requires a qualified local address")
+        presentation.documentation_path = documentation_path
+        presentation._attempts, presentation._attempt_lock = self._attempts, self._attempt_lock
+        return presentation
 
     def permit(self, path, address="", *, now=None):
         """Bound successful as well as failed anonymous authorization work, in this process.
@@ -157,7 +167,7 @@ class OAuthHttp:
 
     def metadata(self):
         record = build_metadata(AnyHttpUrl(self.provider.policy.issuer_url),
-            AnyHttpUrl(self.provider.policy.issuer_url + "/docs/searching-and-retrieving"),
+            AnyHttpUrl(self.provider.policy.issuer_url + self.documentation_path),
             self.registration, RevocationOptions(enabled=True)).model_dump(mode="json", exclude_none=True)
         # AnyHttpUrl adds a trailing slash to an origin. RFC 8414 discovery
         # must publish exactly the issuer named by protected-resource metadata.
