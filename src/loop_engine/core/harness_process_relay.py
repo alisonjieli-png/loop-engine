@@ -149,7 +149,12 @@ def _wire_table(config, directory=None):
 
 
 def _handler(config, wires):
+    mcp_requests = {}
+    mcp_lock = threading.Lock()
+    housekeeping = {"record_type": "customer_relay_housekeeping/v1", "completed_cancellations": 0,
+                    "refused_cancellations": 0}
     class Handler(BaseHTTPRequestHandler):
+        customer_housekeeping = housekeeping
         def log_message(self, *args):
             pass
 
@@ -168,6 +173,11 @@ def _handler(config, wires):
             self.end_headers()
 
         def do_GET(self):
+            if self.path == "/mcp" and config["recipe"]["variant"] == "workspace_tools":
+                self.send_response(405)
+                self.send_header("Allow", "POST")
+                self.end_headers()
+                return
             if self.path not in ("/models", "/v1/models"):
                 self._reply(404, {"error": {"message": "unsupported relay endpoint"}})
                 return
@@ -204,6 +214,8 @@ def _handler(config, wires):
         def do_POST(self):
             try:
                 self.connection.settimeout(config["timeout_seconds"])
+                if self.path == "/mcp" and config["recipe"]["variant"] == "workspace_tools":
+                    return self._mcp()
                 wire = _select_wire(wires, self.path)
                 if wire is None:
                     self._reply(404, {"error": {"message": "unsupported relay endpoint"}})
@@ -236,6 +248,57 @@ def _handler(config, wires):
                     self._reply(400, {"error": {"message": "harness relay refused request"}})
                 except OSError:
                     pass
+
+        def _mcp(self):
+            length = self.headers.get("Content-Length", "")
+            if (not length.isdecimal() or not 0 < int(length) <= config["maximum_request_bytes"]
+                    or self.headers.get("Transfer-Encoding")):
+                raise ValueError("invalid MCP byte length")
+            raw = self.rfile.read(int(length))
+            if len(raw) != int(length):
+                raise ValueError("truncated MCP request")
+            message = _decode(raw)
+            if not isinstance(message, dict) or message.get("jsonrpc") != "2.0":
+                raise ValueError("MCP object required")
+            if message.get("method") == "notifications/cancelled":
+                # MCP permits ignoring cancellation of completed/uncancellable
+                # requests. Native SDK stream cleanup sends this after its tool
+                # answer. It cannot undo or retry the synchronous host effect;
+                # do not widen the host's read-only MCP callback allowlist.
+                params = message.get("params")
+                if (set(message) != {"jsonrpc", "method", "params"} or not isinstance(params, dict)
+                        or set(params) - {"requestId", "reason"} or type(params.get("requestId")) not in (str, int)
+                        or ("reason" in params and (not isinstance(params["reason"], str) or len(params["reason"]) > 1024))):
+                    raise ValueError("invalid cancellation notification")
+                with mcp_lock:
+                    if mcp_requests.get(params["requestId"]) != "completed":
+                        housekeeping["refused_cancellations"] = min(256, housekeeping["refused_cancellations"] + 1)
+                        raise ValueError("cancellation request is unknown, active or initialize")
+                    if housekeeping["completed_cancellations"] >= 256:
+                        raise ValueError("housekeeping byte-count ceiling")
+                    housekeeping["completed_cancellations"] += 1
+                self.send_response(202)
+                self.send_header("Content-Length", "0")
+                self.end_headers()
+                return
+            if "id" in message:
+                identity = message["id"]
+                if type(identity) not in (str, int):
+                    raise ValueError("invalid MCP request identity")
+                with mcp_lock:
+                    if identity in mcp_requests or len(mcp_requests) >= 256:
+                        raise ValueError("duplicate or excessive MCP request identities")
+                    mcp_requests[identity] = "active"
+            response = _exchange(config, {"_workspace_mcp": message})
+            if "id" in message:
+                with mcp_lock:
+                    mcp_requests[message["id"]] = "initialize" if message.get("method") == "initialize" else "completed"
+            if "id" not in message:
+                self.send_response(202)
+                self.send_header("Content-Length", "0")
+                self.end_headers()
+            else:
+                self._reply(200, {"jsonrpc": "2.0", "id": message["id"], **response})
     return Handler
 
 
@@ -250,16 +313,25 @@ def main():
     wires = _wire_table(config)
     module = _load_mounted_module(recipe["module"], recipe["module_sha256"])
     prepare = getattr(module, recipe["prepare_function"])
-    server = ThreadingHTTPServer(("127.0.0.1", 0), _handler(config, wires))
+    handler = _handler(config, wires)
+    server = ThreadingHTTPServer(("127.0.0.1", 0), handler)
     threading.Thread(target=server.serve_forever, daemon=True).start()
     try:
         base = f"http://127.0.0.1:{server.server_port}/v1"
         command, overrides, prompt = prepare(recipe["style"], config, base)
-        return subprocess.run(list(command), input=prompt,
-                              stdin=subprocess.DEVNULL if prompt is None else None,
-                              env={**os.environ, **overrides}).returncode
+        result = subprocess.run(list(command), input=prompt,
+                                stdin=subprocess.DEVNULL if prompt is None else None,
+                                env={**os.environ, **overrides})
+        if recipe["variant"] == "workspace_tools":
+            snapshot = module.collect_workspace_artifacts(config)
+            answer = _exchange(config, {"_workspace_artifacts": snapshot})
+            if answer != {"result": {"record_type": "customer_artifact_ack/v1", "files": len(snapshot["files"])}}:
+                raise ValueError("customer artifact export refused")
+        return result.returncode
     finally:
         server.shutdown()
+        if recipe["variant"] == "workspace_tools":
+            sys.stderr.write(_json(handler.customer_housekeeping).decode() + "\n")
 
 
 if __name__ == "__main__":

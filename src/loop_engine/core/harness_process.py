@@ -93,7 +93,7 @@ def _absolute(value):
 class HarnessProcessSpec:
     """Explicit installed software, with frozen command and mount identities.
 
-    ``style`` must name a text response recipe of ``catalog``, the release
+    ``style`` must name a text or workspace-tools recipe of ``catalog``, the release
     catalogue unless a check supplies a fixture one; a host file cannot
     supply a catalogue. Binding verifies the recipe's module and the codec
     module of each wire it declares against their catalogue digests."""
@@ -129,7 +129,7 @@ class HarnessProcessSpec:
         if not isinstance(catalog, HarnessRecipeCatalog):
             raise HarnessProcessError("a harness process reads a typed recipe catalogue")
         recipe = catalog.recipe(self.style)
-        if recipe is None or recipe.variant != TEXT_RESPONSE_VARIANT:
+        if recipe is None or recipe.variant not in (TEXT_RESPONSE_VARIANT, "workspace_tools"):
             raise HarnessSetupUnavailable('unsupported_style')
         try:
             modules = catalog.mounted_modules(recipe)
@@ -293,6 +293,9 @@ class SandboxLaunch:
     instruction_material: tuple = ()
     request_values: tuple = ()
     command: tuple = RELAY_COMMAND
+    read_only_files: tuple = ()
+    workspace_bytes: int | None = None
+    temporary_bytes: int | None = None
 
     def __post_init__(self):
         if not isinstance(self.spec, HarnessProcessSpec):
@@ -302,6 +305,16 @@ class SandboxLaunch:
         if (not isinstance(self.command, tuple) or not self.command
                 or any(not isinstance(part, str) or not part for part in self.command)):
             raise HarnessProcessError("the sandbox command must be an explicit tuple")
+        for source, target in self.read_only_files:
+            path = _absolute(source)
+            if (not path.is_file() or path.is_symlink() or not target.startswith("/relay/")
+                    or Path(target).name != target[len("/relay/"):]
+                    or target in ("/relay/run.py", "/relay/config.json", "/relay/task.txt", "/relay/broker.sock")):
+                raise HarnessProcessError("private_read_only_file_mount_refused")
+        if self.workspace_bytes is not None or self.temporary_bytes is not None:
+            if (self.spec.recipe.variant != "workspace_tools" or any(type(value) is not int or value < 1024 * 1024
+                    for value in (self.workspace_bytes, self.temporary_bytes))):
+                raise HarnessProcessError("bounded_customer_workspace_required")
 
 
 def recipe_environment(spec: HarnessProcessSpec, request_values):
@@ -328,13 +341,16 @@ def sandbox_arguments(launch: SandboxLaunch) -> list:
     args = ["/usr/bin/bwrap", "--unshare-all", "--die-with-parent", "--new-session", "--clearenv",
             "--ro-bind", "/usr", "/usr", "--symlink", "usr/bin", "/bin",
             "--symlink", "usr/lib", "/lib", "--symlink", "usr/lib64", "/lib64",
-            "--proc", "/proc", "--dev", "/dev", "--tmpfs", "/tmp"]
+            "--proc", "/proc", "--dev", "/dev"]
+    args += (["--size", str(launch.temporary_bytes)] if launch.temporary_bytes is not None else []) + ["--tmpfs", "/tmp"]
     for path in ("/etc/ssl", "/etc/ld.so.cache", "/etc/passwd", "/etc/group"):
         if Path(path).exists():
             args += ["--ro-bind", path, path]
     for path in launch.spec.read_only_paths:
         args += ["--ro-bind", path, path]
-    args += ["--bind", str(run / "work"), "/work", "--ro-bind", str(relay), "/relay/run.py",
+    args += (["--ro-bind", str(run / "work"), "/seed", "--size", str(launch.workspace_bytes), "--tmpfs", "/work"]
+             if launch.workspace_bytes is not None else ["--bind", str(run / "work"), "/work"])
+    args += ["--ro-bind", str(relay), "/relay/run.py",
              "--ro-bind", str(run / "config.json"), "/relay/config.json",
              "--ro-bind", str(run / "task.txt"), "/relay/task.txt",
              "--ro-bind", str(launch.socket_path), "/relay/broker.sock"]
@@ -342,6 +358,8 @@ def sandbox_arguments(launch: SandboxLaunch) -> list:
         args += ["--ro-bind", str(run / "work" / item.name), "/work/" + item.name]
     for module in launch.spec.recipe_modules:
         args += ["--ro-bind", module.path, "/relay/" + module.module + ".py"]
+    for source, target in launch.read_only_files:
+        args += ["--ro-bind", source, target]
     # The sandbox's own layout and consent switches are a typed, digest-bound
     # record; see harness_confinement for what each variable means.
     args += recipe_environment(launch.spec, launch.request_values).setenv_arguments()
@@ -354,10 +372,12 @@ def _request_values(request) -> tuple:
         "output_allowance", "context_capacity"))
 
 
-def _sandbox(request, run, socket_path):
+def _sandbox(request, run, socket_path, *, read_only_files=(), workspace_bytes=None, temporary_bytes=None):
     return sandbox_arguments(SandboxLaunch(
         spec=request.spec, run_directory=str(run), socket_path=str(socket_path),
         instruction_material=request.instruction_material,
+        read_only_files=read_only_files,
+        workspace_bytes=workspace_bytes, temporary_bytes=temporary_bytes,
         request_values=_request_values(request)))
 
 
@@ -440,6 +460,31 @@ def _identity_payload(request, run, instruction_manifest) -> dict:
 
 def run_harness_process(request: HarnessProcessRequest,
                         broker: Callable[[dict], dict]) -> HarnessProcessResult:
+    """Run only the existing text-response profile, refusing workspace tools."""
+    if not isinstance(request, HarnessProcessRequest) or request.spec.recipe.variant != TEXT_RESPONSE_VARIANT:
+        raise HarnessProcessError("text_response_profile_required")
+    return _run_harness_process(request, broker)
+
+
+def run_workspace_harness_process(request, broker, boundary):
+    """Run an explicit confined customer profile with a host-owned boundary."""
+    from .opencode_customer import OpenCodeCustomerBoundary
+    if (not isinstance(boundary, OpenCodeCustomerBoundary)
+            or not isinstance(request, HarnessProcessRequest)
+            or request.spec.recipe.variant != "workspace_tools"
+            or request.spec.process_isolation != "bubblewrap"):
+        raise HarnessProcessError("confined_customer_profile_required")
+    boundary.validate_transport(request)
+    remaining = boundary.budget.remaining_seconds
+    if remaining <= 0 or boundary.budget.cancelled.is_set():
+        raise HarnessProcessError("customer_cancelled_or_expired")
+    with boundary.operation():
+        return _run_harness_process(replace(request, timeout_seconds=min(request.timeout_seconds, remaining)),
+                                    broker, workspace_boundary=boundary)
+
+
+def _run_harness_process(request: HarnessProcessRequest,
+                        broker: Callable[[dict], dict], *, workspace_boundary=None) -> HarnessProcessResult:
     """Execute private text-only harness mechanics; broker stays on caller thread.
 
     Process cancellation kills and waits for the whole PID namespace. An
@@ -457,10 +502,19 @@ def run_harness_process(request: HarnessProcessRequest,
     (run / "work" / "home").mkdir(parents=True)
     for item in request.instruction_material:
         _write_private(run / "work" / item.name, item.body.encode("utf-8"))
+    if workspace_boundary is not None:
+        workspace_boundary.seed(run / "work")
+        workspace_boundary.snapshot_client(run)
     instruction_manifest = tuple((item.name, item.digest) for item in request.instruction_material)
-    _write_private(run / "config.json", _json(_relay_configuration(request)).encode())
+    configuration = _relay_configuration(request)
+    if workspace_boundary is not None:
+        configuration["customer_profile"] = workspace_boundary.configuration()
+    _write_private(run / "config.json", _json(configuration).encode())
     _write_private(run / "task.txt", request.prompt.encode())
-    identity = _sha(_json(_identity_payload(request, run, instruction_manifest)).encode())
+    identity_payload = _identity_payload(request, run, instruction_manifest)
+    if workspace_boundary is not None:
+        identity_payload["customer_profile"] = workspace_boundary.identity()
+    identity = _sha(_json(identity_payload).encode())
     errors, exchanges, buffers = [], [], [bytearray(), bytearray()]
     truncated, expired, stop = [False, False], threading.Event(), threading.Event()
     last_response, history_size = None, 0
@@ -482,15 +536,30 @@ def run_harness_process(request: HarnessProcessRequest,
             os.chmod(socket_path, 0o600)
             listener.listen(4)
             command = (trusted_process_launch(request, run, socket_path)
-                       if request.spec.process_isolation == "trusted_process" else _sandbox(request, run, socket_path))
+                       if request.spec.process_isolation == "trusted_process" else _sandbox(request, run, socket_path,
+                           read_only_files=workspace_boundary.read_only_files if workspace_boundary is not None else (),
+                           workspace_bytes=workspace_boundary.resource_limits.workspace_bytes if workspace_boundary is not None else None,
+                           temporary_bytes=workspace_boundary.resource_limits.temporary_bytes if workspace_boundary is not None else None))
+            if workspace_boundary is not None:
+                command = workspace_boundary.resources.command(command, request.timeout_seconds)
             proc = subprocess.Popen(command,
                 stdin=subprocess.DEVNULL, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
-                env=(launch_environment(request, run).variables() if request.spec.process_isolation == "trusted_process"
+                env=(workspace_boundary.resources.environment() if workspace_boundary is not None else
+                     launch_environment(request, run).variables() if request.spec.process_isolation == "trusted_process"
                      else {"PATH": default_confined_environment().path}),
                 cwd=str(run / "work") if request.spec.process_isolation == "trusted_process" else None,
                 start_new_session=True)
+            if workspace_boundary is not None:
+                workspace_boundary.resources.dispatched = True
 
             def kill():
+                if workspace_boundary is not None:
+                    try:
+                        workspace_boundary.resources.stop()
+                    except Exception:
+                        # An unconfirmed cgroup teardown is a refusal, but must
+                        # not prevent killing/waiting for our launcher as well.
+                        errors.append("customer_cgroup_cleanup_unknown")
                 if proc.poll() is None:
                     try:
                         os.killpg(proc.pid, signal.SIGKILL)
@@ -498,9 +567,21 @@ def run_harness_process(request: HarnessProcessRequest,
                         pass
 
             def watchdog():
-                if not stop.wait(request.timeout_seconds):
-                    expired.set()
-                    kill()
+                if workspace_boundary is None:
+                    if not stop.wait(request.timeout_seconds):
+                        expired.set()
+                        kill()
+                else:
+                    while not stop.wait(0.05):
+                        if workspace_boundary.budget.cancelled.is_set():
+                            errors.append("customer_cancelled")
+                            kill()
+                            return
+                        if (time.monotonic() - started >= request.timeout_seconds
+                                or not workspace_boundary.budget.remaining_seconds):
+                            expired.set()
+                            kill()
+                            return
 
             readers = [threading.Thread(target=drain, args=(pipe, index), daemon=True)
                        for index, pipe in enumerate((proc.stdout, proc.stderr))]
@@ -508,6 +589,8 @@ def run_harness_process(request: HarnessProcessRequest,
             for thread in (*readers, timer):
                 thread.start()
             try:
+                if workspace_boundary is not None:
+                    workspace_boundary.resources.wait_verified(proc)
                 while proc.poll() is None and not expired.is_set():
                     if not select.select([listener], [], [], 0.05)[0]:
                         continue
@@ -529,37 +612,47 @@ def run_harness_process(request: HarnessProcessRequest,
                             serialized = _json(body)
                             entry = HarnessProcessExchange(serialized, _sha(serialized.encode()))
                             exchanges.append(entry)  # Retain the exact attempt before calling its broker.
-                            if body.get("model") != request.model or not isinstance(body.get("messages"), list):
-                                raise HarnessProcessError("request_identity_mismatch")
-                            if body.get("tools") or body.get("functions"):
-                                raise HarnessProcessError("native_tools_not_authorized")
+                            if workspace_boundary is not None:
+                                workspace_boundary.admit(body, request)
+                            else:
+                                if body.get("model") != request.model or not isinstance(body.get("messages"), list):
+                                    raise HarnessProcessError("request_identity_mismatch")
+                                if body.get("tools") or body.get("functions"):
+                                    raise HarnessProcessError("native_tools_not_authorized")
                             forwarded = dict(body)
                             forwarded.pop("max_completion_tokens", None)
                             forwarded["max_tokens"] = request.output_allowance
                             forwarded["stream"] = False
                             exchanges[-1] = replace(entry, broker_called=True)
-                            response = broker(forwarded)
+                            response = (workspace_boundary.invoke_service(body) if workspace_boundary is not None
+                                        and any(key in body for key in ("_workspace_mcp", "_workspace_http", "_workspace_artifacts")) else broker(forwarded))
                             if not isinstance(response, dict):
                                 raise HarnessProcessError("broker_response_not_object")
                             data = _json(response).encode()
                             if len(data) > request.maximum_response_bytes:
                                 raise HarnessProcessError("response_byte_limit")
                             exchanges[-1] = replace(exchanges[-1], response_digest=_sha(data))
-                            choices = response.get("choices")
-                            if (not isinstance(choices, list) or len(choices) != 1
-                                    or not isinstance(choices[0], dict)
-                                    or not isinstance(choices[0].get("message"), dict)
-                                    or choices[0]["message"].get("role") != "assistant"
-                                    or not isinstance(choices[0]["message"].get("content"), str)
-                                    or choices[0]["message"].get("tool_calls")
-                                    or choices[0]["message"].get("function_call")):
-                                raise HarnessProcessError("broker_response_not_text")
-                            last_response = response
+                            if workspace_boundary is not None:
+                                if workspace_boundary.observe(body, response):
+                                    last_response = response
+                            else:
+                                choices = response.get("choices")
+                                if (not isinstance(choices, list) or len(choices) != 1
+                                        or not isinstance(choices[0], dict)
+                                        or not isinstance(choices[0].get("message"), dict)
+                                        or choices[0]["message"].get("role") != "assistant"
+                                        or not isinstance(choices[0]["message"].get("content"), str)
+                                        or choices[0]["message"].get("tool_calls")
+                                        or choices[0]["message"].get("function_call")):
+                                    raise HarnessProcessError("broker_response_not_text")
+                                last_response = response
                         except Exception as exc:
                             code = str(exc) if isinstance(exc, HarnessProcessError) else "broker_" + type(exc).__name__
                             errors.append(code)
                             if entry is not None:
                                 exchanges[-1] = replace(exchanges[-1], error_code=code)
+                            if workspace_boundary is not None:
+                                workspace_boundary.failed(body if entry is not None else None, code)
                             data = _json({"error": {"message": "model broker refused request", "code": code}}).encode()
                         try:
                             client.sendall(len(data).to_bytes(8, "big") + data)
@@ -591,6 +684,13 @@ def run_harness_process(request: HarnessProcessRequest,
         errors.append("process_output_limit")
     if not output and not errors:
         errors.append("empty_harness_output" if proc.returncode == 0 else "process_failed")
+    if workspace_boundary is not None:
+        try:
+            if not workspace_boundary.resources.cleanup_confirmed:
+                raise HarnessProcessError("customer_capture_requires_confirmed_cleanup")
+            workspace_boundary.release_artifacts()
+        except HarnessProcessError as error:
+            errors.append(str(error))
     return HarnessProcessResult(proc.returncode, expired.is_set(), output, stdout, stderr,
         tuple(dict.fromkeys(errors)), identity, round(time.monotonic() - started, 6),
         *truncated, tuple(exchanges), instruction_manifest)
