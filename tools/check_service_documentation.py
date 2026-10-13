@@ -318,10 +318,24 @@ def source_facts(root: Path) -> dict:
                         refusals.add(constants[inner.id])
 
     addresses = {"/mcp"}
-    for module in (HTTP_MODULE, PUBLIC_GOOD_PAGE_MODULE):
-        for node in ast.walk(trees[root / module]):
-            if isinstance(node, ast.Constant) and isinstance(node.value, str) and node.value.startswith("/"):
-                addresses.add(node.value)
+    # A presentation's documentation link is a destination, not a route.
+    # Read the transport's route table and path comparisons, never every
+    # slash-prefixed string in its source.
+    for node in ast.walk(trees[root / HTTP_MODULE]):
+        route_values = ()
+        if (isinstance(node, ast.Assign) and isinstance(node.value, ast.Dict)
+                and any(isinstance(target, ast.Name) and target.id == "API_ROUTES"
+                        for target in node.targets)):
+            route_values = node.value.keys
+        elif (isinstance(node, ast.Compare)
+              and ((isinstance(node.left, ast.Name) and node.left.id == "path")
+                   or (isinstance(node.left, ast.Attribute) and node.left.attr == "path"))):
+            route_values = (item for comparator in node.comparators for item in ast.walk(comparator))
+        addresses.update(value for item in route_values
+                         if (value := literal(item)) is not None and value.startswith("/"))
+    for node in ast.walk(trees[root / PUBLIC_GOOD_PAGE_MODULE]):
+        if isinstance(node, ast.Constant) and isinstance(node.value, str) and node.value.startswith("/"):
+            addresses.add(node.value)
     # Page prose can name another owner's route. Only address-table keys establish
     # a page route here; otherwise a stale link can validate itself after its route moves.
     for node in trees[root / PAGES_MODULE].body:

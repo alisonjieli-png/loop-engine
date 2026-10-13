@@ -11,11 +11,11 @@ from importlib.resources import files
 import json
 import re
 import unicodedata
-from urllib.parse import urlsplit
 
 from loop_engine.core.model_call_records import default_secret_patterns
 from loop_engine.core.service_runtime import feed_source_collections as collections
 from loop_engine.core.service_runtime.catalogue_bundle import strict_json
+from loop_engine.core.service_runtime.http_auth import validate_public_origin
 
 REQUEST = "agent_feed_reading_profile_request/v2"
 PROFILE = "agent_feed_reading_profile/v2"
@@ -232,12 +232,10 @@ def source_origin(value):
     if value is None:
         return None
     try:
-        parsed = urlsplit(value) if type(value) is str and 0 < len(value) <= 512 else None
-        if (parsed is None or parsed.scheme != "https" or not parsed.hostname or parsed.username
-                or parsed.password or parsed.path or parsed.query or parsed.fragment
+        if (type(value) is not str or not 0 < len(value) <= 512
                 or not re.fullmatch(r"https://[a-z0-9.-]+(?::[0-9]{1,5})?", value)):
             raise ValueError()
-        parsed.port
+        validate_public_origin(value)
     except (ValueError, TypeError):
         raise FeedProfileError("feed_profile_source_origin_invalid") from None
     return value

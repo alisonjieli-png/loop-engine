@@ -34,6 +34,28 @@ a separately branded deployment. This direction changes neither current
 prices nor existing subscriptions, grants or free preview terms; the proposed
 $400 hosted computer is not a live offer.
 
+## Task intake and prioritization within AgentAFK, October 13, 2026
+
+The owner places the proposed Baltor Queue within AgentAFK: turn raw data,
+feed observations and retained work into useful tasks, then prioritize them.
+Feeds supplies the evidence and possible next work; AgentFoundry supplies
+reusable implementations; AgentAFK owns task admission, ordering and bounded
+execution. Separate website presentation does not create another task store,
+scheduler, permission system or executable runtime.
+
+Use the existing managed records, research-work compiler and reactive
+scheduler. Retain source references, applicability, dependencies, missing
+evidence, priority reasons, dismissal and the conditions for reopening a task.
+A source update or compiler change cannot silently undo dismissal. Ranking
+does not grant execution authority, and a queued item is not accepted work.
+
+The internal research queue and ordered local overnight manifest already
+exist. General raw-data extraction, customer queue presentation and measured
+prioritization quality remain separate qualification work in S-6.24.03. The
+owner's criticism of frontier-model prioritization is the motivation for a
+comparison, not an established benchmark result. Include simple ordering and
+the existing model/harness workflow as controls.
+
 ## Portable media production, October 13, 2026
 
 The owner wants existing media-generation work integrated into Baltor and

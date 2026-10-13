@@ -49,6 +49,15 @@ The deployment record identifies their actual placement. A Cloudflare product
 or upstream repository becomes an engine choice only after its existing typed
 edge, permissions, costs and behavior are qualified.
 
+The owner's October 13 queue direction puts raw-data task extraction and
+prioritization within AgentAFK. Feeds supplies source evidence and candidate
+next work; AgentAFK admits and orders bounded tasks under the existing managed
+records and scheduler. Preserve dismissal, dependencies, missing evidence and
+reasons for priority. A recommendation does not authorize execution. The
+[owner decision](OWNER-DECISIONS.md#task-intake-and-prioritization-within-agentafk-october-13-2026)
+and S-6.24.03 separate existing internal queues from the customer product and
+its required comparison against simple ordering and ordinary agent work.
+
 Maintain a prioritized research frontier: source discoveries and observed
 failures can suggest further questions, with shared finite budgets and explicit
 exit conditions. Popularity is a discovery signal, not qualification. Public

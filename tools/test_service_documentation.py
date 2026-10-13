@@ -236,6 +236,17 @@ class ServiceDocumentationCheck(unittest.TestCase):
             self.assertIn("address", self.kinds(report))
             self.assertIn("/connect", self.values(report))
 
+    def test_an_oauth_documentation_destination_does_not_declare_a_page(self):
+        """An issuer's help link cannot prove that the linked page is served."""
+        with tempfile.TemporaryDirectory() as folder:
+            root = build_copy(Path(folder))
+            edit(root, HTTP_MODULE, 'documentation_path="/connect"',
+                 'documentation_path="/unserved-reference"')
+            edit(root, SETUP_PAGE, '/connect', '/unserved-reference', every=True)
+            report = check(root)
+            self.assertIn("address", self.kinds(report))
+            self.assertIn("/unserved-reference", self.values(report))
+
     def test_the_privacy_notice_address_is_held_to_the_page_table(self):
         """The setup guide names the privacy notice address, so the page table must keep serving it."""
         with tempfile.TemporaryDirectory() as folder:

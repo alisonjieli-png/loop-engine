@@ -1,5 +1,41 @@
 schema: hardcoding_allowlist/v1
 entries:
+- finding_id: hardcoding.879c94ff14b20ac16f80cc38
+  owner: "loop_engine.core.service_runtime.agentfeeds_pages"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed October 13, 2026: the owner-selected AgentFeeds origin is the inert renderer default. Production passes the explicit host-bound service_brand_profile/v1 origin; the renderer performs no network read. Exact-origin refusal and separate-brand HTTP/browser tests cover this binding. Another origin is a new finding."
+  created_on: '2026-10-13'
+  expires_on: '2027-01-13'
+- finding_id: hardcoding.5a1ea5d3c45cb306696d0300
+  owner: "loop_engine.core.service_runtime.agentfeeds_pages:render"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed October 13, 2026: an HTTPS syntax guard after the existing passive exact-origin validator, not a provider endpoint. The only HTTP exception is explicitly permitted loopback test configuration. Renderer tests refuse credentials, paths, insecure production origins and unsupported ports."
+  created_on: '2026-10-13'
+  expires_on: '2027-01-13'
+- finding_id: hardcoding.00cd5b246e1f52aa20044750
+  owner: "loop_engine.core.service_runtime.feed_profiles:source_origin"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed October 13, 2026: strict syntax for passive operator-supplied source origins. The existing HTTP authentication origin validator also checks structure and port validity; imported profiles and source text cannot select an origin. Profile tests reject path, query, fragment, credential, control-character and invalid-port inputs. No network request is made."
+  created_on: '2026-10-13'
+  expires_on: '2027-01-13'
+- finding_id: hardcoding.6106a5225b0da81c1f9ce6c6
+  owner: "tools.check_agentfeeds.mjs:url"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed October 13, 2026: synthetic declared brand origin in the browser check. The browser routes its socket to an owned loopback fixture and preserves Host/Origin through the real service; all other network destinations are aborted. This is neither a public endpoint nor live TLS qualification."
+  created_on: '2026-10-13'
+  expires_on: '2027-01-13'
+- finding_id: hardcoding.1f5d7fecc795a83d543a5f4e
+  owner: "tools.check_agentfeeds.mjs:url"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed October 13, 2026: synthetic unavailable identity provider in UI fixtures. The provider client and API replies are explicit browser fixtures and all external traffic is aborted. Real branded HTTP/OAuth boundaries have separate loopback tests; no provider access or successful live account is claimed."
+  created_on: '2026-10-13'
+  expires_on: '2027-01-13'
+- finding_id: hardcoding.87ee3e3dd92a8d615ea05a0d
+  owner: "tools.knowledge_radar.community_watch:ingest"
+  classification: CLOSED_CONTROLLED_VOCABULARY
+  rationale: "Reviewed October 13, 2026: existing managed lead state preserved by the intake owner. Changed source evidence must not reopen a dismissed lead. Owning tests exercise repeated and changed sources, compiler reconciliation and already admitted work; all three removed-guard controls detect dismissal loss. This is one existing state, not a second permission or queue policy."
+  created_on: '2026-10-13'
+  expires_on: '2027-01-13'
 - finding_id: hardcoding.ad60058684a25c2d261a8bce
   owner: "tools.knowledge_radar.community-watch-v1.json:sources[9].url"
   classification: STRATEGY_OR_PROVIDER_BINDING

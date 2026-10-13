@@ -1,14 +1,11 @@
 """Real loopback brand boundaries; one runtime/account store and synthetic providers."""
 from contextlib import contextmanager
 from dataclasses import replace
-import sys
-import types
 import unittest
 from unittest import mock
 from urllib.parse import parse_qs, urlsplit
 
 import httpx
-import loop_engine.core.service_runtime as service_package
 
 from loop_engine.core.service_runtime.brand_profiles import ServiceBrandProfile
 from loop_engine.core.service_runtime.http import ServiceHttpConfiguration
@@ -59,15 +56,8 @@ class BrandHttpTests(unittest.TestCase):
     def setUp(self):
         self.mail = _Provider()
         self.billing = SharedBillingFixture()
-        # UI belongs to its own component/worktree. This boundary fixture
-        # supplies a tiny inert renderer, so it tests dispatch, not page copy.
-        pages = types.ModuleType("loop_engine.core.service_runtime.agentfeeds_pages")
-        pages.render = lambda path, *, origin: (("AgentFeeds " + origin + path).encode(), "text/html") if path in (
-            "/", "/signup", "/login", "/account", "/auth/confirm", "/oauth/consent") else None
-        patcher = mock.patch.dict(sys.modules, {pages.__name__: pages})
-        patcher.start(); self.addCleanup(patcher.stop)
-        package_patch = mock.patch.object(service_package, "agentfeeds_pages", pages, create=True)
-        package_patch.start(); self.addCleanup(package_patch.stop)
+        # Exercise the actual integrated renderer through the trusted host
+        # selector; synthetic providers isolate mail and identity effects only.
         original = existing.running_http
         @contextmanager
         def branded(fixture, **kwargs):
@@ -158,6 +148,16 @@ class BrandHttpTests(unittest.TestCase):
         self.assertEqual(self.fixture.client.get("/.well-known/oauth-authorization-server").json()["issuer"], self.fixture.base)
         self.assertEqual(self.client.get("/harness-files").status_code, 404)
         self.assertEqual(self.client.get("/assets/service.js").status_code, 404)
+        notices = self.client.get("/assets/third-party-notices.txt")
+        self.assertEqual(notices.status_code, 200, notices.text)
+        self.assertTrue(notices.content)
+        for suffix in ("json", "md", "rss"):
+            feed = self.client.get("/feeds/sources." + suffix)
+            self.assertEqual(feed.status_code, 200, feed.text)
+            self.assertIn("AgentFeeds source collections", feed.text)
+            self.assertNotIn("Baltor source collections", feed.text)
+            self.assertNotIn("Browse Baltor", feed.text)
+            self.assertEqual(self.client.get("/feeds/catalogue." + suffix).status_code, 404)
 
     def test_unknown_host_and_cross_brand_origins_refuse_before_mail(self):
         signup = {"record_type": "service_account_signup_request/v2", "email": "brand@example.invalid"}

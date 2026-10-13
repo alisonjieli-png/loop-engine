@@ -69,6 +69,16 @@ def validate_reference_url(value):
     return value
 
 
+def validate_public_origin(value, *, permit_loopback=False):
+    """Validate one exact passive service origin without normalizing its bytes."""
+    origin = validate_public_url(value, permit_loopback=permit_loopback)
+    parsed = urlsplit(origin)
+    if parsed.path or origin != value or "\\" in origin or any(c.isspace() for c in origin):
+        raise ValueError("brand presentation requires one exact origin")
+    parsed.port
+    return origin
+
+
 @dataclass(frozen=True)
 class ServiceHttpAuthentication:
     """Versioned host authentication settings, not credentials or tenant grants."""

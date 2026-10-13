@@ -24,7 +24,7 @@ continuation:
       - {task: S-6.217.01, owner: History and evidence, offset_hours: 0, duration_hours: 3}
       - {task: S-6.204.02, owner: Launch and funding, offset_hours: 3, duration_hours: 5}
       - {task: S-6.204.01, owner: Customer outcomes, offset_hours: 6, duration_hours: 4}
-  execution_order: ["S-6.35.03","S-6.35.04","S-6.35.05","S-6.35.06","S-6.12.04","S-6.35.01","S-6.215.01","S-6.215.02","S-6.215.03","S-6.215.04","S-6.215.05","S-6.215.06","S-6.215.07","S-6.215.08","S-6.215.09","S-6.215.10","S-6.215.11","S-6.215.12","S-6.215.13","S-6.214.01","S-6.214.02","S-6.214.03","S-6.214.04","S-6.214.13","S-6.214.05","S-6.214.06","S-6.214.15","S-6.214.07","S-6.214.09","S-6.214.12","S-6.214.10","S-6.214.11","S-6.214.14","S-6.207.01","S-6.207.02","S-6.207.03","S-6.207.04","S-6.207.05","S-6.218.01","S-6.218.02","S-6.218.03","S-6.218.04","S-6.218.05","S-6.218.06","S-6.218.07","S-6.218.08","S-6.218.09","S-6.218.10","S-6.13.01","S-6.13.02","S-6.13.03","S-6.12.01","S-6.12.02","S-6.12.03","S-6.24.01","S-6.24.02","S-6.201.01","S-6.201.02","S-6.201.03","S-6.201.04","S-6.102.01","S-6.102.02","S-6.204.01","S-6.204.02","S-6.216.01","S-6.67.01","S-6.35.02","S-6.217.01","S-6.215.14","S-6.214.08"]
+  execution_order: ["S-6.35.03","S-6.35.04","S-6.35.05","S-6.35.06","S-6.12.04","S-6.35.01","S-6.215.01","S-6.215.02","S-6.215.03","S-6.215.04","S-6.215.05","S-6.215.06","S-6.215.07","S-6.215.08","S-6.215.09","S-6.215.10","S-6.215.11","S-6.215.12","S-6.215.13","S-6.214.01","S-6.214.02","S-6.214.03","S-6.214.04","S-6.214.13","S-6.214.05","S-6.214.06","S-6.214.15","S-6.214.07","S-6.214.09","S-6.214.12","S-6.214.10","S-6.214.11","S-6.214.14","S-6.207.01","S-6.207.02","S-6.207.03","S-6.207.04","S-6.207.05","S-6.218.01","S-6.218.02","S-6.218.03","S-6.218.04","S-6.218.05","S-6.218.06","S-6.218.07","S-6.218.08","S-6.218.09","S-6.218.10","S-6.13.01","S-6.13.02","S-6.13.03","S-6.12.01","S-6.12.02","S-6.12.03","S-6.24.01","S-6.24.02","S-6.24.03","S-6.201.01","S-6.201.02","S-6.201.03","S-6.201.04","S-6.102.01","S-6.102.02","S-6.204.01","S-6.204.02","S-6.216.01","S-6.67.01","S-6.35.02","S-6.217.01","S-6.215.14","S-6.214.08"]
   title: First release and continued system development
   started_at: "2026-09-19T14:12:54Z"
   target_at: "2026-09-20T14:12:54Z"
@@ -2634,6 +2634,16 @@ steps:
         next_action: "Run the customer path on this PC without borrowing administrator access."
         evidence: ""
         comment: "A successful metadata request is not a completed harness task."
+      - id: "S-6.24.03"
+        title: "Turn raw evidence into a prioritized AgentAFK task queue"
+        status: "building"
+        completion_status: "live_qualified"
+        depends_on: []
+        acceptance: "A customer reviews source-linked tasks with applicability, dependencies, priority reasons and holds, then admits only authorized bounded work; measured accepted outcomes exceed or match a simple ordering control."
+        procedure: ["Reuse CommunityStore, RecordOperationService, the research-work compiler and reactive scheduler; do not create another task registry or runtime.","Keep raw evidence, inferred task, ranking, admission and execution as separate states with exact source revisions.","Respect duplicates, dismissed and superseded work, missing task evidence, failed sources, deadlines, dependencies and remaining budgets.","Compare declared priority rules and the ordinary model/harness workflow on independently labeled relevant, irrelevant, duplicate, keep and abstain cases.","Connect admitted task files to the bounded overnight queue only under explicit execution authority; retain every failed or unknown attempt."]
+        next_action: "Expose a passive inspectable candidate-task projection with priority contributions and hold reasons, then qualify the customer admission path."
+        evidence: "October 13 owner direction places Queue within AgentAFK. Existing source intake, managed records, priority aging and unapproved work compilation were inspected. A reproduced defect reopened dismissed work after compiler or source changes; the repair preserves dismissal and cancels stale admitted work. 140 related tests and three removed-guard controls passed in the isolated worktree; customer queue delivery and comparative prioritization remain unqualified."
+        comment: "The current keyword score and manifest order are baselines, not measured task value. Feeds supplies evidence; AgentAFK owns task intake, ordering and execution."
     title: Deliver client, authentication, endpoint-based model and native-harness onboarding
     status: building
     depends_on: [S-6.5, S-6.9, S-6.12]
@@ -5498,7 +5508,7 @@ steps:
         depends_on: []
         acceptance: "Accessible owner directions and actions from the requested time window map to existing roadmap owners with coverage gaps retained."
         procedure: ["Read actual message timestamps and distinguish owner instructions from tool or agent output.","Reconcile changed prices, product scope, privacy, deployment and source requests.","Keep source text private and record only authorized generalizations in public documentation."]
-        next_action: "Carry the 25 obligation groups into their existing owners, including unfinished shareable-draft cleanup; append newer owner requests without claiming inaccessible history was audited."
+        next_action: "Carry the retained obligation groups into their existing owners; the October 13 brand launch belongs to S-6.35.06, maintained feeds to S-6.214 and raw-data task prioritization to S-6.24.03."
         evidence: "The October 9 16:46:07 UTC to October 11 16:46:07 UTC review covers forty selected local files, 57 user-role and 184 visible assistant records. Sixty Codex replies omitted by the first extractor were recovered without reasoning/tool-output ingestion. All 241 records were classified and sixteen deduplicated owner requests mapped to 25 obligation groups; 35 checks passed. The oversized record predates the window. Existing OAuth success, later release chronology and unfinished claims are reconciled; complete historical action or unavailable external-conversation coverage is not certified."
         comment: "Imported instructions are historical data, not current effect authority."
     title: "Library candidates from the owner's Dot direction: review and persona packs, rubrics, briefs, templates and worked examples, one per distinct job"

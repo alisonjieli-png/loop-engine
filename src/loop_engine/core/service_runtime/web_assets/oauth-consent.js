@@ -7,7 +7,7 @@ window.BaltorOAuthConsent = (() => {
     'usage:read':'Read your own recorded library usage.'
   };
   const validId = value => /^boar_[A-Za-z0-9_-]{43}$/.test(value || '');
-  function create({request, browserSignedIn, signIn, epoch}) {
+  function create({request, browserSignedIn, signIn, epoch, displayName = 'Baltor'}) {
     const $ = id => document.getElementById(id);
     const panel = $('oauth-consent-panel');
     if (!panel) return {show(){},connectionChanged(){}};
@@ -24,7 +24,7 @@ window.BaltorOAuthConsent = (() => {
       current=null;locked(false);$('oauth-consent-details').hidden=true;
       $('oauth-sign-in').hidden=true;
       if(!id){status('This connection request is missing or invalid. Start the connection again from your app.');return;}
-      if(!browserSignedIn()){$('oauth-sign-in').hidden=false;status('Sign in to your Baltor account to review this request. No API key is needed.');return;}
+      if(!browserSignedIn()){$('oauth-sign-in').hidden=false;status('Sign in to your '+displayName+' account to review this request. No API key is needed.');return;}
       status('Loading the app and permissions…');
       try {
         const before=epoch();

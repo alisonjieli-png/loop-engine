@@ -240,11 +240,12 @@ def _rss(data, collections, sources, base, title):
     return "\n".join((*rows, "</channel></rss>", ""))
 
 
-def render(path, origin):
+def render(path, origin, *, display_name="Baltor"):
     """Render a bounded release snapshot. A source's publication date is deliberately absent."""
     data, collections, sources = _selection(path)
     base = _base(origin)
-    title = collections[0].title if len(collections) == 1 else "Baltor source collections"
+    _require(display_name in ("Baltor", "AgentFeeds"))
+    title = collections[0].title if len(collections) == 1 else display_name + " source collections"
     if path.endswith(".json"):
         document = {"version": FEED_VERSION, "title": title, "home_page_url": base + "/feeds#source-collections",
                     "feed_url": base + path, "description": data.limitations[0], "language": "en",
@@ -272,7 +273,8 @@ def render(path, origin):
             for source_id in item.source_ids:
                 source = source_by_id[source_id]
                 text += f"- [{source.name}]({source.url}): {source.description} {source.access} {source.reuse}\n"
-        text += f"\n[Browse Baltor Feeds]({base}/feeds). Selecting a collection does not schedule a job or enable a service.\n"
+        label = "Browse AgentFeeds" if display_name == "AgentFeeds" else "Browse Baltor Feeds"
+        text += f"\n[{label}]({base}/feeds). Selecting a collection does not schedule a job or enable a service.\n"
     body = text.encode("utf-8")
     _require(len(body) <= MAXIMUM_OUTPUT_BYTES)
     return body, formats()[path]

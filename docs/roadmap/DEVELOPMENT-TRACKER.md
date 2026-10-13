@@ -3,19 +3,21 @@
 Kind: generated view. Do not edit by hand. The only task authority is
 [roadmap.yaml](roadmap.yaml); change it, then run
 `PYTHONPATH=src:tools .venv/bin/python tools/build_development_tracker.py`.
-Source fingerprint: `sha256:477c6c8d57b11a9141318e5727165ababbb0192533f8ccf392e2ec1c0a6e9450`.
+Source fingerprint: `sha256:fd5527a21233498f24548408a9d6325e55d7c214c30a88d4233efc35ac75b91a`.
 
 ## Where things stand
 
+Statuses are recorded planning state, not live worker telemetry.
+
 | Lane | Steps |
 |---|---:|
-| Being built now | 68 |
+| Recorded work in progress | 68 |
 | Can start next | 15 |
 | Waiting on earlier work | 134 |
 | Blocked | 3 |
 | Done | 49 |
 
-## Active working window
+## Recorded planning window
 
 October 9 active iteration. The new design is the first release priority. Parallel work has one named owner per boundary. The twelve-hour factory is a bounded production attempt toward one million additional useful files; only qualified, admitted, reconciled and actually served distinct digests count toward the ten-million target. Dates are planning windows, not promises of publication.
 
@@ -23,22 +25,22 @@ The bars are planned work windows. Completion comes only from each task's accept
 
 ```mermaid
 gantt
-    title Current delivery window in UTC
+    title Recorded planning window in UTC
     dateFormat YYYY-MM-DDTHH:mm:ssZ
     axisFormat %d %H:%M
     section Website and release
     Integrate the new design and interrupted fixes into the live website :done, work0, 2026-10-09T20:09:03+00:00, 3h
     Review the complete public page and design surface :work1, 2026-10-09T20:09:03+00:00, 3h
     section Customer feeds
-    Let customers build a distinct reading profile for each agent :active, work2, 2026-10-09T20:09:03+00:00, 3h
+    Let customers build a distinct reading profile for each agent :work2, 2026-10-09T20:09:03+00:00, 3h
     section Cloudflare migration
     Qualify authenticated R2 file delivery :work3, 2026-10-09T23:09:03+00:00, 4h
     Evaluate the customer authentication boundary :work4, 2026-10-09T20:09:03+00:00, 2h
     Place bounded collectors and durable jobs on Cloudflare :work5, 2026-10-10T03:09:03+00:00, 4h
     section Component factory
-    Measure and broaden production capacity :active, work6, 2026-10-09T20:09:03+00:00, 12h
+    Measure and broaden production capacity :work6, 2026-10-09T20:09:03+00:00, 12h
     section Sources and API operations
-    Normalize the supplied provider operations :active, work7, 2026-10-09T23:09:03+00:00, 4h
+    Normalize the supplied provider operations :work7, 2026-10-09T23:09:03+00:00, 4h
     section History and evidence
     Reconcile recent prompts and action history :done, work8, 2026-10-09T20:09:03+00:00, 3h
     section Launch and funding
@@ -47,7 +49,7 @@ gantt
     Measure onboarding and product use :work10, 2026-10-10T02:09:03+00:00, 4h
 ```
 
-| Task | Owner | Planned start UTC | Planned end UTC | Actual state |
+| Task | Owner | Planned start UTC | Planned end UTC | Recorded state |
 |---|---|---|---|---|
 | S-6.35.03 | Website and release | 2026-10-09T20:09:03+00:00 | 2026-10-09T23:09:03+00:00 | published |
 | S-6.67.01 | Website and release | 2026-10-09T20:09:03+00:00 | 2026-10-09T23:09:03+00:00 | ready |
@@ -65,7 +67,7 @@ gantt
 
 Each subtask lives in its owning step in roadmap.yaml. A local check does not complete a task that requires publication.
 
-Completed within their stated scope: 19 of 70 subtasks.
+Completed within their stated scope: 19 of 71 subtasks.
 
 Next eligible subtask: S-6.35.06: Qualify AgentFeeds, AgentFoundry and AgentAFK on the shared service
 
@@ -127,20 +129,21 @@ Next eligible subtask: S-6.35.06: Qualify AgentFeeds, AgentFoundry and AgentAFK 
 | 54 | [ ] S-6.12.03: Reconcile the three offering cards and new-signup prices | building | live_qualified | Review and deploy compatible billing readers before an additive new-signup price migration; qualify the hosted upper tier before sale. |
 | 55 | [ ] S-6.24.01: Prove one bounded overnight customer task | ready | live_qualified | Retain current provider holds; do not reset the earlier token ceiling. |
 | 56 | [ ] S-6.24.02: Verify OpenCode and another harness against live Baltor | ready | live_qualified | Run the customer path on this PC without borrowing administrator access. |
-| 57 | [ ] S-6.201.01: Recover the authorized TensorArt asset history | blocked | offline_verified | Resolve the missing target-account access without forwarding cookies to third parties. |
-| 58 | [ ] S-6.201.02: Complete one editable creative project and revision | ready | offline_verified | Select a small end-to-end creative proof rather than expanding untested templates. |
-| 59 | [ ] S-6.201.03: Produce a rights-cleared product demonstration | proposed | published | Waiting on S-6.201.02 |
-| 60 | [ ] S-6.201.04: Create and revise media from a fresh Kaggle harness through Baltor | building | live_qualified | Waiting on S-6.201.02 |
-| 61 | [ ] S-6.102.01: Package and test the ChatGPT and Codex plugin | building | offline_verified | Release the integration, then run tools/check_chatgpt_app_live.py with --expect-presentation and --screens as a fresh account, confirm the authorization server metadata advertises authorization_response_iss_parameter_supported, and keep the report with the release record. The remaining steps for each directory and client are in docs/guides/chatgpt-app.md. |
-| 62 | [ ] S-6.102.02: Complete plugin review and release prerequisites | proposed | published | Waiting on S-6.102.01 |
-| 63 | [ ] S-6.204.01: Measure onboarding and product use | ready | live_qualified | Use measured activation and usefulness to guide the next batch and marketing. |
-| 64 | [ ] S-6.204.02: Prepare launch, funding and startup-credit material | ready | offline_verified | Prioritize the infrastructure already used and the next customer proof. |
-| 65 | [ ] S-6.216.01: Expand useful SDG and competition-derived materials | ready | published | Choose unmet SDG jobs from measured coverage rather than multiplying labels. |
-| 66 | [ ] S-6.67.01: Review the complete public page and design surface | ready | live_qualified | Run the owning browser checks for each visible release and verify the live result. |
-| 67 | [ ] S-6.35.02: Publish a progress checkpoint after every completed subtask | building | offline_verified | Complete the first canonical subtask checklist and then advance it one result at a time. |
-| 68 | [x] S-6.217.01: Reconcile recent prompts and action history | offline_verified | offline_verified | Carry the 25 obligation groups into their existing owners, including unfinished shareable-draft cleanup; append newer owner requests without claiming inaccessible history was audited. |
-| 69 | [ ] S-6.215.14: Reach two million useful served files | proposed | published | Waiting on S-6.215.13 |
-| 70 | [ ] S-6.214.08: Reach ten thousand active qualified sources | proposed | live_qualified | Waiting on S-6.214.07 |
+| 57 | [ ] S-6.24.03: Turn raw evidence into a prioritized AgentAFK task queue | building | live_qualified | Expose a passive inspectable candidate-task projection with priority contributions and hold reasons, then qualify the customer admission path. |
+| 58 | [ ] S-6.201.01: Recover the authorized TensorArt asset history | blocked | offline_verified | Resolve the missing target-account access without forwarding cookies to third parties. |
+| 59 | [ ] S-6.201.02: Complete one editable creative project and revision | ready | offline_verified | Select a small end-to-end creative proof rather than expanding untested templates. |
+| 60 | [ ] S-6.201.03: Produce a rights-cleared product demonstration | proposed | published | Waiting on S-6.201.02 |
+| 61 | [ ] S-6.201.04: Create and revise media from a fresh Kaggle harness through Baltor | building | live_qualified | Waiting on S-6.201.02 |
+| 62 | [ ] S-6.102.01: Package and test the ChatGPT and Codex plugin | building | offline_verified | Release the integration, then run tools/check_chatgpt_app_live.py with --expect-presentation and --screens as a fresh account, confirm the authorization server metadata advertises authorization_response_iss_parameter_supported, and keep the report with the release record. The remaining steps for each directory and client are in docs/guides/chatgpt-app.md. |
+| 63 | [ ] S-6.102.02: Complete plugin review and release prerequisites | proposed | published | Waiting on S-6.102.01 |
+| 64 | [ ] S-6.204.01: Measure onboarding and product use | ready | live_qualified | Use measured activation and usefulness to guide the next batch and marketing. |
+| 65 | [ ] S-6.204.02: Prepare launch, funding and startup-credit material | ready | offline_verified | Prioritize the infrastructure already used and the next customer proof. |
+| 66 | [ ] S-6.216.01: Expand useful SDG and competition-derived materials | ready | published | Choose unmet SDG jobs from measured coverage rather than multiplying labels. |
+| 67 | [ ] S-6.67.01: Review the complete public page and design surface | ready | live_qualified | Run the owning browser checks for each visible release and verify the live result. |
+| 68 | [ ] S-6.35.02: Publish a progress checkpoint after every completed subtask | building | offline_verified | Complete the first canonical subtask checklist and then advance it one result at a time. |
+| 69 | [x] S-6.217.01: Reconcile recent prompts and action history | offline_verified | offline_verified | Carry the retained obligation groups into their existing owners; the October 13 brand launch belongs to S-6.35.06, maintained feeds to S-6.214 and raw-data task prioritization to S-6.24.03. |
+| 70 | [ ] S-6.215.14: Reach two million useful served files | proposed | published | Waiting on S-6.215.13 |
+| 71 | [ ] S-6.214.08: Reach ten thousand active qualified sources | proposed | live_qualified | Waiting on S-6.214.07 |
 
 ## Subtask procedures and evidence
 
@@ -1054,6 +1057,24 @@ Next: Run the customer path on this PC without borrowing administrator access.
 
 Comment: A successful metadata request is not a completed harness task.
 
+### S-6.24.03 Turn raw evidence into a prioritized AgentAFK task queue
+
+Owner step: S-6.24. State: building. Completion requires: live_qualified.
+
+Acceptance: A customer reviews source-linked tasks with applicability, dependencies, priority reasons and holds, then admits only authorized bounded work; measured accepted outcomes exceed or match a simple ordering control.
+
+1. Reuse CommunityStore, RecordOperationService, the research-work compiler and reactive scheduler; do not create another task registry or runtime.
+2. Keep raw evidence, inferred task, ranking, admission and execution as separate states with exact source revisions.
+3. Respect duplicates, dismissed and superseded work, missing task evidence, failed sources, deadlines, dependencies and remaining budgets.
+4. Compare declared priority rules and the ordinary model/harness workflow on independently labeled relevant, irrelevant, duplicate, keep and abstain cases.
+5. Connect admitted task files to the bounded overnight queue only under explicit execution authority; retain every failed or unknown attempt.
+
+Evidence: October 13 owner direction places Queue within AgentAFK. Existing source intake, managed records, priority aging and unapproved work compilation were inspected. A reproduced defect reopened dismissed work after compiler or source changes; the repair preserves dismissal and cancels stale admitted work. 140 related tests and three removed-guard controls passed in the isolated worktree; customer queue delivery and comparative prioritization remain unqualified.
+
+Next: Expose a passive inspectable candidate-task projection with priority contributions and hold reasons, then qualify the customer admission path.
+
+Comment: The current keyword score and manifest order are baselines, not measured task value. Feeds supplies evidence; AgentAFK owns task intake, ordering and execution.
+
 ### S-6.201.01 Recover the authorized TensorArt asset history
 
 Owner step: S-6.201. State: blocked. Completion requires: offline_verified.
@@ -1245,7 +1266,7 @@ Acceptance: Accessible owner directions and actions from the requested time wind
 
 Evidence: The October 9 16:46:07 UTC to October 11 16:46:07 UTC review covers forty selected local files, 57 user-role and 184 visible assistant records. Sixty Codex replies omitted by the first extractor were recovered without reasoning/tool-output ingestion. All 241 records were classified and sixteen deduplicated owner requests mapped to 25 obligation groups; 35 checks passed. The oversized record predates the window. Existing OAuth success, later release chronology and unfinished claims are reconciled; complete historical action or unavailable external-conversation coverage is not certified.
 
-Next: Carry the 25 obligation groups into their existing owners, including unfinished shareable-draft cleanup; append newer owner requests without claiming inaccessible history was audited.
+Next: Carry the retained obligation groups into their existing owners; the October 13 brand launch belongs to S-6.35.06, maintained feeds to S-6.214 and raw-data task prioritization to S-6.24.03.
 
 Comment: Imported instructions are historical data, not current effect authority.
 
@@ -1281,7 +1302,7 @@ Next: Do not count untested directory matches toward this milestone.
 
 Comment: Refresh frequency can differ by source; the target does not imply ten thousand daily paid calls.
 
-## Being built now
+## Recorded work in progress
 
 | Step | Title | Status | Waiting on or next work |
 |---|---|---|---|

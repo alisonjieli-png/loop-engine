@@ -19,6 +19,13 @@ on the code (see `../verification/`), and operating instructions (see
 The [records index](../RECORDS-INDEX.md) lists every version of each
 dated record.
 
+## Records added on October 13, 2026
+
+- [Agent Feeds: evidence, delivery and task queues](AGENT-FEEDS-DEEP-DIVE-2026-10-13.md):
+  source-directory and collector boundaries, separate AgentFeeds presentation,
+  primary-source collection mechanisms, AgentAFK task prioritization and
+  proposed acceptance for four decision families.
+
 ## Records added on September 26, 2026
 
 - [Package activation and the failure laboratory](PACKAGE-ACTIVATION-FAILURE-LABORATORY-2026-09-26.md):

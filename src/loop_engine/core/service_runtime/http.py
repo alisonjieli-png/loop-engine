@@ -2627,8 +2627,11 @@ class ServiceHttpApplication:
         path, method, status_code = request.url.path, request.method, 200
         completions = []
         if self.brand_profile is not None:
+            if path in catalogue_feed.FORMATS:
+                raise ServiceHttpError("route_unavailable", 404)
             from . import agentfeeds_pages
-            asset = (agentfeeds_pages.render(path, origin=self.configuration.public_base_url)
+            asset = (agentfeeds_pages.render(path, origin=self.configuration.public_base_url,
+                                            allow_loopback=self.configuration.allow_loopback_http)
                      if method in ("GET", "HEAD") else None)
             if asset is not None:
                 body, media_type = asset
@@ -2641,7 +2644,7 @@ class ServiceHttpApplication:
             # Never fall through to Baltor's HTML, navigation or public assets.
             # Qualified unchanged client libraries and fonts serve both presentations.
             shared_assets = {"/assets/supabase-client.js", "/assets/oauth-consent.js", "/assets/feed-profile.js",
-                             "/assets/geist.woff2", "/assets/geist-mono.woff2"}
+                             "/assets/geist.woff2", "/assets/geist-mono.woff2", "/assets/third-party-notices.txt"}
             if (path not in API_ROUTES and path not in shared_assets and path not in catalogue_feed.FORMATS
                     and not feed_source_collections.handles(path)):
                 raise ServiceHttpError("route_unavailable", 404)
@@ -2658,7 +2661,8 @@ class ServiceHttpApplication:
                     record = await self._work(lambda: catalogue_feed.snapshot(self.runtime, view))
                     body, media_type = catalogue_feed.render(record, path, origin)
                 else:
-                    body, media_type = feed_source_collections.render(path, origin)
+                    body, media_type = feed_source_collections.render(path, origin,
+                        display_name=self.brand_profile.display_name if self.brand_profile is not None else "Baltor")
             except ServiceRuntimeError as error:
                 if error.code == "feed_source_format_unknown":
                     raise ServiceHttpError("route_unavailable", 404) from None
@@ -2860,7 +2864,8 @@ class ServiceHttpApplication:
                     feed_profile_web.MAXIMUM_REQUEST_BYTES, self.configuration.maximum_request_bytes)))
                 try:
                     output = await self._work(lambda: invoke_http_service_as_loop("feed_profile_export",
-                        lambda: feed_profile_web.export(fields)))
+                        lambda: feed_profile_web.export(fields, origin=self.configuration.public_base_url)
+                        if self.brand_profile is not None else feed_profile_web.export(fields)))
                 except feed_profile_web.profiles.FeedProfileError as error:
                     raise ServiceHttpError(error.code, 400) from None
         elif path == "/api/v1/account/identity" and method == "GET":

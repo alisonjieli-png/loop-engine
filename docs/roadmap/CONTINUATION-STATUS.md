@@ -5,7 +5,7 @@ Kind: generated planning artifact.
 Source: `roadmap.yaml`. Regenerate with
 `python tools/build_continuation_status.py`; `--check` rejects a stale view.
 
-Plan fingerprint: `477c6c8d57b11a9141318e5727165ababbb0192533f8ccf392e2ec1c0a6e9450`.
+Plan fingerprint: `fd5527a21233498f24548408a9d6325e55d7c214c30a88d4233efc35ac75b91a`.
 
 Started: 2026-09-19T14:12:54Z. Historical target: 2026-09-20T14:12:54Z. This is not a release forecast.
 
@@ -15,12 +15,11 @@ A subscription website and dashboard with payments, all intelligence layers and 
 
 ## Next eligible work
 
-- Launch: none currently ready; review dependencies and authority.
-- Improvement: S-6.76: Reusable development workflows and recurring reviews with declared effect policies.
+Next eligible subtask: S-6.35.06: Qualify AgentFeeds, AgentFoundry and AgentAFK on the shared service
 
-## Work in progress
+## Recorded work in progress
 
-These steps are already being built. They are not completed dependencies or permission to deploy.
+These steps have a recorded building status. This is planning state, not live worker telemetry, completed dependencies or permission to deploy.
 
 | Step | Current evidence | Next local work |
 |---|---|---|

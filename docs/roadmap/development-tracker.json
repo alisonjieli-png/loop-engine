@@ -1231,6 +1231,27 @@
    "waiting_on": []
   },
   {
+   "acceptance": "A customer reviews source-linked tasks with applicability, dependencies, priority reasons and holds, then admits only authorized bounded work; measured accepted outcomes exceed or match a simple ordering control.",
+   "comment": "The current keyword score and manifest order are baselines, not measured task value. Feeds supplies evidence; AgentAFK owns task intake, ordering and execution.",
+   "complete": false,
+   "completion_status": "live_qualified",
+   "depends_on": [],
+   "evidence": "October 13 owner direction places Queue within AgentAFK. Existing source intake, managed records, priority aging and unapproved work compilation were inspected. A reproduced defect reopened dismissed work after compiler or source changes; the repair preserves dismissal and cancels stale admitted work. 140 related tests and three removed-guard controls passed in the isolated worktree; customer queue delivery and comparative prioritization remain unqualified.",
+   "id": "S-6.24.03",
+   "next_action": "Expose a passive inspectable candidate-task projection with priority contributions and hold reasons, then qualify the customer admission path.",
+   "owner_step": "S-6.24",
+   "procedure": [
+    "Reuse CommunityStore, RecordOperationService, the research-work compiler and reactive scheduler; do not create another task registry or runtime.",
+    "Keep raw evidence, inferred task, ranking, admission and execution as separate states with exact source revisions.",
+    "Respect duplicates, dismissed and superseded work, missing task evidence, failed sources, deadlines, dependencies and remaining budgets.",
+    "Compare declared priority rules and the ordinary model/harness workflow on independently labeled relevant, irrelevant, duplicate, keep and abstain cases.",
+    "Connect admitted task files to the bounded overnight queue only under explicit execution authority; retain every failed or unknown attempt."
+   ],
+   "status": "building",
+   "title": "Turn raw evidence into a prioritized AgentAFK task queue",
+   "waiting_on": []
+  },
+  {
    "acceptance": "A bounded export from the exact owner account includes available images and generation provenance with coverage limits.",
    "comment": "No images or account history have been claimed downloaded.",
    "complete": false,
@@ -1462,7 +1483,7 @@
    "depends_on": [],
    "evidence": "The October 9 16:46:07 UTC to October 11 16:46:07 UTC review covers forty selected local files, 57 user-role and 184 visible assistant records. Sixty Codex replies omitted by the first extractor were recovered without reasoning/tool-output ingestion. All 241 records were classified and sixteen deduplicated owner requests mapped to 25 obligation groups; 35 checks passed. The oversized record predates the window. Existing OAuth success, later release chronology and unfinished claims are reconciled; complete historical action or unavailable external-conversation coverage is not certified.",
    "id": "S-6.217.01",
-   "next_action": "Carry the 25 obligation groups into their existing owners, including unfinished shareable-draft cleanup; append newer owner requests without claiming inaccessible history was audited.",
+   "next_action": "Carry the retained obligation groups into their existing owners; the October 13 brand launch belongs to S-6.35.06, maintained feeds to S-6.214 and raw-data task prioritization to S-6.24.03.",
    "owner_step": "S-6.217",
    "procedure": [
     "Read actual message timestamps and distinguish owner instructions from tool or agent output.",
@@ -1523,7 +1544,7 @@
  ],
  "execution_counts": {
   "complete": 19,
-  "total": 70
+  "total": 71
  },
  "lanes": {
   "blocked": [
@@ -6961,7 +6982,7 @@
  ],
  "record_type": "development_tracker/v2",
  "source": "docs/roadmap/roadmap.yaml",
- "source_fingerprint": "sha256:477c6c8d57b11a9141318e5727165ababbb0192533f8ccf392e2ec1c0a6e9450",
+ "source_fingerprint": "sha256:fd5527a21233498f24548408a9d6325e55d7c214c30a88d4233efc35ac75b91a",
  "working_schedule": {
   "blocks": [
    {

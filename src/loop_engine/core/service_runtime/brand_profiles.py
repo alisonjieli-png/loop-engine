@@ -4,9 +4,8 @@ A profile selects presentation and OAuth audience, never another runtime,
 catalogue, account namespace, entitlement policy or billing customer.
 """
 from dataclasses import dataclass
-from urllib.parse import urlsplit
 
-from .http_auth import validate_public_url
+from .http_auth import validate_public_origin
 
 BRAND_PROFILE_VERSION = "service_brand_profile/v1"
 
@@ -25,15 +24,11 @@ class ServiceBrandProfile:
             raise ValueError("the qualified brand requires its exact display name")
         # Whether local HTTP is permitted is independently checked against
         # the containing host configuration before an application is built.
-        origin = validate_public_url(self.public_base_url, permit_loopback=True)
-        parsed = urlsplit(origin)
-        if parsed.path or origin != self.public_base_url or "\\" in origin or any(c.isspace() for c in origin):
-            raise ValueError("brand presentation requires one exact origin")
-        parsed.port
+        validate_public_origin(self.public_base_url, permit_loopback=True)
 
     @property
     def host(self):
-        return urlsplit(self.public_base_url).netloc
+        return self.public_base_url.split("://", 1)[1]
 
     @classmethod
     def from_host(cls, value):
