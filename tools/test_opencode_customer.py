@@ -334,7 +334,10 @@ raise SystemExit(1)
             proc = mock.Mock(pid=424242, stdout=io.BytesIO(), stderr=io.BytesIO())
             proc.poll.return_value = None
             boundary = self.boundary()
+            # This is a mocked cleanup failure, not native sandbox qualification.
+            # Keep its prerequisite explicit on CI hosts without Bubblewrap.
             with mock.patch("loop_engine.core.harness_process.subprocess.Popen", return_value=proc), \
+                 mock.patch("loop_engine.core.harness_process.shutil.which", return_value="/usr/bin/bwrap"), \
                  mock.patch("loop_engine.core.harness_process.os.killpg") as killpg, \
                  mock.patch.object(CustomerResourceScope, "command", return_value=["offline-fixture"]), \
                  mock.patch.object(CustomerResourceScope, "environment", return_value={}), \
@@ -361,6 +364,7 @@ raise SystemExit(1)
             proc.poll.return_value = 0
             boundary = self.boundary()
             with mock.patch("loop_engine.core.harness_process.subprocess.Popen", return_value=proc), \
+                 mock.patch("loop_engine.core.harness_process.shutil.which", return_value="/usr/bin/bwrap"), \
                  mock.patch.object(CustomerResourceScope, "command", return_value=["offline-fixture"]), \
                  mock.patch.object(CustomerResourceScope, "environment", return_value={}), \
                  mock.patch.object(CustomerResourceScope, "wait_verified", return_value={}), \
@@ -370,6 +374,22 @@ raise SystemExit(1)
             capture.assert_not_called()
             self.assertIn("customer_cgroup_cleanup_unknown", result.errors)
             self.assertIn("customer_capture_requires_confirmed_cleanup", result.errors)
+
+    def test_missing_bubblewrap_still_refuses_before_launch_or_broker(self):
+        with tempfile.TemporaryDirectory() as folder:
+            work = Path(folder) / "work"
+            work.mkdir()
+            spec = HarnessProcessSpec("opencode.customer_confined", "fixture", ("/usr/bin/python3",), (),
+                                      "opencode_customer", catalog=fixture_catalog())
+            request = HarnessProcessRequest(spec, "fixture", "fixture", 100, 20, 5, str(work), context_capacity=1000)
+            boundary, broker = self.boundary(), mock.Mock()
+            with mock.patch("loop_engine.core.harness_process.shutil.which", return_value=None), \
+                 mock.patch("loop_engine.core.harness_process.subprocess.Popen") as launch:
+                with self.assertRaisesRegex(HarnessProcessError, "qualified Bubblewrap executable is unavailable"):
+                    run_workspace_harness_process(request, broker, boundary)
+            launch.assert_not_called()
+            broker.assert_not_called()
+            self.assertEqual(list(work.iterdir()), [])
 
     def test_artifact_export_is_bounded_exact_and_released_only_after_cleanup(self):
         boundary = self.boundary(artifact_paths=("a", "b"), maximum_file_bytes=4)
