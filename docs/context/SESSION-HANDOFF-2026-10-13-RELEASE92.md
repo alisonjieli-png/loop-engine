@@ -23,6 +23,7 @@ views: 3,660 of 3,664 assertions passed, all 3,194 exact-source GET checks
 passed, and all 20 identity-encoded HEAD checks passed.
 
 Its strict aggregate remains false for two recorded reasons:
+
 1. Four assertions on AgentStudios `/connect` checked `body.innerText()` for
    `https://agentstudios.si/mcp` and `https://www.agentstudios.si/mcp`, while
    `/connect` renders the own-domain MCP URL inside a `readonly` `<input>`
