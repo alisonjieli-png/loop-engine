@@ -36,7 +36,10 @@ browser-accounting limit. The current monthly price direction is $9/$49/$99;
 new Pro checkout selects $49 while existing subscriptions retain their prices.
 AgentAFK remains a local Preview, not an active paid hosted execution service.
 Each standalone offering keeps its own presentation over the shared backend.
-AgentMedia is a proposed creative presentation with a placeholder domain.
+AgentStudios is the selected independent creative presentation. The owner
+purchased `agentstudios.si`, verified in the registrar account, and requests
+its setup over the same backend. S-6.35.08 owns its separate UI, domain setup
+and live qualification; the earlier AgentMedia name remains historical.
 The next catalogue publication must preserve the current baseline and remain
 separate from any further application deployment.
 

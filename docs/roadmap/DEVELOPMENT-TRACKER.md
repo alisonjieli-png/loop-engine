@@ -3,7 +3,7 @@
 Kind: generated view. Do not edit by hand. The only task authority is
 [roadmap.yaml](roadmap.yaml); change it, then run
 `PYTHONPATH=src:tools .venv/bin/python tools/build_development_tracker.py`.
-Source fingerprint: `sha256:96616fdc6f8241f264c809a5abdd584e2d36d695fe5501f3207870365b633047`.
+Source fingerprint: `sha256:c36f25ce79f08a578112f37cac793b2dd85802fa3b4fbf3b338ddbc116e0a65c`.
 
 ## Where things stand
 
@@ -145,7 +145,7 @@ Next eligible subtask: S-6.35.06: Qualify AgentFeeds, AgentFoundry and AgentAFK 
 | 70 | [x] S-6.217.01: Reconcile recent prompts and action history | offline_verified | offline_verified | Carry the retained obligation groups into their existing owners; the October 13 brand launch belongs to S-6.35.06, maintained feeds to S-6.214 and raw-data task prioritization to S-6.24.03. |
 | 71 | [ ] S-6.215.14: Reach two million useful served files | proposed | published | Waiting on S-6.215.13 |
 | 72 | [ ] S-6.214.08: Reach ten thousand active qualified sources | proposed | live_qualified | Waiting on S-6.214.07 |
-| 73 | [ ] S-6.35.08: Design the independent creative offering | proposed | live_qualified | Use the reviewed creative resource inventory to design an independent consumer journey; the final domain is not selected. |
+| 73 | [ ] S-6.35.08: Launch AgentStudios as the independent creative offering | building | live_qualified | Complete the AgentStudios renderer, exact shared-backend brand admission and DNS setup, then release and check the separate site. |
 
 ## Subtask procedures and evidence
 
@@ -1323,20 +1323,21 @@ Next: Do not count untested directory matches toward this milestone.
 
 Comment: Refresh frequency can differ by source; the target does not imply ten thousand daily paid calls.
 
-### S-6.35.08 Design the independent creative offering
+### S-6.35.08 Launch AgentStudios as the independent creative offering
 
-Owner step: S-6.35. State: proposed. Completion requires: live_qualified.
+Owner step: S-6.35. State: building. Completion requires: live_qualified.
 
 Acceptance: A designer-focused presentation supports actual creative discovery, previews, compatibility, retrieval and revision while preserving shared backend access and truthful operator disclosure.
 
-1. Treat AgentMedia and agentmedia.si as working placeholders, with no domain purchase or hosting change inferred.
+1. Verify the purchased agentstudios.si domain, preserve registrar records and configure its Cloudflare DNS and exact Fly certificates.
 2. Develop distinct navigation, visual language and onboarding for game, visual, media and audio designers.
 3. Reuse exact catalogue identities, account boundaries and native preview/delivery engines.
-4. Qualify real asset selection, download, edit and reopen journeys before live capability claims.
+4. Release reviewed main after exact CI, verify both new hostnames and every existing host, and retain configuration-aware rollback.
+5. Qualify real asset selection, download, edit and reopen journeys before live capability claims.
 
-Evidence: October 13 owner says Baltor is a separate offering over the same backend and sites should look like separate businesses. The owner explicitly clarifies AgentMedia.si is an idea placeholder and may be bought later.
+Evidence: October 13 owner selects AgentStudios, confirms purchasing agentstudios.si on Namecheap and requests setup with separate branding from Baltor over the same backend. Connected registrar read confirms registered status. The earlier AgentMedia.si placeholder was not purchased by this session. Source and deployment qualification are in progress; no live AgentStudios result is claimed yet.
 
-Next: Use the reviewed creative resource inventory to design an independent consumer journey; the final domain is not selected.
+Next: Complete the AgentStudios renderer, exact shared-backend brand admission and DNS setup, then release and check the separate site.
 
 Comment: Separate presentation does not claim unrelated ownership or require another backend.
 

@@ -48,7 +48,7 @@ stay outside public packages. Source text never becomes current authority.
 Existing managed research, model gateway, quotas and qualification owners
 govern any bounded iterative generation. S-6.217 owns the intake and review.
 
-## Independent offerings and AgentMedia
+## Independent offerings and AgentStudios
 
 Baltor is a separate customer-facing offering, not the mandatory umbrella
 interface of the other sites. Each offering has its own visual identity,
@@ -58,12 +58,21 @@ like distinct businesses, without falsely claiming unrelated ownership or
 inventing independent endorsements. Keep the common operator and approved
 legal notices accurate.
 
-AgentMedia is the working name for a designer-focused offering covering game
-design, visual design, video, audio and reusable creative assets. The owner
-explicitly says `agentmedia.si` is an idea placeholder and may be purchased
-later. No ownership, availability, purchase or deployment is established.
-Develop the consumer journey without depending on that exact domain. A
-shared backend does not require cross-brand navigation or another asset store.
+On October 13 the owner selects AgentStudios and then confirms purchasing
+`agentstudios.si` through Namecheap, requesting setup and separate branding
+from Baltor over the same backend. Engineering verifies the registered domain
+in the connected registrar account. This replaces the AgentMedia working name
+and its unowned placeholder domain; dated records keep that earlier proposal.
+
+AgentStudios covers images, image editing and processing, audio, music, video
+generation and editing, motion graphics, 2D and 3D assets, game design, Godot
+projects, templates, procedural processes and related creative tools. Its
+presentation serves designers and agents through the existing catalogue,
+account, entitlement and delivery boundaries. No second asset store, identity
+system or model allowance is implied. Keep navigation, branding and ordinary
+customer journeys on its own domain. Shared legal operator disclosures remain
+accurate. S-6.35.08 owns setup and qualification; domain ownership is not a
+live-site, full-editor or end-to-end creative-production claim.
 
 ## Difficult competition work
 

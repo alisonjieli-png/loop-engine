@@ -20,8 +20,11 @@ coverage goals. Targets, collected originals, derivatives, qualified candidates,
 published resources and accepted customer work remain separate counts.
 
 Baltor and the standalone offerings have independent customer-facing identities
-over the shared backend. AgentMedia is a working creative-offering name;
-`agentmedia.si` is explicitly a placeholder, not an owned or launched domain.
+over the shared backend. The owner selects AgentStudios and purchases
+`agentstudios.si`, verified in the connected registrar account. It replaces
+the AgentMedia placeholder and covers creative assets, media processing,
+game design, templates and procedural production tools. Its separate site
+is being qualified through S-6.35.08; ownership alone is not a launch claim.
 Common-operator disclosures remain accurate. Difficult Kaggle and competition
 trials are another end-to-end proof target, with reproducibility, rule checks
 and matched comparisons through existing harness and benchmark owners.
