@@ -1,20 +1,22 @@
 # Languages and components
 
 Kind: engineering standard. It records which language and which library each
-component uses today, why it uses them, and what a new language or a new
-dependency has to satisfy. It proposes no change to the current choices.
+component uses, why it uses them, and what a replacement has to satisfy.
+The October 13 owner direction below requires implementation and deployment
+portability. It does not claim that every current engine is already portable.
 
 ```text
 Language by component
 ├── Python: the engine, the hosted service, the development commands
 ├── JavaScript in the browser: the website pages, plain and same origin
-├── Node.js: browser checks and generated reports only, never at run time
+├── Node.js: development tools and selected native worker dependencies
 └── Container images: Python base images pinned by digest
 ```
 
 ## Python
 
-Python is the product. The distribution is `loop-engine`, the import is
+Python is the current main implementation, not the product's permanent
+language boundary. The distribution is `loop-engine`, the import is
 `loop_engine`, and the command is `loop-engine`
 ([pyproject.toml](../../pyproject.toml)).
 
@@ -131,7 +133,10 @@ that script, and commit the new file with the updated notice.
 
 ## Node.js
 
-Node.js is a development tool. No part of the running service needs it.
+Node.js runs development tools and is included in the
+[downloadable worker](../guides/container-worker.md) for its native harness
+and tooling. The Python HTTP service does not require a Node.js server.
+The table below lists development uses, not every worker dependency.
 
 | Use | Where | Pinned to |
 |---|---|---|
@@ -193,4 +198,72 @@ Answer these before you add one. Record the answers in the change.
    a wheel, installs it in an empty environment and runs the packaged checks.
 7. A new language needs more than a preference. State the component it serves,
    the check that proves it works, how it is built and pinned, and who updates
-   it. Until those exist, use Python.
+   it. Until those exist, preserve the current qualified implementation.
+
+## Implementation and deployment portability
+
+On October 13 the owner requires the swap boundary to cover where and how a
+component runs, including replacing a Python worker with Rust when evidence
+warrants it. This extends the existing
+[functional component standard](../architecture/FUNCTIONAL-COMPONENT-STANDARD.md#10-isolation-and-the-choice-of-execution),
+not the set of executable graph vertex types. A Loop remains the operational
+runtime; CPython, Node.js, a native binary and WebAssembly are execution
+dependencies or formats behind a qualified component edge.
+
+Keep these dimensions separate:
+
+| Dimension | What it identifies | What a change must preserve or requalify |
+| --- | --- | --- |
+| Edge contract | The component's typed, versioned request, result and failure semantics | Caller-visible behavior, effects, cancellation and supported compatibility. |
+| Engine identity | A selected implementation, version and digest in the existing engine slot | Exact implementation provenance and qualification; a rewrite is another engine or version, not the old evidence. |
+| Implementation language | Python, Rust or another language used to build that implementation | No language-specific object or import may become an undeclared cross-process dependency. |
+| Execution runtime and format | Interpreter, native executable, container entry point or WebAssembly module | Toolchain, operating system, architecture, dependencies and resource enforcement. |
+| Invocation and wire protocol | In-process call, supervised process or service exchange | Exact protocol/version, encoding, bounded messages, error and stream semantics. |
+| Isolation and authority | Files, network, secrets, model access and external effects permitted to the attempt | A faster or more distant engine cannot weaken required controls or expand permissions. |
+| Deployment location | A permitted customer machine, browser, paired computer or managed host | Data locality and recipients, identity, provider terms, capabilities, quota, reachability and recovery. |
+
+These are qualification dimensions, not newly implemented fields in
+`engine_slots.yaml`. Engine descriptors and installations currently record
+identity, settings, supported contracts, locality, isolation and qualification;
+the slot catalogue remains the only component swap index. Some execution
+details still live in adapter-specific profiles. A Python `Protocol` or
+dataclass is not by itself an interoperable wire contract. Independently
+deployed participants need explicit version/capability negotiation and strict
+serialization before effects, including numeric bounds, byte encoding,
+digest interpretation and unknown-field refusal. Add the missing adapter at
+the existing edge rather than changing callers to depend on Rust internals.
+
+Migration qualification requires:
+
+1. Pin the current baseline and candidate, build dependencies and installation
+   artifacts. Run the same contract kit against each engine, including malformed
+   inputs, unsupported versions, cancellation, limits and known-wrong results.
+2. Compare frozen equivalent workloads on declared hardware and resource limits.
+   Record cold and warm startup, serialization and network overhead, throughput,
+   tail latency, memory, failures and output quality. Include build, deployment
+   and maintenance cost, and retain the complete attempt population. A language
+   reputation or microbenchmark is not a win.
+3. Preserve durable task identity, accumulated budgets, authorization and
+   authoritative state. Prove checkpoint-format compatibility or an explicit
+   migration, lease/fencing behavior, cancellation and cleanup. An uncertain
+   external outcome must be reconciled before fallback or retry.
+4. Shadow only effect-free work, or use an explicitly isolated comparison
+   profile. A second engine must not repeat a payment, message, publication or
+   other external effect merely to compare it. Qualify a controlled rollout and
+   rollback, including state restoration where the old engine cannot read it.
+5. Select through existing host configuration and engine policy once the
+   candidate meets the contract and the measured reason for change. Preserve
+   the qualified baseline until retirement is deliberate; do not rewrite the
+   whole system because one worker benefits from Rust.
+
+Current evidence is narrower than this requirement. The
+[worker guide](../guides/container-worker.md#two-isolation-profiles) documents
+explicit trusted-process and sandbox choices; it does not qualify every
+location. The [retrieval design](../architecture/CAPABILITY-SUPPLY-AND-RETRIEVAL.md#current-search-implementation)
+already places a prospective Rust engine behind the existing search edge and
+states that no Rust migration is complete. The
+[earlier worker comparison](../guides/frontier-harness-positioning.md#implementation-language-and-runtime-choices)
+and [container research](../research/CONTAINER-AND-ENGINE-COMPOSITION-2026-09-22.md#candidate-execution-placements)
+are candidate designs, not evidence that switching languages or hosts is
+universally implemented. S-6.30 and S-6.84 retain the engine-framework and
+standard work; each actual migration belongs to its existing component owner.

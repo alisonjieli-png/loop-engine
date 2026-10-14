@@ -354,6 +354,22 @@ engine slot. It can use a native implementation, a pinned upstream adapter or
 another qualified engine without changing its callers. An adapter is not a
 new runtime.
 
+The October 13 owner direction extends replacement to implementation language,
+execution runtime and deployment location. These remain separate from engine
+identity and the caller's wire contract. The
+[language and component standard](../standards/LANGUAGES-AND-COMPONENTS.md#implementation-and-deployment-portability)
+maps the dimensions and requires conformance, matched measurements, effect
+isolation, state recovery and a tested rollback before migration. Python-to-Rust
+worker replacement is an example, not a whole-repository rewrite mandate.
+
+Implemented pieces include strict engine descriptor/installation records,
+the existing slot catalogue, typed adapter protocols and specific worker
+execution profiles. They do not supply a general scheduler that can move any
+Python engine to Rust, a browser or a remote host. Cross-language serialization,
+handshakes, binary/toolchain support and state transfer must be qualified for
+the selected component and deployment pair. Unsupported combinations remain
+unavailable; a brand, engine preference or benchmark result grants no effect.
+
 The [Practitioner guide](../components/practitioner/README.md) and kernel
 handshake define required and optional steps. The name of a reference profile
 does not imply a fixed number of steps in every current procedure. Solution

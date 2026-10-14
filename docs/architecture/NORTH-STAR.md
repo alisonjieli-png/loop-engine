@@ -39,6 +39,15 @@ changes the active AgentStudios launch. The
 [AgentBriefs decision](OWNER-DECISIONS.md#agentbriefs-executive-intelligence-proposal)
 separates the intended value, evidence gates, access options and pricing tests.
 
+The owner requires functional components to remain replaceable across
+implementation languages and permitted execution locations, not only across
+algorithms. A Python worker may gain a Rust alternative when the same contract
+and matched measurements justify it. Runtime dependencies, protocol, isolation
+and locality remain distinct; moving an engine cannot expand authority or
+erase state and budgets. The
+[portability decision](OWNER-DECISIONS.md#engine-implementation-and-placement-independence)
+records this requirement without claiming universal migration support today.
+
 Baltor gives people and their chosen agents a head start through maintained
 external knowledge and reusable working material. A person can begin with an
 idea, compare suitable approaches, obtain an implementation and revise the

@@ -48,6 +48,30 @@ stay outside public packages. Source text never becomes current authority.
 Existing managed research, model gateway, quotas and qualification owners
 govern any bounded iterative generation. S-6.217 owns the intake and review.
 
+## Engine implementation and placement independence
+
+On October 13 the owner explicitly requires more than interchangeable
+functional engines: the system must also support changing where and how a
+component runs, including moving a Python worker to Rust when measured evidence
+supports that choice. Language, execution runtime, isolation, invocation
+protocol and deployment location are separate dimensions of an implementation,
+not new Loop types or reasons to duplicate registries and authoritative state.
+
+Preserve the fixed typed, versioned component edge, its authorization and
+caller-visible behavior. A replacement needs its own implementation identity,
+capability and compatibility evidence, resource limits and recovery checks.
+Stateful migration must preserve task history, budgets, leases, fencing and
+unknown-outcome reconciliation. A container is an execution choice, not a
+requirement to put every pure function behind a network service.
+
+The [language and component standard](../standards/LANGUAGES-AND-COMPONENTS.md#implementation-and-deployment-portability)
+owns the dimensions and migration gates. Existing adapters and partial
+execution profiles do not establish universal cross-language or cross-host
+swapping. Compare a bounded candidate with the current engine before changing
+it; no arbitrary full-system Rust rewrite or provider migration is requested.
+These rules apply to shared internal workers and external service components
+regardless of which independent brand uses them.
+
 ## Independent offerings and AgentStudios
 
 Baltor is a separate customer-facing offering, not the mandatory umbrella

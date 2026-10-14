@@ -228,6 +228,15 @@ owner's meaning; the terms below are engineering's reading of them.
 
 ## Rules that already apply
 
+The owner's October 13 clarification requires engine replacement to include
+implementation language, execution runtime and permitted placement. The
+[language and component standard](../standards/LANGUAGES-AND-COMPONENTS.md#implementation-and-deployment-portability)
+owns that dimension map and the migration evidence. It extends the intent of
+LE-ISOLATE-001 without asserting that its proposed fields or every migration
+path are implemented. Historical "Today" observations below retain their
+stated source revision. No new registry, scheduler or operational runtime is
+introduced; S-6.30 and S-6.84 remain the existing owners.
+
 These rules keep their own homes. This standard links them and does not
 repeat them.
 
