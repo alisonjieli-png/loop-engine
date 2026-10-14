@@ -98,6 +98,19 @@ customer journeys on its own domain. Shared legal operator disclosures remain
 accurate. S-6.35.08 owns setup and qualification; domain ownership is not a
 live-site, full-editor or end-to-end creative-production claim.
 
+### Frontend and integration coverage
+
+The owner's later October 13 direction requires every selected website to have
+a frontend and a plan for integration with the shared backend. Document its
+external services, APIs, endpoints, connections, technologies, deployment and
+secret-management procedures for the Gemini takeover. The
+[frontend and backend integration map](BRAND-FRONTEND-BACKEND-INTEGRATION.md)
+assigns each customer journey to existing owners and names its acceptance gate.
+Keep credentials out of documentation; use references to approved stores and
+loaders. Distinguish a local prototype, source integration, provider activation
+and a verified live journey. This request authorizes a review frontend for
+AgentBriefs, not an unverified domain purchase or an unwired private-data intake.
+
 ## AgentBriefs executive intelligence proposal
 
 On October 13 the owner selects AgentBriefs and `agentbriefs.si` for an

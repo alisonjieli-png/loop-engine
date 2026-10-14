@@ -29,17 +29,19 @@ after the creative publication, is 1,560,856 distinct files in 256,380 packages
 Public Good grants, passed ordinary-account retrieval checks and are mirrored
 to R2. That leaves 439,144 files to the next milestone.
 
-Release 91 serves Baltor and the separate AgentFeeds, AgentFoundry, AgentAFK
-and campaign websites. The [current deployment](../architecture/MVP-CLIENT-SERVER.md#current-deployment)
-owns source, images, eighteen-host scope, live checks and the retained
+Release 92 retains Baltor and the separate AgentFeeds, AgentFoundry, AgentAFK
+and campaign websites and deploys the AgentStudios presentation. The
+[current deployment](../architecture/MVP-CLIENT-SERVER.md#current-deployment)
+owns source, images, twenty-host scope, completed live checks and the retained
 browser-accounting limit. The current monthly price direction is $9/$49/$99;
 new Pro checkout selects $49 while existing subscriptions retain their prices.
 AgentAFK remains a local Preview, not an active paid hosted execution service.
 Each standalone offering keeps its own presentation over the shared backend.
 AgentStudios is the selected independent creative presentation. The owner
-purchased `agentstudios.si`, verified in the registrar account, and requests
-its setup over the same backend. S-6.35.08 owns its separate UI, domain setup
-and live qualification; the earlier AgentMedia name remains historical.
+purchased `agentstudios.si`, verified in the registrar account. S-6.35.08 owns
+the remaining public DNS/TLS and customer qualification; the earlier AgentMedia
+name remains historical. The [frontend and backend integration map](../architecture/BRAND-FRONTEND-BACKEND-INTEGRATION.md)
+names each selected site's current connections, missing integrations and tests.
 The next catalogue publication must preserve the current baseline and remain
 separate from any further application deployment.
 

@@ -21,9 +21,18 @@ two defects that were found and fixed after the first claims of correctness.
 
 ## Current context route
 
+Read the [current release 92 deployment](../architecture/MVP-CLIENT-SERVER.md#current-deployment)
+first for AgentStudios application deployment, public domain qualification,
+retained live-check limits and configuration-aware rollback. The
+[website integration map](../architecture/BRAND-FRONTEND-BACKEND-INTEGRATION.md)
+assigns every selected frontend to existing backend owners and remaining
+acceptance gates. The workstation pointer identifies current private evidence,
+active monitoring and the Gemini takeover document. Do not replay completed
+provider operations or assume a later source commit has been deployed.
+
 Read the [October 13 release 91 checkpoint](SESSION-HANDOFF-2026-10-13-RELEASE91.md)
-first for the separate AgentFoundry and AgentAFK presentations and the
-Don't be a meat proxy campaign. All websites are live for public review;
+for the earlier separate AgentFoundry and AgentAFK presentations and the
+Don't be a meat proxy campaign. All websites covered by release 91 are live for public review;
 the application, DNS transitions and release checks are complete. The record
 preserves the new-site run's strict-false secondary body-accounting result,
 current Preview limits, shared backend boundaries and the exact

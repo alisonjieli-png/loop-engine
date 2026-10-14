@@ -166,8 +166,9 @@ Streaming or disk-backed operator metadata remains a separate scaling task.
 AgentStudios is the owner's selected creative-focused offering on the
 account-verified `agentstudios.si` domain. S-6.35.08 owns its independent
 presentation and exact hostname qualification over these same backend
-boundaries. Its setup is in progress, not part of the release 91 live-host
-inventory below. The [owner decision](OWNER-DECISIONS.md#independent-offerings-and-agentstudios)
+boundaries. Release 92 includes the deployed frontend and explicit host
+configuration; both-host public DNS/TLS qualification is tracked separately
+in the current deployment record. The [owner decision](OWNER-DECISIONS.md#independent-offerings-and-agentstudios)
 records the scope and replaces the earlier AgentMedia placeholder.
 
 The owner's standing October 13 direction keeps `baltor.ai` as the combined
@@ -203,7 +204,10 @@ ranking remain unfinished. AgentAFK and the campaign refuse account and
 provider-effect routes. The campaign leads to AgentFeeds, not another product
 or backend. Baltor retains the combined offerings.
 The [current deployment](MVP-CLIENT-SERVER.md#current-deployment) binds the
-eighteen-host release checks and configuration-aware rollback.
+twenty-host release-check scope, completed coverage and configuration-aware
+rollback. The [frontend and backend integration map](BRAND-FRONTEND-BACKEND-INTEGRATION.md)
+records every selected site's existing connections, remaining work and
+customer acceptance gates.
 
 ### Proposed AgentBriefs decision-support composition
 
