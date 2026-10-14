@@ -166,9 +166,11 @@ Streaming or disk-backed operator metadata remains a separate scaling task.
 AgentStudios is the owner's selected creative-focused offering on the
 account-verified `agentstudios.si` domain. S-6.35.08 owns its independent
 presentation and exact hostname qualification over these same backend
-boundaries. Release 92 includes the deployed frontend and explicit host
-configuration; both-host public DNS/TLS qualification is tracked separately
-in the current deployment record. The [owner decision](OWNER-DECISIONS.md#independent-offerings-and-agentstudios)
+boundaries. Release 92 includes the deployed frontend, explicit host
+configuration and completed ordinary public DNS/TLS qualification on both
+`agentstudios.si` and `www.agentstudios.si`, with retained `/connect` selector
+and CDP stream-accounting limits recorded in the current deployment record.
+The [owner decision](OWNER-DECISIONS.md#independent-offerings-and-agentstudios)
 records the scope and replaces the earlier AgentMedia placeholder.
 
 The owner's standing October 13 direction keeps `baltor.ai` as the combined

@@ -1571,9 +1571,9 @@
    "complete": false,
    "completion_status": "live_qualified",
    "depends_on": [],
-   "evidence": "October 13 owner selects AgentStudios, confirms purchasing agentstudios.si on Namecheap and requests separate branding over the same backend. Release92 from b0e2c4cd passed exact CI and guarded deployment; its gate is closed and the shared edge passed3281 exact file checks. The independent creative renderer, exact host admission and provider setup are deployed. Local checks passed3946 self-tests,103 account/routing/OAuth tests,104 browser checks with an independent repeat,32 conformance gates and installed-wheel rendering. The original eighteen-host live attempt preserves9 HEAD assumptions, missing new-host coverage and3 Foundry CDP cancellations; both-host public domain qualification remains open. The earlier AgentMedia placeholder was not purchased.",
+   "evidence": "October 13 owner selects AgentStudios, confirms purchasing agentstudios.si on Namecheap and requests separate branding over the same backend. Release92 from b0e2c4cd passed exact CI and guarded deployment; its gate is closed and the shared edge passed3281 exact file checks. The independent creative renderer, exact host admission and provider setup are deployed. Local checks passed3946 self-tests,103 account/routing/OAuth tests,104 browser checks with an independent repeat,32 conformance gates and installed-wheel rendering. Both https://agentstudios.si and https://www.agentstudios.si completed ordinary public DNS/TLS qualification, and the twenty-host public matrix completed all20 origins and200 views with3660/3664 assertions,3194/3194 exact GETs and20/20 identity HEAD checks. Four /connect innerText assertions failed because the MCP URL renders in a readonly input (passed4/4 in the inputValue supplement), and16 CDP net::ERR_ABORTED body-accounting events remain recorded alongside attempt01. The earlier AgentMedia placeholder was not purchased.",
    "id": "S-6.35.08",
-   "next_action": "Complete the existing bounded ordinary-DNS/TLS monitor and its one successor twenty-host check; preserve all prior failed assertions. Then qualify an actual creative retrieval, edit and clean reopen journey. Do not replay completed provider operations.",
+   "next_action": "Qualify an actual creative retrieval, edit and clean reopen journey, and resolve the retained /connect innerText selector and CDP stream-accounting instrumentation limits. Do not replay completed provider operations.",
    "owner_step": "S-6.35",
    "procedure": [
     "Verify the purchased agentstudios.si domain, preserve registrar records and configure its Cloudflare DNS and exact Fly certificates.",
@@ -1592,9 +1592,9 @@
    "complete": false,
    "completion_status": "live_qualified",
    "depends_on": [],
-   "evidence": "October 13 owner selects AgentBriefs and agentbriefs.si, describing company context, research, opportunity scoring, proof experiments, executive briefs, thresholds and Decision Memory including realized outcomes. The later request requires all websites to have frontends and backend integration plans, with APIs, external services, connections, deployment and secret-management handoff documentation for Gemini. A local review frontend is being prepared; production ownership and launch remain unverified. Official OpenAI documentation distinguishes optional eligible plan usage from identity and requires a program path for paid or remotely hosted apps; no AgentBriefs eligibility is established.",
+   "evidence": "October 13 owner selects AgentBriefs and agentbriefs.si, describing company context, research, opportunity scoring, proof experiments, executive briefs, thresholds and Decision Memory including realized outcomes. The later request requires all websites to have frontends and backend integration plans, with APIs, external services, connections, deployment and secret-management handoff documentation for Gemini. The local-only review frontend in design/prototypes/agentbriefs/ passed124/124 producer browser checks,53/53 independent browser checks (after repairing3 long-string overflow cases caught in the initial50/53 independent run) and zero new high hardcoding findings, with zero outbound network requests. Production domain ownership and launch remain unverified. Official OpenAI documentation distinguishes optional eligible plan usage from identity and requires a program path for paid or remotely hosted apps; no AgentBriefs eligibility is established.",
    "id": "S-6.35.09",
-   "next_action": "Build and review the explicitly synthetic, memory-only AgentBriefs frontend locally, with each screen mapped to existing backend owners and acceptance gates. Define the bounded company-context-to-decision proof and its contracts. Verify domain ownership separately before provider transition; do not accept private uploads, signups or payments through the prototype.",
+   "next_action": "Define and qualify one complete company-context-to-decision proof and its contracts behind the reviewed local-only AgentBriefs prototype. Verify domain ownership separately before any provider transition; do not accept private uploads, signups or payments through the prototype.",
    "owner_step": "S-6.35",
    "procedure": [
     "Verify ownership of the selected agentbriefs.si domain before planning a provider transition; name selection grants no purchase authority.",
@@ -7051,7 +7051,7 @@
  ],
  "record_type": "development_tracker/v2",
  "source": "docs/roadmap/roadmap.yaml",
- "source_fingerprint": "sha256:121d6226ed837046fa85e9ba00ceb8f9a00016f668f661c83a5ff71643ae472f",
+ "source_fingerprint": "sha256:f4271ec734e31d5e43bce74213689165511e566756002b58484488ad1a4058c0",
  "working_schedule": {
   "blocks": [
    {

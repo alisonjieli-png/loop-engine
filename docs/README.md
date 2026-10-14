@@ -24,9 +24,10 @@ and what still needs the owner, are in the
 section of AGENTS.md. No other document restates them.
 
 The [release 92 record](../artifacts/architecture-audit-2026-09-19/pilot-release-92.json)
-records the AgentStudios application deployment and its original qualification
-limits. The current deployment section records subsequent observations.
-Earlier snapshots include the
+and [October 13 release 92 checkpoint](context/SESSION-HANDOFF-2026-10-13-RELEASE92.md)
+record the AgentStudios application deployment, both-host public DNS/TLS
+qualification, twenty-host live check limits and the reviewed local AgentBriefs
+prototype. Earlier snapshots include the
 [October 13 release 91 checkpoint](context/SESSION-HANDOFF-2026-10-13-RELEASE91.md),
 [October 11 release 88 checkpoint](context/SESSION-HANDOFF-2026-10-11-RELEASE88.md),
 [October 8 handoff](context/SESSION-HANDOFF-2026-10-08.md), the

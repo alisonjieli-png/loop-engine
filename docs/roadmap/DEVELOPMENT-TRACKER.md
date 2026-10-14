@@ -3,7 +3,7 @@
 Kind: generated view. Do not edit by hand. The only task authority is
 [roadmap.yaml](roadmap.yaml); change it, then run
 `PYTHONPATH=src:tools .venv/bin/python tools/build_development_tracker.py`.
-Source fingerprint: `sha256:121d6226ed837046fa85e9ba00ceb8f9a00016f668f661c83a5ff71643ae472f`.
+Source fingerprint: `sha256:f4271ec734e31d5e43bce74213689165511e566756002b58484488ad1a4058c0`.
 
 ## Where things stand
 
@@ -145,8 +145,8 @@ Next eligible subtask: S-6.35.06: Qualify AgentFeeds, AgentFoundry and AgentAFK 
 | 70 | [x] S-6.217.01: Reconcile recent prompts and action history | offline_verified | offline_verified | Carry the retained obligation groups into their existing owners; the October 13 brand launch belongs to S-6.35.06, maintained feeds to S-6.214 and raw-data task prioritization to S-6.24.03. |
 | 71 | [ ] S-6.215.14: Reach two million useful served files | proposed | published | Waiting on S-6.215.13 |
 | 72 | [ ] S-6.214.08: Reach ten thousand active qualified sources | proposed | live_qualified | Waiting on S-6.214.07 |
-| 73 | [ ] S-6.35.08: Launch AgentStudios as the independent creative offering | building | live_qualified | Complete the existing bounded ordinary-DNS/TLS monitor and its one successor twenty-host check; preserve all prior failed assertions. Then qualify an actual creative retrieval, edit and clean reopen journey. Do not replay completed provider operations. |
-| 74 | [ ] S-6.35.09: Qualify AgentBriefs executive decision support | building | live_qualified | Build and review the explicitly synthetic, memory-only AgentBriefs frontend locally, with each screen mapped to existing backend owners and acceptance gates. Define the bounded company-context-to-decision proof and its contracts. Verify domain ownership separately before provider transition; do not accept private uploads, signups or payments through the prototype. |
+| 73 | [ ] S-6.35.08: Launch AgentStudios as the independent creative offering | building | live_qualified | Qualify an actual creative retrieval, edit and clean reopen journey, and resolve the retained /connect innerText selector and CDP stream-accounting instrumentation limits. Do not replay completed provider operations. |
+| 74 | [ ] S-6.35.09: Qualify AgentBriefs executive decision support | building | live_qualified | Define and qualify one complete company-context-to-decision proof and its contracts behind the reviewed local-only AgentBriefs prototype. Verify domain ownership separately before any provider transition; do not accept private uploads, signups or payments through the prototype. |
 
 ## Subtask procedures and evidence
 
@@ -1336,9 +1336,9 @@ Acceptance: A designer-focused presentation supports actual creative discovery, 
 4. Release reviewed main after exact CI, verify both new hostnames and every existing host, and retain configuration-aware rollback.
 5. Qualify real asset selection, download, edit and reopen journeys before live capability claims.
 
-Evidence: October 13 owner selects AgentStudios, confirms purchasing agentstudios.si on Namecheap and requests separate branding over the same backend. Release92 from b0e2c4cd passed exact CI and guarded deployment; its gate is closed and the shared edge passed3281 exact file checks. The independent creative renderer, exact host admission and provider setup are deployed. Local checks passed3946 self-tests,103 account/routing/OAuth tests,104 browser checks with an independent repeat,32 conformance gates and installed-wheel rendering. The original eighteen-host live attempt preserves9 HEAD assumptions, missing new-host coverage and3 Foundry CDP cancellations; both-host public domain qualification remains open. The earlier AgentMedia placeholder was not purchased.
+Evidence: October 13 owner selects AgentStudios, confirms purchasing agentstudios.si on Namecheap and requests separate branding over the same backend. Release92 from b0e2c4cd passed exact CI and guarded deployment; its gate is closed and the shared edge passed3281 exact file checks. The independent creative renderer, exact host admission and provider setup are deployed. Local checks passed3946 self-tests,103 account/routing/OAuth tests,104 browser checks with an independent repeat,32 conformance gates and installed-wheel rendering. Both https://agentstudios.si and https://www.agentstudios.si completed ordinary public DNS/TLS qualification, and the twenty-host public matrix completed all20 origins and200 views with3660/3664 assertions,3194/3194 exact GETs and20/20 identity HEAD checks. Four /connect innerText assertions failed because the MCP URL renders in a readonly input (passed4/4 in the inputValue supplement), and16 CDP net::ERR_ABORTED body-accounting events remain recorded alongside attempt01. The earlier AgentMedia placeholder was not purchased.
 
-Next: Complete the existing bounded ordinary-DNS/TLS monitor and its one successor twenty-host check; preserve all prior failed assertions. Then qualify an actual creative retrieval, edit and clean reopen journey. Do not replay completed provider operations.
+Next: Qualify an actual creative retrieval, edit and clean reopen journey, and resolve the retained /connect innerText selector and CDP stream-accounting instrumentation limits. Do not replay completed provider operations.
 
 Comment: Separate presentation does not claim unrelated ownership or require another backend.
 
@@ -1357,9 +1357,9 @@ Acceptance: An authorized company can supply versioned private context, receive 
 7. Evaluate proposed $299/$799 monthly company pilot prices as demand and cost hypotheses, with separately scoped experiments and no change to existing offers.
 8. Keep application sign-in separate from inference permission; seek required program approval before offering hosted ChatGPT plan usage, retain supported customer API access and account separately for ingestion, storage, scheduling and sandbox costs.
 
-Evidence: October 13 owner selects AgentBriefs and agentbriefs.si, describing company context, research, opportunity scoring, proof experiments, executive briefs, thresholds and Decision Memory including realized outcomes. The later request requires all websites to have frontends and backend integration plans, with APIs, external services, connections, deployment and secret-management handoff documentation for Gemini. A local review frontend is being prepared; production ownership and launch remain unverified. Official OpenAI documentation distinguishes optional eligible plan usage from identity and requires a program path for paid or remotely hosted apps; no AgentBriefs eligibility is established.
+Evidence: October 13 owner selects AgentBriefs and agentbriefs.si, describing company context, research, opportunity scoring, proof experiments, executive briefs, thresholds and Decision Memory including realized outcomes. The later request requires all websites to have frontends and backend integration plans, with APIs, external services, connections, deployment and secret-management handoff documentation for Gemini. The local-only review frontend in design/prototypes/agentbriefs/ passed124/124 producer browser checks,53/53 independent browser checks (after repairing3 long-string overflow cases caught in the initial50/53 independent run) and zero new high hardcoding findings, with zero outbound network requests. Production domain ownership and launch remain unverified. Official OpenAI documentation distinguishes optional eligible plan usage from identity and requires a program path for paid or remotely hosted apps; no AgentBriefs eligibility is established.
 
-Next: Build and review the explicitly synthetic, memory-only AgentBriefs frontend locally, with each screen mapped to existing backend owners and acceptance gates. Define the bounded company-context-to-decision proof and its contracts. Verify domain ownership separately before provider transition; do not accept private uploads, signups or payments through the prototype.
+Next: Define and qualify one complete company-context-to-decision proof and its contracts behind the reviewed local-only AgentBriefs prototype. Verify domain ownership separately before any provider transition; do not accept private uploads, signups or payments through the prototype.
 
 Comment: Proposed decision support, not production solution development. Baltor remains a separate offering rather than a mandatory umbrella; shared backend ownership does not permit cross-brand or cross-tenant private data access. No continuous-feed scale, production-savings or current pricing claim is made.
 

@@ -60,30 +60,38 @@ owns the current evidence and limits.
 AgentStudios has its own creative-facing pages, assets, navigation, account
 presentation and OAuth issuer over the same service, catalogue and account
 stores. Its purchased apex and www origins are explicitly configured.
-Cloudflare has six verified DNS-only records, and Namecheap and registry RDAP
-confirm the Cloudflare nameservers. The si parent still publishes the earlier
-registrar delegation at this checkpoint. Both certificates are attached but
-public AgentStudios HTTPS is not yet qualified. The bounded read-only monitor
-waits for both roots before the successor twenty-host check. Do not describe
-the new domain as publicly live from configuration or an origin-header probe.
+Cloudflare has six verified DNS-only records, and Namecheap, registry RDAP
+and the `.si` parent delegation serve the Cloudflare nameservers. Both
+certificates are ready and ordinary public HTTPS is qualified on
+`https://agentstudios.si` and `https://www.agentstudios.si`. Do not replay
+the completed DNS or certificate operations.
 
 The exact source passed 3,946 self-tests, 103 account/routing/OAuth tests,
 104 AgentStudios browser checks and an independent 104-check repeat,
 32 conformance gates, 62 documentation/context checks and pristine committed
 regeneration. A fresh installed wheel passed 402 page/asset/file renders,
 342 shared-asset reads and both error pages after a missing logo was repaired.
-The initial temporary-path and packaging failures remain recorded.
+The local-only AgentBriefs review prototype under `design/prototypes/agentbriefs/`
+passed 124 producer browser checks and 53 independent browser checks after an
+initial 50/53 independent run caught three long-string overflow cases. The
+initial temporary-path, packaging and prototype overflow failures remain recorded.
 
 The configured release-check scope is twenty hosts: eighteen existing public
-hosts and two AgentStudios hosts awaiting public DNS/TLS qualification.
-The public matrix completed all eighteen existing hosts and 164 of 200 target
-views. All 1,702 exact-source GETs passed. Its aggregate remains false:
-nine compressed HEAD checks incorrectly required Content-Length, the new two
-hosts were not reached, and three Foundry Public Good browser requests
-reported canceled with `net::ERR_ABORTED`; the precise cause was not isolated.
-A separate identity-encoding HEAD check passed all nine
-edge hosts. Neither that supplement nor the 2,042 passing assertions erases
-the original 2,052-assertion report's limits.
+hosts and the two AgentStudios hosts. After the bounded monitor confirmed
+both AgentStudios roots over ordinary public DNS and verified TLS, the
+successor twenty-host public matrix completed all 20 origins and all 200
+desktop/phone views: 3,660 of 3,664 assertions passed, all 3,194 exact-source
+GETs passed and all 20 identity-encoded HEAD checks passed. Its strict
+aggregate remains false: four assertions on AgentStudios `/connect` checked
+`body.innerText()` while `/connect` renders the own-domain MCP URL inside a
+`readonly` `<input>` element, and 16 Chrome DevTools `net::ERR_ABORTED`
+body-accounting events occurred on Foundry Public Good and AgentStudios
+streaming media routes. A separate four-of-four `inputValue` supplement
+confirmed `https://agentstudios.si/mcp` and `https://www.agentstudios.si/mcp`
+at 1440 and 390 without altering the original report. The earlier attempt 1
+report (18 of 20 hosts, 164 of 200 views, 2,042 of 2,052 assertions, 1,702 of
+1,702 exact GETs, nine compressed HEAD assumptions and three Foundry
+`net::ERR_ABORTED` events while AgentStudios DNS was pending) is also retained.
 
 The existing nine-host Worker now serves export
 `a031cd4dd6139851ac8bf4218d66ff1a03d6b0668efcf5a179eb5f237cf79a16`, with

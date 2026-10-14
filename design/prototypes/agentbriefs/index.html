@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="robots" content="noindex,nofollow">
+  <meta name="description" content="AgentBriefs local design prototype. Fictional company, synthetic evidence, no backend connection.">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self'; font-src 'self'; connect-src 'none'; form-action 'none'; base-uri 'none'; object-src 'none'">
+  <title>AgentBriefs | Local decision workspace</title>
+  <link rel="stylesheet" href="styles.css">
+  <script src="app.js" defer></script>
+</head>
+<body>
+  <a class="skip" href="#main">Skip to workspace</a>
+  <div class="prototype"><strong>Local design prototype</strong><span>Synthetic company and evidence. No backend connection.</span></div>
+  <div class="shell">
+    <aside class="sidebar" aria-label="Workspace navigation">
+      <a class="brand" href="#overview" aria-label="AgentBriefs overview"><span class="brand-mark" aria-hidden="true">ab.</span><span>AgentBriefs<small>THE DECISION WORKSPACE</small></span></a>
+      <nav aria-label="Main">
+        <a href="#overview" data-nav="overview" aria-current="page"><span aria-hidden="true">01</span> Overview</a>
+        <a href="#company" data-nav="company"><span aria-hidden="true">02</span> CompanyDNA</a>
+        <a href="#brief" data-nav="brief"><span aria-hidden="true">03</span> Decision brief</a>
+        <a href="#evidence" data-nav="evidence"><span aria-hidden="true">04</span> Evidence ledger</a>
+        <a href="#decisions" data-nav="decisions"><span aria-hidden="true">05</span> Decision Memory</a>
+      </nav>
+      <div class="sidebar-note"><span class="label">REVIEW BOUNDARY</span><p>Explore the design using invented details. No source collection, experiment or notification runs here.</p><button type="button" class="text-button" id="reset">Reset the demonstration</button></div>
+      <div class="company-chip"><span class="avatar" aria-hidden="true">N</span><div><strong data-company>Northstar Components</strong><small>Fictional company · <span data-version>context v3</span></small></div></div>
+    </aside>
+    <main id="main" tabindex="-1">
+      <div class="workspace-top"><span class="label">EXECUTIVE INTELLIGENCE / DESIGN REVIEW</span><span class="connection"><span aria-hidden="true"></span> Offline demonstration</span></div>
+      <section data-view="overview" aria-labelledby="overview-title">
+        <header class="page-heading"><div><p class="eyebrow">The attention queue</p><h1 id="overview-title">What deserves a decision?</h1><p>Review a change against your goals, inspect the evidence, and decide what to investigate next.</p></div><a class="button primary" href="#brief">Read the example brief <span aria-hidden="true">↗</span></a></header>
+        <div class="scope-note"><strong>Everything below is a scenario.</strong> Names, sources, scores and dates are fictional. No research or experiment has been performed.</div>
+        <div class="summary-grid" aria-label="Synthetic scenario summary">
+          <article><span class="label">WOULD SURFACE</span><strong id="surface-count">1</strong><p>Under these demonstration thresholds</p></article>
+          <article><span class="label">HELD FOR MORE EVIDENCE</span><strong id="held-count">2</strong><p>Reasons stay visible below</p></article>
+          <article><span class="label">REALIZED BENEFIT</span><strong class="word-value">Not measured</strong><p>No adoption or customer outcome</p></article>
+        </div>
+        <div class="dashboard-grid">
+          <div>
+            <div class="section-heading"><h2>Candidate decisions</h2><span class="tag synthetic">Synthetic examples</span></div>
+            <div id="candidates" aria-live="polite"></div>
+            <div class="source-warning"><span class="warning-mark" aria-hidden="true">!</span><div><strong>One source check is unavailable in this scenario.</strong><p>The supplier bulletin has no current observation. A quiet queue would not mean that nothing changed.</p><a href="#evidence">Inspect source coverage</a></div></div>
+          </div>
+          <aside class="threshold-panel" aria-labelledby="threshold-title">
+            <div class="section-heading"><h2 id="threshold-title">Your attention rules</h2><span class="tiny">Local only</span></div>
+            <p class="muted">Change what this demonstration would surface. These controls do not authorize work or send alerts.</p>
+            <label for="category">Brief category</label><select id="category"><option value="all">All briefing types</option><option value="development">Source-backed development</option><option value="experiment">Experimental fit</option></select>
+            <label for="floor">Evidence floor</label><select id="floor"><option value="ready">Decision-ready for its category</option><option value="relevant">Relevant, with limitations visible</option></select>
+            <label for="priority">Scenario importance <output id="priority-value" for="priority">60 / 100</output></label><input id="priority" type="range" min="0" max="100" step="5" value="60" aria-describedby="importance-help"><p id="importance-help" class="field-help">An invented triage score, not a success probability or measured value.</p>
+            <div class="field-pair"><div><label for="freshness">Maximum age (days)</label><input id="freshness" type="number" min="1" max="30" value="7"></div><div><label for="attention">Briefs per review</label><input id="attention" type="number" min="0" max="3" value="1"></div></div>
+            <p id="rule-status" class="rule-status" role="status">One example would surface. No notification is sent.</p>
+          </aside>
+        </div>
+      </section>
+
+      <section data-view="company" aria-labelledby="company-title" hidden>
+        <header class="page-heading"><div><p class="eyebrow">CompanyDNA</p><h1 id="company-title">Give the decision its context.</h1><p>Goals, systems and constraints should explain why an opportunity matters to this company.</p></div><span class="tag synthetic">Fictional context</span></header>
+        <div class="two-column">
+          <form id="company-form" class="paper" autocomplete="off">
+            <h2>Example context snapshot</h2><p class="muted">Use invented details only. Changes remain in this page's memory and reset on reload. Do not enter company secrets, personal data or credentials. Editing context does not re-analyze the built-in brief.</p>
+            <label for="company-name">Fictional company name</label><input id="company-name" maxlength="80" value="Northstar Components" required>
+            <label for="goal">Decision goal</label><textarea id="goal" maxlength="600" rows="3">Reduce order delays without changing the core ordering system.</textarea>
+            <label for="systems">Systems and work in scope</label><textarea id="systems" maxlength="600" rows="3">Order management service, warehouse planning and invoice review.</textarea>
+            <label for="constraints">Constraints and exclusions</label><textarea id="constraints" maxlength="600" rows="3">Use synthetic data for any experiment. No production writes, purchases or vendor contact.</textarea>
+            <button type="button" id="apply-context" class="button primary">Apply to this preview</button><p id="context-status" role="status" class="field-help">Nothing has been submitted or stored.</p>
+          </form>
+          <aside><div class="paper"><span class="label">CONTEXT SNAPSHOT</span><h2 id="context-name">Northstar Components</h2><dl class="facts"><dt>Version</dt><dd data-version>context v3</dd><dt>Source</dt><dd>Built-in fictional scenario</dd><dt>Access</dt><dd>Local browser memory only</dd><dt>Goal</dt><dd id="context-goal">Reduce order delays without changing the core ordering system.</dd><dt>Systems</dt><dd id="context-systems">Order management service, warehouse planning and invoice review.</dd><dt>Constraints</dt><dd id="context-constraints">Use synthetic data for any experiment. No production writes, purchases or vendor contact.</dd></dl></div>
+          <div class="integration-note"><h2>Import is not connected</h2><p>A production version would need tenant-scoped records, explicit source access, retention rules and connector consent. This prototype has no upload control or connector.</p><button type="button" disabled class="button secondary">Document import unavailable</button></div></aside>
+        </div>
+      </section>
+
+      <section data-view="brief" aria-labelledby="brief-title" hidden>
+        <header class="page-heading"><div><p class="eyebrow">Example brief AB-001 · Synthetic</p><h1 id="brief-title">A second fulfillment region merits review.</h1><p>A fictional supplier update, assessed against the example company's delivery goal. This is a design specimen, not a recommendation about a real supplier.</p></div><span class="tag">Source-backed category</span></header>
+        <div class="brief-grid">
+          <article class="brief-paper">
+            <div class="brief-metadata"><span>Northstar Components</span><span>Based on original context v3</span><span>Example revision 1</span></div>
+            <section><h2>The decision</h2><p>Decide whether to request a service comparison for a second fulfillment region. Do not authorize a migration from this brief.</p></section>
+            <section><h2>Why it might matter here</h2><p>The fictional context prioritizes fewer order delays while retaining the current ordering service. A regional option may change transport distance, but neither lead time nor integration fit has been measured.</p></section>
+            <section><h2>What the scenario supports</h2><ul><li>Two synthetic records describe the same announced region.</li><li>The example company has a delivery-delay goal.</li><li>The existing supplier can remain the comparison baseline.</li></ul><a href="#evidence">Inspect E-001 and E-002</a></section>
+            <section><h2>What it does not establish</h2><p>No real announcement was retrieved. No price, service availability, integration compatibility or benefit has been verified. Company-specific savings are unknown.</p></section>
+            <section><h2>Alternatives and effort</h2><div class="comparison"><div><strong>Keep the current arrangement</strong><p>No switching effort. Review the cause of late orders first.</p></div><div><strong>Request a scoped comparison</strong><p>Needs approved vendor contact, representative demand assumptions and an operations reviewer.</p></div></div></section>
+            <section><h2>Next permitted action</h2><p>In this prototype, you can mark the example for discussion or dismiss it. Neither action contacts a supplier, starts an experiment or changes a system.</p><div class="actions"><button type="button" class="button primary" id="discuss">Mark for discussion</button><button type="button" class="button secondary" id="dismiss">Dismiss in preview</button></div><p id="decision-status" class="field-help" role="status">No decision has been recorded in this preview.</p></section>
+          </article>
+          <aside class="brief-aside"><div class="paper"><span class="label">EVIDENCE IS NOT AN OUTCOME</span><ol class="evidence-steps"><li><strong>Source evidence</strong><span>Synthetic references only</span></li><li><strong>Proof of concept</strong><span>Not applicable to this announcement brief</span></li><li><strong>Realized benefit</strong><span>No adoption or outcome recorded</span></li></ol></div><div class="paper"><h2>Experimental-fit example</h2><p>The invoice-extraction candidate needs a baseline, an approved synthetic dataset, a test method and recorded failures before an experimental claim.</p><dl class="facts"><dt>Experiment state</dt><dd>Not run</dd><dt>Measured result</dt><dd>None</dd><dt>Resource authority</dt><dd>Not granted</dd></dl><button type="button" disabled class="button secondary">Experiment execution unavailable</button></div></aside>
+        </div>
+      </section>
+
+      <section data-view="evidence" aria-labelledby="evidence-title" hidden>
+        <header class="page-heading"><div><p class="eyebrow">Evidence ledger</p><h1 id="evidence-title">Show the basis. Keep the gaps.</h1><p>These invented records demonstrate provenance and uncertainty. They are not fetched articles, benchmarks or customer evidence.</p></div><span class="tag synthetic">No live sources</span></header>
+        <div class="ledger" role="list">
+          <article class="paper evidence-row" role="listitem"><span class="record-id">E-001</span><div><h2>Fictional regional service announcement</h2><p>Scenario publisher: Northline Logistics. Source kind: invented release note.</p><p class="muted">Supports only the announcement in AB-001. Does not establish availability, service performance or customer fit.</p></div><span class="tag synthetic">Synthetic source</span></article>
+          <article class="paper evidence-row" role="listitem"><span class="record-id">E-002</span><div><h2>Fictional region coverage table</h2><p>Scenario publisher: Northline Logistics. Source kind: invented service reference.</p><p class="muted">Same fictional publisher as E-001, not independent corroboration. A real brief must identify that dependency.</p></div><span class="tag synthetic">Synthetic source</span></article>
+          <article class="paper evidence-row" role="listitem"><span class="record-id">E-003</span><div><h2>Invoice-extraction method note</h2><p>Scenario publisher: Example Methods Lab. Source kind: invented technical note.</p><p class="muted">Relevance only. No baseline, executable artifact, trial population or measured result is attached.</p></div><span class="tag held">Evidence incomplete</span></article>
+          <article class="paper evidence-row" role="listitem"><span class="record-id">S-004</span><div><h2>Supplier bulletin check</h2><p>Collection state: unavailable in the scenario.</p><p class="muted">Last successful observation is unknown. This is a collection gap, not evidence that there is no relevant update.</p></div><span class="tag held">Unknown freshness</span></article>
+        </div>
+      </section>
+
+      <section data-view="decisions" aria-labelledby="decisions-title" hidden>
+        <header class="page-heading"><div><p class="eyebrow">Decision Memory</p><h1 id="decisions-title">Keep the decision tied to its evidence.</h1><p>Local demonstration entries link a choice to a brief and context version. They disappear on reload and cannot establish a realized benefit.</p></div><span class="tag">In-memory only</span></header>
+        <div class="paper"><div class="section-heading"><h2>Decisions in this preview</h2><span id="decision-count" class="tiny">0 entries</span></div><p id="decision-empty" class="empty">No demonstration decisions yet. <a href="#brief">Read the example brief</a> and choose a local review action.</p><ol id="decision-list" class="decision-list"></ol></div>
+        <div class="outcome-strip"><div><span class="label">DECISION</span><h2>A review action</h2><p>Discussion or dismissal is not adoption.</p></div><div><span class="label">EXPERIMENT</span><h2>Not run</h2><p>Requires separate scope and permission.</p></div><div><span class="label">REALIZED OUTCOME</span><h2>Not measured</h2><p>A later customer observation must cite its conditions.</p></div></div>
+      </section>
+      <footer><strong>AgentBriefs</strong><span>Independent executive-facing design. Integration with the shared backend is planned.</span><span>Common operator: Baltor.AI. Domain ownership and launch are unverified.</span></footer>
+      <noscript><div class="scope-note">JavaScript is required for the local controls. No information will be submitted. The overview remains readable.</div></noscript>
+    </main>
+  </div>
+</body>
+</html>

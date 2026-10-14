@@ -14,7 +14,7 @@
   "deploy_run": 38494952598,
   "deploy_workflow_conclusion": "success",
   "deployment_gate_after": false,
-  "qualification_state": "application_deployed_agentstudios_public_dns_tls_pending",
+  "qualification_state": "application_deployed_and_agentstudios_public_dns_tls_qualified_with_retained_instrumentation_limits",
   "changes": [
     "Independent AgentStudios creative presentation with media filters, recorded component previews, existing original music/video demonstrations and editable-source downloads",
     "AgentStudios uses the same catalogue, account, entitlement, request-limit and execution boundaries while keeping its own navigation, assets, OAuth issuer and browser storage",
@@ -62,15 +62,15 @@
     "records_proxied": false,
     "nameservers": ["dana.ns.cloudflare.com", "nile.ns.cloudflare.com"],
     "registrar_and_rdap_delegation_acknowledged": true,
-    "parent_delegation_last_observed": ["dns1.registrar-servers.com", "dns2.registrar-servers.com"],
+    "parent_delegation_last_observed": ["dana.ns.cloudflare.com", "nile.ns.cloudflare.com"],
     "old_registrar_records_preserved": true,
     "certificates_attached": 2,
-    "certificates_ready_observed": 0,
+    "certificates_ready_observed": 2,
     "maximum_incremental_certificate_cost_usd_per_month": 0.2,
-    "public_https_qualified": false,
+    "public_https_qualified": true,
     "new_applications": 0,
     "new_databases": 0,
-    "limit": "At this checkpoint the si parent still serves the earlier registrar delegation. Cloudflare authoritative DNS is configured, but ordinary public AgentStudios TLS and full customer journeys are not yet qualified. A bounded read-only monitor waits for both roots to match the exact source before one successor public QA run."
+    "limit": "Both https://agentstudios.si/ and https://www.agentstudios.si/ passed public DNS and TLS qualification at 2026-10-14T02:31:06Z (attempt 45 of the bounded monitor), and the one-shot twenty-host public QA completed all 20 origins and 200 views with 3,660 of 3,664 assertions passing, 3,194 of 3,194 exact GETs passing and 20 of 20 identity HEAD checks passing. Four /connect assertions failed only because check_release92_live_v2.mjs read body.innerText() while the MCP URL is rendered inside input[readonly]; a bounded four-of-four inputValue supplement passed both origins at 1440 and 390. Sixteen Chrome DevTools net::ERR_ABORTED body-accounting events remain recorded on Foundry and AgentStudios streaming/media routes."
   },
   "checks": {
     "self_tests": {"passed": 3946, "total": 3946, "provider_calls": 0},
@@ -102,6 +102,28 @@
       "browser_encoded_bytes": 34265261,
       "limit": "All exact GETs and completed page layouts passed. Nine edge HEAD assertions assumed Content-Length on Brotli responses; a separate identity-encoding check passed all nine without changing the original report. The run stopped before AgentStudios on fetch failure while DNS/TLS was pending. Three Foundry Public Good browser requests reported canceled (net::ERR_ABORTED); the precise cancellation cause was not isolated. These remain instrumentation limits, not ignored events."
     },
+    "live_matrix_attempt_02": {
+      "required_hosts": 20,
+      "completed_hosts": 20,
+      "required_views": 200,
+      "completed_views": 200,
+      "passed_assertions": 3660,
+      "total_assertions": 3664,
+      "exact_source_gets_passed": 3194,
+      "exact_source_gets_total": 3194,
+      "identity_head_passed": 20,
+      "identity_head_total": 20,
+      "strict_aggregate_passed": false,
+      "failed_connect_innertext_assertions": 4,
+      "checker_errors": 0,
+      "instrumentation_events": 16,
+      "requests": 5652,
+      "native_decoded_bytes": 46750298,
+      "browser_encoded_bytes": 62696660,
+      "limit": "Completed all 20 origins and 200 desktop/phone views after AgentStudios public DNS and TLS readiness. All 3,194 exact-source GETs and all 20 identity-encoded HEAD checks passed. Four assertions on AgentStudios /connect failed because check_release92_live_v2.mjs inspected body.innerText() while /connect renders the own-domain MCP URL inside a readonly input element; a separate four-of-four inputValue check confirmed https://agentstudios.si/mcp and https://www.agentstudios.si/mcp at 1440 and 390 without rewriting report.json. Sixteen Chrome DevTools net::ERR_ABORTED body-accounting events occurred on Foundry Public Good and AgentStudios streaming media routes."
+    },
+    "connect_input_supplement": {"passed": 4, "total": 4, "origins": ["https://agentstudios.si", "https://www.agentstudios.si"], "viewports": [1440, 390]},
+    "agentbriefs_local_prototype": {"producer_browser_passed": 124, "producer_browser_total": 124, "independent_browser_passed": 53, "independent_browser_total": 53, "independent_first_attempt_passed": 50, "independent_first_attempt_failed": 3, "outbound_requests": 0},
     "identity_head_supplement": {"passed": 9, "total": 9, "negative_controls": 6},
     "edge_readback": {"passed": 3281, "total": 3281}
   },
@@ -110,7 +132,9 @@
     "Initial root browser command named a nonexistent checker before a browser started. The corrected exact candidate run passes104 checks.",
     "A real initial wheel omitted AgentStudios mark.svg and failed outside-source rendering. Exact package-data coverage and a removed-coverage control repair it.",
     "First three DNS writes returned a list whose total_count lagged the actual rows. Exact GET reconciliation confirmed each write, with no repeated POST. Later operations used bounded GET-only reconciliation for that specific pattern.",
-    "Public matrix attempt01 remains failed for the recorded HEAD assumptions, incomplete AgentStudios coverage and three browser accounting events. Its successor changes only the HEAD request/contract and will run after public DNS/TLS readiness."
+    "Public matrix attempt01 remains failed for the recorded HEAD assumptions, incomplete AgentStudios coverage and three browser accounting events. Its successor changes only the HEAD request/contract and will run after public DNS/TLS readiness.",
+    "Public matrix attempt02 completed all20 origins and200 views with3660/3664 assertions,3194/3194 exact GETs and20/20 identity HEAD checks, retaining4 AgentStudios /connect innerText selector mismatches (passed4/4 in the readonly inputValue supplement) and16 CDP net::ERR_ABORTED stream-accounting events.",
+    "Initial independent AgentBriefs prototype check passed50/53 and caught3 horizontal overflow failures on80-character and600-character unspaced strings at390px and1440px. The CSS overflow repair passed53/53 independent checks and124/124 producer checks while preserving the first failed report."
   ],
   "scope_limits": [
     "No domain purchase, advertising spend, customer message, price or subscription change was made. Standard deployment grant reconciliation is unchanged.",
@@ -118,7 +142,7 @@
     "Local account and OAuth tests are not new-domain real sign-up, email, consent or payment qualification.",
     "Optional model2vec, open-ontologies native binary and skills_ref adapters were not tested by the local full self-test.",
     "Media discovery and source downloads are not a hosted editor, general generation service or completed edit/reopen customer proof.",
-    "AgentBriefs is selected and documented as a proposal, not an owned or launched domain in this record."
+    "AgentBriefs is selected and documented as a proposal and local review prototype, not an owned or launched domain in this record."
   ],
   "private_evidence": "agentstudios-launch-20261013-nzUSey; immutable deployment, DNS, browser, wheel and audit reports retained. Read the workstation pointer before any continuation. Never replay completed operators."
 }
