@@ -5,6 +5,19 @@
   "releases": [
    {
     "kind": "service",
+    "number": 92,
+    "at": "2026-10-14T01:21:13Z",
+    "lines": [
+     "Independent AgentStudios creative presentation with media filters, recorded component previews, existing original music/video demonstrations and editable-source downloads.",
+     "AgentStudios uses the same catalogue, account, entitlement, request-limit and execution boundaries while keeping its own navigation, assets, OAuth issuer and browser storage.",
+     "Exact explicit admission of two new origins; branded browser errors and installed-wheel SVG coverage.",
+     "Previously reviewed growth changes: AgentFeeds local saved collections, bounded offline source readers, feed retry handling, native OpenCode profile and private newsletter intake source; source inclusion is not worker activation or end-to-end customer qualification."
+    ],
+    "seen_after_release": "",
+    "not_shown": 0
+   },
+   {
+    "kind": "service",
     "number": 91,
     "at": "2026-10-13T20:34:40Z",
     "lines": [

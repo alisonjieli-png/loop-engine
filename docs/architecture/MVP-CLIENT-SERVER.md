@@ -2,7 +2,7 @@
 
 Kind: product architecture with measured local implementation and proposed hosting.
 Date: 2026-09-19. The [current deployment](#current-deployment) section was
-added on 2026-09-20 and last checked on 2026-10-13, with Fly release 91 live.
+added on 2026-09-20 and last checked on 2026-10-13, with Fly release 92 live.
 
 The hosted product manages accounts, subscriptions, and access to intelligence.
 The customer runs Loop Engine and the selected harnesses. A hosted intelligence
@@ -48,7 +48,62 @@ section. Update this section in the same change that records a new release.
 Public registration is enabled. The site offers the existing monthly plan;
 these deployment checks alone do not establish a fully qualified paid service.
 
-The running image is Fly release 91, from
+The running image is Fly release 92, from
+`b0e2c4cd7dd2b49c611abca478e78a7624b14704`, image
+`sha256:aa73def135cddf3b27a45c39d8b37e0083b609ae922a2744cc8bb5e3449315ec`.
+Exact CI `38493865609` passed twenty jobs; guarded deployment `38494952598`
+succeeded and the deployment gate is closed. Fly records creation at
+01:21:13 UTC on October 14, still October 13 in the owner's timezone.
+The [release 92 record](../../artifacts/architecture-audit-2026-09-19/pilot-release-92.json)
+owns the current evidence and limits.
+
+AgentStudios has its own creative-facing pages, assets, navigation, account
+presentation and OAuth issuer over the same service, catalogue and account
+stores. Its purchased apex and www origins are explicitly configured.
+Cloudflare has six verified DNS-only records, and Namecheap and registry RDAP
+confirm the Cloudflare nameservers. The si parent still publishes the earlier
+registrar delegation at this checkpoint. Both certificates are attached but
+public AgentStudios HTTPS is not yet qualified. The bounded read-only monitor
+waits for both roots before the successor twenty-host check. Do not describe
+the new domain as publicly live from configuration or an origin-header probe.
+
+The exact source passed 3,946 self-tests, 103 account/routing/OAuth tests,
+104 AgentStudios browser checks and an independent 104-check repeat,
+32 conformance gates, 62 documentation/context checks and pristine committed
+regeneration. A fresh installed wheel passed 402 page/asset/file renders,
+342 shared-asset reads and both error pages after a missing logo was repaired.
+The initial temporary-path and packaging failures remain recorded.
+
+The configured release-check scope is twenty hosts: eighteen existing public
+hosts and two AgentStudios hosts awaiting public DNS/TLS qualification.
+The public matrix completed all eighteen existing hosts and 164 of 200 target
+views. All 1,702 exact-source GETs passed. Its aggregate remains false:
+nine compressed HEAD checks incorrectly required Content-Length, the new two
+hosts were not reached, and three Foundry Public Good browser requests
+reported canceled with `net::ERR_ABORTED`; the precise cause was not isolated.
+A separate identity-encoding HEAD check passed all nine
+edge hosts. Neither that supplement nor the 2,042 passing assertions erases
+the original 2,052-assertion report's limits.
+
+The existing nine-host Worker now serves export
+`a031cd4dd6139851ac8bf4218d66ff1a03d6b0668efcf5a179eb5f237cf79a16`, with
+3,281 public files and 89,430,691 bytes, all passing exact readback.
+Deployment `6231d769-3582-42c8-b648-1e9bc28e849a` uses version
+`4165d810-05a0-43a6-a41d-3bf70bcd29f7`; routes and origin mode are unchanged.
+The catalogue remains 1,560,856 distinct files in 256,380 packages.
+
+Rollback to image91 requires restoring
+`/data/host-before-agentstudios-sites-20261013.json` first, with SHA-256
+`ed23fffd71d4a48cf8c09f4cf239695fe7cf105278ef25be8a78d29e9a140cb6`.
+The staged host digest is
+`0acccc4af0e36252f3db9f2fb4ad3dad2a7c2edf66d73e22e2f22762bb5f5bc2`.
+That rollback retains the earlier websites and withdraws AgentStudios. Keep
+the release 91 Worker deployment/export below for the corresponding edge
+rollback. No price, subscription, catalogue or newsletter activation changed.
+
+### Earlier release 91 qualification and rollback baseline
+
+The preceding image was Fly release 91, from
 `b500149c5cfdebc2ee1bf5ee05b5fba4b7052ec2`, image
 `sha256:34f939fa7cdceb200063a74ed5a01747d5e9a1f9bfd9eea3534d56e54f944a13`.
 Exact CI `38461710945` passed twenty jobs. Guarded deployment `38463481427`
