@@ -73,8 +73,10 @@ def mcp_fixture(method, params):
 
 
 def tool_answer(index, name, arguments):
-    return response(None, [{"id": "offline-call-" + str(index), "type": "function",
+    value = response(None, [{"id": "offline-call-" + str(index), "type": "function",
                             "function": {"name": name, "arguments": json.dumps(arguments)}}])
+    value["choices"][0]["message"]["reasoning"] = "Offline fixture: use the declared tool and inspect its result."
+    return value
 
 
 def run(binary, output):

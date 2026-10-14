@@ -117,8 +117,10 @@ def validate_native_request(body, model):
     for message in body["messages"]:
         if not isinstance(message, dict) or message.get("role") not in ("system", "user", "assistant", "tool"):
             raise HarnessProcessError("customer_message_role_refused")
-        if set(message) - {"role", "content", "tool_calls", "tool_call_id"}:
+        if set(message) - {"role", "content", "tool_calls", "tool_call_id", "reasoning_content"}:
             raise HarnessProcessError("customer_message_fields_refused")
+        if "reasoning_content" in message and (message["role"] != "assistant" or not isinstance(message["reasoning_content"], str)):
+            raise HarnessProcessError("customer_assistant_reasoning_text_required")
         content = message.get("content")
         if content is not None and not isinstance(content, str):
             if (not isinstance(content, list) or any(not isinstance(part, dict) or part.get("type") != "text"

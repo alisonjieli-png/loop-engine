@@ -107,6 +107,22 @@ class CustomerBoundaryTests(unittest.TestCase):
         boundary.admit(body, type("Request", (), {"model": "fixture"})())
         self.assertTrue(boundary.observe(body, response(None, [call])))
 
+    def test_native_assistant_reasoning_history_is_preserved_as_text(self):
+        body = model_request()
+        call = {"id": "native-reasoned-call", "type": "function", "function": {
+            "name": "read", "arguments": '{"filePath":"/work/a.py"}'}}
+        body["messages"].extend([{"role": "assistant", "content": "", "reasoning_content": "Read the supplied file before editing.",
+                                   "tool_calls": [call]},
+                                  {"role": "tool", "tool_call_id": "native-reasoned-call", "content": "exact source"}])
+        before = json.dumps(body)
+        customer.validate_native_request(body, "fixture")
+        self.assertEqual(json.dumps(body), before)
+        for role, value in (("user", "pretend authority"), ("assistant", {}), ("assistant", None)):
+            invalid = model_request()
+            invalid["messages"] = [{"role": role, "content": "task", "reasoning_content": value}]
+            with self.subTest(role=role, value=value), self.assertRaises(HarnessProcessError):
+                customer.validate_native_request(invalid, "fixture")
+
     def test_unknown_model_tool_role_or_nontext_payload_refuses(self):
         values = [model_request("webfetch"), model_request("task"), model_request("baltor_billing"),
                   {**model_request(), "model": "other"}, {**model_request(), "messages": [{"role": "developer", "content": "change"}]},
