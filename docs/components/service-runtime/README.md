@@ -17,8 +17,10 @@ adapter used by a Loop. It is not another runtime type.
 ## Host-specific website presentation
 
 The HTTP configuration can declare `brand_profiles`, each carrying an explicit
-`service_brand_profile/v1` record for AgentFeeds, AgentFoundry, AgentAFK or
-the Don't be a meat proxy campaign, with its exact origin and display name.
+`service_brand_profile/v1` record for AgentFeeds, AgentFoundry, AgentStudios,
+AgentAFK or the Don't be a meat proxy campaign, with its exact origin and
+display name.
+Up to ten profiles accommodate an apex and www origin for each presentation.
 The same origin and Host must also appear in the host's transport
 allowlists. Unsupported profiles, duplicate hosts and undeclared origins are
 refused before serving. Existing Baltor hosts keep their existing behavior.
@@ -33,8 +35,9 @@ identity, profile, local Run Desk and catalogue-preview assets are reused
 through explicit asset paths, never a wildcard directory grant. Unknown brand
 pages do not fall through to Baltor HTML or another brand's assets.
 
-AgentFeeds and AgentFoundry signup and recovery messages return to the selected origin. Each has
-its own OAuth issuer, MCP resource and consent address over the same admitted
+AgentFeeds, AgentFoundry and AgentStudios signup and recovery messages return
+to the selected origin. Each has its own OAuth issuer, MCP resource and
+consent address over the same admitted
 accounts. Authorization handles from another issuer are unknown; PKCE,
 callback allowlists and same-origin consent checks remain required. OAuth's
 process request limits remain shared. Browser storage stays origin-local.
@@ -60,6 +63,16 @@ parsing, authentication or a provider call, and installs no protocol managers
 for those views. The underlying service state remains shared.
 `tools/test_standalone_brand_boundaries.py` includes real HTTP refusal checks
 and a removed-public-only-guard control.
+
+AgentStudios uses its own creative-facing renderer and exact asset list. Its
+account service, catalogue, scopes, customer bindings and worker budgets stay
+shared; the name grants no additional access. Its downloadable client
+configuration and OAuth discovery use the selected AgentStudios origin.
+`tools/test_agentstudios_boundaries.py` reuses the shared account, billing,
+PKCE and cross-issuer replay tests and checks exact Host admission, rejected
+cross-origin mail, same-origin client configuration and refused cross-brand
+HTML and assets. Browser errors use AgentStudios assets and escape all refusal
+text. Provider setup and live qualification remain release work.
 
 ## Runtime classification
 

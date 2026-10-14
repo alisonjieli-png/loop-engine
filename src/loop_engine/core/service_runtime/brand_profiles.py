@@ -9,7 +9,12 @@ from .http_auth import validate_public_origin
 
 BRAND_PROFILE_VERSION = "service_brand_profile/v1"
 BRAND_NAMES = {"agentfeeds": "AgentFeeds", "agentfoundry": "AgentFoundry",
-               "agentafk": "AgentAFK", "meatproxy": "Don't be a meat proxy"}
+               "agentafk": "AgentAFK", "meatproxy": "Don't be a meat proxy",
+               "agentstudios": "AgentStudios"}
+# Five qualified presentations can each declare an apex and www origin.
+# This bound grants no domain access: every entry still needs explicit Host
+# and Origin admission in the containing transport configuration.
+MAXIMUM_BRAND_PROFILES = 10
 
 
 @dataclass(frozen=True)

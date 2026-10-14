@@ -14,6 +14,9 @@ def renderer_for(brand):
     if brand == "agentfoundry":
         from . import agentfoundry_pages
         return agentfoundry_pages
+    if brand == "agentstudios":
+        from . import agentstudios_pages
+        return agentstudios_pages
     if brand == "agentafk":
         from . import agentafk_pages
         return agentafk_pages

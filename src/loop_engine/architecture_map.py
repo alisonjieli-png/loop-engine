@@ -93,7 +93,7 @@ MODULE_MAP = {
         "status_pages", "support_page", "offering_guides", "gallery_page", "gallery_records",
         "gallery_media", "gallery_random",
         "openapi_tool_server", "feed_profile_web", "feed_profiles", "brand_profiles", "brand_pages", "agentfeeds_pages",
-        "agentfoundry_pages", "agentafk_pages", "meatproxy_pages",
+        "agentfoundry_pages", "agentafk_pages", "meatproxy_pages", "agentstudios_pages",
         "catalogue_d1_index", "catalogue_d1_index_checks",
         "catalogue_object_store", "object_store_fake", "catalogue_body_store_checks", "service_engine_body_store",
         "static_site_export", "static_site_checks",

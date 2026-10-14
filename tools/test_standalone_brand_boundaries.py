@@ -22,12 +22,14 @@ import test_oauth_http as existing
 BRANDS = {
     'agentfeeds': ('AgentFeeds', 'https://agentfeeds.example.test'),
     'agentfoundry': ('AgentFoundry', 'https://agentfoundry.example.test'),
+    'agentstudios': ('AgentStudios', 'https://agentstudios.example.test'),
     'agentafk': ('AgentAFK', 'https://agentafk.example.test'),
     'meatproxy': ("Don't be a meat proxy", 'https://meatproxy.example.test'),
 }
 PROFILES = tuple(ServiceBrandProfile(brand, origin, display_name=name)
                  for brand, (name, origin) in BRANDS.items())
 PUBLIC_PROFILES = tuple(profile for profile in PROFILES if profile.brand in ('agentafk', 'meatproxy'))
+ACCOUNT_PROFILES = tuple(profile for profile in PROFILES if not profile.public_only)
 
 
 def public_effect_refused(response):
@@ -129,7 +131,7 @@ class StandalonePublicHttpTests(unittest.TestCase):
                 self.assertIs(getattr(view, name), getattr(self.fixture.app, name), name)
             for name in ('account_email', 'oauth_authorization', 'oauth_http'):
                 self.assertIsNone(getattr(view, name), name)
-        for profile in PROFILES[:2]:
+        for profile in ACCOUNT_PROFILES:
             view = self.presentations[profile.host]
             self.assertIsNotNone(view.account_email)
             self.assertIsNotNone(view.oauth_authorization)
@@ -206,7 +208,7 @@ class StandalonePublicHttpTests(unittest.TestCase):
         self.assertEqual(self.mail.mail_requests, [])
 
     def test_account_enabled_brands_and_default_site_keep_qualified_capabilities(self):
-        for profile in PROFILES[:2]:
+        for profile in ACCOUNT_PROFILES:
             response = self.client.get('/api/v1/account/identity', headers=self.headers(profile))
             self.assertEqual(response.status_code, 200, response.text)
             self.assertEqual(response.json()['result']['redirect_url'], profile.public_base_url + '/auth/callback')

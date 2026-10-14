@@ -31,7 +31,7 @@ from .http_auth import (
     HttpAuthenticationError, ServiceHttpAuthentication, ServiceHttpAuthenticator, validate_public_url,
     EXTERNAL_JWT_AUTHENTICATION,
 )
-from .brand_profiles import ServiceBrandProfile
+from .brand_profiles import MAXIMUM_BRAND_PROFILES, ServiceBrandProfile
 from .list_paging import (JSON_ENCODING, PROTOCOL_ENCODING, ListCursors, ListPageRequest, list_page,
                           paging_request, paging_schema_properties)
 from .observability import (
@@ -404,7 +404,7 @@ class ServiceHttpConfiguration:
         # The declared public service origin owns the packaged browser client.
         # Other origins still require an exact host configuration entry.
         object.__setattr__(self, "allowed_origins", tuple(dict.fromkeys((base.rstrip("/"), *origins))))
-        if not isinstance(self.brand_profiles, (tuple, list)) or len(self.brand_profiles) > 8:
+        if not isinstance(self.brand_profiles, (tuple, list)) or len(self.brand_profiles) > MAXIMUM_BRAND_PROFILES:
             raise ValueError("brand profiles require a bounded explicit list")
         profiles = tuple(ServiceBrandProfile.from_host(value) for value in self.brand_profiles)
         if len({profile.host for profile in profiles}) != len(profiles):
@@ -2550,7 +2550,7 @@ class ServiceHttpApplication:
                     response = JSONResponse(error.protocol_error, status_code=status, headers=cors)
                 elif status == 404 and "text/html" in request.headers.get("accept", ""):
                     response = Response(
-                        missing_address_page(config.display_name),
+                        application._browser_error_page(404, display_name=config.display_name),
                         status_code=404, media_type=HTML_MEDIA_TYPE,
                         headers={**cors, **application._page_headers()})
                 elif status >= 500 and "text/html" in request.headers.get("accept", ""):
@@ -2559,7 +2559,8 @@ class ServiceHttpApplication:
                     # carries, on a page with a way back.
                     message, next_action = _refusal_guidance(code, status)
                     response = Response(
-                        server_error_page(config.display_name, status, message, next_action, reference.value),
+                        application._browser_error_page(status, display_name=config.display_name,
+                            message=message, next_action=next_action, reference=reference.value),
                         status_code=status, media_type=HTML_MEDIA_TYPE,
                         headers={**cors, **application._page_headers(), **(added or {})})
                 else:
@@ -2578,6 +2579,21 @@ class ServiceHttpApplication:
             response.headers["X-Content-Type-Options"] = "nosniff"
             await response(scope, receive, send)
         return Starlette(routes=[Mount("/", app=transport)], lifespan=lifespan)
+
+    def _browser_error_page(self, status, *, display_name, message="", next_action="", reference=""):
+        """Keep a qualified brand's error chrome on its own packaged assets.
+
+        Inputs are server-owned refusal text, not request paths or query values.
+        Existing presentations without this hook retain their prior behavior.
+        """
+        if self.brand_profile is not None:
+            from .brand_pages import renderer_for
+            renderer = renderer_for(self.brand_profile.brand)
+            render_error = getattr(renderer, "error_page", None)
+            if callable(render_error):
+                return render_error(status, message=message, next_action=next_action, reference=reference)
+        return (missing_address_page(display_name) if status == 404 else
+                server_error_page(display_name, status, message, next_action, reference))
 
     def _oauth_challenge(self, code, scope=""):
         if self.oauth_http is None and EXTERNAL_JWT_AUTHENTICATION not in self.authentication.modes:
