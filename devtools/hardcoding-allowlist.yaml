@@ -1,5 +1,83 @@
 schema: hardcoding_allowlist/v1
 entries:
+- finding_id: hardcoding.22884497dc9c0166200bad65
+  owner: "loop_engine.core.service_runtime.agentstudios_pages"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed October 13, 2026: the owner selected and purchased this AgentStudios domain. It is an inert renderer default, not a network request. Production supplies the exact separately admitted Host and Origin; hostile-origin and default-host tests prove the brand name grants no access."
+  created_on: '2026-10-13'
+  expires_on: '2027-01-13'
+- finding_id: hardcoding.3131faf04e3bce07ce059c83
+  owner: "loop_engine.core.service_runtime.agentstudios_pages:media_lenses"
+  classification: CLOSED_CONTROLLED_VOCABULARY
+  rationale: "Reviewed October 13, 2026: this existing gallery kind identifies Godot shader descriptions for the Images filter. It is a nonexclusive presentation hint over public metadata, not an admission decision, capability guarantee or execution grant. The gallery retains each item's identity, licence and qualification limits."
+  created_on: '2026-10-13'
+  expires_on: '2027-01-13'
+- finding_id: hardcoding.d822137330d4c46a39902a41
+  owner: "loop_engine.core.service_runtime.agentstudios_pages:media_lenses"
+  classification: CLOSED_CONTROLLED_VOCABULARY
+  rationale: "Reviewed October 13, 2026: this existing procedural-textures gallery kind contributes the Images discovery hint. Rendering neither changes catalogue admission nor promises a native image editor. The frontend suite verifies that all original identities and public-only selection remain intact."
+  created_on: '2026-10-13'
+  expires_on: '2027-01-13'
+- finding_id: hardcoding.1085780b1ee2ac8faf6a3a71
+  owner: "loop_engine.core.service_runtime.agentstudios_pages:media_lenses"
+  classification: CLOSED_CONTROLLED_VOCABULARY
+  rationale: "Reviewed October 13, 2026: the existing blender-tools gallery kind receives a 3D discovery hint. This comparison changes only client-side filtering metadata; Blender invocation, installation, access and qualification still belong to their existing owners."
+  created_on: '2026-10-13'
+  expires_on: '2027-01-13'
+- finding_id: hardcoding.5ef708c10bb9f4fb1199f506
+  owner: "loop_engine.core.service_runtime.agentstudios_pages:media_lenses"
+  classification: CLOSED_CONTROLLED_VOCABULARY
+  rationale: "Reviewed October 13, 2026: geometry-4d is an existing gallery kind whose visible geometry examples can be discovered through the 3D filter. The hint does not relabel source records or assert that every result is a finished 3D asset; item requirements and limits remain visible."
+  created_on: '2026-10-13'
+  expires_on: '2027-01-13'
+- finding_id: hardcoding.7d7af696701a1ed454e0e947
+  owner: "loop_engine.core.service_runtime.agentstudios_pages:media_lenses"
+  classification: CLOSED_CONTROLLED_VOCABULARY
+  rationale: "Reviewed October 13, 2026: the mesh-algorithms gallery kind receives a 3D discovery hint. This passive comparison neither executes an algorithm nor changes the shared item's identity, qualification, download rights or declared effects."
+  created_on: '2026-10-13'
+  expires_on: '2027-01-13'
+- finding_id: hardcoding.a33fc91e3ade9271fefe5d51
+  owner: "loop_engine.core.service_runtime.agentstudios_pages:media_lenses"
+  classification: CLOSED_CONTROLLED_VOCABULARY
+  rationale: "Reviewed October 13, 2026: asset-contracts is an existing gallery kind included in the 3D discovery filter. Its contract descriptions remain descriptions, not assets or proof of native tool support. Filtering changes no catalogue or permission state."
+  created_on: '2026-10-13'
+  expires_on: '2027-01-13'
+- finding_id: hardcoding.3b948b2eae93321ee362be91
+  owner: "loop_engine.core.service_runtime.agentstudios_pages:media_lenses"
+  classification: CLOSED_CONTROLLED_VOCABULARY
+  rationale: "Reviewed October 13, 2026: the godot-components gallery kind contributes a Games discovery hint. These existing public descriptions retain their source identities and stated checks; inclusion grants no game-engine execution, download entitlement or whole-game acceptance."
+  created_on: '2026-10-13'
+  expires_on: '2027-01-13'
+- finding_id: hardcoding.b3a7e179d1f5411a8ef21184
+  owner: "loop_engine.core.service_runtime.agentstudios_pages:media_lenses"
+  classification: CLOSED_CONTROLLED_VOCABULARY
+  rationale: "Reviewed October 13, 2026: the existing godot-shaders kind contributes the Games filter in addition to its Images hint. The nonexclusive labels support browsing; they neither duplicate components nor change admission or usage accounting."
+  created_on: '2026-10-13'
+  expires_on: '2027-01-13'
+- finding_id: hardcoding.715261705f8154a1f1066512
+  owner: "loop_engine.core.service_runtime.agentstudios_pages:media_lenses"
+  classification: CLOSED_CONTROLLED_VOCABULARY
+  rationale: "Reviewed October 13, 2026: procedural-textures contributes the Templates and processes discovery hint. This is a presentation mapping of an existing gallery kind, not a new registry or runtime setting. The underlying component remains one unchanged item."
+  created_on: '2026-10-13'
+  expires_on: '2027-01-13'
+- finding_id: hardcoding.96b7c61a6162283add3570d4
+  owner: "loop_engine.core.service_runtime.agentstudios_pages:media_lenses"
+  classification: CLOSED_CONTROLLED_VOCABULARY
+  rationale: "Reviewed October 13, 2026: mesh-algorithms contributes the Templates and processes filter alongside its 3D hint. Selecting the filter is browser-local discovery and does not run code, create files or widen the component's declared effects."
+  created_on: '2026-10-13'
+  expires_on: '2027-01-13'
+- finding_id: hardcoding.bb98ffd15e5cb38b81d2fc88
+  owner: "loop_engine.core.service_runtime.agentstudios_pages:media_lenses"
+  classification: CLOSED_CONTROLLED_VOCABULARY
+  rationale: "Reviewed October 13, 2026: geometry-4d contributes a Templates and processes discovery hint using the gallery's existing kind spelling. It does not infer qualified support for a medium or application from a tag; the original per-item requirements and limits stay authoritative."
+  created_on: '2026-10-13'
+  expires_on: '2027-01-13'
+- finding_id: hardcoding.e014e0b63b54fda001acb940
+  owner: "loop_engine.core.service_runtime.agentstudios_pages:media_lenses"
+  classification: CLOSED_CONTROLLED_VOCABULARY
+  rationale: "Reviewed October 13, 2026: blender-tools contributes a Templates and processes discovery hint without changing tool placement or execution. Real browser filter checks and unchanged-identity tests cover the presentation; no new account or provider authority follows."
+  created_on: '2026-10-13'
+  expires_on: '2027-01-13'
 - finding_id: hardcoding.003f0276af9b716f654b1c3c
   owner: "integrations.newsletter-email.quota.mjs:url"
   classification: STRATEGY_OR_PROVIDER_BINDING

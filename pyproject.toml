@@ -115,6 +115,7 @@ loop_engine = [
     "core/service_runtime/web_assets/*.svg",  # The website mark, a placeholder
     "core/service_runtime/web_assets/agentfeeds/*.svg",  # Independent AgentFeeds mark
     "core/service_runtime/web_assets/agentfoundry/*.svg",
+    "core/service_runtime/web_assets/agentstudios/*.svg",
     "core/service_runtime/web_assets/agentafk/*.svg",
     "core/service_runtime/web_assets/meatproxy/*.svg",
     "core/service_runtime/web_assets/*.png",  # The page icons drawn from that mark, and the shared-link cards
