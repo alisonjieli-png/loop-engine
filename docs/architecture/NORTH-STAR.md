@@ -29,6 +29,16 @@ Common-operator disclosures remain accurate. Difficult Kaggle and competition
 trials are another end-to-end proof target, with reproducibility, rule checks
 and matched comparisons through existing harness and benchmark owners.
 
+The owner also selects AgentBriefs and `agentbriefs.si` for a proposed
+executive intelligence offering. Company context would guide research,
+opportunity assessment, authorized proof experiments and thresholded decision
+briefs. Decision Memory would retain decisions and realized outcomes through
+existing managed records and history. Domain ownership and implementation
+are unverified; the proposal neither establishes production savings nor
+changes the active AgentStudios launch. The
+[AgentBriefs decision](OWNER-DECISIONS.md#agentbriefs-executive-intelligence-proposal)
+separates the intended value, evidence gates, access options and pricing tests.
+
 Baltor gives people and their chosen agents a head start through maintained
 external knowledge and reusable working material. A person can begin with an
 idea, compare suitable approaches, obtain an implementation and revise the

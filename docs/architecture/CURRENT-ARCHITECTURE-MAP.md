@@ -205,6 +205,42 @@ or backend. Baltor retains the combined offerings.
 The [current deployment](MVP-CLIENT-SERVER.md#current-deployment) binds the
 eighteen-host release checks and configuration-aware rollback.
 
+### Proposed AgentBriefs decision-support composition
+
+AgentBriefs is a selected name, not a registered service brand or a live
+hostname. Its [owner decision](OWNER-DECISIONS.md#agentbriefs-executive-intelligence-proposal)
+and S-6.35.09 in the [roadmap](../roadmap/roadmap.yaml) describe the proposed
+executive presentation. The following map assigns future work to existing
+owners; it does not claim that the complete customer workflow is implemented.
+
+| Proposed stage | Existing owner to extend | Required output and boundary |
+| --- | --- | --- |
+| Company context | Managed records and tenant access | Versioned private goals, stack, projects and constraints; source access and synchronization permission remain explicit. |
+| Source intake and research | AgentFeeds source contracts and managed research | Dated, attributable observations; quarantined newsletter content is not trusted instructions or public library material. |
+| Opportunity assessment | Typed decision engines and evaluation rubrics | A versioned relevance assessment with uncertainty and source support, separate from experiment permission. |
+| Proof experiment | Canonical Loop execution, task queue, model gateway and sandbox profiles | Approved task and baseline, scoped data and credentials, bounded resources and recorded attempts; no production effects inferred. |
+| Evidence brief | Existing artifact, evaluation and acceptance boundaries | Source-backed strategic analysis or reproducible experimental results, with the evidence category visible. |
+| Notification | Existing account access and permitted delivery boundaries | A deduplicated, threshold-qualified alert; relevance never grants consent to contact someone. |
+| Decision Memory | Managed records, Run History and feedback | Linked decisions, corrections and later outcomes without overwriting original evidence or adding an intelligence layer. |
+
+Each new functional edge needs a typed, versioned contract and conforming,
+swappable engines through the existing engine-slot standard before execution.
+Every executable graph vertex remains a Loop. The proposed executive team is
+a composition of bounded steps, not another runtime or an unrestricted
+autonomous operator. Read-only research, sandbox experiments, notifications
+and production changes have separate authority. Importing a company plan
+does not authorize any of them by itself.
+
+The first customer proof should use one authorized company profile, one
+decision family and a fixed evaluation population. Test both a useful alert
+and a plausible but unsupported candidate that must be withheld. Preserve
+all failures, and distinguish measured experiment results from realized
+outcomes after a customer independently adopts a recommendation. Provider
+plan usage, connector access and application identity remain separate;
+the owner decision records the conditional OpenAI path and API-key fallback.
+
+### Brand, product and access identities
+
 Keep these identities separate:
 
 | Identity | Owns | Does not grant |

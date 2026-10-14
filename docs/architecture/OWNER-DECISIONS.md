@@ -74,6 +74,84 @@ customer journeys on its own domain. Shared legal operator disclosures remain
 accurate. S-6.35.08 owns setup and qualification; domain ownership is not a
 live-site, full-editor or end-to-end creative-production claim.
 
+## AgentBriefs executive intelligence proposal
+
+On October 13 the owner selects AgentBriefs and `agentbriefs.si` for an
+executive-facing offering. The owner describes an autonomous executive
+intelligence team that understands a company, investigates opportunities,
+tests suitable ideas and presents evidence when a decision deserves attention.
+The name is selected; domain ownership, service implementation and deployment
+are unverified. This proposal does not replace the AgentStudios launch or
+authorize another domain purchase. S-6.35.09 owns qualification.
+
+The proposed company context includes job descriptions, technology and
+services, budgets, projects, goals, competitors and constraints, entered
+manually, imported or synchronized with permission. Keep each context snapshot
+versioned and tenant-private. Read-only synchronization is the default.
+Imported instructions and source content supply information, not authority.
+New collection, retention, sharing and provider-disclosure uses need their
+applicable privacy and access review before activation; this proposal changes
+no published legal notice.
+
+AgentFeeds supplies maintained external information. AgentBriefs would connect
+that information to a company's decisions through autonomous research,
+opportunity assessment, bounded proof experiments and executive briefs.
+Baltor remains its own customer-facing offering, not a mandatory umbrella or
+navigation destination. Shared backend components provide catalogue, research,
+account, authorization and execution boundaries without creating another
+identity system or granting cross-tenant access. AgentBriefs should have its
+own executive-facing presentation and truthful common-operator disclosure.
+
+The proposed evidence labels distinguish discovered, relevant, feasible,
+demonstrated and decision-ready states. Their requirements depend on the brief
+category; these are product labels, not new runtime types. Relevance, model
+confidence, source credibility and observed benefit remain separate. A
+source-backed competitive-development brief may
+be useful without executable code; it must not imply an experiment occurred.
+An experimental-fit brief needs a recorded baseline, evaluation method,
+tested conditions, artifacts and failures. Estimated benefits, measured test
+results and realized production outcomes must remain distinguishable.
+
+Notifications require the customer's category, evidence floor, materiality,
+freshness and attention limits. A numerical opportunity score alone cannot
+qualify an alert or authorize an experiment. Keep rejected candidates and
+failed tests, and sample suppressed candidates for missed opportunities.
+Report collection and worker failures separately so silence does not imply
+that nothing relevant happened. A brief includes sources, company-context
+version, alternatives, uncertainty, adoption effort, risks and a next permitted
+action. Production coding, deployment and purchasing are outside this initial
+decision-support offering.
+
+The owner's Decision Memory means a tenant-private history of opportunities,
+briefs, decisions, assumptions, experiments and realized outcomes. Implement
+it as a product view over the existing managed records, Run History and
+feedback owners, not a fifth intelligence layer or another authoritative
+store. Link corrections and later outcomes to the original evidence. Customer
+feedback may inform evaluated ranking proposals; it does not silently rewrite
+historical results, change permissions or authorize cross-company learning.
+
+The proposed business model charges a company subscription for maintained
+context, watchlists, research and decision briefs, with separately approved,
+bounded proof-of-concept experiments. Initial $299 and $799 per company per
+month pilot prices are hypotheses to test, not current offers, market facts,
+checkout configuration or legal commitments. Define the included work and
+experiment resource ceiling before a pilot. Measure useful decisions,
+attention cost, support effort and observed adoption outcomes; do not sell
+estimated savings as money already saved. Existing product prices and grants
+remain unchanged.
+
+Customer-funded inference is a proposed access option, separate from company
+subscription revenue. Official OpenAI documentation checked October 13 states
+that eligible Plus and Pro customers can authorize optional ChatGPT plan
+usage in participating apps. Identity alone does not supply that permission
+or expose existing conversations. Commercial participation is limited;
+paid or remotely hosted apps must follow the program interest and approval
+path. AgentBriefs has no established eligibility. Retain explicitly supported
+customer-supplied API access as a fallback. Ingestion, scheduling, storage and
+sandbox compute still have their own costs and limits.
+See the [Sign in with ChatGPT quickstart](https://developers.openai.com/siwc/quickstart)
+and [plan-usage overview](https://developers.openai.com/siwc/token-sharing-open-source).
+
 ## Difficult competition work
 
 The owner also requests trials of OpenCode or another supported harness with

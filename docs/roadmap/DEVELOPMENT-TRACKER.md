@@ -3,7 +3,7 @@
 Kind: generated view. Do not edit by hand. The only task authority is
 [roadmap.yaml](roadmap.yaml); change it, then run
 `PYTHONPATH=src:tools .venv/bin/python tools/build_development_tracker.py`.
-Source fingerprint: `sha256:c36f25ce79f08a578112f37cac793b2dd85802fa3b4fbf3b338ddbc116e0a65c`.
+Source fingerprint: `sha256:6d759367d4bc763b41f6b6220608c1db330e829ffef85bf6907a37d5aa0b6952`.
 
 ## Where things stand
 
@@ -67,7 +67,7 @@ gantt
 
 Each subtask lives in its owning step in roadmap.yaml. A local check does not complete a task that requires publication.
 
-Completed within their stated scope: 21 of 73 subtasks.
+Completed within their stated scope: 21 of 74 subtasks.
 
 Next eligible subtask: S-6.35.06: Qualify AgentFeeds, AgentFoundry and AgentAFK on the shared service
 
@@ -146,6 +146,7 @@ Next eligible subtask: S-6.35.06: Qualify AgentFeeds, AgentFoundry and AgentAFK 
 | 71 | [ ] S-6.215.14: Reach two million useful served files | proposed | published | Waiting on S-6.215.13 |
 | 72 | [ ] S-6.214.08: Reach ten thousand active qualified sources | proposed | live_qualified | Waiting on S-6.214.07 |
 | 73 | [ ] S-6.35.08: Launch AgentStudios as the independent creative offering | building | live_qualified | Complete the AgentStudios renderer, exact shared-backend brand admission and DNS setup, then release and check the separate site. |
+| 74 | [ ] S-6.35.09: Qualify AgentBriefs executive decision support | proposed | live_qualified | Define and review the bounded company-context-to-decision proof and its contracts using existing owners. Verify domain ownership separately; implement no website, provider transition or paid offer from the planning record. |
 
 ## Subtask procedures and evidence
 
@@ -1340,6 +1341,27 @@ Evidence: October 13 owner selects AgentStudios, confirms purchasing agentstudio
 Next: Complete the AgentStudios renderer, exact shared-backend brand admission and DNS setup, then release and check the separate site.
 
 Comment: Separate presentation does not claim unrelated ownership or require another backend.
+
+### S-6.35.09 Qualify AgentBriefs executive decision support
+
+Owner step: S-6.35. State: proposed. Completion requires: live_qualified.
+
+Acceptance: An authorized company can supply versioned private context, receive a source-backed decision brief or separately approved experimental-fit brief above its configured evidence threshold, inspect all attempts and connect a later decision and realized outcome through existing managed records. Brand, tenant, model access and effect authority remain separate; domain and deployment claims require independent verification.
+
+1. Verify ownership of the selected agentbriefs.si domain before planning a provider transition; name selection grants no purchase authority.
+2. Map company profiles, research, opportunity assessment, evidence briefs, notifications and Decision Memory to existing managed records, AgentFeeds, typed decisions, task history, sandbox and delivery owners; use typed versioned edges and swappable engines.
+3. Qualify one company profile and one decision family, with read-only source access, tenant isolation, source provenance and explicit privacy and retention scope.
+4. Test relevance, evidence floor, materiality, freshness and attention limits separately; preserve suppressed candidates and report operational failures independently of opportunity alerts.
+5. Run optional proof experiments only under separately approved data, credentials, baseline, environment, cost and time bounds; no production writes, purchases or deployment permission is inferred.
+6. Require known-wrong controls for unsupported alerts, stale evidence, duplicate notifications, cross-tenant access and estimates presented as realized savings; retain failed experiments and later corrections.
+7. Evaluate proposed $299/$799 monthly company pilot prices as demand and cost hypotheses, with separately scoped experiments and no change to existing offers.
+8. Keep application sign-in separate from inference permission; seek required program approval before offering hosted ChatGPT plan usage, retain supported customer API access and account separately for ingestion, storage, scheduling and sandbox costs.
+
+Evidence: October 13 owner selects AgentBriefs and agentbriefs.si, describing an autonomous executive intelligence team with company context, research, opportunity scoring, proof experiments, executive briefs, thresholds and Decision Memory including realized outcomes. Ownership, implementation and launch are unverified. Official OpenAI documentation distinguishes optional eligible plan usage from identity and requires a program path for paid or remotely hosted apps; no AgentBriefs eligibility is established.
+
+Next: Define and review the bounded company-context-to-decision proof and its contracts using existing owners. Verify domain ownership separately; implement no website, provider transition or paid offer from the planning record.
+
+Comment: Proposed decision support, not production solution development. Baltor remains a separate offering rather than a mandatory umbrella; shared backend ownership does not permit cross-brand or cross-tenant private data access. No continuous-feed scale, production-savings or current pricing claim is made.
 
 ## Recorded work in progress
 

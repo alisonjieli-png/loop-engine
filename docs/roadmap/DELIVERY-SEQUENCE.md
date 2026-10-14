@@ -43,6 +43,29 @@ and live qualification; the earlier AgentMedia name remains historical.
 The next catalogue publication must preserve the current baseline and remain
 separate from any further application deployment.
 
+## AgentBriefs proposal qualification
+
+The owner selects AgentBriefs and `agentbriefs.si` for executive decision
+support. Ownership and launch are unverified. This additive proposal does not
+interrupt the AgentStudios release. S-6.35.09 owns its qualification, with
+research and feed work remaining under S-6.214 and bounded execution under
+the existing task, model and sandbox owners.
+
+Start with one authorized company profile and one decision family, such as
+evaluating a replacement for a tool the company already uses. Qualify a
+source-backed brief, a separately approved reproducible experiment, a
+thresholded notification and a later outcome linked through Decision Memory.
+Include an unsupported opportunity that must not trigger an alert. Test
+tenant isolation, expired evidence, duplicate notification refusal and the
+separation between estimated benefit and realized results.
+
+The [owner proposal](../architecture/OWNER-DECISIONS.md#agentbriefs-executive-intelligence-proposal)
+records the $299/$799 monthly company pilot pricing hypotheses and conditional
+customer-funded inference options. Do not create prices, accept subscriptions,
+claim OpenAI program approval or start experiments from this planning record.
+Evaluate demand and delivery cost before turning either pilot hypothesis into
+a commercial offer. Current product prices and the active release stay unchanged.
+
 ### Resource goals and the path to value
 
 The [owner decisions](../architecture/OWNER-DECISIONS.md#consumer-value-and-resource-goals)

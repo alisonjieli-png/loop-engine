@@ -1585,11 +1585,35 @@
    "status": "building",
    "title": "Launch AgentStudios as the independent creative offering",
    "waiting_on": []
+  },
+  {
+   "acceptance": "An authorized company can supply versioned private context, receive a source-backed decision brief or separately approved experimental-fit brief above its configured evidence threshold, inspect all attempts and connect a later decision and realized outcome through existing managed records. Brand, tenant, model access and effect authority remain separate; domain and deployment claims require independent verification.",
+   "comment": "Proposed decision support, not production solution development. Baltor remains a separate offering rather than a mandatory umbrella; shared backend ownership does not permit cross-brand or cross-tenant private data access. No continuous-feed scale, production-savings or current pricing claim is made.",
+   "complete": false,
+   "completion_status": "live_qualified",
+   "depends_on": [],
+   "evidence": "October 13 owner selects AgentBriefs and agentbriefs.si, describing an autonomous executive intelligence team with company context, research, opportunity scoring, proof experiments, executive briefs, thresholds and Decision Memory including realized outcomes. Ownership, implementation and launch are unverified. Official OpenAI documentation distinguishes optional eligible plan usage from identity and requires a program path for paid or remotely hosted apps; no AgentBriefs eligibility is established.",
+   "id": "S-6.35.09",
+   "next_action": "Define and review the bounded company-context-to-decision proof and its contracts using existing owners. Verify domain ownership separately; implement no website, provider transition or paid offer from the planning record.",
+   "owner_step": "S-6.35",
+   "procedure": [
+    "Verify ownership of the selected agentbriefs.si domain before planning a provider transition; name selection grants no purchase authority.",
+    "Map company profiles, research, opportunity assessment, evidence briefs, notifications and Decision Memory to existing managed records, AgentFeeds, typed decisions, task history, sandbox and delivery owners; use typed versioned edges and swappable engines.",
+    "Qualify one company profile and one decision family, with read-only source access, tenant isolation, source provenance and explicit privacy and retention scope.",
+    "Test relevance, evidence floor, materiality, freshness and attention limits separately; preserve suppressed candidates and report operational failures independently of opportunity alerts.",
+    "Run optional proof experiments only under separately approved data, credentials, baseline, environment, cost and time bounds; no production writes, purchases or deployment permission is inferred.",
+    "Require known-wrong controls for unsupported alerts, stale evidence, duplicate notifications, cross-tenant access and estimates presented as realized savings; retain failed experiments and later corrections.",
+    "Evaluate proposed $299/$799 monthly company pilot prices as demand and cost hypotheses, with separately scoped experiments and no change to existing offers.",
+    "Keep application sign-in separate from inference permission; seek required program approval before offering hosted ChatGPT plan usage, retain supported customer API access and account separately for ingestion, storage, scheduling and sandbox costs."
+   ],
+   "status": "proposed",
+   "title": "Qualify AgentBriefs executive decision support",
+   "waiting_on": []
   }
  ],
  "execution_counts": {
   "complete": 21,
-  "total": 73
+  "total": 74
  },
  "lanes": {
   "blocked": [
@@ -7027,7 +7051,7 @@
  ],
  "record_type": "development_tracker/v2",
  "source": "docs/roadmap/roadmap.yaml",
- "source_fingerprint": "sha256:c36f25ce79f08a578112f37cac793b2dd85802fa3b4fbf3b338ddbc116e0a65c",
+ "source_fingerprint": "sha256:6d759367d4bc763b41f6b6220608c1db330e829ffef85bf6907a37d5aa0b6952",
  "working_schedule": {
   "blocks": [
    {
