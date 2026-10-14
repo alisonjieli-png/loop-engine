@@ -14580,6 +14580,126 @@ entries:
   rationale: "Reviewed October 9, 2026: the VS Code Insiders redirect that every VS Code dynamic registration names beside vscode.dev (fetchDynamicRegistration in microsoft/vscode src/vs/base/common/oauth.ts at dd036a1c, read October 9); without it VS Code's registration is refused whole. It is a redirect admission rule compared as one exact string, not an outbound call: Baltor never requests it, and no prefix, port, path or other host near it is admitted. tools/test_oauth_authorization.py holds it to eighteen known-wrong forms of it. Expires in three months so the address is read again from the client's documentation."
   created_on: '2026-10-09'
   expires_on: '2027-01-09'
+- finding_id: hardcoding.49b4a09c9a8098b869255f42
+  owner: "tools.harness_kits.builder:_render_mcp_json"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed October 13, 2026: the local starter-kit builder emits the existing Baltor MCP address in a passive Claude Code connection file. Building and checking the kit do not contact it, install a harness or supply credentials. Native connection and effect authorization remain the customer's separate setup."
+  created_on: '2026-10-13'
+  expires_on: '2027-01-13'
+- finding_id: hardcoding.0ff1b06886d691ec32dcc049
+  owner: "tools.harness_kits.builder:_render_opencode_json"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed October 13, 2026: the official OpenCode configuration schema identifier is emitted as passive JSON metadata. The builder does not fetch the schema. Saved native configuration discovery is separate from model use, customer task acceptance and current provider availability."
+  created_on: '2026-10-13'
+  expires_on: '2027-01-13'
+- finding_id: hardcoding.7ded5b17a33a099e8f1aa37f
+  owner: "tools.harness_kits.builder:_render_opencode_json"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed October 13, 2026: this existing Baltor endpoint is emitted into an explicitly disabled OpenCode remote connection. Kit generation performs no network operation and supplies no account or model credential. A native configuration fixture checks the disabled connection; enabling it remains a separate customer action."
+  created_on: '2026-10-13'
+  expires_on: '2027-01-13'
+- finding_id: hardcoding.039f086bc57689a5bf38f94f
+  owner: "tools.harness_kits.catalog"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed October 13, 2026: the OSV querybatch address is a required token in a local dependency-review demonstration fixture. Matching the token is not a vulnerability lookup or evidence that a dependency is safe. The preview builder does not dispatch a request or admit a library item."
+  created_on: '2026-10-13'
+  expires_on: '2027-01-13'
+- finding_id: hardcoding.3a0be889e91ff49a15a1be18
+  owner: "tools.supply_lines.regex_recipe_factory"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed October 13, 2026: this HTTPS expression is an original, registered lexical pattern, not a request destination or complete RFC3986 validator. Matching is length-bounded and network-free. The module and kit guide retain the distinction between lexical fixture checks and independent semantic qualification."
+  created_on: '2026-10-13'
+  expires_on: '2027-01-13'
+- finding_id: hardcoding.fbb7377eb83ac60ce917ba25
+  owner: "tools.supply_lines.regex_recipe_factory"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed October 13, 2026: the Baltor origin is a literal positive example for the HTTPS lexical matcher. It is not fetched, resolved or treated as a trusted execution origin by this factory. Generated records remain local previews."
+  created_on: '2026-10-13'
+  expires_on: '2027-01-13'
+- finding_id: hardcoding.8c7a649a452fcb1bc5c7e2f9
+  owner: "tools.supply_lines.regex_recipe_factory"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed October 13, 2026: a feed address exercises a path-bearing positive HTTPS match in an offline fixture. The factory neither reads this feed nor infers current freshness, licence or account access from the successful lexical match."
+  created_on: '2026-10-13'
+  expires_on: '2027-01-13'
+- finding_id: hardcoding.3e6075d3d52d0e068da9247b
+  owner: "tools.supply_lines.regex_recipe_factory"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed October 13, 2026: the OSV address is one positive string in the HTTPS matching corpus. No vulnerability lookup occurs. The fixture only checks lexical matching and grants neither network authority nor a safety verdict on any package."
+  created_on: '2026-10-13'
+  expires_on: '2027-01-13'
+- finding_id: hardcoding.88285b0bf4bcda8730ad2323
+  owner: "tools.supply_lines.regex_recipe_factory"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed October 13, 2026: the MCP registry address is inert positive URL corpus data. This factory does not access the registry, select a server or install a connection. The version-shaped path is tested as text, not asserted to be a current provider contract."
+  created_on: '2026-10-13'
+  expires_on: '2027-01-13'
+- finding_id: hardcoding.5a3c256692c6b74a80cd16bc
+  owner: "tools.supply_lines.regex_recipe_factory"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed October 13, 2026: the example.com URL tests a lexical port, path and query combination without network access. Matching it grants no authority to connect to that port or reuse a query as an effectful request."
+  created_on: '2026-10-13'
+  expires_on: '2027-01-13'
+- finding_id: hardcoding.2f659d6d026fcd5dcf2be23d
+  owner: "tools.supply_lines.regex_recipe_factory"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed October 13, 2026: https://localhost is negative fixture data for the registered dotted-host lexical profile. It is never contacted and does not alter any HTTP loopback or private-network permission. The fixture states a matcher result, not a universal URL-validity judgment."
+  created_on: '2026-10-13'
+  expires_on: '2027-01-13'
+- finding_id: hardcoding.9bfffa1b043c481e037df85c
+  owner: "tools.supply_lines.regex_recipe_factory"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed October 13, 2026: this plaintext-HTTP string is a negative control for an HTTPS-only lexical matcher. No transport uses it and no HTTPS, redirect or certificate policy is relaxed."
+  created_on: '2026-10-13'
+  expires_on: '2027-01-13'
+- finding_id: hardcoding.d1c8aed5c4cdae22d1e1ab39
+  owner: "tools.supply_lines.regex_recipe_factory"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed October 13, 2026: the incomplete HTTPS prefix is negative corpus data proving a scheme alone does not satisfy the registered lexical profile. It is not a configurable endpoint or an attempted request."
+  created_on: '2026-10-13'
+  expires_on: '2027-01-13'
+- finding_id: hardcoding.21121d250774e2288b9e633c
+  owner: "tools.supply_lines.regex_recipe_factory"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed October 13, 2026: this repeated OSV URL is the exact expected text of the offline extraction fixture. Expected text is not fetched or promoted into a provider operation; its bytes must match the in-memory extraction result."
+  created_on: '2026-10-13'
+  expires_on: '2027-01-13'
+- finding_id: hardcoding.279239c8403835b7f92efbe5
+  owner: "tools.supply_lines.regex_recipe_factory"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed October 13, 2026: this feed URL is expected output text for a bounded local regex extraction example. It does not trigger ingestion, schedule work or claim a feed was read. Source provenance and qualification remain separate from preview generation."
+  created_on: '2026-10-13'
+  expires_on: '2027-01-13'
+- finding_id: hardcoding.b702a9ec1980fb8174b1eac7
+  owner: "tools.supply_lines.regex_recipe_factory"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed October 13, 2026: the example.com HTTP URL is a negative JSON Pointer fixture. It is compared as inert text, not used as an address. This lexical demonstration does not assert complete RFC6901 conformance."
+  created_on: '2026-10-13'
+  expires_on: '2027-01-13'
+- finding_id: hardcoding.b2b07e20ea302ef942aa572a
+  owner: "tools.supply_lines.regex_recipe_factory"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed October 13, 2026: the HTTPS example is negative corpus data for a SPIFFE-shaped lexical matcher. It neither establishes workload identity nor performs TLS, certificate or identity-provider validation. No network operation occurs."
+  created_on: '2026-10-13'
+  expires_on: '2027-01-13'
+- finding_id: hardcoding.f0f2327165cb9c47e05796d4
+  owner: "tools.supply_lines.regex_recipe_factory:check_redos_safety"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed October 13, 2026: the HTTPS prefix constructs one fixed adversarial string for timing registered patterns. The function refuses unregistered patterns and performs no network request. Its fixed examples are explicitly not a linear-complexity proof or arbitrary-code timeout sandbox."
+  created_on: '2026-10-13'
+  expires_on: '2027-01-13'
+- finding_id: hardcoding.a367e02b7cf159ef3725c3d1
+  owner: "tools.supply_lines.regex_recipe_factory:execute_regex_recipe"
+  classification: CLOSED_CONTROLLED_VOCABULARY
+  rationale: "Reviewed October 13, 2026: validate selects the bounded fullmatch operation of this local regex helper. It is not a Loop run mode, admission state or security approval. Unknown recipe identifiers and unsupported operation strings are refused; generated bytes still require separate qualification."
+  created_on: '2026-10-13'
+  expires_on: '2027-01-13'
+- finding_id: hardcoding.20eb256d92bb5f43c4b4c4ef
+  owner: "tools.supply_lines.regex_recipe_factory:execute_regex_recipe"
+  classification: CLOSED_CONTROLLED_VOCABULARY
+  rationale: "Reviewed October 13, 2026: extract selects in-memory lexical extraction with a 65536-character input bound and per-match size bounds. It does not extract files, execute matches or create an executable graph vertex. Unsupported operations are refused."
+  created_on: '2026-10-13'
+  expires_on: '2027-01-13'
 excluded_paths:
 - path: src/loop_engine/core/service_runtime/web_assets/creative-arena/arena.js
   owner: examples.32_creative_arena
