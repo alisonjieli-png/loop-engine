@@ -3,7 +3,7 @@
 Kind: generated view. Do not edit by hand. The only task authority is
 [roadmap.yaml](roadmap.yaml); change it, then run
 `PYTHONPATH=src:tools .venv/bin/python tools/build_development_tracker.py`.
-Source fingerprint: `sha256:f4271ec734e31d5e43bce74213689165511e566756002b58484488ad1a4058c0`.
+Source fingerprint: `sha256:c31eed01ea575dddb03e0f1a2caf04872034ebe1ff5c22b9a522c2b91e8e64d8`.
 
 ## Where things stand
 
@@ -1336,7 +1336,7 @@ Acceptance: A designer-focused presentation supports actual creative discovery, 
 4. Release reviewed main after exact CI, verify both new hostnames and every existing host, and retain configuration-aware rollback.
 5. Qualify real asset selection, download, edit and reopen journeys before live capability claims.
 
-Evidence: October 13 owner selects AgentStudios, confirms purchasing agentstudios.si on Namecheap and requests separate branding over the same backend. Release92 from b0e2c4cd passed exact CI and guarded deployment; its gate is closed and the shared edge passed3281 exact file checks. The independent creative renderer, exact host admission and provider setup are deployed. Local checks passed3946 self-tests,103 account/routing/OAuth tests,104 browser checks with an independent repeat,32 conformance gates and installed-wheel rendering. Both https://agentstudios.si and https://www.agentstudios.si completed ordinary public DNS/TLS qualification, and the twenty-host public matrix completed all20 origins and200 views with3660/3664 assertions,3194/3194 exact GETs and20/20 identity HEAD checks. Four /connect innerText assertions failed because the MCP URL renders in a readonly input (passed4/4 in the inputValue supplement), and16 CDP net::ERR_ABORTED body-accounting events remain recorded alongside attempt01. The earlier AgentMedia placeholder was not purchased.
+Evidence: October 13 owner selects AgentStudios, confirms purchasing agentstudios.si on Namecheap and requests separate branding over the same backend. Release92 from b0e2c4cd passed exact CI and guarded deployment; its gate is closed and the shared edge passed3281 exact file checks. The independent creative renderer, exact host admission and provider setup are deployed. Local checks passed3946 self-tests,103 account/routing/OAuth tests,104 browser checks with an independent repeat,32 conformance gates and installed-wheel rendering. Both the agentstudios.si apex and www hostnames completed ordinary public DNS/TLS qualification, and the twenty-host public matrix completed all20 origins and200 views with3660/3664 assertions,3194/3194 exact GETs and20/20 identity HEAD checks. Four /connect innerText assertions failed because the MCP URL renders in a readonly input (passed4/4 in the inputValue supplement), and16 CDP net::ERR_ABORTED body-accounting events remain recorded alongside attempt01. The earlier AgentMedia placeholder was not purchased.
 
 Next: Qualify an actual creative retrieval, edit and clean reopen journey, and resolve the retained /connect innerText selector and CDP stream-accounting instrumentation limits. Do not replay completed provider operations.
 
