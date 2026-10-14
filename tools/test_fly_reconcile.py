@@ -21,6 +21,11 @@ import fly_reconcile_remote as remote
 
 class FlyReconcileTests(unittest.TestCase):
     def setUp(self):
+        # Direct calls to the operator set a private process-wide umask.
+        # Restore the caller's mask before the next module in this shard.
+        previous = os.umask(0o077)
+        os.umask(previous)
+        self.addCleanup(os.umask, previous)
         self.record = remote.binding("apply-grants", "a" * 40, "123")
         self.children = []
 

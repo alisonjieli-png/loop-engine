@@ -18,6 +18,7 @@ import subprocess
 import sys
 import tempfile
 import unittest
+from unittest import mock
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "tools"))
@@ -27,6 +28,7 @@ import regenerate_all as tool  # noqa: E402
 #: Tools with a check mode that are not views, each with the reason.
 NOT_VIEWS = {"owner_requests_ledger.py": "checks the hand-kept ledger against the roadmap and writes no committed file",
              "build_feed_reading_profile.py": "checks a caller-selected private profile folder; no committed view or repository output is generated",
+             "build_harness_starter_kit.py": "checks a caller-selected starter kit folder; no committed view or repository output is generated",
              "build_chatgpt_app_package.py": "checks the committed plugin package against OpenAI's submission rules; its --zip archive goes to a path the caller names and is never committed",
              "regenerate_all.py": "the runner itself"}
 GIT = ("git", "-c", "user.name=Regeneration test", "-c", "user.email=regeneration@example.invalid",
@@ -82,6 +84,12 @@ class RegistryTests(unittest.TestCase):
         self.assertTrue(with_check)
         missing = [name for name in with_check if f"tools/{name}" not in commands and name not in NOT_VIEWS]
         self.assertEqual(missing, [], "a tool with a check mode compares a committed file; add it to VIEWS")
+
+    def test_starter_kit_check_requires_its_explicit_non_view_reason(self):
+        without_reason = {name: reason for name, reason in NOT_VIEWS.items()
+                          if name != "build_harness_starter_kit.py"}
+        with mock.patch.dict(NOT_VIEWS, without_reason, clear=True), self.assertRaises(AssertionError):
+            self.test_every_tool_with_a_check_mode_is_a_view_or_says_why_not()
 
 
 class RunnerTests(unittest.TestCase):

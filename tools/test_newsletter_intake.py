@@ -178,12 +178,23 @@ class NewsletterIntakeTests(unittest.TestCase):
             intake.quarantine(CommunityStore(self.root), message())
         self.assertFalse(self.root.exists())
         self.root.mkdir(mode=0o755)
+        # mkdir applies the process umask; force the unsafe negative-control
+        # permissions even when an operator or CI starts with umask 077.
+        self.root.chmod(0o755)
+        self.assertEqual(self.root.stat().st_mode & 0o777, 0o755)
         with self.assertRaisesRegex(intake.NewsletterRefusal, "private_root"):
             intake.quarantine(self.store, message())
         self.root.chmod(0o700)
         (self.root / "newsletter-quarantine").symlink_to(self.temporary.name)
         with self.assertRaisesRegex(intake.NewsletterRefusal, "artifact_alias"):
             intake.quarantine(self.store, message())
+
+    def test_private_root_guard_is_independent_of_restrictive_process_umask(self):
+        previous = os.umask(0o077)
+        try:
+            self.test_private_root_grant_and_symlink_guards()
+        finally:
+            os.umask(previous)
 
     def test_changed_private_raw_object_is_not_acknowledged(self):
         intake.quarantine(self.store, message())
