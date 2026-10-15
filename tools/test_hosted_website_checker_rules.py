@@ -4,7 +4,9 @@ from pathlib import Path
 import os
 import subprocess
 import sys
+import tempfile
 import unittest
+from unittest import mock
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -32,12 +34,47 @@ class HostedWebsiteCheckerRulesTests(unittest.TestCase):
             "import assert from 'node:assert/strict';\n"
             f"import * as check from {MODULE!r};\n"
         )
-        result = subprocess.run(
-            ["node", "--input-type=module", "-e", header + source],
-            cwd=ROOT, text=True, capture_output=True, timeout=40,
-            env={**os.environ, **({"CHROME_BINARY": BROWSER_EXECUTABLE} if BROWSER_EXECUTABLE else {})},
-        )
+        # Chrome fails to launch under a deeply nested shard TMPDIR on Linux.
+        # Give only this child a fresh short temp root, not an existing browser
+        # profile. The pre-push credential-free environment is otherwise intact.
+        # Use the existing home-based fixture pattern rather than quota-bound /tmp.
+        with tempfile.TemporaryDirectory(prefix=".hc-", dir=Path.home()) as temporary:
+            result = subprocess.run(
+                ["node", "--input-type=module", "-e", header + source],
+                cwd=ROOT, text=True, capture_output=True, timeout=40,
+                env={**os.environ, "TMPDIR": temporary,
+                     **({"CHROME_BINARY": BROWSER_EXECUTABLE} if BROWSER_EXECUTABLE else {})},
+            )
         self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+
+    def test_child_temp_directory_is_short_private_and_removed_after_success_or_failure(self):
+        with tempfile.TemporaryDirectory() as folder:
+            parent = Path(folder) / ("long-browser-parent-" * 6)
+            parent.mkdir()
+            for fail in (False, True):
+                with self.subTest(fail=fail), mock.patch.dict(os.environ, {"TMPDIR": str(parent)}):
+                    selected = []
+                    def inspect_child(command, **options):
+                        temporary = Path(options["env"]["TMPDIR"])
+                        selected.append(temporary)
+                        self.assertEqual(temporary.parent, Path.home())
+                        self.assertLess(len(os.fsencode(temporary)), len(os.fsencode(parent)))
+                        self.assertEqual(temporary.stat().st_mode & 0o777, 0o700)
+                        expected = {**os.environ, "TMPDIR": str(temporary),
+                                    **({"CHROME_BINARY": BROWSER_EXECUTABLE} if BROWSER_EXECUTABLE else {})}
+                        self.assertEqual(options["env"], expected)
+                        if fail:
+                            raise subprocess.TimeoutExpired(command, options["timeout"])
+                        return subprocess.CompletedProcess(command, 0, "", "")
+                    with mock.patch.object(subprocess, "run", side_effect=inspect_child):
+                        if fail:
+                            with self.assertRaises(subprocess.TimeoutExpired):
+                                self.run_node("// controlled timeout")
+                        else:
+                            self.run_node("// controlled success")
+                    self.assertEqual(os.environ["TMPDIR"], str(parent))
+                    self.assertEqual(len(selected), 1)
+                    self.assertFalse(selected[0].exists())
 
     def test_required_browser_mode_cannot_silently_skip(self):
         result = subprocess.run(

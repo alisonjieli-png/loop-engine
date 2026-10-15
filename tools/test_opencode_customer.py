@@ -239,7 +239,9 @@ class CustomerBoundaryTests(unittest.TestCase):
     def test_fifo_refuses_before_blocking_and_socket_refuses(self):
         # A subprocess timeout makes the old blocking-open implementation a
         # bounded known-wrong control rather than hanging this suite.
-        with tempfile.TemporaryDirectory() as folder:
+        # This fixture itself binds an AF_UNIX socket, whose path must remain
+        # short even when pre-push gives the shard a deeply nested TMPDIR.
+        with tempfile.TemporaryDirectory(prefix=".hp-", dir=Path.home()) as folder:
             work = Path(folder)
             os.mkfifo(work / "out")
             code = """from pathlib import Path
@@ -309,17 +311,35 @@ raise SystemExit(1)
         self.assertEqual(handler_class.customer_housekeeping["refused_cancellations"], 1)
 
     def test_text_runner_cannot_run_workspace_variant(self):
-        with tempfile.TemporaryDirectory() as folder:
+        # Keep workspace files under the shard TMPDIR; only the socket's
+        # managed directory needs the short-home pattern used by harness tests.
+        with tempfile.TemporaryDirectory() as folder, \
+             tempfile.TemporaryDirectory(prefix=".hp-", dir=Path.home()) as sockets:
             work = Path(folder) / "work"
             work.mkdir()
             spec = HarnessProcessSpec("opencode.customer_confined", "fixture", ("/usr/bin/python3",), (), "opencode_customer", catalog=fixture_catalog())
-            request = HarnessProcessRequest(spec, "private", "fixture", 100, 20, 5, str(work), context_capacity=1000)
+            request = HarnessProcessRequest(spec, "private", "fixture", 100, 20, 5, str(work), context_capacity=1000,
+                                            socket_directory=sockets)
             with self.assertRaisesRegex(HarnessProcessError, "text_response_profile_required"):
                 run_harness_process(request, lambda _: response())
             weaker = replace(request, spec=replace(spec, process_isolation="trusted_process"))
             with self.assertRaisesRegex(HarnessProcessError, "confined_customer_profile_required"):
                 run_workspace_harness_process(weaker, lambda _: response(), self.boundary())
             self.assertEqual(list(work.iterdir()), [])
+
+    def test_long_workspace_needs_explicit_short_socket_directory(self):
+        with tempfile.TemporaryDirectory() as folder, \
+             tempfile.TemporaryDirectory(prefix=".hp-", dir=Path.home()) as sockets:
+            work = Path(folder) / ("long-workspace-" * 8)
+            work.mkdir()
+            spec = HarnessProcessSpec("opencode.customer_confined", "fixture", ("/usr/bin/python3",), (),
+                                      "opencode_customer", catalog=fixture_catalog())
+            with self.assertRaisesRegex(HarnessProcessError, "Unix socket path is too long"):
+                HarnessProcessRequest(spec, "fixture", "fixture", 100, 20, 5, str(work), context_capacity=1000)
+            request = HarnessProcessRequest(spec, "fixture", "fixture", 100, 20, 5, str(work), context_capacity=1000,
+                                            socket_directory=sockets)
+            self.assertEqual(request.work_dir, str(work))
+            self.assertEqual(request.socket_directory, sockets)
 
     def test_never_dispatched_scope_can_be_reused_after_preflight_refusal(self):
         boundary = self.boundary()
@@ -341,12 +361,14 @@ raise SystemExit(1)
             self.assertEqual(hashlib.sha256(Path(mounted).read_bytes()).hexdigest(), before)
 
     def test_resource_cleanup_failure_still_kills_and_waits_local_launcher(self):
-        with tempfile.TemporaryDirectory() as folder:
+        with tempfile.TemporaryDirectory() as folder, \
+             tempfile.TemporaryDirectory(prefix=".hp-", dir=Path.home()) as sockets:
             work = Path(folder) / "work"
             work.mkdir()
             spec = HarnessProcessSpec("opencode.customer_confined", "fixture", ("/usr/bin/python3",), (),
                                       "opencode_customer", catalog=fixture_catalog())
-            request = HarnessProcessRequest(spec, "fixture", "fixture", 100, 20, 5, str(work), context_capacity=1000)
+            request = HarnessProcessRequest(spec, "fixture", "fixture", 100, 20, 5, str(work), context_capacity=1000,
+                                            socket_directory=sockets)
             proc = mock.Mock(pid=424242, stdout=io.BytesIO(), stderr=io.BytesIO())
             proc.poll.return_value = None
             boundary = self.boundary()
@@ -370,12 +392,14 @@ raise SystemExit(1)
                     self.fail("uncertain process cannot start again")
 
     def test_unconfirmed_cleanup_refuses_artifact_capture(self):
-        with tempfile.TemporaryDirectory() as folder:
+        with tempfile.TemporaryDirectory() as folder, \
+             tempfile.TemporaryDirectory(prefix=".hp-", dir=Path.home()) as sockets:
             work = Path(folder) / "work"
             work.mkdir()
             spec = HarnessProcessSpec("opencode.customer_confined", "fixture", ("/usr/bin/python3",), (),
                                       "opencode_customer", catalog=fixture_catalog())
-            request = HarnessProcessRequest(spec, "fixture", "fixture", 100, 20, 5, str(work), context_capacity=1000)
+            request = HarnessProcessRequest(spec, "fixture", "fixture", 100, 20, 5, str(work), context_capacity=1000,
+                                            socket_directory=sockets)
             proc = mock.Mock(pid=424242, stdout=io.BytesIO(), stderr=io.BytesIO(), returncode=0)
             proc.poll.return_value = 0
             boundary = self.boundary()
@@ -392,12 +416,14 @@ raise SystemExit(1)
             self.assertIn("customer_capture_requires_confirmed_cleanup", result.errors)
 
     def test_missing_bubblewrap_still_refuses_before_launch_or_broker(self):
-        with tempfile.TemporaryDirectory() as folder:
+        with tempfile.TemporaryDirectory() as folder, \
+             tempfile.TemporaryDirectory(prefix=".hp-", dir=Path.home()) as sockets:
             work = Path(folder) / "work"
             work.mkdir()
             spec = HarnessProcessSpec("opencode.customer_confined", "fixture", ("/usr/bin/python3",), (),
                                       "opencode_customer", catalog=fixture_catalog())
-            request = HarnessProcessRequest(spec, "fixture", "fixture", 100, 20, 5, str(work), context_capacity=1000)
+            request = HarnessProcessRequest(spec, "fixture", "fixture", 100, 20, 5, str(work), context_capacity=1000,
+                                            socket_directory=sockets)
             boundary, broker = self.boundary(), mock.Mock()
             with mock.patch("loop_engine.core.harness_process.shutil.which", return_value=None), \
                  mock.patch("loop_engine.core.harness_process.subprocess.Popen") as launch:
@@ -453,13 +479,14 @@ raise SystemExit(1)
                 self.boundary(artifact_paths=("approved/data",)).capture(work)
 
     def test_workspace_transport_does_not_silently_enlarge_allowances(self):
-        with tempfile.TemporaryDirectory() as folder:
+        with tempfile.TemporaryDirectory() as folder, \
+             tempfile.TemporaryDirectory(prefix=".hp-", dir=Path.home()) as sockets:
             work = Path(folder) / "work"
             work.mkdir()
             spec = HarnessProcessSpec("opencode.customer_confined", "fixture", ("/usr/bin/python3",), (),
                                       "opencode_customer", catalog=fixture_catalog())
             request = HarnessProcessRequest(spec, "fixture", "fixture", 100, 20, 5, str(work), context_capacity=1000,
-                                            maximum_request_bytes=1024)
+                                            maximum_request_bytes=1024, socket_directory=sockets)
             with self.assertRaisesRegex(HarnessProcessError, "wire_allowance_insufficient"):
                 run_workspace_harness_process(request, lambda _: response(), self.boundary())
             self.assertEqual(list(work.iterdir()), [])
