@@ -204,6 +204,7 @@ jobs:
       - name: Verify interactive architecture and video
         run: |
           npm ci --prefix showcase
+          BALTOR_REQUIRE_BROWSER_CHECKER_TESTS=1 python -m unittest tools/test_hosted_website_checker_rules.py
           python3 -m http.server 8082 --directory showcase > /tmp/showcase-server.log 2>&1 &
           SHOWCASE_PID=$!
           trap 'kill $SHOWCASE_PID 2>/dev/null || true; wait $SHOWCASE_PID 2>/dev/null || true' EXIT INT TERM

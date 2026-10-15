@@ -1,16 +1,32 @@
 """Evidence-based hosted checker rules, including actual Chromium observations."""
 
 from pathlib import Path
+import os
 import subprocess
+import sys
 import unittest
 
 
 ROOT = Path(__file__).resolve().parents[1]
 MODULE = (ROOT / "tools/check_hosted_website.mjs").as_uri()
 PLAYWRIGHT = (ROOT / "showcase/node_modules/playwright-core/index.mjs").as_uri()
+BROWSER_CANDIDATES = ([os.environ["CHROME_BINARY"]] if os.environ.get("CHROME_BINARY") else [
+    os.environ.get("LOOP_SHOWCASE_BROWSER"), "/usr/bin/google-chrome",
+    "/usr/bin/google-chrome-stable", "/opt/google/chrome/chrome",
+    "/usr/bin/chromium", "/snap/bin/chromium",
+])
+BROWSER_EXECUTABLE = next((path for path in BROWSER_CANDIDATES
+                           if path and Path(path).is_file() and os.access(path, os.X_OK)), None)
+BROWSER_AVAILABLE = (ROOT / "showcase/node_modules/playwright-core/index.mjs").is_file() and bool(BROWSER_EXECUTABLE)
+BROWSER_REQUIREMENT = "Browser qualification requires showcase npm dependencies and Chrome; pure rules still run."
 
 
 class HostedWebsiteCheckerRulesTests(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        if os.environ.get("BALTOR_REQUIRE_BROWSER_CHECKER_TESTS") == "1" and not BROWSER_AVAILABLE:
+            raise RuntimeError("Required browser qualification cannot run: install showcase npm dependencies and Chrome.")
+
     def run_node(self, source):
         header = (
             "import assert from 'node:assert/strict';\n"
@@ -19,8 +35,19 @@ class HostedWebsiteCheckerRulesTests(unittest.TestCase):
         result = subprocess.run(
             ["node", "--input-type=module", "-e", header + source],
             cwd=ROOT, text=True, capture_output=True, timeout=40,
+            env={**os.environ, **({"CHROME_BINARY": BROWSER_EXECUTABLE} if BROWSER_EXECUTABLE else {})},
         )
         self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+
+    def test_required_browser_mode_cannot_silently_skip(self):
+        result = subprocess.run(
+            [sys.executable, "-m", "unittest", "tools.test_hosted_website_checker_rules.HostedWebsiteCheckerRulesTests.test_readonly_values_require_actual_browser_visibility"],
+            cwd=ROOT, text=True, capture_output=True, timeout=15,
+            env={**os.environ, "BALTOR_REQUIRE_BROWSER_CHECKER_TESTS": "1",
+                 "CHROME_BINARY": str(ROOT / "intentionally-missing-browser-negative-control")},
+        )
+        self.assertNotEqual(result.returncode, 0, result.stdout + result.stderr)
+        self.assertIn("Required browser qualification cannot run", result.stdout + result.stderr)
 
     def test_exact_endpoint_and_media_failure_negative_controls(self):
         self.run_node(r'''
@@ -50,6 +77,7 @@ assert.equal(accepted({...event,method:"POST"}),false);
 assert.equal(accepted({...event,resourceType:"other",url:"https://brand.example/prefetch"}),false);
 ''')
 
+    @unittest.skipUnless(BROWSER_AVAILABLE, BROWSER_REQUIREMENT)
     def test_readonly_values_require_actual_browser_visibility(self):
         self.run_node(f"import {{chromium}} from {PLAYWRIGHT!r};\n" + r'''
 const browser=await chromium.launch({executablePath:process.env.CHROME_BINARY||"/opt/google/chrome/chrome",headless:true,args:["--no-sandbox"]});
@@ -86,10 +114,9 @@ try{
 }finally{await browser.close();}
 ''')
 
-    def test_request_identity_status_and_browser_failures(self):
-        self.run_node(f"import {{chromium}} from {PLAYWRIGHT!r};\n" + r'''
-import http from "node:http";
-import {EventEmitter,once} from "node:events";
+    def test_request_status_is_scoped_to_one_request(self):
+        self.run_node(r'''
+import {EventEmitter} from "node:events";
 const mock=new EventEmitter(),accounting=check.createRequestAccounting("https://brand.example");
 accounting.attach(mock);
 const request=(status=null,error="net::ERR_ABORTED")=>({url:()=>"https://brand.example/a.mp4",method:()=>"GET",resourceType:()=>"media",failure:()=>({errorText:error}),response:async()=>status===null?null:{status:()=>status}});
@@ -104,7 +131,13 @@ assert.equal(result.failedRequests.length,2);
 assert.equal(result.abortedMediaPreviews.length,1);
 assert.equal(result.failedRequests[0].status,404);
 assert.equal(result.failedRequests[1].status,null);
+''')
 
+    @unittest.skipUnless(BROWSER_AVAILABLE, BROWSER_REQUIREMENT)
+    def test_real_browser_aborts_and_http_errors_remain_failures(self):
+        self.run_node(f"import {{chromium}} from {PLAYWRIGHT!r};\n" + r'''
+import http from "node:http";
+import {once} from "node:events";
 const sockets=new Set();
 const server=http.createServer((req,res)=>{
   if(req.url==="/missing"){res.writeHead(404);res.end("missing");return;}
