@@ -1,6 +1,6 @@
 # Baltor delivery and business plan
 
-Kind: current execution order. Updated October 13, 2026. The
+Kind: current execution order. Updated October 15, 2026. The
 [roadmap](roadmap.yaml) owns task status, the [north star](../architecture/NORTH-STAR.md)
 owns product direction, and [AGENTS.md](../../AGENTS.md#commit-push-and-release-authority)
 owns authority. This page orders that work and states what each stage must prove.
@@ -14,7 +14,53 @@ evidence, a comment, a next action and the exact completion scope. The tracker
 refuses a completed task with an unfinished prerequisite. Publishing an
 artifact does not substitute for testing its live behavior.
 
-The latest October 13 priority is the ordinary customer journey, especially
+The October 15 implementation continuation starts with a narrow public-page
+redirect repair (S-6.35.10) and the systems portal's evidence and staff-access
+boundary (S-6.35.11). Redirect only eligible credential-free public website GET
+and HEAD requests that return HTML on declared `www` hosts. Exclude protocol,
+OAuth, app, account, login, saved-work and build routes, credential or callback
+query names, and requests carrying authorization, cookie or origin headers.
+Do not change an issuer, callback or credential recipient. HTTP cannot observe
+browser storage or URL fragments: public-home navigation may reach an apex
+that appears signed out. Existing `www` storage stays untouched; this repair
+does not migrate sessions or prove complete signed-in navigation continuity.
+
+The systems portal must identify the source revision, environment and actual
+attempt behind each displayed result. Show pending, skipped, failed and unknown
+checks separately. Enforce staff access through the existing identity owner;
+`noindex` is not access control. Retain every earlier attempt and reconcile
+completed provider effects before any new release.
+
+Continue actual worker dispatch and ordinary native-harness use through
+S-6.24.01 through S-6.24.03. One separately running worker must claim authorized
+work, produce exact artifacts, survive interruption and return independently
+checked results. A local snapshot or a declared worker name does not meet this
+gate. S-6.32.01 owns the matched Python/process/Rust comparison; its result is
+required before an engine promotion, not before unrelated customer fixes.
+
+Active `social_videos` work remains with its Astra/Codex owner. Use completed
+handoffs for S-6.201.02 through S-6.201.04, with an explicit audience, purpose,
+format, editable source and revision request. Qualify technical output, visual
+quality, sound and clean reopen separately. These tasks should produce useful
+media for a declared audience rather than impose one caption density, pacing
+or presentation style on every customer.
+
+The preserved Antigravity review supplies design and implementation candidates;
+engineering continues without waiting for that harness. When a priority task
+is waiting on access, another writer or bounded capacity, choose useful supply
+work under S-6.215.13, S-6.217 and S-6.214.09. Record the wait reason and the
+selected source job in the owning records. Keep fallback cohorts small, retain
+their exclusions and resume the priority work when it can proceed. Do not start
+another task database, recurring schedule or social publication workflow.
+
+S-6.30 owns integration of the reviewed engine designs. Register each accepted
+engine behind its existing typed edge and conformance kit. Reuse the canonical
+task, scheduler and history stores. Flexible fields and pointer carriers must
+negotiate supported versions and authority before use; they cannot infer
+compatibility, create a competing runtime or widen model access. Qualify each
+small integration on its own and preserve the rest of the candidate work.
+
+The October 13 priority remains the ordinary customer journey, especially
 native OpenCode with Baltor: connect, discover, retrieve, use, revise and
 recover in a clean supported workspace. Installed binaries and plain protocol
 checks do not close this gate. Preserve sandbox, credential, effect and budget
@@ -39,8 +85,9 @@ AgentAFK remains a local Preview, not an active paid hosted execution service.
 Each standalone offering keeps its own presentation over the shared backend.
 AgentStudios is the selected independent creative presentation. The owner
 purchased `agentstudios.si`, verified in the registrar account. S-6.35.08 owns
-the remaining public DNS/TLS and customer qualification; the earlier AgentMedia
-name remains historical. The [frontend and backend integration map](../architecture/BRAND-FRONTEND-BACKEND-INTEGRATION.md)
+the remaining creative customer qualification; public DNS and TLS passed in
+the release 92 record. The earlier AgentMedia name remains historical. The
+[frontend and backend integration map](../architecture/BRAND-FRONTEND-BACKEND-INTEGRATION.md)
 names each selected site's current connections, missing integrations and tests.
 The next catalogue publication must preserve the current baseline and remain
 separate from any further application deployment.
@@ -48,9 +95,9 @@ separate from any further application deployment.
 ## AgentBriefs proposal qualification
 
 The owner selects AgentBriefs and `agentbriefs.si` for executive decision
-support. Ownership and launch are unverified. This additive proposal does not
-interrupt the AgentStudios release. S-6.35.09 owns its qualification, with
-research and feed work remaining under S-6.214 and bounded execution under
+support and confirms the domain purchase on October 15. Registrar control,
+DNS, certificates and launch are separate checks. S-6.35.09 owns qualification.
+Research and feed work remain under S-6.214 and bounded execution under
 the existing task, model and sandbox owners.
 
 Start with one authorized company profile and one decision family, such as
@@ -2279,6 +2326,21 @@ deltas, incremental indexing and selective CI are different optimizations;
 none makes an untested candidate releasable.
 
 ### Source intake and repository upkeep
+
+The October 15 network-share research request extends S-6.207, not the task
+store or the source project's authority. Start with bounded, read-only metadata
+discovery of approved project and research roots. Keep exact locations,
+provenance and coverage in the private checkpoint. Before selecting content,
+identify its owner, revision and dirty state, active writers, likely duplicates
+and missing dependencies. Record inaccessible and deferred paths explicitly.
+The earlier inventory's disk-floor stop still applies to its pending queue.
+
+Organize findings in the existing source records without moving or deleting
+source files, running project code or copying archives into public material.
+Read selected stable sources only after the metadata pass and rights check.
+Adapt a useful component through its existing typed boundary and ordinary
+qualification process; do not import a second runtime, registry or task store.
+Keep source-backed leads, runnable candidates and accepted components distinct.
 
 The [community registry](../../tools/knowledge_radar/community-sources-v1.json)
 contains the owner's design, game, modeling, graphics and video sources.

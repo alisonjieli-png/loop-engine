@@ -3,7 +3,7 @@
 Kind: generated view. Do not edit by hand. The only task authority is
 [roadmap.yaml](roadmap.yaml); change it, then run
 `PYTHONPATH=src:tools .venv/bin/python tools/build_development_tracker.py`.
-Source fingerprint: `sha256:c31eed01ea575dddb03e0f1a2caf04872034ebe1ff5c22b9a522c2b91e8e64d8`.
+Source fingerprint: `sha256:a3a10a10c9d294d2222c00c0085a842456f82bb7763e457a3b31157bb466f6ce`.
 
 ## Where things stand
 
@@ -19,7 +19,7 @@ Statuses are recorded planning state, not live worker telemetry.
 
 ## Recorded planning window
 
-Retained October 9 planning window, not an active-worker inventory. October 13 release 91 serves all standalone websites for public review. The campaign funnel is live-qualified; the combined standalone task retains real authenticated/acquisition outcomes and secondary browser-body accounting qualification. No selected domain is still waiting to launch. Maintained feeds and customer task outcomes remain separate work. The earlier twelve-hour factory was a bounded attempt, not a publication claim. Only qualified, admitted, reconciled and actually served distinct digests count toward the ten-million target. Consult the workstation coordination record for current writers.
+Retained October 9 planning window, not an active-worker inventory or a new schedule. October 15 engineering continues from the preserved Antigravity review without waiting for that harness. Public-page redirects and systems evidence/access lead the current execution order, followed by actual worker, customer and media proofs. AgentBriefs is owner-confirmed purchased; registrar control and launch remain separate checks. Active social_videos production has a separate Astra/Codex owner. Use completed handoffs and preserve that work. Bounded useful supply work may use spare capacity while a priority dependency is unavailable; record the reason and resume priority work when it clears. Only qualified, admitted, reconciled and actually served distinct digests count toward the ten-million target. Consult the workstation coordination record for current writers.
 
 The bars are planned work windows. Completion comes only from each task's acceptance and evidence.
 
@@ -67,88 +67,275 @@ gantt
 
 Each subtask lives in its owning step in roadmap.yaml. A local check does not complete a task that requires publication.
 
-Completed within their stated scope: 21 of 74 subtasks.
+Completed within their stated scope: 21 of 77 subtasks.
 
-Next eligible subtask: S-6.35.06: Qualify AgentFeeds, AgentFoundry and AgentAFK on the shared service
+Next eligible subtask: S-6.35.10: Redirect public website aliases without changing client origins
 
 | Order | Task | State | Completion required | Next action or dependency |
 |---:|---|---|---|---|
-| 1 | [x] S-6.35.03: Integrate the new design and interrupted fixes into the live website | published | published | Preserve the deployed design and release-89 documentation readiness repair while implementing the separate branded sites in S-6.35.06. The owner price change remains recorded in S-6.35.04. |
-| 2 | [x] S-6.35.04: Apply the owner's monthly Basic, Pro and Max prices | published | published | Keep both accepted Price identities during any rollback and preserve existing subscriptions, grants and free preview terms. |
-| 3 | [x] S-6.35.05: Add random asset discovery with provenance and use details | published | published | Preserve the qualified routes and expand useful rights-qualified media through the component intake and portable customer proof in S-6.201.04. |
-| 4 | [x] S-6.35.07: Launch the Don't be a meat proxy campaign funnel for AgentFeeds | live_qualified | live_qualified | Retain the verified public funnel and review agent feedback. Measure useful AgentFeeds activation under the existing consent and measurement rules without turning public website availability into a claim of customer outcomes. |
-| 5 | [ ] S-6.35.06: Qualify AgentFeeds, AgentFoundry and AgentAFK on the shared service | building | live_qualified | All selected websites are live for public review. Qualify real authenticated/acquisition journeys and resolve secondary browser-body measurement gaps; preserve the independent interfaces while maintained feeds, portable component use, adaptive ranking and hosted execution proceed through their owning tasks. |
-| 6 | [x] S-6.12.04: Separate three product cards from the introductory hero | live_qualified | live_qualified | Keep the three visible offerings consistent while the separate billing and hosted-service work proceeds. |
-| 7 | [x] S-6.35.01: Release reviewed main and verify it live | published | published | Keep application deployment and catalogue publication from overlapping. |
-| 8 | [x] S-6.215.01: Record the current live file baseline | offline_verified | offline_verified | Use this exact baseline for reconciliation. |
-| 9 | [x] S-6.215.02: Qualify the retained API-contract population | offline_verified | offline_verified | Carry only the 31,459 qualified packages into admission. |
-| 10 | [x] S-6.215.03: Admit the qualified contract batch | offline_verified | offline_verified | Build the admitted additions bundle. |
-| 11 | [x] S-6.215.04: Build the additions bundle | offline_verified | offline_verified | Use bundle 26c50a60 in the preservation check. |
-| 12 | [x] S-6.215.05: Check retrieval and grant preservation | offline_verified | offline_verified | Use the completed October 11 combined consequence report for the exact additive publication; rebase if the live pointer changes. |
-| 13 | [x] S-6.215.06: Reconcile the complete release and its bodies | offline_verified | offline_verified | Use the exact completed proof for the next guarded publication after the prioritized website release. |
-| 14 | [x] S-6.215.07: Publish the reconciled contract delta | published | published | Publish the next qualified delta against the release live at that time, with the publisher that stages objects as the service user. |
-| 15 | [x] S-6.215.08: Verify the new catalogue as a customer | live_qualified | live_qualified | Repeat for each later publication with one new and one earlier package. |
-| 16 | [x] S-6.215.09: Mirror the new bodies and refresh public counts | live_qualified | live_qualified | Mirror each later publication's new bodies after its customer check. |
-| 17 | [x] S-6.215.10: Complete the repaired case-generation pilot | offline_verified | offline_verified | Qualify and globally deduplicate the completed pilot. |
-| 18 | [x] S-6.215.11: Qualify and admit the new case groups | offline_verified | offline_verified | Regroup the 1,983 non-overlapping jobs held in 376 groups and qualify the 379-group pilot separately before the next case publication. |
-| 19 | [x] S-6.215.12: Publish the qualified case delta | published | published | Publish later case cohorts against the release live at that time. |
-| 20 | [ ] S-6.215.13: Measure and broaden production capacity | building | offline_verified | Preserve the completed four-process qualification; do not replay it. Design bounded metadata streaming before larger catalogue growth. The residual API-atom pilot needs a new-run range selector and preserved exclusions before dispatch. |
-| 21 | [ ] S-6.214.01: Define canonical source counting | ready | offline_verified | Write and test the source-counting rules in the existing source owner. |
-| 22 | [ ] S-6.214.02: Build the source coverage census | ready | offline_verified | Waiting on S-6.214.01 |
-| 23 | [ ] S-6.214.03: Normalize the supplied provider operations | building | offline_verified | Waiting on S-6.214.01 |
-| 24 | [ ] S-6.214.04: Enforce shared quotas and collection costs | ready | offline_verified | Waiting on S-6.214.03 |
-| 25 | [ ] S-6.214.13: Bound and prioritize follow-up research initiatives | ready | offline_verified | Waiting on S-6.214.03, S-6.214.04 |
-| 26 | [ ] S-6.214.05: Qualify source rights and privacy | ready | offline_verified | Waiting on S-6.214.02 |
-| 27 | [ ] S-6.214.06: Run a hundred-source collection pilot | proposed | live_qualified | Waiting on S-6.214.03, S-6.214.04, S-6.214.05 |
-| 28 | [ ] S-6.214.15: Watch and qualify open creative-tool alternatives and automation interfaces | building | live_qualified | Extend the existing bounded daily source watch and qualify a representative edit/revision/export task for selected candidates. |
-| 29 | [ ] S-6.214.07: Expand to one thousand qualified sources | proposed | live_qualified | Waiting on S-6.214.06 |
-| 30 | [ ] S-6.214.09: Produce useful source-backed feeds | ready | live_qualified | Waiting on S-6.214.06 |
-| 31 | [x] S-6.214.12: Let customers build a distinct reading profile for each agent | live_qualified | live_qualified | Preserve exact per-agent export behavior while implementing saved assignments and maintained delivery through their separate owning subtasks. |
-| 32 | [ ] S-6.214.10: Save customer feed preferences per agent | proposed | live_qualified | Waiting on S-6.214.09 |
-| 33 | [ ] S-6.214.11: Deliver and measure personalized feeds | proposed | live_qualified | Waiting on S-6.214.10 |
-| 34 | [ ] S-6.214.14: Show top feeds and components with distinct popularity and agent-use rankings | proposed | live_qualified | Waiting on S-6.214.09, S-6.214.11 |
-| 35 | [ ] S-6.207.01: Complete the approved SMB metadata inventory | blocked | offline_verified | Resolve the measured storage allocation before resuming. |
-| 36 | [x] S-6.207.02: Extract the priority RapidAPI coding session | offline_verified | offline_verified | Use the exact chunks for substantive review and missing-artifact recovery. |
-| 37 | [ ] S-6.207.03: Recover the missing registry artifacts | ready | offline_verified | Start with the two missing native databases and the missing discovery module. |
-| 38 | [ ] S-6.207.04: Perform source-specific question reviews | building | offline_verified | Continue focused history review and turn verified gaps into tests and original implementations. |
-| 39 | [ ] S-6.207.05: Convert approved findings into original candidates | proposed | offline_verified | Waiting on S-6.207.04 |
-| 40 | [ ] S-6.218.01: Specify the hosted live-tool boundary | ready | offline_verified | Draft the narrow first hosted-tool contract and adversarial cases. |
-| 41 | [ ] S-6.218.02: Qualify providers for customer-facing use | ready | offline_verified | Waiting on S-6.218.01 |
-| 42 | [ ] S-6.218.03: Build tenant-bound credential leases | proposed | offline_verified | Waiting on S-6.218.01 |
-| 43 | [ ] S-6.218.04: Add per-tenant budgets and upstream quota reservations | proposed | offline_verified | Waiting on S-6.218.02, S-6.218.03 |
-| 44 | [ ] S-6.218.05: Implement scoped live invocation | proposed | offline_verified | Waiting on S-6.218.04 |
-| 45 | [ ] S-6.218.06: Expose discovery and invocation through MCP and API | proposed | offline_verified | Waiting on S-6.218.05 |
-| 46 | [ ] S-6.218.07: Verify customer isolation and abuse controls | proposed | live_qualified | Waiting on S-6.218.06 |
-| 47 | [ ] S-6.218.08: Reconcile top-tier entitlements and pricing | proposed | live_qualified | Waiting on S-6.218.07 |
-| 48 | [ ] S-6.218.09: Launch and monitor the qualified hosted-tool pilot | proposed | published | Waiting on S-6.218.08 |
-| 49 | [ ] S-6.218.10: Evaluate a dedicated persistent desktop offering | proposed | live_qualified | Waiting on S-6.218.01, S-6.218.03, S-6.218.04, S-6.218.07 |
-| 50 | [ ] S-6.13.01: Qualify authenticated R2 file delivery | ready | live_qualified | Prepare a bounded delivery canary; keep Fly delivery until it passes. |
-| 51 | [ ] S-6.13.02: Place bounded collectors and durable jobs on Cloudflare | proposed | live_qualified | Waiting on S-6.214.06 |
-| 52 | [ ] S-6.13.03: Evaluate the customer authentication boundary | ready | offline_verified | Document the migration evidence needed and cost; do not replace login solely because DNS uses Cloudflare. |
-| 53 | [ ] S-6.12.01: Add private-by-default customer submissions | ready | live_qualified | Implement a narrow customer upload flow before adding a public contribution CTA. |
-| 54 | [ ] S-6.12.02: Add sharing and public-library submission controls | proposed | live_qualified | Waiting on S-6.12.01 |
-| 55 | [ ] S-6.12.03: Reconcile the three offering cards and new-signup prices | building | live_qualified | Review and deploy compatible billing readers before an additive new-signup price migration; qualify the hosted upper tier before sale. |
-| 56 | [ ] S-6.24.01: Prove one bounded overnight customer task | ready | live_qualified | Retain current provider holds; do not reset the earlier token ceiling. |
-| 57 | [ ] S-6.24.02: Verify OpenCode and another harness against live Baltor | ready | live_qualified | Run the customer path on this PC without borrowing administrator access. |
-| 58 | [ ] S-6.24.03: Build an adaptive AgentAFK task queue with dependencies and outcome feedback | building | live_qualified | Expose a passive inspectable task graph and rules-based queue with priority contributions and hold reasons, then qualify customer admission and collect outcome feedback before promoting learned ranking. |
-| 59 | [ ] S-6.201.01: Recover the authorized TensorArt asset history | blocked | offline_verified | Resolve the missing target-account access without forwarding cookies to third parties. |
-| 60 | [ ] S-6.201.02: Complete one editable creative project and revision | ready | offline_verified | Select a small end-to-end creative proof rather than expanding untested templates. |
-| 61 | [ ] S-6.201.03: Produce a rights-cleared product demonstration | proposed | published | Waiting on S-6.201.02 |
-| 62 | [ ] S-6.201.04: Create and revise media from a fresh Kaggle harness through Baltor | building | live_qualified | Waiting on S-6.201.02 |
-| 63 | [ ] S-6.102.01: Package and test the ChatGPT and Codex plugin | building | offline_verified | Release the integration, then run tools/check_chatgpt_app_live.py with --expect-presentation and --screens as a fresh account, confirm the authorization server metadata advertises authorization_response_iss_parameter_supported, and keep the report with the release record. The remaining steps for each directory and client are in docs/guides/chatgpt-app.md. |
-| 64 | [ ] S-6.102.02: Complete plugin review and release prerequisites | proposed | published | Waiting on S-6.102.01 |
-| 65 | [ ] S-6.204.01: Measure onboarding and product use | ready | live_qualified | Use measured activation and usefulness to guide the next batch and marketing. |
-| 66 | [ ] S-6.204.02: Prepare launch, funding and startup-credit material | ready | offline_verified | Prioritize the infrastructure already used and the next customer proof. |
-| 67 | [ ] S-6.216.01: Expand useful SDG and competition-derived materials | ready | published | Choose unmet SDG jobs from measured coverage rather than multiplying labels. |
-| 68 | [ ] S-6.67.01: Review the complete public page and design surface | ready | live_qualified | Run the owning browser checks for each visible release and verify the live result. |
-| 69 | [ ] S-6.35.02: Publish a progress checkpoint after every completed subtask | building | offline_verified | Complete the first canonical subtask checklist and then advance it one result at a time. |
-| 70 | [x] S-6.217.01: Reconcile recent prompts and action history | offline_verified | offline_verified | Carry the retained obligation groups into their existing owners; the October 13 brand launch belongs to S-6.35.06, maintained feeds to S-6.214 and raw-data task prioritization to S-6.24.03. |
-| 71 | [ ] S-6.215.14: Reach two million useful served files | proposed | published | Waiting on S-6.215.13 |
-| 72 | [ ] S-6.214.08: Reach ten thousand active qualified sources | proposed | live_qualified | Waiting on S-6.214.07 |
-| 73 | [ ] S-6.35.08: Launch AgentStudios as the independent creative offering | building | live_qualified | Qualify an actual creative retrieval, edit and clean reopen journey, and resolve the retained /connect innerText selector and CDP stream-accounting instrumentation limits. Do not replay completed provider operations. |
-| 74 | [ ] S-6.35.09: Qualify AgentBriefs executive decision support | building | live_qualified | Define and qualify one complete company-context-to-decision proof and its contracts behind the reviewed local-only AgentBriefs prototype. Verify domain ownership separately before any provider transition; do not accept private uploads, signups or payments through the prototype. |
+| 1 | [ ] S-6.35.10: Redirect public website aliases without changing client origins | building | live_qualified | Integrate the separately owned redirect repair after its HTTP, edge Worker and existing-boundary checks pass. |
+| 2 | [ ] S-6.35.11: Bind the systems portal to evidence and staff access | ready | live_qualified | Identify the current portal's exact export and source, then implement its staff-access and evidence projections through the existing owners. |
+| 3 | [ ] S-6.24.02: Verify OpenCode and another harness against live Baltor | ready | live_qualified | Run the customer path on this PC without borrowing administrator access. |
+| 4 | [ ] S-6.24.01: Prove one bounded overnight customer task | ready | live_qualified | Connect one useful deterministic task to a separate supported worker through the existing queue and history; preserve provider holds and earlier token ceilings. |
+| 5 | [ ] S-6.24.03: Build an adaptive AgentAFK task queue with dependencies and outcome feedback | building | live_qualified | Map the reviewed Antigravity queue and worker candidates to existing task, scheduler, execution and history contracts. Connect the rules-based baseline to S-6.24.01, expose priority and hold reasons, and collect real outcomes before promoting learned ranking. |
+| 6 | [ ] S-6.35.09: Qualify AgentBriefs executive decision support | building | live_qualified | Reconcile the purchased domain's registrar and DNS state, then qualify one complete company-context-to-decision proof behind the reviewed prototype. Do not accept private uploads, signups or payments through an unwired interface. |
+| 7 | [ ] S-6.201.02: Complete one editable creative project and revision | ready | offline_verified | Select one completed media handoff, freeze the audience and revision brief, and qualify the real renderer and editable project before expanding templates. |
+| 8 | [ ] S-6.201.03: Produce a rights-cleared product demonstration | proposed | published | Waiting on S-6.201.02 |
+| 9 | [ ] S-6.201.04: Create and revise media from a fresh Kaggle harness through Baltor | building | live_qualified | Waiting on S-6.201.02 |
+| 10 | [ ] S-6.32.01: Compare equivalent search engines across process boundaries | ready | offline_verified | Prepare one immutable catalogue sample and held-out query set, then run the three implementations through the same comparison harness. |
+| 11 | [x] S-6.35.03: Integrate the new design and interrupted fixes into the live website | published | published | Preserve the deployed design and release-89 documentation readiness repair while implementing the separate branded sites in S-6.35.06. The owner price change remains recorded in S-6.35.04. |
+| 12 | [x] S-6.35.04: Apply the owner's monthly Basic, Pro and Max prices | published | published | Keep both accepted Price identities during any rollback and preserve existing subscriptions, grants and free preview terms. |
+| 13 | [x] S-6.35.05: Add random asset discovery with provenance and use details | published | published | Preserve the qualified routes and expand useful rights-qualified media through the component intake and portable customer proof in S-6.201.04. |
+| 14 | [x] S-6.35.07: Launch the Don't be a meat proxy campaign funnel for AgentFeeds | live_qualified | live_qualified | Retain the verified public funnel and review agent feedback. Measure useful AgentFeeds activation under the existing consent and measurement rules without turning public website availability into a claim of customer outcomes. |
+| 15 | [ ] S-6.35.06: Qualify AgentFeeds, AgentFoundry and AgentAFK on the shared service | building | live_qualified | All selected websites are live for public review. Qualify real authenticated/acquisition journeys and resolve secondary browser-body measurement gaps; preserve the independent interfaces while maintained feeds, portable component use, adaptive ranking and hosted execution proceed through their owning tasks. |
+| 16 | [x] S-6.12.04: Separate three product cards from the introductory hero | live_qualified | live_qualified | Keep the three visible offerings consistent while the separate billing and hosted-service work proceeds. |
+| 17 | [x] S-6.35.01: Release reviewed main and verify it live | published | published | Keep application deployment and catalogue publication from overlapping. |
+| 18 | [x] S-6.215.01: Record the current live file baseline | offline_verified | offline_verified | Use this exact baseline for reconciliation. |
+| 19 | [x] S-6.215.02: Qualify the retained API-contract population | offline_verified | offline_verified | Carry only the 31,459 qualified packages into admission. |
+| 20 | [x] S-6.215.03: Admit the qualified contract batch | offline_verified | offline_verified | Build the admitted additions bundle. |
+| 21 | [x] S-6.215.04: Build the additions bundle | offline_verified | offline_verified | Use bundle 26c50a60 in the preservation check. |
+| 22 | [x] S-6.215.05: Check retrieval and grant preservation | offline_verified | offline_verified | Use the completed October 11 combined consequence report for the exact additive publication; rebase if the live pointer changes. |
+| 23 | [x] S-6.215.06: Reconcile the complete release and its bodies | offline_verified | offline_verified | Use the exact completed proof for the next guarded publication after the prioritized website release. |
+| 24 | [x] S-6.215.07: Publish the reconciled contract delta | published | published | Publish the next qualified delta against the release live at that time, with the publisher that stages objects as the service user. |
+| 25 | [x] S-6.215.08: Verify the new catalogue as a customer | live_qualified | live_qualified | Repeat for each later publication with one new and one earlier package. |
+| 26 | [x] S-6.215.09: Mirror the new bodies and refresh public counts | live_qualified | live_qualified | Mirror each later publication's new bodies after its customer check. |
+| 27 | [x] S-6.215.10: Complete the repaired case-generation pilot | offline_verified | offline_verified | Qualify and globally deduplicate the completed pilot. |
+| 28 | [x] S-6.215.11: Qualify and admit the new case groups | offline_verified | offline_verified | Regroup the 1,983 non-overlapping jobs held in 376 groups and qualify the 379-group pilot separately before the next case publication. |
+| 29 | [x] S-6.215.12: Publish the qualified case delta | published | published | Publish later case cohorts against the release live at that time. |
+| 30 | [ ] S-6.215.13: Measure and broaden production capacity | building | offline_verified | Preserve the completed four-process qualification without replay. When priority integration waits, select one bounded useful string, logic or component cohort; retain exclusions and return to the priority task when it can proceed. Design bounded metadata streaming before larger growth. The residual API-atom pilot needs a new-run range selector and preserved exclusions before dispatch. |
+| 31 | [ ] S-6.214.01: Define canonical source counting | ready | offline_verified | Write and test the source-counting rules in the existing source owner. |
+| 32 | [ ] S-6.214.02: Build the source coverage census | ready | offline_verified | Waiting on S-6.214.01 |
+| 33 | [ ] S-6.214.03: Normalize the supplied provider operations | building | offline_verified | Waiting on S-6.214.01 |
+| 34 | [ ] S-6.214.04: Enforce shared quotas and collection costs | ready | offline_verified | Waiting on S-6.214.03 |
+| 35 | [ ] S-6.214.13: Bound and prioritize follow-up research initiatives | ready | offline_verified | Waiting on S-6.214.03, S-6.214.04 |
+| 36 | [ ] S-6.214.05: Qualify source rights and privacy | ready | offline_verified | Waiting on S-6.214.02 |
+| 37 | [ ] S-6.214.06: Run a hundred-source collection pilot | proposed | live_qualified | Waiting on S-6.214.03, S-6.214.04, S-6.214.05 |
+| 38 | [ ] S-6.214.15: Watch and qualify open creative-tool alternatives and automation interfaces | building | live_qualified | Extend the existing bounded daily source watch and qualify a representative edit/revision/export task for selected candidates. |
+| 39 | [ ] S-6.214.07: Expand to one thousand qualified sources | proposed | live_qualified | Waiting on S-6.214.06 |
+| 40 | [ ] S-6.214.09: Produce useful source-backed feeds | ready | live_qualified | Waiting on S-6.214.06 |
+| 41 | [x] S-6.214.12: Let customers build a distinct reading profile for each agent | live_qualified | live_qualified | Preserve exact per-agent export behavior while implementing saved assignments and maintained delivery through their separate owning subtasks. |
+| 42 | [ ] S-6.214.10: Save customer feed preferences per agent | proposed | live_qualified | Waiting on S-6.214.09 |
+| 43 | [ ] S-6.214.11: Deliver and measure personalized feeds | proposed | live_qualified | Waiting on S-6.214.10 |
+| 44 | [ ] S-6.214.14: Show top feeds and components with distinct popularity and agent-use rankings | proposed | live_qualified | Waiting on S-6.214.09, S-6.214.11 |
+| 45 | [ ] S-6.207.01: Complete the approved SMB metadata inventory | building | offline_verified | Continue bounded project-root discovery on the newly approved share; preserve the previous inventory queue and resolve its measured storage allocation before resuming that scan. |
+| 46 | [x] S-6.207.02: Extract the priority RapidAPI coding session | offline_verified | offline_verified | Use the exact chunks for substantive review and missing-artifact recovery. |
+| 47 | [ ] S-6.207.03: Recover the missing registry artifacts | ready | offline_verified | Start with the two missing native databases and the missing discovery module. |
+| 48 | [ ] S-6.207.04: Perform source-specific question reviews | building | offline_verified | Continue focused history and selected network-share project review; turn verified gaps into owning tests or bounded component adaptations without executing the source project. |
+| 49 | [ ] S-6.207.05: Convert approved findings into original candidates | proposed | offline_verified | Waiting on S-6.207.04 |
+| 50 | [ ] S-6.218.01: Specify the hosted live-tool boundary | ready | offline_verified | Draft the narrow first hosted-tool contract and adversarial cases. |
+| 51 | [ ] S-6.218.02: Qualify providers for customer-facing use | ready | offline_verified | Waiting on S-6.218.01 |
+| 52 | [ ] S-6.218.03: Build tenant-bound credential leases | proposed | offline_verified | Waiting on S-6.218.01 |
+| 53 | [ ] S-6.218.04: Add per-tenant budgets and upstream quota reservations | proposed | offline_verified | Waiting on S-6.218.02, S-6.218.03 |
+| 54 | [ ] S-6.218.05: Implement scoped live invocation | proposed | offline_verified | Waiting on S-6.218.04 |
+| 55 | [ ] S-6.218.06: Expose discovery and invocation through MCP and API | proposed | offline_verified | Waiting on S-6.218.05 |
+| 56 | [ ] S-6.218.07: Verify customer isolation and abuse controls | proposed | live_qualified | Waiting on S-6.218.06 |
+| 57 | [ ] S-6.218.08: Reconcile top-tier entitlements and pricing | proposed | live_qualified | Waiting on S-6.218.07 |
+| 58 | [ ] S-6.218.09: Launch and monitor the qualified hosted-tool pilot | proposed | published | Waiting on S-6.218.08 |
+| 59 | [ ] S-6.218.10: Evaluate a dedicated persistent desktop offering | proposed | live_qualified | Waiting on S-6.218.01, S-6.218.03, S-6.218.04, S-6.218.07 |
+| 60 | [ ] S-6.13.01: Qualify authenticated R2 file delivery | ready | live_qualified | Prepare a bounded delivery canary; keep Fly delivery until it passes. |
+| 61 | [ ] S-6.13.02: Place bounded collectors and durable jobs on Cloudflare | proposed | live_qualified | Waiting on S-6.214.06 |
+| 62 | [ ] S-6.13.03: Evaluate the customer authentication boundary | ready | offline_verified | Document the migration evidence needed and cost; do not replace login solely because DNS uses Cloudflare. |
+| 63 | [ ] S-6.12.01: Add private-by-default customer submissions | ready | live_qualified | Implement a narrow customer upload flow before adding a public contribution CTA. |
+| 64 | [ ] S-6.12.02: Add sharing and public-library submission controls | proposed | live_qualified | Waiting on S-6.12.01 |
+| 65 | [ ] S-6.12.03: Reconcile the three offering cards and new-signup prices | building | live_qualified | Review and deploy compatible billing readers before an additive new-signup price migration; qualify the hosted upper tier before sale. |
+| 66 | [ ] S-6.201.01: Recover the authorized TensorArt asset history | blocked | offline_verified | Resolve the missing target-account access without forwarding cookies to third parties. |
+| 67 | [ ] S-6.102.01: Package and test the ChatGPT and Codex plugin | building | offline_verified | Release the integration, then run tools/check_chatgpt_app_live.py with --expect-presentation and --screens as a fresh account, confirm the authorization server metadata advertises authorization_response_iss_parameter_supported, and keep the report with the release record. The remaining steps for each directory and client are in docs/guides/chatgpt-app.md. |
+| 68 | [ ] S-6.102.02: Complete plugin review and release prerequisites | proposed | published | Waiting on S-6.102.01 |
+| 69 | [ ] S-6.204.01: Measure onboarding and product use | ready | live_qualified | Use measured activation and usefulness to guide the next batch and marketing. |
+| 70 | [ ] S-6.204.02: Prepare launch, funding and startup-credit material | ready | offline_verified | Prioritize the infrastructure already used and the next customer proof. |
+| 71 | [ ] S-6.216.01: Expand useful SDG and competition-derived materials | ready | published | Choose unmet SDG jobs from measured coverage rather than multiplying labels. |
+| 72 | [ ] S-6.67.01: Review the complete public page and design surface | ready | live_qualified | Run the owning browser checks for each visible release and verify the live result. |
+| 73 | [ ] S-6.35.02: Publish a progress checkpoint after every completed subtask | building | offline_verified | Complete the first canonical subtask checklist and then advance it one result at a time. |
+| 74 | [x] S-6.217.01: Reconcile recent prompts and action history | offline_verified | offline_verified | Carry the reviewed Antigravity and pasted-research obligations into their existing owners. Public redirects and systems evidence/access belong to S-6.35.10 and S-6.35.11; maintained feeds to S-6.214, task execution to S-6.24, media proofs to S-6.201 and useful supply to S-6.215.13. |
+| 75 | [ ] S-6.215.14: Reach two million useful served files | proposed | published | Waiting on S-6.215.13 |
+| 76 | [ ] S-6.214.08: Reach ten thousand active qualified sources | proposed | live_qualified | Waiting on S-6.214.07 |
+| 77 | [ ] S-6.35.08: Launch AgentStudios as the independent creative offering | building | live_qualified | Qualify an actual creative retrieval, edit and clean reopen journey, and resolve the retained /connect innerText selector and CDP stream-accounting instrumentation limits. Do not replay completed provider operations. |
 
 ## Subtask procedures and evidence
+
+### S-6.35.10 Redirect public website aliases without changing client origins
+
+Owner step: S-6.35. State: building. Completion requires: live_qualified.
+
+Acceptance: Eligible credential-free public website GET and HEAD requests returning HTML on each declared www host redirect once to the same brand's apex while preserving the path and query. Excluded protocol, OAuth, account and stateful routes retain their existing origin and behavior; browser storage migration and complete signed-in public-navigation continuity are not claimed.
+
+1. Use only admitted www/apex pairs and successfully rendered public HTML; exclude non-GET/HEAD methods, Authorization, Proxy-Authorization, Cookie or Origin headers, decoded credential or callback query names and responses that set cookies.
+2. Refuse redirection for API, MCP, OAuth, authentication, discovery, assets, tracked links, internal edge routes and app, account, admin, login, signup, get-started, saved, build, plan, run-desk, authorize, token, register or revoke paths and descendants.
+3. Exercise real HTTP and the actual edge Worker with known-wrong controls for header leakage, open redirects, path/query changes and altered issuer, resource or callback handling; require no-store and Vary for Authorization, Cookie, Proxy-Authorization and Origin.
+4. Run owning brand, authentication and static-site checks on the exact candidate; retain failures and skipped checks.
+5. After exact CI and the guarded release, verify eligible redirects and excluded traffic across all affected hosts; preserve the previous image, edge export and configuration for rollback.
+
+Evidence: October 15 read-only takeover checks found the six www product hosts serving HTTP 200 without Location. Implementation is assigned to a separate detached worktree; no passing release result is claimed here.
+
+Next: Integrate the separately owned redirect repair after its HTTP, edge Worker and existing-boundary checks pass.
+
+Comment: A blanket canonical redirect would change established client and account origins. HTTP cannot observe browser sessionStorage, localStorage or URL fragments; redirecting public-home navigation leaves www storage untouched and the apex may appear signed out. Limit this repair to public presentation; do not replay completed domain or deployment operators.
+
+### S-6.35.11 Bind the systems portal to evidence and staff access
+
+Owner step: S-6.35. State: ready. Completion requires: live_qualified.
+
+Acceptance: The internal systems portal enforces the existing staff-access boundary and labels every capability or result by exact source revision, environment, attempt and evidence state. Local simulations, estimates, pending reviews and skipped checks are never presented as completed production verification.
+
+1. Reconcile the deployed portal, edge export, source files and release configuration without replaying prior provider effects; preserve every source and failed attempt.
+2. Map each route and displayed field to existing service, staff identity, managed-record and roadmap owners; remove duplicate status ownership.
+3. Enforce staff authorization on protected HTML, JSON and assets at origin and edge, with private cache behavior and crawler exclusion; noindex alone is insufficient.
+4. Test anonymous and wrong-role requests, forged access headers, cross-tenant data, edge bypass, cached private content, unavailable evidence and falsely successful fixtures.
+5. Generate capability and task views from canonical records, keeping intended behavior, local checks, real dispatch, live qualification and measured customer outcomes distinct.
+6. Release the exact checked candidate and repeat access, evidence, desktop/phone and existing-host checks live; preserve rollback and all incomplete scope.
+
+Evidence: October 15 history review found useful Antigravity portal designs and local checks alongside simulated metrics and unqualified live claims. The original internal-portal assignment requires staff access in addition to crawler exclusion. Current implementation and live access still need qualification.
+
+Next: Identify the current portal's exact export and source, then implement its staff-access and evidence projections through the existing owners.
+
+Comment: Protect the internal reference and make its claims reviewable before adding more dashboard surfaces. This is neither a new backend nor another task database.
+
+### S-6.24.02 Verify OpenCode and another harness against live Baltor
+
+Owner step: S-6.24. State: ready. Completion requires: live_qualified.
+
+Acceptance: Ordinary customer connections retrieve exact material and complete a task in supported native harnesses.
+
+1. Use a non-admin customer account and a clean setup.
+2. Run discovery, selection, download and actual use.
+3. Capture errors, denied operations, revisions, complete costs and cleanup.
+
+Evidence: Not yet recorded.
+
+Next: Run the customer path on this PC without borrowing administrator access.
+
+Comment: A successful metadata request is not a completed harness task.
+
+### S-6.24.01 Prove one bounded overnight customer task
+
+Owner step: S-6.24. State: ready. Completion requires: live_qualified.
+
+Acceptance: A supported customer harness receives an authorized task through the existing queue, executes useful work in a separate worker process and returns exact artifacts with independent acceptance, checkpoints and complete usage accounting.
+
+1. Select a frozen useful task and a no-extra-material baseline; identify the canonical scheduler, executor, history and acceptance owners.
+2. Exercise a real claim, dispatch, execution and result return with the task's declared file, network and model authority; never replace a failed dispatch with a snapshot result.
+3. Use an authorized provider route only with a verified allowance and explicit ceiling; keep deterministic work eligible when no model call is needed.
+4. Test duplicate claims, stale fencing, worker loss, interruption, cancellation, tampered bundles and denied effects; preserve every attempt and reconcile unknown outcomes before retry.
+5. Read the resulting artifacts and morning report as the ordinary customer, including failed and unfinished work.
+
+Evidence: Not yet recorded.
+
+Next: Connect one useful deterministic task to a separate supported worker through the existing queue and history; preserve provider holds and earlier token ceilings.
+
+Comment: October 15 priority: prove an actual worker path before expanding snapshot demonstrations or learned routing. Local Preview tooling, hosted supervision and measured task benefit remain separate.
+
+### S-6.24.03 Build an adaptive AgentAFK task queue with dependencies and outcome feedback
+
+Owner step: S-6.24. State: building. Completion requires: live_qualified.
+
+Acceptance: A customer inspects and customizes source-linked task graphs, dependencies, priority reasons and holds, then admits only authorized ready work. A versioned adaptive ranking engine is qualified against fixed rules and simple ordering on held-out outcomes, with shadow evaluation, reversible selection and no permission expansion.
+
+1. Reuse CommunityStore, RecordOperationService, the research-work compiler, solution-graph contracts and reactive scheduler; do not create another task registry or runtime.
+2. Keep raw evidence, inferred task, dependency readiness, ranking, admission and execution as separate states with exact source and graph revisions.
+3. Respect duplicates, dismissed and superseded work, missing task evidence, failed sources, deadlines, resource pools, dependency failures and remaining budgets; detect cycles in prerequisite graphs and represent bounded iterative work within the existing Loop contract.
+4. Record checked outcomes, elapsed time, usage, failures, intervention and customer preferences as scoped feedback; keep tenant data isolated and priority contributions explainable.
+5. Compare selectable ranking engines with fixed rules, first-in-first-out ordering and the ordinary model/harness workflow on held-out cases; shadow a learned challenger before bounded promotion and preserve the deterministic fallback.
+6. Connect admitted task files to the bounded overnight queue only under explicit execution authority; retain every failed or unknown attempt and reconcile before replay.
+
+Evidence: October 13 owner direction places Queue within AgentAFK. Existing source intake, managed records, priority aging and unapproved work compilation were inspected. A reproduced defect reopened dismissed work after compiler or source changes; the repair preserves dismissal and cancels stale admitted work. 140 related tests and three removed-guard controls passed in the isolated worktree; customer queue delivery and comparative prioritization remain unqualified.
+
+Next: Map the reviewed Antigravity queue and worker candidates to existing task, scheduler, execution and history contracts. Connect the rules-based baseline to S-6.24.01, expose priority and hold reasons, and collect real outcomes before promoting learned ranking.
+
+Comment: The owner's later October 13 direction requests a customized self-learning system like Airflow for agents, with prioritization, dependencies and graph-based tasks. Current keyword scoring and manifest order remain baselines, not measured task value or an adaptive customer service. Feeds supplies evidence; AgentFoundry supplies components; AgentAFK owns task intake, ordering and execution. No token-savings benchmark gates this delivery.
+
+### S-6.35.09 Qualify AgentBriefs executive decision support
+
+Owner step: S-6.35. State: building. Completion requires: live_qualified.
+
+Acceptance: An authorized company can supply versioned private context, receive a source-backed decision brief or separately approved experimental-fit brief above its configured evidence threshold, inspect all attempts and connect a later decision and realized outcome through existing managed records. Brand, tenant, model access and effect authority remain separate; domain and deployment claims require independent verification.
+
+1. Record the owner's October 15 confirmation that agentbriefs.si is purchased; reconcile registrar control, existing DNS, certificates and rollback before a provider transition.
+2. Map company profiles, research, opportunity assessment, evidence briefs, notifications and Decision Memory to existing managed records, AgentFeeds, typed decisions, task history, sandbox and delivery owners; use typed versioned edges and swappable engines.
+3. Qualify one company profile and one decision family, with read-only source access, tenant isolation, source provenance and explicit privacy and retention scope.
+4. Test relevance, evidence floor, materiality, freshness and attention limits separately; preserve suppressed candidates and report operational failures independently of opportunity alerts.
+5. Run optional proof experiments only under separately approved data, credentials, baseline, environment, cost and time bounds; no production writes, purchases or deployment permission is inferred.
+6. Require known-wrong controls for unsupported alerts, stale evidence, duplicate notifications, cross-tenant access and estimates presented as realized savings; retain failed experiments and later corrections.
+7. Evaluate proposed $299/$799 monthly company pilot prices as demand and cost hypotheses, with separately scoped experiments and no change to existing offers.
+8. Keep application sign-in separate from inference permission; seek required program approval before offering hosted ChatGPT plan usage, retain supported customer API access and account separately for ingestion, storage, scheduling and sandbox costs.
+
+Evidence: October 13 owner selects AgentBriefs and agentbriefs.si, describing company context, research, opportunity scoring, proof experiments, executive briefs, thresholds and Decision Memory including realized outcomes. The later request requires all websites to have frontends and backend integration plans, with APIs, external services, connections, deployment and secret-management handoff documentation for Gemini. The local-only review frontend in design/prototypes/agentbriefs/ passed124/124 producer browser checks,53/53 independent browser checks (after repairing3 long-string overflow cases caught in the initial50/53 independent run) and zero new high hardcoding findings, with zero outbound network requests. Production domain ownership and launch remain unverified. Official OpenAI documentation distinguishes optional eligible plan usage from identity and requires a program path for paid or remotely hosted apps; no AgentBriefs eligibility is established.
+
+Next: Reconcile the purchased domain's registrar and DNS state, then qualify one complete company-context-to-decision proof behind the reviewed prototype. Do not accept private uploads, signups or payments through an unwired interface.
+
+Comment: The owner confirms purchase on October 15; the October 13 unverified-ownership statement above is retained as dated evidence. Registrar control and launch are not inferred. Proposed decision support does not include production solution development. Baltor remains a separate offering rather than a mandatory umbrella; shared backend ownership permits no cross-brand or cross-tenant private data access. No continuous-feed scale, production-savings or current pricing claim is made.
+
+### S-6.201.02 Complete one editable creative project and revision
+
+Owner step: S-6.201. State: ready. Completion requires: offline_verified.
+
+Acceptance: An attractive finished project serves a declared audience and purpose, survives a meaningful revision and reopens cleanly in a supported environment with its editable source and required assets.
+
+1. Choose one scoped brief with audience, purpose, duration, format and measurable acceptance; define which presentation choices may vary by audience.
+2. Read completed handoffs from the separately owned social_videos work before selecting an engine; preserve active Astra/Codex files and reuse qualified native tools with exact versions and rights.
+3. Produce the finished project and an audience-specific revision that changes useful content, pacing or detail rather than only relabeling the same output.
+4. Check actual frames, transitions, the ending, text layout and sound; keep technical checks, visual review, listening and user acceptance distinct, with skipped or pending checks incomplete.
+5. Reopen the edited source in a clean supported environment; preserve every attempt, failure, intervention and artifact.
+
+Evidence: Not yet recorded.
+
+Next: Select one completed media handoff, freeze the audience and revision brief, and qualify the real renderer and editable project before expanding templates.
+
+Comment: Formats, asset counts and native loading do not establish a useful creative result.
+
+### S-6.201.03 Produce a rights-cleared product demonstration
+
+Owner step: S-6.201. State: proposed. Completion requires: published.
+
+Acceptance: Marketing visuals show the actual supported workflow and do not imply an unmeasured benefit.
+
+1. Create a reproducible screen recording or real-engine render from the accepted project and name the actual toolchain.
+2. Adapt the demonstration to its audience and destination while retaining exact capability and evidence limits; mark emulated scenes as illustrative.
+3. Run any with/without comparison under matched conditions and retain the no-extra-material baseline.
+4. Decode the full clip and run technical checks; inspect transition and ending samples, captions, claims, phone layout and media rights. State the visual and listening review scope; unresolved required review cannot pass publication.
+5. Publish only through the existing authorized product-demo path; this task grants no social-account posting or advertising spend.
+
+Evidence: Not yet recorded.
+
+Next: Use the accepted creative proof, its audience brief and recorded customer outcomes; preserve the separate social_videos owner's work.
+
+Comment: Preview clips are labelled as previews; no fabricated before/after result.
+
+### S-6.201.04 Create and revise media from a fresh Kaggle harness through Baltor
+
+Owner step: S-6.201. State: building. Completion requires: live_qualified.
+
+Acceptance: A fresh supported Kaggle instance running OpenCode or another qualified harness authenticates, retrieves exact media components and assets, produces a useful editable result, makes a meaningful revision and reopens it cleanly.
+
+1. Preserve active OpenCode and Codex work; inventory completed source, prompts, templates, images, videos, generators, audio and verification evidence privately.
+2. Map reusable material to the existing catalogue, code-asset, engine-slot and harness boundaries, with exact dependencies, provenance, rights and account scope.
+3. Select a small complete project and prepare an environment profile with explicit CPU/GPU, runtime, renderer, network, model access and storage requirements.
+4. Use an ordinary authenticated account to retrieve the necessary files into a fresh Kaggle instance with OpenCode or another supported harness; verify bytes and setup without importing workstation caches or credentials.
+5. Generate the media, revise timing/text/assets or aspect ratio, and reopen it in a clean supported environment; record outputs, model usage, time, interventions and failures.
+6. Check missing dependencies, wrong file digests, unavailable tools and insufficient authority; separate technical decode, visual inspection, listening and user acceptance.
+
+Evidence: October 13 owner requests all existing media prompts, assets, tools, templates and image/video generation work through Baltor and AgentFoundry, including media feeds and harness component files. The intended customer uses a Kaggle instance with OpenCode or another authenticated harness. A screenshot shows another session's local media/source/QA outputs, but this session has not yet reproduced the Kaggle workflow or admitted that collection.
+
+Next: Read the completed social_videos integration handoff and choose one audience-specific editable project for ordinary-account retrieval, revision and clean reopen in a fresh supported Kaggle harness. Coordinate parallel producers and preserve their active files.
+
+Comment: The domain remains getagentfoundry.si. A separate brand, local render or library download does not establish portable execution, public reuse rights or hosted AFK availability.
+
+### S-6.32.01 Compare equivalent search engines across process boundaries
+
+Owner step: S-6.32. State: ready. Completion requires: offline_verified.
+
+Acceptance: The existing in-process search engine, the same engine in a persistent process and a Rust candidate are compared on the same immutable index, held-out queries, filters, semantics and resource limits, with correctness, relevance, latency, memory, failures and total cost reported separately.
+
+1. Freeze the index, query population, relevance floor, no-answer cases and exact implementation identities before tuning.
+2. Use the existing typed search edge and recorded engine declarations; preserve the current engine and rollback.
+3. Measure cold startup, warm execution, serialization, transfer, p50/p95/p99 latency and working memory; retain all failed, timed-out, excluded and incomplete attempts.
+4. Use wrong-file, wrong-format, stale, no-match, access-boundary and forced engine-failure controls; no-op binaries and synthetic timings cannot establish a speedup.
+5. Record qualification for each engine without changing production selection; S-6.52 owns subsequent retrieval-engine expansion.
+
+Evidence: October 15 review found local and simulated Antigravity comparisons, not a completed matched production-search benchmark. The existing frontend/backend integration map already requires this three-way comparison.
+
+Next: Prepare one immutable catalogue sample and held-out query set, then run the three implementations through the same comparison harness.
+
+Comment: Measure before promoting a Rust engine or claiming savings. This comparison does not block unrelated website or customer fixes.
 
 ### S-6.35.03 Integrate the new design and interrupted fixes into the live website
 
@@ -470,15 +657,17 @@ Owner step: S-6.215. State: building. Completion requires: offline_verified.
 
 Acceptance: A frozen production plan measures candidate yield, accepted yield, time, storage and cost across several useful file families.
 
-1. Measure the completed batch rather than extrapolating from file placements.
-2. Select licensed data tables, executable utilities, harness templates and editable creative materials.
-3. Reuse unchanged implementations and allocate bounded cohorts with explicit stops.
+1. Measure the completed batch rather than extrapolating from file placements; keep candidate, qualified, admitted, served and useful-execution counts separate.
+2. Select licensed data tables, executable string/entity/synonym utilities, logic packs, harness components and editable creative material by distinct source job.
+3. Reuse unchanged implementations, preserve prior exclusions and allocate bounded cohorts with explicit stops; read completed media handoffs and leave active social_videos files with their owner.
+4. Test useful behavior, malformed inputs and known-wrong results under the existing qualification and sandbox owners; a changed filename, language or parameter does not establish another capability.
+5. Record all attempts, held items, costs and customer-use limits; admission and live publication remain separate operations.
 
 Evidence: October 11 root integrated all thirteen retained supply commits plus the licence/redirect/concurrent-journal repair. The completed 392-shard campaign is exhausted; 5,389 unprocessed API atoms are a research frontier, not qualified cases or a file forecast, and five uncertain boundary atoms remain held. An opt-in clean-spawn verifier passes 111 owning tests, eleven removed-guard controls and 32 conformance gates. Nine final-code sample runs over 46,538 files and 224,074,942 bytes give serial/four/eight-worker medians 6.133/3.863/3.896 seconds; aggregate CPU rises to 15.321/26.674 seconds for the parallel choices. Only baseline/update body verification selects workers; publisher and other phases stay serial. The full four-process qualification completed on October 11 at 21:49:56 UTC with unchanged inputs and exact serial result parity: 1,560,856 base bodies verified and 341,902 new bodies, yielding a private candidate with 1,902,758 distinct files. No publication occurred. Different cache and concurrent load prevent a controlled full-run speed comparison; new production yield remains unmeasured.
 
-Next: Preserve the completed four-process qualification; do not replay it. Design bounded metadata streaming before larger catalogue growth. The residual API-atom pilot needs a new-run range selector and preserved exclusions before dispatch.
+Next: Preserve the completed four-process qualification without replay. When priority integration waits, select one bounded useful string, logic or component cohort; retain exclusions and return to the priority task when it can proceed. Design bounded metadata streaming before larger growth. The residual API-atom pilot needs a new-run range selector and preserved exclusions before dispatch.
 
-Comment: Common-word and parameter combinations are research dimensions, not automatically useful files.
+Comment: Fallback supply uses spare capacity within existing owners, not a competing roadmap or automatic publication. Common-word and parameter combinations are research dimensions, not automatically useful files.
 
 ### S-6.214.01 Define canonical source counting
 
@@ -632,13 +821,14 @@ Owner step: S-6.214. State: ready. Completion requires: live_qualified.
 
 Acceptance: Published feed items have original useful content, citations, dates, scope and a supported output format.
 
-1. Separate observations from original synthesis and recommendations.
-2. Generate JSON Feed, RSS and Markdown through the same owning record.
-3. Check rights, freshness, duplicates, broken references and unsupported claims before publication.
+1. Separate source observations, original synthesis and recommendations; retain dates, source failures, corrections and uncertainty.
+2. Generate JSON Feed, RSS and Markdown through the same owning record; format variants share one item identity.
+3. Check rights, freshness, duplicate sources, broken references and unsupported claims; simulated verification counts or editorial scores cannot become measured usefulness.
+4. Test a stale item, a contradictory source and a collection failure, preserving withheld items and every attempt before publication.
 
 Evidence: Not yet recorded.
 
-Next: Qualify a small number of topic feeds before multiplying them.
+Next: Qualify a bounded useful topic cohort through the existing source pilot. This can use spare capacity while priority integration waits, without starting another collector schedule.
 
 Comment: A list of URLs is not automatically a decision brief.
 
@@ -711,19 +901,21 @@ Comment: Popularity is not a quality score or permission to adopt a tool. An abs
 
 ### S-6.207.01 Complete the approved SMB metadata inventory
 
-Owner step: S-6.207. State: blocked. Completion requires: offline_verified.
+Owner step: S-6.207. State: building. Completion requires: offline_verified.
 
-Acceptance: Every approved path is inventoried or has an explicit inaccessible, deferred or excluded reason.
+Acceptance: Every approved path is inventoried or has an explicit inaccessible, deferred or excluded reason. Selected project roots have private provenance, ownership, revision, dirty-state and duplicate/dependency findings without source mutation or execution.
 
-1. Resume the read-only checkpoint without rescanning completed directories unnecessarily.
-2. Bound metadata output and preserve the workstation's disk reserve.
-3. Prioritize histories and project material ahead of caches and dependencies.
+1. Resume the read-only checkpoint without rescanning completed directories unnecessarily; keep the earlier disk-floor hold on its pending queue until storage is resolved.
+2. Use bounded metadata-first discovery for the newly approved network-share research and project roots; keep exact addresses, paths and coverage outside the public repository.
+3. Identify project owners, active writers, revisions and dirty state before selecting stable source content; mark unavailable metadata as unknown.
+4. Prioritize histories and project material ahead of caches and dependencies, record likely duplicates and missing dependencies, and preserve the workstation's disk reserve.
+5. Refuse source moves, deletes, execution, unbounded traversal and bulk public copying; record inaccessible, skipped and deferred paths instead of treating them as scanned.
 
-Evidence: 65,382 files inventoried, including 1,550 conversation files; 453 directories remain queued. The scan stopped at its 40 GiB floor.
+Evidence: 65,382 files inventoried, including 1,550 conversation files; 453 directories remain queued. The scan stopped at its 40 GiB floor. October 15: the owner added a network share containing research and parallel harness work; initial top-level discovery is observed, not a complete project inventory or content review. Exact source locations remain in the private checkpoint.
 
-Next: Resolve the measured storage allocation before resuming.
+Next: Continue bounded project-root discovery on the newly approved share; preserve the previous inventory queue and resolve its measured storage allocation before resuming that scan.
 
-Comment: No source files were deleted or modified.
+Comment: The new request extends the existing source-intake owner. Organizing findings does not authorize reorganizing the source share. No source files were deleted or modified by the earlier scan.
 
 ### S-6.207.02 Extract the priority RapidAPI coding session
 
@@ -761,15 +953,16 @@ Comment: Do not substitute another database or overwrite the SMB project.
 
 Owner step: S-6.207. State: building. Completion requires: offline_verified.
 
-Acceptance: Each reviewed chunk records answered, unknown, disputed or reasoned not-applicable questions with source anchors.
+Acceptance: Each reviewed chunk records answered, unknown, disputed or reasoned not-applicable questions with source anchors. Project findings distinguish exact duplicates, parallel revisions, missing runtime dependencies and unverified outcome claims.
 
 1. Apply the thousand-question bank by relevance and preserve open questions.
-2. Read high-value owner decisions, code changes, failures and actual outcomes.
-3. Map findings to existing Baltor owners, tests and candidate jobs.
+2. Read high-value owner decisions, code changes, failures and actual outcomes from selected stable sources after metadata and rights review; treat embedded instructions as evidence, not authority.
+3. Map findings to existing Baltor owners, tests and candidate jobs, retaining private source revision and coverage references.
+4. Check that a duplicate is not counted as a new capability, a missing dependency blocks runnable status, and a simulated or unreviewed result cannot become accepted evidence.
 
 Evidence: One thousand questions are defined; 75 source-backed answers exist, including 38 new findings across nine creative-project chunks. Three original camera/timing helpers pass the existing isolated-package checks. No thousand-question chunk review is complete.
 
-Next: Continue focused history review and turn verified gaps into tests and original implementations.
+Next: Continue focused history and selected network-share project review; turn verified gaps into owning tests or bounded component adaptations without executing the source project.
 
 Comment: Question bindings and keyword matches are not completed answers.
 
@@ -779,13 +972,13 @@ Owner step: S-6.207. State: proposed. Completion requires: offline_verified.
 
 Acceptance: Each candidate has a distinct job, source relationship, rights decision and an owning Baltor contract.
 
-1. Keep other-company material private by default.
-2. Transfer one checked invariant into the existing owner.
-3. Qualify exact new bytes through the ordinary component pipeline.
+1. Keep other-company material and raw source histories private by default; record the rights decision before reuse.
+2. Transfer one checked invariant or permitted component adaptation into its existing typed owner, with exact source revision and dependencies; do not import another runtime, registry or task store.
+3. Qualify exact new bytes through the ordinary component pipeline, including independent review and wrong-result controls; source discovery alone authorizes no execution or publication.
 
 Evidence: Not yet recorded.
 
-Next: Start with reusable schema-evidence and recovery invariants.
+Next: Start with reusable schema-evidence and recovery invariants, then select a source-backed harness component from the approved share that fills a verified gap.
 
 Comment: No raw other-company code or history is automatically published.
 
@@ -1046,57 +1239,6 @@ Next: Review and deploy compatible billing readers before an additive new-signup
 
 Comment: Earlier $14.99 Feeds design remains historical; no existing paid rate or free grant is changed by this checklist.
 
-### S-6.24.01 Prove one bounded overnight customer task
-
-Owner step: S-6.24. State: ready. Completion requires: live_qualified.
-
-Acceptance: A supported customer harness completes useful work with checkpoints, declared model access and complete usage accounting.
-
-1. Select a frozen task and a no-extra-material baseline.
-2. Use an authorized provider route with a verified allowance and explicit ceiling.
-3. Test interruption, unknown outcomes, cancellation and the morning report.
-
-Evidence: Not yet recorded.
-
-Next: Retain current provider holds; do not reset the earlier token ceiling.
-
-Comment: Local Preview tooling is available; hosted supervision and measured task benefit are separate.
-
-### S-6.24.02 Verify OpenCode and another harness against live Baltor
-
-Owner step: S-6.24. State: ready. Completion requires: live_qualified.
-
-Acceptance: Ordinary customer connections retrieve exact material and complete a task in supported native harnesses.
-
-1. Use a non-admin customer account and a clean setup.
-2. Run discovery, selection, download and actual use.
-3. Capture errors, denied operations, revisions, complete costs and cleanup.
-
-Evidence: Not yet recorded.
-
-Next: Run the customer path on this PC without borrowing administrator access.
-
-Comment: A successful metadata request is not a completed harness task.
-
-### S-6.24.03 Build an adaptive AgentAFK task queue with dependencies and outcome feedback
-
-Owner step: S-6.24. State: building. Completion requires: live_qualified.
-
-Acceptance: A customer inspects and customizes source-linked task graphs, dependencies, priority reasons and holds, then admits only authorized ready work. A versioned adaptive ranking engine is qualified against fixed rules and simple ordering on held-out outcomes, with shadow evaluation, reversible selection and no permission expansion.
-
-1. Reuse CommunityStore, RecordOperationService, the research-work compiler, solution-graph contracts and reactive scheduler; do not create another task registry or runtime.
-2. Keep raw evidence, inferred task, dependency readiness, ranking, admission and execution as separate states with exact source and graph revisions.
-3. Respect duplicates, dismissed and superseded work, missing task evidence, failed sources, deadlines, resource pools, dependency failures and remaining budgets; detect cycles in prerequisite graphs and represent bounded iterative work within the existing Loop contract.
-4. Record checked outcomes, elapsed time, usage, failures, intervention and customer preferences as scoped feedback; keep tenant data isolated and priority contributions explainable.
-5. Compare selectable ranking engines with fixed rules, first-in-first-out ordering and the ordinary model/harness workflow on held-out cases; shadow a learned challenger before bounded promotion and preserve the deterministic fallback.
-6. Connect admitted task files to the bounded overnight queue only under explicit execution authority; retain every failed or unknown attempt and reconcile before replay.
-
-Evidence: October 13 owner direction places Queue within AgentAFK. Existing source intake, managed records, priority aging and unapproved work compilation were inspected. A reproduced defect reopened dismissed work after compiler or source changes; the repair preserves dismissal and cancels stale admitted work. 140 related tests and three removed-guard controls passed in the isolated worktree; customer queue delivery and comparative prioritization remain unqualified.
-
-Next: Expose a passive inspectable task graph and rules-based queue with priority contributions and hold reasons, then qualify customer admission and collect outcome feedback before promoting learned ranking.
-
-Comment: The owner's later October 13 direction requests a customized self-learning system like Airflow for agents, with prioritization, dependencies and graph-based tasks. Current keyword scoring and manifest order remain baselines, not measured task value or an adaptive customer service. Feeds supplies evidence; AgentFoundry supplies components; AgentAFK owns task intake, ordering and execution. No token-savings benchmark gates this delivery.
-
 ### S-6.201.01 Recover the authorized TensorArt asset history
 
 Owner step: S-6.201. State: blocked. Completion requires: offline_verified.
@@ -1112,57 +1254,6 @@ Evidence: The supplied key is stored. Browser connector access is unavailable; i
 Next: Resolve the missing target-account access without forwarding cookies to third parties.
 
 Comment: No images or account history have been claimed downloaded.
-
-### S-6.201.02 Complete one editable creative project and revision
-
-Owner step: S-6.201. State: ready. Completion requires: offline_verified.
-
-Acceptance: An attractive finished project survives a meaningful revision and clean reopen in a supported environment.
-
-1. Choose one scoped scene, motion or interactive brief with measurable acceptance.
-2. Reuse qualified native tools and record exact assets, versions and rights.
-3. Render, revise and reopen; preserve failed attempts and source files.
-
-Evidence: Not yet recorded.
-
-Next: Select a small end-to-end creative proof rather than expanding untested templates.
-
-Comment: Formats, asset counts and native loading do not establish a useful creative result.
-
-### S-6.201.03 Produce a rights-cleared product demonstration
-
-Owner step: S-6.201. State: proposed. Completion requires: published.
-
-Acceptance: Marketing visuals show the actual supported workflow and do not imply an unmeasured benefit.
-
-1. Create a reproducible screen recording or render from the accepted project.
-2. Run any with/without comparison under matched conditions.
-3. Check captions, claims, phone layout, sound and media rights before publishing.
-
-Evidence: Not yet recorded.
-
-Next: Use the accepted creative proof and recorded customer outcomes.
-
-Comment: Preview clips are labelled as previews; no fabricated before/after result.
-
-### S-6.201.04 Create and revise media from a fresh Kaggle harness through Baltor
-
-Owner step: S-6.201. State: building. Completion requires: live_qualified.
-
-Acceptance: A fresh supported Kaggle instance running OpenCode or another qualified harness authenticates, retrieves exact media components and assets, produces a useful editable result, makes a meaningful revision and reopens it cleanly.
-
-1. Preserve active OpenCode and Codex work; inventory completed source, prompts, templates, images, videos, generators, audio and verification evidence privately.
-2. Map reusable material to the existing catalogue, code-asset, engine-slot and harness boundaries, with exact dependencies, provenance, rights and account scope.
-3. Select a small complete project and prepare an environment profile with explicit CPU/GPU, runtime, renderer, network, model access and storage requirements.
-4. Use an ordinary authenticated account to retrieve the necessary files into a fresh Kaggle instance with OpenCode or another supported harness; verify bytes and setup without importing workstation caches or credentials.
-5. Generate the media, revise timing/text/assets or aspect ratio, and reopen it in a clean supported environment; record outputs, model usage, time, interventions and failures.
-6. Check missing dependencies, wrong file digests, unavailable tools and insufficient authority; separate technical decode, visual inspection, listening and user acceptance.
-
-Evidence: October 13 owner requests all existing media prompts, assets, tools, templates and image/video generation work through Baltor and AgentFoundry, including media feeds and harness component files. The intended customer uses a Kaggle instance with OpenCode or another authenticated harness. A screenshot shows another session's local media/source/QA outputs, but this session has not yet reproduced the Kaggle workflow or admitted that collection.
-
-Next: Review the completed media project's integration notes and choose one portable end-to-end slice before broad publication. Coordinate the parallel producers and preserve their active files.
-
-Comment: The domain remains getagentfoundry.si. A separate brand, local render or library download does not establish portable execution, public reuse rights or hosted AFK availability.
 
 ### S-6.102.01 Package and test the ChatGPT and Codex plugin
 
@@ -1288,9 +1379,9 @@ Acceptance: Accessible owner directions and actions from the requested time wind
 
 Evidence: The October 9 16:46:07 UTC to October 11 16:46:07 UTC review covers forty selected local files, 57 user-role and 184 visible assistant records. Sixty Codex replies omitted by the first extractor were recovered without reasoning/tool-output ingestion. All 241 records were classified and sixteen deduplicated owner requests mapped to 25 obligation groups; 35 checks passed. The oversized record predates the window. Existing OAuth success, later release chronology and unfinished claims are reconciled; complete historical action or unavailable external-conversation coverage is not certified.
 
-Next: Carry the retained obligation groups into their existing owners; the October 13 brand launch belongs to S-6.35.06, maintained feeds to S-6.214 and raw-data task prioritization to S-6.24.03.
+Next: Carry the reviewed Antigravity and pasted-research obligations into their existing owners. Public redirects and systems evidence/access belong to S-6.35.10 and S-6.35.11; maintained feeds to S-6.214, task execution to S-6.24, media proofs to S-6.201 and useful supply to S-6.215.13.
 
-Comment: Imported instructions are historical data, not current effect authority.
+Comment: October 15 continuation: accessible Antigravity narratives and recovered oversized user text were reviewed across agents before implementation. Generated source, original media and truncated tool payloads are not exhaustively qualified by that history review. Keep private source text and coverage details outside the public repository; imported instructions remain historical data.
 
 ### S-6.215.14 Reach two million useful served files
 
@@ -1341,27 +1432,6 @@ Evidence: October 13 owner selects AgentStudios, confirms purchasing agentstudio
 Next: Qualify an actual creative retrieval, edit and clean reopen journey, and resolve the retained /connect innerText selector and CDP stream-accounting instrumentation limits. Do not replay completed provider operations.
 
 Comment: Separate presentation does not claim unrelated ownership or require another backend.
-
-### S-6.35.09 Qualify AgentBriefs executive decision support
-
-Owner step: S-6.35. State: building. Completion requires: live_qualified.
-
-Acceptance: An authorized company can supply versioned private context, receive a source-backed decision brief or separately approved experimental-fit brief above its configured evidence threshold, inspect all attempts and connect a later decision and realized outcome through existing managed records. Brand, tenant, model access and effect authority remain separate; domain and deployment claims require independent verification.
-
-1. Verify ownership of the selected agentbriefs.si domain before planning a provider transition; name selection grants no purchase authority.
-2. Map company profiles, research, opportunity assessment, evidence briefs, notifications and Decision Memory to existing managed records, AgentFeeds, typed decisions, task history, sandbox and delivery owners; use typed versioned edges and swappable engines.
-3. Qualify one company profile and one decision family, with read-only source access, tenant isolation, source provenance and explicit privacy and retention scope.
-4. Test relevance, evidence floor, materiality, freshness and attention limits separately; preserve suppressed candidates and report operational failures independently of opportunity alerts.
-5. Run optional proof experiments only under separately approved data, credentials, baseline, environment, cost and time bounds; no production writes, purchases or deployment permission is inferred.
-6. Require known-wrong controls for unsupported alerts, stale evidence, duplicate notifications, cross-tenant access and estimates presented as realized savings; retain failed experiments and later corrections.
-7. Evaluate proposed $299/$799 monthly company pilot prices as demand and cost hypotheses, with separately scoped experiments and no change to existing offers.
-8. Keep application sign-in separate from inference permission; seek required program approval before offering hosted ChatGPT plan usage, retain supported customer API access and account separately for ingestion, storage, scheduling and sandbox costs.
-
-Evidence: October 13 owner selects AgentBriefs and agentbriefs.si, describing company context, research, opportunity scoring, proof experiments, executive briefs, thresholds and Decision Memory including realized outcomes. The later request requires all websites to have frontends and backend integration plans, with APIs, external services, connections, deployment and secret-management handoff documentation for Gemini. The local-only review frontend in design/prototypes/agentbriefs/ passed124/124 producer browser checks,53/53 independent browser checks (after repairing3 long-string overflow cases caught in the initial50/53 independent run) and zero new high hardcoding findings, with zero outbound network requests. Production domain ownership and launch remain unverified. Official OpenAI documentation distinguishes optional eligible plan usage from identity and requires a program path for paid or remotely hosted apps; no AgentBriefs eligibility is established.
-
-Next: Define and qualify one complete company-context-to-decision proof and its contracts behind the reviewed local-only AgentBriefs prototype. Verify domain ownership separately before any provider transition; do not accept private uploads, signups or payments through the prototype.
-
-Comment: Proposed decision support, not production solution development. Baltor remains a separate offering rather than a mandatory umbrella; shared backend ownership does not permit cross-brand or cross-tenant private data access. No continuous-feed scale, production-savings or current pricing claim is made.
 
 ## Recorded work in progress
 

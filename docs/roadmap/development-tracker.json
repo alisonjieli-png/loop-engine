@@ -8,6 +8,230 @@
  },
  "execution": [
   {
+   "acceptance": "Eligible credential-free public website GET and HEAD requests returning HTML on each declared www host redirect once to the same brand's apex while preserving the path and query. Excluded protocol, OAuth, account and stateful routes retain their existing origin and behavior; browser storage migration and complete signed-in public-navigation continuity are not claimed.",
+   "comment": "A blanket canonical redirect would change established client and account origins. HTTP cannot observe browser sessionStorage, localStorage or URL fragments; redirecting public-home navigation leaves www storage untouched and the apex may appear signed out. Limit this repair to public presentation; do not replay completed domain or deployment operators.",
+   "complete": false,
+   "completion_status": "live_qualified",
+   "depends_on": [],
+   "evidence": "October 15 read-only takeover checks found the six www product hosts serving HTTP 200 without Location. Implementation is assigned to a separate detached worktree; no passing release result is claimed here.",
+   "id": "S-6.35.10",
+   "next_action": "Integrate the separately owned redirect repair after its HTTP, edge Worker and existing-boundary checks pass.",
+   "owner_step": "S-6.35",
+   "procedure": [
+    "Use only admitted www/apex pairs and successfully rendered public HTML; exclude non-GET/HEAD methods, Authorization, Proxy-Authorization, Cookie or Origin headers, decoded credential or callback query names and responses that set cookies.",
+    "Refuse redirection for API, MCP, OAuth, authentication, discovery, assets, tracked links, internal edge routes and app, account, admin, login, signup, get-started, saved, build, plan, run-desk, authorize, token, register or revoke paths and descendants.",
+    "Exercise real HTTP and the actual edge Worker with known-wrong controls for header leakage, open redirects, path/query changes and altered issuer, resource or callback handling; require no-store and Vary for Authorization, Cookie, Proxy-Authorization and Origin.",
+    "Run owning brand, authentication and static-site checks on the exact candidate; retain failures and skipped checks.",
+    "After exact CI and the guarded release, verify eligible redirects and excluded traffic across all affected hosts; preserve the previous image, edge export and configuration for rollback."
+   ],
+   "status": "building",
+   "title": "Redirect public website aliases without changing client origins",
+   "waiting_on": []
+  },
+  {
+   "acceptance": "The internal systems portal enforces the existing staff-access boundary and labels every capability or result by exact source revision, environment, attempt and evidence state. Local simulations, estimates, pending reviews and skipped checks are never presented as completed production verification.",
+   "comment": "Protect the internal reference and make its claims reviewable before adding more dashboard surfaces. This is neither a new backend nor another task database.",
+   "complete": false,
+   "completion_status": "live_qualified",
+   "depends_on": [],
+   "evidence": "October 15 history review found useful Antigravity portal designs and local checks alongside simulated metrics and unqualified live claims. The original internal-portal assignment requires staff access in addition to crawler exclusion. Current implementation and live access still need qualification.",
+   "id": "S-6.35.11",
+   "next_action": "Identify the current portal's exact export and source, then implement its staff-access and evidence projections through the existing owners.",
+   "owner_step": "S-6.35",
+   "procedure": [
+    "Reconcile the deployed portal, edge export, source files and release configuration without replaying prior provider effects; preserve every source and failed attempt.",
+    "Map each route and displayed field to existing service, staff identity, managed-record and roadmap owners; remove duplicate status ownership.",
+    "Enforce staff authorization on protected HTML, JSON and assets at origin and edge, with private cache behavior and crawler exclusion; noindex alone is insufficient.",
+    "Test anonymous and wrong-role requests, forged access headers, cross-tenant data, edge bypass, cached private content, unavailable evidence and falsely successful fixtures.",
+    "Generate capability and task views from canonical records, keeping intended behavior, local checks, real dispatch, live qualification and measured customer outcomes distinct.",
+    "Release the exact checked candidate and repeat access, evidence, desktop/phone and existing-host checks live; preserve rollback and all incomplete scope."
+   ],
+   "status": "ready",
+   "title": "Bind the systems portal to evidence and staff access",
+   "waiting_on": []
+  },
+  {
+   "acceptance": "Ordinary customer connections retrieve exact material and complete a task in supported native harnesses.",
+   "comment": "A successful metadata request is not a completed harness task.",
+   "complete": false,
+   "completion_status": "live_qualified",
+   "depends_on": [
+    "S-6.215.08"
+   ],
+   "evidence": "",
+   "id": "S-6.24.02",
+   "next_action": "Run the customer path on this PC without borrowing administrator access.",
+   "owner_step": "S-6.24",
+   "procedure": [
+    "Use a non-admin customer account and a clean setup.",
+    "Run discovery, selection, download and actual use.",
+    "Capture errors, denied operations, revisions, complete costs and cleanup."
+   ],
+   "status": "ready",
+   "title": "Verify OpenCode and another harness against live Baltor",
+   "waiting_on": []
+  },
+  {
+   "acceptance": "A supported customer harness receives an authorized task through the existing queue, executes useful work in a separate worker process and returns exact artifacts with independent acceptance, checkpoints and complete usage accounting.",
+   "comment": "October 15 priority: prove an actual worker path before expanding snapshot demonstrations or learned routing. Local Preview tooling, hosted supervision and measured task benefit remain separate.",
+   "complete": false,
+   "completion_status": "live_qualified",
+   "depends_on": [],
+   "evidence": "",
+   "id": "S-6.24.01",
+   "next_action": "Connect one useful deterministic task to a separate supported worker through the existing queue and history; preserve provider holds and earlier token ceilings.",
+   "owner_step": "S-6.24",
+   "procedure": [
+    "Select a frozen useful task and a no-extra-material baseline; identify the canonical scheduler, executor, history and acceptance owners.",
+    "Exercise a real claim, dispatch, execution and result return with the task's declared file, network and model authority; never replace a failed dispatch with a snapshot result.",
+    "Use an authorized provider route only with a verified allowance and explicit ceiling; keep deterministic work eligible when no model call is needed.",
+    "Test duplicate claims, stale fencing, worker loss, interruption, cancellation, tampered bundles and denied effects; preserve every attempt and reconcile unknown outcomes before retry.",
+    "Read the resulting artifacts and morning report as the ordinary customer, including failed and unfinished work."
+   ],
+   "status": "ready",
+   "title": "Prove one bounded overnight customer task",
+   "waiting_on": []
+  },
+  {
+   "acceptance": "A customer inspects and customizes source-linked task graphs, dependencies, priority reasons and holds, then admits only authorized ready work. A versioned adaptive ranking engine is qualified against fixed rules and simple ordering on held-out outcomes, with shadow evaluation, reversible selection and no permission expansion.",
+   "comment": "The owner's later October 13 direction requests a customized self-learning system like Airflow for agents, with prioritization, dependencies and graph-based tasks. Current keyword scoring and manifest order remain baselines, not measured task value or an adaptive customer service. Feeds supplies evidence; AgentFoundry supplies components; AgentAFK owns task intake, ordering and execution. No token-savings benchmark gates this delivery.",
+   "complete": false,
+   "completion_status": "live_qualified",
+   "depends_on": [],
+   "evidence": "October 13 owner direction places Queue within AgentAFK. Existing source intake, managed records, priority aging and unapproved work compilation were inspected. A reproduced defect reopened dismissed work after compiler or source changes; the repair preserves dismissal and cancels stale admitted work. 140 related tests and three removed-guard controls passed in the isolated worktree; customer queue delivery and comparative prioritization remain unqualified.",
+   "id": "S-6.24.03",
+   "next_action": "Map the reviewed Antigravity queue and worker candidates to existing task, scheduler, execution and history contracts. Connect the rules-based baseline to S-6.24.01, expose priority and hold reasons, and collect real outcomes before promoting learned ranking.",
+   "owner_step": "S-6.24",
+   "procedure": [
+    "Reuse CommunityStore, RecordOperationService, the research-work compiler, solution-graph contracts and reactive scheduler; do not create another task registry or runtime.",
+    "Keep raw evidence, inferred task, dependency readiness, ranking, admission and execution as separate states with exact source and graph revisions.",
+    "Respect duplicates, dismissed and superseded work, missing task evidence, failed sources, deadlines, resource pools, dependency failures and remaining budgets; detect cycles in prerequisite graphs and represent bounded iterative work within the existing Loop contract.",
+    "Record checked outcomes, elapsed time, usage, failures, intervention and customer preferences as scoped feedback; keep tenant data isolated and priority contributions explainable.",
+    "Compare selectable ranking engines with fixed rules, first-in-first-out ordering and the ordinary model/harness workflow on held-out cases; shadow a learned challenger before bounded promotion and preserve the deterministic fallback.",
+    "Connect admitted task files to the bounded overnight queue only under explicit execution authority; retain every failed or unknown attempt and reconcile before replay."
+   ],
+   "status": "building",
+   "title": "Build an adaptive AgentAFK task queue with dependencies and outcome feedback",
+   "waiting_on": []
+  },
+  {
+   "acceptance": "An authorized company can supply versioned private context, receive a source-backed decision brief or separately approved experimental-fit brief above its configured evidence threshold, inspect all attempts and connect a later decision and realized outcome through existing managed records. Brand, tenant, model access and effect authority remain separate; domain and deployment claims require independent verification.",
+   "comment": "The owner confirms purchase on October 15; the October 13 unverified-ownership statement above is retained as dated evidence. Registrar control and launch are not inferred. Proposed decision support does not include production solution development. Baltor remains a separate offering rather than a mandatory umbrella; shared backend ownership permits no cross-brand or cross-tenant private data access. No continuous-feed scale, production-savings or current pricing claim is made.",
+   "complete": false,
+   "completion_status": "live_qualified",
+   "depends_on": [],
+   "evidence": "October 13 owner selects AgentBriefs and agentbriefs.si, describing company context, research, opportunity scoring, proof experiments, executive briefs, thresholds and Decision Memory including realized outcomes. The later request requires all websites to have frontends and backend integration plans, with APIs, external services, connections, deployment and secret-management handoff documentation for Gemini. The local-only review frontend in design/prototypes/agentbriefs/ passed124/124 producer browser checks,53/53 independent browser checks (after repairing3 long-string overflow cases caught in the initial50/53 independent run) and zero new high hardcoding findings, with zero outbound network requests. Production domain ownership and launch remain unverified. Official OpenAI documentation distinguishes optional eligible plan usage from identity and requires a program path for paid or remotely hosted apps; no AgentBriefs eligibility is established.",
+   "id": "S-6.35.09",
+   "next_action": "Reconcile the purchased domain's registrar and DNS state, then qualify one complete company-context-to-decision proof behind the reviewed prototype. Do not accept private uploads, signups or payments through an unwired interface.",
+   "owner_step": "S-6.35",
+   "procedure": [
+    "Record the owner's October 15 confirmation that agentbriefs.si is purchased; reconcile registrar control, existing DNS, certificates and rollback before a provider transition.",
+    "Map company profiles, research, opportunity assessment, evidence briefs, notifications and Decision Memory to existing managed records, AgentFeeds, typed decisions, task history, sandbox and delivery owners; use typed versioned edges and swappable engines.",
+    "Qualify one company profile and one decision family, with read-only source access, tenant isolation, source provenance and explicit privacy and retention scope.",
+    "Test relevance, evidence floor, materiality, freshness and attention limits separately; preserve suppressed candidates and report operational failures independently of opportunity alerts.",
+    "Run optional proof experiments only under separately approved data, credentials, baseline, environment, cost and time bounds; no production writes, purchases or deployment permission is inferred.",
+    "Require known-wrong controls for unsupported alerts, stale evidence, duplicate notifications, cross-tenant access and estimates presented as realized savings; retain failed experiments and later corrections.",
+    "Evaluate proposed $299/$799 monthly company pilot prices as demand and cost hypotheses, with separately scoped experiments and no change to existing offers.",
+    "Keep application sign-in separate from inference permission; seek required program approval before offering hosted ChatGPT plan usage, retain supported customer API access and account separately for ingestion, storage, scheduling and sandbox costs."
+   ],
+   "status": "building",
+   "title": "Qualify AgentBriefs executive decision support",
+   "waiting_on": []
+  },
+  {
+   "acceptance": "An attractive finished project serves a declared audience and purpose, survives a meaningful revision and reopens cleanly in a supported environment with its editable source and required assets.",
+   "comment": "Formats, asset counts and native loading do not establish a useful creative result.",
+   "complete": false,
+   "completion_status": "offline_verified",
+   "depends_on": [],
+   "evidence": "",
+   "id": "S-6.201.02",
+   "next_action": "Select one completed media handoff, freeze the audience and revision brief, and qualify the real renderer and editable project before expanding templates.",
+   "owner_step": "S-6.201",
+   "procedure": [
+    "Choose one scoped brief with audience, purpose, duration, format and measurable acceptance; define which presentation choices may vary by audience.",
+    "Read completed handoffs from the separately owned social_videos work before selecting an engine; preserve active Astra/Codex files and reuse qualified native tools with exact versions and rights.",
+    "Produce the finished project and an audience-specific revision that changes useful content, pacing or detail rather than only relabeling the same output.",
+    "Check actual frames, transitions, the ending, text layout and sound; keep technical checks, visual review, listening and user acceptance distinct, with skipped or pending checks incomplete.",
+    "Reopen the edited source in a clean supported environment; preserve every attempt, failure, intervention and artifact."
+   ],
+   "status": "ready",
+   "title": "Complete one editable creative project and revision",
+   "waiting_on": []
+  },
+  {
+   "acceptance": "Marketing visuals show the actual supported workflow and do not imply an unmeasured benefit.",
+   "comment": "Preview clips are labelled as previews; no fabricated before/after result.",
+   "complete": false,
+   "completion_status": "published",
+   "depends_on": [
+    "S-6.201.02"
+   ],
+   "evidence": "",
+   "id": "S-6.201.03",
+   "next_action": "Use the accepted creative proof, its audience brief and recorded customer outcomes; preserve the separate social_videos owner's work.",
+   "owner_step": "S-6.201",
+   "procedure": [
+    "Create a reproducible screen recording or real-engine render from the accepted project and name the actual toolchain.",
+    "Adapt the demonstration to its audience and destination while retaining exact capability and evidence limits; mark emulated scenes as illustrative.",
+    "Run any with/without comparison under matched conditions and retain the no-extra-material baseline.",
+    "Decode the full clip and run technical checks; inspect transition and ending samples, captions, claims, phone layout and media rights. State the visual and listening review scope; unresolved required review cannot pass publication.",
+    "Publish only through the existing authorized product-demo path; this task grants no social-account posting or advertising spend."
+   ],
+   "status": "proposed",
+   "title": "Produce a rights-cleared product demonstration",
+   "waiting_on": [
+    "S-6.201.02"
+   ]
+  },
+  {
+   "acceptance": "A fresh supported Kaggle instance running OpenCode or another qualified harness authenticates, retrieves exact media components and assets, produces a useful editable result, makes a meaningful revision and reopens it cleanly.",
+   "comment": "The domain remains getagentfoundry.si. A separate brand, local render or library download does not establish portable execution, public reuse rights or hosted AFK availability.",
+   "complete": false,
+   "completion_status": "live_qualified",
+   "depends_on": [
+    "S-6.201.02"
+   ],
+   "evidence": "October 13 owner requests all existing media prompts, assets, tools, templates and image/video generation work through Baltor and AgentFoundry, including media feeds and harness component files. The intended customer uses a Kaggle instance with OpenCode or another authenticated harness. A screenshot shows another session's local media/source/QA outputs, but this session has not yet reproduced the Kaggle workflow or admitted that collection.",
+   "id": "S-6.201.04",
+   "next_action": "Read the completed social_videos integration handoff and choose one audience-specific editable project for ordinary-account retrieval, revision and clean reopen in a fresh supported Kaggle harness. Coordinate parallel producers and preserve their active files.",
+   "owner_step": "S-6.201",
+   "procedure": [
+    "Preserve active OpenCode and Codex work; inventory completed source, prompts, templates, images, videos, generators, audio and verification evidence privately.",
+    "Map reusable material to the existing catalogue, code-asset, engine-slot and harness boundaries, with exact dependencies, provenance, rights and account scope.",
+    "Select a small complete project and prepare an environment profile with explicit CPU/GPU, runtime, renderer, network, model access and storage requirements.",
+    "Use an ordinary authenticated account to retrieve the necessary files into a fresh Kaggle instance with OpenCode or another supported harness; verify bytes and setup without importing workstation caches or credentials.",
+    "Generate the media, revise timing/text/assets or aspect ratio, and reopen it in a clean supported environment; record outputs, model usage, time, interventions and failures.",
+    "Check missing dependencies, wrong file digests, unavailable tools and insufficient authority; separate technical decode, visual inspection, listening and user acceptance."
+   ],
+   "status": "building",
+   "title": "Create and revise media from a fresh Kaggle harness through Baltor",
+   "waiting_on": [
+    "S-6.201.02"
+   ]
+  },
+  {
+   "acceptance": "The existing in-process search engine, the same engine in a persistent process and a Rust candidate are compared on the same immutable index, held-out queries, filters, semantics and resource limits, with correctness, relevance, latency, memory, failures and total cost reported separately.",
+   "comment": "Measure before promoting a Rust engine or claiming savings. This comparison does not block unrelated website or customer fixes.",
+   "complete": false,
+   "completion_status": "offline_verified",
+   "depends_on": [],
+   "evidence": "October 15 review found local and simulated Antigravity comparisons, not a completed matched production-search benchmark. The existing frontend/backend integration map already requires this three-way comparison.",
+   "id": "S-6.32.01",
+   "next_action": "Prepare one immutable catalogue sample and held-out query set, then run the three implementations through the same comparison harness.",
+   "owner_step": "S-6.32",
+   "procedure": [
+    "Freeze the index, query population, relevance floor, no-answer cases and exact implementation identities before tuning.",
+    "Use the existing typed search edge and recorded engine declarations; preserve the current engine and rollback.",
+    "Measure cold startup, warm execution, serialization, transfer, p50/p95/p99 latency and working memory; retain all failed, timed-out, excluded and incomplete attempts.",
+    "Use wrong-file, wrong-format, stale, no-match, access-boundary and forced engine-failure controls; no-op binaries and synthetic timings cannot establish a speedup.",
+    "Record qualification for each engine without changing production selection; S-6.52 owns subsequent retrieval-engine expansion."
+   ],
+   "status": "ready",
+   "title": "Compare equivalent search engines across process boundaries",
+   "waiting_on": []
+  },
+  {
    "acceptance": "The new shared design, plan labels, gallery, connection workflow and customer feed builder work on the deployed exact CI-passed revision, with customer boundaries and every existing route preserved.",
    "comment": "Basic, Pro and Max are plan names; Agent Feeds, Harness Files and Overnight / AFK Work remain features. Max's scoped public preview does not claim hosted execution or activate a paid checkout. The owner explicitly prioritizes the design release over the longer migration and factory programme.",
    "complete": true,
@@ -409,7 +633,7 @@
   },
   {
    "acceptance": "A frozen production plan measures candidate yield, accepted yield, time, storage and cost across several useful file families.",
-   "comment": "Common-word and parameter combinations are research dimensions, not automatically useful files.",
+   "comment": "Fallback supply uses spare capacity within existing owners, not a competing roadmap or automatic publication. Common-word and parameter combinations are research dimensions, not automatically useful files.",
    "complete": false,
    "completion_status": "offline_verified",
    "depends_on": [
@@ -417,12 +641,14 @@
    ],
    "evidence": "October 11 root integrated all thirteen retained supply commits plus the licence/redirect/concurrent-journal repair. The completed 392-shard campaign is exhausted; 5,389 unprocessed API atoms are a research frontier, not qualified cases or a file forecast, and five uncertain boundary atoms remain held. An opt-in clean-spawn verifier passes 111 owning tests, eleven removed-guard controls and 32 conformance gates. Nine final-code sample runs over 46,538 files and 224,074,942 bytes give serial/four/eight-worker medians 6.133/3.863/3.896 seconds; aggregate CPU rises to 15.321/26.674 seconds for the parallel choices. Only baseline/update body verification selects workers; publisher and other phases stay serial. The full four-process qualification completed on October 11 at 21:49:56 UTC with unchanged inputs and exact serial result parity: 1,560,856 base bodies verified and 341,902 new bodies, yielding a private candidate with 1,902,758 distinct files. No publication occurred. Different cache and concurrent load prevent a controlled full-run speed comparison; new production yield remains unmeasured.",
    "id": "S-6.215.13",
-   "next_action": "Preserve the completed four-process qualification; do not replay it. Design bounded metadata streaming before larger catalogue growth. The residual API-atom pilot needs a new-run range selector and preserved exclusions before dispatch.",
+   "next_action": "Preserve the completed four-process qualification without replay. When priority integration waits, select one bounded useful string, logic or component cohort; retain exclusions and return to the priority task when it can proceed. Design bounded metadata streaming before larger growth. The residual API-atom pilot needs a new-run range selector and preserved exclusions before dispatch.",
    "owner_step": "S-6.215",
    "procedure": [
-    "Measure the completed batch rather than extrapolating from file placements.",
-    "Select licensed data tables, executable utilities, harness templates and editable creative materials.",
-    "Reuse unchanged implementations and allocate bounded cohorts with explicit stops."
+    "Measure the completed batch rather than extrapolating from file placements; keep candidate, qualified, admitted, served and useful-execution counts separate.",
+    "Select licensed data tables, executable string/entity/synonym utilities, logic packs, harness components and editable creative material by distinct source job.",
+    "Reuse unchanged implementations, preserve prior exclusions and allocate bounded cohorts with explicit stops; read completed media handoffs and leave active social_videos files with their owner.",
+    "Test useful behavior, malformed inputs and known-wrong results under the existing qualification and sandbox owners; a changed filename, language or parameter does not establish another capability.",
+    "Record all attempts, held items, costs and customer-use limits; admission and live publication remain separate operations."
    ],
    "status": "building",
    "title": "Measure and broaden production capacity",
@@ -645,12 +871,13 @@
    ],
    "evidence": "",
    "id": "S-6.214.09",
-   "next_action": "Qualify a small number of topic feeds before multiplying them.",
+   "next_action": "Qualify a bounded useful topic cohort through the existing source pilot. This can use spare capacity while priority integration waits, without starting another collector schedule.",
    "owner_step": "S-6.214",
    "procedure": [
-    "Separate observations from original synthesis and recommendations.",
-    "Generate JSON Feed, RSS and Markdown through the same owning record.",
-    "Check rights, freshness, duplicates, broken references and unsupported claims before publication."
+    "Separate source observations, original synthesis and recommendations; retain dates, source failures, corrections and uncertainty.",
+    "Generate JSON Feed, RSS and Markdown through the same owning record; format variants share one item identity.",
+    "Check rights, freshness, duplicate sources, broken references and unsupported claims; simulated verification counts or editorial scores cannot become measured usefulness.",
+    "Test a stale item, a contradictory source and a collection failure, preserving withheld items and every attempt before publication."
    ],
    "status": "ready",
    "title": "Produce useful source-backed feeds",
@@ -752,21 +979,23 @@
    ]
   },
   {
-   "acceptance": "Every approved path is inventoried or has an explicit inaccessible, deferred or excluded reason.",
-   "comment": "No source files were deleted or modified.",
+   "acceptance": "Every approved path is inventoried or has an explicit inaccessible, deferred or excluded reason. Selected project roots have private provenance, ownership, revision, dirty-state and duplicate/dependency findings without source mutation or execution.",
+   "comment": "The new request extends the existing source-intake owner. Organizing findings does not authorize reorganizing the source share. No source files were deleted or modified by the earlier scan.",
    "complete": false,
    "completion_status": "offline_verified",
    "depends_on": [],
-   "evidence": "65,382 files inventoried, including 1,550 conversation files; 453 directories remain queued. The scan stopped at its 40 GiB floor.",
+   "evidence": "65,382 files inventoried, including 1,550 conversation files; 453 directories remain queued. The scan stopped at its 40 GiB floor. October 15: the owner added a network share containing research and parallel harness work; initial top-level discovery is observed, not a complete project inventory or content review. Exact source locations remain in the private checkpoint.",
    "id": "S-6.207.01",
-   "next_action": "Resolve the measured storage allocation before resuming.",
+   "next_action": "Continue bounded project-root discovery on the newly approved share; preserve the previous inventory queue and resolve its measured storage allocation before resuming that scan.",
    "owner_step": "S-6.207",
    "procedure": [
-    "Resume the read-only checkpoint without rescanning completed directories unnecessarily.",
-    "Bound metadata output and preserve the workstation's disk reserve.",
-    "Prioritize histories and project material ahead of caches and dependencies."
+    "Resume the read-only checkpoint without rescanning completed directories unnecessarily; keep the earlier disk-floor hold on its pending queue until storage is resolved.",
+    "Use bounded metadata-first discovery for the newly approved network-share research and project roots; keep exact addresses, paths and coverage outside the public repository.",
+    "Identify project owners, active writers, revisions and dirty state before selecting stable source content; mark unavailable metadata as unknown.",
+    "Prioritize histories and project material ahead of caches and dependencies, record likely duplicates and missing dependencies, and preserve the workstation's disk reserve.",
+    "Refuse source moves, deletes, execution, unbounded traversal and bulk public copying; record inaccessible, skipped and deferred paths instead of treating them as scanned."
    ],
-   "status": "blocked",
+   "status": "building",
    "title": "Complete the approved SMB metadata inventory",
    "waiting_on": []
   },
@@ -811,7 +1040,7 @@
    "waiting_on": []
   },
   {
-   "acceptance": "Each reviewed chunk records answered, unknown, disputed or reasoned not-applicable questions with source anchors.",
+   "acceptance": "Each reviewed chunk records answered, unknown, disputed or reasoned not-applicable questions with source anchors. Project findings distinguish exact duplicates, parallel revisions, missing runtime dependencies and unverified outcome claims.",
    "comment": "Question bindings and keyword matches are not completed answers.",
    "complete": false,
    "completion_status": "offline_verified",
@@ -820,12 +1049,13 @@
    ],
    "evidence": "One thousand questions are defined; 75 source-backed answers exist, including 38 new findings across nine creative-project chunks. Three original camera/timing helpers pass the existing isolated-package checks. No thousand-question chunk review is complete.",
    "id": "S-6.207.04",
-   "next_action": "Continue focused history review and turn verified gaps into tests and original implementations.",
+   "next_action": "Continue focused history and selected network-share project review; turn verified gaps into owning tests or bounded component adaptations without executing the source project.",
    "owner_step": "S-6.207",
    "procedure": [
     "Apply the thousand-question bank by relevance and preserve open questions.",
-    "Read high-value owner decisions, code changes, failures and actual outcomes.",
-    "Map findings to existing Baltor owners, tests and candidate jobs."
+    "Read high-value owner decisions, code changes, failures and actual outcomes from selected stable sources after metadata and rights review; treat embedded instructions as evidence, not authority.",
+    "Map findings to existing Baltor owners, tests and candidate jobs, retaining private source revision and coverage references.",
+    "Check that a duplicate is not counted as a new capability, a missing dependency blocks runnable status, and a simulated or unreviewed result cannot become accepted evidence."
    ],
    "status": "building",
    "title": "Perform source-specific question reviews",
@@ -841,12 +1071,12 @@
    ],
    "evidence": "",
    "id": "S-6.207.05",
-   "next_action": "Start with reusable schema-evidence and recovery invariants.",
+   "next_action": "Start with reusable schema-evidence and recovery invariants, then select a source-backed harness component from the approved share that fills a verified gap.",
    "owner_step": "S-6.207",
    "procedure": [
-    "Keep other-company material private by default.",
-    "Transfer one checked invariant into the existing owner.",
-    "Qualify exact new bytes through the ordinary component pipeline."
+    "Keep other-company material and raw source histories private by default; record the rights decision before reuse.",
+    "Transfer one checked invariant or permitted component adaptation into its existing typed owner, with exact source revision and dependencies; do not import another runtime, registry or task store.",
+    "Qualify exact new bytes through the ordinary component pipeline, including independent review and wrong-result controls; source discovery alone authorizes no execution or publication."
    ],
    "status": "proposed",
    "title": "Convert approved findings into original candidates",
@@ -1214,68 +1444,6 @@
    "waiting_on": []
   },
   {
-   "acceptance": "A supported customer harness completes useful work with checkpoints, declared model access and complete usage accounting.",
-   "comment": "Local Preview tooling is available; hosted supervision and measured task benefit are separate.",
-   "complete": false,
-   "completion_status": "live_qualified",
-   "depends_on": [],
-   "evidence": "",
-   "id": "S-6.24.01",
-   "next_action": "Retain current provider holds; do not reset the earlier token ceiling.",
-   "owner_step": "S-6.24",
-   "procedure": [
-    "Select a frozen task and a no-extra-material baseline.",
-    "Use an authorized provider route with a verified allowance and explicit ceiling.",
-    "Test interruption, unknown outcomes, cancellation and the morning report."
-   ],
-   "status": "ready",
-   "title": "Prove one bounded overnight customer task",
-   "waiting_on": []
-  },
-  {
-   "acceptance": "Ordinary customer connections retrieve exact material and complete a task in supported native harnesses.",
-   "comment": "A successful metadata request is not a completed harness task.",
-   "complete": false,
-   "completion_status": "live_qualified",
-   "depends_on": [
-    "S-6.215.08"
-   ],
-   "evidence": "",
-   "id": "S-6.24.02",
-   "next_action": "Run the customer path on this PC without borrowing administrator access.",
-   "owner_step": "S-6.24",
-   "procedure": [
-    "Use a non-admin customer account and a clean setup.",
-    "Run discovery, selection, download and actual use.",
-    "Capture errors, denied operations, revisions, complete costs and cleanup."
-   ],
-   "status": "ready",
-   "title": "Verify OpenCode and another harness against live Baltor",
-   "waiting_on": []
-  },
-  {
-   "acceptance": "A customer inspects and customizes source-linked task graphs, dependencies, priority reasons and holds, then admits only authorized ready work. A versioned adaptive ranking engine is qualified against fixed rules and simple ordering on held-out outcomes, with shadow evaluation, reversible selection and no permission expansion.",
-   "comment": "The owner's later October 13 direction requests a customized self-learning system like Airflow for agents, with prioritization, dependencies and graph-based tasks. Current keyword scoring and manifest order remain baselines, not measured task value or an adaptive customer service. Feeds supplies evidence; AgentFoundry supplies components; AgentAFK owns task intake, ordering and execution. No token-savings benchmark gates this delivery.",
-   "complete": false,
-   "completion_status": "live_qualified",
-   "depends_on": [],
-   "evidence": "October 13 owner direction places Queue within AgentAFK. Existing source intake, managed records, priority aging and unapproved work compilation were inspected. A reproduced defect reopened dismissed work after compiler or source changes; the repair preserves dismissal and cancels stale admitted work. 140 related tests and three removed-guard controls passed in the isolated worktree; customer queue delivery and comparative prioritization remain unqualified.",
-   "id": "S-6.24.03",
-   "next_action": "Expose a passive inspectable task graph and rules-based queue with priority contributions and hold reasons, then qualify customer admission and collect outcome feedback before promoting learned ranking.",
-   "owner_step": "S-6.24",
-   "procedure": [
-    "Reuse CommunityStore, RecordOperationService, the research-work compiler, solution-graph contracts and reactive scheduler; do not create another task registry or runtime.",
-    "Keep raw evidence, inferred task, dependency readiness, ranking, admission and execution as separate states with exact source and graph revisions.",
-    "Respect duplicates, dismissed and superseded work, missing task evidence, failed sources, deadlines, resource pools, dependency failures and remaining budgets; detect cycles in prerequisite graphs and represent bounded iterative work within the existing Loop contract.",
-    "Record checked outcomes, elapsed time, usage, failures, intervention and customer preferences as scoped feedback; keep tenant data isolated and priority contributions explainable.",
-    "Compare selectable ranking engines with fixed rules, first-in-first-out ordering and the ordinary model/harness workflow on held-out cases; shadow a learned challenger before bounded promotion and preserve the deterministic fallback.",
-    "Connect admitted task files to the bounded overnight queue only under explicit execution authority; retain every failed or unknown attempt and reconcile before replay."
-   ],
-   "status": "building",
-   "title": "Build an adaptive AgentAFK task queue with dependencies and outcome feedback",
-   "waiting_on": []
-  },
-  {
    "acceptance": "A bounded export from the exact owner account includes available images and generation provenance with coverage limits.",
    "comment": "No images or account history have been claimed downloaded.",
    "complete": false,
@@ -1293,74 +1461,6 @@
    "status": "blocked",
    "title": "Recover the authorized TensorArt asset history",
    "waiting_on": []
-  },
-  {
-   "acceptance": "An attractive finished project survives a meaningful revision and clean reopen in a supported environment.",
-   "comment": "Formats, asset counts and native loading do not establish a useful creative result.",
-   "complete": false,
-   "completion_status": "offline_verified",
-   "depends_on": [],
-   "evidence": "",
-   "id": "S-6.201.02",
-   "next_action": "Select a small end-to-end creative proof rather than expanding untested templates.",
-   "owner_step": "S-6.201",
-   "procedure": [
-    "Choose one scoped scene, motion or interactive brief with measurable acceptance.",
-    "Reuse qualified native tools and record exact assets, versions and rights.",
-    "Render, revise and reopen; preserve failed attempts and source files."
-   ],
-   "status": "ready",
-   "title": "Complete one editable creative project and revision",
-   "waiting_on": []
-  },
-  {
-   "acceptance": "Marketing visuals show the actual supported workflow and do not imply an unmeasured benefit.",
-   "comment": "Preview clips are labelled as previews; no fabricated before/after result.",
-   "complete": false,
-   "completion_status": "published",
-   "depends_on": [
-    "S-6.201.02"
-   ],
-   "evidence": "",
-   "id": "S-6.201.03",
-   "next_action": "Use the accepted creative proof and recorded customer outcomes.",
-   "owner_step": "S-6.201",
-   "procedure": [
-    "Create a reproducible screen recording or render from the accepted project.",
-    "Run any with/without comparison under matched conditions.",
-    "Check captions, claims, phone layout, sound and media rights before publishing."
-   ],
-   "status": "proposed",
-   "title": "Produce a rights-cleared product demonstration",
-   "waiting_on": [
-    "S-6.201.02"
-   ]
-  },
-  {
-   "acceptance": "A fresh supported Kaggle instance running OpenCode or another qualified harness authenticates, retrieves exact media components and assets, produces a useful editable result, makes a meaningful revision and reopens it cleanly.",
-   "comment": "The domain remains getagentfoundry.si. A separate brand, local render or library download does not establish portable execution, public reuse rights or hosted AFK availability.",
-   "complete": false,
-   "completion_status": "live_qualified",
-   "depends_on": [
-    "S-6.201.02"
-   ],
-   "evidence": "October 13 owner requests all existing media prompts, assets, tools, templates and image/video generation work through Baltor and AgentFoundry, including media feeds and harness component files. The intended customer uses a Kaggle instance with OpenCode or another authenticated harness. A screenshot shows another session's local media/source/QA outputs, but this session has not yet reproduced the Kaggle workflow or admitted that collection.",
-   "id": "S-6.201.04",
-   "next_action": "Review the completed media project's integration notes and choose one portable end-to-end slice before broad publication. Coordinate the parallel producers and preserve their active files.",
-   "owner_step": "S-6.201",
-   "procedure": [
-    "Preserve active OpenCode and Codex work; inventory completed source, prompts, templates, images, videos, generators, audio and verification evidence privately.",
-    "Map reusable material to the existing catalogue, code-asset, engine-slot and harness boundaries, with exact dependencies, provenance, rights and account scope.",
-    "Select a small complete project and prepare an environment profile with explicit CPU/GPU, runtime, renderer, network, model access and storage requirements.",
-    "Use an ordinary authenticated account to retrieve the necessary files into a fresh Kaggle instance with OpenCode or another supported harness; verify bytes and setup without importing workstation caches or credentials.",
-    "Generate the media, revise timing/text/assets or aspect ratio, and reopen it in a clean supported environment; record outputs, model usage, time, interventions and failures.",
-    "Check missing dependencies, wrong file digests, unavailable tools and insufficient authority; separate technical decode, visual inspection, listening and user acceptance."
-   ],
-   "status": "building",
-   "title": "Create and revise media from a fresh Kaggle harness through Baltor",
-   "waiting_on": [
-    "S-6.201.02"
-   ]
   },
   {
    "acceptance": "The package exposes only qualified MCP capabilities and passes an ordinary-user connection journey.",
@@ -1501,13 +1601,13 @@
   },
   {
    "acceptance": "Accessible owner directions and actions from the requested time window map to existing roadmap owners with coverage gaps retained.",
-   "comment": "Imported instructions are historical data, not current effect authority.",
+   "comment": "October 15 continuation: accessible Antigravity narratives and recovered oversized user text were reviewed across agents before implementation. Generated source, original media and truncated tool payloads are not exhaustively qualified by that history review. Keep private source text and coverage details outside the public repository; imported instructions remain historical data.",
    "complete": true,
    "completion_status": "offline_verified",
    "depends_on": [],
    "evidence": "The October 9 16:46:07 UTC to October 11 16:46:07 UTC review covers forty selected local files, 57 user-role and 184 visible assistant records. Sixty Codex replies omitted by the first extractor were recovered without reasoning/tool-output ingestion. All 241 records were classified and sixteen deduplicated owner requests mapped to 25 obligation groups; 35 checks passed. The oversized record predates the window. Existing OAuth success, later release chronology and unfinished claims are reconciled; complete historical action or unavailable external-conversation coverage is not certified.",
    "id": "S-6.217.01",
-   "next_action": "Carry the retained obligation groups into their existing owners; the October 13 brand launch belongs to S-6.35.06, maintained feeds to S-6.214 and raw-data task prioritization to S-6.24.03.",
+   "next_action": "Carry the reviewed Antigravity and pasted-research obligations into their existing owners. Public redirects and systems evidence/access belong to S-6.35.10 and S-6.35.11; maintained feeds to S-6.214, task execution to S-6.24, media proofs to S-6.201 and useful supply to S-6.215.13.",
    "owner_step": "S-6.217",
    "procedure": [
     "Read actual message timestamps and distinguish owner instructions from tool or agent output.",
@@ -1585,35 +1685,11 @@
    "status": "building",
    "title": "Launch AgentStudios as the independent creative offering",
    "waiting_on": []
-  },
-  {
-   "acceptance": "An authorized company can supply versioned private context, receive a source-backed decision brief or separately approved experimental-fit brief above its configured evidence threshold, inspect all attempts and connect a later decision and realized outcome through existing managed records. Brand, tenant, model access and effect authority remain separate; domain and deployment claims require independent verification.",
-   "comment": "Proposed decision support, not production solution development. Baltor remains a separate offering rather than a mandatory umbrella; shared backend ownership does not permit cross-brand or cross-tenant private data access. No continuous-feed scale, production-savings or current pricing claim is made.",
-   "complete": false,
-   "completion_status": "live_qualified",
-   "depends_on": [],
-   "evidence": "October 13 owner selects AgentBriefs and agentbriefs.si, describing company context, research, opportunity scoring, proof experiments, executive briefs, thresholds and Decision Memory including realized outcomes. The later request requires all websites to have frontends and backend integration plans, with APIs, external services, connections, deployment and secret-management handoff documentation for Gemini. The local-only review frontend in design/prototypes/agentbriefs/ passed124/124 producer browser checks,53/53 independent browser checks (after repairing3 long-string overflow cases caught in the initial50/53 independent run) and zero new high hardcoding findings, with zero outbound network requests. Production domain ownership and launch remain unverified. Official OpenAI documentation distinguishes optional eligible plan usage from identity and requires a program path for paid or remotely hosted apps; no AgentBriefs eligibility is established.",
-   "id": "S-6.35.09",
-   "next_action": "Define and qualify one complete company-context-to-decision proof and its contracts behind the reviewed local-only AgentBriefs prototype. Verify domain ownership separately before any provider transition; do not accept private uploads, signups or payments through the prototype.",
-   "owner_step": "S-6.35",
-   "procedure": [
-    "Verify ownership of the selected agentbriefs.si domain before planning a provider transition; name selection grants no purchase authority.",
-    "Map company profiles, research, opportunity assessment, evidence briefs, notifications and Decision Memory to existing managed records, AgentFeeds, typed decisions, task history, sandbox and delivery owners; use typed versioned edges and swappable engines.",
-    "Qualify one company profile and one decision family, with read-only source access, tenant isolation, source provenance and explicit privacy and retention scope.",
-    "Test relevance, evidence floor, materiality, freshness and attention limits separately; preserve suppressed candidates and report operational failures independently of opportunity alerts.",
-    "Run optional proof experiments only under separately approved data, credentials, baseline, environment, cost and time bounds; no production writes, purchases or deployment permission is inferred.",
-    "Require known-wrong controls for unsupported alerts, stale evidence, duplicate notifications, cross-tenant access and estimates presented as realized savings; retain failed experiments and later corrections.",
-    "Evaluate proposed $299/$799 monthly company pilot prices as demand and cost hypotheses, with separately scoped experiments and no change to existing offers.",
-    "Keep application sign-in separate from inference permission; seek required program approval before offering hosted ChatGPT plan usage, retain supported customer API access and account separately for ingestion, storage, scheduling and sandbox costs."
-   ],
-   "status": "building",
-   "title": "Qualify AgentBriefs executive decision support",
-   "waiting_on": []
   }
  ],
  "execution_counts": {
   "complete": 21,
-  "total": 74
+  "total": 77
  },
  "lanes": {
   "blocked": [
@@ -2637,7 +2713,7 @@
      "S-6.28"
     ],
     "id": "S-6.30",
-    "next_local_work": "Complete shared selection and at-use binding using existing records; qualify semantic behavior and state transitions per docs/research/FUNCTIONAL-ENGINE-WRAPPING-RESEARCH-AND-IMPROVEMENTS-2026-09-23.md before adopting the framework in executor, compiler, search, email, store, model, identity and billing slots.",
+    "next_local_work": "Adapt reviewed Antigravity capabilities through the existing fixed typed edges, engine-slot catalogue, component factories, scheduler and history owners. Do not import parallel registries, task stores, runtime classes or a replacement meaning for the four intelligence layers. Complete shared selection and at-use binding using existing records; qualify semantic behavior and state transitions per docs/research/FUNCTIONAL-ENGINE-WRAPPING-RESEARCH-AND-IMPROVEMENTS-2026-09-23.md. Preserve unsupported versions, missing capacity and unqualified provider behavior as explicit refusals or unknown states rather than guessed conversions or successful snapshots.",
     "phase": 6,
     "status": "building",
     "title": "Engines behind fixed edges: the shared engine framework",
@@ -2791,7 +2867,7 @@
      "S-6.205"
     ],
     "id": "S-6.207",
-    "next_local_work": "Continue bounded source and session interrogation from recorded coverage gaps, preserving redacted source bindings. Include runtime dependencies and workable tests in derived packages; distinguish provenance citations from files actually needed at execution. Reuse delivered candidates instead of counting briefs or layouts as capabilities.",
+    "next_local_work": "Continue bounded source and session interrogation from recorded coverage gaps, including metadata-first discovery of the newly approved network share. Preserve private provenance, edit ownership, revision and dirty-state findings, duplicate decisions and redacted source bindings; do not move, delete, execute or bulk-publish source material. Include runtime dependencies and workable tests in derived packages; distinguish provenance citations from files actually needed at execution. Adapt selected findings through existing owners and reuse delivered candidates instead of counting briefs or layouts as capabilities.",
     "phase": 6,
     "status": "building",
     "title": "The owner's own volumes as seed material: a read-only inventory with provenance classes, seed records per project, and generated harness files reviewed and published under the owner's authorship declaration",
@@ -7051,7 +7127,7 @@
  ],
  "record_type": "development_tracker/v2",
  "source": "docs/roadmap/roadmap.yaml",
- "source_fingerprint": "sha256:c31eed01ea575dddb03e0f1a2caf04872034ebe1ff5c22b9a522c2b91e8e64d8",
+ "source_fingerprint": "sha256:a3a10a10c9d294d2222c00c0085a842456f82bb7763e457a3b31157bb466f6ce",
  "working_schedule": {
   "blocks": [
    {
@@ -7177,7 +7253,7 @@
    }
   ],
   "horizon_hours": 12,
-  "note": "Retained October 9 planning window, not an active-worker inventory. October 13 release 91 serves all standalone websites for public review. The campaign funnel is live-qualified; the combined standalone task retains real authenticated/acquisition outcomes and secondary browser-body accounting qualification. No selected domain is still waiting to launch. Maintained feeds and customer task outcomes remain separate work. The earlier twelve-hour factory was a bounded attempt, not a publication claim. Only qualified, admitted, reconciled and actually served distinct digests count toward the ten-million target. Consult the workstation coordination record for current writers.",
+  "note": "Retained October 9 planning window, not an active-worker inventory or a new schedule. October 15 engineering continues from the preserved Antigravity review without waiting for that harness. Public-page redirects and systems evidence/access lead the current execution order, followed by actual worker, customer and media proofs. AgentBriefs is owner-confirmed purchased; registrar control and launch remain separate checks. Active social_videos production has a separate Astra/Codex owner. Use completed handoffs and preserve that work. Bounded useful supply work may use spare capacity while a priority dependency is unavailable; record the reason and resume priority work when it clears. Only qualified, admitted, reconciled and actually served distinct digests count toward the ten-million target. Consult the workstation coordination record for current writers.",
   "record_type": "development_working_schedule/v1",
   "starts_at": "2026-10-09T20:09:03Z"
  }

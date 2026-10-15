@@ -2,6 +2,37 @@
 
 Kind: current decision route with retained dated decisions. The owner's current conversation takes precedence. [AGENTS.md](../../AGENTS.md#commit-push-and-release-authority) remains the single commit, push, release and effect-authority source. This file records product choices; it grants no new authority.
 
+## Engineering continuation, October 15, 2026
+
+The owner asks engineering to continue implementation from the reviewed
+Antigravity work and its preserved handoffs. Work does not wait for the
+original harness to become available. Keep the existing roadmap as the task
+source, use separate detached worktrees for concurrent changes, and integrate
+reviewed changes through the existing release process.
+
+Engineering starts with the public redirect mismatch and unsupported
+readiness labels on the internal reference surface because both affect how
+people interpret the deployed service. Actual worker execution, customer
+journeys and creative use follow through their existing owners. Record every
+attempt, including failures, incomplete checks and unknown outcomes. Local
+snapshots, simulated personas and estimated gains do not establish deployed
+behavior. Preserve the useful product and component boundaries from the review
+while adapting implementations to the canonical contracts and stores.
+
+Active `social_videos` production has a separate Astra/Codex owner. Read its
+completed handoffs before adopting media engines or assets; do not edit that
+session's working files or duplicate its implementations. When the next
+priority task cannot advance within current access or capacity, use spare
+capacity for bounded string utilities, logic packs, reusable components and
+source-backed feeds under S-6.215, S-6.217 and S-6.214. Resume the priority task
+when its dependency clears. This is a work-order policy, not a new scheduler,
+product, task store or permission to publish social content.
+
+The owner also confirms purchasing `agentbriefs.si`. Registrar control, DNS,
+certificates and service launch still require their own observations. Keep
+the October 13 records of unverified ownership as dated evidence; use the
+current ownership statement for subsequent planning.
+
 ## Consumer value and resource goals
 
 The owner's later October 13 direction asks what each step, component and
@@ -117,9 +148,10 @@ On October 13 the owner selects AgentBriefs and `agentbriefs.si` for an
 executive-facing offering. The owner describes an autonomous executive
 intelligence team that understands a company, investigates opportunities,
 tests suitable ideas and presents evidence when a decision deserves attention.
-The name is selected; domain ownership, service implementation and deployment
-are unverified. This proposal does not replace the AgentStudios launch or
-authorize another domain purchase. S-6.35.09 owns qualification.
+The owner confirms the domain purchase on October 15. Registrar control,
+service implementation and deployment remain separate qualification work.
+This proposal does not authorize another domain purchase. S-6.35.09 owns
+qualification.
 
 The proposed company context includes job descriptions, technology and
 services, budgets, projects, goals, competitors and constraints, entered

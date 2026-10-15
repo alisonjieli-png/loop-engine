@@ -1,6 +1,6 @@
 # Baltor north star
 
-Kind: current product direction. Updated October 13, 2026 to record the owner's brand and domain direction alongside the request to deploy the new interface, expand qualified supply and improve Feeds. The [roadmap](../roadmap/roadmap.yaml) is the task authority. [AGENTS.md](../../AGENTS.md#commit-push-and-release-authority) governs authority.
+Kind: current product direction. Updated October 15, 2026 to record the owner-confirmed AgentBriefs purchase and continued implementation. The [roadmap](../roadmap/roadmap.yaml) is the task authority. [AGENTS.md](../../AGENTS.md#commit-push-and-release-authority) governs authority.
 
 ## Current direction
 
@@ -33,9 +33,10 @@ The owner also selects AgentBriefs and `agentbriefs.si` for a proposed
 executive intelligence offering. Company context would guide research,
 opportunity assessment, authorized proof experiments and thresholded decision
 briefs. Decision Memory would retain decisions and realized outcomes through
-existing managed records and history. Domain ownership and implementation
-are unverified; the proposal neither establishes production savings nor
-changes the active AgentStudios launch. The
+existing managed records and history. The owner confirms purchasing the domain
+on October 15; registrar control, DNS, certificates and service implementation
+still require separate qualification. The proposal establishes no production
+savings. The
 [AgentBriefs decision](OWNER-DECISIONS.md#agentbriefs-executive-intelligence-proposal)
 separates the intended value, evidence gates, access options and pricing tests.
 
