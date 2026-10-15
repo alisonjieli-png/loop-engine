@@ -118,6 +118,36 @@ function markAliased(headers, aliased) {
   }
 }
 
+// Match the origin's public website policy. Protocols, credentials and browser
+// state retain their own origin; a permanent redirect must not be cached and
+// reused for one of those requests. The manifest already declares the exact
+// canonical hostname and admitted roots, so this introduces no host wildcard.
+function websiteRedirect(request, manifest, host, aliased, response) {
+  const url = new URL(request.url);
+  const canonical = manifest?.canonical_hostname;
+  if (aliased || !canonical || url.host !== host || host !== `www.${canonical}`
+      || !Object.hasOwn(manifest.roots, host) || !Object.hasOwn(manifest.roots, canonical)
+      || manifest.roots[host] !== manifest.roots[canonical]
+      || !["GET", "HEAD"].includes(request.method)
+      || ["authorization", "cookie", "proxy-authorization", "origin"].some(name => request.headers.has(name))
+      || response.status !== 200 || response.headers.has("set-cookie")
+      || (response.headers.get("content-type") || "").split(";", 1)[0] !== "text/html") return null;
+  const localPaths = ["/authorize", "/token", "/register", "/revoke", "/app", "/account", "/admin",
+    "/login", "/signup", "/get-started", "/saved", "/build", "/plan", "/run-desk"];
+  const localPrefixes = ["/api", "/mcp", "/oauth", "/auth", "/.well-known", "/out", "/assets", "/__edge"];
+  // URL.pathname retains percent escapes. Decode only for exclusion checks;
+  // the Location below uses the original path and query exactly as received.
+  let path;
+  try { path = decodeURIComponent(url.pathname); } catch { return null; }
+  if (localPaths.includes(path.replace(/\/+$/, ""))
+      || localPrefixes.some(prefix => path === prefix || path.startsWith(prefix + "/"))) return null;
+  const headers = { "location": `https://${canonical}${url.pathname}${url.search}`,
+    "cache-control": "no-store", "vary": "Authorization, Cookie, Origin", "referrer-policy": "no-referrer",
+    "x-content-type-options": "nosniff" };
+  if (response.headers.has("x-robots-tag")) headers["x-robots-tag"] = response.headers.get("x-robots-tag");
+  return textResponse(null, 301, headers);
+}
+
 async function staticAnswer(request, env, manifest, path, host, aliased) {
   if (request.method !== "GET" && request.method !== "HEAD") return null;
   if (manifest.origin_prefixes.some((prefix) => path.startsWith(prefix)) || manifest.origin_addresses.includes(path)) return null;
@@ -292,7 +322,8 @@ export async function handle(request, env) {
     message: "The website could not be loaded.", next_action: "Try again shortly.", retry_after_seconds: 30 },
     files: {}, classes: { page: { headers: {} } } }, aliased);
   const answer = await staticAnswer(request, env, manifest, url.pathname, host, aliased);
-  return answer || toOrigin(request, env, manifest, aliased);
+  const response = answer || await toOrigin(request, env, manifest, aliased);
+  return websiteRedirect(request, manifest, host, aliased, response) || response;
 }
 
 export default {

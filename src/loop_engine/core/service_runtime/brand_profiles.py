@@ -4,6 +4,7 @@ A profile selects presentation and OAuth audience, never another runtime,
 catalogue, account namespace, entitlement policy or billing customer.
 """
 from dataclasses import dataclass
+from urllib.parse import urlsplit
 
 from .http_auth import validate_public_origin
 
@@ -15,6 +16,59 @@ BRAND_NAMES = {"agentfeeds": "AgentFeeds", "agentfoundry": "AgentFoundry",
 # This bound grants no domain access: every entry still needs explicit Host
 # and Origin admission in the containing transport configuration.
 MAXIMUM_BRAND_PROFILES = 10
+
+# These addresses carry an origin-bound protocol or browser-local state. A
+# website's canonical address does not migrate its accounts, tokens or data.
+ORIGIN_LOCAL_WEB_PATHS = frozenset((
+    "/authorize", "/token", "/register", "/revoke", "/app", "/account", "/admin",
+    "/login", "/signup", "/get-started", "/saved", "/build", "/plan", "/run-desk",
+))
+ORIGIN_LOCAL_WEB_PREFIXES = ("/api", "/mcp", "/oauth", "/auth", "/.well-known", "/out", "/assets", "/__edge")
+ORIGIN_LOCAL_REQUEST_HEADERS = frozenset(("authorization", "cookie", "proxy-authorization", "origin"))
+
+
+def website_redirect_origins(public_base_url, allowed_hosts, allowed_origins, brand_profiles=()):
+    """Only explicitly admitted www/apex pairs within the same presentation.
+
+    The base presentation has one canonical origin. A standalone pair must
+    additionally have both profiles for the same brand; an admitted hostname
+    alone never authorizes forwarding a request to another brand.
+    """
+    groups = {"": {public_base_url}}
+    for profile in brand_profiles:
+        groups.setdefault(profile.brand, set()).add(profile.public_base_url)
+    redirects = {}
+    for brand, origins in groups.items():
+        for target in origins:
+            parsed = urlsplit(target)
+            if parsed.netloc.startswith("www."):
+                continue
+            alias = "www." + parsed.netloc
+            alias_origin = parsed.scheme + "://" + alias
+            if (parsed.netloc in allowed_hosts and alias in allowed_hosts
+                    and target in allowed_origins and alias_origin in allowed_origins
+                    and (not brand or alias_origin in origins)):
+                redirects[alias] = target
+    return redirects
+
+
+def public_website_read(method, path, header_names):
+    """Navigation only, before any credential, callback or protocol migration."""
+    return (method in ("GET", "HEAD")
+            and not ORIGIN_LOCAL_REQUEST_HEADERS.intersection(name.lower() for name in header_names)
+            and path.rstrip("/") not in ORIGIN_LOCAL_WEB_PATHS
+            and not any(path == prefix or path.startswith(prefix + "/") for prefix in ORIGIN_LOCAL_WEB_PREFIXES))
+
+
+def website_redirect_location(origin, raw_path, raw_query):
+    """Keep the original encoded target; never resolve it as a relative URL."""
+    try:
+        target = (raw_path + (b"?" + raw_query if raw_query else b"")).decode("ascii")
+    except UnicodeDecodeError:
+        return None
+    if not target.startswith("/") or any(ord(char) < 33 or ord(char) == 127 for char in target):
+        return None
+    return origin + target
 
 
 @dataclass(frozen=True)

@@ -31,7 +31,8 @@ from .http_auth import (
     HttpAuthenticationError, ServiceHttpAuthentication, ServiceHttpAuthenticator, validate_public_url,
     EXTERNAL_JWT_AUTHENTICATION,
 )
-from .brand_profiles import MAXIMUM_BRAND_PROFILES, ServiceBrandProfile
+from .brand_profiles import (MAXIMUM_BRAND_PROFILES, ServiceBrandProfile, public_website_read,
+                             website_redirect_location, website_redirect_origins)
 from .list_paging import (JSON_ENCODING, PROTOCOL_ENCODING, ListCursors, ListPageRequest, list_page,
                           paging_request, paging_schema_properties)
 from .observability import (
@@ -2377,6 +2378,8 @@ class ServiceHttpApplication:
         from mcp.server.streamable_http_manager import StreamableHTTPSessionManager
         from mcp.server.transport_security import TransportSecuritySettings
         profiles = self.brand_presentations()
+        website_origins = website_redirect_origins(self.configuration.public_base_url,
+            self.configuration.allowed_hosts, self.configuration.allowed_origins, self.configuration.brand_profiles)
         brand_hosts = set(profiles)
         brand_origins = {value.configuration.public_base_url for value in profiles.values()}
         base_config = replace(self.configuration, brand_profiles=(),
@@ -2524,6 +2527,21 @@ class ServiceHttpApplication:
                 else:
                     response = await application._web_route(request, Response, JSONResponse)
                     response.headers.update(cors)
+                    # Canonicalize successfully rendered public HTML only.
+                    # All Host/Origin checks above still run first, and existing
+                    # www issuers, credentials and browser state remain local.
+                    website_origin = website_origins.get(request.headers["host"])
+                    if (website_origin and public_website_read(request.method, request.url.path, request.headers)
+                            and response.status_code == 200 and "set-cookie" not in response.headers
+                            and response.headers.get("content-type", "").split(";", 1)[0] == HTML_MEDIA_TYPE):
+                        location = website_redirect_location(website_origin, scope.get("raw_path", b""),
+                                                             scope.get("query_string", b""))
+                        if location is not None:
+                            headers = {"Location": location, "Vary": "Authorization, Cookie, Origin",
+                                       "Referrer-Policy": "no-referrer"}
+                            if "x-robots-tag" in response.headers:
+                                headers["X-Robots-Tag"] = response.headers["x-robots-tag"]
+                            response = Response(status_code=301, headers=headers)
             except Exception as error:
                 status, code = _status(error)
                 details, added = (error.details, error.headers) if isinstance(error, ServiceHttpError) else (None, None)
