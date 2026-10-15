@@ -43,7 +43,7 @@ def canonical_page_answer(answer, location):
     return (status == 301 and headers.get("location") == location and body == b""
             and headers.get("cache-control") == "no-store"
             and {part.strip().lower() for part in headers.get("vary", "").split(",")}
-            >= {"authorization", "cookie", "origin"})
+            >= {"authorization", "cookie", "proxy-authorization", "origin"})
 
 
 def observation(response):
@@ -78,13 +78,22 @@ class RedirectPolicyTests(unittest.TestCase):
 
     def test_redirect_oracle_rejects_old_alias_behavior_and_cache_or_target_regressions(self):
         good = (301, {"location": BASE_ORIGIN + "/?x=1", "cache-control": "no-store",
-                      "vary": "Authorization, Cookie, Origin"}, b"")
+                      "vary": "Authorization, Cookie, Proxy-Authorization, Origin"}, b"")
         self.assertTrue(canonical_page_answer(good, BASE_ORIGIN + "/?x=1"))
         for bad in ((200, good[1], b"page"), (308, good[1], b""),
                     (301, {**good[1], "location": BASE_ORIGIN + "/"}, b""),
                     (301, {**good[1], "cache-control": "public, max-age=3600"}, b""),
                     (301, {**good[1], "vary": "Origin"}, b"")):
             self.assertFalse(canonical_page_answer(bad, BASE_ORIGIN + "/?x=1"))
+
+    def test_stateful_route_descendants_are_excluded_before_rendering(self):
+        for prefix in (*brand_profiles.ORIGIN_LOCAL_WEB_PATHS, *brand_profiles.ORIGIN_LOCAL_WEB_PREFIXES):
+            for suffix in ("", "/", "/child", "//child"):
+                with self.subTest(path=prefix + suffix):
+                    self.assertFalse(brand_profiles.public_website_read("GET", prefix + suffix, ()))
+        for query in (b"%63ode", b"CODE=", b"keep=1&state=", b"%ff=invalid"):
+            self.assertFalse(brand_profiles.public_website_read("GET", "/", (), query))
+        self.assertTrue(brand_profiles.public_website_read("GET", "/privacy", (), b"q=code%3Dordinary%26state%3Dnone"))
 
 
 class WebsiteRedirectHttpTests(unittest.TestCase):
@@ -126,7 +135,7 @@ class WebsiteRedirectHttpTests(unittest.TestCase):
                 self.assertEqual(apex.status_code, 200)
                 self.assertNotIn("location", apex.headers)
 
-    def test_credentials_origin_and_local_browser_state_never_redirect(self):
+    def test_credentials_origin_and_explicit_stateful_routes_never_redirect(self):
         host = "www.agentfeeds.example.test"
         for extra in ({"Authorization": "Bearer synthetic-navigation"}, {"Cookie": "session=synthetic"},
                       {"Proxy-Authorization": "synthetic"}, {"Origin": "https://" + host}):
@@ -149,6 +158,26 @@ class WebsiteRedirectHttpTests(unittest.TestCase):
                 headers={"Host": host, "Origin": "https://" + host})
             self.assertNotIn("location", answer.headers)
             self.assertNotIn(answer.status_code, (301, 307, 308))
+
+    def test_query_borne_credentials_and_callback_values_never_cross_origins(self):
+        host = "www.agentfeeds.example.test"
+        for name in brand_profiles.ORIGIN_LOCAL_QUERY_NAMES:
+            encoded = "%%%02x" % ord(name[0]) + name[1:].upper()
+            for path in ("/?" + name + "=synthetic", "/privacy?utm_source=fixture&" + encoded + "=synthetic",
+                         "/?ordinary=1;" + name + "=synthetic"):
+                with self.subTest(path=path):
+                    answer = self.client.get(path, headers={"Host": host})
+                    self.assertEqual(answer.status_code, 200)
+                    self.assertNotIn("location", answer.headers)
+        for path in ("/login/child", "/account/child", "/%61uth/callback", "/saved//child"):
+            answer = self.client.get(path, headers={"Host": host})
+            self.assertNotIn("location", answer.headers)
+        answer = self.client.head("/?%63ode=synthetic", headers={"Host": host})
+        self.assertEqual(answer.status_code, 200)
+        self.assertNotIn("location", answer.headers)
+        with mock.patch.object(brand_profiles, "ORIGIN_LOCAL_QUERY_NAMES", frozenset()):
+            answer = self.client.get("/?%63ode=synthetic", headers={"Host": host})
+            self.assertEqual(answer.status_code, 301, "removed query guard was not detected")
 
     def test_host_and_origin_refusals_still_precede_redirects(self):
         for headers, status in (({"Host": "www.attacker.invalid"}, 421),
@@ -275,6 +304,7 @@ class WebsiteRedirectEdgeTests(unittest.TestCase):
                 self.assertEqual(answer[0], 200)
                 self.assertNotIn("location", answer[1])
             for path in (*brand_profiles.ORIGIN_LOCAL_WEB_PATHS,
+                         *(path + "/child" for path in brand_profiles.ORIGIN_LOCAL_WEB_PATHS),
                          *(prefix + "/example" for prefix in brand_profiles.ORIGIN_LOCAL_WEB_PREFIXES),
                          "/%61uth/callback?code=synthetic", "/sets-cookie"):
                 answer = _fetch(worker.port, "GET", path, "www.baltor.ai")
@@ -291,6 +321,26 @@ class WebsiteRedirectEdgeTests(unittest.TestCase):
                 answer = _fetch(worker.port, "GET", "/", host)
                 self.assertEqual(answer[0], 200)
                 self.assertNotIn("location", answer[1])
+
+    def test_actual_worker_preserves_sensitive_queries_and_detects_removed_guard(self):
+        with echo_origin() as origin, self.worker(origin) as worker:
+            for name in brand_profiles.ORIGIN_LOCAL_QUERY_NAMES:
+                encoded = "%%%02x" % ord(name[0]) + name[1:].upper()
+                for path in ("/?" + name + "=synthetic", "/privacy?ordinary=1&" + encoded + "=synthetic",
+                             "/?ordinary=1;" + name + "=synthetic"):
+                    with self.subTest(path=path):
+                        answer = _fetch(worker.port, "GET", path, "www.baltor.ai")
+                        self.assertEqual(answer[0], 200)
+                        self.assertNotIn("location", answer[1])
+            answer = _fetch(worker.port, "HEAD", "/?%63ode=synthetic", "www.baltor.ai")
+            self.assertEqual(answer[0], 200)
+            self.assertNotIn("location", answer[1])
+            source = site_worker()
+            old = "if (queryNames.some(name => localQueryNames.has(name))) return null;"
+            self.assertEqual(source.count(old), 1)
+            with self.worker(origin, source.replace(old, "// Deliberately removed query guard.")) as broken:
+                answer = _fetch(broken.port, "GET", "/?%63ode=synthetic", "www.baltor.ai")
+                self.assertEqual(answer[0], 301, "removed edge query guard was not detected")
 
     def test_worker_requires_both_declared_roots_and_detects_known_wrong_variants(self):
         with echo_origin() as origin:

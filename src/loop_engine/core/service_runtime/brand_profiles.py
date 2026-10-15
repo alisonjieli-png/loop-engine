@@ -4,7 +4,7 @@ A profile selects presentation and OAuth audience, never another runtime,
 catalogue, account namespace, entitlement policy or billing customer.
 """
 from dataclasses import dataclass
-from urllib.parse import urlsplit
+from urllib.parse import unquote_plus, urlsplit
 
 from .http_auth import validate_public_origin
 
@@ -25,6 +25,13 @@ ORIGIN_LOCAL_WEB_PATHS = frozenset((
 ))
 ORIGIN_LOCAL_WEB_PREFIXES = ("/api", "/mcp", "/oauth", "/auth", "/.well-known", "/out", "/assets", "/__edge")
 ORIGIN_LOCAL_REQUEST_HEADERS = frozenset(("authorization", "cookie", "proxy-authorization", "origin"))
+ORIGIN_LOCAL_QUERY_NAMES = frozenset((
+    "code", "state", "access_token", "id_token", "refresh_token", "token", "token_hash",
+    "api_key", "apikey", "key", "password", "client_secret", "authorization", "authorization_id",
+    "oauth_authorization_id", "assertion", "code_verifier", "code_challenge", "redirect_uri",
+    "client_id", "resource", "scope", "response_type", "nonce", "session", "session_id",
+    "session_state", "iss", "csrf", "csrf_token", "device_code", "user_code", "login_hint",
+))
 
 
 def website_redirect_origins(public_base_url, allowed_hosts, allowed_origins, brand_profiles=()):
@@ -52,12 +59,27 @@ def website_redirect_origins(public_base_url, allowed_hosts, allowed_origins, br
     return redirects
 
 
-def public_website_read(method, path, header_names):
-    """Navigation only, before any credential, callback or protocol migration."""
+def public_website_read(method, path, header_names, raw_query=b""):
+    """Credential-free public navigation, not proof of an anonymous browser.
+
+    Browser-only storage and URL fragments are not visible here. Storage is
+    never migrated; a public page visit can use a different session at the apex.
+    Standard browser fragment and public anchor behavior is unchanged.
+    Explicit stateful routes and query-borne credentials stay origin-local.
+    """
+    try:
+        # Inspect names only. Retain the original bytes when building Location.
+        # Also refuse semicolon-delimited credentials used by some clients.
+        names = (unquote_plus(field.split("=", 1)[0], errors="strict").lower()
+                 for field in raw_query.decode("ascii").replace(";", "&").split("&"))
+        if ORIGIN_LOCAL_QUERY_NAMES.intersection(names):
+            return False
+    except UnicodeError:
+        return False
     return (method in ("GET", "HEAD")
             and not ORIGIN_LOCAL_REQUEST_HEADERS.intersection(name.lower() for name in header_names)
-            and path.rstrip("/") not in ORIGIN_LOCAL_WEB_PATHS
-            and not any(path == prefix or path.startswith(prefix + "/") for prefix in ORIGIN_LOCAL_WEB_PREFIXES))
+            and not any(path == prefix or path.startswith(prefix + "/")
+                        for prefix in (*ORIGIN_LOCAL_WEB_PATHS, *ORIGIN_LOCAL_WEB_PREFIXES)))
 
 
 def website_redirect_location(origin, raw_path, raw_query):

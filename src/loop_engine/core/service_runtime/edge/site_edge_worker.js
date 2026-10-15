@@ -119,9 +119,11 @@ function markAliased(headers, aliased) {
 }
 
 // Match the origin's public website policy. Protocols, credentials and browser
-// state retain their own origin; a permanent redirect must not be cached and
+// stateful routes retain their own origin; a permanent redirect must not be cached and
 // reused for one of those requests. The manifest already declares the exact
 // canonical hostname and admitted roots, so this introduces no host wildcard.
+// Browser-only storage and fragments are invisible here. This does not migrate
+// storage or establish sign-in state; standard public anchor behavior remains.
 function websiteRedirect(request, manifest, host, aliased, response) {
   const url = new URL(request.url);
   const canonical = manifest?.canonical_hostname;
@@ -135,14 +137,23 @@ function websiteRedirect(request, manifest, host, aliased, response) {
   const localPaths = ["/authorize", "/token", "/register", "/revoke", "/app", "/account", "/admin",
     "/login", "/signup", "/get-started", "/saved", "/build", "/plan", "/run-desk"];
   const localPrefixes = ["/api", "/mcp", "/oauth", "/auth", "/.well-known", "/out", "/assets", "/__edge"];
+  const localQueryNames = new Set(["code", "state", "access_token", "id_token", "refresh_token", "token", "token_hash",
+    "api_key", "apikey", "key", "password", "client_secret", "authorization", "authorization_id",
+    "oauth_authorization_id", "assertion", "code_verifier", "code_challenge", "redirect_uri",
+    "client_id", "resource", "scope", "response_type", "nonce", "session", "session_id",
+    "session_state", "iss", "csrf", "csrf_token", "device_code", "user_code", "login_hint"]);
   // URL.pathname retains percent escapes. Decode only for exclusion checks;
   // the Location below uses the original path and query exactly as received.
   let path;
-  try { path = decodeURIComponent(url.pathname); } catch { return null; }
-  if (localPaths.includes(path.replace(/\/+$/, ""))
-      || localPrefixes.some(prefix => path === prefix || path.startsWith(prefix + "/"))) return null;
+  try {
+    path = decodeURIComponent(url.pathname);
+    const queryNames = url.search.slice(1).split(/[&;]/)
+      .map(field => decodeURIComponent(field.split("=", 1)[0].replace(/\+/g, " ")).toLowerCase());
+    if (queryNames.some(name => localQueryNames.has(name))) return null;
+  } catch { return null; }
+  if ([...localPaths, ...localPrefixes].some(prefix => path === prefix || path.startsWith(prefix + "/"))) return null;
   const headers = { "location": `https://${canonical}${url.pathname}${url.search}`,
-    "cache-control": "no-store", "vary": "Authorization, Cookie, Origin", "referrer-policy": "no-referrer",
+    "cache-control": "no-store", "vary": "Authorization, Cookie, Proxy-Authorization, Origin", "referrer-policy": "no-referrer",
     "x-content-type-options": "nosniff" };
   if (response.headers.has("x-robots-tag")) headers["x-robots-tag"] = response.headers.get("x-robots-tag");
   return textResponse(null, 301, headers);

@@ -2529,15 +2529,17 @@ class ServiceHttpApplication:
                     response.headers.update(cors)
                     # Canonicalize successfully rendered public HTML only.
                     # All Host/Origin checks above still run first, and existing
-                    # www issuers, credentials and browser state remain local.
+                    # www issuers and credential-bearing requests remain local.
+                    # This does not detect or migrate browser-only storage.
                     website_origin = website_origins.get(request.headers["host"])
-                    if (website_origin and public_website_read(request.method, request.url.path, request.headers)
+                    if (website_origin and public_website_read(request.method, request.url.path, request.headers,
+                                                             scope.get("query_string", b""))
                             and response.status_code == 200 and "set-cookie" not in response.headers
                             and response.headers.get("content-type", "").split(";", 1)[0] == HTML_MEDIA_TYPE):
                         location = website_redirect_location(website_origin, scope.get("raw_path", b""),
                                                              scope.get("query_string", b""))
                         if location is not None:
-                            headers = {"Location": location, "Vary": "Authorization, Cookie, Origin",
+                            headers = {"Location": location, "Vary": "Authorization, Cookie, Proxy-Authorization, Origin",
                                        "Referrer-Policy": "no-referrer"}
                             if "x-robots-tag" in response.headers:
                                 headers["X-Robots-Tag"] = response.headers["x-robots-tag"]
