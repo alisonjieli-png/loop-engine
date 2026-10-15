@@ -182,6 +182,7 @@
     "core/service_api.py",
     "core/service_runtime/http.py",
     "core/service_runtime/http_auth.py",
+    "core/service_runtime/brand_profiles.py",
     "core/service_runtime/oauth_authorization.py",
     "core/service_runtime/oauth_http.py",
     "core/service_runtime/feed_source_collections.py",
@@ -881,6 +882,7 @@
     "maximum_total_bytes"
   ],
   "network_allowed_modules_reasons": {
+    "core/service_runtime/brand_profiles.py": "Uses only the pure urllib.parse.urlsplit and unquote_plus parsers to validate explicitly admitted website origins and inspect query names before canonical redirects. It creates no outbound client, socket or upstream request. tools/test_website_redirects.py restricts its network-related imports to these two parser functions and detects HTTP-client, socket and wildcard imports with known-wrong controls. The existing HTTP and edge transports still own all serving effects.",
     "core/web_research_engines.py": "The existing Web Research port's manually selected Brave, Exa and Tavily search adapters. Fixed provider endpoints use the bounded no-redirect transport in brave_search.py, with a shared operator request/account allowance reserved before dispatch. urllib.parse only validates untrusted candidate URLs. The per-engine conformance kit and tools/test_web_research_engines.py use injected transports and verify no secrets or candidate bodies enter metadata reports. This is not a persistent collector or an automatic fallback service.",
     "core/service_runtime/feed_source_collections.py": "Uses urllib.parse.urlsplit only to validate packaged source links. This release-curated projection creates no outbound client, socket or upstream request. tools/test_feed_source_collections.py restricts its network-related imports to that parser and detects added HTTP-client or socket imports with known-wrong controls.",
     "core/service_runtime/oauth_authorization.py": "Uses urllib.parse only to validate exact resource and registered callback addresses and construct redirects. It performs no outbound network request; existing browser identity and the host transport retain their authority. tools/test_oauth_http.py rejects outbound client imports in this module.",

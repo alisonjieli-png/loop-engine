@@ -5,6 +5,7 @@ DNS or production requests are made. Removed guards exercise the same oracles.
 """
 from contextlib import contextmanager
 from dataclasses import replace
+import ast
 import hashlib
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 import json
@@ -51,6 +52,35 @@ def observation(response):
 
 
 class RedirectPolicyTests(unittest.TestCase):
+    def test_network_import_exception_allows_only_the_two_pure_url_parsers(self):
+        # Match the packaged source-directory guard: urllib is classified as
+        # network-capable globally, so this narrow exception needs its own
+        # direct-import restriction and known-wrong controls.
+        def only_parsers(source):
+            network = {"urllib", "requests", "http", "socket", "httpx", "aiohttp"}
+            for node in ast.walk(ast.parse(source)):
+                if isinstance(node, ast.Import):
+                    if any(alias.name.split(".", 1)[0] in network for alias in node.names):
+                        return False
+                elif isinstance(node, ast.ImportFrom) and (node.module or "").split(".", 1)[0] in network:
+                    if node.module != "urllib.parse" or any(alias.name not in {"urlsplit", "unquote_plus"}
+                                                            for alias in node.names):
+                        return False
+            return True
+        module = Path(brand_profiles.__file__)
+        source = module.read_text()
+        rules = json.loads((module.parents[2] / "forbidden_paths.json").read_text())
+        name = "core/service_runtime/brand_profiles.py"
+        self.assertIn(name, rules["network_allowed_modules"])
+        self.assertIn(name, rules["network_allowed_modules_reasons"])
+        self.assertTrue(only_parsers(source))
+        for added in ("import urllib.request", "from urllib import request", "import requests",
+                      "import http.client", "from http import client", "import socket", "from socket import socket",
+                      "import httpx", "import aiohttp", "from urllib.parse import *",
+                      "from urllib.parse import urljoin", "import urllib.parse"):
+            with self.subTest(added=added):
+                self.assertFalse(only_parsers(source + "\n" + added), added)
+
     def test_only_declared_same_brand_pairs_are_selected(self):
         hosts = ("baltor.example.test", *PAIRS, *(profile.host for profile in PROFILES))
         origins = (BASE_ORIGIN, "https://www.baltor.example.test", *(p.public_base_url for p in PROFILES))
