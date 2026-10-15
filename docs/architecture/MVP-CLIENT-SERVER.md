@@ -2,7 +2,7 @@
 
 Kind: product architecture with measured local implementation and proposed hosting.
 Date: 2026-09-19. The [current deployment](#current-deployment) section was
-added on 2026-09-20 and last checked on 2026-10-13, with Fly release 92 live.
+added on 2026-09-20 and last checked on 2026-10-15, with Fly release 93 live.
 
 The hosted product manages accounts, subscriptions, and access to intelligence.
 The customer runs Loop Engine and the selected harnesses. A hosted intelligence
@@ -48,14 +48,106 @@ section. Update this section in the same change that records a new release.
 Public registration is enabled. The site offers the existing monthly plan;
 these deployment checks alone do not establish a fully qualified paid service.
 
-The running image is Fly release 92, from
+The running application image is Fly release 93, from
+`bdc4595574d1017837286263a901cb59f6eef41c`, tree
+`ddcb6f404cdd05ba9d4d995cdf2fe375ca202676`, image
+`sha256:e5a4519b23932a9a89e43e482c4f4d44bf29992a00779874f991597a5b82b263`.
+Exact CI `38705962862` passed all twenty required jobs. Guarded deployment
+`38708447261` succeeded, and readback confirms the deployment gate is closed.
+Fly records creation at 08:52:42 UTC on October 15. The exact image is running
+on the started machine with fresh passing machine health and all three required
+service-health checks passing. The
+[release 93 record](../../artifacts/architecture-audit-2026-09-19/pilot-release-93.json)
+owns these application facts and the remaining qualification scope.
+
+The complete public browser run is not passing. Its final attempt passed all
+4,715 assertions across twenty hosts and 200 views, but 21 canceled metadata
+fetches keep the functional, accounting and strict results false. The narrow
+redirect criterion is qualified; the broader website/customer journey remains
+open under S-6.35.06 and S-6.35.08.
+
+The source limits canonical redirects to credential-free public HTML GET and
+HEAD requests on six admitted same-brand `www`/apex pairs. Protocol, OAuth,
+account and browser-state traffic remains origin-local. This does not migrate
+browser storage or establish complete signed-in navigation continuity.
+The source also includes exact visible connection-URL checks, retained browser
+failure evidence, bounded source inventory and the reviewed takeover plan.
+
+GET-only readback confirms Cloudflare deployment
+`718c83e8-f624-4a5b-b4b7-a417b657c852`, serving version
+`88893ff0-d6a1-40d7-b719-1e767355938e` at 100 percent. Its export is
+`6e2fc6fc9885581bf160d943c45e4b240fbc58ee725d9e8958563977735db26a`,
+with 3,278 public files and 89,507,264 bytes from the exact application source.
+Settings match; origin mode remains `all`, with aliases and routes unchanged.
+All 3,278 public files passed exact live readback in 138.872 seconds.
+
+The six-pair redirect supplement passed all 118 GET/HEAD, header, query,
+stateful-route, MCP and metadata probes in 3.602 seconds, reading 3,804,995
+bytes. It used no actual credentials and did not follow redirects or test
+authenticated continuity. The first twenty-host browser attempt failed after
+one host and six of 200 views, with 19 of 20 assertions passing. Three native
+fetches failed for Baltor's root, pricing and terms pages; the cause was not
+captured. Later successful Node GET and curl HEAD probes are separate evidence.
+The second attempt used the same frozen checker and manifest. It completed all
+twenty hosts and 200 views, with 4,711 of 4,715 assertions passing, all 3,194
+exact-source GETs and all twenty identity HEAD checks passing. It made 6,050
+requests and accounted for 36,124,761 native decoded bytes and 18,970,943 browser
+encoded bytes. Accounting is incomplete: 21 canceled HTTP 200 metadata fetches
+remain errors and instrumentation events. No browser HTTP error of 400 or
+higher and no body-read error was recorded.
+
+Four assertions incorrectly required an MCP URL on AgentFeeds' public Markdown
+reading-instruction page. A preserved checker successor uses the source's
+`/feeds/collections/coding-benchmarks.md` expectation with the same files,
+hosts, views and limits. The third attempt completed all twenty hosts and 200
+views with 4,715 of 4,715 assertions, all 3,194 exact-source GETs and all twenty
+HEAD checks passing. It made 6,050 requests, with 36,124,761 native decoded bytes
+and 18,951,155 accounted browser encoded bytes. It still records 21 canceled
+HTTP 200 metadata fetches and the same 21 instrumentation events, with no HTTP
+response of 400 or higher or native body-read error. All three matrix reports
+remain preserved. The correction fixed four assertions only; no production
+fix or benign attribution is established for the metadata-fetch failures.
+
+Engineering retains release 93 because its new redirect/exclusion scope,
+complete-origin source/navigation assertions and exact edge assets passed,
+with service health still ready at three of three required checks. The broader
+cancellation class and endpoints were already recorded in release 92, and the
+Foundry and AgentStudios `site.js` readers are unchanged between the two release
+revisions. That does not prove an identical cause or full customer acceptance.
+Current scoped evidence does not justify rollback; stream/UI correlation
+remains open and the strict results stay false.
+
+The first edge attempt failed on a private helper's MCP result-field mismatch
+before any provider write. The second attempt's upload was acknowledged, but
+its postcheck compared version and deployment identities and failed. Separate
+GET-only reconciliation confirmed the intended active version and export;
+the Worker PUT was not repeated. Both original failures remain recorded.
+
+The first deployment dispatch, `38707101182`, failed at the authority step
+after the observer's failed status read closed the gate. Checkout, provider,
+build, publish and service-effect steps were skipped. Fresh reconciliation
+confirmed release 92 before the separately recorded successful second attempt.
+The failed report remains unchanged.
+
+No host configuration changed. Application rollback to release 92 uses
+`sha256:aa73def135cddf3b27a45c39d8b37e0083b609ae922a2744cc8bb5e3449315ec`
+without a host-file restore. The retained edge rollback is deployment
+`6231d769-3582-42c8-b648-1e9bc28e849a`, version
+`4165d810-05a0-43a6-a41d-3bf70bcd29f7`, export
+`a031cd4dd6139851ac8bf4218d66ff1a03d6b0668efcf5a179eb5f237cf79a16`.
+This application release makes no DNS, catalogue, model, billing or
+social-publication change.
+
+### Earlier release 92 qualification and rollback baseline
+
+Release 92 ran from
 `b0e2c4cd7dd2b49c611abca478e78a7624b14704`, image
 `sha256:aa73def135cddf3b27a45c39d8b37e0083b609ae922a2744cc8bb5e3449315ec`.
 Exact CI `38493865609` passed twenty jobs; guarded deployment `38494952598`
 succeeded and the deployment gate is closed. Fly records creation at
 01:21:13 UTC on October 14, still October 13 in the owner's timezone.
 The [release 92 record](../../artifacts/architecture-audit-2026-09-19/pilot-release-92.json)
-owns the current evidence and limits.
+owns that release's evidence and limits.
 
 AgentStudios has its own creative-facing pages, assets, navigation, account
 presentation and OAuth issuer over the same service, catalogue and account

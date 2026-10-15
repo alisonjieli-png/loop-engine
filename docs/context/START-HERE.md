@@ -21,9 +21,22 @@ two defects that were found and fixed after the first claims of correctness.
 
 ## Current context route
 
+Read the [October 15 takeover handoff](SESSION-HANDOFF-2026-10-15-TAKEOVER.md)
+and [current deployment](../architecture/MVP-CLIENT-SERVER.md#current-deployment)
+first. Application release 93 is confirmed with its exact image, passing
+service health and a closed deployment gate. GET-only reconciliation confirms
+the edge deployment and exact export identity. All 3,278 public-file reads and
+118 bounded redirect probes pass. The final browser matrix completed twenty
+hosts and 200 views with all 4,715 assertions passing, but 21 canceled
+metadata-fetch errors keep its functional, accounting and strict results false.
+Only the narrow redirect task is live-qualified; the metadata-fetch cause and
+broader customer journeys remain unresolved. The handoff preserves the reviewed history scope,
+source work, local checks and failed application and edge attempts beside their
+reconciliations. Do not repeat a completed operation or infer broader live
+qualification from a bounded probe.
+
 Read the [October 13 release 92 checkpoint](SESSION-HANDOFF-2026-10-13-RELEASE92.md)
-and [current release 92 deployment](../architecture/MVP-CLIENT-SERVER.md#current-deployment)
-first for AgentStudios application deployment, completed both-host public
+for the earlier AgentStudios application deployment, completed both-host public
 DNS/TLS qualification, twenty-host live check limits, the reviewed local-only
 AgentBriefs prototype (`design/prototypes/agentbriefs/`) and configuration-aware
 rollback. The
