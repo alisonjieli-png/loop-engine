@@ -10,12 +10,12 @@
   {
    "acceptance": "Eligible credential-free public website GET and HEAD requests returning HTML on each declared www host redirect once to the same brand's apex while preserving the path and query. Excluded protocol, OAuth, account and stateful routes retain their existing origin and behavior; browser storage migration and complete signed-in public-navigation continuity are not claimed.",
    "comment": "A blanket canonical redirect would change established client and account origins. HTTP cannot observe browser sessionStorage, localStorage or URL fragments; redirecting public-home navigation leaves www storage untouched and the apex may appear signed out. Limit this repair to public presentation; do not replay completed domain or deployment operators.",
-   "complete": false,
+   "complete": true,
    "completion_status": "live_qualified",
    "depends_on": [],
-   "evidence": "October 15 read-only takeover checks found the six www product hosts serving HTTP 200 without Location. Implementation is assigned to a separate detached worktree; no passing release result is claimed here.",
+   "evidence": "October 15 initial read-only takeover checks found the six www product hosts serving HTTP 200 without Location. Release 93 from bdc4595574d1017837286263a901cb59f6eef41c passed all 20 local gates and exact CI 38705962862, deployed through 38708447261 with the gate closed, and its edge deployment was confirmed by GET-only reconciliation. All 118 direct six-pair GET/HEAD, header, query, stateful-route, MCP and metadata probes passed. The final matrix completed all 20 origins and 200 views with all 4,715 assertions, 3,194 exact-source GETs and 20 HEAD checks passing. This closes only the stated redirect criterion: 21 canceled HTTP 200 metadata fetches still make the broader matrix's functional, accounting and strict results false. All three matrix attempts and edge/application failures remain in pilot-release-93.json.",
    "id": "S-6.35.10",
-   "next_action": "Integrate the separately owned redirect repair after its HTTP, edge Worker and existing-boundary checks pass.",
+   "next_action": "Retain the HTTP, edge Worker, callback-query and origin-local negative controls on later releases. Keep the metadata-fetch diagnosis and broader customer journeys under S-6.35.06 and S-6.35.08; narrow redirect qualification does not close them.",
    "owner_step": "S-6.35",
    "procedure": [
     "Use only admitted www/apex pairs and successfully rendered public HTML; exclude non-GET/HEAD methods, Authorization, Proxy-Authorization, Cookie or Origin headers, decoded credential or callback query names and responses that set cookies.",
@@ -24,7 +24,7 @@
     "Run owning brand, authentication and static-site checks on the exact candidate; retain failures and skipped checks.",
     "After exact CI and the guarded release, verify eligible redirects and excluded traffic across all affected hosts; preserve the previous image, edge export and configuration for rollback."
    ],
-   "status": "building",
+   "status": "live_qualified",
    "title": "Redirect public website aliases without changing client origins",
    "waiting_on": []
   },
@@ -321,7 +321,7 @@
   },
   {
    "acceptance": "Baltor.ai retains all three offerings while AgentFeeds, AgentFoundry and AgentAFK have separate branded domains and tested acquisition paths, truthful operator and billing information, isolated origin handling and attributable results, reusing the existing product contracts and entitlements.",
-   "comment": "This task qualifies the current standalone website scope, not complete customer outcomes. AgentFoundry reuses account/MCP access and offers no new checkout; AFK is a browser-local Preview with account/provider effects refused, not hosted execution or adaptive ranking. S-6.214, S-6.201.04 and S-6.24.03 retain the respective remaining work. The $9/$49/$99 direction, existing subscriptions, grants and free preview terms remain unchanged; advertising spend stays with the owner.",
+   "comment": "This task qualifies the current standalone website scope, not complete customer outcomes. AgentFoundry reuses account/MCP access and offers no new checkout; AFK is a browser-local Preview with account/provider effects refused, not hosted execution or adaptive ranking. S-6.214, S-6.201.04 and S-6.24.03 retain the respective remaining work. The $9/$49/$99 direction, existing subscriptions, grants and free preview terms remain unchanged; advertising spend stays with the owner. Release 93 matrices 02 and 03 each retain 21 canceled HTTP 200 public-metadata fetch errors across Foundry and AgentStudios. The final matrix passes all 4,715 assertions but remains functionally and strictly false. Initial fixture diagnosis passed 12 of 14 controls without reproducing navigation hypotheses; a separate exact-guard comparison passed 8 of 8. Neither establishes the production cause, a benign attribution or a production fix. This existing task and S-6.35.08 own that diagnosis.",
    "complete": false,
    "completion_status": "live_qualified",
    "depends_on": [
@@ -329,7 +329,7 @@
    ],
    "evidence": "Release 91 from b500149c serves independent AgentFoundry and AgentAFK presentations after exact CI38461710945 and guarded deployment38463481427; gate closed. All four standalone domains and www hostnames are live, with active free DNS zones and direct Fly HTTPS. The six new origins completed1814/1814 functional assertions and1556exact-source GET checks, but four secondary Foundry body-accounting errors keep the strict aggregate false and byte accounting partial. Public Good instrumentation buffers real responses and does not qualify native streaming. AgentFeeds passed414/414; existing-host456/456, offering497/497, edge3281/3281 and pulse50/50 passed. This combined task stays building for real authenticated/acquisition outcomes and remaining instrumentation qualification, not an unlaunched domain. See pilot-release-91.json.",
    "id": "S-6.35.06",
-   "next_action": "All selected websites are live for public review. Qualify real authenticated/acquisition journeys and resolve secondary browser-body measurement gaps; preserve the independent interfaces while maintained feeds, portable component use, adaptive ranking and hosted execution proceed through their owning tasks.",
+   "next_action": "All selected websites are live for public review. Correlate each retained release 93 metadata fetch's start, status, consumed bytes and EOF or cancellation with the required UI terminal state and navigation/context teardown on the exact source. Preserve failed and successful controls; do not suppress fetch errors or infer a benign cause from later successful reads. Qualify real authenticated/acquisition journeys and resolve browser-body measurement gaps; preserve the independent interfaces while maintained feeds, portable component use, adaptive ranking and hosted execution proceed through their owning tasks.",
    "owner_step": "S-6.35",
    "procedure": [
     "Implement the owner's standing October 13 direction: baltor.ai combines all three offerings and AgentFeeds, AgentFoundry and AgentAFK have distinct brands and separate domains as additional customer acquisition channels. Baltor subdomains do not satisfy that direction.",
@@ -365,13 +365,13 @@
   },
   {
    "acceptance": "The exact CI-passed revision is deployed through the guarded workflow, with the gate closed and rollback recorded.",
-   "comment": "Rollback image90 requires restoring /data/host-before-standalone-sites-20261013.json first. This preserves AgentFeeds and withdraws the three new presentations. No catalogue, price, subscription, R2 or model change occurred; standard deployment grant reconciliation and the three DNS transitions are recorded separately.",
+   "comment": "The recorded release 91 rollback to image90 requires restoring /data/host-before-standalone-sites-20261013.json first. This preserves AgentFeeds and withdraws the three new presentations. No catalogue, price, subscription, R2 or model change occurred in that record; standard deployment grant reconciliation and the three DNS transitions are recorded separately. The release 93 status-read race that prematurely closed the gate, incompatible MCP result-field access and version/deployment identity mismatch justify reusable observer/adapter qualification. Published status here describes the recorded deployment outcome, not completion of this future tooling integration. Reuse existing release and provider owners; add no runtime or registry.",
    "complete": true,
    "completion_status": "published",
    "depends_on": [],
-   "evidence": "Release 91 from b500149c: exact CI38461710945 passed twenty jobs, guarded deployment38463481427 succeeded, gate closed, image34f939fa7cdc. Local self-tests3949/3949, workspace browser1003/1003 plus197controls, AgentFeeds browser128, focused67plus26, conformance32, documentation58, installed-wheel858 and pristine regeneration passed. Live AgentFeeds414/414, existing-host456/456 over68views, offering497/497, exact edge3281/3281 and final pulse50/50 passed. All new sites are publicly available with1814/1814 functional assertions and1556exact-source GET checks; the strict aggregate remains false for four secondary body-accounting errors, retained alongside all earlier failures in pilot-release-91.json.",
+   "evidence": "Release 91 from b500149c: exact CI38461710945 passed twenty jobs, guarded deployment38463481427 succeeded, gate closed, image34f939fa7cdc. Local self-tests3949/3949, workspace browser1003/1003 plus197controls, AgentFeeds browser128, focused67plus26, conformance32, documentation58, installed-wheel858 and pristine regeneration passed. Live AgentFeeds414/414, existing-host456/456 over68views, offering497/497, exact edge3281/3281 and final pulse50/50 passed. All new sites are publicly available with1814/1814 functional assertions and1556exact-source GET checks; the strict aggregate remains false for four secondary body-accounting errors, retained alongside all earlier failures in pilot-release-91.json. October 15: release 93 from bdc4595574d1017837286263a901cb59f6eef41c passed 20 local gates and exact CI 38705962862, then guarded deployment 38708447261 with the gate closed. Application health passed 3 of 3; reconciled edge deployment passed 3,278 exact file reads and 118 direct redirect probes. Final matrix coverage reached all 20 hosts and 200 views with 4,715 assertions, but 21 metadata-fetch failures keep functional, accounting and strict results false. The root retains the scoped repair with broader diagnosis open; pilot-release-93.json preserves every application, edge and matrix attempt.",
    "id": "S-6.35.01",
-   "next_action": "Keep application deployment and catalogue publication from overlapping.",
+   "next_action": "Keep application deployment and catalogue publication from overlapping. Qualify reusable release-observer and provider adapters from the private release 93 repairs through the existing tooling boundary. Require actual pinned SDK result tests, immutable attempt journals, bounded GET-only reconciliation and retries, exact image/version/ETag/source bindings and no mutation replay. This integration is unfinished and is not a newly shipped public tool.",
    "owner_step": "S-6.35",
    "procedure": [
     "Freeze the candidate and finish its owning checks and exact CI.",
@@ -984,9 +984,9 @@
    "complete": false,
    "completion_status": "offline_verified",
    "depends_on": [],
-   "evidence": "65,382 files inventoried, including 1,550 conversation files; 453 directories remain queued. The scan stopped at its 40 GiB floor. October 15: the owner added a network share containing research and parallel harness work; initial top-level discovery is observed, not a complete project inventory or content review. Exact source locations remain in the private checkpoint.",
+   "evidence": "65,382 files inventoried, including 1,550 conversation files; 453 directories remain queued. The scan stopped at its 40 GiB floor. October 15: the owner added a network share containing research and parallel harness work. A bounded selected-scope inventory completed 2,700 files and seven marker projects with zero scanner errors; six projects retain unresolved authorship and one has a third-party signal. Eighteen credential-named files were excluded. The selected inventory and candidate mapping are not a complete share scan, rights finding, source execution or publication. Exact source locations remain private.",
    "id": "S-6.207.01",
-   "next_action": "Continue bounded project-root discovery on the newly approved share; preserve the previous inventory queue and resolve its measured storage allocation before resuming that scan.",
+   "next_action": "Use the completed selected-scope inventory for project ownership, revision and dirty-state review; preserve unresolved authorship and dependency findings. Keep the previous inventory queue and resolve its measured storage allocation before resuming that scan; do not infer whole-share completion from the selected roots.",
    "owner_step": "S-6.207",
    "procedure": [
     "Resume the read-only checkpoint without rescanning completed directories unnecessarily; keep the earlier disk-floor hold on its pending queue until storage is resolved.",
@@ -1041,7 +1041,7 @@
   },
   {
    "acceptance": "Each reviewed chunk records answered, unknown, disputed or reasoned not-applicable questions with source anchors. Project findings distinguish exact duplicates, parallel revisions, missing runtime dependencies and unverified outcome claims.",
-   "comment": "Question bindings and keyword matches are not completed answers.",
+   "comment": "Question bindings and keyword matches are not completed answers. The October 15 metadata-only review mapped eight candidate families from indexes, descriptors and summaries without source-code review. A separate bounded review read all 624 collector lines and 225 registry lines: unsupported Measured/safety_vetted labels, invented defaults and mirror/local-sample fallbacks presented as live remain unqualified. One proposed offline Poly Haven snapshot projection belongs under S-6.214.03 and S-6.214.05, with reusable admission under S-6.215.13; it is not implemented or tested. Source revision and rights remain unknown, original media was not inspected, and no source was executed or published. These reviews do not complete a thousand-question review or admit new served components.",
    "complete": false,
    "completion_status": "offline_verified",
    "depends_on": [
@@ -1049,7 +1049,7 @@
    ],
    "evidence": "One thousand questions are defined; 75 source-backed answers exist, including 38 new findings across nine creative-project chunks. Three original camera/timing helpers pass the existing isolated-package checks. No thousand-question chunk review is complete.",
    "id": "S-6.207.04",
-   "next_action": "Continue focused history and selected network-share project review; turn verified gaps into owning tests or bounded component adaptations without executing the source project.",
+   "next_action": "Continue from the completed selected metadata and candidate-family mapping into exact source revision, ownership, dirty-state, rights and dependency review. Turn verified gaps into owning tests or bounded component adaptations without executing the source project.",
    "owner_step": "S-6.207",
    "procedure": [
     "Apply the thousand-question bank by relevance and preserve open questions.",
@@ -1667,13 +1667,13 @@
   },
   {
    "acceptance": "A designer-focused presentation supports actual creative discovery, previews, compatibility, retrieval and revision while preserving shared backend access and truthful operator disclosure.",
-   "comment": "Separate presentation does not claim unrelated ownership or require another backend.",
+   "comment": "Separate presentation does not claim unrelated ownership or require another backend. Release 93's final matrix completes all hosts, views and assertions but retains 21 metadata-fetch failures across Foundry and AgentStudios; functional, accounting and strict results remain false. Narrow public redirect qualification does not complete this creative customer journey.",
    "complete": false,
    "completion_status": "live_qualified",
    "depends_on": [],
    "evidence": "October 13 owner selects AgentStudios, confirms purchasing agentstudios.si on Namecheap and requests separate branding over the same backend. Release92 from b0e2c4cd passed exact CI and guarded deployment; its gate is closed and the shared edge passed3281 exact file checks. The independent creative renderer, exact host admission and provider setup are deployed. Local checks passed3946 self-tests,103 account/routing/OAuth tests,104 browser checks with an independent repeat,32 conformance gates and installed-wheel rendering. Both the agentstudios.si apex and www hostnames completed ordinary public DNS/TLS qualification, and the twenty-host public matrix completed all20 origins and200 views with3660/3664 assertions,3194/3194 exact GETs and20/20 identity HEAD checks. Four /connect innerText assertions failed because the MCP URL renders in a readonly input (passed4/4 in the inputValue supplement), and16 CDP net::ERR_ABORTED body-accounting events remain recorded alongside attempt01. The earlier AgentMedia placeholder was not purchased.",
    "id": "S-6.35.08",
-   "next_action": "Qualify an actual creative retrieval, edit and clean reopen journey, and resolve the retained /connect innerText selector and CDP stream-accounting instrumentation limits. Do not replay completed provider operations.",
+   "next_action": "Qualify an actual creative retrieval, edit and clean reopen journey. Retain the corrected visible readonly connection checks and earlier reports; diagnose the canceled public-metadata fetches jointly with S-6.35.06 without suppressing failures or claiming a benign cause. Do not replay completed provider operations.",
    "owner_step": "S-6.35",
    "procedure": [
     "Verify the purchased agentstudios.si domain, preserve registrar records and configure its Cloudflare DNS and exact Fly certificates.",
@@ -1688,7 +1688,7 @@
   }
  ],
  "execution_counts": {
-  "complete": 21,
+  "complete": 22,
   "total": 77
  },
  "lanes": {
@@ -7127,7 +7127,7 @@
  ],
  "record_type": "development_tracker/v2",
  "source": "docs/roadmap/roadmap.yaml",
- "source_fingerprint": "sha256:a3a10a10c9d294d2222c00c0085a842456f82bb7763e457a3b31157bb466f6ce",
+ "source_fingerprint": "sha256:7d565b955d610501b9c5f1604a5ab2019b32c7c3ec5ff261feca51df7a1abf6c",
  "working_schedule": {
   "blocks": [
    {

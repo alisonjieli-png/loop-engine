@@ -3,7 +3,7 @@
 Kind: generated view. Do not edit by hand. The only task authority is
 [roadmap.yaml](roadmap.yaml); change it, then run
 `PYTHONPATH=src:tools .venv/bin/python tools/build_development_tracker.py`.
-Source fingerprint: `sha256:a3a10a10c9d294d2222c00c0085a842456f82bb7763e457a3b31157bb466f6ce`.
+Source fingerprint: `sha256:7d565b955d610501b9c5f1604a5ab2019b32c7c3ec5ff261feca51df7a1abf6c`.
 
 ## Where things stand
 
@@ -67,13 +67,13 @@ gantt
 
 Each subtask lives in its owning step in roadmap.yaml. A local check does not complete a task that requires publication.
 
-Completed within their stated scope: 21 of 77 subtasks.
+Completed within their stated scope: 22 of 77 subtasks.
 
-Next eligible subtask: S-6.35.10: Redirect public website aliases without changing client origins
+Next eligible subtask: S-6.35.11: Bind the systems portal to evidence and staff access
 
 | Order | Task | State | Completion required | Next action or dependency |
 |---:|---|---|---|---|
-| 1 | [ ] S-6.35.10: Redirect public website aliases without changing client origins | building | live_qualified | Integrate the separately owned redirect repair after its HTTP, edge Worker and existing-boundary checks pass. |
+| 1 | [x] S-6.35.10: Redirect public website aliases without changing client origins | live_qualified | live_qualified | Retain the HTTP, edge Worker, callback-query and origin-local negative controls on later releases. Keep the metadata-fetch diagnosis and broader customer journeys under S-6.35.06 and S-6.35.08; narrow redirect qualification does not close them. |
 | 2 | [ ] S-6.35.11: Bind the systems portal to evidence and staff access | ready | live_qualified | Identify the current portal's exact export and source, then implement its staff-access and evidence projections through the existing owners. |
 | 3 | [ ] S-6.24.02: Verify OpenCode and another harness against live Baltor | ready | live_qualified | Run the customer path on this PC without borrowing administrator access. |
 | 4 | [ ] S-6.24.01: Prove one bounded overnight customer task | ready | live_qualified | Connect one useful deterministic task to a separate supported worker through the existing queue and history; preserve provider holds and earlier token ceilings. |
@@ -87,9 +87,9 @@ Next eligible subtask: S-6.35.10: Redirect public website aliases without changi
 | 12 | [x] S-6.35.04: Apply the owner's monthly Basic, Pro and Max prices | published | published | Keep both accepted Price identities during any rollback and preserve existing subscriptions, grants and free preview terms. |
 | 13 | [x] S-6.35.05: Add random asset discovery with provenance and use details | published | published | Preserve the qualified routes and expand useful rights-qualified media through the component intake and portable customer proof in S-6.201.04. |
 | 14 | [x] S-6.35.07: Launch the Don't be a meat proxy campaign funnel for AgentFeeds | live_qualified | live_qualified | Retain the verified public funnel and review agent feedback. Measure useful AgentFeeds activation under the existing consent and measurement rules without turning public website availability into a claim of customer outcomes. |
-| 15 | [ ] S-6.35.06: Qualify AgentFeeds, AgentFoundry and AgentAFK on the shared service | building | live_qualified | All selected websites are live for public review. Qualify real authenticated/acquisition journeys and resolve secondary browser-body measurement gaps; preserve the independent interfaces while maintained feeds, portable component use, adaptive ranking and hosted execution proceed through their owning tasks. |
+| 15 | [ ] S-6.35.06: Qualify AgentFeeds, AgentFoundry and AgentAFK on the shared service | building | live_qualified | All selected websites are live for public review. Correlate each retained release 93 metadata fetch's start, status, consumed bytes and EOF or cancellation with the required UI terminal state and navigation/context teardown on the exact source. Preserve failed and successful controls; do not suppress fetch errors or infer a benign cause from later successful reads. Qualify real authenticated/acquisition journeys and resolve browser-body measurement gaps; preserve the independent interfaces while maintained feeds, portable component use, adaptive ranking and hosted execution proceed through their owning tasks. |
 | 16 | [x] S-6.12.04: Separate three product cards from the introductory hero | live_qualified | live_qualified | Keep the three visible offerings consistent while the separate billing and hosted-service work proceeds. |
-| 17 | [x] S-6.35.01: Release reviewed main and verify it live | published | published | Keep application deployment and catalogue publication from overlapping. |
+| 17 | [x] S-6.35.01: Release reviewed main and verify it live | published | published | Keep application deployment and catalogue publication from overlapping. Qualify reusable release-observer and provider adapters from the private release 93 repairs through the existing tooling boundary. Require actual pinned SDK result tests, immutable attempt journals, bounded GET-only reconciliation and retries, exact image/version/ETag/source bindings and no mutation replay. This integration is unfinished and is not a newly shipped public tool. |
 | 18 | [x] S-6.215.01: Record the current live file baseline | offline_verified | offline_verified | Use this exact baseline for reconciliation. |
 | 19 | [x] S-6.215.02: Qualify the retained API-contract population | offline_verified | offline_verified | Carry only the 31,459 qualified packages into admission. |
 | 20 | [x] S-6.215.03: Admit the qualified contract batch | offline_verified | offline_verified | Build the admitted additions bundle. |
@@ -117,10 +117,10 @@ Next eligible subtask: S-6.35.10: Redirect public website aliases without changi
 | 42 | [ ] S-6.214.10: Save customer feed preferences per agent | proposed | live_qualified | Waiting on S-6.214.09 |
 | 43 | [ ] S-6.214.11: Deliver and measure personalized feeds | proposed | live_qualified | Waiting on S-6.214.10 |
 | 44 | [ ] S-6.214.14: Show top feeds and components with distinct popularity and agent-use rankings | proposed | live_qualified | Waiting on S-6.214.09, S-6.214.11 |
-| 45 | [ ] S-6.207.01: Complete the approved SMB metadata inventory | building | offline_verified | Continue bounded project-root discovery on the newly approved share; preserve the previous inventory queue and resolve its measured storage allocation before resuming that scan. |
+| 45 | [ ] S-6.207.01: Complete the approved SMB metadata inventory | building | offline_verified | Use the completed selected-scope inventory for project ownership, revision and dirty-state review; preserve unresolved authorship and dependency findings. Keep the previous inventory queue and resolve its measured storage allocation before resuming that scan; do not infer whole-share completion from the selected roots. |
 | 46 | [x] S-6.207.02: Extract the priority RapidAPI coding session | offline_verified | offline_verified | Use the exact chunks for substantive review and missing-artifact recovery. |
 | 47 | [ ] S-6.207.03: Recover the missing registry artifacts | ready | offline_verified | Start with the two missing native databases and the missing discovery module. |
-| 48 | [ ] S-6.207.04: Perform source-specific question reviews | building | offline_verified | Continue focused history and selected network-share project review; turn verified gaps into owning tests or bounded component adaptations without executing the source project. |
+| 48 | [ ] S-6.207.04: Perform source-specific question reviews | building | offline_verified | Continue from the completed selected metadata and candidate-family mapping into exact source revision, ownership, dirty-state, rights and dependency review. Turn verified gaps into owning tests or bounded component adaptations without executing the source project. |
 | 49 | [ ] S-6.207.05: Convert approved findings into original candidates | proposed | offline_verified | Waiting on S-6.207.04 |
 | 50 | [ ] S-6.218.01: Specify the hosted live-tool boundary | ready | offline_verified | Draft the narrow first hosted-tool contract and adversarial cases. |
 | 51 | [ ] S-6.218.02: Qualify providers for customer-facing use | ready | offline_verified | Waiting on S-6.218.01 |
@@ -149,13 +149,13 @@ Next eligible subtask: S-6.35.10: Redirect public website aliases without changi
 | 74 | [x] S-6.217.01: Reconcile recent prompts and action history | offline_verified | offline_verified | Carry the reviewed Antigravity and pasted-research obligations into their existing owners. Public redirects and systems evidence/access belong to S-6.35.10 and S-6.35.11; maintained feeds to S-6.214, task execution to S-6.24, media proofs to S-6.201 and useful supply to S-6.215.13. |
 | 75 | [ ] S-6.215.14: Reach two million useful served files | proposed | published | Waiting on S-6.215.13 |
 | 76 | [ ] S-6.214.08: Reach ten thousand active qualified sources | proposed | live_qualified | Waiting on S-6.214.07 |
-| 77 | [ ] S-6.35.08: Launch AgentStudios as the independent creative offering | building | live_qualified | Qualify an actual creative retrieval, edit and clean reopen journey, and resolve the retained /connect innerText selector and CDP stream-accounting instrumentation limits. Do not replay completed provider operations. |
+| 77 | [ ] S-6.35.08: Launch AgentStudios as the independent creative offering | building | live_qualified | Qualify an actual creative retrieval, edit and clean reopen journey. Retain the corrected visible readonly connection checks and earlier reports; diagnose the canceled public-metadata fetches jointly with S-6.35.06 without suppressing failures or claiming a benign cause. Do not replay completed provider operations. |
 
 ## Subtask procedures and evidence
 
 ### S-6.35.10 Redirect public website aliases without changing client origins
 
-Owner step: S-6.35. State: building. Completion requires: live_qualified.
+Owner step: S-6.35. State: live_qualified. Completion requires: live_qualified.
 
 Acceptance: Eligible credential-free public website GET and HEAD requests returning HTML on each declared www host redirect once to the same brand's apex while preserving the path and query. Excluded protocol, OAuth, account and stateful routes retain their existing origin and behavior; browser storage migration and complete signed-in public-navigation continuity are not claimed.
 
@@ -165,9 +165,9 @@ Acceptance: Eligible credential-free public website GET and HEAD requests return
 4. Run owning brand, authentication and static-site checks on the exact candidate; retain failures and skipped checks.
 5. After exact CI and the guarded release, verify eligible redirects and excluded traffic across all affected hosts; preserve the previous image, edge export and configuration for rollback.
 
-Evidence: October 15 read-only takeover checks found the six www product hosts serving HTTP 200 without Location. Implementation is assigned to a separate detached worktree; no passing release result is claimed here.
+Evidence: October 15 initial read-only takeover checks found the six www product hosts serving HTTP 200 without Location. Release 93 from bdc4595574d1017837286263a901cb59f6eef41c passed all 20 local gates and exact CI 38705962862, deployed through 38708447261 with the gate closed, and its edge deployment was confirmed by GET-only reconciliation. All 118 direct six-pair GET/HEAD, header, query, stateful-route, MCP and metadata probes passed. The final matrix completed all 20 origins and 200 views with all 4,715 assertions, 3,194 exact-source GETs and 20 HEAD checks passing. This closes only the stated redirect criterion: 21 canceled HTTP 200 metadata fetches still make the broader matrix's functional, accounting and strict results false. All three matrix attempts and edge/application failures remain in pilot-release-93.json.
 
-Next: Integrate the separately owned redirect repair after its HTTP, edge Worker and existing-boundary checks pass.
+Next: Retain the HTTP, edge Worker, callback-query and origin-local negative controls on later releases. Keep the metadata-fetch diagnosis and broader customer journeys under S-6.35.06 and S-6.35.08; narrow redirect qualification does not close them.
 
 Comment: A blanket canonical redirect would change established client and account origins. HTTP cannot observe browser sessionStorage, localStorage or URL fragments; redirecting public-home navigation leaves www storage untouched and the apex may appear signed out. Limit this repair to public presentation; do not replay completed domain or deployment operators.
 
@@ -423,9 +423,9 @@ Acceptance: Baltor.ai retains all three offerings while AgentFeeds, AgentFoundry
 
 Evidence: Release 91 from b500149c serves independent AgentFoundry and AgentAFK presentations after exact CI38461710945 and guarded deployment38463481427; gate closed. All four standalone domains and www hostnames are live, with active free DNS zones and direct Fly HTTPS. The six new origins completed1814/1814 functional assertions and1556exact-source GET checks, but four secondary Foundry body-accounting errors keep the strict aggregate false and byte accounting partial. Public Good instrumentation buffers real responses and does not qualify native streaming. AgentFeeds passed414/414; existing-host456/456, offering497/497, edge3281/3281 and pulse50/50 passed. This combined task stays building for real authenticated/acquisition outcomes and remaining instrumentation qualification, not an unlaunched domain. See pilot-release-91.json.
 
-Next: All selected websites are live for public review. Qualify real authenticated/acquisition journeys and resolve secondary browser-body measurement gaps; preserve the independent interfaces while maintained feeds, portable component use, adaptive ranking and hosted execution proceed through their owning tasks.
+Next: All selected websites are live for public review. Correlate each retained release 93 metadata fetch's start, status, consumed bytes and EOF or cancellation with the required UI terminal state and navigation/context teardown on the exact source. Preserve failed and successful controls; do not suppress fetch errors or infer a benign cause from later successful reads. Qualify real authenticated/acquisition journeys and resolve browser-body measurement gaps; preserve the independent interfaces while maintained feeds, portable component use, adaptive ranking and hosted execution proceed through their owning tasks.
 
-Comment: This task qualifies the current standalone website scope, not complete customer outcomes. AgentFoundry reuses account/MCP access and offers no new checkout; AFK is a browser-local Preview with account/provider effects refused, not hosted execution or adaptive ranking. S-6.214, S-6.201.04 and S-6.24.03 retain the respective remaining work. The $9/$49/$99 direction, existing subscriptions, grants and free preview terms remain unchanged; advertising spend stays with the owner.
+Comment: This task qualifies the current standalone website scope, not complete customer outcomes. AgentFoundry reuses account/MCP access and offers no new checkout; AFK is a browser-local Preview with account/provider effects refused, not hosted execution or adaptive ranking. S-6.214, S-6.201.04 and S-6.24.03 retain the respective remaining work. The $9/$49/$99 direction, existing subscriptions, grants and free preview terms remain unchanged; advertising spend stays with the owner. Release 93 matrices 02 and 03 each retain 21 canceled HTTP 200 public-metadata fetch errors across Foundry and AgentStudios. The final matrix passes all 4,715 assertions but remains functionally and strictly false. Initial fixture diagnosis passed 12 of 14 controls without reproducing navigation hypotheses; a separate exact-guard comparison passed 8 of 8. Neither establishes the production cause, a benign attribution or a production fix. This existing task and S-6.35.08 own that diagnosis.
 
 ### S-6.12.04 Separate three product cards from the introductory hero
 
@@ -453,11 +453,11 @@ Acceptance: The exact CI-passed revision is deployed through the guarded workflo
 2. Dispatch the guarded deployment once and reconcile the remote result.
 3. Close the deployment gate; record image, revision, rollback and all-host checks.
 
-Evidence: Release 91 from b500149c: exact CI38461710945 passed twenty jobs, guarded deployment38463481427 succeeded, gate closed, image34f939fa7cdc. Local self-tests3949/3949, workspace browser1003/1003 plus197controls, AgentFeeds browser128, focused67plus26, conformance32, documentation58, installed-wheel858 and pristine regeneration passed. Live AgentFeeds414/414, existing-host456/456 over68views, offering497/497, exact edge3281/3281 and final pulse50/50 passed. All new sites are publicly available with1814/1814 functional assertions and1556exact-source GET checks; the strict aggregate remains false for four secondary body-accounting errors, retained alongside all earlier failures in pilot-release-91.json.
+Evidence: Release 91 from b500149c: exact CI38461710945 passed twenty jobs, guarded deployment38463481427 succeeded, gate closed, image34f939fa7cdc. Local self-tests3949/3949, workspace browser1003/1003 plus197controls, AgentFeeds browser128, focused67plus26, conformance32, documentation58, installed-wheel858 and pristine regeneration passed. Live AgentFeeds414/414, existing-host456/456 over68views, offering497/497, exact edge3281/3281 and final pulse50/50 passed. All new sites are publicly available with1814/1814 functional assertions and1556exact-source GET checks; the strict aggregate remains false for four secondary body-accounting errors, retained alongside all earlier failures in pilot-release-91.json. October 15: release 93 from bdc4595574d1017837286263a901cb59f6eef41c passed 20 local gates and exact CI 38705962862, then guarded deployment 38708447261 with the gate closed. Application health passed 3 of 3; reconciled edge deployment passed 3,278 exact file reads and 118 direct redirect probes. Final matrix coverage reached all 20 hosts and 200 views with 4,715 assertions, but 21 metadata-fetch failures keep functional, accounting and strict results false. The root retains the scoped repair with broader diagnosis open; pilot-release-93.json preserves every application, edge and matrix attempt.
 
-Next: Keep application deployment and catalogue publication from overlapping.
+Next: Keep application deployment and catalogue publication from overlapping. Qualify reusable release-observer and provider adapters from the private release 93 repairs through the existing tooling boundary. Require actual pinned SDK result tests, immutable attempt journals, bounded GET-only reconciliation and retries, exact image/version/ETag/source bindings and no mutation replay. This integration is unfinished and is not a newly shipped public tool.
 
-Comment: Rollback image90 requires restoring /data/host-before-standalone-sites-20261013.json first. This preserves AgentFeeds and withdraws the three new presentations. No catalogue, price, subscription, R2 or model change occurred; standard deployment grant reconciliation and the three DNS transitions are recorded separately.
+Comment: The recorded release 91 rollback to image90 requires restoring /data/host-before-standalone-sites-20261013.json first. This preserves AgentFeeds and withdraws the three new presentations. No catalogue, price, subscription, R2 or model change occurred in that record; standard deployment grant reconciliation and the three DNS transitions are recorded separately. The release 93 status-read race that prematurely closed the gate, incompatible MCP result-field access and version/deployment identity mismatch justify reusable observer/adapter qualification. Published status here describes the recorded deployment outcome, not completion of this future tooling integration. Reuse existing release and provider owners; add no runtime or registry.
 
 ### S-6.215.01 Record the current live file baseline
 
@@ -911,9 +911,9 @@ Acceptance: Every approved path is inventoried or has an explicit inaccessible, 
 4. Prioritize histories and project material ahead of caches and dependencies, record likely duplicates and missing dependencies, and preserve the workstation's disk reserve.
 5. Refuse source moves, deletes, execution, unbounded traversal and bulk public copying; record inaccessible, skipped and deferred paths instead of treating them as scanned.
 
-Evidence: 65,382 files inventoried, including 1,550 conversation files; 453 directories remain queued. The scan stopped at its 40 GiB floor. October 15: the owner added a network share containing research and parallel harness work; initial top-level discovery is observed, not a complete project inventory or content review. Exact source locations remain in the private checkpoint.
+Evidence: 65,382 files inventoried, including 1,550 conversation files; 453 directories remain queued. The scan stopped at its 40 GiB floor. October 15: the owner added a network share containing research and parallel harness work. A bounded selected-scope inventory completed 2,700 files and seven marker projects with zero scanner errors; six projects retain unresolved authorship and one has a third-party signal. Eighteen credential-named files were excluded. The selected inventory and candidate mapping are not a complete share scan, rights finding, source execution or publication. Exact source locations remain private.
 
-Next: Continue bounded project-root discovery on the newly approved share; preserve the previous inventory queue and resolve its measured storage allocation before resuming that scan.
+Next: Use the completed selected-scope inventory for project ownership, revision and dirty-state review; preserve unresolved authorship and dependency findings. Keep the previous inventory queue and resolve its measured storage allocation before resuming that scan; do not infer whole-share completion from the selected roots.
 
 Comment: The new request extends the existing source-intake owner. Organizing findings does not authorize reorganizing the source share. No source files were deleted or modified by the earlier scan.
 
@@ -962,9 +962,9 @@ Acceptance: Each reviewed chunk records answered, unknown, disputed or reasoned 
 
 Evidence: One thousand questions are defined; 75 source-backed answers exist, including 38 new findings across nine creative-project chunks. Three original camera/timing helpers pass the existing isolated-package checks. No thousand-question chunk review is complete.
 
-Next: Continue focused history and selected network-share project review; turn verified gaps into owning tests or bounded component adaptations without executing the source project.
+Next: Continue from the completed selected metadata and candidate-family mapping into exact source revision, ownership, dirty-state, rights and dependency review. Turn verified gaps into owning tests or bounded component adaptations without executing the source project.
 
-Comment: Question bindings and keyword matches are not completed answers.
+Comment: Question bindings and keyword matches are not completed answers. The October 15 metadata-only review mapped eight candidate families from indexes, descriptors and summaries without source-code review. A separate bounded review read all 624 collector lines and 225 registry lines: unsupported Measured/safety_vetted labels, invented defaults and mirror/local-sample fallbacks presented as live remain unqualified. One proposed offline Poly Haven snapshot projection belongs under S-6.214.03 and S-6.214.05, with reusable admission under S-6.215.13; it is not implemented or tested. Source revision and rights remain unknown, original media was not inspected, and no source was executed or published. These reviews do not complete a thousand-question review or admit new served components.
 
 ### S-6.207.05 Convert approved findings into original candidates
 
@@ -1429,9 +1429,9 @@ Acceptance: A designer-focused presentation supports actual creative discovery, 
 
 Evidence: October 13 owner selects AgentStudios, confirms purchasing agentstudios.si on Namecheap and requests separate branding over the same backend. Release92 from b0e2c4cd passed exact CI and guarded deployment; its gate is closed and the shared edge passed3281 exact file checks. The independent creative renderer, exact host admission and provider setup are deployed. Local checks passed3946 self-tests,103 account/routing/OAuth tests,104 browser checks with an independent repeat,32 conformance gates and installed-wheel rendering. Both the agentstudios.si apex and www hostnames completed ordinary public DNS/TLS qualification, and the twenty-host public matrix completed all20 origins and200 views with3660/3664 assertions,3194/3194 exact GETs and20/20 identity HEAD checks. Four /connect innerText assertions failed because the MCP URL renders in a readonly input (passed4/4 in the inputValue supplement), and16 CDP net::ERR_ABORTED body-accounting events remain recorded alongside attempt01. The earlier AgentMedia placeholder was not purchased.
 
-Next: Qualify an actual creative retrieval, edit and clean reopen journey, and resolve the retained /connect innerText selector and CDP stream-accounting instrumentation limits. Do not replay completed provider operations.
+Next: Qualify an actual creative retrieval, edit and clean reopen journey. Retain the corrected visible readonly connection checks and earlier reports; diagnose the canceled public-metadata fetches jointly with S-6.35.06 without suppressing failures or claiming a benign cause. Do not replay completed provider operations.
 
-Comment: Separate presentation does not claim unrelated ownership or require another backend.
+Comment: Separate presentation does not claim unrelated ownership or require another backend. Release 93's final matrix completes all hosts, views and assertions but retains 21 metadata-fetch failures across Foundry and AgentStudios; functional, accounting and strict results remain false. Narrow public redirect qualification does not complete this creative customer journey.
 
 ## Recorded work in progress
 

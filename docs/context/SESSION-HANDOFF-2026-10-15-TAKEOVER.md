@@ -154,7 +154,7 @@ required jobs. Its separately gated live-model job did not run.
 The private twenty-host public checker has offline controls for approved alias
 navigation, visible connection text, request failure retention and source
 bindings. Its manifest requires the clean candidate revision and tree plus a
-completed export receipt bound to the export path, manifest, Worker and checker
+completed export record bound to the export path, manifest, Worker and checker
 digests. An export intent alone is insufficient provenance.
 
 Preparation found and retained two network-guard failures. Playwright routing

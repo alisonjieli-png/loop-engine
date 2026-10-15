@@ -5,7 +5,7 @@ Kind: generated planning artifact.
 Source: `roadmap.yaml`. Regenerate with
 `python tools/build_continuation_status.py`; `--check` rejects a stale view.
 
-Plan fingerprint: `a3a10a10c9d294d2222c00c0085a842456f82bb7763e457a3b31157bb466f6ce`.
+Plan fingerprint: `7d565b955d610501b9c5f1604a5ab2019b32c7c3ec5ff261feca51df7a1abf6c`.
 
 Started: 2026-09-19T14:12:54Z. Historical target: 2026-09-20T14:12:54Z. This is not a release forecast.
 
@@ -15,7 +15,7 @@ A subscription website and dashboard with payments, all intelligence layers and 
 
 ## Next eligible work
 
-Next eligible subtask: S-6.35.10: Redirect public website aliases without changing client origins
+Next eligible subtask: S-6.35.11: Bind the systems portal to evidence and staff access
 
 ## Recorded work in progress
 

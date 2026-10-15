@@ -5,6 +5,20 @@
   "releases": [
    {
     "kind": "service",
+    "number": 93,
+    "at": "2026-10-15T08:52:42Z",
+    "lines": [
+     "Credential-free public HTML GET and HEAD canonical redirects for six admitted same-brand www/apex pairs; origin-bound protocol, account and browser-state traffic remains excluded.",
+     "Exact visible connection-URL checks, including readonly controls, and per-request browser failure retention.",
+     "Bounded source inventory and seed-consumer preservation of partial state and unresolved authorship.",
+     "Reviewed takeover roadmap reconciliation, current AgentBriefs purchase fact and separate active media ownership.",
+     "Short private temporary directories for socket and browser test fixtures, without relaxing production path or request guards."
+    ],
+    "seen_after_release": "",
+    "not_shown": 0
+   },
+   {
+    "kind": "service",
     "number": 92,
     "at": "2026-10-14T01:21:13Z",
     "lines": [
