@@ -3,7 +3,11 @@
 It asks each hostname the site map lists, plus the technical Fly hostname, for the
 homepage, the privacy notice, Get started, the health record and the capabilities
 record. It passes when every address answers 200, every health record is ready with
-its required checks passing, and every hostname reports the same capabilities. It
+its required checks passing, and every hostname reports the same capabilities. A
+www hostname whose apex the site map also lists is the one exception: since release
+93 it forwards its public pages to the apex with the same path, so those pages must
+answer a permanent redirect to exactly that address. Its origin-bound pages, such
+as Get started, and its API stay on the www origin and must answer 200 there. It
 also asks the identity provider's public health address, with the publishable key
 the service itself publishes, because a free identity project pauses after a week
 without requests. It sends no credential of its own, signs nothing in and changes
@@ -26,6 +30,10 @@ PAGES = ("/", "/privacy", "/get-started")
 HEALTH, CAPABILITIES, IDENTITY = "/api/v1/health", "/api/v1/capabilities", "/api/v1/account/identity"
 SLOW_SECONDS = 10.0
 RECORD_TYPE = "live_pulse/v1"
+#: Public pages a www alias forwards to its apex (brand_profiles.public_website_read). Get started is
+#: origin-bound and stays on the alias; tools/test_check_live_pulse.py holds this list to that rule.
+ALIAS_FORWARDED_PAGES = ("/", "/privacy")
+PERMANENT_REDIRECTS = (301, 308)
 
 
 class RefuseRedirect(urllib.request.HTTPRedirectHandler):
@@ -34,15 +42,26 @@ class RefuseRedirect(urllib.request.HTTPRedirectHandler):
 
 
 def fetch(opener, url, headers=None, timeout=30):
-    """Status, seconds and body of one GET; a transport failure is status 0."""
+    """Status, seconds, body and redirect target of one GET; a transport failure is status 0."""
     started = time.monotonic()
     try:
         with opener.open(urllib.request.Request(url, headers=headers or {}), timeout=timeout) as response:
-            return response.status, time.monotonic() - started, response.read(2_000_000)
+            return response.status, time.monotonic() - started, response.read(2_000_000), None
     except urllib.error.HTTPError as error:
-        return error.code, time.monotonic() - started, b""
+        location = error.headers.get("Location") if error.headers is not None else None
+        return error.code, time.monotonic() - started, b"", location
     except Exception:  # noqa: BLE001 - a transport failure is reported as status 0, not raised
-        return 0, time.monotonic() - started, b""
+        return 0, time.monotonic() - started, b"", None
+
+
+def forwarded_location(origin, hostname, path, hostnames):
+    """The apex address a www alias must redirect this page to, or None when it must answer itself.
+
+    The scheme comes from the alias origin the pulse already asked, so it is written in one place."""
+    apex = hostname[len("www."):]
+    if hostname.startswith("www.") and apex in hostnames and path in ALIAS_FORWARDED_PAGES:
+        return origin[:len(origin) - len(hostname)] + apex + path
+    return None
 
 
 def result_of(body):
@@ -69,8 +88,15 @@ def pulse(hostnames, opener=None):
     for hostname in hostnames:
         origin = "https://" + hostname
         for path in (*PAGES, HEALTH, CAPABILITIES):
-            status, seconds, body = fetch(opener, origin + path)
-            rows.append({"hostname": hostname, "path": path, "status": status, "seconds": round(seconds, 2)})
+            status, seconds, body, location = fetch(opener, origin + path)
+            row = {"hostname": hostname, "path": path, "status": status, "seconds": round(seconds, 2)}
+            rows.append(row)
+            expected = forwarded_location(origin, hostname, path, hostnames)
+            if expected:
+                row.update(location=location, expected_location=expected)
+                if status not in PERMANENT_REDIRECTS or location != expected:
+                    problems.append(f"{hostname}{path} answered {status} to {location}, not a permanent redirect to {expected}")
+                continue
             if status != 200:
                 problems.append(f"{hostname}{path} answered {status}")
             elif seconds > SLOW_SECONDS:
@@ -82,11 +108,11 @@ def pulse(hostnames, opener=None):
     if len(set(capabilities.values())) > 1:
         problems.append("the hostnames report different capabilities")
     identity_status = "not asked"
-    status, _seconds, body = fetch(opener, "https://" + hostnames[0] + IDENTITY)
+    status, _seconds, body, _location = fetch(opener, "https://" + hostnames[0] + IDENTITY)
     identity = result_of(body) if status == 200 else None
     if isinstance(identity, dict) and identity.get("project_url") and identity.get("publishable_key"):
-        status, _seconds, _body = fetch(opener, identity["project_url"].rstrip("/") + "/auth/v1/health",
-                                        {"apikey": identity["publishable_key"]})
+        status, _seconds, _body, _location = fetch(opener, identity["project_url"].rstrip("/") + "/auth/v1/health",
+                                                   {"apikey": identity["publishable_key"]})
         identity_status = status
         if status != 200:
             problems.append(f"the identity provider's health address answered {status}")

@@ -43,6 +43,9 @@ class Opener:
             change = self.changes[url]
             if isinstance(change, int):
                 raise urllib.error.HTTPError(url, change, "refused", {}, None)
+            if isinstance(change, tuple):
+                status, location = change
+                raise urllib.error.HTTPError(url, status, "moved", {"Location": location}, None)
             return Response(200, change)
         if url.endswith("/api/v1/health"):
             return Response(200, HEALTH)
@@ -54,6 +57,9 @@ class Opener:
 
 
 HOSTS = ["baltor.ai", "docs.baltor.ai"]
+ALIASED = ["baltor.ai", "www.baltor.ai"]
+FORWARDED = {"https://www.baltor.ai/": (301, "https://baltor.ai/"),
+             "https://www.baltor.ai/privacy": (301, "https://baltor.ai/privacy")}
 
 
 class LivePulseTests(unittest.TestCase):
@@ -82,6 +88,38 @@ class LivePulseTests(unittest.TestCase):
     def test_known_wrong_an_identity_provider_that_refuses_fails(self):
         report = pulse_tool.pulse(HOSTS, Opener({"https://identity.example/auth/v1/health": 503}))
         self.assertIn("the identity provider's health address answered 503", report["problems"])
+
+    def test_a_www_alias_that_forwards_its_public_pages_to_the_apex_passes(self):
+        report = pulse_tool.pulse(ALIASED, Opener(FORWARDED))
+        self.assertTrue(report["passed"], report["problems"])
+        forwarded = [row for row in report["rows"] if row.get("expected_location")]
+        self.assertEqual([row["path"] for row in forwarded], ["/", "/privacy"])
+
+    def test_known_wrong_an_alias_that_forwards_somewhere_else_fails(self):
+        report = pulse_tool.pulse(ALIASED, Opener({**FORWARDED, "https://www.baltor.ai/privacy": (301, "https://baltor.ai/")}))
+        self.assertFalse(report["passed"])
+        self.assertIn("www.baltor.ai/privacy answered 301 to https://baltor.ai/, not a permanent redirect to "
+                      "https://baltor.ai/privacy", report["problems"])
+
+    def test_known_wrong_an_alias_that_stops_forwarding_fails(self):
+        report = pulse_tool.pulse(ALIASED, Opener())
+        self.assertIn("www.baltor.ai/ answered 200 to None, not a permanent redirect to https://baltor.ai/",
+                      report["problems"])
+
+    def test_known_wrong_a_temporary_redirect_fails(self):
+        report = pulse_tool.pulse(ALIASED, Opener({**FORWARDED, "https://www.baltor.ai/": (302, "https://baltor.ai/")}))
+        self.assertIn("www.baltor.ai/ answered 302 to https://baltor.ai/, not a permanent redirect to https://baltor.ai/",
+                      report["problems"])
+
+    def test_known_wrong_an_alias_that_forwards_an_origin_bound_page_fails(self):
+        changes = {**FORWARDED, "https://www.baltor.ai/get-started": (301, "https://baltor.ai/get-started")}
+        report = pulse_tool.pulse(ALIASED, Opener(changes))
+        self.assertIn("www.baltor.ai/get-started answered 301", report["problems"])
+
+    def test_the_forwarded_pages_follow_the_service_rule(self):
+        from loop_engine.core.service_runtime.brand_profiles import public_website_read
+        for path in pulse_tool.PAGES:
+            self.assertEqual(path in pulse_tool.ALIAS_FORWARDED_PAGES, public_website_read("GET", path, ()), path)
 
     def test_the_site_map_hostnames_and_the_technical_hostname_are_all_asked(self):
         hostnames = pulse_tool.site_hostnames()
