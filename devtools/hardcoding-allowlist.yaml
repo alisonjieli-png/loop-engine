@@ -1,5 +1,11 @@
 schema: hardcoding_allowlist/v1
 entries:
+- finding_id: hardcoding.bedd5dce2609651e16e15157
+  owner: "loop_engine.core.service_runtime.edge.site_edge_worker.js:url"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed October 15, 2026: HTTPS joins an explicitly admitted same-brand www/apex pair to the original encoded path and query for a public HTML redirect. It is not an outbound request or an arbitrary destination. The owning Worker requires a successful public HTML response, excludes credential-bearing and origin-local requests, and preserves no-store and credential-sensitive Vary. Actual Worker and HTTP tests reject cross-brand, protocol, callback and cache regressions."
+  created_on: '2026-10-15'
+  expires_on: '2027-01-15'
 - finding_id: hardcoding.22884497dc9c0166200bad65
   owner: "loop_engine.core.service_runtime.agentstudios_pages"
   classification: STRATEGY_OR_PROVIDER_BINDING
