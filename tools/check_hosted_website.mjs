@@ -1,10 +1,100 @@
 /* Read-only browser acceptance of the deployed public site. No credentials. */
-import {chromium} from "../showcase/node_modules/playwright-core/index.mjs";
 import {readFileSync,writeFileSync,existsSync} from "node:fs";
 import {spawnSync} from "node:child_process";
 import {resolve} from "node:path";
+import {pathToFileURL} from "node:url";
 import {createHash} from "node:crypto";
 import {internalTerms,invitationWords as liveInvitation,retiredAccessWords as liveRetired,unpublishedTerms,cardStatusWords} from "./public_wording_rules.mjs";
+import {heroProblems,heroCheckRejectsItsKnownWrongCases,checkAudiences} from "./homepage_audience_checks.mjs";
+
+/* Adapted from AGY's readonly-control and media-abort investigation. These
+   helpers observe browser evidence; a later successful fetch cannot erase a
+   failed request, and no additional network probe is made by the accountant. */
+export function visibleConnectionText(){
+  const visible=node=>{
+    if(!node||node.closest("[hidden]"))return false;
+    const box=node.getBoundingClientRect();
+    if(box.width<=0||box.height<=0)return false;
+    for(let item=node;item;item=item.parentElement){
+      if(item.tagName==="DETAILS"&&!item.open&&!item.querySelector(":scope > summary")?.contains(node))return false;
+      const style=getComputedStyle(item);
+      if(style.display==="none"||style.visibility==="hidden"||style.visibility==="collapse"
+        ||Number(style.opacity)===0||style.contentVisibility==="hidden")return false;
+    }
+    return true;
+  };
+  const readonlyValues=[...document.querySelectorAll("input[readonly], textarea[readonly]")]
+    .filter(node=>node.readOnly&&(node.tagName==="TEXTAREA"||["text","url","email","search","tel","number"].includes(node.type))&&visible(node))
+    .map(node=>node.value.trim()).filter(Boolean);
+  /* innerText omits readonly input values and includes opacity-zero text.
+     Inspect rendered text nodes as well as rendered readonly controls. */
+  const texts=[],walker=document.createTreeWalker(document.body,NodeFilter.SHOW_TEXT);
+  for(let node=walker.nextNode();node;node=walker.nextNode()){
+    if(node.textContent.trim()&&!node.parentElement.closest("input,textarea,script,style")
+      &&visible(node.parentElement))texts.push(node.textContent.trim());
+  }
+  return {bodyText:texts.join("\n"),readonlyValues,text:[...texts,...readonlyValues].join("\n")};
+}
+
+export function connectionTextProblems(state,expectedEndpoint,{requireBearer=false}={}){
+  const problems=[],text=state?.text||"";
+  let expected;
+  try{
+    expected=new URL(expectedEndpoint);
+    if(expected.protocol!=="https:"||expected.username||expected.password||expected.search||expected.hash
+      ||expected.pathname!=="/mcp"||expected.href!==expectedEndpoint)throw new Error("invalid endpoint");
+  }catch(_){return ["invalid declared HTTPS MCP endpoint"];}
+  const urls=text.match(/https?:\/\/[^\s"'<>`]+/g)||[];
+  const exact=urls.some(value=>{
+    try{
+      const url=new URL(value);
+      return url.href===expected.href&&!url.username&&!url.password&&!url.search&&!url.hash;
+    }catch(_){return false;}
+  });
+  if(!exact)problems.push("missing exact declared MCP endpoint");
+  if(requireBearer&&!/\bAuthorization\s*["']?\s*:\s*["']?Bearer\b/i.test(text))problems.push("missing Authorization: Bearer instruction");
+  return problems;
+}
+
+export function isVerifiedMediaAbort(event,origin){
+  if(event.error!=="net::ERR_ABORTED"||![200,206].includes(event.status)||event.method!=="GET")return false;
+  try{if(new URL(event.url).origin!==origin)return false;}catch(_){return false;}
+  if(["script","stylesheet","fetch","xhr","document","font","websocket","eventsource","manifest"].includes(event.resourceType))return false;
+  return event.resourceType==="media"||(["other","prefetch"].includes(event.resourceType)
+    &&/\.(?:mp4|webm|wav)$/i.test(new URL(event.url).pathname));
+}
+
+export function createRequestAccounting(origin){
+  const statuses=new WeakMap(),pending=new Set(),requestFailures=[],httpErrors=[];
+  const describe=request=>({url:request.url(),method:request.method(),resourceType:request.resourceType()});
+  const attach=page=>{
+    page.on("response",response=>{
+      const request=response.request(),status=response.status();
+      statuses.set(request,status);
+      if(status>=400)httpErrors.push({...describe(request),status});
+    });
+    page.on("requestfailed",request=>{
+      const event={...describe(request),error:request.failure()?.errorText||"unknown request failure",status:statuses.get(request)??null};
+      requestFailures.push(event);
+      const task=(async()=>{
+        try{
+          const response=await request.response();
+          if(event.status===null&&response)event.status=response.status();
+        }catch(error){event.accounting_error=String(error);}
+      })();
+      pending.add(task);void task.finally(()=>pending.delete(task));
+    });
+  };
+  return {attach,async settle(){
+    while(pending.size)await Promise.all([...pending]);
+    const abortedMediaPreviews=requestFailures.filter(event=>!event.accounting_error&&isVerifiedMediaAbort(event,origin));
+    const failedRequests=requestFailures.filter(event=>!abortedMediaPreviews.includes(event));
+    return {requestFailures,httpErrors,abortedMediaPreviews,failedRequests};
+  }};
+}
+
+async function runHostedWebsiteCheck(){
+const {chromium}=await import("../showcase/node_modules/playwright-core/index.mjs");
 
 const origin=process.argv[2],output=resolve(process.argv[3]||"");
 if(!origin||new URL(origin).origin!==origin||!origin.startsWith("https://")||!process.argv[3]||existsSync(output))throw new Error("Use an exact HTTPS origin and a new report path.");
@@ -17,7 +107,6 @@ const check=(name,passed)=>checks.push({name,passed:passed===true});
 /* The owner's decisions of September 23, 2026, written once as rules that the journey below and its known-wrong cases share.
    tools/check_service_workspace.mjs holds the same decisions against a local service. */
 const heroHarnesses=["Claude Code","Codex","OpenCode","Pi","Baltor Harness"];
-import {heroProblems,heroCheckRejectsItsKnownWrongCases,checkAudiences} from "./homepage_audience_checks.mjs";
 const categoryProblems=state=>[...(/^Harness and agent optimized operation\.$/m.test(state.footer)?[]:["the footer does not carry the category line in full"]),...(JSON.stringify(state.harnesses)===JSON.stringify(heroHarnesses)?[]:["the hero names "+JSON.stringify(state.harnesses)])];
 const statesThePlanAndPrice=text=>/^Agent Feeds \+ Harness Files \$49 a month\b/.test(text)&&!/United States dollars|per month/i.test(text);
 const cardProblems=(cards,order)=>[...(JSON.stringify(cards.map(card=>card.name))!==JSON.stringify(order)?["the cards are "+JSON.stringify(cards.map(card=>card.name))]:[]),
@@ -60,6 +149,8 @@ const shownPage=target=>target.evaluate(()=>({views:[...document.querySelectorAl
 const showcasePaths=["/demo","/demo/kaggle","/status","/examples","/case-studies/data-cleanup","/case-studies/pi-and-gemma-4","/case-studies/sign-up-protection","/for/designers","/for/coding-agents","/for/engineering-teams","/for/comparing-tools","/for/protocol-and-client"];
 const browser=await chromium.launch({executablePath:"/opt/google/chrome/chrome",headless:true,args:["--no-sandbox"]});
 const context=await browser.newContext({viewport:{width:1440,height:1000},reducedMotion:"reduce"});
+const accounting=createRequestAccounting(origin);
+context.on("page",accounting.attach);
 await context.route("**/*",route=>{if(new URL(route.request().url()).origin===origin)route.continue();else{external.push(new URL(route.request().url()).origin);route.abort();}});
 const page=await context.newPage();page.on("pageerror",error=>errors.push(error.message));
 try{
@@ -357,6 +448,9 @@ try{
   await page.goto(origin+"/connect");await page.waitForFunction(()=>document.querySelectorAll('#client-tabs [role="tab"]').length>0);
   const expectedEndpoint = liveCapabilities.authorization_server?.available === true ? liveCapabilities.authorization_server.resource : origin + "/mcp";
   await page.waitForFunction(() => !document.querySelector("#copy-configuration").disabled);
+  const connectionState=await page.evaluate(visibleConnectionText);
+  check("connect_page_includes_exact_visible_endpoint",connectionTextProblems(connectionState,expectedEndpoint).length===0);
+  check("connect_endpoint_check_rejects_a_lookalike_path",connectionTextProblems({text:expectedEndpoint+"-evil"},expectedEndpoint).length>0);
   check("guided_setup_uses_declared_connection_endpoint",(await page.locator("#client-configuration").innerText()).includes(expectedEndpoint)
     && await page.locator("#protocol-url").inputValue() === expectedEndpoint && await page.locator("#setup-endpoint").textContent() === expectedEndpoint);
   /* Every harness the hero names as one "Baltor sets up" has steps of its own on the guide, as the homepage's questions promise. */
@@ -450,5 +544,10 @@ try{
   check("no_unexpected_third_party_requests",external.length===0);
 }catch(error){checks.push({name:"hosted_browser_journey_completed",passed:false,error:String(error)});}
 finally{await browser.close();}
-const result={record_type:"hosted_website_acceptance/v1",origin,observed_at:new Date().toISOString(),checks,passed:checks.filter(x=>x.passed).length,total:checks.length,all_passed:checks.every(x=>x.passed),errors,external,navigation,navigation_limits:"One headless browser navigation per route from the development workstation; not field Core Web Vitals or an availability guarantee",credentials_used:false,external_mutations:false};
+const requestAccounting=await accounting.settle();
+check("no_failed_page_requests",requestAccounting.failedRequests.length===0&&requestAccounting.httpErrors.length===0);
+const result={record_type:"hosted_website_acceptance/v1",origin,observed_at:new Date().toISOString(),checks,passed:checks.filter(x=>x.passed).length,total:checks.length,all_passed:checks.every(x=>x.passed),errors,external,navigation,request_accounting:requestAccounting,navigation_limits:"One headless browser navigation per route from the development workstation; not field Core Web Vitals or an availability guarantee",credentials_used:false,external_mutations:false};
 writeFileSync(output,JSON.stringify(result,null,2)+"\n",{flag:"wx"});console.log(JSON.stringify({passed:result.passed,total:result.total,all_passed:result.all_passed,failures:checks.filter(x=>!x.passed)}));process.exitCode=result.all_passed?0:1;
+}
+
+if(process.argv[1]&&pathToFileURL(resolve(process.argv[1])).href===import.meta.url)await runHostedWebsiteCheck();
