@@ -10,6 +10,12 @@ walks the volume once, writes an inventory outside the repository, and
 classifies each project root by the provenance signals it finds. It copies
 nothing, hashes nothing, and generates nothing.
 
+For a newly connected source without that authorship declaration, pass
+--unverified-authorship. Absence of a contrary signal then stays unresolved.
+Optional --max-files and --max-seconds bounds retain a partial inventory and
+name why it stopped. The time bound is cooperative between filesystem calls;
+it cannot interrupt a stalled network filesystem call.
+
 ```text
 Inventory of one volume (outside the repository: it names private paths)
 ├── files-NNN.jsonl       one row per file: path, size, extension, modified time, and its
@@ -46,6 +52,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import math
 import os
 import re
 import sys
@@ -75,6 +82,7 @@ SECRET_FOLDERS = frozenset({
     ".moonchild productions", "google-chrome", "chromium", "BraveSoftware", "vivaldi", "opera", "Thunderbird",
     "Mozilla", ".aws", ".azure", ".kube", ".docker", "gcloud", ".gcloud", ".putty", ".vnc", ".anydesk",
     "chrome-profile", "chrome_profile", "browser-profile", "browser_profile", "User Data", "user-data-dir"})
+SECRET_FOLDER_NAMES = frozenset(name.lower() for name in SECRET_FOLDERS)
 SKIPPED_SUFFIXES = (".tar", ".tar.gz", ".tgz", ".zip", ".7z", ".rar", ".iso", ".img", ".vhd", ".vhdx", ".vmdk",
                     ".dmg", ".pkg", ".exe", ".msi", ".dll", ".so", ".dylib", ".bin", ".safetensors", ".ckpt",
                     ".pt", ".pth", ".onnx", ".gguf", ".npz", ".npy", ".parquet", ".sqlite", ".db")
@@ -251,14 +259,18 @@ def harness_kind(relative: str) -> str:
     return ""
 
 
-def _read_head(path: str, size: int = HEAD_BYTES, *, redact: bool = True) -> str:
+def _read_head(path: str, size: int = HEAD_BYTES, *, redact: bool = True, problems=None) -> str:
     if os.path.islink(path):
+        if problems is not None:
+            problems.append("provenance_symlink_not_read")
         return ""
     try:
         with open(path, "rb") as stream:
             text = stream.read(size).decode("utf-8", "replace")
             return _redact(text) if redact else text
     except OSError:
+        if problems is not None:
+            problems.append("provenance_head_unreadable")
         return ""
 
 
@@ -275,12 +287,14 @@ def _redact(text: str) -> str:
 
 def _remotes(git_folder: str, *, problems=None) -> list:
     if os.path.islink(git_folder):
+        if problems is not None:
+            problems.append("git_metadata_symlink_not_read")
         return []
     config = os.path.join(git_folder, "config")
     if not os.path.isfile(config):
         return []
     remotes = []
-    for value in REMOTE_URL.findall(_read_head(config, 65536, redact=False)):
+    for value in REMOTE_URL.findall(_read_head(config, 65536, redact=False, problems=problems)):
         if "://" in value:
             try:
                 parsed = urlsplit(value)
@@ -329,7 +343,8 @@ def _classify(project: dict, owner_accounts: set, owner_names: set) -> str:
 
 class Inventory:
     def __init__(self, volume: Path, output: Path, owner_accounts, owner_names, shard_rows=200_000,
-                 excluded_paths=None, skipped_names=()):
+                 excluded_paths=None, skipped_names=(), *, unverified_authorship=False,
+                 max_files=None, max_seconds=None):
         self.volume, self.output = volume, output
         self.owner_accounts = {account.lower() for account in owner_accounts}
         self.owner_names = {name.lower() for name in owner_names if name}
@@ -348,7 +363,20 @@ class Inventory:
         self.projects = []
         self._stats_store = {}
         self.started = time.time()
+        self.started_monotonic = time.monotonic()
+        self.max_files, self.max_seconds = max_files, max_seconds
+        self.unverified_authorship = unverified_authorship
+        self.stop_reason = ""
         self.projects_stream = open(output / "projects.jsonl", "w", encoding="utf-8")
+
+    def budget_exhausted(self):
+        """Check cooperative scan bounds; an in-flight filesystem read can finish later."""
+        if not self.stop_reason:
+            if self.max_files is not None and self.files >= self.max_files:
+                self.stop_reason = "file_limit"
+            elif self.max_seconds is not None and time.monotonic() - self.started_monotonic >= self.max_seconds:
+                self.stop_reason = "time_limit"
+        return bool(self.stop_reason)
 
     def exclude(self, folder: str, kind: str, reason: str, size: "int | None" = None):
         """Count one left-out file (or record one left-out folder) without its name or its contents."""
@@ -402,7 +430,10 @@ class Inventory:
         for name in names:
             if name in LICENCE_NAMES:
                 licence_files.append(name)
-                licence_holders.extend(_holders(_read_head(os.path.join(folder, name))))
+                if not self.budget_exhausted():
+                    licence_holders.extend(_holders(_read_head(os.path.join(folder, name), problems=problems)))
+                else:
+                    problems.append("provenance_sampling_incomplete")
         row = {"record_type": PROJECT_RECORD_TYPE, "path": os.path.relpath(folder, self.volume), "top_folder": top,
                "name": os.path.basename(folder), "markers": markers, "git_remotes": remotes[:5],
                "provenance_issues": problems,
@@ -419,16 +450,27 @@ class Inventory:
                     "oldest_modified_at": oldest, "copyright_holders": [h for h, _n in copyright_holders.most_common(5)],
                     "readme": readme[:600]})
         row["provenance_class"] = _classify(row, self.owner_accounts, self.owner_names)
+        if self.unverified_authorship and row["provenance_class"] == OWNER_DECLARED:
+            row["provenance_class"] = PROVENANCE_UNRESOLVED
+            row["provenance_issues"].append("authorship_not_established_for_this_source")
         self.projects.append({key: row[key] for key in ("path", "provenance_class", "source_files", "size_bytes")})
         self.projects_stream.write(json.dumps(row, ensure_ascii=False) + "\n")
 
     def walk(self, folder: str, top: str, project: "dict | None", depth: int):
         """Walk one folder; a folder with a marker starts a project (nested projects keep their own row)."""
+        if self.budget_exhausted():
+            return
         try:
             with os.scandir(folder) as entries:
-                listed = list(entries)
+                listed = []
+                for entry in entries:
+                    if self.budget_exhausted():
+                        return
+                    listed.append(entry)
         except OSError:
             self.errors += 1
+            return
+        if self.budget_exhausted():
             return
         names = [entry.name for entry in listed]
         own = None
@@ -436,6 +478,8 @@ class Inventory:
             own = self.project(folder, names, top)
         current = own or project
         for entry in listed:
+            if self.budget_exhausted():
+                break
             name = entry.name
             if name.startswith("._"):
                 continue  # AppleDouble sidecars carry no content of their own.
@@ -443,7 +487,7 @@ class Inventory:
                 if entry.is_symlink():
                     continue
                 if entry.is_dir(follow_symlinks=False):
-                    if name in SECRET_FOLDERS:
+                    if name.lower() in SECRET_FOLDER_NAMES:
                         self.exclude(entry.path, "secret_store",
                                      "key, password, browser or mail profile folders are never entered")
                         continue
@@ -476,9 +520,10 @@ class Inventory:
                 modified = int(entry_stat.st_mtime)
                 stats_of["newest"] = max(stats_of["newest"], modified)
                 stats_of["oldest"] = modified if not stats_of["oldest"] else min(stats_of["oldest"], modified)
-                if suffix in SOURCE_SUFFIXES and stats_of["sampled"] < SAMPLE_SOURCE_FILES:
+                if (suffix in SOURCE_SUFFIXES and stats_of["sampled"] < SAMPLE_SOURCE_FILES
+                        and not self.budget_exhausted()):
                     stats_of["sampled"] += 1
-                    for holder in _holders(_read_head(entry.path)):
+                    for holder in _holders(_read_head(entry.path, problems=current["provenance_issues"])):
                         stats_of["holders"][holder] += 1
         if own is not None:
             stats = self._stats(own)
@@ -492,14 +537,19 @@ class Inventory:
             store[id(project)] = {"counts": Counter(), "languages": Counter(), "size": 0, "newest": 0, "oldest": 0,
                                   "holders": Counter(), "readme": "", "sampled": 0}
             for name in ("README.md", "readme.md", "README"):
+                if self.budget_exhausted():
+                    project["provenance_issues"].append("provenance_sampling_incomplete")
+                    break
                 candidate = os.path.join(self.volume, project["path"], name)
                 if os.path.isfile(candidate):
-                    store[id(project)]["readme"] = _read_head(candidate, 2000)
+                    store[id(project)]["readme"] = _read_head(candidate, 2000, problems=project["provenance_issues"])
                     break
         return store[id(project)]
 
     def run(self, roots) -> dict:
         for root in roots:
+            if self.budget_exhausted():
+                break
             top = os.path.basename(root.rstrip("/"))
             self.walk(root, top, None, 0)
         if self.shard:
@@ -531,8 +581,16 @@ class Inventory:
                                         "written by the owner; a project keeps that basis only while no git remote, "
                                         "licence file or copyright line names someone else."),
                    "what_this_is_not": "No file was copied, hashed, opened beyond its first bytes, or generated from."}
+        summary.update(complete=not self.stop_reason and self.errors == 0,
+                       stop_reason=self.stop_reason or ("read_errors" if self.errors else ""),
+                       authorship_mode="unverified" if self.unverified_authorship else "historical_owner_declaration",
+                       limits={"max_files": self.max_files, "max_seconds": self.max_seconds})
+        if self.unverified_authorship:
+            summary["provenance_basis"] = ("Authorship is unverified for this source. Explicit owner remotes and "
+                                          "contrary provenance signals are recorded; absence of a contrary signal "
+                                          "does not inherit an authorship declaration from another volume.")
         (self.output / "summary.json").write_text(json.dumps(summary, indent=1))
-        self.progress("finished")
+        self.progress("finished" if summary["complete"] else "partial")
         return summary
 
 
@@ -547,7 +605,16 @@ def main(argv=None) -> int:
                         help="a folder, relative to the volume, that is not walked, with the reason recorded")
     parser.add_argument("--skip-folder", action="append", default=[], metavar="NAME",
                         help="a folder name skipped wherever it appears, like the built-in vendored names")
+    parser.add_argument("--unverified-authorship", action="store_true",
+                        help="do not apply the historical owner-volume declaration to this source")
+    parser.add_argument("--max-files", type=int, help="stop with an explicitly partial inventory at this file count")
+    parser.add_argument("--max-seconds", type=float,
+                        help="cooperative elapsed-time limit; an in-flight filesystem read is not interrupted")
     args = parser.parse_args(argv)
+    if args.max_files is not None and args.max_files <= 0:
+        parser.error("--max-files must be positive")
+    if args.max_seconds is not None and (not math.isfinite(args.max_seconds) or args.max_seconds <= 0):
+        parser.error("--max-seconds must be finite and positive")
     volume, output = Path(args.volume).resolve(), Path(args.output).resolve()
     repository = Path(__file__).resolve().parents[1]
     if output == repository or repository in output.parents:
@@ -559,6 +626,10 @@ def main(argv=None) -> int:
     if args.root and any(Path(root).is_absolute() or ".." in Path(root).parts
                          or not (volume / root).resolve().is_relative_to(volume) for root in args.root):
         print("a selected root must stay within the named volume", file=sys.stderr)
+        return 2
+    if args.root and any((volume.joinpath(*Path(root).parts[:count])).is_symlink()
+                         for root in args.root for count in range(1, len(Path(root).parts) + 1)):
+        print("a selected root must not follow symbolic links", file=sys.stderr)
         return 2
     # The inventory must never be walked into itself. Without selected roots every top-level folder is walked, so the
     # output must lie outside the volume; with selected roots (a home folder walked by named roots, October 5, 2026)
@@ -579,12 +650,15 @@ def main(argv=None) -> int:
     skipped = SKIPPED_FOLDERS | frozenset(args.skip_folder)
     roots = [str(volume / root) for root in args.root] if args.root else [
         entry.path for entry in os.scandir(volume) if entry.is_dir(follow_symlinks=False)
-        and entry.name not in skipped and entry.name not in SECRET_FOLDERS and not entry.name.startswith(".")]
+        and entry.name not in skipped and entry.name.lower() not in SECRET_FOLDER_NAMES and not entry.name.startswith(".")]
     inventory = Inventory(volume, output, args.owner_account, args.owner_name, excluded_paths=excluded_paths,
-                          skipped_names=args.skip_folder)
+                          skipped_names=args.skip_folder, unverified_authorship=args.unverified_authorship,
+                          max_files=args.max_files, max_seconds=args.max_seconds)
     for root in list(roots):
-        reason = excluded_paths.get(os.path.relpath(root, volume))
-        if os.path.basename(root.rstrip("/")) in SECRET_FOLDERS:
+        relative = Path(os.path.relpath(root, volume))
+        reason = next((reason for folder, reason in excluded_paths.items()
+                       if relative == Path(folder) or Path(folder) in relative.parents), None)
+        if any(part.lower() in SECRET_FOLDER_NAMES for part in Path(root).parts):
             # A secret store named as a root is still never entered.
             inventory.exclude(root, "secret_store", "key, password, browser or mail profile folders are never entered")
             roots.remove(root)
@@ -593,7 +667,8 @@ def main(argv=None) -> int:
             roots.remove(root)
     summary = inventory.run(roots)
     print(json.dumps({key: summary[key] for key in ("files", "bytes", "projects", "projects_by_provenance_class",
-                                                     "harness_kinds", "excluded_by_class", "seconds", "errors")},
+                                                     "harness_kinds", "excluded_by_class", "seconds", "errors",
+                                                     "complete", "stop_reason")},
                      indent=1))
     return 0
 

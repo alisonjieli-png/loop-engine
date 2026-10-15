@@ -11,6 +11,7 @@ import os
 import sys
 import tempfile
 import unittest
+from unittest import mock
 from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
@@ -333,6 +334,118 @@ class HolderTest(unittest.TestCase):
         # Known-wrong: the same licence in a project of another name still names someone else.
         self.assertEqual(scanner._classify({**project, "name": "other-tool"}, set(), {"amarel"}),
                          scanner.THIRD_PARTY_LICENCE)
+
+
+class BoundedSourceIntakeTests(unittest.TestCase):
+    def setUp(self):
+        self.temp = tempfile.TemporaryDirectory()
+        self.addCleanup(self.temp.cleanup)
+        self.root = Path(self.temp.name)
+        self.volume = self.root / "volume"
+        fixture_volume(self.volume)
+
+    def run_scan(self, *options):
+        output = self.root / "inventory"
+        code = scanner.main(["--volume", str(self.volume), "--output", str(output),
+                             "--owner-account", "owner-account", *options])
+        self.assertEqual(code, 0)
+        return output, json.loads((output / "summary.json").read_text())
+
+    def test_new_source_does_not_inherit_an_older_authorship_declaration(self):
+        output, summary = self.run_scan("--unverified-authorship")
+        rows = [json.loads(line) for line in (output / "projects.jsonl").read_text().splitlines()]
+        self.assertNotIn(scanner.OWNER_DECLARED, {row["provenance_class"] for row in rows})
+        self.assertEqual(next(row for row in rows if row["name"] == "resizer")["provenance_class"],
+                         scanner.PROVENANCE_UNRESOLVED)
+        self.assertEqual(next(row for row in rows if row["name"] == "own-remote")["provenance_class"],
+                         scanner.OWNER_REMOTE)
+        self.assertNotIn("declared on September 26", summary["provenance_basis"])
+        self.assertTrue(summary["complete"])
+
+    def test_file_ceiling_keeps_partial_inventory_and_never_claims_completion(self):
+        output, summary = self.run_scan("--max-files", "2", "--unverified-authorship")
+        self.assertEqual(summary["files"], 2)
+        self.assertFalse(summary["complete"])
+        self.assertEqual(summary["stop_reason"], "file_limit")
+        self.assertEqual(json.loads((output / "progress.json").read_text())["state"], "partial")
+        self.assertEqual(sum(len(path.read_text().splitlines()) for path in output.glob("files-*.jsonl")), 2)
+
+    def test_elapsed_ceiling_stops_before_source_reads(self):
+        with mock.patch.object(scanner.time, "monotonic", side_effect=[0.0, 2.0, 2.0, 2.0]):
+            output, summary = self.run_scan("--max-seconds", "1")
+        self.assertFalse(summary["complete"])
+        self.assertEqual(summary["stop_reason"], "time_limit")
+        self.assertEqual(summary["files"], 0)
+        self.assertEqual((output / "projects.jsonl").read_text(), "")
+
+    def test_directory_enumeration_cannot_start_provenance_reads_after_deadline(self):
+        clock = [0.0]
+        original = os.scandir
+
+        def slow_directory(path):
+            clock[0] = 2.0
+            return original(path)
+
+        with mock.patch.object(scanner.time, "monotonic", side_effect=lambda: clock[0]), \
+                mock.patch.object(scanner.os, "scandir", side_effect=slow_directory), \
+                mock.patch.object(scanner, "_read_head") as read_head:
+            _output, summary = self.run_scan("--root", "PROJECTS/own-remote", "--max-seconds", "1")
+        self.assertEqual(summary["stop_reason"], "time_limit")
+        read_head.assert_not_called()
+
+    def test_known_wrong_removed_budget_cannot_satisfy_the_bounded_scan_oracle(self):
+        with mock.patch.object(scanner.Inventory, "budget_exhausted", return_value=False):
+            _output, summary = self.run_scan("--max-files", "2")
+        self.assertGreater(summary["files"], 2)
+        self.assertTrue(summary["complete"])
+        self.assertFalse(summary["files"] <= 2 and not summary["complete"]
+                         and summary["stop_reason"] == "file_limit")
+
+    def test_invalid_limits_refuse_before_creating_an_output(self):
+        for options in (("--max-files", "0"), ("--max-files", "-2"),
+                        ("--max-seconds", "0"), ("--max-seconds", "nan"), ("--max-seconds", "inf")):
+            with self.subTest(options=options), self.assertRaises(SystemExit):
+                scanner.main(["--volume", str(self.volume), "--output", str(self.root / "refused"), *options])
+            self.assertFalse((self.root / "refused").exists())
+
+    def test_selected_descendants_cannot_bypass_private_ancestor_exclusions(self):
+        _write(self.volume, ".ssh/archive/README.md", "private")
+        _write(self.volume, "PERSONAL/Identity/README.md", "private")
+        output, summary = self.run_scan("--root", ".ssh/archive", "--root", "PERSONAL/Identity",
+                                       "--exclude-path", "PERSONAL=operator-private")
+        self.assertEqual(summary["files"], 0)
+        self.assertEqual(summary["excluded_by_class"], {"secret_store": 1, "operator_excluded": 1})
+        self.assertFalse(list(output.glob("files-*.jsonl")))
+
+    def test_unreadable_provenance_does_not_become_owner_material(self):
+        _write(self.volume, "PROJECTS/resizer/LICENSE", MIT)
+        original = open
+
+        def fail_licence(path, *args, **kwargs):
+            if str(path).endswith("resizer/LICENSE"):
+                raise PermissionError("fixture licence unavailable")
+            return original(path, *args, **kwargs)
+
+        with mock.patch("builtins.open", side_effect=fail_licence):
+            output, _summary = self.run_scan()
+        rows = [json.loads(line) for line in (output / "projects.jsonl").read_text().splitlines()]
+        row = next(row for row in rows if row["name"] == "resizer")
+        self.assertEqual(row["provenance_class"], scanner.PROVENANCE_UNRESOLVED)
+        self.assertIn("provenance_head_unreadable", row["provenance_issues"])
+
+    def test_selected_symlink_cannot_hide_a_secret_ancestor(self):
+        _write(self.volume, ".ssh/archive/README.md", "private")
+        (self.volume / "safe-alias").symlink_to(self.volume / ".ssh/archive", target_is_directory=True)
+        output = self.root / "refused-alias"
+        self.assertEqual(scanner.main(["--volume", str(self.volume), "--root", "safe-alias",
+                                       "--output", str(output)]), 2)
+        self.assertFalse(output.exists())
+
+    def test_secret_folder_names_remain_excluded_with_other_casing(self):
+        _write(self.volume, "work/Chrome-Profile/Default/README.md", "private")
+        _output, summary = self.run_scan("--root", "work")
+        self.assertEqual(summary["files"], 0)
+        self.assertEqual(summary["excluded_by_class"], {"secret_store": 1})
 
 
 if __name__ == "__main__":

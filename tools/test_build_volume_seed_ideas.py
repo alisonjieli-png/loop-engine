@@ -208,6 +208,34 @@ class SeedIdeasTest(unittest.TestCase):
         self.assertEqual(code, 2)
         self.assertFalse((HERE.parent / "seeds-here").exists())
 
+    def test_partial_unverified_or_missing_summary_refuses_before_source_reread(self):
+        path = self.inventory / "summary.json"
+        baseline = json.loads(path.read_text())
+        for summary, code in (({**baseline, "complete": False}, "inventory_incomplete"),
+                              ({**baseline, "errors": 1}, "inventory_incomplete"),
+                              ({**baseline, "authorship_mode": "unverified"}, "inventory_authorship_unverified"),
+                              ({**baseline, "authorship_mode": "unknown"}, "inventory_authorship_unverified")):
+            path.write_text(json.dumps(summary))
+            target = self.root / "refused-new-source"
+            with self.subTest(code=code), unittest.mock.patch.object(seeds, "excerpt_for") as read_source:
+                with self.assertRaisesRegex(seeds.SeedError, code):
+                    seeds.build(self.inventory, self.volume, None, target, maximum=5, volume_name="v")
+                read_source.assert_not_called()
+                self.assertFalse(target.exists())
+        path.unlink()
+        with self.assertRaisesRegex(seeds.SeedError, "inventory_incomplete"):
+            seeds.build(self.inventory, self.volume, None, self.root / "missing-summary", maximum=5, volume_name="v")
+
+    def test_legacy_finished_summary_remains_eligible(self):
+        path = self.inventory / "summary.json"
+        summary = json.loads(path.read_text())
+        for field in ("complete", "stop_reason", "limits", "authorship_mode"):
+            summary.pop(field, None)
+        path.write_text(json.dumps(summary))
+        report = seeds.build(self.inventory, self.volume, None, self.root / "legacy-finished",
+                             maximum=5, volume_name="v")
+        self.assertGreater(report["kept"], 0)
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -416,6 +416,18 @@ def build(inventory: Path, volume: Path, registry: "Path | None", output: Path, 
     projects_path = inventory / "projects.jsonl"
     if not projects_path.is_file():
         refuse("inventory_missing", f"{projects_path} is not an inventory")
+    # A partially walked source can hide contrary provenance. New-source
+    # inventories also must not acquire the older whole-volume declaration
+    # through this consumer's seed text.
+    try:
+        summary = json.loads((inventory / "summary.json").read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        refuse("inventory_incomplete", "a completed inventory summary is required")
+    if (not isinstance(summary, dict) or summary.get("record_type") != "local_volume_inventory/v1"
+            or summary.get("complete", True) is not True or summary.get("errors") != 0):
+        refuse("inventory_incomplete", "partial or failed discovery cannot seed generation")
+    if summary.get("authorship_mode", "historical_owner_declaration") != "historical_owner_declaration":
+        refuse("inventory_authorship_unverified", "qualify new-source provenance before generating owner-derived material")
     inventory_sha256 = hashlib.sha256(projects_path.read_bytes()).hexdigest()
     statuses = index_statuses(registry, volume)
     projects = []
