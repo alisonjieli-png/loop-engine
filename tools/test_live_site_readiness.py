@@ -78,6 +78,19 @@ for(const options of [{timeoutMs:0},{timeoutMs:10001},{timeoutMs:Infinity},{init
   await assert.rejects(check.observePageReadiness({},options),/declared bounds/);
 """)
 
+    def test_squeezed_text_is_refused_and_ordinary_wrapping_is_not(self):
+        self.run_node("""
+const {isSqueezed,squeezedTextProblems,SQUEEZED_TEXT}=check;
+assert.deepEqual(SQUEEZED_TEXT,{minimumCharacters:24,minimumLines:5,charactersPerLineBelow:6});
+// The steps of /case-studies/sign-up-protection on October 16, 2026: 57 characters in 20 lines of two or three letters.
+const known={text:'Get started asks for your email address and nothing else.',characters:57,lines:20};
+assert.equal(isSqueezed(known),true);
+assert.deepEqual(squeezedTextProblems([known]),['squeezes "Get started asks for your email address and nothing else." into 20 lines of about 3 characters']);
+for(const ordinary of [{characters:57,lines:2},{characters:400,lines:9},{characters:30,lines:5},{characters:23,lines:23},{characters:60,lines:4}])
+  assert.equal(isSqueezed(ordinary),false,JSON.stringify(ordinary));
+assert.deepEqual(squeezedTextProblems([{text:'a',characters:57,lines:2}]),[]);
+""")
+
     def test_checkers_use_the_shared_controls_and_final_assertions(self):
         live = (ROOT / "tools/check_live_site_for_people.mjs").read_text()
         self.assertIn('from "./live_site_readiness.mjs"', live)
@@ -85,6 +98,8 @@ for(const options of [{timeoutMs:0},{timeoutMs:10001},{timeoutMs:Infinity},{init
         self.assertIn("if(readiness.timed_out)note(where", live)
         self.assertIn("shouldCaptureView({size:sizeName,scheme,failed:problems.length>firstProblem})", live)
         self.assertIn('documentation:view==="docs"?(address==="/docs"?"index":"page"):null', live)
+        self.assertIn("page.evaluate(squeezedTextCandidates,SQUEEZED_TEXT)", live)
+        self.assertIn("for(const problem of squeezedTextProblems(squeezed))note(where,problem)", live)
         for name in ("check_documentation_browser.mjs", "check_service_workspace.mjs"):
             source = (ROOT / "tools" / name).read_text()
             self.assertIn('from "./documentation_readiness_checks.mjs"', source)

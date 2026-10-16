@@ -53,7 +53,7 @@ main:has(> .md-page){max-width:none;padding:0}
 .md-table-wrap{overflow-x:auto;max-width:100%;border:1px solid var(--border);border-radius:12px;background:var(--paper)}
 .md-table{width:100%;border-collapse:collapse;font-size:.9375rem}
 .md-table caption{padding:.75rem 1rem;text-align:left;color:var(--muted);caption-side:top}
-.md-table th,.md-table td{padding:.625rem 1rem;border-top:1px solid var(--border);text-align:left;vertical-align:top}
+.md-table th,.md-table td{padding:.625rem 1rem;border-top:1px solid var(--border);text-align:left;vertical-align:top;overflow-wrap:break-word}
 .md-table thead th{border-top:0;color:var(--muted);font-size:.8125rem;font-weight:600;white-space:nowrap}
 .md-table td{font-family:var(--font-mono);font-size:.875rem}
 .md-table th a,.md-cards a.md-row-link{display:inline-flex;align-items:center;min-height:44px}

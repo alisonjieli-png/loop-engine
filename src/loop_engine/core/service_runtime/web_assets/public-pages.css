@@ -244,8 +244,8 @@ main:has(> [data-view=learning]:not([hidden])),main:has(> [data-view=security]:n
 .case-split p{color:var(--muted);max-width:40rem;line-height:1.6}
 .case-risk{box-shadow:inset 4px 0 0 var(--error)}
 .case-steps{display:flex;flex-direction:column;gap:.75rem;margin:0;padding:0;list-style:none;counter-reset:case-step;color:var(--muted);line-height:1.6}
-.case-steps li{display:grid;grid-template-columns:2rem minmax(0,1fr);gap:.75rem;counter-increment:case-step}
-.case-steps li::before{content:"0" counter(case-step);color:var(--accent);font-family:var(--font-mono);font-size:.8125rem;font-weight:600;line-height:1.9}
+.case-steps li{position:relative;padding-left:2.75rem;counter-increment:case-step}
+.case-steps li::before{content:"0" counter(case-step);position:absolute;left:0;top:0;color:var(--accent);font-family:var(--font-mono);font-size:.8125rem;font-weight:600;line-height:1.9}
 .case-steps strong{color:var(--ink)}
 .fact-ladder{display:flex;flex-direction:column;gap:0;list-style:none;margin:0;padding:0;background:var(--paper);border:1px solid var(--border);border-radius:var(--radius-panel);overflow:hidden}
 .fact-ladder li{display:grid;grid-template-columns:7rem minmax(0,1fr);align-items:baseline;gap:.5rem 1.25rem;padding:1rem 1.5rem;border-top:1px solid var(--border)}

@@ -3,7 +3,9 @@
    The owner, September 25, 2026: "For releases you may want to adjust the logic, to be more flexible, reasonable, and human
    oriented tests rather than something too strict." This check decides whether a release stays live. It asks what a visitor
    would notice, page by page from the typed site map, at desktop and phone width: the page opens, its heading shows, no script
-   error fires, nothing scrolls sideways on a phone, and every link on it leads somewhere. It keeps the initial 1.5-second
+   error fires, nothing scrolls sideways on a phone, no text is squeezed into a column a person cannot read (added on
+   October 16, 2026, after a case study's steps wrapped one or two letters to a line), and every link on it leads somewhere.
+   It keeps the initial 1.5-second
    observation, then allows a bounded wait for actual content. Screenshots cover desktop/light and phone/dark, every failed
    view, and any initial not-ready state. It does not compare copy word for word; tools/check_hosted_website.mjs keeps those
    detailed rules and runs beside this one as advice.
@@ -13,7 +15,7 @@ import {chromium} from "../showcase/node_modules/playwright-core/index.mjs";
 import {readFileSync,writeFileSync,existsSync,mkdirSync} from "node:fs";
 import {resolve} from "node:path";
 import {setRequestedAppearance,readRequestedAppearance,appearanceProblems,appearanceKnownWrongControls} from "./browser_appearance_checks.mjs";
-import {observePageReadiness,readinessProblems,shouldCaptureView} from "./live_site_readiness.mjs";
+import {observePageReadiness,readinessProblems,shouldCaptureView,SQUEEZED_TEXT,squeezedTextCandidates,squeezedTextProblems} from "./live_site_readiness.mjs";
 
 const origin=process.argv[2],folder=resolve(process.argv[3]||"");
 if(!origin||!origin.startsWith("https://")||new URL(origin).origin!==origin||!process.argv[3]||existsSync(folder))
@@ -64,6 +66,8 @@ for(const [sizeName,viewport] of Object.entries(sizes)){
       if(readiness.timed_out)note(where,`did not become ready within ${readiness.timeout_after_initial_ms} ms after the initial observation`);
       else if(readiness.errors.length)note(where,"could not read readiness: "+readiness.errors.join(" | "));
       if(sizeName==="phone"&&seen.sideways>2)note(where,`scrolls sideways by ${seen.sideways} pixels on a phone`);
+      const squeezed=await page.evaluate(squeezedTextCandidates,SQUEEZED_TEXT).catch(error=>{note(where,"could not read the text columns: "+String(error.message).slice(0,120));return [];});
+      for(const problem of squeezedTextProblems(squeezed))note(where,problem);
       if(scriptErrors.length)note(where,"script errors: "+scriptErrors.slice(0,3).join(" | "));
       const appearance=await readRequestedAppearance(page).catch(()=>({theme:"unreadable"}));
       for(const problem of appearanceProblems(appearance,scheme))note(where,problem);

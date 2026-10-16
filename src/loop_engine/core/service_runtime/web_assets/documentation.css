@@ -123,7 +123,7 @@ main:has(> [data-view="docs"]:not([hidden])){max-width:none;padding:0}
 .docs-table{margin:1rem 0;overflow-x:auto;border:1px solid var(--border);border-radius:12px;background:var(--paper)}
 .docs-table table{width:100%;min-width:32rem;border-collapse:collapse;font-size:.875rem}
 .docs-table th{padding:.625rem 1rem;overflow-wrap:normal;word-break:normal;border-bottom:1px solid var(--border);background:var(--band);color:var(--ink);font-size:.8125rem;font-weight:600;text-align:left;vertical-align:bottom}
-.docs-table td{padding:.75rem 1rem;border-top:1px solid var(--line-soft,var(--border));color:var(--ink);vertical-align:top;line-height:1.55}
+.docs-table td{padding:.75rem 1rem;border-top:1px solid var(--line-soft,var(--border));color:var(--ink);vertical-align:top;line-height:1.55;overflow-wrap:break-word}
 .docs-table tbody tr:first-child td{border-top:0}
 .docs-table td:first-child code{white-space:nowrap}
 .docs-note{color:var(--muted)}

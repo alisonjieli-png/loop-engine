@@ -36,6 +36,33 @@ export function readinessProblems(state){
 
 export const shouldCaptureView=({size,scheme,failed})=>failed||(size==="desktop"&&scheme==="light")||(size==="phone"&&scheme==="dark");
 
+/* Text a person cannot read because its column is too narrow. On October 16, 2026 the launch audit found the four steps of
+   /case-studies/sign-up-protection wrapped one or two letters to a line at every width: a two-column grid placed each step's
+   text, an anonymous grid item, in the 2rem number column. Every page opened, kept its heading and had no script error, so
+   no check noticed. A run of ordinary text that wraps into at least five lines of fewer than six characters each is refused;
+   code, pictures and visually hidden text are not read. */
+export const SQUEEZED_TEXT={minimumCharacters:24,minimumLines:5,charactersPerLineBelow:6};
+export const isSqueezed=({characters,lines})=>characters>=SQUEEZED_TEXT.minimumCharacters&&lines>=SQUEEZED_TEXT.minimumLines
+  &&characters/lines<SQUEEZED_TEXT.charactersPerLineBelow;
+
+/* Runs in the page: each visible text node long enough to judge, with its length and its number of line boxes. */
+export function squeezedTextCandidates({minimumCharacters,minimumLines}){
+  const shown=node=>!!node&&node.getClientRects().length>0&&!node.closest("[hidden]")&&getComputedStyle(node).visibility!=="hidden";
+  const found=[],walker=document.createTreeWalker(document.body,NodeFilter.SHOW_TEXT);
+  for(let node=walker.nextNode();node&&found.length<20;node=walker.nextNode()){
+    const text=node.textContent.replace(/\s+/g," ").trim(),parent=node.parentElement;
+    if(text.length<minimumCharacters||!parent||!shown(parent)
+      ||parent.closest("pre,code,kbd,samp,script,style,svg,textarea,[aria-hidden='true'],.sr-only,.deck-visually-hidden"))continue;
+    const range=document.createRange();range.selectNodeContents(node);
+    const lines=new Set([...range.getClientRects()].filter(box=>box.width>0&&box.height>0).map(box=>Math.round(box.top))).size;
+    if(lines>=minimumLines)found.push({text:text.slice(0,60),characters:text.length,lines});
+  }
+  return found;
+}
+
+export const squeezedTextProblems=candidates=>candidates.filter(isSqueezed)
+  .map(item=>`squeezes "${item.text}" into ${item.lines} lines of about ${Math.max(1,Math.round(item.characters/item.lines))} characters`);
+
 export async function observePageReadiness(page,{documentation=null,initialDelayMs=INITIAL_OBSERVATION_MS,
   timeoutMs=READINESS_TIMEOUT_MS,onInitialNotReady=async()=>{}}={}){
   if(!Number.isInteger(initialDelayMs)||initialDelayMs<0||initialDelayMs>INITIAL_OBSERVATION_MS
