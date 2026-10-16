@@ -1,0 +1,36 @@
+{
+ "record_type": "public_good_policy_renewal_evidence/v1",
+ "recorded_on": "2026-10-16",
+ "application_release": 93,
+ "operator_source_revision": "f2ae304e",
+ "operator_code_matches_running_release": "public_good.py, public_good_operator.py, public_good_selection.py, catalogue_commands.py and runtime.py are identical between the release 93 source bdc45955 and f2ae304e",
+ "reason": "All 448 grants would have lapsed at 00:00 UTC on October 31, 2026 (29 grants: the five September 30 originals and the 24 SDG tools of October 8) or November 1, 2026 (419 grants), ending free access to the whole collection. The renewal keeps the offer unchanged and moves only the expiry, to a quarterly review point.",
+ "catalogue_release": "29a2bc33c3132a97466e79c18350f3574624f2ef7967b07241029e269b92e742",
+ "previous_policy_version": "9f0f5cfe3dda4985b7b725e41aa24990",
+ "policy_version": "a4b61a97d4944a9887304756dddb99ec",
+ "source_policy_file_sha256": "0bb4f78d874db9cadc307e5963d6252bbde86c898aa987a2dc831e30c53e6685",
+ "policy_file_sha256": "93fe35eb3e3bc00a6957af09f4e781dc681d2c82964e22a045e82f5482fd4625",
+ "payload_digest": "b3c47ad1aa137918f6bc1e9f44dcaa46e7162943a6f1a51d59e8bb3bbb9e309c",
+ "grants": 448,
+ "expires_at_before": {"1793404800": 29, "1793491200": 419},
+ "expires_at_after": {"1801440000": 448},
+ "expires_at_after_utc": "2027-02-01T00:00:00Z",
+ "unchanged": [
+  "every grant's binding, item version, approval and rights references, public-benefit reason, goals, initiatives and useful paths, in the same order",
+  "limits: 60 requests and 67,108,864 bytes per account per 3,600 seconds; 16,777,216-byte maximum response; 300 requests and 268,435,456 bytes per host window",
+  "account required, no subscription required"
+ ],
+ "checks": {
+  "preparation": "The applied October 8 file's exact serialization was reproduced from its parsed value before editing; a field-level comparison shows only expected_release, expected_version and expires_at changed; the 448 grant identities equal the live public listing.",
+  "operator_parser": "read_request accepted the file: 448 grants, one expiry value, unchanged limits",
+  "operator_tests": "tools/test_public_good_operator.py and tools/test_public_good_selection.py: 25 passed",
+  "known_state_control": "Before the plan, a read-only host script reported the stored policy 9f0f5cfe with 448 active grants and the expected 29 and 419 expiry counts, so its later reading could be trusted.",
+  "host_plan": "applied false; same file and payload digests; previous version 9f0f5cfe; 448 selected versions, 2,323 file placements and 11,665,026 bytes verified against the active release (256,380 members); no serving view installed and no search rebuilt",
+  "apply": "once, with --expected-digest; an attempt record was written first; no replay",
+  "public_readback": "baltor.ai, app.baltor.ai and baltor-pilot.fly.dev each serve policy a4b61a97 with 448 packages, 1,984 distinct files, 1,128 distinct useful files and all 17 goals non-empty",
+  "stored_readback": "the host store holds 448 active grants, all expiring at 1801440000"
+ },
+ "not_changed": "No grant, binding, path, reason, limit, catalogue, application, billing, DNS or schedule change; no model call.",
+ "next_review": "Before 2027-01-25, renew eligible unchanged versions through the same guarded operator path, or let a grant lapse with a recorded reason.",
+ "private_evidence_root": "/home/username/baltor-private/claude-takeover-20261015-dhycum/ops/public-good-renewal"
+}

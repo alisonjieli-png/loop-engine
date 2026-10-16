@@ -1580,10 +1580,11 @@ select the same files as website visitors; retain the existing exact-file
 download path and verify the complete browse-to-use journey. The dot's own
 connection, two-way intake and feedback still need separate acceptance.
 
-Track the access-grant review dates as housekeeping: the five original grants
-expire on October 31 UTC and the earlier selected grants on November 1 UTC.
-Review and renew eligible unchanged versions before expiry through the same
-guarded operator path. Never remove expiry checks or relabel stale source
+Track the access-grant review dates as housekeeping. On October 16 policy
+`a4b61a97...` renewed all 448 grants unchanged until February 1, 2027 at
+00:00 UTC ([renewal record](../../artifacts/architecture-audit-2026-09-19/public-good-renewal-2026-10-16.json)).
+Review and renew eligible unchanged versions before January 25, 2027 through
+the same guarded operator path. Never remove expiry checks or relabel stale source
 guidance as current to keep a count high.
 
 1. **Reconcile and preserve the current work.** Account for inherited changes,

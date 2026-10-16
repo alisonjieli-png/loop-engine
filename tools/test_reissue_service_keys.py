@@ -335,6 +335,33 @@ class RenewalTests(unittest.TestCase):
         printed = json.loads(shown.getvalue())
         self.assertEqual((printed["renewal_ok"], printed["renewal"][0]["refused"]), (False, "administrator_credential_refused"))
 
+    def run_timer(self, administrator_expires_at=None):
+        import io
+        from contextlib import redirect_stdout
+        self.service.add("le_saved_value_000000000000000000000000", "pilot-owner", "c" * 32, NOW + 6 * DAY)
+        if administrator_expires_at is not None:
+            self.store.items["baltor-admin"][0].attributes["expires_at"] = str(administrator_expires_at)
+        with unittest.mock.patch.object(reissue, "collection", lambda: self.store), \
+                unittest.mock.patch.object(reissue, "call", self.service.call), \
+                unittest.mock.patch.object(reissue.time, "time", lambda: NOW), redirect_stdout(io.StringIO()) as shown:
+            code = reissue.main(["--origin", "https://service.example", "--account", "pilot-owner",
+                                 "--lifetime-seconds", str(7 * DAY), "--renew-within", str(4 * DAY),
+                                 "--revoke-replaced", "--confirm-reissue"])
+        return code, json.loads(shown.getvalue())
+
+    def test_the_administrator_expiry_is_reported_and_fails_the_timer_inside_two_weeks(self):
+        code, printed = self.run_timer(NOW + 10 * DAY)
+        self.assertEqual(code, reissue.EXIT_ADMINISTRATOR_EXPIRING)
+        self.assertTrue(printed["renewal_ok"])
+        self.assertEqual((printed["administrator"]["expiring"], printed["administrator"]["days_left"]), (True, 10.0))
+
+    def test_known_wrong_an_administrator_far_from_expiry_or_without_facts_passes(self):
+        code, printed = self.run_timer(NOW + 30 * DAY)
+        self.assertEqual((code, printed["administrator"]["expiring"]), (0, False))
+        self.setUp()
+        code, printed = self.run_timer()
+        self.assertEqual((code, printed["administrator"]["expires_at"]), (0, None))
+
     def test_a_saved_key_of_another_account_is_refused_before_any_write(self):
         self.service.add("le_saved_value_000000000000000000000000", "pilot-boundary", "c" * 32, NOW + 6 * DAY)
         with self.assertRaisesRegex(reissue.ReissueError, "another_account"):

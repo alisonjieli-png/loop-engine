@@ -30,6 +30,8 @@ an unattended timer runs:
 Exit status: 0 when every account is done, 1 when one was refused, and 3 when
 the service refused the administrator credential itself, which no renewal can
 repair: that credential is replaced through the operator bootstrap, not here.
+A renewal run exits 4 when every account is done but the saved administrator
+key expires within 14 days; rotate it with tools/rotate_service_administrator.py.
 """
 from __future__ import annotations
 
@@ -55,6 +57,9 @@ ADMINISTRATOR_ACCOUNT = "baltor-admin"
 #: The failure that no renewal repairs. Its own exit status lets a timer's log say so.
 ADMINISTRATOR_REFUSED = "administrator_credential_refused"
 EXIT_ADMINISTRATOR_REFUSED = 3
+#: The saved administrator key expires within ADMINISTRATOR_WARNING_DAYS; the renewals themselves still ran.
+EXIT_ADMINISTRATOR_EXPIRING = 4
+ADMINISTRATOR_WARNING_DAYS = 14
 
 
 class ReissueError(RuntimeError):
@@ -333,11 +338,29 @@ def run_renewal(options, hostname):
         except ReissueError as error:
             failures.append(str(error))
             results.append({"account": account, "refused": str(error), "secret_printed": False})
+    administrator = administrator_expiry(saved, hostname)
     print(json.dumps({"origin": options.origin, "checked_at": checked_at, "dry_run": not options.confirm_reissue,
-                      "renewal_ok": not failures, "renewal": results}))
+                      "renewal_ok": not failures, "renewal": results, "administrator": administrator}))
     if ADMINISTRATOR_REFUSED in failures:
         return EXIT_ADMINISTRATOR_REFUSED
-    return 1 if failures else 0
+    if failures:
+        return 1
+    return EXIT_ADMINISTRATOR_EXPIRING if administrator["expiring"] else 0
+
+
+def administrator_expiry(saved, hostname):
+    """The saved administrator key's expiry from its keyring facts; no request and no secret read.
+
+    tools/rotate_service_administrator.py writes `expires_at` beside the value. Inside the warning window the
+    timer exits EXIT_ADMINISTRATOR_EXPIRING after its renewals, so the coming expiry shows as a failed unit
+    instead of as lapsed diagnostic keys a week after the administrator key stopped working (October 2026)."""
+    items = list(saved.search_items(attributes(hostname, ADMINISTRATOR_ACCOUNT)))
+    value = items[0].get_attributes().get("expires_at") if len(items) == 1 else None
+    expires_at = int(value) if isinstance(value, str) and value.isdigit() else None
+    days_left = None if expires_at is None else round((expires_at - time.time()) / 86400, 1)
+    return {"expires_at": expires_at, "days_left": days_left,
+            "expiring": days_left is not None and days_left < ADMINISTRATOR_WARNING_DAYS,
+            "rotate_with": "tools/rotate_service_administrator.py --origin ORIGIN --confirm-rotation"}
 
 
 if __name__ == "__main__":

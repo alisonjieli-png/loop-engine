@@ -167,8 +167,14 @@ that key before creating a replacement.
 
 Test tokens cannot create administrators, change billing, run commands,
 access cloud administration or call models. The administrator credential is
-separate from customer harness credentials and expires October 20, 2026 at
-02:51:28 UTC. Bootstrap-key rotation remains an operator action. Administrator
+separate from customer harness credentials. The bootstrap key of September 20
+was replaced on October 16, 2026, and the current key expires on January 14,
+2027 at 14:36:38 UTC. Rotate it before then with
+`/usr/bin/python3 tools/rotate_service_administrator.py --origin https://baltor-pilot.fly.dev --confirm-rotation`
+(without the flag it only reads and reports): the new key replaces the
+keyring value, must be accepted by the service, and only then is the old key
+revoked. The daily diagnostic-key renewal exits 4 when fewer than 14 days are
+left. Administrator
 revocation does not automatically revoke every previously issued test token;
 revoke those tokens explicitly or disable their target tenant.
 

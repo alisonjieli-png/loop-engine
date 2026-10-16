@@ -1,0 +1,25 @@
+{
+ "record_type": "service_administrator_key_rotation_evidence/v1",
+ "recorded_on": "2026-10-16",
+ "application_release": 93,
+ "origin": "https://baltor-pilot.fly.dev",
+ "administrator": "baltor-admin",
+ "reason": "The September 20 bootstrap key expired at 2026-10-20T02:51:28Z. The daily diagnostic key renewal signs with it and would have exited 3 afterwards, letting the live checks' diagnostic keys lapse within seven days. The bootstrap operation refuses to run again while an administrator exists, so no rotation path existed.",
+ "tool": "tools/rotate_service_administrator.py with the host step tools/service_admin_rotation_host.py, run as the service user",
+ "dry_run": {"checked_at": 1792161370, "active_administrator_keys": 1, "replaced_key_id": "c1f5d8ed42d04ccbafe48b1b236f1be8", "replaced_key_expires_at": 1792464688},
+ "rotation": {
+  "issued_at": 1792161398,
+  "key_id": "335eb8a30fa84691b79b9988fccc3618",
+  "expires_at": 1799937398,
+  "expires_at_utc": "2027-01-14T14:36:38Z",
+  "new_key_accepted_before_revocation": true,
+  "replaced_key_revoked": true,
+  "replaced_key_refused_afterwards": true,
+  "active_administrator_keys_after": 1,
+  "secret_printed": false
+ },
+ "follow_up_check": "A dry run of the daily diagnostic renewal read the administration view with the new key: both diagnostic keys accepted, administrator expiry reported as 90 days.",
+ "warning": "tools/reissue_service_keys.py now reports the saved administrator key's expiry from its keyring facts and exits 4 when fewer than 14 days are left.",
+ "next_rotation": "Before 2027-01-07.",
+ "private_evidence_root": "/home/username/baltor-private/claude-takeover-20261015-dhycum/ops/admin-key-rotation"
+}
