@@ -204,7 +204,7 @@ installation of the item's producer family.
 | `ollama.kimi-k3` | moonshot | model_gateway | Disabled. The repository's model policy refuses this model on every route. |
 | `claude_code.bare` | anthropic | command_line | Disabled. `claude -p --bare` reads only `ANTHROPIC_API_KEY`, never the login of an interactive session; on this machine that variable is not set, and one probe recorded `authentication_unavailable` with no model call. |
 | `claude_code.subscription` | anthropic | command_line | `claude -p --safe-mode` with no tools and no session persistence: every customization (instruction files, skills, plugins, hooks, protocol servers) is off while the owner's subscription login still works. The model is pinned with `--model {model}`, and the result's model usage must name only that model. The owner capped it at 150 review calls in total on 24 September 2026, because it shares the subscription with the engineering sessions; the command's `--quota-group-ceiling claude_subscription=N` holds each command to what remains. Never asked about an item Claude Code wrote. |
-| `tactical.gemma-4-coding-abliterated` | google | provider_binding | The owner's Tactical Engineering endpoint through the committed provider binding `tools/resources/original-native-generation-providers/tactical-gemma-4-coding-abliterated.json`, which declares the review purpose `decide_label` beside `generation`. The TLS trust contract, family evidence and measured capacity are the binding's; the credential reference `tactical-model-generation` is resolved inside the review process only. The model writes reasoning before its verdict, so the installation declares `json_after_reasoning` and a 16,384 token allocation within the measured 65,536. Never asked about an item the same endpoint produced, because both are the google family. |
+| `tactical.gemma-4-coding-abliterated` | google | provider_binding | The owner's Tactical Engineering endpoint through the committed provider binding `tools/resources/original-native-generation-providers/tactical-gemma-4-coding-abliterated.json`, which declares the review purpose `decide_label` beside `generation`. The TLS trust contract, family evidence and measured capacity are the binding's; the server's address and certificate name are the operator references `tactical-model-endpoint` and `tactical-model-tls-server-name`, read at run time, and the credential reference `tactical-model-generation` is resolved inside the review process only. The model writes reasoning before its verdict, so the installation declares `json_after_reasoning` and a 16,384 token allocation within the measured 65,536. Never asked about an item the same endpoint produced, because both are the google family. |
 
 ## The provider_binding engine
 
@@ -213,7 +213,10 @@ exact digest. The engine validates it with the candidate generator's own loader
 at the checkout's current commit: the binding bytes, trust anchor, family
 evidence, capacity record and panel vocabulary must be committed unchanged, the
 binding's model and family must be the installation's, and the binding must
-declare the installation's purpose. Only then is the operator credential
+declare the installation's purpose. A setting the binding names by operator
+reference must be configured, or the engine is unavailable before any
+credential is read, and the availability record names that endpoint only by
+its reference and SHA-256. Only then is the operator credential
 resolved, inside the review process, by the resolver the command supplies when
 model calls are authorized. A command without model authority resolves no
 credential, and the engine is then unavailable with

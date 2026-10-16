@@ -126,8 +126,10 @@ class BindingReviewer:
             return Availability(False, "the model policy refuses this route: " + str(error)[:300], "", {},
                                 REFUSED_BY_ROUTE_POLICY)
         self.binding, self.spec, self.route = binding, spec, route
+        # The endpoint as the binding's summary records it: a private address appears as its operator
+        # reference and digest, so a review record never names the server.
         return Availability(True, "", f"provider_binding/{binding.binding_id}",
-                            {"binding_sha256": binding.sha256, "endpoint": binding.settings.endpoint,
+                            {"binding_sha256": binding.sha256, "endpoint": binding.summary()["endpoint"],
                              "capacity_sha256": binding.capacity_sha256,
                              "tls_pinned_sha256": binding.settings.tls_pinned_sha256 or ""})
 

@@ -203,6 +203,48 @@ class BindingEngineTest(unittest.TestCase):
                 self.assertEqual(attempt.outcome, reviewers.AUTHENTICATION_UNAVAILABLE)
                 self.assertEqual(self.transport.requests, [])
 
+    def test_a_private_endpoint_named_by_reference_answers_and_the_record_holds_only_its_digest(self):
+        from tools import private_endpoints
+        name = "origin.fixture.invalid"
+        for field in ("endpoint", "tls_server_name"):
+            self.provider.pop(field)
+        self.commit()
+        raw = json.loads((self.repo / BINDING).read_text())
+        raw["setting_references"] = {"endpoint": "tactical-model-endpoint",
+                                     "tls_server_name": "tactical-model-tls-server-name"}
+        self.binding_digest = self.write(BINDING, raw)
+        _git(self.repo, "add", ".")
+        _git(self.repo, "commit", "-q", "-m", "binding by reference")
+        environment = {"LOOP_ENGINE_TACTICAL_BASE_URL": ENDPOINT, "LOOP_ENGINE_TACTICAL_TLS_SERVER_NAME": name}
+        with patch.dict("os.environ", environment), \
+                patch.object(private_endpoints, "_keyring_value", side_effect=LookupError("no keyring here")):
+            availability, attempt = self.review(self.engine())
+        self.assertTrue(availability.available, availability.reason)
+        self.assertEqual(attempt.outcome, reviewers.ANSWERED)
+        self.assertEqual(self.transport.requests[0]["url"], ENDPOINT + "/chat/completions")
+        self.assertEqual(availability.model_version["endpoint"],
+                         {"reference": "operator:tactical-model-endpoint",
+                          "sha256": generation.digest(ENDPOINT.encode())})
+        self.assertNotIn(name, json.dumps(availability.model_version))
+
+    def test_an_unconfigured_private_endpoint_leaves_the_engine_unavailable_before_the_credential(self):
+        from tools import private_endpoints
+        for field in ("endpoint", "tls_server_name"):
+            self.provider.pop(field)
+        self.commit()
+        raw = json.loads((self.repo / BINDING).read_text())
+        raw["setting_references"] = {"endpoint": "tactical-model-endpoint"}
+        self.binding_digest = self.write(BINDING, raw)
+        _git(self.repo, "add", ".")
+        _git(self.repo, "commit", "-q", "-m", "binding by reference")
+        with patch.dict("os.environ", {"LOOP_ENGINE_TACTICAL_BASE_URL": ""}), \
+                patch.object(private_endpoints, "_keyring_value", side_effect=LookupError("no keyring here")):
+            availability, attempt = self.review(self.engine())
+        self.assertFalse(availability.available)
+        self.assertEqual(availability.reason_code, reviewers.ENGINE_UNAVAILABLE)
+        self.assertIn("provider_binding_setting_unavailable", availability.reason)
+        self.assertEqual((self.resolved, self.transport.requests), ([], []))
+
     def test_another_reported_model_is_not_an_answer(self):
         _availability, attempt = self.review(self.engine(), Transport(model="other-model"))
         self.assertEqual(attempt.outcome, reviewers.MODEL_IDENTITY_MISMATCH)

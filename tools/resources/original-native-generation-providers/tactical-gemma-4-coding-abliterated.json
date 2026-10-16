@@ -1,10 +1,9 @@
 {
- "record_type": "original_native_generation_provider_binding/v1",
+ "record_type": "original_native_generation_provider_binding/v2",
  "binding_id": "tactical_gemma_4_coding_abliterated",
  "provider": {
   "id": "tactical",
   "kind": "custom",
-  "endpoint": "https://ai.tacticalengineering.net:6969/v1",
   "model": "gemma-4-coding-abliterated",
   "wire": "openai",
   "locality": "organization",
@@ -17,8 +16,11 @@
   "stream": "stream",
   "tls_verification": "ca_file",
   "tls_ca_file": "tools/resources/original-native-generation-providers/cloudflare-origin-ca-rsa-root.pem",
-  "tls_server_name": "ai.iamretarded.net",
   "tls_pinned_sha256": "0fc69cf1c72abe552e9fb3cfa96db9974d7bd93394c20d219d4c051a1a923901"
+ },
+ "setting_references": {
+  "endpoint": "tactical-model-endpoint",
+  "tls_server_name": "tactical-model-tls-server-name"
  },
  "trust_anchor_sha256": "91a8a5567efa6bf941162aa806b3ba476aaddf7867640e53053b35fb225a5dae",
  "producer_family": "google",

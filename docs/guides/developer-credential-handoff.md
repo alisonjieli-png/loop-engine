@@ -131,6 +131,47 @@ Their environment names are declared in the manifest. Conflicting names
 refuse. A timeout leaves the external outcome unknown and does not retry.
 Inspect provider state before repeating a possible write.
 
+## Private endpoint settings
+
+The owner's Tactical model server is private infrastructure, so the
+repository does not hold its address. Two operator references in
+[`operator_credentials.json`](../../tools/operator_credentials.json) name it,
+and [`private_endpoints.py`](../../tools/private_endpoints.py) reads them
+when the generation lanes, the candidate generator, the review panel's
+`provider_binding` reviewer or the 3D showcase proxy is about to connect.
+
+| Reference | Environment variable | Value |
+|---|---|---|
+| `tactical-model-endpoint` | `LOOP_ENGINE_TACTICAL_BASE_URL` | The connect URL, as the API base `https://<host>:<port>/v1`. |
+| `tactical-model-tls-server-name` | `LOOP_ENGINE_TACTICAL_TLS_SERVER_NAME` | The DNS name the server's certificate proves, when it names another host than the connect URL. |
+
+An environment variable applies to one command and wins over the keyring.
+To keep the values on this workstation, store each one once from your own
+interactive terminal, then check them:
+
+```bash
+/usr/bin/python3 tools/operator_credentials.py store --ref tactical-model-endpoint
+/usr/bin/python3 tools/operator_credentials.py store --ref tactical-model-tls-server-name
+/usr/bin/python3 tools/operator_credentials.py inventory
+```
+
+The prompt hides what you type, and `inventory` reports each reference as
+present and well formed without printing it. `store` never overwrites an
+item. To change a stored value, remove its keyring item first, for example
+`secret-tool clear application loop-engine service tactical account endpoint purpose model-endpoint-address`,
+and store it again. The values that the September 2026 Tactical runs used
+are in the dated
+[Tactical generation binding record](../verification/TACTICAL-GENERATION-BINDING-2026-09-23.md).
+
+Every caller verifies the server: it trusts only the committed Cloudflare
+Origin CA root and checks the certificate name. A missing connect URL stops
+the caller before any socket opens or key is read, with
+`private_endpoint_unconfigured` from the lanes and the proxy, and
+`provider_binding_setting_unavailable` from the generator and the review
+panel. The Kaggle notebooks read the same two values from the Kaggle secrets
+`tacticalhat_kaggle_base_url` and `tacticalhat_kaggle_tls_server_name`, as
+[the notebook guide](../../kaggle/README.md) describes.
+
 ## Limits
 
 This handoff works on this workstation under its authorized user. It is not

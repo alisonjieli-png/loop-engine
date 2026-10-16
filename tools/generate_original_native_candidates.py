@@ -6,10 +6,13 @@ package identity and materialization. A private run journal records dispatch
 before the provider call; an interrupted dispatch is never repeated silently.
 
 The provider is Ollama Cloud with a reviewed panel installation, or one
-committed provider binding (``original_native_generation_provider_binding/v1``)
+committed provider binding (``original_native_generation_provider_binding/v2``)
 that selects a custom endpoint through the existing settings, endpoint and
 gateway contracts, with its own family evidence, measured capacity record,
-TLS trust and operator credential reference.
+TLS trust and operator credential reference. A binding for a private server
+names its endpoint and certificate name by operator reference
+(``setting_references``), read at run time through tools/private_endpoints.py,
+so the repository never carries that server's address.
 """
 from __future__ import annotations
 
@@ -68,11 +71,14 @@ PLAN_TYPE = "original_native_generation_plan/v1"
 DRAFT_TYPE = "original_native_file_draft/v1"
 RUN_TYPE = "original_native_generation_run/v7"
 EVENT_TYPE = "original_native_generation_event/v3"
-BINDING_TYPE = "original_native_generation_provider_binding/v1"
+#: Version 2 may name the endpoint and the certificate name by operator reference instead of by value.
+BINDING_TYPE = "original_native_generation_provider_binding/v2"
 CAPACITY_TYPE = "endpoint_output_capacity/v1"
 FAMILY_EVIDENCE_TYPE = "generation_producer_family_evidence/v1"
 BINDING_FIELDS = {"record_type", "binding_id", "provider", "trust_anchor_sha256", "producer_family",
                   "family_evidence", "capacity", "credential_reference"}
+#: The optional binding field mapping provider settings fields to operator references.
+SETTING_REFERENCES_FIELD = "setting_references"
 PANEL_PATH = "tools/candidate_review/resources/panel.json"
 STOP_ERROR_CODES = ("rate_limited", "provider_unavailable", "authentication_failed", "timeout",
                     "model_identity_mismatch", "model_not_found", "missing_credential", "tls_trust_refused",
@@ -279,12 +285,21 @@ class ProviderBinding:
     capacity_sha256: str
     panel_sha256: str
     credential_reference: str
+    #: (provider settings field, operator reference) pairs whose values were read at run time.
+    setting_references: tuple = ()
 
     def summary(self):
+        """The secret-free summary a run records. A value read from an operator reference is recorded as that
+        reference and its SHA-256, never as the value, so no record gains a private server's address."""
+        recorded = {"endpoint": self.settings.endpoint, "tls_server_name": self.settings.tls_server_name}
+        for field, reference in self.setting_references:
+            value = recorded[field]
+            recorded[field] = {"reference": "operator:" + reference,
+                               "sha256": digest(value.encode()) if value else None}
         return {"record_type": BINDING_TYPE, "binding_id": self.binding_id, "path": self.path,
                 "sha256": self.sha256, "settings_sha256": digest(canonical(self.settings.safe_summary())),
-                "endpoint": self.settings.endpoint, "tls_verification": self.settings.tls_verification,
-                "tls_server_name": self.settings.tls_server_name,
+                "endpoint": recorded["endpoint"], "tls_verification": self.settings.tls_verification,
+                "tls_server_name": recorded["tls_server_name"],
                 "tls_pinned_sha256": self.settings.tls_pinned_sha256,
                 "trust_anchor_sha256": self.trust_anchor_sha256,
                 "family_evidence_sha256": self.family_evidence_sha256,
@@ -318,16 +333,31 @@ def committed_record(repository, revision, reference, record_type, code):
     return value
 
 
-def load_provider_binding(repository, revision, path, expected_digest, model, family, *, purpose="generation"):
+def private_setting_values(references):
+    """Provider settings fields read now from the operator references a binding names (tools/private_endpoints.py)."""
+    from tools import private_endpoints
+    return private_endpoints.resolve_references(references)
+
+
+def load_provider_binding(repository, revision, path, expected_digest, model, family, *, purpose="generation",
+                          setting_resolver=None):
     """Validate one provider binding and everything it names, before any credential is read.
 
     ``purpose`` is the use the caller makes of the endpoint; the binding's provider settings must declare it,
-    so a binding committed for generation only is refused as a review route, and the other way round."""
+    so a binding committed for generation only is refused as a review route, and the other way round.
+
+    A binding may name its ``endpoint`` and ``tls_server_name`` by operator reference
+    (``setting_references``) instead of by value. Those values are read through ``setting_resolver``
+    (by default the environment, then the keyring) after the committed bytes are checked and before
+    anything is parsed, and they are held to every check a literal value meets. An absent endpoint refuses
+    with ``provider_binding_setting_unavailable``; the credential is still unread."""
     raw = committed_bytes(repository, revision, path, expected_digest, "provider_binding_not_committed")
     if secret_present(raw.decode("utf-8")):
         refuse("provider_binding_contains_secret")
     value = strict_json(raw)
-    exact(value, BINDING_FIELDS, "provider_binding_fields_invalid")
+    exact(value, BINDING_FIELDS | ({SETTING_REFERENCES_FIELD} if type(value) is dict
+                                   and SETTING_REFERENCES_FIELD in value else set()),
+          "provider_binding_fields_invalid")
     if value["record_type"] != BINDING_TYPE:
         refuse("provider_binding_version_unsupported")
     if type(value["binding_id"]) is not str or not re.fullmatch(r"[a-z][a-z0-9_]{0,63}", value["binding_id"]):
@@ -337,6 +367,24 @@ def load_provider_binding(repository, revision, path, expected_digest, model, fa
             "credential_env", "maximum_output_tokens", "maximum_output_source")):
         # One credential path (the operator reference) and one capacity source (the record).
         refuse("provider_binding_settings_invalid")
+    references = value.get(SETTING_REFERENCES_FIELD, {})
+    if (type(references) is not dict or (SETTING_REFERENCES_FIELD in value and not references)
+            or not set(references) <= {"endpoint", "tls_server_name"} or (references and "endpoint" not in references)
+            or any(type(name) is not str or not re.fullmatch(r"[a-z][a-z0-9-]{0,63}", name)
+                   for name in references.values())):
+        refuse("provider_binding_setting_references_invalid")
+    if any(field in provider for field in references):
+        # One source for each field: the committed value or the operator reference, never both.
+        refuse("provider_binding_setting_declared_twice")
+    if references:
+        try:
+            resolved = (setting_resolver or private_setting_values)(dict(references))
+        except Exception:  # noqa: BLE001 - which setting is missing is in the resolver's own message, not here
+            refuse("provider_binding_setting_unavailable")
+        if type(resolved) is not dict or not set(resolved) <= set(references) or "endpoint" not in resolved \
+                or any(type(item) is not str or not item for item in resolved.values()):
+            refuse("provider_binding_setting_unavailable")
+        provider = {**provider, **resolved}
     # The settings loader is a cited source of the starter catalogue, so its
     # key list gains the two TLS identity fields only with the next catalogue
     # re-anchor. Until then they are applied through ProviderSettings' own
@@ -391,7 +439,8 @@ def load_provider_binding(repository, revision, path, expected_digest, model, fa
         # Refused here, before any credential is read or provider built.
         refuse("output_capacity_unknown")
     return ProviderBinding(value["binding_id"], path, expected_digest, settings, capability, family, anchor,
-                           value["family_evidence"]["sha256"], value["capacity"]["sha256"], panel_digest, reference)
+                           value["family_evidence"]["sha256"], value["capacity"]["sha256"], panel_digest, reference,
+                           tuple(sorted(references.items())))
 
 
 def operator_credential(reference):
@@ -905,7 +954,7 @@ def implementation_digests(spec, extra=()):
 
 
 def generate(request, *, gateway=None, provider_spec=None, token_bound_resolver=None, fixture_run=False,
-             credential_resolver=None):
+             credential_resolver=None, setting_resolver=None):
     if request.calls_authorized is not True or request.writes_authorized is not True:
         refuse("generation_authority_required")
     if type(request.call_ceiling) is not int or request.call_ceiling < 1:
@@ -938,7 +987,8 @@ def generate(request, *, gateway=None, provider_spec=None, token_bound_resolver=
         # A custom producer is bound by its own committed evidence, never by
         # adding an unqualified reviewer installation to the review panel.
         binding = load_provider_binding(repository, plan["source_revision"], request.provider_binding,
-                                        request.provider_binding_sha256, request.model, request.producer_family)
+                                        request.provider_binding_sha256, request.model, request.producer_family,
+                                        setting_resolver=setting_resolver)
         family_source_digest = binding.family_evidence_sha256
     elif not fixture_run:
         family_path = PANEL_PATH

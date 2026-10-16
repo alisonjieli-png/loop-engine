@@ -147,15 +147,16 @@ class ProviderBindingTest(unittest.TestCase):
             writes_authorized=True, provider_binding=BINDING, provider_binding_sha256=self.binding_digest)
         return replace(request, **changes)
 
-    def run_bound(self, transport=None, resolver=None, **changes):
+    def run_bound(self, transport=None, resolver=None, setting_resolver=None, **changes):
         self.transport = transport or Transport()
         with patch.object(custom_endpoint, "_endpoint_opener", lambda ep: self.transport), \
                 patch.object(custom_endpoint, "_claim_call_slot", lambda name: 0.0):
-            return generation.generate(self.request(**changes), credential_resolver=resolver or self.resolver)
+            return generation.generate(self.request(**changes), credential_resolver=resolver or self.resolver,
+                                       setting_resolver=setting_resolver)
 
-    def assert_refused_before_credential(self, code, **changes):
+    def assert_refused_before_credential(self, code, setting_resolver=None, **changes):
         with self.assertRaisesRegex(generation.GenerationError, code):
-            self.run_bound(**changes)
+            self.run_bound(setting_resolver=setting_resolver, **changes)
         self.assertEqual(self.resolved, [])
         self.assertEqual(self.transport.requests, [])
         self.assertFalse((self.root / "run").exists())
@@ -375,6 +376,107 @@ class ProviderBindingTest(unittest.TestCase):
             self.run_bound(provider_binding=None, provider_binding_sha256=None)
         self.assertEqual(self.resolved, [])
         self.assertEqual(self.transport.requests, [])
+
+    # -- a private endpoint named by operator reference ------------------------------------------------
+    REFERENCES = {"endpoint": "fixture-endpoint", "tls_server_name": "fixture-certificate-name"}
+    PRIVATE_NAME = "origin.fixture.invalid"
+
+    def commit_by_reference(self, references=None):
+        for field in ("endpoint", "tls_server_name"):
+            self.provider.pop(field, None)
+        self.commit(setting_references=dict(self.REFERENCES) if references is None else references)
+
+    def settings_from(self, values):
+        def resolve(references):
+            self.read_settings.append(dict(references))
+            if isinstance(values, Exception):
+                raise values
+            return dict(values)
+        self.read_settings = []
+        return resolve
+
+    def test_a_binding_naming_its_endpoint_by_reference_reads_it_now_and_records_only_digests(self):
+        self.commit_by_reference()
+        raw = (self.repo / BINDING).read_text()
+        self.assertNotIn("fixture.invalid", raw, "the committed binding names no address")
+        resolver = self.settings_from({"endpoint": ENDPOINT, "tls_server_name": self.PRIVATE_NAME})
+        result = self.run_bound(setting_resolver=resolver)
+        self.assertEqual(result["candidate_count"], 1)
+        self.assertEqual(self.read_settings, [self.REFERENCES])
+        [sent] = self.transport.requests
+        self.assertEqual(sent["url"], ENDPOINT + "/chat/completions")
+        summary = json.loads((self.root / "run/run.json").read_text())["provider_binding"]
+        self.assertEqual(summary["record_type"], "original_native_generation_provider_binding/v2")
+        self.assertEqual(summary["endpoint"], {"reference": "operator:fixture-endpoint",
+                                               "sha256": generation.digest(ENDPOINT.encode())})
+        self.assertEqual(summary["tls_server_name"], {"reference": "operator:fixture-certificate-name",
+                                                      "sha256": generation.digest(self.PRIVATE_NAME.encode())})
+        self.assertNotIn(self.PRIVATE_NAME, self.output_files_text())
+
+    def test_an_unavailable_reference_refuses_before_the_credential(self):
+        self.commit_by_reference()
+        self.assert_refused_before_credential("provider_binding_setting_unavailable",
+                                              setting_resolver=self.settings_from(LookupError("not configured")))
+        for values in ({}, {"tls_server_name": self.PRIVATE_NAME}, {"endpoint": ""},
+                       {"endpoint": ENDPOINT, "model": "other"}):
+            with self.subTest(values=values):
+                self.assert_refused_before_credential("provider_binding_setting_unavailable",
+                                                      setting_resolver=self.settings_from(values))
+
+    def test_a_resolved_value_meets_every_check_a_committed_one_does(self):
+        self.commit_by_reference()
+        cases = (({"endpoint": "http://fixture.invalid:6969/v1"}, "provider_binding_settings_invalid"),
+                 ({"endpoint": "https://other.invalid:6969/v1"}, "family_evidence_not_for_this_binding"),
+                 ({"endpoint": ENDPOINT, "tls_server_name": "*.fixture.invalid"}, "provider_binding_settings_invalid"))
+        for values, code in cases:
+            with self.subTest(values=values):
+                self.assert_refused_before_credential(code, setting_resolver=self.settings_from(values))
+
+    def test_a_field_is_declared_by_value_or_by_reference_never_both(self):
+        self.commit(setting_references={"endpoint": "fixture-endpoint"})
+        self.assert_refused_before_credential("provider_binding_setting_declared_twice",
+                                              setting_resolver=self.settings_from({"endpoint": ENDPOINT}))
+        self.assertEqual(self.read_settings, [], "nothing is read for a refused binding")
+
+    def test_malformed_setting_references_are_refused(self):
+        for references in ({}, {"model": "fixture-model"}, {"tls_server_name": "fixture-certificate-name"},
+                           {"endpoint": "Fixture Endpoint"}, ["fixture-endpoint"]):
+            with self.subTest(references=references):
+                self.commit_by_reference(references)
+                self.assert_refused_before_credential("provider_binding_setting_references_invalid",
+                                                      setting_resolver=self.settings_from({"endpoint": ENDPOINT}))
+                self.assertEqual(self.read_settings, [])
+
+    def test_the_default_reader_takes_the_tactical_references_from_the_environment(self):
+        from tools import private_endpoints
+        self.commit_by_reference({"endpoint": "tactical-model-endpoint",
+                                  "tls_server_name": "tactical-model-tls-server-name"})
+        environment = {"LOOP_ENGINE_TACTICAL_BASE_URL": ENDPOINT,
+                       "LOOP_ENGINE_TACTICAL_TLS_SERVER_NAME": self.PRIVATE_NAME}
+        with patch.dict("os.environ", environment), \
+                patch.object(private_endpoints, "_keyring_value", side_effect=LookupError("no keyring here")):
+            binding = generation.load_provider_binding(self.repo, _git(self.repo, "rev-parse", "HEAD"), BINDING,
+                                                       self.binding_digest, MODEL, "google")
+        self.assertEqual((binding.settings.endpoint, binding.settings.tls_server_name), (ENDPOINT, self.PRIVATE_NAME))
+        with patch.dict("os.environ", {"LOOP_ENGINE_TACTICAL_BASE_URL": "", "LOOP_ENGINE_TACTICAL_TLS_SERVER_NAME": ""}), \
+                patch.object(private_endpoints, "_keyring_value", side_effect=LookupError("no keyring here")), \
+                self.assertRaisesRegex(generation.GenerationError, "provider_binding_setting_unavailable"):
+            generation.load_provider_binding(self.repo, _git(self.repo, "rev-parse", "HEAD"), BINDING,
+                                             self.binding_digest, MODEL, "google")
+        self.assertEqual(self.resolved, [])
+
+    def test_the_committed_tactical_binding_names_no_address(self):
+        path = Path(__file__).resolve().parent / "resources/original-native-generation-providers"
+        value = json.loads((path / "tactical-gemma-4-coding-abliterated.json").read_text())
+        self.assertEqual(value["record_type"], generation.BINDING_TYPE)
+        self.assertNotIn("endpoint", value["provider"])
+        self.assertNotIn("tls_server_name", value["provider"])
+        self.assertEqual(value["setting_references"], {"endpoint": "tactical-model-endpoint",
+                                                       "tls_server_name": "tactical-model-tls-server-name"})
+        panel_record = json.loads((Path(__file__).resolve().parent / "candidate_review/resources/panel.json").read_text())
+        [installation] = [row for row in panel_record["installations"] if row["engine_kind"] == "provider_binding"]
+        self.assertEqual(installation["settings"]["binding_sha256"], generation.digest(
+            (path / "tactical-gemma-4-coding-abliterated.json").read_bytes()), "the panel pins the current bytes")
 
 
 if __name__ == "__main__":

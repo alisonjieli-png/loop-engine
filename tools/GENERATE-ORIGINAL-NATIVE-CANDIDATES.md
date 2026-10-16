@@ -190,7 +190,7 @@ the run and remains in the journal.
 
 `--provider-binding PATH --provider-binding-sha256 DIGEST` selects a custom
 endpoint instead of Ollama Cloud. The file is
-`original_native_generation_provider_binding/v1`, committed in this
+`original_native_generation_provider_binding/v2`, committed in this
 repository. It holds exactly one custom provider in the settings file's own
 shape, the trust anchor digest, the producer family, the path and digest of
 a family evidence record (`generation_producer_family_evidence/v1`) and of a
@@ -198,10 +198,24 @@ capacity record (`endpoint_output_capacity/v1`), and the name of an operator
 credential reference. It never holds a credential, a `credential_env`, or an
 output maximum of its own.
 
+A private server's address is not committed either. The optional
+`setting_references` field names the provider's `endpoint`, and optionally
+its `tls_server_name`, by operator reference instead of by value. The values
+are read when the binding is loaded, through
+[`private_endpoints.py`](private_endpoints.py): the environment variable each
+reference declares in [`operator_credentials.json`](operator_credentials.json)
+wins, otherwise the reference's system keyring item is read. A field is
+declared by value or by reference, never both. An absent endpoint refuses
+with `provider_binding_setting_unavailable` before the credential is read.
+The run record keeps each referenced value as its reference and SHA-256,
+never as the value.
+
 Before any credential is read, the command checks the following:
 
 - The binding, its trust anchor, both records and the review panel are
   committed unchanged at the plan's source revision.
+- Every referenced setting is configured, and the values meet every check a
+  committed value meets.
 - The provider is a verified HTTPS custom endpoint with purpose `generation`.
 - `--model` and `--family` equal the binding's values exactly, and the
   family is in the review panel's vocabulary.
@@ -219,11 +233,13 @@ unqualified reviewer added to the panel.
 
 The first binding is
 [Tactical's `gemma-4-coding-abliterated`](resources/original-native-generation-providers/tactical-gemma-4-coding-abliterated.json).
-Its capacity is recorded as unknown, so the command refuses it with
-`output_capacity_unknown`. The
+Its capacity record of September 24, 2026 states a verified maximum of 65,536
+output tokens. Its endpoint and certificate name are the operator references
+`tactical-model-endpoint` and `tactical-model-tls-server-name`; the
+[credential handoff](../docs/guides/developer-credential-handoff.md#private-endpoint-settings)
+says how an operator supplies them. The
 [Tactical binding record](../docs/verification/TACTICAL-GENERATION-BINDING-2026-09-23.md)
-lists the four server facts the owner must supply before a successor
-capacity record can state a maximum.
+keeps the history of the binding.
 
 ## Optional strict total-token mode
 

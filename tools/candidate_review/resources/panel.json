@@ -264,7 +264,7 @@
       "lens": "correctness_and_usefulness",
       "enabled": true,
       "disabled_reason": "",
-      "settings": {"binding_path": "tools/resources/original-native-generation-providers/tactical-gemma-4-coding-abliterated.json", "binding_sha256": "701d978e37f88c60906cf2c668481ce4796a64dc4c2f6dc61549df8f2058ee80", "route_name": "review.tactical.gemma-4-coding-abliterated", "purpose": "decide_label", "timeout_seconds": 900.0, "output_allocation_tokens": 16384, "answer_format": "json_after_reasoning"}
+      "settings": {"binding_path": "tools/resources/original-native-generation-providers/tactical-gemma-4-coding-abliterated.json", "binding_sha256": "479d409bfc90326d2aed6b1128e9bfea817881e5c2f6f7bba99ad24cde63c8df", "route_name": "review.tactical.gemma-4-coding-abliterated", "purpose": "decide_label", "timeout_seconds": 900.0, "output_allocation_tokens": 16384, "answer_format": "json_after_reasoning"}
     }
   ]
 }
