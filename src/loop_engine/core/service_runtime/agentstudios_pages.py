@@ -228,7 +228,9 @@ def render(path, *, origin=ORIGIN, allow_loopback=False):
     html = ('<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">'
             '<title>' + escape(title) + ' | AgentStudios</title><meta name="description" content="Creative components, editable source and media demonstrations for the tools and agents you already use.">'
             '<link rel="canonical" href="' + escape(origin + path, quote=True) + '"><meta property="og:title" content="' + escape(title, quote=True) + ' | AgentStudios">'
-            '<meta property="og:url" content="' + escape(origin + path, quote=True) + '"><meta name="theme-color" content="#f7f5ef"><link rel="icon" href="' + mark + '">'
+            '<meta property="og:url" content="' + escape(origin + path, quote=True) + '">'
+            + agentfeeds_pages._preview('AgentStudios', 'Creative components, editable source and media demonstrations for the tools and agents you already use.')
+            + '<meta name="theme-color" content="#f7f5ef"><link rel="icon" href="' + mark + '">'
             '<link rel="stylesheet" href="' + _versioned('site.css') + '">' + scripts + '</head><body><a class="skip-link" href="#main">Skip to content</a>'
             '<header class="site-header"><a class="brand" href="/" aria-label="AgentStudios home"><img src="' + mark + '" width="34" height="34" alt="">Agent<span>Studios</span></a>'
             '<button class="menu-button" type="button" aria-controls="site-nav" aria-expanded="false">Menu</button><nav id="site-nav" aria-label="Main navigation">' + nav + '</nav>'

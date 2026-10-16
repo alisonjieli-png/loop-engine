@@ -39,6 +39,12 @@ def _link(path, label, kind=""):
     return f'<a class="{kind}" href="{escape(path, quote=True)}"{current}>{escape(label)}</a>'
 
 
+def _preview(site, description):
+    """Link-preview metadata from the page's own description; no image is claimed."""
+    return (f'<meta property="og:description" content="{escape(description, quote=True)}"><meta property="og:type" content="website">'
+            f'<meta property="og:site_name" content="{escape(site, quote=True)}"><meta name="twitter:card" content="summary">')
+
+
 def _intro(kicker, title, text):
     return f'<div class="page-intro"><p class="eyebrow">{escape(kicker)}</p><h1>{escape(title)}</h1><p class="lede">{escape(text)}</p></div>'
 
@@ -339,7 +345,8 @@ def render(path, *, origin=ORIGIN, directory=None, allow_loopback=False):
     html = ('<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">'
             f'<title>{escape(title)} | AgentFeeds</title><meta name="description" content="Source collections and reading profiles for the agents you already run.">'
             f'<link rel="canonical" href="{escape(origin + path, quote=True)}">{feed_links}<meta property="og:title" content="{escape(title, quote=True)} | AgentFeeds">'
-            f'<meta property="og:url" content="{escape(origin + path, quote=True)}"><meta name="theme-color" content="#102A43"><link rel="icon" href="{mark}"><link rel="stylesheet" href="{css}">{scripts}</head>'
+            f'<meta property="og:url" content="{escape(origin + path, quote=True)}">' + _preview('AgentFeeds', 'Source collections and reading profiles for the agents you already run.')
+            + f'<meta name="theme-color" content="#102A43"><link rel="icon" href="{mark}"><link rel="stylesheet" href="{css}">{scripts}</head>'
             '<body><a class="skip-link" href="#main">Skip to content</a><header class="site-header"><a class="brand" href="/" aria-label="AgentFeeds home">'
             f'<img src="{mark}" width="32" height="32" alt=""><span>Agent<span class="brand-light">Feeds</span></span></a>'
             '<button class="menu-button" type="button" aria-expanded="false" aria-controls="site-nav">Menu</button><nav id="site-nav" aria-label="Main navigation">'

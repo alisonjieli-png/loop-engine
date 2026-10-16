@@ -176,6 +176,7 @@ def render(path, *, origin=ORIGIN, allow_loopback=False):
             f'<title>{escape(title)} | An AgentFeeds campaign</title><meta name="description" content="Stop relaying newsletters and social posts to your agent. Give it curated sources and a question with AgentFeeds.">'
             f'<link rel="canonical" href="{canonical}"><meta property="og:title" content="{escape(title, quote=True)}"><meta property="og:url" content="{canonical}">'
             '<meta property="og:description" content="You have better things to do than read the internet to your agent."><meta property="og:type" content="website">'
+            '<meta property="og:site_name" content="Don&#x27;t be a meat proxy"><meta name="twitter:card" content="summary">'
             f'<meta name="theme-color" content="#f5f0e8"><link rel="icon" href="{mark}"><link rel="stylesheet" href="{css}"><script defer src="{js}"></script></head>'
             '<body><a class="skip-link" href="#main">Skip to content</a><header class="site-header"><a class="brand" href="/" aria-label="Don\'t be a meat proxy home">'
             f'<img src="{mark}" width="36" height="36" alt=""><span>don\'t be a<br>meat proxy.</span></a>'

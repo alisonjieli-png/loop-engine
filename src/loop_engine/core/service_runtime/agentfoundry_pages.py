@@ -232,7 +232,8 @@ def render(path, *, origin=ORIGIN, allow_loopback=False):
     html = ('<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">'
             f'<title>{escape(title)} | AgentFoundry</title><meta name="description" content="Skills, code, instructions and working files for the agent tools you already use.">'
             f'<link rel="canonical" href="{escape(origin + path, quote=True)}"><meta property="og:title" content="{escape(title, quote=True)} | AgentFoundry">'
-            f'<meta property="og:url" content="{escape(origin + path, quote=True)}"><meta name="theme-color" content="#f4f1e9"><link rel="icon" href="{mark}">'
+            f'<meta property="og:url" content="{escape(origin + path, quote=True)}">' + agentfeeds_pages._preview('AgentFoundry', 'Skills, code, instructions and working files for the agent tools you already use.')
+            + f'<meta name="theme-color" content="#f4f1e9"><link rel="icon" href="{mark}">'
             f'<link rel="stylesheet" href="{css}">{scripts}</head><body><a class="skip-link" href="#main">Skip to content</a><header class="site-header">'
             f'<a class="brand" href="/" aria-label="AgentFoundry home"><img src="{mark}" width="30" height="30" alt="">Agent<span>Foundry</span></a>'
             '<button class="menu-button" type="button" aria-controls="site-nav" aria-expanded="false">Menu</button><nav id="site-nav" aria-label="Main navigation">' + nav + '</nav>'

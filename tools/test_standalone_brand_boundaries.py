@@ -118,6 +118,25 @@ class StandaloneProfileTests(unittest.TestCase):
                 # The shared fallback that brands without this hook used to serve must fail the same oracle.
                 self.assertTrue(error_page_problems(renderer, profile.display_name, web_pages.missing_address_page(profile.display_name).decode()))
 
+    def test_every_brand_page_carries_link_preview_metadata(self):
+        def preview_problems(html, display_name):
+            head = html.split('</head>', 1)[0]
+            tags = dict(re.findall(r'<meta (?:property|name)="(og:[a-z_]+|twitter:card|description)" content="([^"]*)"', head))
+            problems = [name for name in ('description', 'og:title', 'og:url', 'og:description', 'og:type', 'og:site_name', 'twitter:card') if not tags.get(name)]
+            if tags.get('og:site_name', '').replace('&#x27;', "'") != display_name:
+                problems.append('og:site_name')
+            return problems
+        for profile in PROFILES:
+            renderer = brand_pages.renderer_for(profile.brand)
+            for path in renderer.routes():
+                with self.subTest(brand=profile.brand, path=path):
+                    html = renderer.render(path, origin=profile.public_base_url)[0].decode()
+                    self.assertEqual(preview_problems(html, profile.display_name), [])
+        # Known-wrong: the head served before October 16, 2026 had no og:description, og:site_name or card.
+        old = ('<title>Help | AgentFoundry</title><meta name="description" content="Skills."><meta property="og:title" content="Help | AgentFoundry">'
+               '<meta property="og:url" content="https://agentfoundry.example.test/help"></head>')
+        self.assertEqual(preview_problems(old, 'AgentFoundry'), ['og:description', 'og:type', 'og:site_name', 'twitter:card', 'og:site_name'])
+
     def test_refusal_checker_detects_wrong_status_or_wrong_guard(self):
         self.assertTrue(public_effect_refused(httpx.Response(404, json={'error': {'code': 'route_unavailable'}})))
         for status, body in ((200, {'result': {}}), (401, {'error': {'code': 'authentication_required'}}),
