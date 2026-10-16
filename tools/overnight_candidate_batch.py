@@ -288,6 +288,9 @@ class BatchSupervisor:
             "idea_id": idea["id"],
             "attempt": attempt,
         }
+        # Built before the dispatch is recorded or counted: an unconfigured private endpoint or an
+        # unresolved key stops the batch here, with no call counted that was never made.
+        environment = lane.environment()
         self._record({"event": "dispatch", **record, "stricter": stricter})
         self._calls += 1
         try:
@@ -302,7 +305,7 @@ class BatchSupervisor:
                 try:
                     completed = subprocess.run(
                         argv, capture_output=True, text=True,
-                        env=lane.environment(), cwd=str(work), timeout=900.0)
+                        env=environment, cwd=str(work), timeout=900.0)
                 except subprocess.TimeoutExpired:
                     return {**record, "outcome": "timeout"}
                 if completed.returncode != 0:

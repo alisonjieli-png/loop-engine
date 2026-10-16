@@ -5,11 +5,22 @@ directory (OPENCODE_CONFIG_DIR), its own data home (XDG_DATA_HOME), its
 own working directory, and its own opencode.jsonc that names exactly one
 remote provider. The declared providers are Ollama Cloud
 (https://ollama.com/v1, key OLLAMA_API_KEY) and the owner's Tactical
-Engineering endpoint (https://ai.tacticalengineering.net:6969/v1, key
-TACTICAL_API_KEY, resolved from the system keyring through
-tools/operator_credentials.py). No lane may name a local endpoint: a
-provider whose base URL is not one of the two declared remote endpoints
-is refused before any process starts.
+Engineering server, whose connect URL and certificate name are private
+settings read at run time (tools/private_endpoints.py) and whose key,
+TACTICAL_API_KEY, resolves from the system keyring through
+tools/operator_credentials.py. No lane may name a local endpoint: a
+provider whose upstream URL is local is refused before any process starts.
+
+No lane switches certificate verification off. The Tactical certificate
+comes from the Cloudflare Origin CA, which no public trust store holds, and
+it names another host than the one the URL connects to. OpenCode's runtime
+(Bun 1.3.14 inside opencode 1.18.35) honours NODE_EXTRA_CA_CERTS but still
+checks the name against the URL host, so it cannot verify this server
+itself. The Tactical lane therefore talks plain HTTP to a loopback
+forwarder in this process (tools/verified_forwarder.py), which opens every
+upstream connection trusting only the pinned root, with hostname checking
+on against the configured certificate name. The forwarder adds the key to
+each request, so the OpenCode process never holds the Tactical key.
 
 The model supplies UTF-8 candidate file text only. The frozen idea
 record from tools/harness_idea_matrix.py owns the method identity, the
@@ -21,6 +32,8 @@ from __future__ import annotations
 
 import argparse
 import hashlib
+import importlib
+import importlib.util
 import json
 import os
 import re
@@ -28,6 +41,7 @@ import shutil
 import stat
 import subprocess
 import sys
+import threading
 import time
 from dataclasses import dataclass
 from pathlib import Path
@@ -36,8 +50,10 @@ if __name__ == "__main__" and __package__ in (None, ""):
     sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
     sys.path.insert(0, str(Path(__file__).resolve().parent))
 
+ROOT = Path(__file__).resolve().parents[1]
 LANE_RECORD_TYPE = "opencode_generation_lane/v1"
-LANE_RUN_RECORD_TYPE = "opencode_generation_lane_run/v1"
+#: Version 2 names a private endpoint by its summary (name and digests), never by its URL.
+LANE_RUN_RECORD_TYPE = "opencode_generation_lane_run/v2"
 
 #: The only remote endpoints a lane may call. No local model, ever.
 DECLARED_ENDPOINTS = {
@@ -48,22 +64,16 @@ DECLARED_ENDPOINTS = {
                     "nemotron-3-nano:30b", "qwen3.5:397b", "deepseek-v4.1-flash"),
     },
     "tactical": {
-        # The owner's Tactical Engineering model server, which also answers
-        # as iamretarded.net. The endpoint's Origin certificate is issued
-        # for ai.iamretarded.net while the served hostname is
-        # ai.tacticalengineering.net, so a Node harness cannot verify the
-        # chain by hostname. The owner's documented approach for this
-        # endpoint (recorded in the operator opencode configuration and
-        # the capacity-measurement binding) is to run the harness with
-        # hostname TLS verification disabled; the pinned Origin CA and
-        # the pinned leaf digest in the binding record remain the trust
-        # evidence. The lane sets NODE_TLS_REJECT_UNAUTHORIZED=0 for its
-        # own subprocess only.
-        "base_url": "https://ai.tacticalengineering.net:6969/v1",
+        # The owner's Tactical Engineering model server. Its connect URL and the name its certificate
+        # proves are private settings (tools/private_endpoints.py), never written here. The lane reaches
+        # it through the verified forwarder, trusting only the pinned Cloudflare Origin CA root below.
+        "private_endpoint": "tactical",
+        "transport": "verified_forwarder",
+        "tls_ca_file": "tools/resources/original-native-generation-providers/cloudflare-origin-ca-rsa-root.pem",
+        "tls_ca_sha256": "91a8a5567efa6bf941162aa806b3ba476aaddf7867640e53053b35fb225a5dae",
         "key_environment": "TACTICAL_API_KEY",
         "credential_reference": "tactical-model-generation",
         "models": ("gemma-4-coding-abliterated",),
-        "disable_node_tls_verification": True,
     },
 }
 
@@ -73,6 +83,13 @@ OPENCODE_EXECUTABLE = Path.home() / ".opencode" / "bin" / "opencode"
 MAX_IDEA_FILE_BYTES = 16 * 1024 * 1024
 MAX_CANDIDATE_BYTES = 2 * 1024 * 1024
 RUN_TIMEOUT_SECONDS = 900.0
+#: The variable that carries a forwarded lane's loopback API base into its OpenCode process. The lane's
+#: opencode.jsonc reads it as {env:...}, so the file names no upstream, port or path token.
+FORWARDER_URL_ENVIRONMENT = "LOOP_ENGINE_LANE_FORWARDER_URL"
+#: What a forwarded lane's OpenCode process sends as its key: a placeholder the forwarder replaces.
+FORWARDER_API_KEY_PLACEHOLDER = "verified-forwarder-adds-the-key"
+_FORWARDERS: dict = {}
+_FORWARDER_LOCK = threading.Lock()
 
 
 class LaneError(ValueError):
@@ -87,6 +104,96 @@ def declared_endpoint(name: str) -> dict:
     if name not in DECLARED_ENDPOINTS:
         refuse("provider_not_declared")
     return DECLARED_ENDPOINTS[name]
+
+
+def _sibling(name: str):
+    """A module beside this one, whether this file was imported as tools.<name>, by bare name or by path."""
+    for candidate in ("tools." + name, name):
+        if candidate in sys.modules:
+            return sys.modules[candidate]
+    try:
+        return importlib.import_module("tools." + name)
+    except ImportError:
+        spec = importlib.util.spec_from_file_location(name, Path(__file__).resolve().parent / f"{name}.py")
+        module = importlib.util.module_from_spec(spec)
+        sys.modules[name] = module
+        spec.loader.exec_module(module)
+        return module
+
+
+def private_settings(name: str):
+    """The private endpoint settings of a declared endpoint, read now. Refuses when they are absent."""
+    endpoint = declared_endpoint(name)
+    if not endpoint.get("private_endpoint"):
+        refuse("endpoint_not_private")
+    private_endpoints = _sibling("private_endpoints")
+    try:
+        return private_endpoints.resolve(endpoint["private_endpoint"])
+    except private_endpoints.PrivateEndpointError as error:
+        raise LaneError(str(error)) from None
+
+
+def endpoint_base_url(name: str) -> str:
+    """The upstream API base a declared endpoint calls: its literal URL, or its private setting read now."""
+    endpoint = declared_endpoint(name)
+    return endpoint["base_url"] if "base_url" in endpoint else private_settings(name).base_url
+
+
+def endpoint_record(name: str) -> dict:
+    """How a run record names the endpoint: a public URL as itself, a private one by name and digests.
+
+    A private endpoint with a running forwarder is named by the settings that forwarder was started with.
+    """
+    endpoint = declared_endpoint(name)
+    if "base_url" in endpoint:
+        return {"base_url": endpoint["base_url"]}
+    running = _FORWARDERS.get(name)
+    summary = running.private_summary if running is not None else private_settings(name).summary()
+    return {"private_endpoint": summary, "transport": endpoint.get("transport", "")}
+
+
+def trust_anchor(name: str) -> Path:
+    """The pinned root file a forwarded endpoint trusts, as a path in this checkout."""
+    return ROOT / declared_endpoint(name)["tls_ca_file"]
+
+
+def forwarder_for(name: str):
+    """The verified forwarder of a forwarded endpoint, started on first use in this process.
+
+    The private settings are read and the pinned anchor checked before the key is read; the key then
+    stays in this process, held by the forwarder.
+    """
+    endpoint = declared_endpoint(name)
+    if endpoint.get("transport") != "verified_forwarder":
+        refuse("endpoint_not_forwarded")
+    with _FORWARDER_LOCK:
+        running = _FORWARDERS.get(name)
+        if running is not None and running.serving:
+            return running
+        settings = private_settings(name)
+        if any(pattern.search(settings.base_url) for pattern in FORBIDDEN_URL_PATTERNS):
+            refuse("local_endpoint_refused")
+        forwarding = _sibling("verified_forwarder")
+        try:
+            forwarding.anchor_context(trust_anchor(name), endpoint["tls_ca_sha256"])
+            forwarder = forwarding.VerifiedForwarder(
+                settings.base_url, ca_file=trust_anchor(name), ca_sha256=endpoint["tls_ca_sha256"],
+                tls_server_name=settings.tls_server_name, authorization="Bearer " + _resolve_key(endpoint),
+                timeout_seconds=2 * RUN_TIMEOUT_SECONDS)
+        except forwarding.ForwarderError as error:
+            raise LaneError(str(error)) from None
+        forwarder.private_summary = settings.summary()
+        forwarder.start()
+        _FORWARDERS[name] = forwarder
+        return forwarder
+
+
+def stop_forwarders() -> None:
+    """Stop every forwarder this process started."""
+    with _FORWARDER_LOCK:
+        for forwarder in _FORWARDERS.values():
+            forwarder.stop()
+        _FORWARDERS.clear()
 
 
 def _resolve_key(provider: dict) -> str:
@@ -162,13 +269,20 @@ class Lane:
         for directory in (self.root, self.config_directory, self.data_home,
                           self.workspace):
             directory.mkdir(parents=True, exist_ok=True)
-        base_url = endpoint["base_url"]
-        if any(pattern.search(base_url) for pattern in FORBIDDEN_URL_PATTERNS):
-            refuse("local_endpoint_refused")
+        if endpoint.get("transport") == "verified_forwarder":
+            # The upstream is private configuration and the loopback port changes with each process, so
+            # the file names neither; OpenCode reads the forwarder's base from the lane's environment.
+            options = {"baseURL": "{env:%s}" % FORWARDER_URL_ENVIRONMENT,
+                       "apiKey": FORWARDER_API_KEY_PLACEHOLDER}
+        else:
+            base_url = endpoint["base_url"]
+            if any(pattern.search(base_url) for pattern in FORBIDDEN_URL_PATTERNS):
+                refuse("local_endpoint_refused")
+            options = {"baseURL": base_url, "apiKey": "{env:%s}" % endpoint["key_environment"]}
         provider_block = {
             "npm": "@ai-sdk/openai-compatible",
             "name": self.provider,
-            "options": {"baseURL": base_url, "apiKey": "{env:%s}" % endpoint["key_environment"]},
+            "options": options,
             "models": {self.model: {"name": self.model}},
         }
         config = {
@@ -180,17 +294,20 @@ class Lane:
         target.write_text(json.dumps(config, indent=2) + "\n", encoding="utf-8")
 
     def environment(self) -> dict[str, str]:
-        """A scrubbed environment built from nothing, by allowlist."""
+        """A scrubbed environment built from nothing, by allowlist.
+
+        A lane carries only its own provider's key. A forwarded lane carries no key at all, only the
+        loopback base of its verified forwarder, and no lane carries a variable that changes how the
+        harness checks certificates.
+        """
         endpoint = declared_endpoint(self.provider)
-        allowlist = ("OLLAMA_API_KEY", "TACTICAL_API_KEY", "PATH", "HOME",
-                     "TERM", "LANG")
+        allowlist = ("PATH", "HOME", "TERM", "LANG")
         environment = {name: os.environ[name] for name in allowlist
                        if name in os.environ}
-        environment[endpoint["key_environment"]] = _resolve_key(endpoint)
-        if endpoint.get("disable_node_tls_verification"):
-            # Owner-documented trust model for the Tactical Origin
-            # certificate; see DECLARED_ENDPOINTS["tactical"].
-            environment["NODE_TLS_REJECT_UNAUTHORIZED"] = "0"
+        if endpoint.get("transport") == "verified_forwarder":
+            environment[FORWARDER_URL_ENVIRONMENT] = forwarder_for(self.provider).base_url
+        else:
+            environment[endpoint["key_environment"]] = _resolve_key(endpoint)
         environment["OPENCODE_CONFIG_DIR"] = str(self.config_directory)
         environment["XDG_DATA_HOME"] = str(self.data_home)
         return environment
@@ -331,6 +448,9 @@ class LaneRunner:
         """One model call per idea, recorded before dispatch, never repeated."""
         if not self.executable.is_file():
             refuse("opencode_executable_missing")
+        # Built first: an unconfigured private endpoint or an unresolved key refuses before the
+        # ledger records a dispatch.
+        environment = self.lane.environment()
         self.runs_directory.mkdir(parents=True, exist_ok=True)
         stamp = time.strftime("%Y%m%dT%H%M%SZ", time.gmtime())
         run_id = f"{self.lane.lane_id}-{idea['id']}-{stamp}"
@@ -339,7 +459,7 @@ class LaneRunner:
             "run_id": run_id,
             "lane_id": self.lane.lane_id,
             "provider": self.lane.provider,
-            "base_url": declared_endpoint(self.lane.provider)["base_url"],
+            "endpoint": endpoint_record(self.lane.provider),
             "model": self.lane.model,
             "idea_id": idea["id"],
             "method_signature": idea["method_signature"],
@@ -352,7 +472,7 @@ class LaneRunner:
         try:
             completed = subprocess.run(
                 argv, capture_output=True, text=True, timeout=RUN_TIMEOUT_SECONDS,
-                env=self.lane.environment(), cwd=str(self.lane.workspace))
+                env=environment, cwd=str(self.lane.workspace))
         except subprocess.TimeoutExpired:
             record["outcome"] = "timeout"
             _append_jsonl(ledger_path, record)
@@ -556,11 +676,14 @@ def main(argv: list[str] | None = None) -> int:
     lanes = build_lanes(lane_root, specs)
     ledger_path = lane_root / "generation-ledger.jsonl"
     results = []
-    for lane in lanes:
-        runner = LaneRunner(lane)
-        for idea in ideas:
-            runner.write_idea(idea)
-            results.append(runner.run(idea, ledger_path))
+    try:
+        for lane in lanes:
+            runner = LaneRunner(lane)
+            for idea in ideas:
+                runner.write_idea(idea)
+                results.append(runner.run(idea, ledger_path))
+    finally:
+        stop_forwarders()
     print(json.dumps({"lanes": len(lanes), "ideas_per_lane": len(ideas),
                       "runs": results}, indent=2, ensure_ascii=False))
     return 0

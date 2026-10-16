@@ -518,16 +518,22 @@ class Run:
     def generate(self) -> None:
         if self.done("generate") or self._nothing("generate"):
             return
-        from tools.opencode_generation_lanes import DECLARED_ENDPOINTS, DEFAULT_LANE_SPECS, OPENCODE_EXECUTABLE
+        from tools.opencode_generation_lanes import (DEFAULT_LANE_SPECS, OPENCODE_EXECUTABLE, LaneError,
+                                                     endpoint_base_url)
         from tools import overnight_candidate_batch as batch_tool
         if not OPENCODE_EXECUTABLE.is_file():
             self.outage("generate", "program_missing", program=str(OPENCODE_EXECUTABLE))
-        endpoint = urlsplit(DECLARED_ENDPOINTS["tactical"]["base_url"])
+        try:
+            # The Tactical address is private configuration read now (tools/private_endpoints.py); a note
+            # names the endpoint by name, never by its host.
+            endpoint = urlsplit(endpoint_base_url("tactical"))
+        except LaneError as error:
+            self.outage("generate", "endpoint_unconfigured", endpoint="tactical", error=str(error).split(":")[0])
         try:
             with socket.create_connection((endpoint.hostname, endpoint.port or 443), timeout=15):
                 pass
         except OSError as error:
-            self.outage("generate", "endpoint_unreachable", endpoint=endpoint.netloc, error=type(error).__name__)
+            self.outage("generate", "endpoint_unreachable", endpoint="tactical", error=type(error).__name__)
         batch = self._ideas()
         count = batch["idea_count"]
         ceiling = int(math.ceil(count * CEILING_FACTOR))

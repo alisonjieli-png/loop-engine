@@ -1,10 +1,15 @@
-"""Known-wrong checks for the OpenCode generation lanes. No model is called."""
+"""Known-wrong checks for the OpenCode generation lanes. No model is called and no outside host is contacted."""
 from __future__ import annotations
 
+import hashlib
 import json
 import os
+import ssl
 import tempfile
+import threading
 import unittest
+import urllib.request
+from importlib.util import find_spec
 from unittest import mock
 from pathlib import Path
 import sys
@@ -13,9 +18,13 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 sys.path.insert(0, str(ROOT / "tools"))
 
+from tools import opencode_generation_lanes as lanes  # noqa: E402
+from tools import private_endpoints  # noqa: E402
 from tools.opencode_generation_lanes import (  # noqa: E402
     DECLARED_ENDPOINTS,
     FORBIDDEN_URL_PATTERNS,
+    FORWARDER_API_KEY_PLACEHOLDER,
+    FORWARDER_URL_ENVIRONMENT,
     Lane,
     LaneError,
     LaneRunner,
@@ -24,6 +33,15 @@ from tools.opencode_generation_lanes import (  # noqa: E402
     _render_prompt,
     build_lanes,
 )
+
+#: Invented settings for the Tactical lane; the real ones are private configuration.
+TACTICAL_ENVIRONMENT = {"LOOP_ENGINE_TACTICAL_BASE_URL": "https://origin.fixture.invalid:6969/v1",
+                        "LOOP_ENGINE_TACTICAL_TLS_SERVER_NAME": "origin.fixture.test",
+                        "TACTICAL_API_KEY": "stand-in-tactical-value"}
+
+
+def _without_keyring(reference):
+    raise LookupError("no keyring in these checks")
 
 
 def _lane(provider: str, model: str, root: Path, lane_id: str = "lane-test") -> Lane:
@@ -54,9 +72,30 @@ def _idea() -> dict:
 class ProviderDeclarationChecks(unittest.TestCase):
     def test_declared_endpoints_are_remote_only(self):
         for name, endpoint in DECLARED_ENDPOINTS.items():
+            if endpoint.get("private_endpoint"):
+                # A private endpoint has no URL in the repository; its URL is checked when it is read.
+                self.assertNotIn("base_url", endpoint)
+                self.assertEqual(endpoint["transport"], "verified_forwarder")
+                continue
             for pattern in FORBIDDEN_URL_PATTERNS:
                 self.assertIsNone(pattern.search(endpoint["base_url"]),
                                   f"{name} must not be local")
+
+    def test_a_local_private_upstream_is_refused_before_any_key_is_read(self):
+        environment = {**TACTICAL_ENVIRONMENT, "LOOP_ENGINE_TACTICAL_BASE_URL": "https://127.0.0.1:9/v1"}
+        with mock.patch.dict(os.environ, environment), \
+                mock.patch.object(private_endpoints, "_keyring_value", _without_keyring), \
+                mock.patch.object(lanes, "_resolve_key", side_effect=AssertionError("key read")), \
+                tempfile.TemporaryDirectory() as temporary:
+            lane = _lane("tactical", "gemma-4-coding-abliterated", Path(temporary) / "lane")
+            with self.assertRaisesRegex(LaneError, "local_endpoint_refused"):
+                lane.environment()
+        self.assertEqual(lanes._FORWARDERS, {})
+
+    def test_the_pinned_tactical_root_is_the_committed_file(self):
+        endpoint = DECLARED_ENDPOINTS["tactical"]
+        raw = (ROOT / endpoint["tls_ca_file"]).read_bytes()
+        self.assertEqual(hashlib.sha256(raw).hexdigest(), endpoint["tls_ca_sha256"])
 
     def test_undeclared_provider_is_refused(self):
         with tempfile.TemporaryDirectory() as temporary:
@@ -88,10 +127,15 @@ class LaneSetupChecks(unittest.TestCase):
                 config = json.loads((lane.config_directory / "opencode.jsonc").read_text())
                 self.assertEqual(config["model"], f"{provider}/{lane.model}")
                 self.assertIn(provider, config["provider"])
-                base_url = config["provider"][provider]["options"]["baseURL"]
-                self.assertTrue(base_url.startswith("https://"))
-                self.assertEqual(config["provider"][provider]["options"]["apiKey"],
-                                 "{env:%s}" % DECLARED_ENDPOINTS[provider]["key_environment"])
+                options = config["provider"][provider]["options"]
+                if provider == "tactical":
+                    # No upstream, port or key in the file: the forwarder's base arrives by environment and
+                    # the forwarder replaces the placeholder key.
+                    self.assertEqual(options, {"baseURL": "{env:%s}" % FORWARDER_URL_ENVIRONMENT,
+                                               "apiKey": FORWARDER_API_KEY_PLACEHOLDER})
+                    continue
+                self.assertTrue(options["baseURL"].startswith("https://"))
+                self.assertEqual(options["apiKey"], "{env:%s}" % DECLARED_ENDPOINTS[provider]["key_environment"])
 
     def test_environment_is_scrubbed_and_isolated(self):
         # The lane passes its provider's key through by name. The test supplies a stand-in value, so it runs the
@@ -106,6 +150,56 @@ class LaneSetupChecks(unittest.TestCase):
                                  str(lane.config_directory))
                 self.assertEqual(environment["XDG_DATA_HOME"], str(lane.data_home))
                 self.assertEqual(environment["OLLAMA_API_KEY"], "stand-in-value")
+
+    def test_an_ollama_lane_carries_only_its_own_key(self):
+        with mock.patch.dict(os.environ, {"OLLAMA_API_KEY": "stand-in-value", **TACTICAL_ENVIRONMENT}):
+            with tempfile.TemporaryDirectory() as temporary:
+                lane = _lane("ollama-cloud", "gpt-oss:20b", Path(temporary) / "lane")
+                environment = lane.environment()
+        self.assertNotIn("TACTICAL_API_KEY", environment)
+        self.assertNotIn(TACTICAL_ENVIRONMENT["TACTICAL_API_KEY"], json.dumps(environment))
+
+    def test_the_tactical_lane_reaches_a_verified_forwarder_and_never_holds_the_key(self):
+        parent = {**TACTICAL_ENVIRONMENT, "NODE_TLS_REJECT_UNAUTHORIZED": "0", "NODE_EXTRA_CA_CERTS": "/x.pem"}
+        self.addCleanup(lanes.stop_forwarders)
+        with mock.patch.dict(os.environ, parent), \
+                mock.patch.object(private_endpoints, "_keyring_value", _without_keyring), \
+                tempfile.TemporaryDirectory() as temporary:
+            lane = _lane("tactical", "gemma-4-coding-abliterated", Path(temporary) / "lane")
+            lane.write_config()
+            environment = lane.environment()
+            again = lane.environment()
+            record = lanes.endpoint_record("tactical")
+        for name in ("NODE_TLS_REJECT_UNAUTHORIZED", "NODE_EXTRA_CA_CERTS", "TACTICAL_API_KEY"):
+            self.assertNotIn(name, environment)
+        self.assertNotIn(TACTICAL_ENVIRONMENT["TACTICAL_API_KEY"], json.dumps(environment))
+        self.assertTrue(environment[FORWARDER_URL_ENVIRONMENT].startswith("http://127.0.0.1:"))
+        self.assertTrue(environment[FORWARDER_URL_ENVIRONMENT].endswith("/v1"))
+        self.assertEqual(again[FORWARDER_URL_ENVIRONMENT], environment[FORWARDER_URL_ENVIRONMENT],
+                         "one forwarder per endpoint and process")
+        forwarder = lanes._FORWARDERS["tactical"]
+        self.assertEqual(forwarder.authorization, "Bearer " + TACTICAL_ENVIRONMENT["TACTICAL_API_KEY"])
+        self.assertEqual(forwarder.tls_server_name, "origin.fixture.test")
+        self.assertEqual((forwarder.context.verify_mode, forwarder.context.check_hostname), (ssl.CERT_REQUIRED, True))
+        for private in ("origin.fixture", TACTICAL_ENVIRONMENT["TACTICAL_API_KEY"]):
+            self.assertNotIn(private, json.dumps(record))
+        self.assertEqual(record["private_endpoint"]["private_endpoint"], "tactical")
+        self.assertEqual(lanes.endpoint_record("ollama-cloud"), {"base_url": "https://ollama.com/v1"})
+
+    def test_an_unconfigured_tactical_endpoint_refuses_before_the_key_or_a_process(self):
+        environment = {key: value for key, value in os.environ.items() if not key.startswith("LOOP_ENGINE_TACTICAL")}
+        with mock.patch.dict(os.environ, environment, clear=True), \
+                mock.patch.object(private_endpoints, "_keyring_value", _without_keyring), \
+                mock.patch.object(lanes, "_resolve_key", side_effect=AssertionError("key read")), \
+                tempfile.TemporaryDirectory() as temporary:
+            lane = _lane("tactical", "gemma-4-coding-abliterated", Path(temporary) / "lane")
+            lane.write_config()
+            runner = LaneRunner(lane, executable=Path(sys.executable))
+            ledger = Path(temporary) / "ledger.jsonl"
+            with self.assertRaisesRegex(LaneError, "private_endpoint_unconfigured.*LOOP_ENGINE_TACTICAL_BASE_URL"):
+                runner.run(_idea(), ledger)
+            self.assertFalse(ledger.exists(), "nothing is recorded as dispatched")
+        self.assertEqual(lanes._FORWARDERS, {})
 
     def test_lane_roots_do_not_share_directories(self):
         with tempfile.TemporaryDirectory() as temporary:
@@ -250,6 +344,45 @@ class BuildLanesChecks(unittest.TestCase):
         with tempfile.TemporaryDirectory() as temporary:
             with self.assertRaises(LaneError):
                 build_lanes(Path(temporary), [])
+
+
+@unittest.skipUnless(find_spec("cryptography"), "cryptography creates the throwaway certificate authority")
+class TacticalLaneThroughTheForwarderChecks(unittest.TestCase):
+    """The Tactical lane end to end against a local origin whose certificate names another host than 127.0.0.1."""
+
+    def test_a_request_through_the_lane_reaches_the_origin_verified_with_the_held_key(self):
+        from tools.test_custom_endpoint_tls_trust import NAME, _certificates
+        from tools.test_verified_forwarder import EVENTS, PLACEHOLDER, _OriginServer
+
+        folder = tempfile.TemporaryDirectory()
+        self.addCleanup(folder.cleanup)
+        certificates = _certificates(Path(folder.name))
+        context = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
+        context.load_cert_chain(certificates["leaf"], certificates["key"])
+        origin = _OriginServer(context)
+        threading.Thread(target=origin.serve_forever, daemon=True).start()
+        self.addCleanup(origin.server_close)
+        self.addCleanup(origin.shutdown)
+        self.addCleanup(lanes.stop_forwarders)
+        anchor = Path(certificates["anchor"])
+        declared = {**DECLARED_ENDPOINTS["tactical"], "tls_ca_file": str(anchor),
+                    "tls_ca_sha256": hashlib.sha256(anchor.read_bytes()).hexdigest()}
+        environment = {**TACTICAL_ENVIRONMENT, "LOOP_ENGINE_TACTICAL_TLS_SERVER_NAME": NAME,
+                       "LOOP_ENGINE_TACTICAL_BASE_URL": f"https://127.0.0.1:{origin.server_port}/v1"}
+        # The fixture origin is local by necessity; the refusal of local upstreams has its own check above.
+        with mock.patch.dict(os.environ, environment), mock.patch.dict(DECLARED_ENDPOINTS, {"tactical": declared}), \
+                mock.patch.object(lanes, "FORBIDDEN_URL_PATTERNS", ()), \
+                mock.patch.object(private_endpoints, "_keyring_value", _without_keyring), \
+                tempfile.TemporaryDirectory() as temporary:
+            lane_environment = _lane("tactical", "gemma-4-coding-abliterated", Path(temporary) / "lane").environment()
+        request = urllib.request.Request(lane_environment[FORWARDER_URL_ENVIRONMENT] + "/chat/completions",
+                                         data=b'{"model": "gemma-4-coding-abliterated", "stream": true}',
+                                         headers={"Authorization": "Bearer " + PLACEHOLDER})
+        with urllib.request.urlopen(request, timeout=10) as response:
+            self.assertEqual(response.read(), b"".join(EVENTS))
+        [sent] = origin.requests
+        self.assertEqual(sent["path"], "/v1/chat/completions")
+        self.assertEqual(sent["headers"]["Authorization"], "Bearer " + TACTICAL_ENVIRONMENT["TACTICAL_API_KEY"])
 
 
 if __name__ == "__main__":

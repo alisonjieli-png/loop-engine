@@ -12,10 +12,14 @@ Transport adapter: the owner's Tactical server streams tool-call arguments in a 
 parses (September 27, 2026), while its complete answer is correct. A streamed request is therefore sent upstream
 as a complete request, and the same answer is passed back as a stream. The adapter is applied to every run.
 
-The endpoint comes from tools/opencode_generation_lanes.DECLARED_ENDPOINTS. Its key is resolved in this process
-through tools/operator_credentials.py. The Tactical Origin certificate does not match the served host name, so
-host name verification is off for that endpoint only, as the generation lanes do, and the leaf certificate seen
-at start is pinned: a different leaf later refuses the call.
+The endpoint comes from tools/opencode_generation_lanes.DECLARED_ENDPOINTS. A private endpoint (the owner's Tactical
+server) has no URL in the repository: its connect URL and the name its certificate proves are read at start from
+operator configuration (tools/private_endpoints.py). Its key is resolved in this process through
+tools/operator_credentials.py. Every upstream connection is verified. A private endpoint trusts only its pinned root
+file, with hostname checking on against its certificate name, through the same trust contract connection the
+generation lanes' verified forwarder uses (tools/verified_forwarder.py); a public one uses the system store. The leaf
+certificate a private endpoint shows at start is pinned as well: a different leaf later refuses the call. A recorded
+error never names the upstream host or its certificate name.
 
 Usage: python proxy.py --endpoint tactical --port 18912 --ledger CALLS.jsonl --limits LIMITS.json --session-ceiling N
 """
@@ -26,7 +30,6 @@ import hashlib
 import http.client
 import importlib.util
 import json
-import socket
 import ssl
 import sys
 import threading
@@ -50,8 +53,12 @@ def _module(name: str, path: Path):
     return module
 
 
+def lanes():
+    return _module("opencode_generation_lanes", TOOLS / "opencode_generation_lanes.py")
+
+
 def declared_endpoint(name: str) -> dict:
-    return _module("opencode_generation_lanes", TOOLS / "opencode_generation_lanes.py").DECLARED_ENDPOINTS[name]
+    return lanes().DECLARED_ENDPOINTS[name]
 
 
 def resolve_key(reference: str) -> str:
@@ -103,10 +110,20 @@ def as_event_stream(data: bytes) -> bytes:
 class Proxy:
     def __init__(self, endpoint: str, ledger: Path, limits: Path, session_ceiling: int, deadline: str | None):
         declared = declared_endpoint(endpoint)
-        address = urlsplit(declared["base_url"])
+        module = lanes()
+        try:
+            address = urlsplit(module.endpoint_base_url(endpoint))
+            self.private = bool(declared.get("private_endpoint"))
+            self.tls_server_name = module.private_settings(endpoint).tls_server_name if self.private else ""
+            forwarding = module._sibling("verified_forwarder")
+            self.tls_context = (forwarding.anchor_context(module.trust_anchor(endpoint), declared["tls_ca_sha256"])
+                                if self.private else ssl.create_default_context())
+        except (module.LaneError, ValueError) as error:
+            raise SystemExit(f"the {endpoint} endpoint cannot be reached verified: {error}") from None
+        self.trusted_connection = forwarding.custom_endpoint._TrustedHTTPSConnection
         self.host, self.port = address.hostname, address.port or 443
         self.prefix = address.path.rstrip("/")
-        self.unverified_host = bool(declared.get("disable_node_tls_verification"))
+        self.pinned = ""
         self.key = resolve_key(declared["credential_reference"])
         self.ledger, self.limits, self.session_ceiling = ledger, limits, session_ceiling
         self.deadline = datetime.fromisoformat(deadline) if deadline else None
@@ -118,19 +135,33 @@ class Proxy:
                 if row.get("outcome") in PHYSICAL:
                     self.sent += 1
                     self.per_run[row["run_id"]] = self.per_run.get(row["run_id"], 0) + 1
-        self.pinned = self.leaf() if self.unverified_host else None
+        try:
+            self.pinned = self.leaf() if self.private else ""
+        except OSError as error:
+            # The refusal text names the expected certificate name; the message that leaves this process does not.
+            raise SystemExit(f"the {endpoint} endpoint did not prove its identity under the pinned trust anchor "
+                             f"({type(error).__name__}); nothing was sent") from None
 
-    def context(self) -> ssl.SSLContext:
-        context = ssl.create_default_context()
-        if self.unverified_host:
-            context.check_hostname = False
-            context.verify_mode = ssl.CERT_NONE
-        return context
+    def connection(self, timeout: float) -> http.client.HTTPSConnection:
+        """One upstream connection held to the endpoint's trust contract; it verifies when it connects."""
+        return self.trusted_connection(self.host, port=self.port, timeout=timeout, context=self.tls_context,
+                                       tls_server_name=self.tls_server_name, tls_pinned_sha256=self.pinned)
 
     def leaf(self) -> str:
-        with socket.create_connection((self.host, self.port), timeout=20) as raw:
-            with self.context().wrap_socket(raw, server_hostname=self.host) as tls:
-                return hashlib.sha256(tls.getpeercert(binary_form=True)).hexdigest()
+        """The SHA-256 of the leaf certificate a verified handshake shows now; no HTTP is sent."""
+        connection = self.connection(20)
+        try:
+            connection.connect()
+            return hashlib.sha256(connection.sock.getpeercert(binary_form=True)).hexdigest()
+        finally:
+            connection.close()
+
+    def private_text(self, text: str) -> str:
+        """An error text with the upstream host and its certificate name replaced, so a record names neither."""
+        for value, label in ((self.tls_server_name, "<certificate name>"), (self.host, "<upstream>")):
+            if value:
+                text = text.replace(value, label)
+        return text
 
     def record(self, row: dict) -> None:
         with self.lock:
@@ -208,10 +239,9 @@ def handler_for(proxy: Proxy):
             started, t0 = now(), time.time()
             status, data, outcome, error = 0, b"", "ok", None
             try:
-                connection = http.client.HTTPSConnection(proxy.host, proxy.port, context=proxy.context(), timeout=600)
+                # Verified when it connects: the pinned anchor, the expected name and the leaf seen at start.
+                connection = proxy.connection(600)
                 connection.connect()
-                if proxy.pinned and hashlib.sha256(connection.sock.getpeercert(binary_form=True)).hexdigest() != proxy.pinned:
-                    raise ssl.SSLError("leaf certificate changed during the session")
                 headers = {"Content-Type": "application/json", "Authorization": "Bearer " + proxy.key, "Accept": "application/json"}
                 connection.request(method, proxy.prefix + rest, body=body if body else None, headers=headers)
                 response = connection.getresponse()
@@ -224,7 +254,7 @@ def handler_for(proxy: Proxy):
                     outcome = "upstream_error"
             except Exception as exc:
                 outcome = "transport_error"
-                error = (type(exc).__name__ + ": " + str(exc)[:200]).replace(proxy.key or "\0", "<key>")
+                error = proxy.private_text((type(exc).__name__ + ": " + str(exc)).replace(proxy.key or "\0", "<key>"))[:240]
                 if not status:
                     try:
                         self.reply(502, json.dumps({"error": {"message": "upstream transport failed", "type": "server_error"}}).encode())
@@ -237,7 +267,7 @@ def handler_for(proxy: Proxy):
                        "error": error, "response_bytes": len(data), "request_bytes": len(body)}
                 row.update(usage_of(data))
                 if status >= 400 and len(data) < 2000:
-                    row["upstream_error_text"] = data.decode("utf-8", "replace")[:300]
+                    row["upstream_error_text"] = proxy.private_text(data.decode("utf-8", "replace"))[:300]
                 proxy.record(row)
     return Handler
 
@@ -252,7 +282,7 @@ def main(argv=None) -> int:
     parser.add_argument("--deadline", default=None, help="ISO time after which no call is sent.")
     args = parser.parse_args(argv)
     proxy = Proxy(args.endpoint, args.ledger, args.limits, args.session_ceiling, args.deadline)
-    proxy.record({"event": "proxy_start", "at": now(), "endpoint": args.endpoint, "pinned_leaf_sha256": proxy.pinned,
+    proxy.record({"event": "proxy_start", "at": now(), "endpoint": args.endpoint, "pinned_leaf_sha256": proxy.pinned or None,
                   "session_ceiling": args.session_ceiling, "calls_already_in_ledger": proxy.sent, "key_present": bool(proxy.key)})
     ThreadingHTTPServer(("127.0.0.1", args.port), handler_for(proxy)).serve_forever()
     return 0
