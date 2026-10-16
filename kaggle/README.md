@@ -11,8 +11,8 @@ harness described below, so every fix can be tested before it is pasted.
 | Notebook | Providers | Best for | Kaggle secrets required |
 |---|---|---|---|
 | [01 quickstart](01_quickstart_ollama.py) | Ollama Cloud only | First run, smallest surface, fastest to debug | `ollama_kaggle_key` |
-| [02 tacticalengineering only](02_tacticalengineering_only.py) | Your private tacticalengineering gateway | Long runs on your own GPU box, wall-clock deadline, deepest logging | `tacticalhat_kaggle_key` |
-| [03 three-provider failover](03_three_provider_failover.py) | Ollama Cloud, tacticalengineering, Mistral | Maximum resilience: the run continues when any one provider fails | `ollama_kaggle_key`, `mistral_kaggle_key`, `tacticalhat_kaggle_key` |
+| [02 tacticalengineering only](02_tacticalengineering_only.py) | Your private tacticalengineering gateway | Long runs on your own GPU box, wall-clock deadline, deepest logging | `tacticalhat_kaggle_key`, `tacticalhat_kaggle_base_url`, and `tacticalhat_kaggle_tls_server_name` when the certificate names another host |
+| [03 three-provider failover](03_three_provider_failover.py) | Ollama Cloud, tacticalengineering, Mistral | Maximum resilience: the run continues when any one provider fails | `ollama_kaggle_key`, `mistral_kaggle_key`, `tacticalhat_kaggle_key`, `tacticalhat_kaggle_base_url`, and `tacticalhat_kaggle_tls_server_name` when the certificate names another host |
 
 All three solve the same task: a reproducible baseline for the competition
 files attached to the notebook (Playground Series S6E9 by default). Change
@@ -86,7 +86,7 @@ shipped exactly that failure before and a reader needs to see it.
 | `loop-engine/logs/run-history/` | Loop Engine Run History (replay, reports, studio); never deleted by the cells | yes | yes | yes |
 | `loop-engine/logs/summary/` | `summary-<stamp>.md` (02) or `final-report-<stamp>.md` (03), one page per attempt | | yes | yes |
 | `loop-engine/logs/master/master-<stamp>.log` | chronological master log | | yes | |
-| `loop-engine/providers.yaml` | the settings file the solve reads (no key values) | | yes | yes |
+| `loop-engine/providers.yaml` | the settings file the solve reads (no key values and no server address) | | yes | yes |
 | `loop-engine/task.md` | the task text given to the solve | yes | yes | yes |
 
 A cell removes stale `loop-engine/workspace-*` directories at the start of a
@@ -118,7 +118,8 @@ variables redirect the cell:
 | `LOOP_ENGINE_KAGGLE_COMPETITION` | `playground-series-s6e9` | competition slug |
 | `LOOP_ENGINE_SOURCE_DIR` | unset | when set, this checkout is installed instead of downloading `main.zip`; the checkout is never deleted |
 | `LOOP_ENGINE_KAGGLE_STAGE` | `solve` | `offline` stops after doctor/configure, `preflight` stops after the provider probes, `solve` is the full run |
-| `LOOP_ENGINE_TACTICAL_BASE_URL` | `https://ai.tacticalengineering.net:6969/v1/chat/completions` | the private endpoint (02, 03); the `/v1` base or the full URL |
+| `LOOP_ENGINE_TACTICAL_BASE_URL` | unset | the private server's connect URL when the secret `tacticalhat_kaggle_base_url` is not attached (02, 03); the `/v1` base or the full URL |
+| `LOOP_ENGINE_TACTICAL_TLS_SERVER_NAME` | unset | the DNS name the server's certificate proves, when it names another host than the URL (02, 03) |
 | `LOOP_ENGINE_TACTICAL_MODEL` | `gemma-4-coding-abliterated` | model id on that endpoint (02, 03) |
 | `LOOP_ENGINE_KAGGLE_DEADLINE_SECONDS` | `18000` (5 hours) | wall-clock budget of the solve phase in notebook 02; the harness shortens it to test the deadline path |
 
@@ -127,8 +128,18 @@ the secret is not attached, the cell falls back to an environment variable
 with the secret's upper-cased name (`OLLAMA_KAGGLE_KEY`,
 `MISTRAL_KAGGLE_KEY`, `TACTICALHAT_KAGGLE_KEY`) and then to the provider's
 standard variable (`OLLAMA_API_KEY`, `MISTRAL_API_KEY`, `TACTICAL_API_KEY`).
-Key values only ever enter the environment of the child processes; they are
-never printed and never written to a file.
+Key values only ever enter the environment of the processes the cell starts;
+they are never printed and never written to a file.
+
+The Tactical server's connect URL and certificate name are read in the same
+order: the secret `tacticalhat_kaggle_base_url`, then
+`TACTICALHAT_KAGGLE_BASE_URL`, then `LOOP_ENGINE_TACTICAL_BASE_URL`, and the
+secret `tacticalhat_kaggle_tls_server_name`, then
+`TACTICALHAT_KAGGLE_TLS_SERVER_NAME`, then
+`LOOP_ENGINE_TACTICAL_TLS_SERVER_NAME`. The preflight and solve stages stop
+with a clear message when the connect URL is missing. Neither value is
+printed, and the preflight record names the URL only by its secret and its
+SHA-256.
 
 A notebook pushed through the Kaggle API (`kaggle kernels push`) does not
 inherit secret access. Kaggle grants a secret to a notebook in the editor,
@@ -162,7 +173,7 @@ a subprocess, and checks what the stage must leave behind:
 source .venv/bin/activate
 python kaggle/check_cells.py --cell 01 --stage offline   # default stage
 python kaggle/check_cells.py --cell all --stage offline  # no key, no network
-python kaggle/check_cells.py --cell 02 --stage preflight # needs TACTICALHAT_KAGGLE_KEY or TACTICAL_API_KEY
+python kaggle/check_cells.py --cell 02 --stage preflight # needs the Tactical key and connect URL variables
 python kaggle/check_cells.py --cell 03 --stage solve --verbose --keep
 ```
 
@@ -177,8 +188,8 @@ stop level that was needed.
 | `preflight` | the above, plus a preflight record with a boolean `ok` per provider and at least one provider ok |
 | `solve` | the above, plus an `outcome.json` under `run-history/` or a typed terminal code in the solve record |
 
-The offline stage removes every provider variable from the child's
-environment, so it needs no key and makes no network call. The preflight and
+The offline stage removes every provider variable from the environment of
+the cell it runs, so it needs no key and makes no network call. The preflight and
 solve stages refuse with exit code 2 when the keys the chosen cell needs are
 missing; nothing is fabricated. `--keep` keeps the temporary root (a failing
 run always keeps it), `--verbose` streams the cell output, `--root DIR`
@@ -193,15 +204,25 @@ places the temporary root under `DIR`.
   from Mistral platform documentation. Both routes enter failover
   automatically.
 - **tacticalengineering** (notebooks 02 and 03): a **private endpoint**
-  operated by the notebook owner, reached as a direct-origin
-  OpenAI-compatible API on port 6969. The hostname is DNS-only and serves a
-  Cloudflare Origin CA certificate, so the endpoint declares
-  `tls_verification: skip` (the typed equivalent of `curl -k`, scoped to
-  exactly this endpoint) and `stream: auto` (retries with SSE streaming if a
-  proxy ever cuts a long generation). `tls_verification: ca_file` together
-  with `tls_ca_file: <path to the Cloudflare Origin CA root>` is now
-  supported and is the preferred setting whenever that root file is
-  available on the notebook. The declared output ceiling is the gemma-4
+  operated by the notebook owner, an OpenAI-compatible API on its own
+  origin. Its address is in neither the notebooks nor the repository: the
+  connect URL comes from the secret `tacticalhat_kaggle_base_url`, and the
+  name its certificate proves, when that is another host than the URL's,
+  from `tacticalhat_kaggle_tls_server_name`. The certificate comes from the
+  Cloudflare Origin CA, which no public trust store holds. The cell trusts
+  exactly the Cloudflare Origin CA RSA root committed at
+  `tools/resources/original-native-generation-providers/cloudflare-origin-ca-rsa-root.pem`
+  in the checkout it installs, after checking that file's SHA-256, and
+  keeps hostname checking on. The settings loader cannot declare an expected
+  certificate name yet, so the probe and the solve both reach the server
+  through a verified forwarder on 127.0.0.1 inside the cell
+  (`tools/verified_forwarder.py`), and `providers.yaml` names that
+  forwarder, not the server. A server that cannot prove the expected name
+  under that root is refused with `tls_trust_refused` before any request is
+  sent: notebook 02 stops, and notebook 03 continues on the other two
+  providers. Certificate verification is never switched off.
+  `stream: auto` retries with SSE streaming if a proxy ever cuts a long
+  generation. The declared output ceiling is the gemma-4
   published 32,768 tokens; it is declared, not measured by these notebooks.
   Requests identify themselves honestly (`Loop-Engine-Kaggle` for the solve,
   `Loop-Engine-Kaggle-Preflight` for the raw probe); no browser User-Agent is

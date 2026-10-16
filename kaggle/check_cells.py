@@ -12,9 +12,9 @@ the files the stage must leave behind.
 
 Stage offline needs no provider key and no network: provider variables are
 removed from the child's environment so nothing can be called by accident.
-Stages preflight and solve need the provider keys of the chosen cell in the
-environment; the harness refuses (exit 2) when they are missing and never
-fabricates one.
+Stages preflight and solve need the provider secrets of the chosen cell in
+the environment (the keys, and for cells 02 and 03 the Tactical connect URL);
+the harness refuses (exit 2) when they are missing and never fabricates one.
 
 Exit codes: 0 every check passed, 1 a check failed, 2 the run was refused.
 """
@@ -39,26 +39,31 @@ REPOSITORY_ROOT = HERE.parent
 
 STAGES = ("offline", "preflight", "solve")
 
-# Cell id -> (file name, keys it needs as (secret name, standard variable)).
+# Cell id -> (file name, secrets it needs as (secret name, standard variable)).
+# The Tactical server's connect URL is a secret like its key: it is private
+# configuration that neither the cells nor the repository carry.
+TACTICAL_SECRETS = (("tacticalhat_kaggle_key", "TACTICAL_API_KEY"),
+                    ("tacticalhat_kaggle_base_url", "LOOP_ENGINE_TACTICAL_BASE_URL"))
 CELLS = {
     "01": ("01_quickstart_ollama.py",
            (("ollama_kaggle_key", "OLLAMA_API_KEY"),)),
-    "02": ("02_tacticalengineering_only.py",
-           (("tacticalhat_kaggle_key", "TACTICAL_API_KEY"),)),
+    "02": ("02_tacticalengineering_only.py", TACTICAL_SECRETS),
     "03": ("03_three_provider_failover.py",
            (("ollama_kaggle_key", "OLLAMA_API_KEY"),
-            ("mistral_kaggle_key", "MISTRAL_API_KEY"),
-            ("tacticalhat_kaggle_key", "TACTICAL_API_KEY"))),
+            ("mistral_kaggle_key", "MISTRAL_API_KEY"), *TACTICAL_SECRETS)),
 }
 
-# Every provider variable the cells know about. The offline stage removes
-# all of them from the child's environment.
+# Every provider variable the cells know about, the Tactical server's
+# address settings among them. The offline stage removes all of them from
+# the child's environment.
 PROVIDER_VARIABLES = (
     "OLLAMA_API_KEY", "MISTRAL_API_KEY", "TACTICAL_API_KEY",
     "OLLAMA_KAGGLE_KEY", "MISTRAL_KAGGLE_KEY", "TACTICALHAT_KAGGLE_KEY",
     "TACTICALHAT_API_KEY", "LOOP_ENGINE_ENDPOINTS", "OPENWEBUI_API_KEY",
     "PRIVATE_OPENWEBUI_API_KEY", "OPENROUTER_API_KEY",
     "OPENCODE_ZEN_API_KEY", "OPENCODE_GO_API_KEY",
+    "LOOP_ENGINE_TACTICAL_BASE_URL", "LOOP_ENGINE_TACTICAL_TLS_SERVER_NAME",
+    "TACTICALHAT_KAGGLE_BASE_URL", "TACTICALHAT_KAGGLE_TLS_SERVER_NAME",
 )
 
 DATASET_ROWS = 200
@@ -363,8 +368,8 @@ def main(argv: list | None = None) -> int:
                         f"or {standard_env}")
         if missing:
             return refuse(
-                f"stage {args.stage!r} needs provider keys that are not "
-                "in the environment. No key is ever fabricated.\n  "
+                f"stage {args.stage!r} needs provider secrets that are not "
+                "in the environment. No key or address is ever fabricated.\n  "
                 + "\n  ".join(sorted(set(missing))))
 
     parent = Path(args.root).resolve() if args.root else None

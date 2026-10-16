@@ -38,6 +38,7 @@ from pathlib import Path, PurePosixPath
 from datetime import datetime, timezone
 from types import SimpleNamespace
 
+import hashlib
 import importlib.util
 import json
 import os
@@ -148,23 +149,32 @@ PRIMARY_ROUTE = "cloud.default"
 PRIMARY_PROVIDER = "ollama_cloud"
 PROBE_MODEL_ID = "deepseek-v4-flash:0731"
 
-# tacticalengineering: the owner's PRIVATE direct-origin OpenAI-compatible
-# API. The DNS-only hostname serves a Cloudflare Origin CA certificate, so
-# the endpoint declares tls_verification: skip (the typed curl -k, scoped
-# to exactly this endpoint). tls_verification: ca_file with tls_ca_file
-# pointing at the Origin CA root is the preferred alternative when that
-# root is available. stream: auto self-orients: non-streamed first, SSE
-# retry when a proxy wall cuts a long generation. The URL may be the /v1
-# base or the full /chat/completions URL; both resolve the same way.
-TACTICAL_BASE_URL = os.environ.get(
-    "LOOP_ENGINE_TACTICAL_BASE_URL",
-    "https://ai.tacticalengineering.net:6969/v1/chat/completions").strip()
+# tacticalengineering: the owner's PRIVATE OpenAI-compatible model server.
+# Its address is in neither this cell nor the repository. The connect URL
+# (the /v1 base or the full /chat/completions URL) comes from the Kaggle
+# secret tacticalhat_kaggle_base_url, and the DNS name its certificate
+# proves, when that is another host than the URL's, from the secret
+# tacticalhat_kaggle_tls_server_name (outside Kaggle: the
+# LOOP_ENGINE_TACTICAL_BASE_URL and LOOP_ENGINE_TACTICAL_TLS_SERVER_NAME
+# variables). The certificate comes from the Cloudflare Origin CA, which no
+# public trust store holds, so the cell trusts exactly the root committed
+# in the checkout it installs, after checking that file's SHA-256, with
+# hostname checking on. The settings loader cannot declare an expected
+# certificate name yet, so the solve reaches the server through a verified
+# forwarder on 127.0.0.1 inside this cell (tools/verified_forwarder.py),
+# which holds that trust contract for every request. Nothing here switches
+# certificate verification off. stream: auto self-orients: non-streamed
+# first, SSE retry when a proxy wall cuts a long generation.
+TACTICAL_BASE_URL_SECRET_NAME = "tacticalhat_kaggle_base_url"
+TACTICAL_BASE_URL_ENV = "LOOP_ENGINE_TACTICAL_BASE_URL"
+TACTICAL_SERVER_NAME_SECRET_NAME = "tacticalhat_kaggle_tls_server_name"
+TACTICAL_SERVER_NAME_ENV = "LOOP_ENGINE_TACTICAL_TLS_SERVER_NAME"
+TACTICAL_TRUST_ANCHOR = ("tools/resources/original-native-generation-providers/"
+                         "cloudflare-origin-ca-rsa-root.pem")
+TACTICAL_TRUST_ANCHOR_SHA256 = (
+    "91a8a5567efa6bf941162aa806b3ba476aaddf7867640e53053b35fb225a5dae")
 TACTICAL_MODEL = os.environ.get(
     "LOOP_ENGINE_TACTICAL_MODEL", "gemma-4-coding-abliterated").strip()
-TACTICAL_ENDPOINT = (
-    TACTICAL_BASE_URL.rstrip("/")
-    if TACTICAL_BASE_URL.rstrip("/").endswith("/chat/completions")
-    else TACTICAL_BASE_URL.rstrip("/") + "/chat/completions")
 # gemma-4 published model output ceiling. Declared by this notebook, not
 # measured by it.
 TACTICAL_MAX_OUTPUT = 32768
@@ -330,13 +340,44 @@ def probe_builtin_provider(provider, route, model_id, max_total_tokens, env):
     return record
 
 
+def tactical_api_base(url):
+    """The /v1 API base of a configured URL that may name /chat/completions."""
+    base = url.strip().rstrip("/")
+    suffix = "/chat/completions"
+    return base[:-len(suffix)] if base.endswith(suffix) else base
+
+
+def start_tactical_forwarder(base_url, server_name):
+    """Start the installed checkout's verified forwarder for the Tactical server.
+
+    The forwarder trusts only the committed Cloudflare Origin CA root, after
+    checking the file's SHA-256, keeps hostname checking on against the
+    configured certificate name (or the URL host when none is configured),
+    and passes the solve's own key through unchanged. A declaration it
+    refuses raises ValueError with a stable code and no private value.
+    """
+    path = REPOSITORY_DIR / "tools" / "verified_forwarder.py"
+    spec = importlib.util.spec_from_file_location("verified_forwarder", path)
+    module = importlib.util.module_from_spec(spec)
+    sys.modules["verified_forwarder"] = module
+    spec.loader.exec_module(module)
+    forwarder = module.VerifiedForwarder(
+        tactical_api_base(base_url),
+        ca_file=REPOSITORY_DIR / TACTICAL_TRUST_ANCHOR,
+        ca_sha256=TACTICAL_TRUST_ANCHOR_SHA256,
+        tls_server_name=server_name)
+    forwarder.start()
+    return forwarder
+
+
 def probe_endpoint_raw(name, url, key, model, max_tokens=32, timeout=90):
     """One direct OpenAI-style probe against a custom endpoint.
 
     Returns a typed record: ok, latency, provider-reported usage, or the
     exact failure. Never raises; the preflight report carries the result.
+    The URL is the verified forwarder on 127.0.0.1, which holds the TLS
+    trust contract; no proxy is used for it.
     """
-    import ssl
     payload = json.dumps({
         "model": model,
         "messages": [{"role": "user",
@@ -350,13 +391,7 @@ def probe_endpoint_raw(name, url, key, model, max_tokens=32, timeout=90):
     })
     started = time.monotonic()
     try:
-        # Origin serves a private CA; verification skip is the operator's
-        # documented direct-origin policy for this host.
-        context = ssl.create_default_context()
-        context.check_hostname = False
-        context.verify_mode = ssl.CERT_NONE
-        opener = urllib.request.build_opener(
-            urllib.request.HTTPSHandler(context=context))
+        opener = urllib.request.build_opener(urllib.request.ProxyHandler({}))
         with opener.open(req, timeout=timeout) as r:
             body = json.loads(r.read())
         elapsed = time.monotonic() - started
@@ -377,6 +412,14 @@ def probe_endpoint_raw(name, url, key, model, max_tokens=32, timeout=90):
         }
     except Exception as exc:
         error = f"{type(exc).__name__}: {str(exc)[:200]}"
+        if isinstance(exc, urllib.error.HTTPError):
+            # The forwarder answers its own refusals with a stable code.
+            try:
+                code = json.loads(exc.read(4096) or b"{}")["error"]["code"]
+            except Exception:
+                code = ""
+            if code:
+                error += f" ({code})"
         return {
             "endpoint": name, "ok": False, "exit_code": None,
             "elapsed_seconds": round(time.monotonic() - started, 2),
@@ -416,14 +459,22 @@ keys = {provider: read_secret(secret_name, key_env)
 ollama_key = keys["ollama_cloud"]
 mistral_key = keys["mistral"]
 tactical_key = keys["tacticalengineering"]
+# The Tactical server's address and certificate name: private, never printed.
+tactical_base_url = read_secret(
+    TACTICAL_BASE_URL_SECRET_NAME, TACTICAL_BASE_URL_ENV)
+tactical_server_name = read_secret(
+    TACTICAL_SERVER_NAME_SECRET_NAME, TACTICAL_SERVER_NAME_ENV)
 
-# Strip stale leftovers from older cells.
+# Strip stale leftovers from older cells. The solve reaches the Tactical
+# server through the forwarder, so it needs no address either.
 for name in (
         "LOOP_ENGINE_ENDPOINTS", "TACTICALHAT_API_KEY",
         "OPENWEBUI_API_KEY", "PRIVATE_OPENWEBUI_API_KEY",
         "OPENROUTER_API_KEY", "OPENCODE_ZEN_API_KEY",
         "OPENCODE_GO_API_KEY", OLLAMA_KEY_ENV, MISTRAL_KEY_ENV,
-        TACTICAL_KEY_ENV):
+        TACTICAL_KEY_ENV, TACTICAL_BASE_URL_ENV, TACTICAL_SERVER_NAME_ENV,
+        TACTICAL_BASE_URL_SECRET_NAME.upper(),
+        TACTICAL_SERVER_NAME_SECRET_NAME.upper()):
     os.environ.pop(name, None)
 
 missing = [
@@ -431,13 +482,22 @@ missing = [
     + (f" [lookup failed with {SECRET_LOOKUP_FAILURES[secret_name]}]"
        if secret_name in SECRET_LOOKUP_FAILURES else "")
     for provider, secret_name, key_env in SECRETS if not keys[provider]]
+if not tactical_base_url:
+    missing.append(
+        f"{TACTICAL_BASE_URL_SECRET_NAME!r} (or "
+        f"{TACTICAL_BASE_URL_SECRET_NAME.upper()} / {TACTICAL_BASE_URL_ENV})"
+        + (" [lookup failed with "
+           f"{SECRET_LOOKUP_FAILURES[TACTICAL_BASE_URL_SECRET_NAME]}]"
+           if TACTICAL_BASE_URL_SECRET_NAME in SECRET_LOOKUP_FAILURES
+           else ""))
 if missing and STAGE != "offline":
     # Each name carries why its own lookup failed. A secret that is not
     # attached and a secrets service that refuses the request need opposite
     # answers, and a shared sentence about creating secrets fits only one.
     service_refused = bool(SECRET_LOOKUP_FAILURES)
     raise RuntimeError(
-        f"Stage {STAGE!r} needs all three provider keys. Unresolved: "
+        f"Stage {STAGE!r} needs all three provider keys and the Tactical "
+        "connect URL. Unresolved: "
         + ", ".join(missing)
         + (". A batch run started through the Kaggle API cannot reach the "
            "secrets service even when the secrets are attached; run the "
@@ -456,6 +516,8 @@ print("Provider credentials configured:", {
     "mistral": bool(command_environment.get(MISTRAL_KEY_ENV)),
     "tacticalengineering": bool(command_environment.get(TACTICAL_KEY_ENV)),
 })
+print("Tactical connect URL configured:", bool(tactical_base_url),
+      "| certificate name configured:", bool(tactical_server_name))
 print("Stage requested:", STAGE)
 
 # Hand the attached input root to the solve and report what is in it. The
@@ -593,17 +655,42 @@ preflight["providers"].append(probe_builtin_provider(
     command_environment))
 
 # --- 5c. tacticalengineering via a direct OpenAI-style probe ---
-tactical_result = probe_endpoint_raw(
-    "tacticalengineering", TACTICAL_ENDPOINT, tactical_key, TACTICAL_MODEL)
-# The probe result comes first so the explicit fields below (the real
-# endpoint URL among them) are never overwritten by it.
+# The forwarder is the only route to the server: the probe and the solve
+# both go through it, so the probe checks the path the solve will use.
+tactical_forwarder = None
+TACTICAL_ENDPOINT = ""
+try:
+    tactical_forwarder = start_tactical_forwarder(
+        tactical_base_url, tactical_server_name)
+    TACTICAL_ENDPOINT = tactical_forwarder.base_url + "/chat/completions"
+    for name in ("NO_PROXY", "no_proxy"):
+        command_environment[name] = ",".join(part for part in (
+            command_environment.get(name, ""), "127.0.0.1", "localhost")
+            if part)
+    tactical_result = probe_endpoint_raw(
+        "tacticalengineering", TACTICAL_ENDPOINT, tactical_key,
+        TACTICAL_MODEL)
+except ValueError as forwarder_error:
+    tactical_result = {
+        "endpoint": "tacticalengineering", "ok": False, "exit_code": None,
+        "elapsed_seconds": 0.0, "error": str(forwarder_error)[:200],
+        "note": "the verified forwarder refused its declaration: "
+                + str(forwarder_error)[:160],
+    }
+# The probe result comes first so the explicit fields below are never
+# overwritten by it. The record names the endpoint by its secret and its
+# digest, never by its address.
 preflight["providers"].append({
     **tactical_result,
     "provider": "tacticalengineering",
-    "probe_kind": "direct_openai_chat",
-    "endpoint": TACTICAL_ENDPOINT,
+    "probe_kind": "direct_openai_chat_through_verified_forwarder",
+    "endpoint": "secret " + TACTICAL_BASE_URL_SECRET_NAME,
+    "endpoint_sha256": hashlib.sha256(
+        tactical_api_base(tactical_base_url).encode()).hexdigest(),
     "model": TACTICAL_MODEL,
-    "tls_verification": "skip",
+    "tls_verification": "ca_file",
+    "tls_trust_anchor_sha256": TACTICAL_TRUST_ANCHOR_SHA256,
+    "tls_server_name_configured": bool(tactical_server_name),
 })
 
 # The record is always written, whatever the probes returned.
@@ -667,12 +754,14 @@ settings = {
                 "kind": "custom",
                 "enabled": True,
                 "credential_env": TACTICAL_KEY_ENV,
+                # The verified forwarder on 127.0.0.1 (section 5c): it holds
+                # the TLS trust contract, the pinned root and the expected
+                # certificate name, for every request the solve makes.
                 "endpoint": TACTICAL_ENDPOINT,
                 "model": TACTICAL_MODEL,
                 "wire": "openai",
                 "locality": "cloud",
                 "stream": "auto",
-                "tls_verification": "skip",
                 "maximum_output_tokens": TACTICAL_MAX_OUTPUT,
                 "maximum_output_source": TACTICAL_MAX_OUTPUT_SOURCE,
                 "counts_as_evidence": True,
@@ -688,6 +777,12 @@ settings = {
         ],
     },
 }
+if tactical_forwarder is None:
+    # A refused forwarder declaration leaves no verified route to the
+    # Tactical server, so the solve fails over between the other two.
+    settings["models"]["providers"] = [
+        provider for provider in settings["models"]["providers"]
+        if provider["id"] != "tacticalengineering"]
 
 settings_text = yaml.safe_dump(settings, sort_keys=False, allow_unicode=True)
 for secret in (ollama_key, mistral_key, tactical_key):
@@ -714,6 +809,8 @@ gateway = (
     .settings.build_gateway(command_environment))
 
 expected_providers = {"ollama_cloud", "tacticalengineering", "mistral"}
+if tactical_forwarder is None:
+    expected_providers.discard("tacticalengineering")
 if set(gateway.providers) != expected_providers:
     raise RuntimeError(
         "Expected exactly Ollama, tacticalengineering, and Mistral; found: "
@@ -826,6 +923,9 @@ completed = subprocess.run(
     stderr=None,      # progress + exact model IO stream live to the notebook
     check=False,
 )
+
+if tactical_forwarder is not None:
+    tactical_forwarder.stop()
 
 raw_output = completed.stdout.strip()
 RESULT_FILE.write_text(
