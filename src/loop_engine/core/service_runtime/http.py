@@ -314,6 +314,25 @@ DECLARED_ROUTES = (*API_ROUTES, PROTOCOL_PATH, *WEB_ASSETS, *GENERATED_WEB_FILES
 CREDENTIAL_BODY_ROUTES = ("/api/v1/account/signup", PROMOTION_REDEMPTION_PATH, ADMIN_SIGN_UP_LINKS_PATH,
                           *oauth_http.CREDENTIAL_ROUTES, feed_profile_web.PATH, CUSTOMER_FEEDS_PATH)
 
+#: The public documents a monitor, a crawler or a client reads before it holds a credential. HEAD on each is answered
+#: by GET's own handler, with GET's status and headers and no content (RFC 9110, section 9.3.2), so a HEAD probe and a
+#: GET cannot disagree; the launch audit of October 16, 2026 found HEAD answering 404 beside GET's 200 on all of them.
+#: Every other route keeps the methods `API_ROUTES` names.
+HEAD_READ_ROUTES = frozenset(("/api/v1/health", "/api/v1/capabilities", TOOL_SERVER_DOCUMENT_PATH,
+                              OPENAI_APPS_CHALLENGE_PATH, oauth_http.METADATA_PATH,
+                              "/.well-known/oauth-protected-resource", "/.well-known/oauth-protected-resource/mcp"))
+
+
+def head_as_get(request):
+    """The same request with the GET method, for a HEAD on one of `HEAD_READ_ROUTES`."""
+    return type(request)({**request.scope, "method": "GET"}, request.receive)
+
+
+def without_content(response):
+    """GET's answer as a HEAD answer: its status and headers, its Content-Length included, and no content."""
+    response.body = b""
+    return response
+
 
 class ServiceHttpError(ValueError):
     """A bounded versioned transport refusal with no private exception text; no other failure adds details or headers.
@@ -2624,7 +2643,7 @@ class ServiceHttpApplication:
                 # account/OAuth workflows whose return UI it does not supply.
                 # Refuse before body parsing, authentication or provider work.
                 if application.brand_profile is not None and application.brand_profile.public_only:
-                    public_health = request.url.path == "/api/v1/health" and request.method == "GET"
+                    public_health = request.url.path == "/api/v1/health" and request.method in ("GET", "HEAD")
                     if (request.method not in ("GET", "HEAD") or
                             ((request.url.path in API_ROUTES or request.url.path == PROTOCOL_PATH or open_surface)
                              and not public_health)):
@@ -2990,6 +3009,8 @@ class ServiceHttpApplication:
             if answer is None:
                 raise ServiceHttpError("route_unavailable", 404)
             return answer
+        if method == "HEAD" and path in HEAD_READ_ROUTES:
+            return without_content(await self._web_route(head_as_get(request), Response, JSONResponse))
         # Decide whether this service serves the address before asking who is
         # calling. An unknown address that is authenticated first answers 401
         # unauthorized, which sends the reader looking for a credential fault

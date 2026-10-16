@@ -788,6 +788,19 @@ failed-attempt limit is inactive, and nothing in a running service says so
 out loud. The refusal names the exact repair. A loopback binding serves only
 its own machine and needs no such statement.
 
+## HEAD on the public read routes
+
+A monitor or a client often asks with HEAD before it reads. Since October 16,
+2026 HEAD on the public documents in `HEAD_READ_ROUTES` (the health and
+capabilities records, the tool-server document, the OpenAI domain challenge
+and the three OAuth discovery documents) is answered by GET's own handler,
+with GET's status and headers, its `Content-Length` included, and no content,
+as RFC 9110 describes HEAD. A public-only brand presentation answers HEAD on
+its health record the same way. Every other route keeps the methods
+`API_ROUTES` names, so HEAD on an authenticated read or an authorization start
+still answers 404. `tools/test_http_head_reads.py` holds this on real loopback
+HTTP, with a known-wrong control that removes the rule.
+
 ## Failed-attempt limit for each client address
 
 This section describes current behavior. The HTTP transport counts refused
