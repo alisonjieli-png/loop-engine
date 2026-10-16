@@ -89,7 +89,7 @@ MODULE_MAP = {
         "list_paging", "list_paging_checks",
         "commercial_relationship", "public_links",
         "red_team_page",
-        "feedback", "feedback_checks", "staff_work",
+        "feedback", "feedback_checks", "staff_work", "systems_view",
         "status_pages", "support_page", "offering_guides", "gallery_page", "gallery_records",
         "gallery_media", "gallery_random",
         "openapi_tool_server", "feed_profile_web", "feed_profiles", "brand_profiles", "brand_pages", "agentfeeds_pages",

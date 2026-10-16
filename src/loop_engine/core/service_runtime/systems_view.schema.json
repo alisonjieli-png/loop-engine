@@ -1,0 +1,105 @@
+{
+ "$id": "service_systems_view/v1",
+ "title": "The recorded facts behind the staff Systems view",
+ "description": "A JSON Schema, draft 2020-12, for the record tools/build_systems_view.py writes from release, catalogue and edge records in the repository. Every number is copied from the record a row cites.",
+ "type": "object",
+ "additionalProperties": false,
+ "required": ["record_type", "generated_by", "states", "reading_rules", "current_deployment", "entries", "rows", "sources"],
+ "properties": {
+  "record_type": {"const": "service_systems_view/v1"},
+  "generated_by": {"const": "tools/build_systems_view.py"},
+  "reading_rules": {"const": "tools/build_systems_view.py"},
+  "states": {"const": ["passed", "failed", "pending", "skipped", "unknown"]},
+  "current_deployment": {
+   "type": "object",
+   "additionalProperties": false,
+   "required": ["statement", "section", "stated", "newest_release_entry", "newest_release_evidence", "comparison"],
+   "properties": {
+    "statement": {"type": "string", "pattern": "^docs/"},
+    "section": {"type": "string", "minLength": 1},
+    "stated": {
+     "type": "object",
+     "additionalProperties": false,
+     "required": ["release", "source_revision", "source_tree", "image", "ci_run", "deploy_run", "edge_deployment", "edge_version", "edge_export"],
+     "properties": {
+      "release": {"type": "integer"},
+      "source_revision": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+      "source_tree": {"type": ["string", "null"], "pattern": "^[0-9a-f]{40}$"},
+      "image": {"type": ["string", "null"], "pattern": "^[0-9a-f]{64}$"},
+      "ci_run": {"type": ["integer", "null"]},
+      "deploy_run": {"type": ["integer", "null"]},
+      "edge_deployment": {"type": ["string", "null"]},
+      "edge_version": {"type": ["string", "null"]},
+      "edge_export": {"type": ["string", "null"], "pattern": "^[0-9a-f]{64}$"}
+     }
+    },
+    "newest_release_entry": {"type": "string", "pattern": "^fly-release-[0-9]+$"},
+    "newest_release_evidence": {"type": "string", "pattern": "^artifacts/"},
+    "comparison": {
+     "type": "object",
+     "additionalProperties": {"enum": ["agrees", "differs", "not_stated", "not_recorded"]}
+    }
+   }
+  },
+  "entries": {
+   "type": "array",
+   "items": {
+    "type": "object",
+    "additionalProperties": false,
+    "required": ["id", "kind", "title", "number", "at", "source_revision", "source_tree", "environment_or_host", "image", "rollback", "edge", "catalogue", "evidence", "record_type", "also_recorded_in"],
+    "properties": {
+     "id": {"type": "string", "pattern": "^[a-z0-9][a-z0-9.-]*$"},
+     "kind": {"enum": ["application_release", "catalogue_publication", "edge_measurement"]},
+     "title": {"type": "string", "minLength": 1},
+     "number": {"type": ["integer", "null"]},
+     "at": {"type": ["string", "number", "null"]},
+     "source_revision": {"type": ["string", "null"]},
+     "source_tree": {"type": ["string", "null"]},
+     "environment_or_host": {"type": "string", "minLength": 1},
+     "image": {"type": ["string", "null"]},
+     "rollback": {"type": ["object", "null"]},
+     "edge": {"type": ["object", "null"]},
+     "catalogue": {"type": ["object", "null"]},
+     "evidence": {"type": "string", "pattern": "^artifacts/"},
+     "record_type": {"type": "string", "minLength": 1},
+     "also_recorded_in": {"type": "array", "items": {"type": "string", "pattern": "^artifacts/"}}
+    }
+   }
+  },
+  "rows": {
+   "type": "array",
+   "items": {
+    "type": "object",
+    "additionalProperties": false,
+    "required": ["entry", "check", "state", "observed", "source_revision", "revision_basis", "environment_or_host", "attempt", "at", "evidence", "pointer"],
+    "properties": {
+     "entry": {"type": "string", "minLength": 1},
+     "check": {"type": "string", "minLength": 1},
+     "state": {"enum": ["passed", "failed", "pending", "skipped", "unknown"]},
+     "observed": {"type": "string", "minLength": 1},
+     "source_revision": {"type": ["string", "null"]},
+     "revision_basis": {"enum": ["release_record", "row"]},
+     "environment_or_host": {"type": "string", "minLength": 1},
+     "attempt": {"type": ["string", "null"]},
+     "at": {"type": ["string", "number", "null"]},
+     "evidence": {"type": "string", "pattern": "^artifacts/"},
+     "pointer": {"type": "string"}
+    }
+   }
+  },
+  "sources": {
+   "type": "array",
+   "items": {
+    "type": "object",
+    "additionalProperties": false,
+    "required": ["path", "sha256", "role", "record_type"],
+    "properties": {
+     "path": {"type": "string", "pattern": "^(?:artifacts|docs)/"},
+     "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+     "role": {"enum": ["application_release_record", "application_release_record_copy", "check_report", "current_deployment_statement", "catalogue_publication_record", "catalogue_release_record", "edge_measurement"]},
+     "record_type": {"type": ["string", "null"]}
+    }
+   }
+  }
+ }
+}

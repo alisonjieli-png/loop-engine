@@ -343,6 +343,9 @@
         "_FETCH_RECORD = \"baltor_library_fetch_receipt/v2\"",
         "raw = _read(path / \"receipt.json\", MAXIMUM_FETCH_RECORD_BYTES)"
       ],
+      "core/service_runtime/systems_view.json": [
+        "\"pointer\": \"/publication_receipt\""
+      ],
       "core/service_runtime/web_assets/gallery/gallery.json": [
         "inverter(child: Task",
         "One child run per tick for the repeater. Reactive composites halt only the child that was running.",

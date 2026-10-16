@@ -8,10 +8,11 @@ what is pushed.
 
 VIEWS below is the one list of generated files, taken from what the workflow in .github/workflows/ci.yml runs: the
 tools tests compare the documentation pages, the starter catalogue release folder, the decision red team record, the
-development tracker, the continuation status, the records index and the public status pages with their builders; the
-self-test compares the packaged contract copies and the architecture diagrams; the conformance gates compare the
-semantic dictionary and the architecture map. The conformance manifest is written by the conformance gate and is
-regenerated last, because it reads everything else. Dated records are evidence, not views, and are never regenerated.
+development tracker, the continuation status, the records index, the public status pages and the staff Systems
+record with their builders; the self-test compares the packaged contract copies and the architecture diagrams; the
+conformance gates compare the semantic dictionary and the architecture map. The conformance manifest is written by
+the conformance gate and is regenerated last, because it reads everything else. Dated records are evidence, not
+views, and are never regenerated.
 
 Every builder runs in its own process with the target tree first on the import path, so an exported commit is
 regenerated with its own code. The order is checked before anything runs: a view may not read the output of a view
@@ -160,6 +161,15 @@ VIEWS = (
          ("{python}", "tools/record_demonstration_steps.py", "--write"),
          "tools tests: test_homepage_demonstration and test_showcase_pages, the recorded "
          "demonstrations match this release's library"),
+    View("systems-view",
+         ("src/loop_engine/core/service_runtime/systems_view.json",),
+         ("artifacts/architecture-audit-2026-09-19/*.json", "artifacts/release-*/**/*.json",
+          "artifacts/community-release-*/*", "artifacts/catalogue-publication-*/*.json",
+          "artifacts/cloudflare-*/site-edge*.json", "docs/architecture/MVP-CLIENT-SERVER.md",
+          "src/loop_engine/core/service_runtime/systems_view.schema.json", "tools/build_systems_view.py",
+          "tools/build_public_status_pages.py"),
+         ("{python}", "tools/build_systems_view.py"),
+         "tools tests: test_systems_view, the committed record is current"),
     View("status-pages",
          ("src/loop_engine/core/service_runtime/web_assets/status-pages/status-pages.json",),
          ("artifacts/architecture-audit-2026-09-19/pilot-release-*.json", "artifacts/community-release-*/README.md",
