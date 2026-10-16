@@ -27,6 +27,12 @@ def navigation_problems(html):
 
 
 class AgentStudiosPagesTests(unittest.TestCase):
+    def test_escape_closes_the_phone_menu_and_returns_focus(self):
+        # The other brands already close their menu on Escape; this one did not before October 16, 2026.
+        script = pages.render(pages.ASSET_PREFIX + 'site.js')[0].decode()
+        for fragment in ("event.key !== 'Escape'", "button.setAttribute('aria-expanded', 'false')", "classList.remove('open')", 'button.focus()'):
+            self.assertIn(fragment, script)
+
     def test_every_route_has_independent_shell_and_same_origin(self):
         for path in pages.routes():
             with self.subTest(path=path):

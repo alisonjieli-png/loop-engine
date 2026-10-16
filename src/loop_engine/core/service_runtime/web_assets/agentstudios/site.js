@@ -5,6 +5,11 @@
     const button = event.currentTarget, open = button.getAttribute('aria-expanded') !== 'true';
     button.setAttribute('aria-expanded', String(open)); document.querySelector('#site-nav').classList.toggle('open', open);
   });
+  document.addEventListener('keydown', event => {
+    const button = document.querySelector('.menu-button');
+    if (event.key !== 'Escape' || button?.getAttribute('aria-expanded') !== 'true') return;
+    button.setAttribute('aria-expanded', 'false'); document.querySelector('#site-nav').classList.remove('open'); button.focus();
+  });
   document.querySelectorAll('[data-copy]').forEach(button => button.addEventListener('click', async () => {
     const input = button.parentElement.querySelector('input');
     try { await navigator.clipboard.writeText(input.value); button.textContent = 'Copied'; }
