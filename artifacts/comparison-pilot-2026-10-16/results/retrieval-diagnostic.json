@@ -1,0 +1,482 @@
+{
+ "record_type": "comparison_pilot_retrieval_diagnostic/v1",
+ "observed_at": "2026-10-16T16:30:14+00:00",
+ "endpoint": "https://baltor.ai/api/v1/retrieval",
+ "mode": "lexical",
+ "top_n": 5,
+ "interpretation": "Search offers only; nothing was read or downloaded, and no trial result changes.",
+ "searches": [
+  {
+   "task": "a-cachetools-tlru",
+   "query": "time aware LRU cache",
+   "http_status": 200,
+   "bodies_loaded": false,
+   "hits": [
+    {
+     "identity": "read_the_train_validation_gap",
+     "kind": "skill",
+     "library_tier": "verified",
+     "declared_effects": [],
+     "body_allowed": true,
+     "purpose": "Detect overfitting and leakage from two numbers: read the gap between the training score and the cross-validated score, aware of metric direction and scale, and"
+    },
+    {
+     "identity": "audit_data_splits_for_errors_and_leakage",
+     "kind": "skill",
+     "library_tier": "verified",
+     "declared_effects": [],
+     "body_allowed": true,
+     "purpose": "Audit training, test and cross-validation splits for schema errors, label errors, near duplicates and leakage across splits by identity, by time or by a proxy o"
+    },
+    {
+     "identity": "import_skill_litestar_settings_6152a6f40462",
+     "kind": "skill",
+     "library_tier": "community",
+     "declared_effects": [
+      "reads_secret",
+      "spawns_process"
+     ],
+     "body_allowed": true,
+     "purpose": "Auto-activate for get_env, dataclass settings, pydantic_settings, BaseSettings, lru_cache config factories, app.state settings, LITESTAR_APP, or env parsing. No"
+    },
+    {
+     "identity": "import_command_brainstorm_2ea1658b819e",
+     "kind": "instruction_file",
+     "library_tier": "community",
+     "declared_effects": [
+      "writes_fs"
+     ],
+     "body_allowed": true,
+     "purpose": "Enhanced brainstorming with smart detection, design modes, time budgets, context-aware questions, and spec capture"
+    },
+    {
+     "identity": "import_skill_think_temporal_4ca95fbd3563",
+     "kind": "skill",
+     "library_tier": "community",
+     "declared_effects": [],
+     "body_allowed": true,
+     "purpose": "Time-aware reasoning methods \u2014 Temporal (event sequences, time intervals, causation across time) and Historical (source evaluation, pattern detection across his"
+    }
+   ]
+  },
+  {
+   "task": "a-cachetools-tlru",
+   "query": "cache with per item time to live python",
+   "http_status": 200,
+   "bodies_loaded": false,
+   "hits": [
+    {
+     "identity": "audit_data_splits_for_errors_and_leakage",
+     "kind": "skill",
+     "library_tier": "verified",
+     "declared_effects": [],
+     "body_allowed": true,
+     "purpose": "Audit training, test and cross-validation splits for schema errors, label errors, near duplicates and leakage across splits by identity, by time or by a proxy o"
+    },
+    {
+     "identity": "import_skill_stdtel_query_e5d6d3b4858e",
+     "kind": "skill",
+     "library_tier": "community",
+     "declared_effects": [
+      "reads_fs",
+      "network",
+      "spawns_process"
+     ],
+     "body_allowed": true,
+     "purpose": "Query standards-telemetry data to answer questions about skill cost, token usage, cache-hit rate, and delivery outcomes \u2014 tokens per merged PR, tokens per cycle"
+    },
+    {
+     "identity": "import_subagent_product_manager_8d3bbc0888b5",
+     "kind": "instruction_file",
+     "library_tier": "community",
+     "declared_effects": [
+      "reads_fs",
+      "writes_fs"
+     ],
+     "body_allowed": true,
+     "purpose": "MUST BE USED for product lifecycle work: discovery synthesis, roadmaps with owner/metric/time-horizon per item, PRDs, outcome measurement across the app portfol"
+    },
+    {
+     "identity": "library.supply.openapi_operations.37cf1bbe62e8b7b5829980c1.bf308c5852302d5f",
+     "kind": "tool",
+     "library_tier": "community",
+     "declared_effects": [
+      "network",
+      "reads_secret",
+      "spawns_process"
+     ],
+     "body_allowed": true,
+     "purpose": "VM Migration API: Extend the migrating VM time to live. (POST /v1/{migratingVm}:extendMigration), one tested Python function and one tested JavaScript module wi"
+    },
+    {
+     "identity": "library.supply.openapi_operations.348a6e6458800f45f306e516.097971a28055e4c5",
+     "kind": "tool",
+     "library_tier": "community",
+     "declared_effects": [
+      "network",
+      "reads_secret",
+      "spawns_process"
+     ],
+     "body_allowed": true,
+     "purpose": "Data API: Get Live Collection Item (GET /collections/{collection_id}/items/{item_id}/live), one tested Python function and one tested JavaScript module with Typ"
+    }
+   ]
+  },
+  {
+   "task": "a-cachetools-tlru",
+   "query": "recreate a class from its documentation and tests",
+   "http_status": 200,
+   "bodies_loaded": false,
+   "hits": [
+    {
+     "identity": "choose_metrics_by_task_type_and_industry",
+     "kind": "skill",
+     "library_tier": "verified",
+     "declared_effects": [],
+     "body_allowed": true,
+     "purpose": "Choose evaluation metrics for a machine learning task by task type, class balance (balanced, imbalanced or skewed classes) and industry: which metrics to use, s"
+    },
+    {
+     "identity": "layer_exception_catalogs_with_precedence",
+     "kind": "skill",
+     "library_tier": "verified",
+     "declared_effects": [
+      "reads_fs"
+     ],
+     "body_allowed": true,
+     "purpose": "Manage exception lists for data cleaning in layers with a fixed precedence: packaged general list, task folder file, casings learned from the column, rule param"
+    },
+    {
+     "identity": "verify_an_export_in_an_isolated_interpreter",
+     "kind": "skill",
+     "library_tier": "verified",
+     "declared_effects": [
+      "reads_fs",
+      "spawns_process"
+     ],
+     "body_allowed": true,
+     "purpose": "Verify that an exported Python package is complete and runs on its own: recompute the manifest digests, refuse undeclared files, then import it and run its test"
+    },
+    {
+     "identity": "measure_the_environment_before_relying_on_it",
+     "kind": "skill",
+     "library_tier": "verified",
+     "declared_effects": [
+      "reads_fs",
+      "network",
+      "spawns_process"
+     ],
+     "body_allowed": true,
+     "purpose": "Measure memory, disk, processors, tools, data size and network access before planning work, mark every capacity as measured or unknown, and prefer processing th"
+    },
+    {
+     "identity": "plan_and_split_work_with_explicit_joins",
+     "kind": "skill",
+     "library_tier": "verified",
+     "declared_effects": [],
+     "body_allowed": true,
+     "purpose": "Split a large task into parts that can be checked alone, each with its own goal, contract and authority, with explicit dependencies and join conditions, and tes"
+    }
+   ]
+  },
+  {
+   "task": "b-dotenv-backslash",
+   "query": "dotenv parser",
+   "http_status": 200,
+   "bodies_loaded": false,
+   "hits": [
+    {
+     "identity": "library.supply.program_installs.d53f462292e6b7358769d225.2be9786be1fbd54c",
+     "kind": "tool",
+     "library_tier": "community",
+     "declared_effects": [
+      "network",
+      "spawns_process",
+      "writes_fs"
+     ],
+     "body_allowed": true,
+     "purpose": "dotenv-linter 4.0.0 (Lightning-fast linter for .env files written in Rust): the install recipe with published checksums for each platform and a typed wrapper th"
+    },
+    {
+     "identity": "import_hook_transcript_parser_ts_b40f5b2f90f1",
+     "kind": "tool",
+     "library_tier": "community",
+     "declared_effects": [
+      "writes_fs",
+      "network",
+      "spawns_process"
+     ],
+     "body_allowed": true,
+     "purpose": "hook transcript-parser.ts"
+    },
+    {
+     "identity": "import_hook_session_parser_ts_0bb34aa652e3",
+     "kind": "tool",
+     "library_tier": "community",
+     "declared_effects": [
+      "writes_fs",
+      "spawns_process"
+     ],
+     "body_allowed": true,
+     "purpose": "hook session-parser.ts"
+    },
+    {
+     "identity": "library.supply.program_installs.9ac56e313523546aa31af68f.f8bfa79d2dfe968f",
+     "kind": "tool",
+     "library_tier": "community",
+     "declared_effects": [
+      "network",
+      "spawns_process",
+      "writes_fs"
+     ],
+     "body_allowed": true,
+     "purpose": "clickhouse-sql-parser 0.5.6 (Writing clickhouse sql parser in pure Go): the install recipe with published checksums for each platform and a typed wrapper that c"
+    },
+    {
+     "identity": "library.supply.mcp_registry.ef8cceada9f8ecdd5b0b957e.634dd17afc8cb765",
+     "kind": "tool",
+     "library_tier": "community",
+     "declared_effects": [
+      "network",
+      "spawns_process"
+     ],
+     "body_allowed": true,
+     "purpose": "Connection settings for the protocol server io.github.MasonChow/source-map-parser-mcp, version 1.3.2. It starts on your machine with npx from the npm package so"
+    }
+   ]
+  },
+  {
+   "task": "b-dotenv-backslash",
+   "query": "escaped backslash in quoted value regex",
+   "http_status": 200,
+   "bodies_loaded": false,
+   "hits": [
+    {
+     "identity": "choose_one_next_action",
+     "kind": "skill",
+     "library_tier": "verified",
+     "declared_effects": [],
+     "body_allowed": true,
+     "purpose": "Choose the following step in multi step work: compare candidate actions by value, cost, risk and information gain, keep a simple baseline, select one bounded ac"
+    },
+    {
+     "identity": "detect_malformed_values_by_dominant_pattern",
+     "kind": "skill",
+     "library_tier": "verified",
+     "declared_effects": [],
+     "body_allowed": true,
+     "purpose": "Find malformed values in a column that should follow one format, such as dates, postal codes or identifiers, by comparing the character pattern of each value wi"
+    },
+    {
+     "identity": "restore_capitalisation_of_names",
+     "kind": "skill",
+     "library_tier": "verified",
+     "declared_effects": [],
+     "body_allowed": true,
+     "purpose": "Fix the capitalisation of person and company names written in all upper case or all lower case: particles such as van and de, Mc and Mac prefixes, acronyms such"
+    },
+    {
+     "identity": "escalate_uncertain_values_with_candidates",
+     "kind": "skill",
+     "library_tier": "verified",
+     "declared_effects": [],
+     "body_allowed": true,
+     "purpose": "Hand an uncertain data value to a language model, to research or to a person as a small typed request: the value, ranked candidates with confidence, reasons, on"
+    },
+    {
+     "identity": "apply_hold_or_escalate_each_correction",
+     "kind": "skill",
+     "library_tier": "verified",
+     "declared_effects": [],
+     "body_allowed": true,
+     "purpose": "Decide automatically which data corrections to apply: give each proposed correction a confidence equal to its weakest signal, apply at or above 0.9, escalate be"
+    }
+   ]
+  },
+  {
+   "task": "b-dotenv-backslash",
+   "query": "debug a regression across two modules",
+   "http_status": 200,
+   "bodies_loaded": false,
+   "hits": [
+    {
+     "identity": "score_duplicate_pairs_by_weakest_signal",
+     "kind": "skill",
+     "library_tier": "verified",
+     "declared_effects": [],
+     "body_allowed": true,
+     "purpose": "Score whether two records are the same entity (fuzzy matching): build comparison keys for name, address, email and phone, measure token overlap and sequence sim"
+    },
+    {
+     "identity": "choose_metrics_by_task_type_and_industry",
+     "kind": "skill",
+     "library_tier": "verified",
+     "declared_effects": [],
+     "body_allowed": true,
+     "purpose": "Choose evaluation metrics for a machine learning task by task type, class balance (balanced, imbalanced or skewed classes) and industry: which metrics to use, s"
+    },
+    {
+     "identity": "propose_a_dedupe_without_deleting_rows",
+     "kind": "skill",
+     "library_tier": "verified",
+     "declared_effects": [],
+     "body_allowed": true,
+     "purpose": "Turn duplicate pairs into clusters and a merge proposal with one survivor for each cluster, keep first or keep most complete, without deleting any row. Possible"
+    },
+    {
+     "identity": "read_the_train_validation_gap",
+     "kind": "skill",
+     "library_tier": "verified",
+     "declared_effects": [],
+     "body_allowed": true,
+     "purpose": "Detect overfitting and leakage from two numbers: read the gap between the training score and the cross-validated score, aware of metric direction and scale, and"
+    },
+    {
+     "identity": "audit_data_splits_for_errors_and_leakage",
+     "kind": "skill",
+     "library_tier": "verified",
+     "declared_effects": [],
+     "body_allowed": true,
+     "purpose": "Audit training, test and cross-validation splits for schema errors, label errors, near duplicates and leakage across splits by identity, by time or by a proxy o"
+    }
+   ]
+  },
+  {
+   "task": "c-spaceship-titanic",
+   "query": "Spaceship Titanic",
+   "http_status": 200,
+   "bodies_loaded": false,
+   "hits": [
+    {
+     "identity": "library.supply.creative_originals.4eb0e5ff79611cb55106e55b.cdd9851775b1aa7e",
+     "kind": "tool",
+     "library_tier": "community",
+     "declared_effects": [
+      "spawns_process",
+      "writes_fs"
+     ],
+     "body_allowed": true,
+     "purpose": "Generate tileable PBR maps of science fiction greeble panelling: recursive rectangle subdivision into panels at different levels, with grille slots, corner bolt"
+    }
+   ]
+  },
+  {
+   "task": "c-spaceship-titanic",
+   "query": "tabular binary classification scikit-learn",
+   "http_status": 200,
+   "bodies_loaded": false,
+   "hits": [
+    {
+     "identity": "choose_metrics_by_task_type_and_industry",
+     "kind": "skill",
+     "library_tier": "verified",
+     "declared_effects": [],
+     "body_allowed": true,
+     "purpose": "Choose evaluation metrics for a machine learning task by task type, class balance (balanced, imbalanced or skewed classes) and industry: which metrics to use, s"
+    },
+    {
+     "identity": "import_rules_pandas_scikit_learn_guide_cursorrules_pr_31796c2b9ee3",
+     "kind": "instruction_file",
+     "library_tier": "community",
+     "declared_effects": [],
+     "body_allowed": true,
+     "purpose": "\"Cursor rules for Pandas development with scikit-learn guide integration.\""
+    },
+    {
+     "identity": "import_rules_pytorch_scikit_learn_cursorrules_prompt__2920c8606a06",
+     "kind": "instruction_file",
+     "library_tier": "community",
+     "declared_effects": [],
+     "body_allowed": true,
+     "purpose": "\"Cursor rules for PyTorch development with scikit-learn integration.\""
+    },
+    {
+     "identity": "import_skill_stable_baselines3_8aee6ad33af9",
+     "kind": "skill",
+     "library_tier": "community",
+     "declared_effects": [
+      "reads_fs",
+      "writes_fs",
+      "network",
+      "spawns_process"
+     ],
+     "body_allowed": true,
+     "purpose": "Production-ready reinforcement learning algorithms (PPO, SAC, DQN, TD3, DDPG, A2C) with scikit-learn-like API. Use for standard RL experiments, quick prototypin"
+    },
+    {
+     "identity": "import_skill_learn_17f72b3080fa",
+     "kind": "skill",
+     "library_tier": "community",
+     "declared_effects": [
+      "writes_fs",
+      "reads_secret",
+      "network",
+      "spawns_process"
+     ],
+     "body_allowed": true,
+     "purpose": "Smart full learn-all dispatcher \u2014 the no-arg /guild:learn entrypoint that replaces the old usage-stop with a genuine smart full-learn. Detects target shape (reg"
+    }
+   ]
+  },
+  {
+   "task": "c-spaceship-titanic",
+   "query": "kaggle getting started competition",
+   "http_status": 200,
+   "bodies_loaded": false,
+   "hits": [
+    {
+     "identity": "import_subagent_tutorial_author_1f9352ee5d4c",
+     "kind": "instruction_file",
+     "library_tier": "community",
+     "declared_effects": [
+      "network"
+     ],
+     "body_allowed": true,
+     "purpose": "Creates tutorials, getting started guides, and learning resources"
+    },
+    {
+     "identity": "import_command_getting_started_79dbf3c93cc1",
+     "kind": "instruction_file",
+     "library_tier": "community",
+     "declared_effects": [
+      "reads_fs"
+     ],
+     "body_allowed": true,
+     "purpose": "Interactive onboarding \u2014 check setup, discover capabilities, and get your first task done"
+    },
+    {
+     "identity": "import_command_getting_started_fb605361104e",
+     "kind": "instruction_file",
+     "library_tier": "community",
+     "declared_effects": [
+      "reads_fs",
+      "reads_secret",
+      "spawns_process"
+     ],
+     "body_allowed": true,
+     "purpose": "First-time setup guide \u2014 verify config, discover commands, and run your first tool"
+    },
+    {
+     "identity": "library.supply.openapi_operations.0638c7eb2cd36b8e0ff09091.8a25efb34fae6d7a",
+     "kind": "tool",
+     "library_tier": "community",
+     "declared_effects": [
+      "network",
+      "reads_secret",
+      "spawns_process"
+     ],
+     "body_allowed": true,
+     "purpose": "Amazon Simple Systems Manager (SSM) API: <p>Get information about an OpsItem by using the ID. You must have permission in Identity and Access Management (IAM) t"
+    },
+    {
+     "identity": "import_subagent_documentation_writer_6e19c8882a25",
+     "kind": "instruction_file",
+     "library_tier": "community",
+     "declared_effects": [],
+     "body_allowed": true,
+     "purpose": "Technical documentation writer for PHP projects. Use PROACTIVELY when generating README, ARCHITECTURE.md, API docs, ADRs, getting started guides, or any technic"
+    }
+   ]
+  }
+ ]
+}

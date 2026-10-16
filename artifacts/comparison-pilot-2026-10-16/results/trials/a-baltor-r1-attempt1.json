@@ -1,0 +1,293 @@
+{
+ "record_type": "comparison_pilot_trial/v1",
+ "trial_id": "a-baltor-r1",
+ "attempt": 1,
+ "attempt_id": "a-baltor-r1-attempt1",
+ "plan_index": 1,
+ "task": "a-cachetools-tlru",
+ "arm": "baltor",
+ "repetition": 1,
+ "meter_step_id": "s1f8982db5b12",
+ "started_at": "2026-10-16T16:22:28+00:00",
+ "model": "gemma4:31b",
+ "request_cap": 20,
+ "wall_clock_budget_seconds": 1800,
+ "setup": {
+  "exit_status": 0,
+  "elapsed_seconds": 2.408,
+  "verified_ok_lines": 12
+ },
+ "harness": {
+  "exit_status": 0,
+  "elapsed_seconds": 52.697,
+  "timed_out": false,
+  "stopped_by_runner": null
+ },
+ "elapsed_total_seconds": 55.367,
+ "finished_at": "2026-10-16T16:23:24+00:00",
+ "model_requests": {
+  "physical": 8,
+  "refused": 0,
+  "refusal_reasons": {},
+  "completed": 8,
+  "outcomes": {
+   "ok": 8
+  },
+  "http_statuses": {
+   "200": 8
+  },
+  "usage_totals": {
+   "prompt_tokens": 237086,
+   "completion_tokens": 4556,
+   "total_tokens": 241642
+  },
+  "requests_missing_usage": 0,
+  "cached_input_tokens": "not reported by the provider",
+  "provider_elapsed_ms": 33733,
+  "requests": [
+   {
+    "sequence": 3,
+    "elapsed_ms": 1617,
+    "prompt_tokens": 9277,
+    "completion_tokens": 184,
+    "finish_reason": "tool_calls",
+    "tool_calls": [
+     "todowrite"
+    ],
+    "outcome": "ok",
+    "messages": 2,
+    "tools_offered": 21
+   },
+   {
+    "sequence": 4,
+    "elapsed_ms": 803,
+    "prompt_tokens": 9703,
+    "completion_tokens": 60,
+    "finish_reason": "tool_calls",
+    "tool_calls": [
+     "read",
+     "read",
+     "read"
+    ],
+    "outcome": "ok",
+    "messages": 4,
+    "tools_offered": 21
+   },
+   {
+    "sequence": 5,
+    "elapsed_ms": 2437,
+    "prompt_tokens": 33984,
+    "completion_tokens": 38,
+    "finish_reason": "tool_calls",
+    "tool_calls": [
+     "bash"
+    ],
+    "outcome": "ok",
+    "messages": 8,
+    "tools_offered": 21
+   },
+   {
+    "sequence": 6,
+    "elapsed_ms": 1650,
+    "prompt_tokens": 34094,
+    "completion_tokens": 188,
+    "finish_reason": "tool_calls",
+    "tool_calls": [
+     "todowrite"
+    ],
+    "outcome": "ok",
+    "messages": 10,
+    "tools_offered": 21
+   },
+   {
+    "sequence": 7,
+    "elapsed_ms": 16020,
+    "prompt_tokens": 34524,
+    "completion_tokens": 3739,
+    "finish_reason": "tool_calls",
+    "tool_calls": [
+     "edit",
+     "edit"
+    ],
+    "outcome": "ok",
+    "messages": 12,
+    "tools_offered": 21
+   },
+   {
+    "sequence": 8,
+    "elapsed_ms": 1143,
+    "prompt_tokens": 38288,
+    "completion_tokens": 31,
+    "finish_reason": "tool_calls",
+    "tool_calls": [
+     "bash"
+    ],
+    "outcome": "ok",
+    "messages": 15,
+    "tools_offered": 21
+   },
+   {
+    "sequence": 9,
+    "elapsed_ms": 1413,
+    "prompt_tokens": 38395,
+    "completion_tokens": 186,
+    "finish_reason": "tool_calls",
+    "tool_calls": [
+     "todowrite"
+    ],
+    "outcome": "ok",
+    "messages": 17,
+    "tools_offered": 21
+   },
+   {
+    "sequence": 10,
+    "elapsed_ms": 8650,
+    "prompt_tokens": 38821,
+    "completion_tokens": 130,
+    "finish_reason": "stop",
+    "tool_calls": [],
+    "outcome": "ok",
+    "messages": 19,
+    "tools_offered": 21
+   }
+  ]
+ },
+ "events": {
+  "steps": 8,
+  "tool_counts": {
+   "todowrite": 3,
+   "read": 3,
+   "bash": 2,
+   "edit": 2
+  },
+  "tool_calls": [
+   {
+    "tool": "todowrite",
+    "status": "completed",
+    "input": "{\"todos\": [{\"content\": \"Explore codebase to understand existing cache implementations (TTLCache, LRUCache)\", \"priority\": \"high\", \"status\": \"in_progress\"}, {\"content\": \"Analyze TLRUCache documentation in docs/index.rst and type stubs in src/cachetools/__init__.pyi\", \"priority\": \"high\", \"status\": \"pending\"}, {\"content\": \"Implement TLRUCache in src/cachetools/__init__.py\", \"priority\": \"high\", \"status\": \"pending\"}, {\"content\": \"Export TLRUCache from src/cachetools/__init__.py and its __all__ list\", \"priority\": \"high\", \"status\": \"pending\"}, {\"content\": \"Verify implementation with `python -m pytest ",
+    "output_chars": 735
+   },
+   {
+    "tool": "read",
+    "status": "completed",
+    "input": "{\"filePath\": \"src/cachetools/__init__.py\"}",
+    "output_chars": 22431
+   },
+   {
+    "tool": "read",
+    "status": "completed",
+    "input": "{\"filePath\": \"src/cachetools/__init__.pyi\"}",
+    "output_chars": 9709
+   },
+   {
+    "tool": "read",
+    "status": "completed",
+    "input": "{\"filePath\": \"docs/index.rst\"}",
+    "output_chars": 35633
+   },
+   {
+    "tool": "bash",
+    "status": "completed",
+    "input": "{\"command\": \"python -m pytest -q tests\", \"description\": \"Run existing tests to ensure base state is correct.\"}",
+    "output_chars": 423
+   },
+   {
+    "tool": "todowrite",
+    "status": "completed",
+    "input": "{\"todos\": [{\"content\": \"Explore codebase to understand existing cache implementations (TTLCache, LRUCache)\", \"priority\": \"high\", \"status\": \"completed\"}, {\"content\": \"Analyze TLRUCache documentation in docs/index.rst and type stubs in src/cachetools/__init__.pyi\", \"priority\": \"high\", \"status\": \"completed\"}, {\"content\": \"Implement TLRUCache in src/cachetools/__init__.py\", \"priority\": \"high\", \"status\": \"in_progress\"}, {\"content\": \"Export TLRUCache from src/cachetools/__init__.py and its __all__ list\", \"priority\": \"high\", \"status\": \"pending\"}, {\"content\": \"Verify implementation with `python -m pyt",
+    "output_chars": 739
+   },
+   {
+    "tool": "edit",
+    "status": "completed",
+    "input": "{\"filePath\": \"src/cachetools/__init__.py\", \"newString\": \"__all__ = (\\n    \\\"Cache\\\",\\n    \\\"FIFOCache\\\",\\n    \\\"LFUCache\\\",\\n    \\\"LRUCache\\\",\\n    \\\"RRCache\\\",\\n    \\\"TLRUCache\\\",\\n    \\\"TTLCache\\\",\\n    \\\"cached\\\",\\n    \\\"cachedmethod\\\",\\n)\", \"oldString\": \"__all__ = (\\n    \\\"Cache\\\",\\n    \\\"FIFOCache\\\",\\n    \\\"LFUCache\\\",\\n    \\\"LRUCache\\\",\\n    \\\"RRCache\\\",\\n    \\\"TTLCache\\\",\\n    \\\"cached\\\",\\n    \\\"cachedmethod\\\",\\n)\"}",
+    "output_chars": 26
+   },
+   {
+    "tool": "edit",
+    "status": "completed",
+    "input": "{\"filePath\": \"src/cachetools/__init__.py\", \"newString\": \"class TTLCache(_TimedCache):\\n    \\\"\\\"\\\"LRU Cache implementation with per-item time-to-live (TTL) value.\\\"\\\"\\\"\\n\\n    class _Link:\\n        __slots__ = (\\\"expires\\\", \\\"key\\\", \\\"next\\\", \\\"prev\\\")\\n\\n        def __init__(self, key=None, expires=None):\\n            self.key = key\\n            self.expires = expires\\n\\n        def __reduce__(self):\\n            return TTLCache._Link, (self.key, self.expires)\\n\\n        def unlink(self):\\n            next = self.next\\n            prev = self.prev\\n            prev.next = next\\n            nex",
+    "output_chars": 26
+   },
+   {
+    "tool": "bash",
+    "status": "completed",
+    "input": "{\"command\": \"python -m pytest -q tests\", \"description\": \"Verify the implementation with existing tests.\"}",
+    "output_chars": 423
+   },
+   {
+    "tool": "todowrite",
+    "status": "completed",
+    "input": "{\"todos\": [{\"content\": \"Explore codebase to understand existing cache implementations (TTLCache, LRUCache)\", \"priority\": \"high\", \"status\": \"completed\"}, {\"content\": \"Analyze TLRUCache documentation in docs/index.rst and type stubs in src/cachetools/__init__.pyi\", \"priority\": \"high\", \"status\": \"completed\"}, {\"content\": \"Implement TLRUCache in src/cachetools/__init__.py\", \"priority\": \"high\", \"status\": \"completed\"}, {\"content\": \"Export TLRUCache from src/cachetools/__init__.py and its __all__ list\", \"priority\": \"high\", \"status\": \"completed\"}, {\"content\": \"Verify implementation with `python -m pyt",
+    "output_chars": 741
+   }
+  ],
+  "final_text": "I have recreated the `TLRUCache` class in `src/cachetools/__init__.py` and exported it in the `__all__` list.\n\n**Changes:**\n- Implemented `TLRUCache` as a subclass of `_TimedCache`, mimicking the structure and logic of `TTLCache` but using a user-provided `ttu` (time-to-use) function to calculate expiration times.\n- Added `TLRUCache` to `__all__` in `src/cachetools/__init__.py`.\n- Verified that existing tests still pass.",
+  "harness_reported_tokens": {
+   "total": 241642,
+   "input": 36926,
+   "output": 4556,
+   "reasoning": 0,
+   "cache_write": 0,
+   "cache_read": 200160
+  }
+ },
+ "baltor": {
+  "searches": [],
+  "reads": [],
+  "manifests": [],
+  "other_mcp_calls": [],
+  "skill_loads": [],
+  "client_commands": [],
+  "installed_skills": [],
+  "abstained_from_baltor": true,
+  "material_overlap_with_work": {
+   "retrieved_bodies": 0,
+   "shared_shingles": 0,
+   "note": "nothing was retrieved"
+  }
+ },
+ "egress": {
+  "allowed": {
+   "baltor.ai": 9
+  },
+  "refused": {
+   "registry.npmjs.org": 2
+  }
+ },
+ "workspace_changes": {
+  "src/cachetools/__init__.py": {
+   "state": "modified",
+   "lines_added": 143,
+   "lines_removed": 0
+  }
+ },
+ "wrong_file_incidents": [],
+ "score": {
+  "passed": false,
+  "suite": {
+   "passed": 350,
+   "failure": 3,
+   "error": 0,
+   "skipped": 0,
+   "total": 353
+  },
+  "hidden_tlru": {
+   "passed": 31,
+   "failure": 3,
+   "error": 0,
+   "skipped": 0,
+   "total": 34
+  },
+  "hidden_tlru_pass_fraction": 0.9118,
+  "exit_status": 1,
+  "failing_tests": [
+   "tests.test_tlru.TLRUCacheTest::test_ttu",
+   "tests.test_tlru.TLRUCacheTest::test_ttu_expired",
+   "tests.test_tlru.TLRUCacheTest::test_ttu_reverse_insert"
+  ]
+ },
+ "provider_failure_seen": false,
+ "accepted": false,
+ "artifact_patch": "results/patches/a-baltor-r1-attempt1.patch"
+}

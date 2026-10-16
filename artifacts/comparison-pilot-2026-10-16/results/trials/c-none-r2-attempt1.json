@@ -1,0 +1,189 @@
+{
+ "record_type": "comparison_pilot_trial/v1",
+ "trial_id": "c-none-r2",
+ "attempt": 1,
+ "attempt_id": "c-none-r2-attempt1",
+ "plan_index": 11,
+ "task": "c-spaceship-titanic",
+ "arm": "none",
+ "repetition": 2,
+ "meter_step_id": "s96c514f364d9",
+ "started_at": "2026-10-16T16:32:21+00:00",
+ "model": "gemma4:31b",
+ "request_cap": 20,
+ "wall_clock_budget_seconds": 1800,
+ "setup": null,
+ "harness": {
+  "exit_status": 0,
+  "elapsed_seconds": 40.359,
+  "timed_out": false,
+  "stopped_by_runner": null
+ },
+ "elapsed_total_seconds": 40.821,
+ "finished_at": "2026-10-16T16:33:02+00:00",
+ "model_requests": {
+  "physical": 5,
+  "refused": 0,
+  "refusal_reasons": {},
+  "completed": 5,
+  "outcomes": {
+   "ok": 5
+  },
+  "http_statuses": {
+   "200": 5
+  },
+  "usage_totals": {
+   "prompt_tokens": 37677,
+   "completion_tokens": 904,
+   "total_tokens": 38581
+  },
+  "requests_missing_usage": 0,
+  "cached_input_tokens": "not reported by the provider",
+  "provider_elapsed_ms": 22365,
+  "requests": [
+   {
+    "sequence": 138,
+    "elapsed_ms": 771,
+    "prompt_tokens": 6743,
+    "completion_tokens": 25,
+    "finish_reason": "tool_calls",
+    "tool_calls": [
+     "bash"
+    ],
+    "outcome": "ok",
+    "messages": 2,
+    "tools_offered": 9
+   },
+   {
+    "sequence": 139,
+    "elapsed_ms": 723,
+    "prompt_tokens": 6782,
+    "completion_tokens": 26,
+    "finish_reason": "tool_calls",
+    "tool_calls": [
+     "read"
+    ],
+    "outcome": "ok",
+    "messages": 4,
+    "tools_offered": 9
+   },
+   {
+    "sequence": 140,
+    "elapsed_ms": 15869,
+    "prompt_tokens": 7512,
+    "completion_tokens": 695,
+    "finish_reason": "tool_calls",
+    "tool_calls": [
+     "write"
+    ],
+    "outcome": "ok",
+    "messages": 6,
+    "tools_offered": 9
+   },
+   {
+    "sequence": 141,
+    "elapsed_ms": 640,
+    "prompt_tokens": 8218,
+    "completion_tokens": 35,
+    "finish_reason": "tool_calls",
+    "tool_calls": [
+     "bash"
+    ],
+    "outcome": "ok",
+    "messages": 8,
+    "tools_offered": 9
+   },
+   {
+    "sequence": 142,
+    "elapsed_ms": 4362,
+    "prompt_tokens": 8422,
+    "completion_tokens": 123,
+    "finish_reason": "stop",
+    "tool_calls": [],
+    "outcome": "ok",
+    "messages": 10,
+    "tools_offered": 9
+   }
+  ]
+ },
+ "events": {
+  "steps": 5,
+  "tool_counts": {
+   "bash": 2,
+   "read": 1,
+   "write": 1
+  },
+  "tool_calls": [
+   {
+    "tool": "bash",
+    "status": "completed",
+    "input": "{\"description\": \"Check available files in data directory\", \"command\": \"ls data\"}",
+    "output_chars": 19
+   },
+   {
+    "tool": "read",
+    "status": "completed",
+    "input": "{\"filePath\": \"data/train.csv\", \"limit\": 10}",
+    "output_chars": 1135
+   },
+   {
+    "tool": "write",
+    "status": "completed",
+    "input": "{\"content\": \"import pandas as pd\\nimport numpy as np\\nfrom sklearn.ensemble import RandomForestClassifier\\nfrom sklearn.model_selection import train_test_split\\nfrom sklearn.preprocessing import LabelEncoder\\nfrom sklearn.metrics import accuracy_score\\n\\ndef preprocess(df):\\n    # Drop Name as it is likely unique and not helpful\\n    df = df.drop(columns=['Name'])\\n    \\n    # Feature Engineering: Cabin\\n    # Cabin is deck/num/side\\n    df[['CabinDeck', 'CabinNum', 'CabinSide']] = df['Cabin'].str.split('/', expand=True)\\n    df = df.drop(columns=['Cabin'])\\n    \\n    # Fill missing values\\n  ",
+    "output_chars": 24
+   },
+   {
+    "tool": "bash",
+    "status": "completed",
+    "input": "{\"command\": \"python3 solution.py\", \"description\": \"Run the solution script to train the model and generate predictions.csv\"}",
+    "output_chars": 585
+   }
+  ],
+  "final_text": "I implemented a Random Forest classifier to predict the `Transported` status. The approach included:\n1.  **Preprocessing**: Dropped `Name`, split `Cabin` into `Deck`, `Num`, and `Side`, and filled missing values using the mode for categorical features and the median for numerical features.\n2.  **Encoding**: Used `LabelEncoder` to convert categorical strings into numeric values.\n3.  **Validation**: Used an 80/20 train-test split to measure performance.\n\n**Validation Accuracy**: 0.8056",
+  "harness_reported_tokens": {
+   "total": 38581,
+   "input": 2061,
+   "output": 904,
+   "reasoning": 0,
+   "cache_write": 0,
+   "cache_read": 35616
+  }
+ },
+ "egress": {
+  "allowed": {},
+  "refused": {
+   "registry.npmjs.org": 1
+  }
+ },
+ "workspace_changes": {
+  "predictions.csv": {
+   "state": "added",
+   "lines_added": 1724,
+   "lines_removed": 0
+  },
+  "solution.py": {
+   "state": "added",
+   "lines_added": 68,
+   "lines_removed": 0
+  }
+ },
+ "wrong_file_incidents": [],
+ "score": {
+  "valid": true,
+  "refusal": null,
+  "accuracy": 0.7992,
+  "rows": 1723,
+  "passed": true,
+  "solution_script_present": true,
+  "rerun": {
+   "exit_status": 0,
+   "valid": true,
+   "refusal": null,
+   "agreement_with_submitted": 1.0,
+   "accuracy": 0.7992
+  }
+ },
+ "provider_failure_seen": false,
+ "accepted": true,
+ "artifact_patch": "results/solutions/c-none-r2-attempt1-solution.py"
+}

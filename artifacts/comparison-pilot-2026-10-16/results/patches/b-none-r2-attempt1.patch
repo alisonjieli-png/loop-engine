@@ -1,0 +1,30 @@
+--- a/tests/test_regression.py
++++ b/tests/test_regression.py
+@@ -0,0 +1,27 @@
++import os
++import subprocess
++from dotenv.main import set_key
++
++def test_set_key_backslash_escaping():
++    env_file = "test_regression.env"
++    try:
++        # Simulation of user report:
++        # dotenv -f .env set WIN_DIR 'C:\Users\me\'
++        set_key(env_file, "WIN_DIR", "C:\\Users\\me\\")
++        # Note: user wrote 'C:\Users\me\', in shell this might be interpreted.
++        # But the report says "new backslash escaping in set_key is broken".
++        
++        # Let's use the CLI as the user did to be precise
++        subprocess.run(["dotenv", "-f", env_file, "set", "WIN_DIR", "C:\\Users\\me\\"], check=True)
++        subprocess.run(["dotenv", "-f", env_file, "set", "NEXT", "ok"], check=True)
++        
++        res1 = subprocess.run(["dotenv", "-f", env_file, "get", "WIN_DIR"], capture_output=True, text=True, check=True)
++        assert res1.stdout.strip() == "C:\\Users\\me\\"
++        
++        res2 = subprocess.run(["dotenv", "-f", env_file, "get", "NEXT"], capture_output=True, text=True, check=True)
++        assert res2.stdout.strip() == "ok"
++    finally:
++        if os.path.exists(env_file):
++            with open(env_file, "r") as f:
++                print(f"Content of {env_file}: {f.read()}")
++            os.remove(env_file)

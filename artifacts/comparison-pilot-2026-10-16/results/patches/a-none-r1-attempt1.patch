@@ -1,0 +1,224 @@
+--- a/src/cachetools/__init__.py
++++ b/src/cachetools/__init__.py
+@@ -6,6 +6,7 @@
+     "LFUCache",
+     "LRUCache",
+     "RRCache",
++    "TLRUCache",
+     "TTLCache",
+     "cached",
+     "cachedmethod",
+@@ -446,8 +447,8 @@
+         raise NotImplementedError
+ 
+ 
+-class TTLCache(_TimedCache):
+-    """LRU Cache implementation with per-item time-to-live (TTL) value."""
++class TLRUCache(_TimedCache):
++    """LRU Cache implementation with per-item time-to-use (TTU) value."""
+ 
+     class _Link:
+         __slots__ = ("expires", "key", "next", "prev")
+@@ -457,7 +458,7 @@
+             self.expires = expires
+ 
+         def __reduce__(self):
+-            return TTLCache._Link, (self.key, self.expires)
++            return TLRUCache._Link, (self.key, self.expires)
+ 
+         def unlink(self):
+             next = self.next
+@@ -465,12 +466,12 @@
+             prev.next = next
+             next.prev = prev
+ 
+-    def __init__(self, maxsize, ttl, timer=time.monotonic, getsizeof=None):
++    def __init__(self, maxsize, ttu, timer=time.monotonic, getsizeof=None):
+         _TimedCache.__init__(self, maxsize, timer, getsizeof)
+-        self.__root = root = TTLCache._Link()
++        self.__root = root = TLRUCache._Link()
+         root.prev = root.next = root
+         self.__links = collections.OrderedDict()
+-        self.__ttl = ttl
++        self.__ttu = ttu
+ 
+     def __contains__(self, key):
+         try:
+@@ -494,13 +495,13 @@
+ 
+     def __setitem__(self, key, value, cache_setitem=Cache.__setitem__):
+         with self.timer as time:
+-            expires = time + self.__ttl
++            expires = self.__ttu(key, value, time)
+             self.expire(time)
+             cache_setitem(self, key, value)
+         try:
+             link = self.__getlink(key)
+         except KeyError:
+-            self.__links[key] = link = TTLCache._Link(key)
++            self.__links[key] = link = TLRUCache._Link(key)
+         else:
+             link.unlink()
+         link.expires = expires
+@@ -536,9 +537,9 @@
+         self.expire(self.timer())
+ 
+     @property
+-    def ttl(self):
+-        """The time-to-live value of the cache's items."""
+-        return self.__ttl
++    def ttu(self):
++        """The time-to-use function of the cache's items."""
++        return self.__ttu
+ 
+     def expire(self, time=None):
+         """Remove expired items from the cache and return an iterable of the
+@@ -588,6 +589,148 @@
+         return value
+ 
+ 
++class TTLCache(_TimedCache):
++    """LRU Cache implementation with per-item time-to-live (TTL) value."""
++
++    class _Link:
++        __slots__ = ("expires", "key", "next", "prev")
++
++        def __init__(self, key=None, expires=None):
++            self.key = key
++            self.expires = expires
++
++        def __reduce__(self):
++            return TTLCache._Link, (self.key, self.expires)
++
++        def unlink(self):
++            next = self.next
++            prev = self.prev
++            prev.next = next
++            next.prev = prev
++
++    def __init__(self, maxsize, ttl, timer=time.monotonic, getsizeof=None):
++        _TimedCache.__init__(self, maxsize, timer, getsizeof)
++        self.__root = root = TTLCache._Link()
++        root.prev = root.next = root
++        self.__links = collections.OrderedDict()
++        self.__ttl = ttl
++
++    def __contains__(self, key):
++        try:
++            link = self.__links[key]  # no reordering
++        except KeyError:
++            return False
++        else:
++            return self.timer() < link.expires
++
++    def __getitem__(self, key, cache_getitem=Cache.__getitem__):
++        try:
++            link = self.__getlink(key)
++        except KeyError:
++            expired = False
++        else:
++            expired = not (self.timer() < link.expires)
++        if expired:
++            return self.__missing__(key)
++        else:
++            return cache_getitem(self, key)
++
++    def __setitem__(self, key, value, cache_setitem=Cache.__setitem__):
++        with self.timer as time:
++            expires = time + self.__ttl
++            self.expire(time)
++            cache_setitem(self, key, value)
++        try:
++            link = self.__getlink(key)
++        except KeyError:
++            self.__links[key] = link = TTLCache._Link(key)
++        else:
++            link.unlink()
++        link.expires = expires
++        link.next = root = self.__root
++        link.prev = prev = root.prev
++        prev.next = root.prev = link
++
++    def __delitem__(self, key, cache_delitem=Cache.__delitem__):
++        cache_delitem(self, key)
++        link = self.__links.pop(key)
++        link.unlink()
++        if not (self.timer() < link.expires):
++            raise KeyError(key)
++
++    def __iter__(self):
++        root = self.__root
++        curr = root.next
++        while curr is not root:
++            # "freeze" time for iterator access
++            with self.timer as time:
++                if time < curr.expires:
++                    yield curr.key
++            curr = curr.next
++
++    def __setstate__(self, state):
++        self.__dict__.update(state)
++        root = self.__root
++        root.prev = root.next = root
++        for link in sorted(self.__links.values(), key=lambda obj: obj.expires):
++            link.next = root
++            link.prev = prev = root.prev
++            prev.next = root.prev = link
++        self.expire(self.timer())
++
++    @property
++    def ttl(self):
++        """The time-to-live value of the cache's items."""
++        return self.__ttl
++
++    def expire(self, time=None):
++        """Remove expired items from the cache and return an iterable of the
++        expired `(key, value)` pairs.
++
++        """
++        if time is None:
++            time = self.timer()
++        root = self.__root
++        curr = root.next
++        links = self.__links
++        expired = []
++        cache_delitem = Cache.__delitem__
++        cache_getitem = Cache.__getitem__
++        while curr is not root and not (time < curr.expires):
++            expired.append((curr.key, cache_getitem(self, curr.key)))
++            cache_delitem(self, curr.key)
++            del links[curr.key]
++            next = curr.next
++            curr.unlink()
++            curr = next
++        return expired
++
++    def popitem(self):
++        """Remove and return the `(key, value)` pair least recently used that
++        has not already expired.
++
++        """
++        with self.timer as time:
++            self.expire(time)
++            try:
++                key = next(iter(self.__links))
++            except StopIteration:
++                raise KeyError("%s is empty" % type(self).__name__) from None
++            else:
++                return (key, self.pop(key))
++
++    def clear(self):
++        _TimedCache.clear(self)
++        root = self.__root
++        root.prev = root.next = root
++        self.__links.clear()
++
++    def __getlink(self, key):
++        value = self.__links[key]
++        self.__links.move_to_end(key)
++        return value
++
++
+ # note that the runtime __name__ is "CacheInfo", as in stdlib:
+ # https://github.com/python/cpython/blob/3.14/Lib/functools.py#L520
+ _CacheInfo = collections.namedtuple(

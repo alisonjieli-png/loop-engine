@@ -1,0 +1,32 @@
+--- a/.env
++++ b/.env
+@@ -0,0 +1,2 @@
++WIN_DIR='C:\\Users\\me\\'
++NEXT='ok'
+--- a/reproduce_issue.py
++++ b/reproduce_issue.py
+@@ -0,0 +1,24 @@
++from dotenv.main import set_key, get_key
++import os
++
++def test_repro():
++    dotenv_path = '.env'
++    with open(dotenv_path, 'w') as f: f.write('')
++    val = 'C:\Users\me\'
++    set_key(dotenv_path, 'WIN_DIR', val)
++    set_key(dotenv_path, 'NEXT', 'ok')
++    win_dir = get_key(dotenv_path, 'WIN_DIR')
++    next_val = get_key(dotenv_path, 'NEXT')
++    print(f'WIN_DIR: {win_dir}')
++    print(f'NEXT: {next_val}')
++    assert win_dir == val
++    assert next_val == 'ok'
++
++if __name__ == '__main__':
++    try:
++        test_repro()
++        print('Success')
++    except AssertionError:
++        print('Assertion failed')
++    except Exception as e:
++        print(f'An error occurred: {e}')

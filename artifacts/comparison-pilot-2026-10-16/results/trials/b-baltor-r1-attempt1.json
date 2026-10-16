@@ -1,0 +1,563 @@
+{
+ "record_type": "comparison_pilot_trial/v1",
+ "trial_id": "b-baltor-r1",
+ "attempt": 1,
+ "attempt_id": "b-baltor-r1-attempt1",
+ "plan_index": 4,
+ "task": "b-dotenv-backslash",
+ "arm": "baltor",
+ "repetition": 1,
+ "meter_step_id": "s122d1c30c22f",
+ "started_at": "2026-10-16T16:25:45+00:00",
+ "model": "gemma4:31b",
+ "request_cap": 20,
+ "wall_clock_budget_seconds": 1800,
+ "setup": {
+  "exit_status": 0,
+  "elapsed_seconds": 2.271,
+  "verified_ok_lines": 12
+ },
+ "harness": {
+  "exit_status": -15,
+  "elapsed_seconds": 73.082,
+  "timed_out": false,
+  "stopped_by_runner": "request_cap_reached"
+ },
+ "elapsed_total_seconds": 75.612,
+ "finished_at": "2026-10-16T16:27:00+00:00",
+ "model_requests": {
+  "physical": 20,
+  "refused": 1,
+  "refusal_reasons": {
+   "step_cap_reached": 1
+  },
+  "completed": 20,
+  "outcomes": {
+   "ok": 20
+  },
+  "http_statuses": {
+   "200": 20
+  },
+  "usage_totals": {
+   "prompt_tokens": 366809,
+   "completion_tokens": 4389,
+   "total_tokens": 371198
+  },
+  "requests_missing_usage": 0,
+  "cached_input_tokens": "not reported by the provider",
+  "provider_elapsed_ms": 43559,
+  "requests": [
+   {
+    "sequence": 39,
+    "elapsed_ms": 1040,
+    "prompt_tokens": 9347,
+    "completion_tokens": 31,
+    "finish_reason": "tool_calls",
+    "tool_calls": [
+     "bash"
+    ],
+    "outcome": "ok",
+    "messages": 2,
+    "tools_offered": 21
+   },
+   {
+    "sequence": 40,
+    "elapsed_ms": 909,
+    "prompt_tokens": 9986,
+    "completion_tokens": 20,
+    "finish_reason": "tool_calls",
+    "tool_calls": [
+     "grep"
+    ],
+    "outcome": "ok",
+    "messages": 4,
+    "tools_offered": 21
+   },
+   {
+    "sequence": 41,
+    "elapsed_ms": 819,
+    "prompt_tokens": 10046,
+    "completion_tokens": 36,
+    "finish_reason": "tool_calls",
+    "tool_calls": [
+     "read"
+    ],
+    "outcome": "ok",
+    "messages": 6,
+    "tools_offered": 21
+   },
+   {
+    "sequence": 42,
+    "elapsed_ms": 1964,
+    "prompt_tokens": 14156,
+    "completion_tokens": 357,
+    "finish_reason": "tool_calls",
+    "tool_calls": [
+     "bash"
+    ],
+    "outcome": "ok",
+    "messages": 8,
+    "tools_offered": 21
+   },
+   {
+    "sequence": 43,
+    "elapsed_ms": 1982,
+    "prompt_tokens": 14600,
+    "completion_tokens": 377,
+    "finish_reason": "tool_calls",
+    "tool_calls": [
+     "bash"
+    ],
+    "outcome": "ok",
+    "messages": 10,
+    "tools_offered": 21
+   },
+   {
+    "sequence": 44,
+    "elapsed_ms": 2371,
+    "prompt_tokens": 15046,
+    "completion_tokens": 495,
+    "finish_reason": "tool_calls",
+    "tool_calls": [
+     "bash"
+    ],
+    "outcome": "ok",
+    "messages": 12,
+    "tools_offered": 21
+   },
+   {
+    "sequence": 45,
+    "elapsed_ms": 1947,
+    "prompt_tokens": 15621,
+    "completion_tokens": 392,
+    "finish_reason": "tool_calls",
+    "tool_calls": [
+     "bash"
+    ],
+    "outcome": "ok",
+    "messages": 14,
+    "tools_offered": 21
+   },
+   {
+    "sequence": 46,
+    "elapsed_ms": 1647,
+    "prompt_tokens": 16086,
+    "completion_tokens": 370,
+    "finish_reason": "tool_calls",
+    "tool_calls": [
+     "bash"
+    ],
+    "outcome": "ok",
+    "messages": 16,
+    "tools_offered": 21
+   },
+   {
+    "sequence": 47,
+    "elapsed_ms": 2296,
+    "prompt_tokens": 16532,
+    "completion_tokens": 394,
+    "finish_reason": "tool_calls",
+    "tool_calls": [
+     "bash"
+    ],
+    "outcome": "ok",
+    "messages": 18,
+    "tools_offered": 21
+   },
+   {
+    "sequence": 48,
+    "elapsed_ms": 935,
+    "prompt_tokens": 17022,
+    "completion_tokens": 52,
+    "finish_reason": "tool_calls",
+    "tool_calls": [
+     "bash"
+    ],
+    "outcome": "ok",
+    "messages": 20,
+    "tools_offered": 21
+   },
+   {
+    "sequence": 49,
+    "elapsed_ms": 2016,
+    "prompt_tokens": 17423,
+    "completion_tokens": 386,
+    "finish_reason": "tool_calls",
+    "tool_calls": [
+     "bash"
+    ],
+    "outcome": "ok",
+    "messages": 22,
+    "tools_offered": 21
+   },
+   {
+    "sequence": 50,
+    "elapsed_ms": 2624,
+    "prompt_tokens": 17969,
+    "completion_tokens": 32,
+    "finish_reason": "tool_calls",
+    "tool_calls": [
+     "read"
+    ],
+    "outcome": "ok",
+    "messages": 24,
+    "tools_offered": 21
+   },
+   {
+    "sequence": 51,
+    "elapsed_ms": 11357,
+    "prompt_tokens": 21806,
+    "completion_tokens": 302,
+    "finish_reason": "tool_calls",
+    "tool_calls": [
+     "bash"
+    ],
+    "outcome": "ok",
+    "messages": 26,
+    "tools_offered": 21
+   },
+   {
+    "sequence": 52,
+    "elapsed_ms": 2216,
+    "prompt_tokens": 22329,
+    "completion_tokens": 294,
+    "finish_reason": "tool_calls",
+    "tool_calls": [
+     "bash"
+    ],
+    "outcome": "ok",
+    "messages": 28,
+    "tools_offered": 21
+   },
+   {
+    "sequence": 53,
+    "elapsed_ms": 915,
+    "prompt_tokens": 22848,
+    "completion_tokens": 39,
+    "finish_reason": "tool_calls",
+    "tool_calls": [
+     "bash"
+    ],
+    "outcome": "ok",
+    "messages": 30,
+    "tools_offered": 21
+   },
+   {
+    "sequence": 54,
+    "elapsed_ms": 1990,
+    "prompt_tokens": 23128,
+    "completion_tokens": 287,
+    "finish_reason": "tool_calls",
+    "tool_calls": [
+     "bash"
+    ],
+    "outcome": "ok",
+    "messages": 32,
+    "tools_offered": 21
+   },
+   {
+    "sequence": 55,
+    "elapsed_ms": 1545,
+    "prompt_tokens": 23688,
+    "completion_tokens": 135,
+    "finish_reason": "tool_calls",
+    "tool_calls": [
+     "bash"
+    ],
+    "outcome": "ok",
+    "messages": 34,
+    "tools_offered": 21
+   },
+   {
+    "sequence": 56,
+    "elapsed_ms": 929,
+    "prompt_tokens": 23844,
+    "completion_tokens": 32,
+    "finish_reason": "tool_calls",
+    "tool_calls": [
+     "read"
+    ],
+    "outcome": "ok",
+    "messages": 36,
+    "tools_offered": 21
+   },
+   {
+    "sequence": 57,
+    "elapsed_ms": 1909,
+    "prompt_tokens": 27572,
+    "completion_tokens": 130,
+    "finish_reason": "tool_calls",
+    "tool_calls": [
+     "bash"
+    ],
+    "outcome": "ok",
+    "messages": 38,
+    "tools_offered": 21
+   },
+   {
+    "sequence": 58,
+    "elapsed_ms": 2148,
+    "prompt_tokens": 27760,
+    "completion_tokens": 228,
+    "finish_reason": "tool_calls",
+    "tool_calls": [
+     "bash"
+    ],
+    "outcome": "ok",
+    "messages": 40,
+    "tools_offered": 21
+   }
+  ]
+ },
+ "events": {
+  "steps": 20,
+  "tool_counts": {
+   "bash": 16,
+   "grep": 1,
+   "read": 3
+  },
+  "tool_calls": [
+   {
+    "tool": "bash",
+    "status": "completed",
+    "input": "{\"command\": \"ls -R\", \"description\": \"List all files in the project to understand the structure.\"}",
+    "output_chars": 1304
+   },
+   {
+    "tool": "grep",
+    "status": "completed",
+    "input": "{\"pattern\": \"def set_key\"}",
+    "output_chars": 79
+   },
+   {
+    "tool": "read",
+    "status": "completed",
+    "input": "{\"filePath\": \"/home/dev/project/src/dotenv/main.py\", \"offset\": 190}",
+    "output_chars": 11359
+   },
+   {
+    "tool": "bash",
+    "status": "completed",
+    "input": "{\"command\": \"# Create a reproduction script\\ncat <<EOF > reproduce_issue.py\\nimport os\\nimport subprocess\\n\\ndef run_command(cmd):\\n    print(f\\\"Running: {' '.join(cmd)}\\\")\\n    result = subprocess.run(cmd, capture_output=True, text=True)\\n    print(f\\\"Stdout: {result.stdout}\\\")\\n    print(f\\\"Stderr: {result.stderr}\\\")\\n    return result\\n\\nenv_file = \\\".env_repro\\\"\\nif os.path.exists(env_file):\\n    os.remove(env_file)\\n\\n# 1. dotenv -f .env set WIN_DIR 'C:\\\\Users\\\\me\\\\'\\nrun_command([\\\"dotenv\\\", \\\"-f\\\", env_file, \\\"set\\\", \\\"WIN_DIR\\\", r\\\"C:\\\\Users\\\\me\\\\\\\"])\\n\\n# 2. dotenv -f .env set NEXT ok",
+    "output_chars": 296
+   },
+   {
+    "tool": "bash",
+    "status": "completed",
+    "input": "{\"command\": \"# Corrected reproduction script\\ncat <<EOF > reproduce_issue.py\\nimport os\\nimport subprocess\\n\\ndef run_command(cmd):\\n    print(f\\\"Running: {' '.join(cmd)}\\\")\\n    result = subprocess.run(cmd, capture_output=True, text=True)\\n    print(f\\\"Stdout: {result.stdout}\\\")\\n    print(f\\\"Stderr: {result.stderr}\\\")\\n    return result\\n\\nenv_file = \\\".env_repro\\\"\\nif os.path.exists(env_file):\\n    os.remove(env_file)\\n\\n# 1. dotenv -f .env set WIN_DIR 'C:\\\\Users\\\\me\\\\'\\n# Using a string that avoids the trailing backslash issue in Python\\nwin_dir_val = \\\"C:\\\\\\\\Users\\\\\\\\me\\\\\\\\\\\"\\nrun_command",
+    "output_chars": 207
+   },
+   {
+    "tool": "bash",
+    "status": "completed",
+    "input": "{\"command\": \"# Corrected reproduction script again\\ncat <<EOF > reproduce_issue.py\\nimport os\\nimport subprocess\\n\\ndef run_command(cmd):\\n    print(f\\\"Running: {' '.join(cmd)}\\\")\\n    result = subprocess.run(cmd, capture_output=True, text=True)\\n    print(f\\\"Stdout: {result.stdout}\\\")\\n    print(f\\\"Stderr: {result.stderr}\\\")\\n    return result\\n\\nenv_file = \\\".env_repro\\\"\\nif os.path.exists(env_file):\\n    os.remove(env_file)\\n\\n# 1. dotenv -f .env set WIN_DIR 'C:\\\\Users\\\\me\\\\'\\nwin_dir_val = \\\"C:\\\\\\\\\\\\\\\\Users\\\\\\\\\\\\\\\\me\\\\\\\\\\\\\\\\\\\"\\n# Wait, I need the literal value 'C:\\\\Users\\\\me\\\\' to be passe",
+    "output_chars": 254
+   },
+   {
+    "tool": "bash",
+    "status": "completed",
+    "input": "{\"command\": \"# Corrected reproduction script yet again\\ncat <<EOF > reproduce_issue.py\\nimport os\\nimport subprocess\\n\\ndef run_command(cmd):\\n    print(f\\\"Running: {' '.join(cmd)}\\\")\\n    result = subprocess.run(cmd, capture_output=True, text=True)\\n    print(f\\\"Stdout: {result.stdout}\\\")\\n    print(f\\\"Stderr: {result.stderr}\\\")\\n    return result\\n\\nenv_file = \\\".env_repro\\\"\\nif os.path.exists(env_file):\\n    os.remove(env_file)\\n\\n# 1. dotenv -f .env set WIN_DIR 'C:\\\\Users\\\\me\\\\'\\n# We want the value passed to the process to be C:\\\\Users\\\\me\\\\\\n# In Python string: \\\"C:\\\\\\\\Users\\\\\\\\me\\\\\\\\\\\"\\",
+    "output_chars": 207
+   },
+   {
+    "tool": "bash",
+    "status": "completed",
+    "input": "{\"command\": \"# Corrected reproduction script using a different way to define the backslash\\ncat <<EOF > reproduce_issue.py\\nimport os\\nimport subprocess\\n\\ndef run_command(cmd):\\n    print(f\\\"Running: {' '.join(cmd)}\\\")\\n    result = subprocess.run(cmd, capture_output=True, text=True)\\n    print(f\\\"Stdout: {result.stdout}\\\")\\n    print(f\\\"Stderr: {result.stderr}\\\")\\n    return result\\n\\nenv_file = \\\".env_repro\\\"\\nif os.path.exists(env_file):\\n    os.remove(env_file)\\n\\n# 1. dotenv -f .env set WIN_DIR 'C:\\\\Users\\\\me\\\\'\\nwin_dir_val = \\\"C:\\\\\\\\Users\\\\\\\\me\\\" + \\\"\\\\\\\\\\\"\\n\\nrun_command([\\\"dotenv\\\", ",
+    "output_chars": 228
+   },
+   {
+    "tool": "bash",
+    "status": "completed",
+    "input": "{\"command\": \"# Using chr(92) for backslash\\ncat <<EOF > reproduce_issue.py\\nimport os\\nimport subprocess\\n\\ndef run_command(cmd):\\n    print(f\\\"Running: {' '.join(cmd)}\\\")\\n    result = subprocess.run(cmd, capture_output=True, text=True)\\n    print(f\\\"Stdout: {result.stdout}\\\")\\n    print(f\\\"Stderr: {result.stderr}\\\")\\n    return result\\n\\nenv_file = \\\".env_repro\\\"\\nif os.path.exists(env_file):\\n    os.remove(env_file)\\n\\n# 1. dotenv -f .env set WIN_DIR 'C:\\\\Users\\\\me\\\\'\\n# C:\\\\Users\\\\me\\\\\\nwin_dir_val = \\\"C:\\\" + chr(92) + \\\"Users\\\" + chr(92) + \\\"me\\\" + chr(92)\\n\\nrun_command([\\\"dotenv\\\", \\\"-f",
+    "output_chars": 296
+   },
+   {
+    "tool": "bash",
+    "status": "completed",
+    "input": "{\"command\": \"# I think I had a typo in the previous one. Let me check the script content.\\ncat reproduce_issue.py\\n\", \"description\": \"Check the content of the reproduction script.\"}",
+    "output_chars": 883
+   },
+   {
+    "tool": "bash",
+    "status": "completed",
+    "input": "{\"command\": \"# Correct the typo in reproduce_issue.py\\ncat <<EOF > reproduce_issue.py\\nimport os\\nimport subprocess\\n\\ndef run_command(cmd):\\n    print(f\\\"Running: {' '.join(cmd)}\\\")\\n    result = subprocess.run(cmd, capture_output=True, text=True)\\n    print(f\\\"Stdout: {result.stdout}\\\")\\n    print(f\\\"Stderr: {result.stderr}\\\")\\n    return result\\n\\nenv_file = \\\".env_repro\\\"\\nif os.path.exists(env_file):\\n    os.remove(env_file)\\n\\n# 1. dotenv -f .env set WIN_DIR 'C:\\\\Users\\\\me\\\\'\\nwin_dir_val = \\\"C:\\\" + chr(92) + \\\"Users\\\" + chr(92) + \\\"me\\\" + chr(92)\\n\\nrun_command([\\\"dotenv\\\", \\\"-f\\\", env_",
+    "output_chars": 455
+   },
+   {
+    "tool": "read",
+    "status": "completed",
+    "input": "{\"filePath\": \"/home/dev/project/src/dotenv/main.py\", \"offset\": 210}",
+    "output_chars": 10632
+   },
+   {
+    "tool": "bash",
+    "status": "completed",
+    "input": "{\"command\": \"cat <<EOF > tests/test_regression_set_key.py\\nimport os\\nfrom dotenv.main import set_key, dotenv_values\\n\\ndef test_set_key_with_trailing_backslash():\\n    env_file = \\\"test_regression.env\\\"\\n    try:\\n        # 1. Set a key with a trailing backslash\\n        # Value: C:\\\\Users\\\\me\\\\\\n        win_dir_val = \\\"C:\\\\\\\\Users\\\\\\\\me\\\\\\\\\\\"\\n        set_key(env_file, \\\"WIN_DIR\\\", win_dir_val)\\n        \\n        # 2. Set another key\\n        set_key(env_file, \\\"NEXT\\\", \\\"ok\\\")\\n        \\n        # 3. Verify values\\n        values = dotenv_values(env_file)\\n        assert values[\\\"WIN_DIR\\\"]",
+    "output_chars": 855
+   },
+   {
+    "tool": "bash",
+    "status": "completed",
+    "input": "{\"command\": \"cat <<EOF > tests/test_regression_set_key.py\\nimport os\\nfrom dotenv.main import set_key, dotenv_values\\n\\ndef test_set_key_with_trailing_backslash():\\n    env_file = \\\"test_regression.env\\\"\\n    try:\\n        # 1. Set a key with a trailing backslash\\n        # Value: C:\\\\Users\\\\me\\\\\\n        win_dir_val = \\\"C:\\\\\\\\Users\\\\\\\\me\\\\\\\\\\\"\\n        set_key(env_file, \\\"WIN_DIR\\\", win_dir_val)\\n        \\n        # 2. Set another key\\n        set_key(env_file, \\\"NEXT\\\", \\\"ok\\\")\\n        \\n        # 3. Verify values\\n        values = dotenv_values(env_file)\\n        assert values[\\\"WIN_DIR\\\"]",
+    "output_chars": 855
+   },
+   {
+    "tool": "bash",
+    "status": "completed",
+    "input": "{\"command\": \"cat tests/test_regression_set_key.py\\n\", \"description\": \"Check the content of the regression test file.\"}",
+    "output_chars": 706
+   },
+   {
+    "tool": "bash",
+    "status": "completed",
+    "input": "{\"command\": \"# It seems the shell is messing up the cat <<EOF if I have backslashes.\\n# I will use a different way to write the file.\\npython3 -c '\\nwith open(\\\"tests/test_regression_set_key.py\\\", \\\"w\\\") as f:\\n    f.write(r\\\"\\\"\\\"import os\\nfrom dotenv.main import set_key, dotenv_values\\n\\ndef test_set_key_with_trailing_backslash():\\n    env_file = \\\"test_regression.env\\\"\\n    try:\\n        win_dir_val = \\\"C:\\\\\\\\Users\\\\\\\\me\\\\\\\\\\\"\\n        set_key(env_file, \\\"WIN_DIR\\\", win_dir_val)\\n        set_key(env_file, \\\"NEXT\\\", \\\"ok\\\")\\n        values = dotenv_values(env_file)\\n        assert values[\\\"W",
+    "output_chars": 1049
+   },
+   {
+    "tool": "bash",
+    "status": "completed",
+    "input": "{\"command\": \"# Let's see what's in the env file after set_key\\npython3 -c '\\nfrom dotenv.main import set_key\\nenv_file = \\\"test_regression.env\\\"\\nwin_dir_val = \\\"C:\\\\\\\\Users\\\\\\\\me\\\\\\\\\\\"\\nset_key(env_file, \\\"WIN_DIR\\\", win_dir_val)\\nwith open(env_file, \\\"r\\\") as f:\\n    print(f.read())\\n'\\n\", \"description\": \"Inspect the .env file after calling set_key with a trailing backslash.\"}",
+    "output_chars": 27
+   },
+   {
+    "tool": "read",
+    "status": "completed",
+    "input": "{\"filePath\": \"/home/dev/project/src/dotenv/main.py\", \"offset\": 218}",
+    "output_chars": 10360
+   },
+   {
+    "tool": "bash",
+    "status": "completed",
+    "input": "{\"command\": \"# Let's test a value without trailing backslash\\npython3 -c '\\nfrom dotenv.main import set_key, dotenv_values\\nenv_file = \\\"test_no_trailing.env\\\"\\nval = \\\"C:\\\\\\\\Users\\\\\\\\me\\\"\\nset_key(env_file, \\\"WIN_DIR\\\", val)\\nprint(f\\\"Value: {dotenv_values(env_file).get(\\\\\\\"WIN_DIR\\\\\\\")}\\\")\\n'\\n\", \"description\": \"Test set_key with a value that does not have a trailing backslash.\"}",
+    "output_chars": 209
+   },
+   {
+    "tool": "bash",
+    "status": "completed",
+    "input": "{\"command\": \"# Fix the print statement\\npython3 -c '\\nfrom dotenv.main import set_key, dotenv_values\\nenv_file = \\\"test_no_trailing.env\\\"\\nval = \\\"C:\\\\\\\\Users\\\\\\\\me\\\"\\nset_key(env_file, \\\"WIN_DIR\\\", val)\\nprint(f\\\"Value: {dotenv_values(env_file).get(\\\\\\\"WIN_DIR\\\\\\\")}\\\")\\n' | sed 's/\\\\\\\\\\\"WIN_DIR\\\\\\\\\\\"/\\\"WIN_DIR\\\"/g'\\n# Actually just use a simpler print.\\npython3 -c '\\nfrom dotenv.main import set_key, dotenv_values\\nenv_file = \\\"test_no_trailing.env\\\"\\nval = \\\"C:\\\\\\\\Users\\\\\\\\me\\\"\\nset_key(env_file, \\\"WIN_DIR\\\", val)\\nprint(dotenv_values(env_file).get(\\\"WIN_DIR\\\"))\\n'\\n\", \"description\": \"Test se",
+    "output_chars": 221
+   }
+  ],
+  "final_text": "",
+  "harness_reported_tokens": {
+   "total": 371198,
+   "input": 23161,
+   "output": 4389,
+   "reasoning": 0,
+   "cache_write": 0,
+   "cache_read": 343648
+  }
+ },
+ "baltor": {
+  "searches": [],
+  "reads": [],
+  "manifests": [],
+  "other_mcp_calls": [],
+  "skill_loads": [],
+  "client_commands": [],
+  "installed_skills": [],
+  "abstained_from_baltor": true,
+  "material_overlap_with_work": {
+   "retrieved_bodies": 0,
+   "shared_shingles": 0,
+   "note": "nothing was retrieved"
+  }
+ },
+ "egress": {
+  "allowed": {
+   "baltor.ai": 9
+  },
+  "refused": {
+   "registry.npmjs.org": 2
+  }
+ },
+ "workspace_changes": {
+  ".env_repro": {
+   "state": "added",
+   "lines_added": 2,
+   "lines_removed": 0
+  },
+  "reproduce_issue.py": {
+   "state": "added",
+   "lines_added": 31,
+   "lines_removed": 0
+  },
+  "test_no_trailing.env": {
+   "state": "added",
+   "lines_added": 1,
+   "lines_removed": 0
+  },
+  "test_regression.env": {
+   "state": "added",
+   "lines_added": 1,
+   "lines_removed": 0
+  },
+  "tests/test_regression_set_key.py": {
+   "state": "added",
+   "lines_added": 15,
+   "lines_removed": 0
+  }
+ },
+ "wrong_file_incidents": [],
+ "score": {
+  "hidden_suite": {
+   "passed": 253,
+   "failure": 4,
+   "error": 0,
+   "skipped": 1,
+   "total": 258
+  },
+  "hidden_parser_tests": {
+   "passed": 54,
+   "failure": 2,
+   "error": 0,
+   "skipped": 0,
+   "total": 56
+  },
+  "hidden_suite_failing": [
+   "tests.test_main::test_set_key_round_trips[C:\\\\Users\\\\]",
+   "tests.test_main::test_set_key_round_trips[back\\\\]",
+   "tests.test_parser::test_parse_stream[a='b\\\\\\\\'\\nc='d'-expected35]",
+   "tests.test_parser::test_parse_stream[a=\"b\\\\\\\\\"\\nc=\"d\"-expected36]"
+  ],
+  "hidden_suite_ok": false,
+  "source_changes": {},
+  "source_changed_lines": 0,
+  "scope_ok": false,
+  "test_changes": {
+   "tests/test_regression_set_key.py": {
+    "state": "added",
+    "lines_added": 15,
+    "lines_removed": 0
+   }
+  },
+  "regression_files": [
+   "tests/test_regression_set_key.py"
+  ],
+  "regression": {
+   "before_fix": {
+    "passed": 0,
+    "failure": 1,
+    "error": 0,
+    "skipped": 0,
+    "total": 1
+   },
+   "after_fix": {
+    "passed": 0,
+    "failure": 1,
+    "error": 0,
+    "skipped": 0,
+    "total": 1
+   }
+  },
+  "regression_ok": false,
+  "root_cause_file_present": false,
+  "root_cause_names_parser": false,
+  "root_cause_names_pattern": false,
+  "explanation_ok": false,
+  "passed": false
+ },
+ "provider_failure_seen": false,
+ "accepted": false,
+ "artifact_patch": "results/patches/b-baltor-r1-attempt1.patch"
+}

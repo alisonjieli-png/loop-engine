@@ -1,0 +1,776 @@
+{
+ "record_type": "comparison_pilot_summary/v1",
+ "attempts": [
+  {
+   "attempt_id": "a-baltor-r1-attempt1",
+   "plan_index": 1,
+   "task": "a-cachetools-tlru",
+   "arm": "baltor",
+   "repetition": 1,
+   "accepted": false,
+   "secondary": {
+    "name": "TLRUCache tests passed of 34",
+    "value": 31
+   },
+   "physical_requests": 8,
+   "refused_requests": 0,
+   "prompt_tokens": 237086,
+   "completion_tokens": 4556,
+   "requests_missing_usage": 0,
+   "cached_prompt_tokens": 200160,
+   "requests_missing_cached_count": 0,
+   "mean_prompt_tokens_per_request": 29636,
+   "elapsed_seconds": 55.367,
+   "setup_seconds": 2.408,
+   "provider_seconds": 33.7,
+   "stopped_by_runner": null,
+   "exit_status": 0,
+   "tool_counts": {
+    "todowrite": 3,
+    "read": 3,
+    "bash": 2,
+    "edit": 2
+   },
+   "tool_calls": 10,
+   "baltor_searches": 0,
+   "baltor_reads": 0,
+   "baltor_skill_loads": 0,
+   "baltor_client_commands": 0,
+   "baltor_abstained": true,
+   "wrong_file_incidents": 0,
+   "changed_files": [
+    "src/cachetools/__init__.py"
+   ],
+   "provider_failure_seen": false,
+   "outcomes": {
+    "ok": 8
+   }
+  },
+  {
+   "attempt_id": "a-none-r1-attempt1",
+   "plan_index": 2,
+   "task": "a-cachetools-tlru",
+   "arm": "none",
+   "repetition": 1,
+   "accepted": false,
+   "secondary": {
+    "name": "TLRUCache tests passed of 34",
+    "value": 31
+   },
+   "physical_requests": 7,
+   "refused_requests": 0,
+   "prompt_tokens": 199325,
+   "completion_tokens": 2070,
+   "requests_missing_usage": 0,
+   "cached_prompt_tokens": 172384,
+   "requests_missing_cached_count": 0,
+   "mean_prompt_tokens_per_request": 28475,
+   "elapsed_seconds": 39.849,
+   "setup_seconds": null,
+   "provider_seconds": 21.6,
+   "stopped_by_runner": null,
+   "exit_status": 0,
+   "tool_counts": {
+    "read": 4,
+    "bash": 2,
+    "todowrite": 2,
+    "edit": 2
+   },
+   "tool_calls": 10,
+   "baltor_searches": 0,
+   "baltor_reads": 0,
+   "baltor_skill_loads": 0,
+   "baltor_client_commands": 0,
+   "baltor_abstained": null,
+   "wrong_file_incidents": 0,
+   "changed_files": [
+    "src/cachetools/__init__.py"
+   ],
+   "provider_failure_seen": false,
+   "outcomes": {
+    "ok": 7
+   }
+  },
+  {
+   "attempt_id": "b-none-r1-attempt1",
+   "plan_index": 3,
+   "task": "b-dotenv-backslash",
+   "arm": "none",
+   "repetition": 1,
+   "accepted": false,
+   "secondary": {
+    "name": "upstream parser tests passed of 56",
+    "value": 54
+   },
+   "physical_requests": 20,
+   "refused_requests": 1,
+   "prompt_tokens": 382928,
+   "completion_tokens": 6168,
+   "requests_missing_usage": 0,
+   "cached_prompt_tokens": 365600,
+   "requests_missing_cached_count": 0,
+   "mean_prompt_tokens_per_request": 19146,
+   "elapsed_seconds": 89.331,
+   "setup_seconds": null,
+   "provider_seconds": 47.8,
+   "stopped_by_runner": "request_cap_reached",
+   "exit_status": -15,
+   "tool_counts": {
+    "bash": 17,
+    "glob": 1,
+    "grep": 1,
+    "read": 1
+   },
+   "tool_calls": 20,
+   "baltor_searches": 0,
+   "baltor_reads": 0,
+   "baltor_skill_loads": 0,
+   "baltor_client_commands": 0,
+   "baltor_abstained": null,
+   "wrong_file_incidents": 0,
+   "changed_files": [
+    "tests/test_regression.py"
+   ],
+   "provider_failure_seen": false,
+   "outcomes": {
+    "ok": 20
+   }
+  },
+  {
+   "attempt_id": "b-baltor-r1-attempt1",
+   "plan_index": 4,
+   "task": "b-dotenv-backslash",
+   "arm": "baltor",
+   "repetition": 1,
+   "accepted": false,
+   "secondary": {
+    "name": "upstream parser tests passed of 56",
+    "value": 54
+   },
+   "physical_requests": 20,
+   "refused_requests": 1,
+   "prompt_tokens": 366809,
+   "completion_tokens": 4389,
+   "requests_missing_usage": 0,
+   "cached_prompt_tokens": 343648,
+   "requests_missing_cached_count": 0,
+   "mean_prompt_tokens_per_request": 18340,
+   "elapsed_seconds": 75.612,
+   "setup_seconds": 2.271,
+   "provider_seconds": 43.6,
+   "stopped_by_runner": "request_cap_reached",
+   "exit_status": -15,
+   "tool_counts": {
+    "bash": 16,
+    "grep": 1,
+    "read": 3
+   },
+   "tool_calls": 20,
+   "baltor_searches": 0,
+   "baltor_reads": 0,
+   "baltor_skill_loads": 0,
+   "baltor_client_commands": 0,
+   "baltor_abstained": true,
+   "wrong_file_incidents": 0,
+   "changed_files": [
+    ".env_repro",
+    "reproduce_issue.py",
+    "test_no_trailing.env",
+    "test_regression.env",
+    "tests/test_regression_set_key.py"
+   ],
+   "provider_failure_seen": false,
+   "outcomes": {
+    "ok": 20
+   }
+  },
+  {
+   "attempt_id": "c-baltor-r1-attempt1",
+   "plan_index": 5,
+   "task": "c-spaceship-titanic",
+   "arm": "baltor",
+   "repetition": 1,
+   "accepted": true,
+   "secondary": {
+    "name": "held-out accuracy",
+    "value": 0.8108
+   },
+   "physical_requests": 9,
+   "refused_requests": 0,
+   "prompt_tokens": 103088,
+   "completion_tokens": 1590,
+   "requests_missing_usage": 0,
+   "cached_prompt_tokens": 99168,
+   "requests_missing_cached_count": 0,
+   "mean_prompt_tokens_per_request": 11454,
+   "elapsed_seconds": 44.627,
+   "setup_seconds": 2.308,
+   "provider_seconds": 11.1,
+   "stopped_by_runner": null,
+   "exit_status": 0,
+   "tool_counts": {
+    "todowrite": 3,
+    "bash": 4,
+    "write": 1,
+    "read": 1,
+    "edit": 1
+   },
+   "tool_calls": 10,
+   "baltor_searches": 0,
+   "baltor_reads": 0,
+   "baltor_skill_loads": 0,
+   "baltor_client_commands": 0,
+   "baltor_abstained": true,
+   "wrong_file_incidents": 0,
+   "changed_files": [
+    "predictions.csv",
+    "solution.py"
+   ],
+   "provider_failure_seen": false,
+   "outcomes": {
+    "ok": 9
+   }
+  },
+  {
+   "attempt_id": "c-none-r1-attempt1",
+   "plan_index": 6,
+   "task": "c-spaceship-titanic",
+   "arm": "none",
+   "repetition": 1,
+   "accepted": true,
+   "secondary": {
+    "name": "held-out accuracy",
+    "value": 0.812
+   },
+   "physical_requests": 7,
+   "refused_requests": 0,
+   "prompt_tokens": 53872,
+   "completion_tokens": 1319,
+   "requests_missing_usage": 0,
+   "cached_prompt_tokens": 47136,
+   "requests_missing_cached_count": 0,
+   "mean_prompt_tokens_per_request": 7696,
+   "elapsed_seconds": 29.179,
+   "setup_seconds": null,
+   "provider_seconds": 9.1,
+   "stopped_by_runner": null,
+   "exit_status": 0,
+   "tool_counts": {
+    "bash": 3,
+    "todowrite": 2,
+    "write": 1
+   },
+   "tool_calls": 6,
+   "baltor_searches": 0,
+   "baltor_reads": 0,
+   "baltor_skill_loads": 0,
+   "baltor_client_commands": 0,
+   "baltor_abstained": null,
+   "wrong_file_incidents": 0,
+   "changed_files": [
+    "predictions.csv",
+    "solution.py"
+   ],
+   "provider_failure_seen": false,
+   "outcomes": {
+    "ok": 7
+   }
+  },
+  {
+   "attempt_id": "a-none-r2-attempt1",
+   "plan_index": 7,
+   "task": "a-cachetools-tlru",
+   "arm": "none",
+   "repetition": 2,
+   "accepted": false,
+   "secondary": {
+    "name": "TLRUCache tests passed of 34",
+    "value": 31
+   },
+   "physical_requests": 12,
+   "refused_requests": 0,
+   "prompt_tokens": 348863,
+   "completion_tokens": 2010,
+   "requests_missing_usage": 0,
+   "cached_prompt_tokens": 313440,
+   "requests_missing_cached_count": 0,
+   "mean_prompt_tokens_per_request": 29072,
+   "elapsed_seconds": 44.998,
+   "setup_seconds": null,
+   "provider_seconds": 24.7,
+   "stopped_by_runner": null,
+   "exit_status": 0,
+   "tool_counts": {
+    "todowrite": 2,
+    "read": 4,
+    "edit": 4,
+    "bash": 1
+   },
+   "tool_calls": 11,
+   "baltor_searches": 0,
+   "baltor_reads": 0,
+   "baltor_skill_loads": 0,
+   "baltor_client_commands": 0,
+   "baltor_abstained": null,
+   "wrong_file_incidents": 0,
+   "changed_files": [
+    "src/cachetools/__init__.py"
+   ],
+   "provider_failure_seen": false,
+   "outcomes": {
+    "ok": 12
+   }
+  },
+  {
+   "attempt_id": "a-baltor-r2-attempt1",
+   "plan_index": 8,
+   "task": "a-cachetools-tlru",
+   "arm": "baltor",
+   "repetition": 2,
+   "accepted": false,
+   "secondary": {
+    "name": "TLRUCache tests passed of 34",
+    "value": 31
+   },
+   "physical_requests": 8,
+   "refused_requests": 0,
+   "prompt_tokens": 258578,
+   "completion_tokens": 4883,
+   "requests_missing_usage": 0,
+   "cached_prompt_tokens": 228352,
+   "requests_missing_cached_count": 0,
+   "mean_prompt_tokens_per_request": 32322,
+   "elapsed_seconds": 45.928,
+   "setup_seconds": 2.492,
+   "provider_seconds": 23.9,
+   "stopped_by_runner": null,
+   "exit_status": 0,
+   "tool_counts": {
+    "todowrite": 3,
+    "read": 3,
+    "edit": 3,
+    "bash": 1
+   },
+   "tool_calls": 10,
+   "baltor_searches": 0,
+   "baltor_reads": 0,
+   "baltor_skill_loads": 0,
+   "baltor_client_commands": 0,
+   "baltor_abstained": true,
+   "wrong_file_incidents": 0,
+   "changed_files": [
+    "src/cachetools/__init__.py"
+   ],
+   "provider_failure_seen": false,
+   "outcomes": {
+    "ok": 8
+   }
+  },
+  {
+   "attempt_id": "b-baltor-r2-attempt1",
+   "plan_index": 9,
+   "task": "b-dotenv-backslash",
+   "arm": "baltor",
+   "repetition": 2,
+   "accepted": false,
+   "secondary": {
+    "name": "upstream parser tests passed of 56",
+    "value": 54
+   },
+   "physical_requests": 20,
+   "refused_requests": 1,
+   "prompt_tokens": 374593,
+   "completion_tokens": 3669,
+   "requests_missing_usage": 0,
+   "cached_prompt_tokens": 362720,
+   "requests_missing_cached_count": 0,
+   "mean_prompt_tokens_per_request": 18730,
+   "elapsed_seconds": 57.316,
+   "setup_seconds": 2.886,
+   "provider_seconds": 31.1,
+   "stopped_by_runner": "request_cap_reached",
+   "exit_status": -15,
+   "tool_counts": {
+    "bash": 17,
+    "grep": 1,
+    "read": 2
+   },
+   "tool_calls": 20,
+   "baltor_searches": 0,
+   "baltor_reads": 0,
+   "baltor_skill_loads": 0,
+   "baltor_client_commands": 0,
+   "baltor_abstained": true,
+   "wrong_file_incidents": 0,
+   "changed_files": [
+    ".env",
+    "reproduce_issue.py"
+   ],
+   "provider_failure_seen": false,
+   "outcomes": {
+    "ok": 20
+   }
+  },
+  {
+   "attempt_id": "b-none-r2-attempt1",
+   "plan_index": 10,
+   "task": "b-dotenv-backslash",
+   "arm": "none",
+   "repetition": 2,
+   "accepted": false,
+   "secondary": {
+    "name": "upstream parser tests passed of 56",
+    "value": 54
+   },
+   "physical_requests": 20,
+   "refused_requests": 1,
+   "prompt_tokens": 246536,
+   "completion_tokens": 1257,
+   "requests_missing_usage": 0,
+   "cached_prompt_tokens": 227072,
+   "requests_missing_cached_count": 0,
+   "mean_prompt_tokens_per_request": 12327,
+   "elapsed_seconds": 65.377,
+   "setup_seconds": null,
+   "provider_seconds": 36.4,
+   "stopped_by_runner": "request_cap_reached",
+   "exit_status": -15,
+   "tool_counts": {
+    "bash": 11,
+    "edit": 5,
+    "read": 3,
+    "grep": 1
+   },
+   "tool_calls": 20,
+   "baltor_searches": 0,
+   "baltor_reads": 0,
+   "baltor_skill_loads": 0,
+   "baltor_client_commands": 0,
+   "baltor_abstained": null,
+   "wrong_file_incidents": 0,
+   "changed_files": [
+    "tests/test_regression.py"
+   ],
+   "provider_failure_seen": false,
+   "outcomes": {
+    "ok": 20
+   }
+  },
+  {
+   "attempt_id": "c-none-r2-attempt1",
+   "plan_index": 11,
+   "task": "c-spaceship-titanic",
+   "arm": "none",
+   "repetition": 2,
+   "accepted": true,
+   "secondary": {
+    "name": "held-out accuracy",
+    "value": 0.7992
+   },
+   "physical_requests": 5,
+   "refused_requests": 0,
+   "prompt_tokens": 37677,
+   "completion_tokens": 904,
+   "requests_missing_usage": 0,
+   "cached_prompt_tokens": 35616,
+   "requests_missing_cached_count": 0,
+   "mean_prompt_tokens_per_request": 7535,
+   "elapsed_seconds": 40.821,
+   "setup_seconds": null,
+   "provider_seconds": 22.4,
+   "stopped_by_runner": null,
+   "exit_status": 0,
+   "tool_counts": {
+    "bash": 2,
+    "read": 1,
+    "write": 1
+   },
+   "tool_calls": 4,
+   "baltor_searches": 0,
+   "baltor_reads": 0,
+   "baltor_skill_loads": 0,
+   "baltor_client_commands": 0,
+   "baltor_abstained": null,
+   "wrong_file_incidents": 0,
+   "changed_files": [
+    "predictions.csv",
+    "solution.py"
+   ],
+   "provider_failure_seen": false,
+   "outcomes": {
+    "ok": 5
+   }
+  },
+  {
+   "attempt_id": "c-baltor-r2-attempt1",
+   "plan_index": 12,
+   "task": "c-spaceship-titanic",
+   "arm": "baltor",
+   "repetition": 2,
+   "accepted": false,
+   "secondary": {
+    "name": "held-out accuracy",
+    "value": 0.7847
+   },
+   "physical_requests": 7,
+   "refused_requests": 0,
+   "prompt_tokens": 73428,
+   "completion_tokens": 1480,
+   "requests_missing_usage": 0,
+   "cached_prompt_tokens": 63648,
+   "requests_missing_cached_count": 0,
+   "mean_prompt_tokens_per_request": 10490,
+   "elapsed_seconds": 37.399,
+   "setup_seconds": 2.472,
+   "provider_seconds": 10.8,
+   "stopped_by_runner": null,
+   "exit_status": 0,
+   "tool_counts": {
+    "bash": 3,
+    "todowrite": 2,
+    "write": 1
+   },
+   "tool_calls": 6,
+   "baltor_searches": 0,
+   "baltor_reads": 0,
+   "baltor_skill_loads": 0,
+   "baltor_client_commands": 0,
+   "baltor_abstained": true,
+   "wrong_file_incidents": 0,
+   "changed_files": [
+    "predictions.csv",
+    "solution.py"
+   ],
+   "provider_failure_seen": false,
+   "outcomes": {
+    "ok": 7
+   }
+  }
+ ],
+ "cells": [
+  {
+   "task": "a-cachetools-tlru",
+   "arm": "none",
+   "attempts": 2,
+   "accepted": 0,
+   "secondary_name": "TLRUCache tests passed of 34",
+   "secondary_values": [
+    31,
+    31
+   ],
+   "physical_requests": [
+    7,
+    12
+   ],
+   "prompt_tokens": [
+    199325,
+    348863
+   ],
+   "completion_tokens": [
+    2070,
+    2010
+   ],
+   "cached_prompt_tokens": [
+    172384,
+    313440
+   ],
+   "elapsed_seconds": [
+    39.849,
+    44.998
+   ],
+   "mean_prompt_tokens_per_request": 28774,
+   "baltor_abstentions": 0,
+   "cap_stops": 0,
+   "wrong_file_incidents": 0
+  },
+  {
+   "task": "a-cachetools-tlru",
+   "arm": "baltor",
+   "attempts": 2,
+   "accepted": 0,
+   "secondary_name": "TLRUCache tests passed of 34",
+   "secondary_values": [
+    31,
+    31
+   ],
+   "physical_requests": [
+    8,
+    8
+   ],
+   "prompt_tokens": [
+    237086,
+    258578
+   ],
+   "completion_tokens": [
+    4556,
+    4883
+   ],
+   "cached_prompt_tokens": [
+    200160,
+    228352
+   ],
+   "elapsed_seconds": [
+    55.367,
+    45.928
+   ],
+   "mean_prompt_tokens_per_request": 30979,
+   "baltor_abstentions": 2,
+   "cap_stops": 0,
+   "wrong_file_incidents": 0
+  },
+  {
+   "task": "b-dotenv-backslash",
+   "arm": "none",
+   "attempts": 2,
+   "accepted": 0,
+   "secondary_name": "upstream parser tests passed of 56",
+   "secondary_values": [
+    54,
+    54
+   ],
+   "physical_requests": [
+    20,
+    20
+   ],
+   "prompt_tokens": [
+    382928,
+    246536
+   ],
+   "completion_tokens": [
+    6168,
+    1257
+   ],
+   "cached_prompt_tokens": [
+    365600,
+    227072
+   ],
+   "elapsed_seconds": [
+    89.331,
+    65.377
+   ],
+   "mean_prompt_tokens_per_request": 15736,
+   "baltor_abstentions": 0,
+   "cap_stops": 2,
+   "wrong_file_incidents": 0
+  },
+  {
+   "task": "b-dotenv-backslash",
+   "arm": "baltor",
+   "attempts": 2,
+   "accepted": 0,
+   "secondary_name": "upstream parser tests passed of 56",
+   "secondary_values": [
+    54,
+    54
+   ],
+   "physical_requests": [
+    20,
+    20
+   ],
+   "prompt_tokens": [
+    366809,
+    374593
+   ],
+   "completion_tokens": [
+    4389,
+    3669
+   ],
+   "cached_prompt_tokens": [
+    343648,
+    362720
+   ],
+   "elapsed_seconds": [
+    75.612,
+    57.316
+   ],
+   "mean_prompt_tokens_per_request": 18535,
+   "baltor_abstentions": 2,
+   "cap_stops": 2,
+   "wrong_file_incidents": 0
+  },
+  {
+   "task": "c-spaceship-titanic",
+   "arm": "none",
+   "attempts": 2,
+   "accepted": 2,
+   "secondary_name": "held-out accuracy",
+   "secondary_values": [
+    0.812,
+    0.7992
+   ],
+   "physical_requests": [
+    7,
+    5
+   ],
+   "prompt_tokens": [
+    53872,
+    37677
+   ],
+   "completion_tokens": [
+    1319,
+    904
+   ],
+   "cached_prompt_tokens": [
+    47136,
+    35616
+   ],
+   "elapsed_seconds": [
+    29.179,
+    40.821
+   ],
+   "mean_prompt_tokens_per_request": 7616,
+   "baltor_abstentions": 0,
+   "cap_stops": 0,
+   "wrong_file_incidents": 0
+  },
+  {
+   "task": "c-spaceship-titanic",
+   "arm": "baltor",
+   "attempts": 2,
+   "accepted": 1,
+   "secondary_name": "held-out accuracy",
+   "secondary_values": [
+    0.8108,
+    0.7847
+   ],
+   "physical_requests": [
+    9,
+    7
+   ],
+   "prompt_tokens": [
+    103088,
+    73428
+   ],
+   "completion_tokens": [
+    1590,
+    1480
+   ],
+   "cached_prompt_tokens": [
+    99168,
+    63648
+   ],
+   "elapsed_seconds": [
+    44.627,
+    37.399
+   ],
+   "mean_prompt_tokens_per_request": 10972,
+   "baltor_abstentions": 2,
+   "cap_stops": 0,
+   "wrong_file_incidents": 0
+  }
+ ],
+ "ledger": {
+  "physical_requests": 145,
+  "by_arm": {
+   "probe": 2,
+   "baltor": 72,
+   "none": 71
+  },
+  "refused": 4,
+  "outcomes": {
+   "ok": 145
+  },
+  "requests_missing_usage": 0
+ },
+ "ceiling": 300
+}

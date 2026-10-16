@@ -1,0 +1,65 @@
+--- a/.env_repro
++++ b/.env_repro
+@@ -0,0 +1,2 @@
++WIN_DIR='C:\\Users\\me\\'
++NEXT='ok'
+--- a/reproduce_issue.py
++++ b/reproduce_issue.py
+@@ -0,0 +1,31 @@
++import os
++import subprocess
++
++def run_command(cmd):
++    print(f"Running: {' '.join(cmd)}")
++    result = subprocess.run(cmd, capture_output=True, text=True)
++    print(f"Stdout: {result.stdout}")
++    print(f"Stderr: {result.stderr}")
++    return result
++
++env_file = ".env_repro"
++if os.path.exists(env_file):
++    os.remove(env_file)
++
++# 1. dotenv -f .env set WIN_DIR 'C:\Users\me\'
++win_dir_val = "C:" + chr(92) + "Users" + chr(92) + "me" + chr(92)
++
++run_command(["dotenv", "-f", env_file, "set", "WIN_DIR", win_dir_val])
++
++# 2. dotenv -f .env set NEXT ok
++run_command(["dotenv", "-f", env_file, "set", "NEXT", "ok"])
++
++# 3. dotenv -f .env get WIN_DIR
++run_command(["dotenv", "-f", env_file, "get", "WIN_DIR"])
++
++# 4. dotenv -f .env get NEXT
++run_command(["dotenv", "-f", env_file, "get", "NEXT"])
++
++with open(env_file, "r") as f:
++    print("\nFinal .env content:")
++    print(f.read())
+--- a/test_no_trailing.env
++++ b/test_no_trailing.env
+@@ -0,0 +1 @@
++WIN_DIR='C:\\Users\\me'
+--- a/test_regression.env
++++ b/test_regression.env
+@@ -0,0 +1 @@
++WIN_DIR='C:\\Users\\me\\'
+--- a/tests/test_regression_set_key.py
++++ b/tests/test_regression_set_key.py
+@@ -0,0 +1,15 @@
++import os
++from dotenv.main import set_key, dotenv_values
++
++def test_set_key_with_trailing_backslash():
++    env_file = "test_regression.env"
++    try:
++        win_dir_val = "C:\\Users\\me\\"
++        set_key(env_file, "WIN_DIR", win_dir_val)
++        set_key(env_file, "NEXT", "ok")
++        values = dotenv_values(env_file)
++        assert values["WIN_DIR"] == win_dir_val
++        assert values["NEXT"] == "ok"
++    finally:
++        if os.path.exists(env_file):
++            os.remove(env_file)

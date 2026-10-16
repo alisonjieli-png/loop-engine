@@ -1,0 +1,4 @@
+# Verbatim harness output from the comparison pilot, kept byte for byte as evidence.
+# The pilot did not author these files, so whitespace checks do not apply to them.
+patches/*.patch -whitespace
+solutions/*.py -whitespace

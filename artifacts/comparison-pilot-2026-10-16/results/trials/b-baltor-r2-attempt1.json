@@ -1,0 +1,528 @@
+{
+ "record_type": "comparison_pilot_trial/v1",
+ "trial_id": "b-baltor-r2",
+ "attempt": 1,
+ "attempt_id": "b-baltor-r2-attempt1",
+ "plan_index": 9,
+ "task": "b-dotenv-backslash",
+ "arm": "baltor",
+ "repetition": 2,
+ "meter_step_id": "sc6e62e0a4bb2",
+ "started_at": "2026-10-16T16:30:06+00:00",
+ "model": "gemma4:31b",
+ "request_cap": 20,
+ "wall_clock_budget_seconds": 1800,
+ "setup": {
+  "exit_status": 0,
+  "elapsed_seconds": 2.886,
+  "verified_ok_lines": 12
+ },
+ "harness": {
+  "exit_status": -15,
+  "elapsed_seconds": 54.089,
+  "timed_out": false,
+  "stopped_by_runner": "request_cap_reached"
+ },
+ "elapsed_total_seconds": 57.316,
+ "finished_at": "2026-10-16T16:31:03+00:00",
+ "model_requests": {
+  "physical": 20,
+  "refused": 1,
+  "refusal_reasons": {
+   "step_cap_reached": 1
+  },
+  "completed": 20,
+  "outcomes": {
+   "ok": 20
+  },
+  "http_statuses": {
+   "200": 20
+  },
+  "usage_totals": {
+   "prompt_tokens": 374593,
+   "completion_tokens": 3669,
+   "total_tokens": 378262
+  },
+  "requests_missing_usage": 0,
+  "cached_input_tokens": "not reported by the provider",
+  "provider_elapsed_ms": 31093,
+  "requests": [
+   {
+    "sequence": 96,
+    "elapsed_ms": 964,
+    "prompt_tokens": 9347,
+    "completion_tokens": 29,
+    "finish_reason": "tool_calls",
+    "tool_calls": [
+     "bash"
+    ],
+    "outcome": "ok",
+    "messages": 2,
+    "tools_offered": 21
+   },
+   {
+    "sequence": 97,
+    "elapsed_ms": 1597,
+    "prompt_tokens": 9984,
+    "completion_tokens": 20,
+    "finish_reason": "tool_calls",
+    "tool_calls": [
+     "grep"
+    ],
+    "outcome": "ok",
+    "messages": 4,
+    "tools_offered": 21
+   },
+   {
+    "sequence": 98,
+    "elapsed_ms": 839,
+    "prompt_tokens": 10044,
+    "completion_tokens": 30,
+    "finish_reason": "tool_calls",
+    "tool_calls": [
+     "read"
+    ],
+    "outcome": "ok",
+    "messages": 6,
+    "tools_offered": 21
+   },
+   {
+    "sequence": 99,
+    "elapsed_ms": 1461,
+    "prompt_tokens": 16318,
+    "completion_tokens": 92,
+    "finish_reason": "tool_calls",
+    "tool_calls": [
+     "bash"
+    ],
+    "outcome": "ok",
+    "messages": 8,
+    "tools_offered": 21
+   },
+   {
+    "sequence": 100,
+    "elapsed_ms": 1730,
+    "prompt_tokens": 16444,
+    "completion_tokens": 33,
+    "finish_reason": "tool_calls",
+    "tool_calls": [
+     "bash"
+    ],
+    "outcome": "ok",
+    "messages": 10,
+    "tools_offered": 21
+   },
+   {
+    "sequence": 101,
+    "elapsed_ms": 933,
+    "prompt_tokens": 16499,
+    "completion_tokens": 30,
+    "finish_reason": "tool_calls",
+    "tool_calls": [
+     "read"
+    ],
+    "outcome": "ok",
+    "messages": 12,
+    "tools_offered": 21
+   },
+   {
+    "sequence": 102,
+    "elapsed_ms": 1328,
+    "prompt_tokens": 19051,
+    "completion_tokens": 139,
+    "finish_reason": "tool_calls",
+    "tool_calls": [
+     "bash"
+    ],
+    "outcome": "ok",
+    "messages": 14,
+    "tools_offered": 21
+   },
+   {
+    "sequence": 103,
+    "elapsed_ms": 1280,
+    "prompt_tokens": 19355,
+    "completion_tokens": 142,
+    "finish_reason": "tool_calls",
+    "tool_calls": [
+     "bash"
+    ],
+    "outcome": "ok",
+    "messages": 16,
+    "tools_offered": 21
+   },
+   {
+    "sequence": 104,
+    "elapsed_ms": 1267,
+    "prompt_tokens": 19653,
+    "completion_tokens": 138,
+    "finish_reason": "tool_calls",
+    "tool_calls": [
+     "bash"
+    ],
+    "outcome": "ok",
+    "messages": 18,
+    "tools_offered": 21
+   },
+   {
+    "sequence": 105,
+    "elapsed_ms": 1513,
+    "prompt_tokens": 19935,
+    "completion_tokens": 147,
+    "finish_reason": "tool_calls",
+    "tool_calls": [
+     "bash"
+    ],
+    "outcome": "ok",
+    "messages": 20,
+    "tools_offered": 21
+   },
+   {
+    "sequence": 106,
+    "elapsed_ms": 1200,
+    "prompt_tokens": 20227,
+    "completion_tokens": 140,
+    "finish_reason": "tool_calls",
+    "tool_calls": [
+     "bash"
+    ],
+    "outcome": "ok",
+    "messages": 22,
+    "tools_offered": 21
+   },
+   {
+    "sequence": 107,
+    "elapsed_ms": 1280,
+    "prompt_tokens": 20510,
+    "completion_tokens": 135,
+    "finish_reason": "tool_calls",
+    "tool_calls": [
+     "bash"
+    ],
+    "outcome": "ok",
+    "messages": 24,
+    "tools_offered": 21
+   },
+   {
+    "sequence": 108,
+    "elapsed_ms": 1806,
+    "prompt_tokens": 20782,
+    "completion_tokens": 295,
+    "finish_reason": "tool_calls",
+    "tool_calls": [
+     "bash"
+    ],
+    "outcome": "ok",
+    "messages": 26,
+    "tools_offered": 21
+   },
+   {
+    "sequence": 109,
+    "elapsed_ms": 1731,
+    "prompt_tokens": 21158,
+    "completion_tokens": 337,
+    "finish_reason": "tool_calls",
+    "tool_calls": [
+     "bash"
+    ],
+    "outcome": "ok",
+    "messages": 28,
+    "tools_offered": 21
+   },
+   {
+    "sequence": 110,
+    "elapsed_ms": 1656,
+    "prompt_tokens": 21567,
+    "completion_tokens": 321,
+    "finish_reason": "tool_calls",
+    "tool_calls": [
+     "bash"
+    ],
+    "outcome": "ok",
+    "messages": 30,
+    "tools_offered": 21
+   },
+   {
+    "sequence": 111,
+    "elapsed_ms": 1654,
+    "prompt_tokens": 21970,
+    "completion_tokens": 317,
+    "finish_reason": "tool_calls",
+    "tool_calls": [
+     "bash"
+    ],
+    "outcome": "ok",
+    "messages": 32,
+    "tools_offered": 21
+   },
+   {
+    "sequence": 112,
+    "elapsed_ms": 1724,
+    "prompt_tokens": 22356,
+    "completion_tokens": 331,
+    "finish_reason": "tool_calls",
+    "tool_calls": [
+     "bash"
+    ],
+    "outcome": "ok",
+    "messages": 34,
+    "tools_offered": 21
+   },
+   {
+    "sequence": 113,
+    "elapsed_ms": 3645,
+    "prompt_tokens": 22757,
+    "completion_tokens": 355,
+    "finish_reason": "tool_calls",
+    "tool_calls": [
+     "bash"
+    ],
+    "outcome": "ok",
+    "messages": 36,
+    "tools_offered": 21
+   },
+   {
+    "sequence": 114,
+    "elapsed_ms": 1748,
+    "prompt_tokens": 23126,
+    "completion_tokens": 317,
+    "finish_reason": "tool_calls",
+    "tool_calls": [
+     "bash"
+    ],
+    "outcome": "ok",
+    "messages": 38,
+    "tools_offered": 21
+   },
+   {
+    "sequence": 115,
+    "elapsed_ms": 1737,
+    "prompt_tokens": 23510,
+    "completion_tokens": 321,
+    "finish_reason": "tool_calls",
+    "tool_calls": [
+     "bash"
+    ],
+    "outcome": "ok",
+    "messages": 40,
+    "tools_offered": 21
+   }
+  ]
+ },
+ "events": {
+  "steps": 20,
+  "tool_counts": {
+   "bash": 17,
+   "grep": 1,
+   "read": 2
+  },
+  "tool_calls": [
+   {
+    "tool": "bash",
+    "status": "completed",
+    "input": "{\"description\": \"List files in the project to understand the structure\", \"command\": \"ls -R\"}",
+    "output_chars": 1304
+   },
+   {
+    "tool": "grep",
+    "status": "completed",
+    "input": "{\"pattern\": \"def set_key\"}",
+    "output_chars": 79
+   },
+   {
+    "tool": "read",
+    "status": "completed",
+    "input": "{\"filePath\": \"/home/dev/project/src/dotenv/main.py\"}",
+    "output_chars": 17627
+   },
+   {
+    "tool": "bash",
+    "status": "completed",
+    "input": "{\"command\": \"python3 -c \\\"import os; open('.env', 'w').write('')\\\" && dotenv -f .env set WIN_DIR 'C:\\\\Users\\\\me\\\\' && dotenv -f .env set NEXT ok && dotenv -f .env get WIN_DIR && dotenv -f .env get NEXT\", \"description\": \"Reproduce the reported issue using the dotenv CLI\"}",
+    "output_chars": 88
+   },
+   {
+    "tool": "bash",
+    "status": "completed",
+    "input": "{\"command\": \"cat .env\", \"description\": \"Check the content of .env after the commands\"}",
+    "output_chars": 36
+   },
+   {
+    "tool": "read",
+    "status": "completed",
+    "input": "{\"filePath\": \"/home/dev/project/src/dotenv/parser.py\"}",
+    "output_chars": 6574
+   },
+   {
+    "tool": "bash",
+    "status": "completed",
+    "input": "{\"command\": \"python3 -c \\\"from dotenv.main import set_key; from dotenv.main import get_key; import os; open('.env', 'w').write(''); set_key('.env', 'WIN_DIR', 'C:\\\\\\\\Users\\\\\\\\me\\\\\\\\'); set_key('.env', 'NEXT', 'ok'); print(f'WIN_DIR: {get_key(\\\\'.env\\\\', \\\\'WIN_DIR\\\\')}'); print(f'NEXT: {get_key(\\\\'.env\\\\', \\\\'NEXT\\\\')}')\\\"\", \"description\": \"Reproduce the issue using Python API\"}",
+    "output_chars": 589
+   },
+   {
+    "tool": "bash",
+    "status": "completed",
+    "input": "{\"command\": \"python3 -c \\\"from dotenv.main import set_key; from dotenv.main import get_key; import os; open('.env', 'w').write(''); set_key('.env', 'WIN_DIR', r'C:\\\\Users\\\\me\\\\\\\\'); set_key('.env', 'NEXT', 'ok'); print(f'WIN_DIR: {get_key(\\\\'.env\\\\', \\\\'WIN_DIR\\\\')}'); print(f'NEXT: {get_key(\\\\'.env\\\\', \\\\'NEXT\\\\')}')\\\"\", \"description\": \"Reproduce the issue using Python API with raw string for the value\"}",
+    "output_chars": 541
+   },
+   {
+    "tool": "bash",
+    "status": "completed",
+    "input": "{\"command\": \"python3 -c \\\"from dotenv.main import set_key; from dotenv.main import get_key; import os; open('.env', 'w').write(''); set_key('.env', 'WIN_DIR', 'C:/Users/me/'); set_key('.env', 'NEXT', 'ok'); print(f'WIN_DIR: {get_key(\\\\'.env\\\\', \\\\'WIN_DIR\\\\')}'); print(f'NEXT: {get_key(\\\\'.env\\\\', \\\\'NEXT\\\\')}')\\\"\", \"description\": \"Reproduce with forward slashes to see if it works\"}",
+    "output_chars": 592
+   },
+   {
+    "tool": "bash",
+    "status": "completed",
+    "input": "{\"command\": \"python3 -c \\\"from dotenv.main import set_key; from dotenv.main import get_key; import os; open('.env', 'w').write(''); set_key('.env', 'WIN_DIR', 'C:/Users/me/ '); set_key('.env', 'NEXT', 'ok'); print(f'WIN_DIR: {get_key(\\\\'.env\\\\', \\\\'WIN_DIR\\\\')}'); print(f'NEXT: {get_key(\\\\'.env\\\\', \\\\'NEXT\\\\')}')\\\"\", \"description\": \"Reproduce with forward slashes and a space to avoid line continuation character issue in python -c\"}",
+    "output_chars": 594
+   },
+   {
+    "tool": "bash",
+    "status": "completed",
+    "input": "{\"command\": \"python3 -c \\\"from dotenv.main import set_key; from dotenv.main import get_key; import os; open('.env', 'w').write(''); set_key('.env', 'WIN_DIR', 'C:Usersme'); set_key('.env', 'NEXT', 'ok'); print(f'WIN_DIR: {get_key(\\\\'.env\\\\', \\\\'WIN_DIR\\\\')}'); print(f'NEXT: {get_key(\\\\'.env\\\\', \\\\'NEXT\\\\')}')\\\"\", \"description\": \"Reproduce with a simple string that doesn't use backslashes\"}",
+    "output_chars": 586
+   },
+   {
+    "tool": "bash",
+    "status": "completed",
+    "input": "{\"command\": \"python3 -c \\\"import os; from dotenv.main import set_key, get_key; open('.env', 'w').write(''); set_key('.env', 'WIN_DIR', 'C:Usersme'); set_key('.env', 'NEXT', 'ok'); print(f'WIN_DIR: {get_key(\\\\'.env\\\\', \\\\'WIN_DIR\\\\')}'); print(f'NEXT: {get_key(\\\\'.env\\\\', \\\\'NEXT\\\\')}')\\\"\", \"description\": \"Reproduce with a simpler python command to avoid syntax errors in the shell\"}",
+    "output_chars": 538
+   },
+   {
+    "tool": "bash",
+    "status": "completed",
+    "input": "{\"command\": \"cat <<EOF > reproduce_issue.py\\nfrom dotenv.main import set_key, get_key\\nimport os\\n\\ndef test_repro():\\n    dotenv_path = '.env'\\n    with open(dotenv_path, 'w') as f:\\n        f.write('')\\n    \\n    set_key(dotenv_path, 'WIN_DIR', r'C:\\\\Users\\\\me\\\\\\\\')\\n    set_key(dotenv_path, 'NEXT', 'ok')\\n    \\n    win_dir = get_key(dotenv_path, 'WIN_DIR')\\n    next_val = get_key(dotenv_path, 'NEXT')\\n    \\n    print(f'WIN_DIR: {win_dir}')\\n    print(f'NEXT: {next_val}')\\n    \\n    assert win_dir == r'C:\\\\Users\\\\me\\\\\\\\'\\n    assert next_val == 'ok'\\n\\nif __name__ == '__main__':\\n    try:\\n ",
+    "output_chars": 243
+   },
+   {
+    "tool": "bash",
+    "status": "completed",
+    "input": "{\"command\": \"cat <<EOF > reproduce_issue.py\\nfrom dotenv.main import set_key, get_key\\nimport os\\n\\ndef test_repro():\\n    dotenv_path = '.env'\\n    with open(dotenv_path, 'w') as f:\\n        f.write('')\\n    \\n    # The user said: dotenv -f .env set WIN_DIR 'C:\\\\Users\\\\me\\\\'\\n    # In shell, 'C:\\\\Users\\\\me\\\\' is C:\\\\Users\\\\me\\\\\\n    set_key(dotenv_path, 'WIN_DIR', 'C:\\\\\\\\Users\\\\\\\\me\\\\\\\\')\\n    set_key(dotenv_path, 'NEXT', 'ok')\\n    \\n    win_dir = get_key(dotenv_path, 'WIN_DIR')\\n    next_val = get_key(dotenv_path, 'NEXT')\\n    \\n    print(f'WIN_DIR: {win_dir}')\\n    print(f'NEXT: {next_val}",
+    "output_chars": 215
+   },
+   {
+    "tool": "bash",
+    "status": "completed",
+    "input": "{\"command\": \"cat <<EOF > reproduce_issue.py\\nfrom dotenv.main import set_key, get_key\\nimport os\\n\\ndef test_repro():\\n    dotenv_path = '.env'\\n    with open(dotenv_path, 'w') as f:\\n        f.write('')\\n    \\n    # The user said: dotenv -f .env set WIN_DIR 'C:\\\\Users\\\\me\\\\'\\n    set_key(dotenv_path, 'WIN_DIR', 'C:\\\\\\\\Users\\\\\\\\me\\\\\\\\')\\n    set_key(dotenv_path, 'NEXT', 'ok')\\n    \\n    win_dir = get_key(dotenv_path, 'WIN_DIR')\\n    next_val = get_key(dotenv_path, 'NEXT')\\n    \\n    print(f'WIN_DIR: {win_dir}')\\n    print(f'NEXT: {next_val}')\\n    \\n    assert win_dir == 'C:\\\\\\\\Users\\\\\\\\me\\\\\\\\",
+    "output_chars": 244
+   },
+   {
+    "tool": "bash",
+    "status": "completed",
+    "input": "{\"command\": \"cat <<EOF > reproduce_issue.py\\nfrom dotenv.main import set_key, get_key\\nimport os\\n\\ndef test_repro():\\n    dotenv_path = '.env'\\n    with open(dotenv_path, 'w') as f:\\n        f.write('')\\n    \\n    # The user said: dotenv -f .env set WIN_DIR 'C:\\\\Users\\\\me\\\\'\\n    val = 'C:\\\\\\\\Users\\\\\\\\me\\\\\\\\'\\n    set_key(dotenv_path, 'WIN_DIR', val)\\n    set_key(dotenv_path, 'NEXT', 'ok')\\n    \\n    win_dir = get_key(dotenv_path, 'WIN_DIR')\\n    next_val = get_key(dotenv_path, 'NEXT')\\n    \\n    print(f'WIN_DIR: {win_dir}')\\n    print(f'NEXT: {next_val}')\\n    \\n    assert win_dir == val\\n  ",
+    "output_chars": 191
+   },
+   {
+    "tool": "bash",
+    "status": "completed",
+    "input": "{\"command\": \"cat <<EOF > reproduce_issue.py\\nfrom dotenv.main import set_key, get_key\\nimport os\\n\\ndef test_repro():\\n    dotenv_path = '.env'\\n    with open(dotenv_path, 'w') as f:\\n        f.write('')\\n    \\n    # The user said: dotenv -f .env set WIN_DIR 'C:\\\\Users\\\\me\\\\'\\n    # We use raw string for the value in the script.\\n    val = r'C:\\\\Users\\\\me\\\\\\\\'\\n    set_key(dotenv_path, 'WIN_DIR', val)\\n    set_key(dotenv_path, 'NEXT', 'ok')\\n    \\n    win_dir = get_key(dotenv_path, 'WIN_DIR')\\n    next_val = get_key(dotenv_path, 'NEXT')\\n    \\n    print(f'WIN_DIR: {win_dir}')\\n    print(f'NEXT",
+    "output_chars": 192
+   },
+   {
+    "tool": "bash",
+    "status": "completed",
+    "input": "{\"command\": \"cat <<EOF > reproduce_issue.py\\nfrom dotenv.main import set_key, get_key\\nimport os\\n\\ndef test_repro():\\n    dotenv_path = '.env'\\n    with open(dotenv_path, 'w') as f:\\n        f.write('')\\n    \\n    # The user said: dotenv -f .env set WIN_DIR 'C:\\\\Users\\\\me\\\\'\\n    # In the shell, the value is C:\\\\Users\\\\me\\\\ (length 12)\\n    val = 'C:\\\\\\\\Users\\\\\\\\me\\\\\\\\'\\n    set_key(dotenv_path, 'WIN_DIR', val)\\n    set_key(dotenv_path, 'NEXT', 'ok')\\n    \\n    win_dir = get_key(dotenv_path, 'WIN_DIR')\\n    next_val = get_key(dotenv_path, 'NEXT')\\n    \\n    print(f'WIN_DIR: {win_dir}')\\n    p",
+    "output_chars": 11
+   },
+   {
+    "tool": "bash",
+    "status": "completed",
+    "input": "{\"command\": \"python3 -c \\\"with open('reproduce_issue.py', 'w') as f: f.write(\\\\\\\"from dotenv.main import set_key, get_key\\\\nimport os\\\\n\\\\ndef test_repro():\\\\n    dotenv_path = '.env'\\\\n    with open(dotenv_path, 'w') as f: f.write('')\\\\n    val = 'C:\\\\\\\\\\\\\\\\Users\\\\\\\\\\\\\\\\me\\\\\\\\\\\\\\\\'\\\\n    set_key(dotenv_path, 'WIN_DIR', val)\\\\n    set_key(dotenv_path, 'NEXT', 'ok')\\\\n    win_dir = get_key(dotenv_path, 'WIN_DIR')\\\\n    next_val = get_key(dotenv_path, 'NEXT')\\\\n    print(f'WIN_DIR: {win_dir}')\\\\n    print(f'NEXT: {next_val}')\\\\n    assert win_dir == val\\\\n    assert next_val == 'ok'\\\\n\\\\nif __na",
+    "output_chars": 189
+   },
+   {
+    "tool": "bash",
+    "status": "completed",
+    "input": "{\"command\": \"python3 -c \\\"with open('reproduce_issue.py', 'w') as f: f.write(\\\\\\\"from dotenv.main import set_key, get_key\\\\nimport os\\\\n\\\\ndef test_repro():\\\\n    dotenv_path = '.env'\\\\n    with open(dotenv_path, 'w') as f: f.write('')\\\\n    val = r'C:\\\\\\\\Users\\\\\\\\me\\\\\\\\\\\\\\\\' \\\\n    set_key(dotenv_path, 'WIN_DIR', val)\\\\n    set_key(dotenv_path, 'NEXT', 'ok')\\\\n    win_dir = get_key(dotenv_path, 'WIN_DIR')\\\\n    next_val = get_key(dotenv_path, 'NEXT')\\\\n    print(f'WIN_DIR: {win_dir}')\\\\n    print(f'NEXT: {next_val}')\\\\n    assert win_dir == val\\\\n    assert next_val == 'ok'\\\\n\\\\nif __name__ =",
+    "output_chars": 1656
+   }
+  ],
+  "final_text": "",
+  "harness_reported_tokens": {
+   "total": 378262,
+   "input": 11873,
+   "output": 3669,
+   "reasoning": 0,
+   "cache_write": 0,
+   "cache_read": 362720
+  }
+ },
+ "baltor": {
+  "searches": [],
+  "reads": [],
+  "manifests": [],
+  "other_mcp_calls": [],
+  "skill_loads": [],
+  "client_commands": [],
+  "installed_skills": [],
+  "abstained_from_baltor": true,
+  "material_overlap_with_work": {
+   "retrieved_bodies": 0,
+   "shared_shingles": 0,
+   "note": "nothing was retrieved"
+  }
+ },
+ "egress": {
+  "allowed": {
+   "baltor.ai": 9
+  },
+  "refused": {
+   "registry.npmjs.org": 2
+  }
+ },
+ "workspace_changes": {
+  ".env": {
+   "state": "added",
+   "lines_added": 2,
+   "lines_removed": 0
+  },
+  "reproduce_issue.py": {
+   "state": "added",
+   "lines_added": 24,
+   "lines_removed": 0
+  }
+ },
+ "wrong_file_incidents": [],
+ "score": {
+  "hidden_suite": {
+   "passed": 253,
+   "failure": 4,
+   "error": 0,
+   "skipped": 1,
+   "total": 258
+  },
+  "hidden_parser_tests": {
+   "passed": 54,
+   "failure": 2,
+   "error": 0,
+   "skipped": 0,
+   "total": 56
+  },
+  "hidden_suite_failing": [
+   "tests.test_main::test_set_key_round_trips[C:\\\\Users\\\\]",
+   "tests.test_main::test_set_key_round_trips[back\\\\]",
+   "tests.test_parser::test_parse_stream[a='b\\\\\\\\'\\nc='d'-expected35]",
+   "tests.test_parser::test_parse_stream[a=\"b\\\\\\\\\"\\nc=\"d\"-expected36]"
+  ],
+  "hidden_suite_ok": false,
+  "source_changes": {},
+  "source_changed_lines": 0,
+  "scope_ok": false,
+  "test_changes": {},
+  "regression_files": [],
+  "regression": {
+   "before_fix": null,
+   "after_fix": null
+  },
+  "regression_ok": false,
+  "root_cause_file_present": false,
+  "root_cause_names_parser": false,
+  "root_cause_names_pattern": false,
+  "explanation_ok": false,
+  "passed": false
+ },
+ "provider_failure_seen": false,
+ "accepted": false,
+ "artifact_patch": "results/patches/b-baltor-r2-attempt1.patch"
+}

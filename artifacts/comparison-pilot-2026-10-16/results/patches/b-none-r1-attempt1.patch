@@ -1,0 +1,28 @@
+--- a/tests/test_regression.py
++++ b/tests/test_regression.py
+@@ -0,0 +1,25 @@
++import os
++from dotenv import set_key, get_key
++
++def test_backslash_escaping_regression(tmp_path):
++    env_file = tmp_path / ".env"
++    
++    # Run: dotenv -f .env set WIN_DIR 'C:\Users\me\'
++    val1 = "C:" + chr(92) + "Users" + chr(92) + "me" + chr(92)
++    
++    set_key(str(env_file), "WIN_DIR", val1)
++    
++    # Run: dotenv -f .env set NEXT ok
++    set_key(str(env_file), "NEXT", "ok")
++    
++    # Afterwards dotenv -f .env get WIN_DIR does not print C:\Users\me    res1 = get_key(str(env_file), "WIN_DIR")
++    print(f"DEBUG: res1={res1!r}, val1={val1!r}")
++    assert res1 == val1
++    
++    res2 = get_key(str(env_file), "NEXT")
++    print(f"DEBUG: res2={res2!r}")
++    assert res2 == "ok"
++
++if __name__ == "__main__":
++    import pytest
++    pytest.main([__file__])

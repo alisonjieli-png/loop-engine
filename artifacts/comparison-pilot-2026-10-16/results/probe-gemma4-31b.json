@@ -1,0 +1,48 @@
+{
+ "record_type": "comparison_pilot_model_probe/v1",
+ "model": "gemma4:31b",
+ "cap": 4,
+ "physical_requests": 2,
+ "requests": [
+  {
+   "sequence": 1,
+   "http_status": 200,
+   "outcome": "ok",
+   "finish_reason": "tool_calls",
+   "tool_calls": [
+    "write"
+   ],
+   "usage": {
+    "completion_tokens": 30,
+    "prompt_tokens": 6487,
+    "total_tokens": 6517
+   },
+   "elapsed_ms": 799
+  },
+  {
+   "sequence": 2,
+   "http_status": 200,
+   "outcome": "ok",
+   "finish_reason": "stop",
+   "tool_calls": [],
+   "usage": {
+    "completion_tokens": 6,
+    "prompt_tokens": 6528,
+    "total_tokens": 6534
+   },
+   "elapsed_ms": 628
+  }
+ ],
+ "harness": {
+  "exit_status": 0,
+  "elapsed_seconds": 12.443,
+  "timed_out": false,
+  "stopped_by_runner": null
+ },
+ "tool_counts": {
+  "write": 1
+ },
+ "final_text": "DONE",
+ "answer_file": "42",
+ "passed": true
+}
