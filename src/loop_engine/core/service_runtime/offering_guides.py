@@ -353,8 +353,9 @@ def _harness_entries(origin: str) -> str:
          '<p class="md-reading">Merge this table into your existing <code>config.toml</code>.</p>'
          + _code(recipe_text(recipes["codex"], endpoint), "Codex configuration")
          + f'<p class="og-check">Check it: <code>{escape(recipes["codex"]["verification_command"])}</code>. To sign in with '
-           f'OAuth instead, run <code>codex mcp add baltor --url {escape(endpoint)}</code> and then '
-           '<code>codex mcp login baltor</code>. <a href="/docs/quickstart-codex">Read the Codex quickstart</a></p>'),
+           f'OAuth instead, run <code>codex mcp add baltor --url {escape(endpoint)}</code>; Codex starts the Baltor '
+           'sign-in itself. Run <code>codex mcp login baltor</code> only if that sign-in did not finish. '
+           '<a href="/docs/quickstart-codex">Read the Codex quickstart</a></p>'),
         ("opencode", "OpenCode", "opencode.json or OAuth",
          '<p class="md-reading">Merge the <code>baltor</code> entry into the <code>mcp</code> section of your existing '
          '<code>opencode.json</code>.</p>'
