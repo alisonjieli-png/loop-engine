@@ -369,7 +369,8 @@ def page_head(site_map: SiteMap, path: str, host: str | None, display_name: str)
 
     At the root address the Host decides the page, through the site map's
     hostname table; every other address shows its own page on every hostname.
-    The canonical address is always on the canonical hostname.
+    The canonical address is on the canonical hostname, except for a page of a
+    canonical section, whose canonical address is on its section's hostname.
     """
     root = site_map.root_address(host)
     address = root if path == "/" else path
@@ -377,7 +378,7 @@ def page_head(site_map: SiteMap, path: str, host: str | None, display_name: str)
     if page is None:
         return None
     return {"title": display_name + " | " + page.title, "description": page.description,
-            "canonical": site_map.canonical_origin + page.address, "indexed": page.indexed,
+            "canonical": site_map.canonical_url(page.address), "indexed": page.indexed,
             "image": site_map.canonical_origin + site_map.social_image, "site_name": display_name,
             "root_address": root, "view": page.view}
 
@@ -446,22 +447,34 @@ def with_page_head(body: bytes, head) -> bytes:
     return before.rstrip() + b"\n" + b"".join(b"  " + tag + b"\n" for tag in tags) + closing + after
 
 
+def _disallowed(site_map: SiteMap) -> list:
+    lines = ["Disallow: " + prefix for prefix in ROBOTS_DISALLOWED_PREFIXES]
+    return lines + ["Disallow: " + page.address for page in site_map.pages
+                    if not page.indexed and page.address not in CRAWLABLE_UNLISTED_PAGES]
+
+
 def robots_text(site_map: SiteMap) -> bytes:
     """`robots.txt`: the unlisted pages and the interface routes are left alone, and the site map is named."""
     lines = ["# " + site_map.display_name + ". Written from the website's site map; do not edit by hand.",
-             "User-agent: *"]
-    lines += ["Disallow: " + prefix for prefix in ROBOTS_DISALLOWED_PREFIXES]
-    lines += ["Disallow: " + page.address for page in site_map.pages
-              if not page.indexed and page.address not in CRAWLABLE_UNLISTED_PAGES]
+             "User-agent: *", *_disallowed(site_map)]
     lines += ["", "Sitemap: " + site_map.canonical_origin + "/sitemap.xml"]
     lines += ["Sitemap: " + site_map.canonical_origin + address for address in EXTRA_SITEMAPS]
     return ("\n".join(lines) + "\n").encode("utf-8")
 
 
+def section_robots_text(site_map: SiteMap, section) -> bytes:
+    """`robots.txt` of a hostname that holds a canonical section: the same addresses are left alone, because every
+    address answers on every hostname, and the one site map named is the section's own."""
+    lines = ["# " + site_map.display_name + ", " + section.hostname + ". Written from the website's site map; do not "
+             "edit by hand.", "User-agent: *", *_disallowed(site_map), "", "Sitemap: " + section.origin + "/sitemap.xml"]
+    return ("\n".join(lines) + "\n").encode("utf-8")
+
+
 def sitemap_xml(site_map: SiteMap) -> bytes:
-    """`sitemap.xml`: every page a search engine may list, at its canonical address, in site map order."""
+    """`sitemap.xml`: every page a search engine may list at its canonical address on the canonical hostname, in site
+    map order. A page of a canonical section is listed by its own hostname's site map instead."""
     rows = ["  <url><loc>" + escape(site_map.canonical_origin + page.address, quote=False) + "</loc></url>"
-            for page in site_map.indexed_pages()]
+            for page in site_map.indexed_pages() if site_map.section_of(page.address) is None]
     return ('<?xml version="1.0" encoding="UTF-8"?>\n'
             '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
             + "\n".join(rows) + "\n</urlset>\n").encode("utf-8")
@@ -524,6 +537,12 @@ def llms_text(site_map: SiteMap) -> bytes:
         entry = page(address)
         if entry is not None and entry.indexed:
             lines.append(f"- [{entry.title}]({origin}{entry.address}): {entry.description}")
+    sections = [(surface, page(surface.address)) for surface in site_map.canonical_sections()]
+    if sections:
+        # Each canonical section is a site of its own with its own llms.txt, which lists its pages in Markdown.
+        lines += ["", "## Sites for one kind of component", ""]
+        lines += [f"- [{entry.title}]({site_map.canonical_url(surface.address)}): {entry.description} Its own guide for "
+                  f"agents is {surface.origin}/llms.txt." for surface, entry in sections]
     lines += ["", "## Optional", "",
               f"- [MCP server directory]({origin}/directory): MCP servers and agent APIs from public registries.",
               f"- [Models]({origin}/models): context windows, prices, licences and hardware needs, with sources.",
@@ -602,6 +621,10 @@ def served_asset(path, method, display_name, host=None, site_map=None, library_c
         return None
     site_map = site_map or packaged_site_map()
     if path in GENERATED_WEB_FILES:
+        # A hostname that holds a canonical section serves its section's own copy, which the section's renderer
+        # answers after this table; every other hostname serves the shared file.
+        if site_map.section_file(host, path) is not None:
+            return None
         return GENERATORS[path](site_map), GENERATED_WEB_FILES[path]
     if path not in WEB_ASSETS:
         return None

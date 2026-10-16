@@ -222,7 +222,8 @@ const rootPage=siteMap.pages.find(item=>item.address===rootAddress),rootIsHome=r
    own view is checked first; shared application checks use its declared route. */
 const applicationAddress=rootIsHome?"/":siteMap.pages.find(item=>item.view==="about").address;
 const pageTitle=entry=>siteMap.display_name+" | "+entry.title;
-const opensItsPage=(shown,entry)=>Boolean(entry)&&JSON.stringify(shown.views)===JSON.stringify([entry.view])&&shown.title===pageTitle(entry)&&shown.canonical===canonicalOrigin+entry.address;
+/* A page names the canonical address the typed reader gives it: its section's hostname for a page of a canonical section. */
+const opensItsPage=(shown,entry)=>Boolean(entry)&&JSON.stringify(shown.views)===JSON.stringify([entry.view])&&shown.title===pageTitle(entry)&&shown.canonical===siteMap.canonical_urls[entry.address];
 const shownPage=target=>target.evaluate(()=>({views:[...document.querySelectorAll("[data-view]")].filter(item=>!item.hidden).map(item=>item.dataset.view),title:document.title,
   canonical:document.querySelector('link[rel="canonical"]')?.getAttribute("href")||"",brand:document.querySelector("header a.brand")?.getAttribute("href")||""}));
 /* The pages of September 24, 2026, checked on every hostname at their own addresses. */
@@ -602,8 +603,12 @@ try{
     check("live_page_opens_with_its_own_title_and_canonical_address_"+address.slice(1).replace(/\//g,"-"),direct.status()===200&&opensItsPage(await shownPage(page),siteMap.pages.find(item=>item.address===address)));
   }
   const robots=await page.request.get(origin+"/robots.txt",{maxRedirects:0}),sitemap=await page.request.get(origin+"/sitemap.xml",{maxRedirects:0});
-  const listed=[...(await sitemap.text()).matchAll(/<loc>([^<]+)<\/loc>/g)].map(found=>found[1]),listable=siteMap.pages.filter(item=>item.indexed).map(item=>canonicalOrigin+item.address);
-  check("live_robots_and_sitemap_follow_the_site_map",robots.status()===200&&(await robots.text()).includes("Sitemap: "+canonicalOrigin+"/sitemap.xml")&&sitemap.status()===200&&JSON.stringify(listed)===JSON.stringify(listable));
+  /* A hostname that holds a canonical section names its own site map, which opens with the section's root; every other
+     hostname names the canonical hostname's, which lists every listed page outside a section in site map order. */
+  const ownSection=siteMap.hostnames.find(item=>item.canonical_section&&item.hostname===new URL(origin).hostname),sitemapOrigin=ownSection?"https://"+ownSection.hostname:canonicalOrigin;
+  const listed=[...(await sitemap.text()).matchAll(/<loc>([^<]+)<\/loc>/g)].map(found=>found[1]),listable=siteMap.pages.filter(item=>item.indexed).map(item=>siteMap.canonical_urls[item.address]).filter(url=>url.startsWith(canonicalOrigin+"/"));
+  const listsItsPages=ownSection?listed[0]===sitemapOrigin+"/"&&listed.every(url=>url.startsWith(sitemapOrigin+"/")):JSON.stringify(listed)===JSON.stringify(listable);
+  check("live_robots_and_sitemap_follow_the_site_map",robots.status()===200&&(await robots.text()).includes("Sitemap: "+sitemapOrigin+"/sitemap.xml")&&sitemap.status()===200&&listsItsPages);
   // Compare the identity representation. A CDN may legally omit Content-Length
   // after selecting compression; its decoded body is not that wire length.
   const representationHeaders={"Accept-Encoding":"identity"};

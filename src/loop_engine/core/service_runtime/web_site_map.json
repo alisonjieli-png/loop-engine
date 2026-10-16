@@ -1,7 +1,7 @@
 {
-  "record_type": "service_web_site_map/v3",
+  "record_type": "service_web_site_map/v4",
   "decided_on": "2026-10-16",
-  "decided_by": "engineering, preserving earlier design, hostnames and audience paths, and adding the owner's Feeds direction as a clearly limited catalogue-metadata preview; on October 9, 2026 engineering relabeled the footer link to /overnight from \"Solve problems overnight\" to the offering name \"Overnight / AFK Work\" and rewrote the use cases description to match the page, with no page or link removed; for release 87 the same day engineering added three pages with footer links (Use Agent Feeds at /feeds/setup, Harness Files at /harness-files, Gallery at /gallery), renamed the signed-in workspace page title to Workspace and rewrote the efficiency description to match its page, again with no page or link removed; on October 16, 2026 the launch audit took \"reviewed\" out of the two random preview descriptions, as the owner's rule for library copy asks, and named the Basic and Pro plans in the pricing description, with no page or link removed",
+  "decided_by": "engineering, preserving earlier design, hostnames and audience paths, and adding the owner's Feeds direction as a clearly limited catalogue-metadata preview; on October 9, 2026 engineering relabeled the footer link to /overnight from \"Solve problems overnight\" to the offering name \"Overnight / AFK Work\" and rewrote the use cases description to match the page, with no page or link removed; for release 87 the same day engineering added three pages with footer links (Use Agent Feeds at /feeds/setup, Harness Files at /harness-files, Gallery at /gallery), renamed the signed-in workspace page title to Workspace and rewrote the efficiency description to match its page, again with no page or link removed; on October 16, 2026 the launch audit took \"reviewed\" out of the two random preview descriptions, as the owner's rule for library copy asks, and named the Basic and Pro plans in the pricing description, with no page or link removed; later the same day engineering moved the record to version 4, which states for each hostname whether it holds a canonical section, and no existing hostname holds one, so every canonical address stays where it was",
   "display_name": "Baltor",
   "canonical_hostname": "baltor.ai",
   "groups": [
@@ -1470,47 +1470,56 @@
     {
       "hostname": "baltor.ai",
       "address": "/",
-      "anchor": ""
+      "anchor": "",
+      "canonical_section": false
     },
     {
       "hostname": "www.baltor.ai",
       "address": "/",
-      "anchor": ""
+      "anchor": "",
+      "canonical_section": false
     },
     {
       "hostname": "docs.baltor.ai",
       "address": "/docs",
-      "anchor": ""
+      "anchor": "",
+      "canonical_section": false
     },
     {
       "hostname": "status.baltor.ai",
       "address": "/status",
-      "anchor": ""
+      "anchor": "",
+      "canonical_section": false
     },
     {
       "hostname": "examples.baltor.ai",
       "address": "/examples",
-      "anchor": ""
+      "anchor": "",
+      "canonical_section": false
     },
     {
       "hostname": "demo.baltor.ai",
       "address": "/demo",
-      "anchor": ""
+      "anchor": "",
+      "canonical_section": false
     },
     {
       "hostname": "app.baltor.ai",
       "address": "/",
-      "anchor": ""
+      "anchor": "",
+      "canonical_section": false
     },
     {
       "hostname": "deck.baltor.ai",
       "address": "/deck",
-      "anchor": ""
+      "anchor": "",
+      "canonical_section": false
     },
     {
       "hostname": "redteam.baltor.ai",
       "address": "/case-studies/decision-red-team",
-      "anchor": ""
+      "anchor": "",
+      "canonical_section": false
     }
   ],
   "removed": [

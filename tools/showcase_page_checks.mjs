@@ -46,7 +46,7 @@ export async function runShowcasePageChecks({root,python,browser,context,fixture
     h1:[...document.querySelectorAll("h1")].filter(node=>node.getClientRects().length>0).length,height:document.documentElement.scrollHeight,
     overflow:document.documentElement.scrollWidth>innerWidth+1}));
   const opensItsPage=(state,entry)=>Boolean(entry)&&JSON.stringify(state.views)===JSON.stringify([entry.view])&&state.title===siteMap.display_name+" | "+entry.title
-    &&state.canonical===canonicalOrigin+entry.address&&state.h1===1;
+    &&state.canonical===siteMap.canonical_urls[entry.address]&&state.h1===1;
 
   /* Each page at its own address: one view, one visible heading, its own title and its canonical address on the canonical hostname,
      within its scroll budget at 1440 by 900 and at 390 by 844, with a screenshot of each size beside the report. */

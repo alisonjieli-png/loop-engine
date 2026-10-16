@@ -173,8 +173,13 @@ especially for pages like a case study." The finite 6,000-pixel case-study
 limit gives the measured 5,120-pixel sign-up protection study 880 pixels of
 room for explanation and evidence. Its measured phone height was 5,972 pixels.
 This allowance does not change the homepage or ordinary-page limits. The
-site map is `service_web_site_map/v3` and the layout standard is
-`service_web_layout_standard/v2`; earlier records are refused.
+site map is `service_web_site_map/v4` and the layout standard is
+`service_web_layout_standard/v2`; earlier records are refused. Version 4,
+October 16, 2026, states for each hostname whether it holds a canonical
+section. Such a hostname is the canonical address of its root page and of
+every page below that page's address. Its pages link the canonical
+hostname's pages by their whole addresses, so sign-in and sign-up always run
+on `baltor.ai`. It serves its own `robots.txt`, `sitemap.xml` and `llms.txt`.
 
 The live measurements of release 20 that led to these rules, recorded on
 September 23, 2026: the homepage was 7,046 pixels at 1440 (7.8 screens) and

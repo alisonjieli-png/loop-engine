@@ -21,7 +21,9 @@ a page that nothing links to without a written reason, a page that says it is
 linked from the header or the footer when that list does not hold it, a page
 that only earlier links reach and still asks to be listed by a search engine,
 two listed pages with the same title or the same description, a hostname whose
-root is not a linked page, or a removal without a date and a reason. `tools/test_website_site_map.py` compares
+root is not a linked page, a canonical section that is not a listed page below
+the homepage on a subdomain of the canonical hostname or that overlaps another,
+or a removal without a date and a reason. `tools/test_website_site_map.py` compares
 the site map with the pages the service serves, and
 `tools/check_website_layout.mjs` measures the served pages in a browser; both
 read the records through `load_site_map` and `load_layout_standard`.
@@ -39,6 +41,16 @@ reader that guessed them would publish a description nobody wrote.
 Site map version 3 and layout standard version 2, September 26, 2026, add the
 finite case-study scroll budget. Earlier records lack that policy and are
 refused rather than interpreted with the ordinary-page limit.
+
+Site map version 4, October 16, 2026, says for each hostname whether it holds
+a canonical section: whether the hostname is the canonical address of the
+page it opens at its root and of every page below that page's address, as
+the owner's showcase hostnames are, or only a second address for that page,
+as docs.baltor.ai is. A version 3 record lacks the choice and is refused,
+because a reader that guessed it would name the wrong canonical address for
+every page of a section. A hostname that holds a section serves the section's
+own `robots.txt`, `sitemap.xml` and `llms.txt` at its root; every other
+address is the same page on every hostname.
 """
 from __future__ import annotations
 
@@ -46,12 +58,18 @@ from dataclasses import asdict, dataclass
 import json
 import re
 from typing import Any
+from urllib.parse import urlsplit
 
-SITE_MAP_RECORD_TYPE = "service_web_site_map/v3"
+SITE_MAP_RECORD_TYPE = "service_web_site_map/v4"
 LAYOUT_STANDARD_RECORD_TYPE = "service_web_layout_standard/v2"
 #: The packaged files that hold the two records, beside this module.
 SITE_MAP_FILE = "web_site_map.json"
 LAYOUT_STANDARD_FILE = "web_layout_standard.json"
+#: The scheme of every address the website names. A hostname in the record carries none.
+SCHEME = "https"
+#: The files a hostname that holds a canonical section serves at its own root from the section's own copies, which
+#: live at the section's address followed by the same name. Every other hostname serves the shared files.
+SECTION_ROOT_FILES = ("/robots.txt", "/sitemap.xml", "/llms.txt")
 #: The three header states a page shows: a visitor, a signed-in person and an operator.
 HEADER_STATES = ("signed_out", "signed_in", "operator")
 #: The places a page can be linked from. A hub page and any other page count as "page".
@@ -136,11 +154,23 @@ class FooterBaseRow:
 
 @dataclass(frozen=True)
 class HostnameSurface:
-    """The page a hostname opens at its root address, and the part of it shown first."""
+    """The page a hostname opens at its root address, the part of it shown first, and whether the hostname holds a
+    canonical section: it is then the canonical address of that page, at its root, and of every page whose address
+    starts with that page's address and a slash."""
 
     hostname: str
     address: str
     anchor: str
+    canonical_section: bool
+
+    @property
+    def origin(self) -> str:
+        """The origin of this hostname, for a whole address."""
+        return SCHEME + "://" + self.hostname
+
+    def holds(self, address: str) -> bool:
+        """True when `address` is the section's root page or a page below it."""
+        return address == self.address or address.startswith(self.address + "/")
 
 
 @dataclass(frozen=True)
@@ -180,8 +210,53 @@ class SiteMap:
 
     @property
     def canonical_origin(self) -> str:
-        """The one origin every page names as its canonical address."""
-        return "https://" + self.canonical_hostname
+        """The origin every page outside a canonical section names as its canonical address."""
+        return SCHEME + "://" + self.canonical_hostname
+
+    def canonical_sections(self) -> tuple[HostnameSurface, ...]:
+        """The hostnames that are the canonical address of their own section, in record order."""
+        return tuple(surface for surface in self.hostnames if surface.canonical_section)
+
+    def section_of(self, address: str) -> HostnameSurface | None:
+        """The hostname whose canonical section holds `address`, or None for an address of the canonical hostname."""
+        return next((surface for surface in self.canonical_sections() if surface.holds(address)), None)
+
+    def canonical_url(self, address: str) -> str:
+        """The whole canonical address of the page at `address`: on its section's hostname, at the root for the
+        section's own page, or on the canonical hostname for every other page."""
+        section = self.section_of(address)
+        if section is None:
+            return self.canonical_origin + address
+        return section.origin + ("/" if address == section.address else address)
+
+    def section_file(self, host: str | None, path: str) -> str | None:
+        """The address whose bytes a hostname serves at one of its root files: the section's own copy on a hostname
+        that holds a canonical section, None on every other hostname and for every other path."""
+        name = hostname_of(host)
+        section = next((surface for surface in self.canonical_sections() if surface.hostname == name), None)
+        return section.address + path if section is not None and path in SECTION_ROOT_FILES else None
+
+    def address_of(self, url: str) -> str | None:
+        """The address a whole address of this website names, or None for any other address.
+
+        On the canonical hostname it is the path. On a hostname that holds a canonical section, the root is the
+        section's own page, a root file is the section's own copy and any other path is itself. A query or a fragment
+        is left out; an address with a user part, a port or another scheme names nothing here.
+        """
+        try:
+            parts = urlsplit(url)
+            port = parts.port
+        except ValueError:
+            return None
+        if parts.scheme != SCHEME or parts.username or parts.password or port is not None or not parts.hostname:
+            return None
+        path = parts.path or "/"
+        if parts.hostname == self.canonical_hostname:
+            return path
+        section = next((surface for surface in self.canonical_sections() if surface.hostname == parts.hostname), None)
+        if section is None:
+            return None
+        return section.address if path == "/" else (self.section_file(section.hostname, path) or path)
 
     def root_address(self, host: str | None) -> str:
         """The address of the page a request's Host shows at the root address "/".
@@ -375,6 +450,28 @@ def _removal(value: Any, where: str) -> Removal:
                    _text(row["reason"], where + ".reason"), _text(row["decided_by"], where + ".decided_by"))
 
 
+def _sections(site_map: SiteMap) -> None:
+    """A canonical section is a listed page below the homepage, on a subdomain of the canonical hostname, and no
+    section holds another, so every address has exactly one canonical address."""
+    sections = site_map.canonical_sections()
+    for surface in sections:
+        if not surface.hostname.endswith("." + site_map.canonical_hostname):
+            raise SiteMapError(f"hostname {surface.hostname} holds a canonical section, and only a subdomain of "
+                               f"{site_map.canonical_hostname} may hold one")
+        if surface.address == "/":
+            raise SiteMapError(f"hostname {surface.hostname} holds the homepage as a canonical section; a section is "
+                               "a page below the homepage")
+        if not site_map.page(surface.address).indexed:
+            raise SiteMapError(f"hostname {surface.hostname} holds {surface.address} as a canonical section, and "
+                               "search engines may not list that page")
+        if surface.anchor:
+            raise SiteMapError(f"hostname {surface.hostname} holds a canonical section and opens a part of its page; "
+                               "a canonical address names the whole page")
+        for other in sections:
+            if other is not surface and other.holds(surface.address):
+                raise SiteMapError(f"the canonical sections of {surface.hostname} and {other.hostname} overlap")
+
+
 def _consistency(site_map: SiteMap) -> None:
     """Every link names a page, and every page's declared places agree with the lists that hold it."""
     addresses = {page.address for page in site_map.pages}
@@ -397,6 +494,7 @@ def _consistency(site_map: SiteMap) -> None:
             raise SiteMapError(f"hostname {surface.hostname} opens {surface.address}, which only earlier links reach")
         if surface.hostname == site_map.canonical_hostname and surface.address != "/":
             raise SiteMapError(f"the canonical hostname {surface.hostname} opens the homepage at its root")
+    _sections(site_map)
     listed = site_map.indexed_pages()
     _unique([page.title for page in listed], "the titles of listed pages")
     _unique([page.description for page in listed], "the descriptions of listed pages")
@@ -417,10 +515,13 @@ def site_map_from_record(record: Any) -> SiteMap:
     footer_brand, footer_groups, base_row = _footer(row["footer"], "site map.footer")
     hostnames = []
     for index, item in enumerate(_list(row["hostnames"], "site map.hostnames", True)):
-        surface = _fields(item, f"site map.hostnames[{index}]", ("hostname", "address", "anchor"))
+        surface = _fields(item, f"site map.hostnames[{index}]", ("hostname", "address", "anchor", "canonical_section"))
+        if not isinstance(surface["canonical_section"], bool):
+            raise SiteMapError(f"site map.hostnames[{index}].canonical_section must be true or false")
         hostnames.append(HostnameSurface(_text(surface["hostname"], f"site map.hostnames[{index}].hostname", _HOSTNAME),
                                          _text(surface["address"], f"site map.hostnames[{index}].address", _ADDRESS),
-                                         _text(surface["anchor"], f"site map.hostnames[{index}].anchor", _TOKEN, empty=True)))
+                                         _text(surface["anchor"], f"site map.hostnames[{index}].anchor", _TOKEN, empty=True),
+                                         surface["canonical_section"]))
     _unique([surface.hostname for surface in hostnames], "site map.hostnames")
     removed = tuple(_removal(item, f"site map.removed[{index}]") for index, item in enumerate(_list(row["removed"], "site map.removed", True)))
     social_image = _text(row["social_image"], "site map.social_image", _HREF)
@@ -514,5 +615,9 @@ def load_layout_standard() -> LayoutStandard:
 
 
 def as_plain_record(value: SiteMap | LayoutStandard) -> dict:
-    """The checked record as plain JSON values, for a check written in another language."""
-    return json.loads(json.dumps(asdict(value)))
+    """The checked record as plain JSON values, for a check written in another language. A site map also carries the
+    canonical address of each of its pages, so a check in another language never restates the rule that decides it."""
+    record = json.loads(json.dumps(asdict(value)))
+    if isinstance(value, SiteMap):
+        record["canonical_urls"] = {page.address: value.canonical_url(page.address) for page in value.pages}
+    return record

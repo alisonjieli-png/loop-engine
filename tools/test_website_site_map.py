@@ -153,8 +153,12 @@ def first(node, test):
 
 
 def unversioned(value):
-    """An address as the site map names it: a packaged file's content version is not part of its address."""
-    return ASSET_VERSION.sub("", value) if isinstance(value, str) and value.startswith("/assets/") else value
+    """An address as the site map names it: a packaged file's content version is not part of its address, whether the
+    file is named from the root or by its whole address."""
+    if not isinstance(value, str):
+        return value
+    path = value if value.startswith("/") else "/" + value.split("://", 1)[-1].partition("/")[2]
+    return ASSET_VERSION.sub("", value) if path.startswith("/assets/") else value
 
 
 @dataclass
@@ -286,11 +290,24 @@ def pages_are_served_with_one_h1(site):
     return problems
 
 
+def chrome_href(site_map, addresses, href):
+    """The address a page's header or footer must name for a site map entry.
+
+    A page of a canonical section names every page of the canonical hostname by its whole address, because a link from
+    the root would keep the reader on the section's hostname, where sign-in and sign-up do not run. Every other page
+    names it from the root, as the site map writes it.
+    """
+    if href and href.startswith("/") and addresses and all(site_map.section_of(address) for address in addresses):
+        return site_map.canonical_origin + href
+    return href
+
+
 def header_matches_the_site_map(site):
     problems = []
     for document, addresses in site.page_documents():
         for state in HEADER_STATES:
-            expected = [(entry.role, entry.label, entry.href) for entry in site.site_map.header[state]]
+            expected = [(entry.role, entry.label, chrome_href(site.site_map, addresses, entry.href))
+                        for entry in site.site_map.header[state]]
             actual = header_entries(document, state)
             where = f"header, {state}, on {addresses[0]}"
             problems.extend([f"{where}: the page has no header"] if actual is None else order_problems(where, expected, actual))
@@ -323,12 +340,12 @@ def footer_matches_the_site_map(site):
             heading = first(nav, lambda item: "footer-heading" in item.classes())
             if heading is not None and heading.text() != group.name:
                 problems.append(f"{where}: the group {group.name!r} is headed {heading.text()!r}")
-            expected = [(link.role, link.label, link.href) for link in group.links]
+            expected = [(link.role, link.label, chrome_href(site_map, addresses, link.href)) for link in group.links]
             problems.extend(order_problems(f"{where}, group {group.name!r}", expected, _footer_links(nav)))
         outside = [item for item in footer.walk() if item.tag == "a" and "href" in item.attrs
                    and not any(node.tag == "nav" for node in item.ancestors(footer))]
         brands = [item for item in outside if "brand" in item.classes()]
-        if [item.attrs["href"] for item in brands] != [site_map.footer_brand]:
+        if [item.attrs["href"] for item in brands] != [chrome_href(site_map, addresses, site_map.footer_brand)]:
             problems.append(f"{where}: the footer brand links to {[item.attrs['href'] for item in brands]}")
         extra = [item.attrs["href"] for item in outside if "brand" not in item.classes()]
         if extra:
@@ -371,9 +388,13 @@ def internal_addresses_are_served(site):
             if not value.strip():
                 problems.append(f"{where}: an empty address")
                 continue
-            if EXTERNAL.match(value):
-                continue
             path, _, fragment = value.partition("#")
+            if EXTERNAL.match(value):
+                # A whole address of this website, such as a canonical section's link to the canonical hostname, is
+                # checked like an address from the root; any other site's address is not this check's to make.
+                path = site.site_map.address_of(path)
+                if path is None:
+                    continue
             path = path.split("?", 1)[0]
             if not path:
                 if fragment and fragment not in ids:
@@ -397,18 +418,28 @@ def internal_addresses_are_served(site):
     return problems
 
 
+def _site_links(site_map, element):
+    """The addresses of this website that the links inside `element` open: from the root, or as whole addresses of the
+    canonical hostname or of a canonical section's hostname."""
+    links = set()
+    for item in element.walk():
+        if item.tag != "a" or "href" not in item.attrs:
+            continue
+        href = item.attrs["href"].split("#", 1)[0]
+        address = href if href.startswith("/") else site_map.address_of(href) if EXTERNAL.match(href) else None
+        if address is not None:
+            links.add(address)
+    return links
+
+
 def _content_links(site, page):
     view = view_of(site.document(page.address), page.view)
-    if view is None:
-        return set()
-    return {item.attrs["href"].split("#", 1)[0] for item in view.walk()
-            if item.tag == "a" and "href" in item.attrs and item.attrs["href"].startswith("/")}
+    return set() if view is None else _site_links(site.site_map, view)
 
 
-def _chrome_links(document, tag):
+def _chrome_links(site_map, document, tag):
     part = first(document, lambda item: item.tag == tag)
-    return set() if part is None else {item.attrs["href"].split("#", 1)[0] for item in part.walk()
-                                       if item.tag == "a" and "href" in item.attrs and item.attrs["href"].startswith("/")}
+    return set() if part is None else _site_links(site_map, part)
 
 
 def every_page_is_reached_or_has_a_reason(site):
@@ -421,8 +452,8 @@ def every_page_is_reached_or_has_a_reason(site):
             problems.append(f"{address}: served as a page and absent from the site map")
     header, footer, content = set(), set(), {}
     for document, addresses in site.page_documents():
-        header |= _chrome_links(document, "header")
-        footer |= _chrome_links(document, "footer")
+        header |= _chrome_links(site_map, document, "header")
+        footer |= _chrome_links(site_map, document, "footer")
     for page in site_map.pages:
         content[page.address] = _content_links(site, page)
     # A page nothing links to is still a way in: an earlier link, a message or the identity provider opens it, and the
@@ -598,7 +629,7 @@ def inventory_of(site, release, revision):
 
 # The fixture site: a small website that passes every rule, so that each known-wrong case changes one thing.
 FIXTURE_MAP = {
-    "record_type": "service_web_site_map/v3", "decided_on": "2026-09-23", "decided_by": "the fixture",
+    "record_type": "service_web_site_map/v4", "decided_on": "2026-09-23", "decided_by": "the fixture",
     "display_name": "Example", "canonical_hostname": "example.com", "social_image": "/assets/mark.svg",
     "groups": ["Product", "Company", "Account"],
     "pages": [
@@ -632,8 +663,8 @@ FIXTURE_MAP = {
         {"name": "Company", "links": [{"role": "link", "label": "Sign in", "href": "/login"},
                                       {"role": "link", "label": "Notices", "href": "/assets/notices.txt"}]}],
         "base_row": {"operator": "Example.AI", "operator_line": "1 Example Street", "mark": "/assets/mark.svg"}},
-    "hostnames": [{"hostname": "example.com", "address": "/", "anchor": ""},
-                  {"hostname": "demo.example.com", "address": "/", "anchor": "demo"}],
+    "hostnames": [{"hostname": "example.com", "address": "/", "anchor": "", "canonical_section": False},
+                  {"hostname": "demo.example.com", "address": "/", "anchor": "demo", "canonical_section": False}],
     "removed": [{"date": "2026-09-23", "kind": "header_link", "state": "signed_out", "subject": "/retired",
                  "reason": "the fixture retired it", "decided_by": "the fixture"}],
 }
@@ -879,6 +910,16 @@ KNOWN_WRONG_RECORDS = {
     "a removed header link without its state": _record_change(("removed", 0, "state"), ""),
     "a hostname that opens an address that is not a page": _record_change(("hostnames", 1, "address"), "/demo"),
     "a view name that is not a lowercase token": _record_change(("pages", 0, "view"), "Home View"),
+    "a hostname without its section choice": _record_change(("hostnames", 1, "canonical_section"), _DELETE),
+    "a section choice that is not true or false": _record_change(("hostnames", 1, "canonical_section"), "yes"),
+    "the canonical hostname holding a canonical section": _record_change(("hostnames", 0, "canonical_section"), True),
+    "a canonical section at the homepage": _record_change(("hostnames", 1, "canonical_section"), True),
+    "a canonical section on another domain": lambda record: _with_section(record, "guide.example.org", "/guide"),
+    "a canonical section whose page search engines may not list": lambda record: _with_section(record, "app.example.com", "/app"),
+    "a canonical section that opens a part of its page": lambda record: _with_section(record, "guide.example.com", "/guide",
+                                                                                      "guide-steps"),
+    "two canonical sections that overlap": lambda record: _with_section(_with_section(record, "guide.example.com", "/guide"),
+                                                                        "guides.example.com", "/guide"),
 }
 GUARDED_RECORD_CASES = {
     "_consistency": ("a page that says the footer links it when the footer does not",
@@ -888,7 +929,16 @@ GUARDED_RECORD_CASES = {
                      "a canonical hostname whose root is not the homepage",
                      "two listed pages with one description"),
     "_unique": ("a repeated page address",),
+    "_sections": ("the canonical hostname holding a canonical section", "a canonical section at the homepage",
+                  "a canonical section on another domain", "a canonical section whose page search engines may not list",
+                  "a canonical section that opens a part of its page", "two canonical sections that overlap"),
 }
+
+
+def _with_section(record, hostname, address, anchor=""):
+    """The record with one more hostname that holds the canonical section at `address`."""
+    return {**record, "hostnames": record["hostnames"] + [
+        {"hostname": hostname, "address": address, "anchor": anchor, "canonical_section": True}]}
 
 
 class SiteMapRecords(unittest.TestCase):
@@ -909,13 +959,13 @@ class SiteMapRecords(unittest.TestCase):
         self.assertEqual(pages["/case-studies/decision-red-team"].scroll_budget, "documentation")
 
     def test_site_map_refuses_versions_without_the_current_budget_contract(self):
-        for version in ("service_web_site_map/v2", "service_web_site_map/v4"):
+        for version in ("service_web_site_map/v3", "service_web_site_map/v5"):
             with self.subTest(version=version), self.assertRaises(SiteMapError):
                 site_map_from_record({**json.loads(json.dumps(FIXTURE_MAP)), "record_type": version})
 
     def test_the_packaged_records_are_read_by_the_typed_reader(self):
         site_map, layout = load_site_map(), load_layout_standard()
-        self.assertEqual(site_map.record_type, "service_web_site_map/v3")
+        self.assertEqual(site_map.record_type, "service_web_site_map/v4")
         self.assertEqual(layout.record_type, "service_web_layout_standard/v2")
         self.assertEqual([group.name for group in site_map.footer_groups], ["Product", "Library", "Use cases", "Documentation", "Company"])
         self.assertEqual(max(layout.section_padding_px["desktop"]), 64)
@@ -923,6 +973,29 @@ class SiteMapRecords(unittest.TestCase):
 
     def test_the_fixture_record_is_accepted(self):
         self.assertEqual(site_map_from_record(json.loads(json.dumps(FIXTURE_MAP))).display_name, "Example")
+
+    def test_a_canonical_section_names_its_own_hostname_for_its_pages_and_root_files(self):
+        site_map = site_map_from_record(_with_section(json.loads(json.dumps(FIXTURE_MAP)), "guide.example.com", "/guide"))
+        self.assertEqual(site_map.canonical_url("/guide"), "https://guide.example.com/")
+        self.assertEqual(site_map.canonical_url("/guide/steps"), "https://guide.example.com/guide/steps")
+        # A longer name that only starts like the section is not below it.
+        self.assertEqual(site_map.canonical_url("/guides"), "https://example.com/guides")
+        self.assertEqual(site_map.canonical_url("/pricing"), "https://example.com/pricing")
+        self.assertEqual(site_map.section_file("guide.example.com:443", "/robots.txt"), "/guide/robots.txt")
+        self.assertIsNone(site_map.section_file("example.com", "/robots.txt"))
+        self.assertIsNone(site_map.section_file("guide.example.com", "/pricing"))
+        self.assertEqual(site_map.address_of("https://guide.example.com/"), "/guide")
+        self.assertEqual(site_map.address_of("https://guide.example.com/sitemap.xml"), "/guide/sitemap.xml")
+        self.assertEqual(site_map.address_of("https://guide.example.com/guide/steps?x=1#top"), "/guide/steps")
+        self.assertEqual(site_map.address_of("https://example.com/pricing?x=1#plans"), "/pricing")
+        for other in ("http://example.com/pricing", "https://example.org/", "https://user@example.com/",
+                      "https://example.com:8443/", "https://demo.example.com/", "mailto:someone@example.com"):
+            with self.subTest(address=other):
+                self.assertIsNone(site_map.address_of(other))
+        # Without the section every page keeps its canonical address on the canonical hostname.
+        plain = site_map_from_record(json.loads(json.dumps(FIXTURE_MAP)))
+        self.assertEqual(plain.canonical_url("/guide"), "https://example.com/guide")
+        self.assertIsNone(plain.section_file("guide.example.com", "/robots.txt"))
 
     def test_the_reader_refuses_each_known_wrong_record(self):
         for description, change in KNOWN_WRONG_RECORDS.items():
@@ -952,6 +1025,52 @@ class SiteMapRecords(unittest.TestCase):
             for description in cases:
                 with self.subTest(guard=guard, case=description), mock.patch.object(web_site_map, guard, lambda *given: None):
                     site_map_from_record(KNOWN_WRONG_RECORDS[description](json.loads(json.dumps(FIXTURE_MAP))))
+
+
+def _section_fixture(absolute):
+    """The fixture site with /guide as the canonical section of guide.example.com, served as a page of its own whose
+    header and footer name the canonical hostname's pages by their whole addresses, or from the root."""
+    state = fixture()
+    whole = lambda part: part.replace('href="/', 'href="https://example.com/')  # noqa: E731
+    header, footer = ((whole(state.parts[name]) if absolute else state.parts[name]) for name in ("header", "footer"))
+    guide = (state.parts["head"] + header + "<main>" + state.parts["guide"].replace(" hidden", "", 1) + "</main>"
+             + footer + state.parts["tail"])
+    site = replace(state, record=_with_section(state.record, "guide.example.com", "/guide")).site()
+    serve = site.serve
+    site.serve = lambda address: (guide, HTML) if address == "/guide" else serve(address)
+    return site
+
+
+class CanonicalSectionChrome(unittest.TestCase):
+    """A page of a canonical section links the canonical hostname's pages by their whole addresses, so a reader who
+    signs up from it does so on the canonical hostname; every other page links them from the root."""
+
+    def test_a_section_page_with_whole_addresses_passes_every_rule(self):
+        site = _section_fixture(absolute=True)
+        found = {name: rule(site) for name, rule in RULES.items()}
+        self.assertEqual({name: problems for name, problems in found.items() if problems}, {})
+
+    def test_a_section_page_that_links_from_the_root_is_refused(self):
+        site = _section_fixture(absolute=False)
+        for rule in (header_matches_the_site_map, footer_matches_the_site_map):
+            with self.subTest(rule=rule.__name__):
+                self.assertTrue(any("/guide" in problem for problem in rule(site)))
+
+    def test_a_page_outside_a_section_that_links_by_whole_addresses_is_refused(self):
+        whole = lambda part: part.replace('href="/', 'href="https://example.com/')  # noqa: E731
+        state = fixture()
+        site = replace(state, parts={**state.parts, "header": whole(state.parts["header"])}).site()
+        self.assertTrue(header_matches_the_site_map(site))
+
+    def test_a_whole_address_of_this_website_that_nothing_serves_is_refused(self):
+        state = fixture()
+        site = replace(state, parts={**state.parts, "home": state.parts["home"].replace(
+            '<a href="/guide">', '<a href="https://example.com/nowhere">Nowhere</a><a href="/guide">', 1)}).site()
+        self.assertTrue(any("/nowhere" in problem for problem in internal_addresses_are_served(site)))
+        # Another site's address is not this check's to make.
+        site = replace(state, parts={**state.parts, "home": state.parts["home"].replace(
+            '<a href="/guide">', '<a href="https://example.org/nowhere">Elsewhere</a><a href="/guide">', 1)}).site()
+        self.assertEqual(internal_addresses_are_served(site), [])
 
 
 SERVICE_SCRIPT = ROOT / "src/loop_engine/core/service_runtime/web_assets/service.js"

@@ -13,8 +13,9 @@ answered only for packaged files, and `/robots.txt` and `/sitemap.xml` answered
 case beside it that the rule must report:
 
 - every page of the site map is served with its own title, description,
-  canonical address on the canonical hostname and shared-link tags, and a page
-  a search engine may not list says so;
+  canonical address (on the canonical hostname, or on its section's hostname
+  for a page of a canonical section) and shared-link tags, and a page a search
+  engine may not list says so;
 - every page of the one-page application is served with its own view shown
   and every other view hidden, so a reader without the script and a crawler
   that does not run it read that page, not the homepage;
@@ -99,7 +100,7 @@ def head_problems(site_map, serve) -> list:
         if answer is None or answer[1] != HTML_MEDIA_TYPE:
             problems.append(f"{page.address}: not served as a page")
             continue
-        head, canonical = read_head(answer[0]), site_map.canonical_origin + page.address
+        head, canonical = read_head(answer[0]), site_map.canonical_url(page.address)
         expected = {"titles": [DISPLAY_NAME + " | " + page.title], "descriptions": [page.description],
                     "canonical": [canonical], "og_url": [canonical], "og_title": [DISPLAY_NAME + " | " + page.title],
                     # A page file with its own shared-link picture (the deck's card) keeps it and shows it as a large card.
@@ -138,7 +139,7 @@ def hostname_problems(site_map, serve) -> list:
         if answer is None:
             problems.append(f"{surface.hostname}: the root address is not served")
             continue
-        head, canonical = read_head(answer[0]), site_map.canonical_origin + surface.address
+        head, canonical = read_head(answer[0]), site_map.canonical_url(surface.address)
         if head["canonical"] != [canonical]:
             problems.append(f"{surface.hostname}: the root names {head['canonical']}, and the site map gives {canonical}")
         own = serve(surface.address, surface.hostname)
@@ -170,7 +171,9 @@ def listing_problems(site_map, serve) -> list:
         return ["robots.txt or sitemap.xml is not served"]
     listed = [element.findtext(SITEMAP_NAMESPACE + "loc") for element in
               ElementTree.fromstring(sitemap[0]).findall(SITEMAP_NAMESPACE + "url")]
-    wanted = [site_map.canonical_origin + page.address for page in site_map.indexed_pages()]
+    # A page of a canonical section is listed by its own hostname's site map, not by the canonical hostname's.
+    wanted = [site_map.canonical_origin + page.address for page in site_map.indexed_pages()
+              if site_map.section_of(page.address) is None]
     if listed != wanted:
         problems.append(f"sitemap.xml lists {sorted(set(listed) ^ set(wanted))} differently from the site map")
     lines = robots[0].decode("utf-8").splitlines()

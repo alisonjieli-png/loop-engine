@@ -304,7 +304,7 @@ try{
     const w={...where,width:desktop.width};
     check("address_shows_its_view",d.view===page.view,w,{expected:page.view,shown:d.view});
     check("page_title_matches_the_site_map",d.title===siteMap.display_name+" | "+page.title,w,{expected:siteMap.display_name+" | "+page.title,shown:d.title});
-    const canonical="https://"+siteMap.canonical_hostname+page.address;
+    const canonical=siteMap.canonical_urls[page.address];
     check("page_names_its_canonical_address",d.canonical===canonical,w,{expected:canonical,shown:d.canonical});
     const measured={desktop:d};
     const phoneTab=byWidth.phone.page;await load(phoneTab,page.address);measured.phone=await phoneTab.evaluate(measure,arguments_(false));record.height.phone=measured.phone.height;

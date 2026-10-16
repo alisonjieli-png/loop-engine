@@ -309,8 +309,9 @@ with a dated removal row in that record.
 
 Since September 24, 2026 the service writes each page's own head before any
 script runs, from the typed site map (`web_site_map.json`, record
-`service_web_site_map/v3`): the title, the one-line description, the
-canonical address on `https://baltor.ai`, the Open Graph and card tags a
+`service_web_site_map/v4`): the title, the one-line description, the
+canonical address on `https://baltor.ai` (or, for a page of a canonical
+section, on the section's own hostname), the Open Graph and card tags a
 shared link shows, and `noindex` for a page a search engine may not list. The
 title, the description and those tags are taken out of a page's own head
 first, so a page with a file of its own, not only a view of `index.html`,
@@ -328,7 +329,11 @@ own page on every hostname.
 
 `/robots.txt` and `/sitemap.xml` are written from the same record: the
 sitemap lists every page marked `indexed` at its canonical address, and
-robots.txt leaves out the interface routes and every unlisted page. Both
+robots.txt leaves out the interface routes and every unlisted page. A
+hostname that holds a canonical section answers `/robots.txt`,
+`/sitemap.xml` and `/llms.txt` with its section's own copies, which name its
+own site map and list its own pages; the canonical hostname's sitemap leaves
+those pages out. Both
 answer HEAD like GET, with a strong validator. The checks are
 `web_surface_checks.py` in the service self-test and
 `tools/showcase_page_checks.mjs` in the browser suite.
