@@ -147,6 +147,26 @@ class ServiceAccessSession:
         object.__setattr__(self, "allowed_scopes", scopes(self.allowed_scopes))
 
 
+def verified_customer_session(runtime, store, principal, session):
+    """Check one signed-in customer's browser session inside an open store read, and return the guards it rests on.
+
+    The principal must be a subject sign-in, the session must name that same subject binding, the session must
+    not be signed out, and it must not have expired. The expiry is read after the revocation: a revocation is
+    removed once its session has expired, so a session whose revocation disappeared between the two reads is
+    already past its expiry here. Customer client tokens and saved customer feeds both use this one check.
+    """
+    current, guards = runtime._revalidate(store, principal)
+    if (current.authentication_kind != SUBJECT or not isinstance(session, ServiceAccessSession)
+            or session.authentication_record_id != current.authentication_record_id):
+        raise ServiceRuntimeError("browser_session_required")
+    catalog = runtime._catalog
+    if catalog.read(store, SESSION_REVOCATION, session.credential_digest) is not None:
+        raise ServiceRuntimeError("unauthorized")
+    if session.expires_at <= runtime._now():
+        raise ServiceRuntimeError("unauthorized")
+    return current, (*guards, catalog.guard(None, catalog.identity(SESSION_REVOCATION, session.credential_digest)))
+
+
 @dataclass(frozen=True)
 class ServiceAccessRequest:
     operation: str
@@ -216,20 +236,7 @@ class ServiceAccessAdministration:
         return (current.tenant_id,) if self.customer_managed else self.policy.target_tenants
 
     def _customer_authorize(self, store, principal, session):
-        current, guards = self.runtime._revalidate(store, principal)
-        if (current.authentication_kind != SUBJECT or not isinstance(session, ServiceAccessSession)
-                or session.authentication_record_id != current.authentication_record_id):
-            raise ServiceRuntimeError("browser_session_required")
-        catalog = self.runtime._catalog
-        revoked = catalog.read(store, SESSION_REVOCATION, session.credential_digest)
-        if revoked is not None:
-            raise ServiceRuntimeError("unauthorized")
-        # The expiry is read after the revocation. A revocation is removed once
-        # its session has expired, so a session whose revocation disappeared
-        # between the two reads is already past its expiry here.
-        if session.expires_at <= self.runtime._now():
-            raise ServiceRuntimeError("unauthorized")
-        return current, (*guards, catalog.guard(None, catalog.identity(SESSION_REVOCATION, session.credential_digest)))
+        return verified_customer_session(self.runtime, store, principal, session)
 
     def _authorize_context(self, store, principal, session):
         return (self._customer_authorize(store, principal, session) if self.customer_managed
