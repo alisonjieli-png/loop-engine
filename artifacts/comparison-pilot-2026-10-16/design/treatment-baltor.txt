@@ -1,0 +1,2 @@
+
+The Baltor library is connected to this project through the baltor MCP tools and the baltor-library skill. You may search it for material that helps with this task and use what fits, or continue without it.

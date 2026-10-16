@@ -1,0 +1,278 @@
+{
+ "record_type": "comparison_pilot_design/v1",
+ "frozen_on": "2026-10-16",
+ "title": "Popular-project comparison pilot with and without Baltor",
+ "owner_request": "October 16, 2026: more demos, tests and end-to-end tests that use baltor.ai to monitor, recreate, redo and compare popular coding projects side by side (CodeRabbit lists, GitHub lists of common projects, Kaggle), and show how AgentBriefs can suggest ways to improve upon them as new technologies, systems and architectures are released.",
+ "governing_protocol": [
+  "docs/roadmap/DELIVERY-SEQUENCE.md#customer-task-comparison-programme",
+  "docs/roadmap/DELIVERY-SEQUENCE.md#agentbriefs-proposal-qualification",
+  "docs/roadmap/roadmap.yaml: D-06, D-09, S-6.173, S-6.185, S-6.35.09"
+ ],
+ "kind": "diagnostic pilot; not a benefit study and not a full Loop Engine case study",
+ "question": "With the same pinned native harness, model route, environment and budget, does a fresh customer's live Baltor connection change what an agent finishes on three popular-project tasks, and what does the connection cost in requests, tokens and time?",
+ "claim_rules": [
+  "This pilot supports no percentage-improvement claim and no statement that Baltor helps or hurts. It reports, per task and arm, how many of the two repetitions passed acceptance, the secondary metric, requests, tokens, time and failures.",
+  "Lower tokens or time on work that failed acceptance are not savings.",
+  "Every attempt is reported, including failures, cap stops, timeouts and provider failures. An attempt with a provider failure is excluded from the comparison, kept in the record and run again once.",
+  "A Baltor arm that never searched or read Baltor is recorded as an abstention and still counts as a Baltor-arm result.",
+  "Whether retrieved material was used is an inference from shared text and is labelled as one."
+ ],
+ "selection_rule": {
+  "written_before_any_model_call": true,
+  "sources": "the inventory in sources/source-directory.json (CodeRabbit lists, GitHub Trending, Topics and curated lists, Kaggle Getting Started)",
+  "repository_tasks": "a project from an inventoried list with a permissive licence, pure Python, at least 1,000 GitHub stars, and an offline test suite that runs in under 60 seconds in the pinned environment; task a needs a documented feature with its own test file; task b needs a recorded upstream fix spanning two modules whose library half can be withheld; no project serves two tasks",
+  "kaggle_task": "a Getting Started tabular competition whose rules the account has already accepted, with enough rows for a group-held-out split of more than 1,000 rows",
+  "considered_and_not_selected": {
+   "CodeRabbit leaderboard and awesome-coderabbit projects": "large applications or Rust, TypeScript or Zig toolchains, GPU or service dependencies",
+   "markdownlint (CodeRabbit sponsorship list)": "acceptance tests are snapshot suites that need the full Node development toolchain",
+   "GitHub Trending (Python, monthly)": "mostly large AI agent projects with cloud dependencies",
+   "more-itertools, toolz, schedule (awesome-python)": "eligible; cachetools and python-dotenv were preferred because their features and fixes map to separate test files",
+   "Titanic": "891 rows give a held-out split too small to separate arms",
+   "Playground Series s6e10": "would require accepting new competition rules"
+  }
+ },
+ "harness": {
+  "name": "OpenCode",
+  "version": "1.17.9",
+  "binary_path": "/home/username/.local/lib/node_modules/opencode-ai/bin/opencode.exe",
+  "binary_sha256": "ff18379ebe33df346d2b3b36080ccef9c0eb0b0cdf68dd471567e0304651db70",
+  "invocation": "opencode run --format json --title task --dir /home/dev/project PROMPT",
+  "configuration": "runner/harness.py opencode_config(): one provider (Ollama Cloud through the counting proxy), permission edit/bash allow, webfetch deny, external_directory allow, doom_loop allow, autoupdate off, share disabled; the Baltor arm adds the published mcp.baltor entry",
+  "sandbox": "Bubblewrap 0.11.1: system folders read only, the shared Python environment read only, the trial home read-write at /home/dev with the project at /home/dev/project; the workstation home, the repository and the hidden acceptance folder are not mounted",
+  "environment": "runner/harness.py sandbox_environment(); identical in both arms except BALTOR_SERVICE_TOKEN in the Baltor arm",
+  "python_environment": {
+   "interpreter": "CPython 3.14.4",
+   "packages": {
+    "pytest": "9.1.1",
+    "click": "8.5.0",
+    "pandas": "3.0.6",
+    "numpy": "2.5.4",
+    "scikit-learn": "1.9.1"
+   }
+  },
+  "offline_plumbing_check": "runner/offline_check.py against runner/offline_fake_model.py: zero model calls; both arm configurations started, the Baltor arm listed 12 baltor_* tools and the baltor-library skill"
+ },
+ "model_route": {
+  "provider": "Ollama Cloud",
+  "host": "ollama.com",
+  "base_path": "/v1",
+  "key_variable": "OLLAMA_API_KEY",
+  "model": "gemma4:31b",
+  "why": "the default model of the repository's OpenCode loop (tools/opencode_loop.py) and of the overnight Ollama Cloud lanes; 32.7 billion parameters, BF16, 262,144-token context, tool calling, thinking off by default (probe/ollama-gemma4-31b-show.json)",
+  "settings": "OpenCode defaults; the harness sends no temperature, seed or reasoning setting; max_tokens 32000 as OpenCode sends it; streaming with usage",
+  "fallback_order_if_the_probe_fails": [
+   "nemotron-3-nano:30b",
+   "gpt-oss:20b"
+  ]
+ },
+ "treatment": {
+  "arms": {
+   "none": "the harness, model, environment, network policy and budget without any Baltor configuration, key or mention",
+   "baltor": "the same, plus the published OpenCode connection entry, the published baltor-library skill bootstrap run in the project before the harness starts, the fresh customer's Baltor key in BALTOR_SERVICE_TOKEN, and one sentence appended to the prompt"
+  },
+  "connection_entry_file": "design/baltor-connection-entry.json",
+  "bootstrap_file": "design/baltor-quickstart-bootstrap.sh",
+  "prompt_line_file": "design/treatment-baltor.txt",
+  "published_sources": {
+   "quickstart_page": "https://baltor.ai/assets/docs/quickstart-opencode.html (SHA-256 c161a236dadc5133ab5909a60dff23a462998f3d3252cdb936d92d4c33e9c807 on October 16, 2026); its bootstrap and connection blocks equal docs/guides/quickstart-opencode.md at 7a13618e",
+   "client_recipe": "https://baltor.ai/assets/client-recipes.json (SHA-256 147964f20f1e6b8f28a5a04e7a0247a1d4a493ed9415caa7511181b5ab3b9364), OpenCode 1.x entry"
+  },
+  "customer_account": {
+   "created": "2026-10-16 with tools/check_live_account_journeys.mjs --fresh-only",
+   "tenant_id": "customer.e62171d41ebd73ac6f2f887e1773ee1324391b08ae0fba057f893394e6bd4fc1",
+   "entitlement": "bodies",
+   "access_source": "founding_free_monthly",
+   "account_page_plan": "Pro; A founding place, free each month. Search and download.",
+   "key": {
+    "label": "Comparison pilot OpenCode 2026-10-16",
+    "scopes": [
+     "provisioning:metadata",
+     "provisioning:read"
+    ],
+    "lifetime_minutes": 2880,
+    "storage": "private file outside the repository, never printed"
+   }
+  },
+  "setup_overhead": "the bootstrap's time is inside the Baltor arm's wall-clock budget; Baltor tool calls are inside its request cap"
+ },
+ "network": {
+  "allowed_hosts": [
+   "baltor.ai",
+   "app.baltor.ai"
+  ],
+  "rule": "every proxy variable in the sandbox points at runner/egress_proxy.py, which tunnels only to the allowed hosts on port 443 for both arms and records every attempt; a program that ignores proxy variables is not blocked and is looked for in the tool calls afterwards"
+ },
+ "budgets": {
+  "trial_request_cap": 20,
+  "trial_wall_clock_seconds": 1800,
+  "pilot_ceiling_physical_requests": 300,
+  "probe_request_cap": 4,
+  "provider_failure_reruns": 1,
+  "provider_failure_wait_seconds": 120,
+  "worst_case": "probe 4 plus 12 trials at the cap (240) is 244 requests; up to 56 remain for provider-failure reruns"
+ },
+ "plan": [
+  {
+   "index": 1,
+   "id": "a-baltor-r1",
+   "task": "a-cachetools-tlru",
+   "arm": "baltor",
+   "repetition": 1
+  },
+  {
+   "index": 2,
+   "id": "a-none-r1",
+   "task": "a-cachetools-tlru",
+   "arm": "none",
+   "repetition": 1
+  },
+  {
+   "index": 3,
+   "id": "b-none-r1",
+   "task": "b-dotenv-backslash",
+   "arm": "none",
+   "repetition": 1
+  },
+  {
+   "index": 4,
+   "id": "b-baltor-r1",
+   "task": "b-dotenv-backslash",
+   "arm": "baltor",
+   "repetition": 1
+  },
+  {
+   "index": 5,
+   "id": "c-baltor-r1",
+   "task": "c-spaceship-titanic",
+   "arm": "baltor",
+   "repetition": 1
+  },
+  {
+   "index": 6,
+   "id": "c-none-r1",
+   "task": "c-spaceship-titanic",
+   "arm": "none",
+   "repetition": 1
+  },
+  {
+   "index": 7,
+   "id": "a-none-r2",
+   "task": "a-cachetools-tlru",
+   "arm": "none",
+   "repetition": 2
+  },
+  {
+   "index": 8,
+   "id": "a-baltor-r2",
+   "task": "a-cachetools-tlru",
+   "arm": "baltor",
+   "repetition": 2
+  },
+  {
+   "index": 9,
+   "id": "b-baltor-r2",
+   "task": "b-dotenv-backslash",
+   "arm": "baltor",
+   "repetition": 2
+  },
+  {
+   "index": 10,
+   "id": "b-none-r2",
+   "task": "b-dotenv-backslash",
+   "arm": "none",
+   "repetition": 2
+  },
+  {
+   "index": 11,
+   "id": "c-none-r2",
+   "task": "c-spaceship-titanic",
+   "arm": "none",
+   "repetition": 2
+  },
+  {
+   "index": 12,
+   "id": "c-baltor-r2",
+   "task": "c-spaceship-titanic",
+   "arm": "baltor",
+   "repetition": 2
+  }
+ ],
+ "order_rule": "fixed ABBA counterbalancing written before any trial: each task's two arms swap order between repetitions, and the Baltor arm goes first in three of the six pairs",
+ "seeds": {
+  "spaceship_split": 20261016,
+  "model_sampling": "not seeded; OpenCode exposes no seed setting"
+ },
+ "tasks": {
+  "a-cachetools-tlru": {
+   "family": "recreate or extend a well-defined feature",
+   "source": "awesome-python (Caching): cachetools, MIT, 2,787 stars, tag v7.2.2 commit be0b2eba99f676fbd525a8bc83a4dd62611c6821",
+   "workspace": "cachetools v7.2.2 with class TLRUCache and its __all__ entry removed from src/cachetools/__init__.py and tests/test_tlru.py removed; docs and the type stub kept; a fresh Git repository with one commit",
+   "prompt_file": "design/tasks/a-cachetools-tlru/prompt.txt",
+   "pythonpath": "/home/dev/project/src",
+   "hidden_acceptance": "the upstream tests folder at v7.2.2 including tests/test_tlru.py (34 tests), run against the harness's src folder inside a network-less sandbox; kept in the host folder pilot/hidden/a-cachetools-tlru, never mounted in the harness sandbox",
+   "passes_when": "all 353 upstream tests pass, including all 34 TLRUCache tests",
+   "secondary_metric": "fraction of the 34 TLRUCache tests that pass"
+  },
+  "b-dotenv-backslash": {
+   "family": "advanced debugging: a seeded cross-module failure with misleading symptoms",
+   "source": "awesome-python (Configuration Files): python-dotenv, BSD-3-Clause, 8,900 stars, tag v1.2.4 commit a565c2cc41599c48eabc6b7b7f5b826d43c5a6d7",
+   "workspace": "python-dotenv v1.2.4 with the parser half of upstream fix f7b18d9c72d1abcc2ad4023424b84f5bee30d266 (pull request 680) reversed in src/dotenv/parser.py and its parser tests reversed in tests/test_parser.py; set_key's half kept, so a value written by set_key that ends in a backslash breaks the next read; the changelog line shortened to the set_key sentence; a fresh Git repository with one commit",
+   "prompt_file": "design/tasks/b-dotenv-backslash/prompt.txt",
+   "pythonpath": "/home/dev/project/src",
+   "hidden_acceptance": "the upstream tests folder at v1.2.4, including all of tests/test_parser.py, run against the harness's src folder; the seeded tree and the reference parser for the regression and scope checks; kept in pilot/hidden/b-dotenv-backslash, never mounted",
+   "passes_when": "all four hold: every upstream test passes; the library change touches only src/dotenv/parser.py with at most 12 changed lines; at least one test file the harness added or changed fails against the seeded library and passes against the harness's library; ROOT_CAUSE.md names parser.py and the single-quoted value pattern",
+   "secondary_metric": "upstream parser tests passed out of 56"
+  },
+  "c-spaceship-titanic": {
+   "family": "Kaggle Getting Started tabular task with a held-out local split",
+   "source": "Kaggle Spaceship Titanic, train.csv SHA-256 17336d553f49ebdf6ecb266d2b5d3746e5dd308445f7c7864141c4f28d2a88d0",
+   "workspace": "data/train.csv with 6,970 labelled passengers and data/test.csv with 1,723 passengers without labels; 20 percent of the 6,217 travel groups held out with seed 20261016; a fresh Git repository with one commit; no submission to Kaggle",
+   "prompt_file": "design/tasks/c-spaceship-titanic/prompt.txt",
+   "pythonpath": null,
+   "hidden_acceptance": "the 1,723 held-out labels in pilot/hidden/c-spaceship-titanic/holdout_labels.csv, never mounted; ids SHA-256 fc7d7b8cccc71f615455f63e8f45e6fb4bc628eaa47f27af1044e91270af1ede",
+   "passes_when": "predictions.csv has exactly the columns PassengerId,Transported, one boolean row for each of the 1,723 held-out passengers, and accuracy of at least 0.790",
+   "secondary_metric": "held-out accuracy; also whether solution.py reproduces predictions.csv when rerun without network",
+   "reference_lines": {
+    "all_true": 0.52,
+    "cryosleep_rule": 0.7226,
+    "plain_logistic_regression": 0.7841,
+    "gradient_boosting_reference": 0.8131
+   }
+  }
+ },
+ "wrong_file_incident_rule": "a pre-existing file modified or deleted outside the task's editable paths (runner/run_pilot.py EDITABLE); files under .opencode/ are the documented skill placement and are reported separately",
+ "scorer_controls": {
+  "file": "design/scorer-controls.json",
+  "all_as_expected": true,
+  "count": 17,
+  "summary": {
+   "a-K1": "fail",
+   "a-K2": "fail",
+   "a-K3": "fail",
+   "a-P1": "pass",
+   "b-K1": "fail",
+   "b-K2": "fail",
+   "b-K3": "fail",
+   "b-K4": "fail",
+   "b-K5": "fail",
+   "b-P1": "pass",
+   "c-K1": "fail",
+   "c-K2": "fail",
+   "c-K3": "fail",
+   "c-K4": "fail",
+   "c-K5": "fail",
+   "c-K6": "fail",
+   "c-P1": "pass"
+  }
+ },
+ "probe": "runner/probe.py: one scratch task outside the comparison, without-Baltor configuration, at most 4 requests, after this freeze and before trial 1; passes when answer.txt holds 42 and a tool was called",
+ "amendment_rule": "after the freeze only harness or recording plumbing may change, as a recorded amendment with its reason and the digests before and after; tasks, prompts, arms, model, budgets, scoring and claim rules may not change",
+ "limits_declared_in_advance": [
+  "Twelve trials on three tasks, two repetitions per arm, one harness and one model: a diagnostic of the method, not an estimate of benefit.",
+  "Popular projects may be in the model's training data; both arms share that exposure.",
+  "The sandbox confines files, not every network path: a program that ignores the proxy variables could reach the internet, and the tool calls are scanned for that.",
+  "The Baltor arm uses a founding-place Pro account; a customer without Pro would reach fewer files.",
+  "Spaceship Titanic rows reach the model provider during the run, as they would for any customer using a hosted model; no row is committed.",
+  "Cost is the owner's existing Ollama subscription and is not metered per request; token counts are provider-reported and cached tokens are not reported."
+ ]
+}

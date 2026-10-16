@@ -1,0 +1,632 @@
+{
+ "record_type": "comparison_pilot_scorer_controls/v1",
+ "model_calls": 0,
+ "all_as_expected": true,
+ "controls": [
+  {
+   "control": "a-K1",
+   "task": "a-cachetools-tlru",
+   "description": "template unchanged: no TLRUCache",
+   "expected_pass": false,
+   "scored_pass": false,
+   "as_expected": true,
+   "outcome": {
+    "passed": false,
+    "suite": {
+     "passed": 0,
+     "failure": 0,
+     "error": 1,
+     "skipped": 0,
+     "total": 1
+    },
+    "hidden_tlru": {
+     "passed": 0,
+     "failure": 0,
+     "error": 0,
+     "skipped": 0,
+     "total": 0
+    },
+    "hidden_tlru_pass_fraction": 0.0,
+    "exit_status": 2,
+    "failing_tests": [
+     "::tests.test_tlru"
+    ]
+   }
+  },
+  {
+   "control": "a-K2",
+   "task": "a-cachetools-tlru",
+   "description": "an LRU cache that ignores ttu",
+   "expected_pass": false,
+   "scored_pass": false,
+   "as_expected": true,
+   "outcome": {
+    "passed": false,
+    "suite": {
+     "passed": 344,
+     "failure": 9,
+     "error": 0,
+     "skipped": 0,
+     "total": 353
+    },
+    "hidden_tlru": {
+     "passed": 25,
+     "failure": 9,
+     "error": 0,
+     "skipped": 0,
+     "total": 34
+    },
+    "hidden_tlru_pass_fraction": 0.7353,
+    "exit_status": 1,
+    "failing_tests": [
+     "tests.test_tlru.TLRUCacheTest::test_overwrite_existing_with_expired",
+     "tests.test_tlru.TLRUCacheTest::test_tlru_clear",
+     "tests.test_tlru.TLRUCacheTest::test_tlru_datetime",
+     "tests.test_tlru.TLRUCacheTest::test_ttu",
+     "tests.test_tlru.TLRUCacheTest::test_ttu_expire",
+     "tests.test_tlru.TLRUCacheTest::test_ttu_expired",
+     "tests.test_tlru.TLRUCacheTest::test_ttu_heap_cleanup",
+     "tests.test_tlru.TLRUCacheTest::test_ttu_reverse_insert",
+     "tests.test_tlru.TLRUCacheTest::test_ttu_tuple_key"
+    ]
+   }
+  },
+  {
+   "control": "a-K3",
+   "task": "a-cachetools-tlru",
+   "description": "a TTL cache with a constant time-to-live",
+   "expected_pass": false,
+   "scored_pass": false,
+   "as_expected": true,
+   "outcome": {
+    "passed": false,
+    "suite": {
+     "passed": 344,
+     "failure": 9,
+     "error": 0,
+     "skipped": 0,
+     "total": 353
+    },
+    "hidden_tlru": {
+     "passed": 25,
+     "failure": 9,
+     "error": 0,
+     "skipped": 0,
+     "total": 34
+    },
+    "hidden_tlru_pass_fraction": 0.7353,
+    "exit_status": 1,
+    "failing_tests": [
+     "tests.test_tlru.TLRUCacheTest::test_overwrite_existing_with_expired",
+     "tests.test_tlru.TLRUCacheTest::test_tlru_clear",
+     "tests.test_tlru.TLRUCacheTest::test_tlru_datetime",
+     "tests.test_tlru.TLRUCacheTest::test_ttu",
+     "tests.test_tlru.TLRUCacheTest::test_ttu_expire",
+     "tests.test_tlru.TLRUCacheTest::test_ttu_expired",
+     "tests.test_tlru.TLRUCacheTest::test_ttu_heap_cleanup",
+     "tests.test_tlru.TLRUCacheTest::test_ttu_reverse_insert",
+     "tests.test_tlru.TLRUCacheTest::test_ttu_tuple_key"
+    ]
+   }
+  },
+  {
+   "control": "a-P1",
+   "task": "a-cachetools-tlru",
+   "description": "the upstream TLRUCache restored",
+   "expected_pass": true,
+   "scored_pass": true,
+   "as_expected": true,
+   "outcome": {
+    "passed": true,
+    "suite": {
+     "passed": 353,
+     "failure": 0,
+     "error": 0,
+     "skipped": 0,
+     "total": 353
+    },
+    "hidden_tlru": {
+     "passed": 34,
+     "failure": 0,
+     "error": 0,
+     "skipped": 0,
+     "total": 34
+    },
+    "hidden_tlru_pass_fraction": 1.0,
+    "exit_status": 0,
+    "failing_tests": []
+   }
+  },
+  {
+   "control": "b-K1",
+   "task": "b-dotenv-backslash",
+   "description": "seeded tree unchanged, no test, no explanation",
+   "expected_pass": false,
+   "scored_pass": false,
+   "as_expected": true,
+   "outcome": {
+    "hidden_suite": {
+     "passed": 253,
+     "failure": 4,
+     "error": 0,
+     "skipped": 1,
+     "total": 258
+    },
+    "hidden_parser_tests": {
+     "passed": 54,
+     "failure": 2,
+     "error": 0,
+     "skipped": 0,
+     "total": 56
+    },
+    "hidden_suite_failing": [
+     "tests.test_main::test_set_key_round_trips[C:\\\\Users\\\\]",
+     "tests.test_main::test_set_key_round_trips[back\\\\]",
+     "tests.test_parser::test_parse_stream[a='b\\\\\\\\'\\nc='d'-expected35]",
+     "tests.test_parser::test_parse_stream[a=\"b\\\\\\\\\"\\nc=\"d\"-expected36]"
+    ],
+    "hidden_suite_ok": false,
+    "source_changes": {},
+    "source_changed_lines": 0,
+    "scope_ok": false,
+    "test_changes": {},
+    "regression_files": [],
+    "regression": {
+     "before_fix": null,
+     "after_fix": null
+    },
+    "regression_ok": false,
+    "root_cause_file_present": false,
+    "root_cause_names_parser": false,
+    "root_cause_names_pattern": false,
+    "explanation_ok": false,
+    "passed": false
+   }
+  },
+  {
+   "control": "b-K2",
+   "task": "b-dotenv-backslash",
+   "description": "the misleading fix: stop escaping backslashes in set_key",
+   "expected_pass": false,
+   "scored_pass": false,
+   "as_expected": true,
+   "outcome": {
+    "hidden_suite": {
+     "passed": 250,
+     "failure": 7,
+     "error": 0,
+     "skipped": 1,
+     "total": 258
+    },
+    "hidden_parser_tests": {
+     "passed": 54,
+     "failure": 2,
+     "error": 0,
+     "skipped": 0,
+     "total": 56
+    },
+    "hidden_suite_failing": [
+     "tests.test_main::test_set_key[-a-b\\\\c-expected13-a='b\\\\\\\\c'\\n]",
+     "tests.test_main::test_set_key[-a-b\\\\-expected14-a='b\\\\\\\\'\\n]",
+     "tests.test_main::test_set_key[-a-b\\\\'c-expected15-a='b\\\\\\\\\\\\'c'\\n]",
+     "tests.test_main::test_set_key_round_trips[C:\\\\Users\\\\]",
+     "tests.test_main::test_set_key_round_trips[back\\\\]",
+     "tests.test_parser::test_parse_stream[a='b\\\\\\\\'\\nc='d'-expected35]",
+     "tests.test_parser::test_parse_stream[a=\"b\\\\\\\\\"\\nc=\"d\"-expected36]"
+    ],
+    "hidden_suite_ok": false,
+    "source_changes": {
+     "src/dotenv/main.py": {
+      "state": "modified",
+      "lines_added": 1,
+      "lines_removed": 1
+     }
+    },
+    "source_changed_lines": 2,
+    "scope_ok": false,
+    "test_changes": {
+     "tests/test_regression_backslash.py": {
+      "state": "added",
+      "lines_added": 10,
+      "lines_removed": 0
+     }
+    },
+    "regression_files": [
+     "tests/test_regression_backslash.py"
+    ],
+    "regression": {
+     "before_fix": {
+      "passed": 0,
+      "failure": 1,
+      "error": 0,
+      "skipped": 0,
+      "total": 1
+     },
+     "after_fix": {
+      "passed": 0,
+      "failure": 1,
+      "error": 0,
+      "skipped": 0,
+      "total": 1
+     }
+    },
+    "regression_ok": false,
+    "root_cause_file_present": true,
+    "root_cause_names_parser": false,
+    "root_cause_names_pattern": false,
+    "explanation_ok": false,
+    "passed": false
+   }
+  },
+  {
+   "control": "b-K3",
+   "task": "b-dotenv-backslash",
+   "description": "only the single-quoted pattern repaired",
+   "expected_pass": false,
+   "scored_pass": false,
+   "as_expected": true,
+   "outcome": {
+    "hidden_suite": {
+     "passed": 256,
+     "failure": 1,
+     "error": 0,
+     "skipped": 1,
+     "total": 258
+    },
+    "hidden_parser_tests": {
+     "passed": 55,
+     "failure": 1,
+     "error": 0,
+     "skipped": 0,
+     "total": 56
+    },
+    "hidden_suite_failing": [
+     "tests.test_parser::test_parse_stream[a=\"b\\\\\\\\\"\\nc=\"d\"-expected36]"
+    ],
+    "hidden_suite_ok": false,
+    "source_changes": {
+     "src/dotenv/parser.py": {
+      "state": "modified",
+      "lines_added": 1,
+      "lines_removed": 1
+     }
+    },
+    "source_changed_lines": 2,
+    "scope_ok": true,
+    "test_changes": {
+     "tests/test_regression_backslash.py": {
+      "state": "added",
+      "lines_added": 10,
+      "lines_removed": 0
+     }
+    },
+    "regression_files": [
+     "tests/test_regression_backslash.py"
+    ],
+    "regression": {
+     "before_fix": {
+      "passed": 0,
+      "failure": 1,
+      "error": 0,
+      "skipped": 0,
+      "total": 1
+     },
+     "after_fix": {
+      "passed": 1,
+      "failure": 0,
+      "error": 0,
+      "skipped": 0,
+      "total": 1
+     }
+    },
+    "regression_ok": true,
+    "root_cause_file_present": true,
+    "root_cause_names_parser": true,
+    "root_cause_names_pattern": true,
+    "explanation_ok": true,
+    "passed": false
+   }
+  },
+  {
+   "control": "b-K4",
+   "task": "b-dotenv-backslash",
+   "description": "the upstream parser restored without a regression test or explanation",
+   "expected_pass": false,
+   "scored_pass": false,
+   "as_expected": true,
+   "outcome": {
+    "hidden_suite": {
+     "passed": 257,
+     "failure": 0,
+     "error": 0,
+     "skipped": 1,
+     "total": 258
+    },
+    "hidden_parser_tests": {
+     "passed": 56,
+     "failure": 0,
+     "error": 0,
+     "skipped": 0,
+     "total": 56
+    },
+    "hidden_suite_failing": [],
+    "hidden_suite_ok": true,
+    "source_changes": {
+     "src/dotenv/parser.py": {
+      "state": "modified",
+      "lines_added": 4,
+      "lines_removed": 2
+     }
+    },
+    "source_changed_lines": 6,
+    "scope_ok": true,
+    "test_changes": {},
+    "regression_files": [],
+    "regression": {
+     "before_fix": null,
+     "after_fix": null
+    },
+    "regression_ok": false,
+    "root_cause_file_present": false,
+    "root_cause_names_parser": false,
+    "root_cause_names_pattern": false,
+    "explanation_ok": false,
+    "passed": false
+   }
+  },
+  {
+   "control": "b-K5",
+   "task": "b-dotenv-backslash",
+   "description": "the right fix plus an unrelated change to main.py",
+   "expected_pass": false,
+   "scored_pass": false,
+   "as_expected": true,
+   "outcome": {
+    "hidden_suite": {
+     "passed": 257,
+     "failure": 0,
+     "error": 0,
+     "skipped": 1,
+     "total": 258
+    },
+    "hidden_parser_tests": {
+     "passed": 56,
+     "failure": 0,
+     "error": 0,
+     "skipped": 0,
+     "total": 56
+    },
+    "hidden_suite_failing": [],
+    "hidden_suite_ok": true,
+    "source_changes": {
+     "src/dotenv/main.py": {
+      "state": "modified",
+      "lines_added": 1,
+      "lines_removed": 1
+     },
+     "src/dotenv/parser.py": {
+      "state": "modified",
+      "lines_added": 4,
+      "lines_removed": 2
+     }
+    },
+    "source_changed_lines": 8,
+    "scope_ok": false,
+    "test_changes": {
+     "tests/test_regression_backslash.py": {
+      "state": "added",
+      "lines_added": 10,
+      "lines_removed": 0
+     }
+    },
+    "regression_files": [
+     "tests/test_regression_backslash.py"
+    ],
+    "regression": {
+     "before_fix": {
+      "passed": 0,
+      "failure": 1,
+      "error": 0,
+      "skipped": 0,
+      "total": 1
+     },
+     "after_fix": {
+      "passed": 1,
+      "failure": 0,
+      "error": 0,
+      "skipped": 0,
+      "total": 1
+     }
+    },
+    "regression_ok": true,
+    "root_cause_file_present": true,
+    "root_cause_names_parser": true,
+    "root_cause_names_pattern": true,
+    "explanation_ok": true,
+    "passed": false
+   }
+  },
+  {
+   "control": "b-P1",
+   "task": "b-dotenv-backslash",
+   "description": "the upstream parser fix with a regression test and an explanation",
+   "expected_pass": true,
+   "scored_pass": true,
+   "as_expected": true,
+   "outcome": {
+    "hidden_suite": {
+     "passed": 257,
+     "failure": 0,
+     "error": 0,
+     "skipped": 1,
+     "total": 258
+    },
+    "hidden_parser_tests": {
+     "passed": 56,
+     "failure": 0,
+     "error": 0,
+     "skipped": 0,
+     "total": 56
+    },
+    "hidden_suite_failing": [],
+    "hidden_suite_ok": true,
+    "source_changes": {
+     "src/dotenv/parser.py": {
+      "state": "modified",
+      "lines_added": 4,
+      "lines_removed": 2
+     }
+    },
+    "source_changed_lines": 6,
+    "scope_ok": true,
+    "test_changes": {
+     "tests/test_regression_backslash.py": {
+      "state": "added",
+      "lines_added": 10,
+      "lines_removed": 0
+     }
+    },
+    "regression_files": [
+     "tests/test_regression_backslash.py"
+    ],
+    "regression": {
+     "before_fix": {
+      "passed": 0,
+      "failure": 1,
+      "error": 0,
+      "skipped": 0,
+      "total": 1
+     },
+     "after_fix": {
+      "passed": 1,
+      "failure": 0,
+      "error": 0,
+      "skipped": 0,
+      "total": 1
+     }
+    },
+    "regression_ok": true,
+    "root_cause_file_present": true,
+    "root_cause_names_parser": true,
+    "root_cause_names_pattern": true,
+    "explanation_ok": true,
+    "passed": true
+   }
+  },
+  {
+   "control": "c-K1",
+   "task": "c-spaceship-titanic",
+   "description": "all passengers predicted True",
+   "expected_pass": false,
+   "scored_pass": false,
+   "as_expected": true,
+   "outcome": {
+    "valid": true,
+    "refusal": null,
+    "accuracy": 0.52,
+    "rows": 1723,
+    "passed": false,
+    "solution_script_present": false
+   }
+  },
+  {
+   "control": "c-K2",
+   "task": "c-spaceship-titanic",
+   "description": "the CryoSleep rule",
+   "expected_pass": false,
+   "scored_pass": false,
+   "as_expected": true,
+   "outcome": {
+    "valid": true,
+    "refusal": null,
+    "accuracy": 0.7226,
+    "rows": 1723,
+    "passed": false,
+    "solution_script_present": false
+   }
+  },
+  {
+   "control": "c-K3",
+   "task": "c-spaceship-titanic",
+   "description": "plain logistic regression on unengineered numeric columns",
+   "expected_pass": false,
+   "scored_pass": false,
+   "as_expected": true,
+   "outcome": {
+    "valid": true,
+    "refusal": null,
+    "accuracy": 0.7841,
+    "rows": 1723,
+    "passed": false,
+    "solution_script_present": false
+   }
+  },
+  {
+   "control": "c-K4",
+   "task": "c-spaceship-titanic",
+   "description": "the reference predictions shuffled across passengers",
+   "expected_pass": false,
+   "scored_pass": false,
+   "as_expected": true,
+   "outcome": {
+    "valid": true,
+    "refusal": null,
+    "accuracy": 0.4974,
+    "rows": 1723,
+    "passed": false,
+    "solution_script_present": false
+   }
+  },
+  {
+   "control": "c-K5",
+   "task": "c-spaceship-titanic",
+   "description": "the reference predictions with ten passengers missing",
+   "expected_pass": false,
+   "scored_pass": false,
+   "as_expected": true,
+   "outcome": {
+    "valid": false,
+    "refusal": "passenger_set_differs",
+    "passed": false,
+    "solution_script_present": false
+   }
+  },
+  {
+   "control": "c-K6",
+   "task": "c-spaceship-titanic",
+   "description": "the reference predictions written as yes and no",
+   "expected_pass": false,
+   "scored_pass": false,
+   "as_expected": true,
+   "outcome": {
+    "valid": false,
+    "refusal": "label_not_boolean",
+    "passed": false,
+    "solution_script_present": false
+   }
+  },
+  {
+   "control": "c-P1",
+   "task": "c-spaceship-titanic",
+   "description": "gradient boosting on engineered features (reference solution.py)",
+   "expected_pass": true,
+   "scored_pass": true,
+   "as_expected": true,
+   "outcome": {
+    "valid": true,
+    "refusal": null,
+    "accuracy": 0.8131,
+    "rows": 1723,
+    "passed": true,
+    "solution_script_present": true,
+    "rerun": {
+     "exit_status": 0,
+     "valid": true,
+     "refusal": null,
+     "agreement_with_submitted": 1.0,
+     "accuracy": 0.8131
+    }
+   }
+  }
+ ]
+}

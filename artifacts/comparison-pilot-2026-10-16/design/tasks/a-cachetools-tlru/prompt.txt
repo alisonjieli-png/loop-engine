@@ -1,0 +1,5 @@
+You are working in a copy of cachetools 7.2.2, a Python library of memoizing caches. The class TLRUCache, a time-aware least recently used cache, has been removed from src/cachetools/__init__.py and from its __all__ list. Its documentation in docs/index.rst and its type stub in src/cachetools/__init__.pyi are still there.
+
+Recreate TLRUCache so that it behaves exactly as documented and consistently with the other cache classes in the package, especially TTLCache, and export it from the package again. Do not change the behaviour of anything else.
+
+Run the existing tests with `python -m pytest -q tests`; PYTHONPATH already points at src. Installing packages from the internet is not possible; use the Python packages already installed. The project's own TLRUCache tests are held out and will be used to check your work. When you are finished, summarise what you changed.

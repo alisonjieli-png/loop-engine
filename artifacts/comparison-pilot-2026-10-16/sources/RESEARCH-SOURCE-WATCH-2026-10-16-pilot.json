@@ -1,0 +1,196 @@
+{
+  "created_at": "2026-10-16T15:57:15Z",
+  "github_requests_authenticated": false,
+  "interpretation": "Changes are review prompts, not source claims, candidate approval, or runtime authority.",
+  "limits": {
+    "max_bytes": 512000,
+    "max_online_sources": 12,
+    "timeout_seconds": 5.0
+  },
+  "manifest_sha256": "4b313ea94985c3d8867475cc02126f2d6a257020623def6ac856d324d9df693d",
+  "mode": "online",
+  "record_type": "research_source_watch_report/v1",
+  "sources": [
+    {
+      "change": "unchanged",
+      "checked_at": "2026-10-16T15:57:10Z",
+      "comparison_basis": "manifest baseline_revision",
+      "failure": null,
+      "id": "cachetools",
+      "kind": "github_repository",
+      "license_state": "MIT at v7.2.2 (LICENSE file, GitHub licence API)",
+      "name": "cachetools (pilot task a source project)",
+      "observed": {
+        "etag": "W/\"e4c9bd38c8c476f837736732b54277c2b7e9661e261cf78e295f2ba82886e278\"",
+        "fingerprint": "be0b2eba99f676fbd525a8bc83a4dd62611c6821",
+        "last_modified": "Thu, 15 Oct 2026 20:32:17 GMT",
+        "request_url": "https://api.github.com/repos/tkem/cachetools/commits?per_page=1",
+        "revision": "be0b2eba99f676fbd525a8bc83a4dd62611c6821"
+      },
+      "retrieved_at": "2026-10-16T15:57:10Z",
+      "roadmap_step": "S-6.173",
+      "url": "https://github.com/tkem/cachetools"
+    },
+    {
+      "change": "changed",
+      "checked_at": "2026-10-16T15:57:10Z",
+      "comparison_basis": "manifest baseline_revision",
+      "failure": null,
+      "id": "python_dotenv",
+      "kind": "github_repository",
+      "license_state": "BSD-3-Clause at v1.2.4 (LICENSE file, GitHub licence API)",
+      "name": "python-dotenv (pilot task b source project)",
+      "observed": {
+        "etag": "W/\"1c1be9f5a1d122b4fe87de2798492d1f5bf61e59765a123097b450dab7a1b12d\"",
+        "fingerprint": "0b2880591780a426b0551436f47a17e7a76d954f",
+        "last_modified": "Thu, 01 Oct 2026 07:34:34 GMT",
+        "request_url": "https://api.github.com/repos/theskumar/python-dotenv/commits?per_page=1",
+        "revision": "0b2880591780a426b0551436f47a17e7a76d954f"
+      },
+      "retrieved_at": "2026-10-16T15:57:11Z",
+      "roadmap_step": "S-6.173",
+      "url": "https://github.com/theskumar/python-dotenv"
+    },
+    {
+      "change": "unknown",
+      "checked_at": "2026-10-16T15:57:11Z",
+      "comparison_basis": null,
+      "failure": null,
+      "id": "awesome_python",
+      "kind": "github_repository",
+      "license_state": "CC BY 4.0 (LICENSE file); GitHub licence API reports NOASSERTION",
+      "name": "awesome-python curated list",
+      "observed": {
+        "etag": "W/\"0fe4d784bd3d77d5c44871ab8134e6dc8aecd4df9b55df5fea6093326f294553\"",
+        "fingerprint": "42b8bd9fe3ace7b68602608bef4c33c964f85f83",
+        "last_modified": "Fri, 16 Oct 2026 11:47:36 GMT",
+        "request_url": "https://api.github.com/repos/vinta/awesome-python/commits?per_page=1",
+        "revision": "42b8bd9fe3ace7b68602608bef4c33c964f85f83"
+      },
+      "retrieved_at": "2026-10-16T15:57:12Z",
+      "roadmap_step": "S-6.173",
+      "url": "https://github.com/vinta/awesome-python"
+    },
+    {
+      "change": "unknown",
+      "checked_at": "2026-10-16T15:57:12Z",
+      "comparison_basis": null,
+      "failure": null,
+      "id": "awesome_coderabbit",
+      "kind": "github_repository",
+      "license_state": "CC0-1.0 (LICENSE file, GitHub licence API)",
+      "name": "awesome-coderabbit list",
+      "observed": {
+        "etag": "W/\"fe481c5cf47f6693522eedbbe5d33b20dc144abbc42c3d25df7d33101997c9d2\"",
+        "fingerprint": "60b891c087d17372d95c6a1fe06e3e219cfd91c6",
+        "last_modified": "Tue, 29 Sep 2026 15:08:19 GMT",
+        "request_url": "https://api.github.com/repos/coderabbitai/awesome-coderabbit/commits?per_page=1",
+        "revision": "60b891c087d17372d95c6a1fe06e3e219cfd91c6"
+      },
+      "retrieved_at": "2026-10-16T15:57:12Z",
+      "roadmap_step": "S-6.173",
+      "url": "https://github.com/coderabbitai/awesome-coderabbit"
+    },
+    {
+      "change": "unknown",
+      "checked_at": "2026-10-16T15:57:12Z",
+      "comparison_basis": null,
+      "failure": null,
+      "id": "awesome_index",
+      "kind": "github_repository",
+      "license_state": "CC0-1.0 (license file, GitHub licence API)",
+      "name": "awesome (index of curated lists)",
+      "observed": {
+        "etag": "W/\"c2d39d6e3afecdd2f46793f438e3196d49d7e3cf29f5f1caa4ec53498ebabff8\"",
+        "fingerprint": "bc98e517ddca672f55f9857d714fc3ea3c3540b2",
+        "last_modified": "Wed, 02 Sep 2026 02:10:45 GMT",
+        "request_url": "https://api.github.com/repos/sindresorhus/awesome/commits?per_page=1",
+        "revision": "bc98e517ddca672f55f9857d714fc3ea3c3540b2"
+      },
+      "retrieved_at": "2026-10-16T15:57:13Z",
+      "roadmap_step": "S-6.173",
+      "url": "https://github.com/sindresorhus/awesome"
+    },
+    {
+      "change": "unknown",
+      "checked_at": "2026-10-16T15:57:13Z",
+      "comparison_basis": null,
+      "failure": null,
+      "id": "markdownlint",
+      "kind": "github_repository",
+      "license_state": "MIT (GitHub licence API)",
+      "name": "markdownlint (CodeRabbit-sponsored project, considered)",
+      "observed": {
+        "etag": "W/\"24303549a21ca14efd7690b911742b351fe7a69cdda3ca645445907a13451fff\"",
+        "fingerprint": "b67636d47f335cf124990faae4a72c5e9fadd613",
+        "last_modified": "Thu, 15 Oct 2026 05:59:29 GMT",
+        "request_url": "https://api.github.com/repos/DavidAnson/markdownlint/commits?per_page=1",
+        "revision": "b67636d47f335cf124990faae4a72c5e9fadd613"
+      },
+      "retrieved_at": "2026-10-16T15:57:13Z",
+      "roadmap_step": "S-6.173",
+      "url": "https://github.com/DavidAnson/markdownlint"
+    },
+    {
+      "change": "unknown",
+      "checked_at": "2026-10-16T15:57:13Z",
+      "comparison_basis": null,
+      "failure": null,
+      "id": "more_itertools",
+      "kind": "github_repository",
+      "license_state": "MIT (LICENSE file, GitHub licence API)",
+      "name": "more-itertools (considered)",
+      "observed": {
+        "etag": "W/\"a800e47101b41f783b5de8db01157fa4dabde16cbefe6a59156c38ed041853df\"",
+        "fingerprint": "4aeb4338ae1407d8da9723e86da99efeb446f719",
+        "last_modified": "Wed, 14 Oct 2026 18:49:35 GMT",
+        "request_url": "https://api.github.com/repos/more-itertools/more-itertools/commits?per_page=1",
+        "revision": "4aeb4338ae1407d8da9723e86da99efeb446f719"
+      },
+      "retrieved_at": "2026-10-16T15:57:14Z",
+      "roadmap_step": "S-6.173",
+      "url": "https://github.com/more-itertools/more-itertools"
+    },
+    {
+      "change": "unknown",
+      "checked_at": "2026-10-16T15:57:14Z",
+      "comparison_basis": null,
+      "failure": null,
+      "id": "toolz",
+      "kind": "github_repository",
+      "license_state": "BSD-3-Clause in LICENSE.txt; GitHub licence API reports NOASSERTION",
+      "name": "toolz (considered)",
+      "observed": {
+        "etag": "W/\"8ec09158cca46ccabe4afb4ac90cbdb1348dff72e2cda839ab30257e0debcb0e\"",
+        "fingerprint": "451af60dec590a6010e2babdbf391ea8f815122f",
+        "last_modified": "Fri, 18 Sep 2026 17:06:26 GMT",
+        "request_url": "https://api.github.com/repos/pytoolz/toolz/commits?per_page=1",
+        "revision": "451af60dec590a6010e2babdbf391ea8f815122f"
+      },
+      "retrieved_at": "2026-10-16T15:57:14Z",
+      "roadmap_step": "S-6.173",
+      "url": "https://github.com/pytoolz/toolz"
+    },
+    {
+      "change": "unknown",
+      "checked_at": "2026-10-16T15:57:14Z",
+      "comparison_basis": null,
+      "failure": null,
+      "id": "schedule",
+      "kind": "github_repository",
+      "license_state": "MIT (LICENSE.txt, GitHub licence API)",
+      "name": "schedule (considered)",
+      "observed": {
+        "etag": "W/\"b0f151b0726452a132bfcdcc7a286f89421d8f2854869ebaba9f7ac6afe268f4\"",
+        "fingerprint": "82a43db1b938d8fdf60103bd41f329e06c8d3651",
+        "last_modified": "Sat, 25 May 2024 18:40:33 GMT",
+        "request_url": "https://api.github.com/repos/dbader/schedule/commits?per_page=1",
+        "revision": "82a43db1b938d8fdf60103bd41f329e06c8d3651"
+      },
+      "retrieved_at": "2026-10-16T15:57:15Z",
+      "roadmap_step": "S-6.173",
+      "url": "https://github.com/dbader/schedule"
+    }
+  ],
+  "tool_sha256": "6331c52e821c2ed47962115eda02ed877fbf7fad680f7fa2afae9e37c563a63a"
+}

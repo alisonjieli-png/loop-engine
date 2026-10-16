@@ -1,0 +1,14 @@
+{
+  "record_type": "research_source_watch_manifest/v1",
+  "sources": [
+    {"id": "cachetools", "name": "cachetools (pilot task a source project)", "kind": "github_repository", "url": "https://github.com/tkem/cachetools", "roadmap_step": "S-6.173", "license_state": "MIT at v7.2.2 (LICENSE file, GitHub licence API)", "baseline_revision": "be0b2eba99f676fbd525a8bc83a4dd62611c6821", "note": "Listed in awesome-python under Caching. Pilot task a recreates TLRUCache at tag v7.2.2."},
+    {"id": "python_dotenv", "name": "python-dotenv (pilot task b source project)", "kind": "github_repository", "url": "https://github.com/theskumar/python-dotenv", "roadmap_step": "S-6.173", "license_state": "BSD-3-Clause at v1.2.4 (LICENSE file, GitHub licence API)", "baseline_revision": "a565c2cc41599c48eabc6b7b7f5b826d43c5a6d7", "note": "Listed in awesome-python under Configuration Files. Pilot task b withholds the parser half of upstream pull request 680 at tag v1.2.4."},
+    {"id": "awesome_python", "name": "awesome-python curated list", "kind": "github_repository", "url": "https://github.com/vinta/awesome-python", "roadmap_step": "S-6.173", "license_state": "CC BY 4.0 (LICENSE file); GitHub licence API reports NOASSERTION", "note": "GitHub list of common Python projects; source of the two repository tasks."},
+    {"id": "awesome_coderabbit", "name": "awesome-coderabbit list", "kind": "github_repository", "url": "https://github.com/coderabbitai/awesome-coderabbit", "roadmap_step": "S-6.173", "license_state": "CC0-1.0 (LICENSE file, GitHub licence API)", "note": "CodeRabbit's own list, including open-source projects that use CodeRabbit."},
+    {"id": "awesome_index", "name": "awesome (index of curated lists)", "kind": "github_repository", "url": "https://github.com/sindresorhus/awesome", "roadmap_step": "S-6.173", "license_state": "CC0-1.0 (license file, GitHub licence API)"},
+    {"id": "markdownlint", "name": "markdownlint (CodeRabbit-sponsored project, considered)", "kind": "github_repository", "url": "https://github.com/DavidAnson/markdownlint", "roadmap_step": "S-6.173", "license_state": "MIT (GitHub licence API)", "note": "Named in CodeRabbit's open-source sponsorship post; considered for a pilot task and not selected."},
+    {"id": "more_itertools", "name": "more-itertools (considered)", "kind": "github_repository", "url": "https://github.com/more-itertools/more-itertools", "roadmap_step": "S-6.173", "license_state": "MIT (LICENSE file, GitHub licence API)"},
+    {"id": "toolz", "name": "toolz (considered)", "kind": "github_repository", "url": "https://github.com/pytoolz/toolz", "roadmap_step": "S-6.173", "license_state": "BSD-3-Clause in LICENSE.txt; GitHub licence API reports NOASSERTION"},
+    {"id": "schedule", "name": "schedule (considered)", "kind": "github_repository", "url": "https://github.com/dbader/schedule", "roadmap_step": "S-6.173", "license_state": "MIT (LICENSE.txt, GitHub licence API)"}
+  ]
+}

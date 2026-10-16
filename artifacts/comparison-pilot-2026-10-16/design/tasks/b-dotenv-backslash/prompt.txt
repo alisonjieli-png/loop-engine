@@ -1,0 +1,7 @@
+You are working in a copy of python-dotenv 1.2.4. A user reports:
+
+"Since upgrading, `dotenv set` corrupts my .env file. I ran `dotenv -f .env set WIN_DIR 'C:\Users\me\'` and then `dotenv -f .env set NEXT ok`. Afterwards `dotenv -f .env get WIN_DIR` does not print C:\Users\me\ and `dotenv -f .env get NEXT` fails as if NEXT had been deleted. It looks like the new backslash escaping in set_key is broken."
+
+Find the root cause and fix it with a minimal change to the library. Add a regression test under tests/ that fails before your fix and passes after it. Write a short explanation of the root cause to ROOT_CAUSE.md in the project root: which file and which function or pattern was at fault, and why the symptom appeared where the user saw it.
+
+Run the tests with `python -m pytest -q`; PYTHONPATH already points at src and the dotenv command is on PATH. Installing packages from the internet is not possible; use the Python packages already installed. Some of the project's own tests are held out and will be used to check your work. When you are finished, summarise what you changed.

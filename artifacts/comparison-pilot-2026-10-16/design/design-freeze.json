@@ -1,0 +1,33 @@
+{
+ "files": {
+  "design/baltor-connection-entry.json": "4e8070b03d2d6e111b0a1b3fcb882093745079a898c2be9bf150aef36a82c647",
+  "design/baltor-quickstart-bootstrap.sh": "592a05701b8fb286ea04741226c909b57a8334afcff74e04220760b61af045d3",
+  "design/design.json": "daf2cd2972e0cd947e776363fd56db53cc00da7a455a2c946eae3b06a1ca87a8",
+  "design/scorer-controls.json": "72e1e2974be98c78c06ac6037f03daaee98c8432b7880e20ff0ef309007412f6",
+  "design/task-manifest.json": "e0a8c0e0f2613646262401a7b1e9a5b86556d705293bb6ee2683b0201a7ff552",
+  "design/tasks/a-cachetools-tlru/prompt.txt": "bb3a87be2360725b3e3dc22aad94a1be7bf4f9cc7184909bf698555e88214a43",
+  "design/tasks/b-dotenv-backslash/prompt.txt": "d87968dae21276a651ed183cc17cf3553e2c2b62a12b59762d9aa8e633c62912",
+  "design/tasks/c-spaceship-titanic/prompt.txt": "9429d8aa6c01df2f509e734e51c0012a254ed3631b033151c9d05c188ff72a70",
+  "design/treatment-baltor.txt": "d5bec1e07a4a60f7849e6d3aae61faf8760d63e51f6fcfe9fc3c8c316c77fa83",
+  "probe/ollama-gemma4-31b-show.json": "f71cbec6d1692682549c7d8233de85bf4ba244128b66a07e45cfe26df40f8122",
+  "probe/ollama-model-list.json": "bc8be990a878f3a33ca98df424480bc5ac0b56a1bf4887c9b8f8a42c2b24585d",
+  "runner/controls.py": "a035bb68b6f04a94c9bd9a3987ef5dd387d6dbac555025dc21534269fa29b0f1",
+  "runner/egress_proxy.py": "2b922cba35a60895b93663e62960a4d17841e4c483c29072f6a843738d333cc1",
+  "runner/freeze.py": "42c3ccad18e78fcca0c0b3987bf48c4b45389315fb860d2ac8461556c6d966f1",
+  "runner/harness.py": "2b6549ac12a6c48a8c602556181b6e984ace3b06ce27018dcff3ca5545e4822f",
+  "runner/meter.py": "8bc4ce89a476249de881351f31bda6782fdc0fc75c9aed287eecef9c753685be",
+  "runner/offline_check.py": "eb9349258679ffe3f95d8e26d9604a05f52fad20543f27e8789fd9df3ba1f71e",
+  "runner/offline_fake_model.py": "9b63f62f37aed0d89fefdfe9ceaa8e87cc89c61967e26da5e8d2f00934940994",
+  "runner/prepare_tasks.py": "0a29087309528401e22d87907a6f3d8169b9d03c0755b17f3b261837bc2be5cb",
+  "runner/probe.py": "c45f42e7ac73c9ee94da6a5957dfe7d54d7efc3e68c1c566cff89fec97f52428",
+  "runner/run_pilot.py": "b35a303a335286728a6377d36c8bfaa3f1a5c9e27f13ea9cc8abedf3be33aa3c",
+  "runner/scoring.py": "d7446074925a15338491c573b426db7e1fcb727662cba282c181f6978905ab44",
+  "runner/spaceship_reference.py": "eceb5d746228a02a76a6a29060b98da6bff7e16b4f6462bb1a675c3a55089ead",
+  "runner/split_spaceship.py": "4ec5f3752af1ac69d2e7e78c6cbe86a8bf5b3634bc47d56699b0a0bc006f4541",
+  "runner/test_runner.py": "fe799efe42d585e85744f04e90cadfe9c03448c1472f0a2a5dc8a70b2b8535e3",
+  "sources/RESEARCH-SOURCE-WATCH-2026-10-16-pilot.json": "d389428ffce630792279cd90e8c49c5c31d98de5a9263f568232958bb30dcf71",
+  "sources/source-directory.json": "83a1960618eb17cf5facd06a52ca82876d1e9fa2849c02efcfaa7ed917007f7a",
+  "sources/watch-manifest.json": "4b313ea94985c3d8867475cc02126f2d6a257020623def6ac856d324d9df693d"
+ },
+ "record_type": "comparison_pilot_design_freeze/v1"
+}

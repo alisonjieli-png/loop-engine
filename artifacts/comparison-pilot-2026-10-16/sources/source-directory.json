@@ -1,0 +1,181 @@
+{
+  "record_type": "agent_feed_source_directory/v1",
+  "source_docs_checked_on": "2026-10-16",
+  "refresh_mode": "release_curated",
+  "data_scope": "source_descriptions_only",
+  "limitations": [
+    "This inventory was read once on October 16, 2026 for the comparison pilot. It is not served on the website and does not refresh. It uses the packaged Feeds source directory format so that the existing parser checks it.",
+    "A list position, star count, vote count or review count is a popularity signal at the read time, not evidence of quality, adoption or a qualified component.",
+    "Reading a source does not grant permission to copy its code, data or text. Each repository's licence and each competition's rules apply to the exact item."
+  ],
+  "sources": [
+    {
+      "id": "coderabbit-oss-review-leaderboard",
+      "name": "CodeRabbit open-source review leaderboard, September 2026",
+      "url": "https://coderabbit.ai/blog/one-million-open-source-reviews-september-2026",
+      "kind": "publisher_updates",
+      "description": "CodeRabbit's post of October 8, 2026 by Santosh Yadav. It reports 1,049,817 completed reviews on open-source repositories in September 2026 and ranks the ten public repositories with the most: stablyai/orca 5,629, pingdotgg/t3code 3,856, manaflow-ai/cmux 3,475, Comfy-Org/ComfyUI_frontend 2,699, lidge-jun/opencodex 2,375, oven-sh/bun 1,751, infiniflow/ragflow 1,667, vllm-project/vllm 1,516, pnpm/pnpm 1,476 and jdx/mise 1,386. Counts include repeat reviews of the same pull request.",
+      "access": "Public blog page with no API, read on October 16, 2026. Only the top three entries link their repositories.",
+      "reuse": "The page states no reuse terms beyond a CodeRabbit copyright notice. Keep project names, counts and the link as facts; do not copy the article. None of the ten fits a small offline pilot task: each is a large application, a TypeScript, Rust or Zig toolchain, or needs a GPU or services."
+    },
+    {
+      "id": "coderabbit-oss-sponsorship",
+      "name": "CodeRabbit open-source sponsorship post",
+      "url": "https://coderabbit.ai/blog/coderabbit-commits-1-million-to-open-source",
+      "kind": "publisher_updates",
+      "description": "Post of September 18, 2025 by Aravind Putrevu naming projects the earlier pledge supported: pnpm, Biome, ast-grep, iTerm2 and markdownlint.",
+      "access": "Public blog page, read on October 16, 2026.",
+      "reuse": "No reuse terms stated. markdownlint (MIT, 6,384 stars) was the one candidate small enough to consider; it was not selected because its acceptance tests are snapshot suites that need the full Node development toolchain."
+    },
+    {
+      "id": "awesome-coderabbit",
+      "name": "awesome-coderabbit",
+      "url": "https://github.com/coderabbitai/awesome-coderabbit",
+      "kind": "directory",
+      "description": "CodeRabbit's curated list: configuration examples by language, pre-merge check packs, integration guides and 13 open-source projects that use CodeRabbit, including Appsmith, Documenso, Formbricks, Neon, Novu, Plane, Unkey and UploadThing.",
+      "access": "GitHub repository with 542 stars; revision 60b891c087d17372d95c6a1fe06e3e219cfd91c6 recorded by the research watch on October 16, 2026.",
+      "reuse": "CC0-1.0. The listed projects are full applications with service dependencies, so none was selected for an offline pilot task."
+    },
+    {
+      "id": "github-trending",
+      "name": "GitHub Trending",
+      "url": "https://github.com/trending",
+      "kind": "directory",
+      "description": "Repositories gaining stars in a day, week or month, by language. The monthly Python view read on October 16, 2026 listed 19 repositories, most of them AI agent tools between 5,000 and 105,000 stars, such as vectorize-io/hindsight, Panniantong/Agent-Reach and docling-project/docling.",
+      "access": "Public page without an official API. The existing Trendshift engines (trendshift_public, trendshift_signal) are the repository's reader for trending rankings and keep results as live lookups.",
+      "reuse": "GitHub's Acceptable Use Policies, section 7, allow research use of public non-personal information when resulting publications are open access, and forbid use for spam or selling personal information. Trending suits AgentBriefs watch lists better than small offline tasks."
+    },
+    {
+      "id": "github-topics",
+      "name": "GitHub Topics",
+      "url": "https://github.com/topics",
+      "kind": "directory",
+      "description": "Repositories grouped by topic and sortable by stars. The python topic reported 968,861 public repositories on October 16, 2026; its most-starred entries included donnemartin/system-design-primer, vinta/awesome-python and TheAlgorithms/Python.",
+      "access": "Public pages; the GitHub search API reaches the same data through the existing github_search engine.",
+      "reuse": "GitHub terms apply; each repository's licence governs its code."
+    },
+    {
+      "id": "awesome-python",
+      "name": "awesome-python",
+      "url": "https://github.com/vinta/awesome-python",
+      "kind": "directory",
+      "description": "A curated list of Python frameworks, libraries and tools with 327,887 stars. It lists cachetools under Caching and python-dotenv under Configuration Files, the source projects of pilot tasks a and b, and also more-itertools, toolz, schedule, attrs, click, marshmallow and boltons.",
+      "access": "GitHub repository; revision 42b8bd9fe3ace7b68602608bef4c33c964f85f83 recorded by the research watch on October 16, 2026.",
+      "reuse": "CC BY 4.0 by its LICENSE file; the GitHub licence API reports NOASSERTION. The list's text is attributed if quoted; listed projects carry their own licences."
+    },
+    {
+      "id": "awesome-index",
+      "name": "awesome, the index of curated lists",
+      "url": "https://github.com/sindresorhus/awesome",
+      "kind": "directory",
+      "description": "The index of topic lists, with 519,848 stars. It leads to language and domain lists such as awesome-python.",
+      "access": "GitHub repository; revision bc98e517ddca672f55f9857d714fc3ea3c3540b2 recorded by the research watch on October 16, 2026.",
+      "reuse": "CC0-1.0."
+    },
+    {
+      "id": "github-releases-api",
+      "name": "GitHub releases and commits API",
+      "url": "https://docs.github.com/en/rest/releases/releases",
+      "kind": "api_documentation",
+      "description": "Release and commit records for a repository. The research watch and the github_releases engine use it to pin revisions and see new releases of a project or its dependencies.",
+      "access": "api.github.com; unauthenticated reads are limited to 60 an hour per address.",
+      "reuse": "Stored facts only, under the existing github_releases source contract."
+    },
+    {
+      "id": "pypi-json-api",
+      "name": "PyPI JSON API",
+      "url": "https://docs.pypi.org/api/json/",
+      "kind": "api_documentation",
+      "description": "Release versions, upload times and declared requirements of Python packages, used for each brief's dependency and release evidence.",
+      "access": "pypi.org/pypi/PROJECT/json, public reads.",
+      "reuse": "Package metadata as facts with links; package licences govern code."
+    },
+    {
+      "id": "osv-advisories",
+      "name": "OSV vulnerability database",
+      "url": "https://google.github.io/osv.dev/api/",
+      "kind": "api_documentation",
+      "description": "Advisories for a pinned package version. An empty answer is not a security certificate.",
+      "access": "api.osv.dev queries, public.",
+      "reuse": "Advisory identifiers and dates as facts, under the existing osv_advisories reader rules."
+    },
+    {
+      "id": "kaggle-getting-started",
+      "name": "Kaggle Getting Started competitions",
+      "url": "https://www.kaggle.com/competitions",
+      "kind": "directory",
+      "description": "Knowledge competitions without deadlines. The Kaggle command line listed Titanic, House Prices, Home Data for ML Course, Spaceship Titanic, Digit Recognizer, Store Sales, NLP Getting Started, LLM Classification Finetuning and ConnectX on October 16, 2026, each with a closing date in 2030.",
+      "access": "Kaggle API through the existing command line and token; the account had already entered Titanic, House Prices and Spaceship Titanic, so their files download without accepting new rules.",
+      "reuse": "Each competition's rules govern its data. Kaggle's general terms page renders by script and was not read here."
+    },
+    {
+      "id": "kaggle-spaceship-titanic",
+      "name": "Spaceship Titanic competition",
+      "url": "https://www.kaggle.com/competitions/spaceship-titanic",
+      "kind": "benchmark",
+      "description": "Binary tabular classification: 8,693 labelled training passengers and 4,277 unlabelled test passengers, sponsored by Google LLC and open since February 23, 2022. The source of pilot task c, scored on a held-out local split.",
+      "access": "Rules read on October 16, 2026 through the Kaggle command line pages command; train.csv SHA-256 17336d553f49ebdf6ecb266d2b5d3746e5dd308445f7c7864141c4f28d2a88d0.",
+      "reuse": "The rules' header says competition use and academic, non-commercial use only, and section 7.B forbids redistributing the data to anyone not in the competition. The data is never committed; only counts and digests are."
+    },
+    {
+      "id": "kaggle-playground-series",
+      "name": "Kaggle Playground Series",
+      "url": "https://www.kaggle.com/competitions/playground-series-s6e10",
+      "kind": "benchmark",
+      "description": "Monthly synthetic tabular competitions; season 6 episode 10 closes on October 31, 2026 and had 2,041 teams on October 16, 2026.",
+      "access": "Downloading its data would need new rules accepted, which this pilot does not do.",
+      "reuse": "Its own rules; not used in the pilot."
+    },
+    {
+      "id": "kaggle-notebooks",
+      "name": "Kaggle public notebooks",
+      "url": "https://www.kaggle.com/code",
+      "kind": "directory",
+      "description": "Public notebooks by competition and votes. For Spaceship Titanic the most voted were gusthema/spaceship-titanic-with-tfdf (8,050 votes), samuelcortinhas/spaceship-titanic-a-complete-guide (2,047) and odins0n/spaceship-titanic-eda-27-different-models (1,073).",
+      "access": "Kaggle API notebook listing, metadata only, read on October 16, 2026; no notebook code was downloaded or run.",
+      "reuse": "Each notebook's own licence; a vote count is not a qualified method."
+    },
+    {
+      "id": "baltor-model-directory",
+      "name": "Baltor model directory",
+      "url": "https://baltor.ai/models",
+      "kind": "directory",
+      "description": "Model names, makers, licences, sizes, context windows and listed prices gathered from the Hugging Face Hub, models.dev and LiteLLM, used for the model lines of each AgentBriefs brief.",
+      "access": "Public page and packaged data, read on October 16, 2026.",
+      "reuse": "Stored facts under the model_directory source contract, which excludes OpenRouter and Artificial Analysis values."
+    },
+    {
+      "id": "baltor-mcp-directory",
+      "name": "Baltor MCP server directory",
+      "url": "https://baltor.ai/directory",
+      "kind": "directory",
+      "description": "Model Context Protocol servers with their sources, used to look for tools a project's maintainers or agents could adopt.",
+      "access": "Public page and packaged data, read on October 16, 2026.",
+      "reuse": "Stored facts under the mcp_directory source contract."
+    }
+  ],
+  "collections": [
+    {
+      "id": "popular-project-task-sources",
+      "title": "Popular project and task sources",
+      "group": "Compare harness work",
+      "purpose": "Find popular open projects and public tasks that can be recreated, repaired or modelled in a clean local workspace, with their own tests or a held-out split as acceptance.",
+      "source_ids": ["coderabbit-oss-review-leaderboard", "coderabbit-oss-sponsorship", "awesome-coderabbit", "github-trending", "github-topics", "awesome-python", "awesome-index", "kaggle-getting-started", "kaggle-spaceship-titanic", "kaggle-playground-series", "kaggle-notebooks"],
+      "compare_fields": ["licence", "language and toolchain", "test suite and run time", "offline feasibility", "popularity signal and date", "data rules"],
+      "agent_task": "Choose candidate tasks by a rule written before any trial and record why each candidate was taken or left.",
+      "decision_question": "Which popular project or task can be compared with and without Baltor, offline, with acceptance the harness cannot see?",
+      "review_trigger": "A new leaderboard month, a list revision, a new Getting Started competition or a licence change."
+    },
+    {
+      "id": "project-improvement-watch",
+      "title": "Project improvement watch",
+      "group": "Brief a project",
+      "purpose": "Collect dated evidence of releases, models, tools and advisories that could improve a chosen project, for an AgentBriefs brief with a testable experiment.",
+      "source_ids": ["github-releases-api", "pypi-json-api", "osv-advisories", "baltor-model-directory", "baltor-mcp-directory", "github-trending"],
+      "compare_fields": ["release date", "version", "evidence link", "estimated benefit as a hypothesis", "experiment cost", "risk"],
+      "agent_task": "Write a brief that separates evidence, hypothesis and the experiment that would test it.",
+      "decision_question": "Which recent release, tool or method is worth one bounded experiment on this project, and which is not?",
+      "review_trigger": "A new release of the project or one of its dependencies, a new advisory or a model directory change."
+    }
+  ]
+}
