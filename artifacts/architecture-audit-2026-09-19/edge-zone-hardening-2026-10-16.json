@@ -1,0 +1,40 @@
+{
+ "record_type": "edge_zone_settings_evidence/v1",
+ "recorded_on": "2026-10-16",
+ "zone": "baltor.ai (Cloudflare Free plan; every web hostname proxied with Worker routes)",
+ "changes": [
+  {
+   "setting": "always_use_https",
+   "before": "off",
+   "after": "on",
+   "reason": "The launch audit (docs/verification/LAUNCH-AUDIT-BALTOR-2026-10-16.md) found http://baltor.ai serving full pages, including /login, /get-started and /mcp, so a bearer token sent to http://baltor.ai/mcp would travel unencrypted. Cloudflare now answers every plain HTTP request with a 301 to the same HTTPS address before the Worker runs. Certificates renew through DNS _acme-challenge records, which a redirect cannot affect."
+  },
+  {
+   "setting": "security_header.strict_transport_security",
+   "before": {"enabled": false, "max_age": 0, "include_subdomains": false, "preload": false, "nosniff": false},
+   "after": {"enabled": true, "max_age": 31536000, "include_subdomains": false, "preload": false, "nosniff": false},
+   "reason": "No response sent Strict-Transport-Security. One year on each proxied host, without includeSubDomains or preload, which would commit hostnames outside this zone's proxied set; nosniff stays with the service's own headers."
+  },
+  {
+   "setting": "min_tls_version",
+   "before": "1.0",
+   "after": "1.2",
+   "reason": "TLS 1.0 and 1.1 are deprecated; 1.2 is the common minimum."
+  },
+  {
+   "setting": "workers routes request_limit_fail_open (nine baltor-web-edge routes)",
+   "before": false,
+   "after": true,
+   "reason": "The edge Worker runs first for every request on the public hostnames, and the routes failed closed at the account's Workers request limit. The plan could not be read with the available permissions; on the Free plan that limit is 100,000 requests a day, and recent use was 4,946 to 40,005 a day. Past a limit, requests now go to the proxied Fly origin, which serves the same website and redirects, instead of an error page. systems.baltor.ai stays fail closed."
+  }
+ ],
+ "verification": {
+  "plain_http": "http://baltor.ai/, /mcp, /login and app, www, docs, status and deck hosts each answer 301 to the same https address",
+  "hsts": "https://baltor.ai/, https://app.baltor.ai/... and https://www.baltor.ai/get-started send strict-transport-security: max-age=31536000",
+  "tls": "a TLS 1.1-only client is refused; TLS 1.2 answers 200",
+  "routes": "provider readback lists the nine baltor-web-edge routes with request_limit_fail_open true and systems.baltor.ai false; the public hosts answer as before"
+ },
+ "brand_domains": "agentfeeds.si, getagentfoundry.si, agentafk.si, agentstudios.si and dontbeameatproxy.si are DNS-only to Fly, which already redirects plain HTTP with a 301; they send no Strict-Transport-Security header yet, which needs the service to add it for those hosts.",
+ "rollback": "Restore the before values through the zone settings and route updates.",
+ "private_evidence_root": "/home/username/baltor-private/claude-takeover-20261015-dhycum/ops/zone-https and ops/edge-fail-open"
+}
