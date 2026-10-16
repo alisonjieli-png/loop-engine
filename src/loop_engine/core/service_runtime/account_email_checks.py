@@ -35,11 +35,12 @@ import uuid
 
 from . import account_email as module
 from .account_email import (
-    CONFIGURATION_RECORD_TYPE, CONFIRM_PAGE, CONFIRMATION_SENT, GENERATE_LINK_PATH, GENERATED_PASSWORD_GROUPS,
-    IDENTITY_SECRET_PREFIX, MAIL_SECRET_PREFIX, MAIL_SEND_PATH, MAXIMUM_PASSWORD_BYTES, PROVIDER_PROFILE,
+    BUDGET_REFUSAL_VERSION, CONFIGURATION_RECORD_TYPE, CONFIRM_PAGE, CONFIRMATION_SENT, DAILY_BUDGET_REACHED,
+    DAY_SECONDS, GENERATE_LINK_PATH, GENERATED_PASSWORD_GROUPS, IDENTITY_SECRET_PREFIX, LARGEST_DAILY_MESSAGE_BUDGET,
+    MAIL_BUSY, MAIL_SECRET_PREFIX, MAIL_SEND_PATH, MAXIMUM_PASSWORD_BYTES, MESSAGE_BUDGET_VERSION, PROVIDER_PROFILE,
     RECOVERY_ACTION, RECOVERY_RESULT_VERSION, RECOVERY_SENT, SERVICE_REFUSAL_STATUSES, SIGNUP_ACTION,
     SIGNUP_RESULT_VERSION, AccountEmailAdapter, AccountEmailConfiguration, AccountEmailError, AccountMailRequest,
-    IdentityLinkRequest, PreparedAccountRequest, ProviderAnswer, counted_email_key, email_address,
+    IdentityLinkRequest, PreparedAccountRequest, ProviderAnswer, counted_email_key, day_is_spent, email_address,
     generate_identity_link, generated_signup_password, send_account_mail,
 )
 from .http import ServiceHttpApplication
@@ -173,10 +174,11 @@ class _Provider:
         return [request.text_body for request, _secret in self.mail_requests]
 
 
-def _adapter(provider, settings=None, *, address_limits=None, secret_resolver=None):
+def _adapter(provider, settings=None, *, address_limits=None, secret_resolver=None, runtime=None):
     return AccountEmailAdapter(settings or _settings(), secret_resolver or _secrets, public_base_url=ORIGIN,
         address_limits=address_limits or ServiceRequestLimits(client_address_source=SOCKET_PEER_SOURCE),
-        display_name=DISPLAY_NAME, identity_transport=provider.identity, mail_transport=provider.mail)
+        display_name=DISPLAY_NAME, identity_transport=provider.identity, mail_transport=provider.mail,
+        runtime=runtime)
 
 
 def _answer_for(adapter, fields, action=SIGNUP_ACTION, address=FIRST):
@@ -947,6 +949,29 @@ def _host_file_checks(check, root):
           and load("unstated_closed", request_limits=None, browser_identity=identity,
                    account_email=_host_block(signup_enabled=False, recovery_enabled=False)).account_email is not None)
 
+    def counted_by_the_loader(name):
+        """The documented block with the budget for the free plan: the loader gives the adapter the service store."""
+        try:
+            loaded = load(name, browser_identity=identity, account_email=_host_block(daily_message_budget=95))
+        except ServiceRuntimeError:
+            return False
+        today = loaded.account_email.message_budget()
+        return (loaded.account_email.daily_messages is not None
+                and loaded.account_email.daily_messages.runtime is loaded.runtime
+                and today["counted"] is True and today["daily_message_budget"] == 95
+                and today["messages_today"] == 0 and today["remaining_today"] == 95)
+    check("a_host_block_with_a_daily_budget_installs_an_adapter_that_counts_in_the_service_store",
+          counted_by_the_loader("budget") and application.account_email.message_budget()["counted"] is True
+          and application.account_email.message_budget()["daily_message_budget"] is None)
+
+    class Forgetting(module.AccountEmailAdapter):
+        """The known-wrong loader: it builds the adapter without the service store."""
+
+        def __init__(self, *arguments, runtime=None, **keywords):
+            super().__init__(*arguments, **keywords)
+    with patch.object(module, "AccountEmailAdapter", Forgetting):
+        check("removed_service_store_in_the_host_loader_is_detected", not counted_by_the_loader("budget-mutant"))
+
 
 def _unusable_token_is_refused():
     provider = _Provider(identity_answers=[_link_answer(token_hash="a token with spaces")])
@@ -1605,6 +1630,472 @@ def _email_first_signup_checks(check, root):
               _founding_offer_report(root, "founding-offer-mutant") != (True, False, False, False))
 
 
+#: The day the budget checks count on, in Coordinated Universal Time, and a
+#: moment three hours before it ends. The clocks below are chosen, never read.
+BUDGET_DAY = "2026-10-16"
+BUDGET_DAY_START = int(datetime(2026, 10, 16, tzinfo=timezone.utc).timestamp())
+LATE_EVENING = BUDGET_DAY_START + 21 * 3600
+NEXT_DAY_STAMP = "2026-10-17T00:00:00Z"
+#: What a caller reads once the day is spent at `LATE_EVENING`: the same record for every address.
+SPENT_DAY_REFUSAL = (DAILY_BUDGET_REACHED, 503,
+                     {"record_type": BUDGET_REFUSAL_VERSION, "resets_at": NEXT_DAY_STAMP, "retry_after_seconds": 10_800},
+                     {"Retry-After": "10800"})
+#: The mail provider's answers when one of its own limits refuses a send, in
+#: the shape of its error object: a status, a message and a `name`.
+DAILY_CAP_ANSWER = ProviderAnswer(429, {"statusCode": 429, "name": "daily_quota_exceeded",
+                                        "message": "You have exceeded your daily email sending quota."})
+MONTHLY_CAP_ANSWER = ProviderAnswer(429, {"statusCode": 429, "name": "monthly_quota_exceeded",
+                                          "message": "You have exceeded your monthly email sending quota."})
+RATE_ANSWER = ProviderAnswer(429, {"statusCode": 429, "name": "rate_limit_exceeded", "message": "Too many requests."})
+
+
+class _Clock:
+    """A clock a check moves by hand."""
+
+    def __init__(self, moment):
+        self.moment = moment
+
+    def __call__(self):
+        return self.moment
+
+
+def _counted_runtime(root, name, clock, *, writes=True):
+    """A service runtime over the database in one folder, with a chosen clock.
+
+    Two runtimes over one folder are two processes of one service: they share
+    the store and nothing else.
+    """
+    from .records import ServiceRuntimeConfig
+    from .runtime import ServiceRuntime
+    folder = (root / name).resolve()
+    folder.mkdir(parents=True, exist_ok=True)
+    return ServiceRuntime(ServiceRuntimeConfig(str(folder / "service.db"), writes_authorized=writes), clock=clock)
+
+
+def _counted(provider, runtime, budget=1, *, mail=None, **changes):
+    """An adapter that counts each day's messages in the store of `runtime`, with a daily budget."""
+    return AccountEmailAdapter(_settings(daily_message_budget=budget, **{"attempts_for_each_address": 50, **changes}),
+        _secrets, public_base_url=ORIGIN,
+        address_limits=ServiceRequestLimits(client_address_source=SOCKET_PEER_SOURCE, failures_allowed=100),
+        display_name=DISPLAY_NAME, identity_transport=provider.identity, mail_transport=mail or provider.mail,
+        runtime=runtime)
+
+
+def _refusal_record(function):
+    """The code, status, details and headers of one refusal, or empty text, 200 and nothing for an accepted call."""
+    try:
+        function()
+    except AccountEmailError as error:
+        return error.code, error.status, error.details, error.headers
+    return "", 200, None, None
+
+
+def _budget_configuration_checks(check, root):
+    refused = (-1, 0, 1.5, 95.0, True, False, "95", [95], float("nan"), float("inf"),
+               LARGEST_DAILY_MESSAGE_BUDGET + 1, 10 ** 9)
+
+    def budget_refusals():
+        return [_refused(lambda value=value: _settings(daily_message_budget=value)) for value in refused]
+    check("a_daily_message_budget_is_a_whole_number_from_one_to_its_ceiling_or_absent",
+          _settings().daily_message_budget is None
+          and [_settings(daily_message_budget=value).daily_message_budget
+               for value in (1, 95, LARGEST_DAILY_MESSAGE_BUDGET)] == [1, 95, LARGEST_DAILY_MESSAGE_BUDGET]
+          and AccountEmailConfiguration.from_host(_host_block(daily_message_budget=95)).daily_message_budget == 95
+          and AccountEmailConfiguration.from_host(_host_block(daily_message_budget=None)).daily_message_budget is None
+          and budget_refusals() == ["invalid_account_email_daily_budget"] * len(refused)
+          and _refused(lambda: AccountEmailConfiguration.from_host(_host_block(daily_budget=95)))
+          == "unsupported_account_email_configuration")
+    with patch.object(module, "LARGEST_DAILY_MESSAGE_BUDGET", 10 ** 12):
+        check("removed_daily_budget_ceiling_is_detected",
+              budget_refusals() != ["invalid_account_email_daily_budget"] * len(refused))
+    from .account_origin_checks import mutated
+    with mutated(AccountEmailConfiguration, "__post_init__", "type(self.daily_message_budget) is not int",
+                 "not isinstance(self.daily_message_budget, (int, float))"):
+        check("removed_whole_number_rule_for_the_daily_budget_is_detected",
+              budget_refusals() != ["invalid_account_email_daily_budget"] * len(refused))
+    clock = _Clock(LATE_EVENING)
+    unwritable = _counted_runtime(root, "unwritable", clock, writes=False)
+    plain = _adapter(_Provider())
+    check("a_daily_budget_needs_the_service_store_with_write_authority_and_no_budget_counts_without_one",
+          _refused(lambda: _adapter(_Provider(), _settings(daily_message_budget=95)))
+          == "account_email_budget_needs_the_service_store"
+          and _refused(lambda: _adapter(_Provider(), _settings(daily_message_budget=95), runtime=unwritable))
+          == "account_email_budget_needs_the_service_store"
+          and plain.daily_messages is None and _adapter(_Provider(), runtime=unwritable).daily_messages is None
+          and plain.message_budget() == {"record_type": MESSAGE_BUDGET_VERSION, "counted": False,
+                                         "daily_message_budget": None}
+          and _counted(_Provider(), _counted_runtime(root, "unbudgeted", clock), None).daily_messages is not None)
+
+
+def _count_survives_a_restart(root, name):
+    """Two messages in one process, then a new process over the same store: it reads two and stops at three."""
+    clock = _Clock(LATE_EVENING)
+    first, second = _Provider(), _Provider()
+    before = _counted(first, _counted_runtime(root, name, clock), budget=3)
+    sent = [_refused(lambda index=index: _answer_for(before, _signup_request("restart%d@example.com" % index)))
+            for index in range(2)]
+    after = _counted(second, _counted_runtime(root, name, clock), budget=3)
+    read = after.message_budget()
+    third = _refused(lambda: _answer_for(after, _signup_request("restart2@example.com")))
+    fourth = _refusal_record(lambda: _answer_for(after, _signup_request("restart3@example.com")))
+    return (sent == ["", ""] and read.get("messages_today") == 2 and read.get("remaining_today") == 1
+            and third == "" and fourth == SPENT_DAY_REFUSAL
+            and (len(first.mail_requests), len(second.mail_requests), len(second.identity_requests)) == (2, 1, 1)
+            and after.message_budget().get("messages_today") == 3)
+
+
+def _memory_only_count():
+    """The known-wrong count: kept in the memory of each process, so a restart starts it again."""
+    def change(self, day, changed):
+        held = self.__dict__.setdefault("memory_days", {})
+        held[day] = changed(held.get(day) or module._day_count(None, day))
+        return held[day]
+
+    def read(self, budget, now):
+        day = module.utc_day(now)[0]
+        return self.__dict__.setdefault("memory_days", {}).get(day) or module._day_count(None, day)
+    return change, read
+
+
+def _spent_day_asks_no_provider(root, name):
+    """With a budget of one spent, sign-up and recovery ask no provider, in the process that spent it and in another."""
+    clock = _Clock(LATE_EVENING)
+    provider, other = _Provider(), _Provider()
+    warm = _counted(provider, _counted_runtime(root, name, clock))
+    first = _refused(lambda: _answer_for(warm, _signup_request("first.spender@example.com")))
+    asked = (len(provider.identity_requests), len(provider.mail_requests))
+    # A second process of the same service, whose memory holds nothing yet:
+    # its first refusal reads the store and its second comes from memory.
+    cold = _counted(other, _counted_runtime(root, name, clock))
+    refusals = [_refusal_record(lambda: _answer_for(warm, _signup_request(NEW_ADDRESS))),
+                _refusal_record(lambda: _answer_for(warm, RECOVERY_REQUEST, RECOVERY_ACTION)),
+                _refusal_record(lambda: _answer_for(cold, _signup_request(KNOWN_ADDRESS))),
+                _refusal_record(lambda: _answer_for(cold, dict(RECOVERY_REQUEST, email=KNOWN_ADDRESS),
+                                                    RECOVERY_ACTION))]
+    return (first == "" and asked == (1, 1) and refusals == [SPENT_DAY_REFUSAL] * 4
+            and (len(provider.identity_requests), len(provider.mail_requests)) == asked
+            and (other.identity_requests, other.mail_requests) == ([], []))
+
+
+def _next_day_starts_a_new_count(root, name):
+    clock = _Clock(LATE_EVENING)
+    provider = _Provider()
+    adapter = _counted(provider, _counted_runtime(root, name, clock))
+    evening = _refused(lambda: _answer_for(adapter, _signup_request("evening@example.com")))
+    clock.moment = BUDGET_DAY_START + DAY_SECONDS - 1
+    last_second = _refusal_record(lambda: _answer_for(adapter, _signup_request("late@example.com")))
+    clock.moment = BUDGET_DAY_START + DAY_SECONDS
+    morning = _refused(lambda: _answer_for(adapter, _signup_request("morning@example.com")))
+    read = adapter.message_budget()
+    return (evening == "" and last_second[:2] == (DAILY_BUDGET_REACHED, 503)
+            and last_second[3] == {"Retry-After": "1"} and last_second[2]["resets_at"] == NEXT_DAY_STAMP
+            and morning == "" and read["day"] == "2026-10-17" and read["messages_today"] == 1
+            and read["resets_at"] == "2026-10-18T00:00:00Z" and len(provider.mail_requests) == 2)
+
+
+def _provider_limit_outcomes(root, name):
+    """What a caller reads, and what the day holds, after each answer of the mail provider, and for the next request."""
+    outcomes = {}
+    for label, answer in (("daily", DAILY_CAP_ANSWER), ("monthly", MONTHLY_CAP_ANSWER), ("rate", RATE_ANSWER),
+                          ("unnamed", ProviderAnswer(429, {})),
+                          ("refused", ProviderAnswer(422, {"statusCode": 422, "name": "validation_error"})),
+                          ("outage", ProviderAnswer(500, {})), ("deadline", TimeoutError("fixture deadline"))):
+        provider = _Provider(mail_answers=[answer])
+        adapter = _counted(provider, _counted_runtime(root, name + "-" + label, _Clock(LATE_EVENING)), None)
+        refusal = _refusal_record(lambda: _answer_for(adapter, _signup_request("limit.first@example.com")))
+        read = adapter.message_budget()
+        asked = len(provider.identity_requests)
+        following = _refused(lambda: _answer_for(adapter, _signup_request("limit.next@example.com")))
+        outcomes[label] = {"refusal": refusal, "messages": read["messages_today"],
+                           "reached": read["provider_limit_reached_at"], "remaining": read["remaining_today"],
+                           "following": following, "asked_again": len(provider.identity_requests) > asked}
+    # Without the service store nothing is counted, and the answer is still the daily limit.
+    outcomes["uncounted"] = _refusal_record(lambda: _answer_for(_adapter(_Provider(mail_answers=[DAILY_CAP_ANSWER])),
+                                                                SIGNUP_REQUEST))
+    return outcomes
+
+
+def _provider_caps_are_the_daily_limit(outcomes):
+    caps = all(outcomes[label]["refusal"] == SPENT_DAY_REFUSAL and outcomes[label]["messages"] == 0
+               and outcomes[label]["reached"] == "2026-10-16T21:00:00Z" and outcomes[label]["remaining"] == 0
+               and outcomes[label]["following"] == DAILY_BUDGET_REACHED and not outcomes[label]["asked_again"]
+               for label in ("daily", "monthly"))
+    unnamed = outcomes["unnamed"]
+    return (caps and unnamed["refusal"] == SPENT_DAY_REFUSAL and unnamed["messages"] == 0
+            and unnamed["reached"] is None and unnamed["remaining"] is None and unnamed["following"] == ""
+            and unnamed["asked_again"] and outcomes["uncounted"][:2] == (DAILY_BUDGET_REACHED, 503))
+
+
+def _definite_refusals_give_the_count_back(outcomes):
+    return (outcomes["refused"]["refusal"] == ("account_mail_refused", 503, None, None)
+            and outcomes["refused"]["messages"] == 0
+            and all(outcomes[label]["refusal"] == ("account_mail_unavailable", 503, None, None)
+                    and outcomes[label]["messages"] == 1 for label in ("outage", "deadline"))
+            and all(outcomes[label]["following"] == "" and outcomes[label]["asked_again"]
+                    for label in ("refused", "outage", "deadline")))
+
+
+def _provider_refusal_is_asked_again(root, name):
+    """The provider's refusal for its cap is remembered for a quarter of an hour, never past 00:00 UTC.
+
+    A restart forgets it and asks the provider at once, so a plan raised at the
+    provider is used again without waiting for the next day.
+    """
+    clock, memory = _Clock(LATE_EVENING), module.PROVIDER_LIMIT_MEMORY_SECONDS
+    provider = _Provider(mail_answers=[DAILY_CAP_ANSWER])
+    adapter = _counted(provider, _counted_runtime(root, name, clock), None)
+    first = _refused(lambda: _answer_for(adapter, _signup_request("again.first@example.com")))
+    told = adapter.message_budget()
+    clock.moment = LATE_EVENING + memory - 1
+    remembered = _refused(lambda: _answer_for(adapter, _signup_request("again.second@example.com")))
+    asked_while_remembered = len(provider.identity_requests)
+    clock.moment = LATE_EVENING + memory
+    asked_again = _refused(lambda: _answer_for(adapter, _signup_request("again.third@example.com")))
+    restarted_provider = _Provider(mail_answers=[DAILY_CAP_ANSWER])
+    restarted = _counted(restarted_provider, _counted_runtime(root, name, clock), None)
+    after_restart = _refused(lambda: _answer_for(restarted, _signup_request("again.fourth@example.com")))
+    # One minute before the day ends, the memory ends with the day.
+    closing_clock = _Clock(BUDGET_DAY_START + DAY_SECONDS - 60)
+    closing_provider = _Provider(mail_answers=[DAILY_CAP_ANSWER])
+    closing = _counted(closing_provider, _counted_runtime(root, name + "-closing", closing_clock), None)
+    _refused(lambda: _answer_for(closing, _signup_request("closing.first@example.com")))
+    closing_clock.moment = BUDGET_DAY_START + DAY_SECONDS
+    next_day = _refused(lambda: _answer_for(closing, _signup_request("closing.second@example.com")))
+    return (first == remembered == DAILY_BUDGET_REACHED and asked_while_remembered == 1
+            and told["provider_limit_reached_at"] == "2026-10-16T21:00:00Z"
+            and told["provider_asked_again_at"] == "2026-10-16T21:15:00Z" and told["remaining_today"] == 0
+            and asked_again == "" and len(provider.identity_requests) == 2 and len(provider.mail_requests) == 2
+            and after_restart == DAILY_BUDGET_REACHED and len(restarted_provider.identity_requests) == 1
+            and next_day == "" and len(closing_provider.identity_requests) == 2)
+
+
+def _provider_limit_checks(check, root):
+    check("a_provider_cap_refusal_is_remembered_for_a_quarter_hour_never_past_the_day_and_not_across_a_restart",
+          _provider_refusal_is_asked_again(root, "asked-again"))
+    with patch.object(module, "PROVIDER_LIMIT_MEMORY_SECONDS", DAY_SECONDS):
+        check("removed_quarter_hour_end_of_the_provider_memory_is_detected",
+              not _provider_refusal_is_asked_again(root, "asked-again-mutant"))
+    outcomes = _provider_limit_outcomes(root, "limits")
+    check("a_provider_cap_answer_is_the_daily_limit_refusal_and_the_next_request_asks_no_provider",
+          _provider_caps_are_the_daily_limit(outcomes))
+    with patch.object(module, "PROVIDER_LIMIT_STATUS", 0):
+        check("removed_provider_limit_mapping_is_detected",
+              not _provider_caps_are_the_daily_limit(_provider_limit_outcomes(root, "limits-mutant")))
+    rate = outcomes["rate"]
+    check("the_provider_rate_for_each_second_asks_for_a_short_wait_and_does_not_stop_the_day",
+          rate["refusal"] == (MAIL_BUSY, 503, {"record_type": "service_retry_refusal/v1", "retry_after_seconds": 1},
+                              {"Retry-After": "1"})
+          and rate["messages"] == 0 and rate["reached"] is None and rate["following"] == "" and rate["asked_again"])
+    check("a_definite_mail_refusal_gives_its_count_back_and_an_unknown_outcome_keeps_it",
+          _definite_refusals_give_the_count_back(outcomes))
+    with patch.object(module.DailyMessageCount, "give_back", lambda self, day, budget, provider_limit=False: None):
+        check("removed_give_back_is_detected",
+              not _definite_refusals_give_the_count_back(_provider_limit_outcomes(root, "give-back-mutant")))
+
+
+def _spent_day_route_answers(root, name):
+    """Sign-up and recovery for an address with an account and one without, over the real route, once the day is spent.
+
+    Another process of the same service spends the budget, so the route's
+    first refusal reads the store and the later ones come from memory. The
+    identity answers are chosen so that one address would have an account,
+    and no answer may be asked for.
+    """
+    import httpx
+    fixture = _fixture(root, name)
+    fixture.runtime._clock = lambda: LATE_EVENING
+    _answer_for(_counted(_Provider(), fixture.runtime), _signup_request("spender@example.com"))
+    provider = _Provider(identity_answers=[_ineligible(SIGNUP_ACTION), _link_answer()])
+    limits = ServiceRequestLimits(client_address_source=HEADER_SOURCE, client_address_header=PROXY_HEADER)
+
+    def build(configuration):
+        adapter = AccountEmailAdapter(_settings(allow_loopback=True, daily_message_budget=1), _secrets,
+            public_base_url=configuration.public_base_url, address_limits=configuration.request_limits,
+            display_name=configuration.display_name, identity_transport=provider.identity,
+            mail_transport=provider.mail, runtime=fixture.runtime)
+        return ServiceHttpApplication(fixture.runtime, fixture.provisioning, configuration,
+                                      browser_identity=_IdentityStandIn(fixture.runtime), account_email=adapter)
+    with running_http(fixture, application_factory=build, display_name=DISPLAY_NAME, request_limits=limits) as (
+            base, _service):
+        with httpx.Client(base_url=base, trust_env=False, timeout=5) as client:
+            answers = [client.post(path, json={"record_type": version, "email": address},
+                                   headers={PROXY_HEADER: FIRST})
+                       for address in (KNOWN_ADDRESS, NEW_ADDRESS)
+                       for path, version in ((module.SIGNUP_PATH, module.SIGNUP_REQUEST_VERSION),
+                                             (module.RECOVERY_PATH, module.RECOVERY_REQUEST_VERSION))]
+    return answers, provider
+
+
+def _spent_day_answers_alike(root, name):
+    """Every answer has one status, one Retry-After and one record, apart from its own request reference, and no address."""
+    answers, provider = _spent_day_route_answers(root, name)
+
+    def shape(answer):
+        body = answer.json()
+        body.pop("request_reference", None)
+        return json.dumps([answer.status_code, answer.headers.get("retry-after"), answer.headers.get("cache-control"),
+                           body], sort_keys=True)
+    shapes = {shape(answer) for answer in answers}
+    record = answers[0].json()
+    said = " ".join(answer.text + json.dumps(dict(answer.headers)) for answer in answers)
+    return (len(answers) == 4 and len(shapes) == 1 and answers[0].status_code == 503
+            and answers[0].headers.get("retry-after") == "10800"
+            and record["error"]["code"] == DAILY_BUDGET_REACHED and record["error"]["details"] == SPENT_DAY_REFUSAL[2]
+            and record["error"]["message"] and not any(address in said for address in (KNOWN_ADDRESS, NEW_ADDRESS))
+            and (provider.identity_requests, provider.mail_requests) == ([], []))
+
+
+def _refusal_naming_the_address():
+    """The known-wrong refusal: the same code and status, with the requested address in its details."""
+    prepare, deliver = AccountEmailAdapter.prepare, AccountEmailAdapter.deliver
+
+    def named(error, address):
+        if error.code != DAILY_BUDGET_REACHED:
+            return error
+        return AccountEmailError(error.code, error.status, details={**error.details, "address": address},
+                                 headers=error.headers)
+
+    def naming_prepare(self, action, request_fields, address_key):
+        try:
+            return prepare(self, action, request_fields, address_key)
+        except AccountEmailError as error:
+            raise named(error, str(request_fields.get("email"))) from None
+
+    def naming_deliver(self, prepared):
+        try:
+            return deliver(self, prepared)
+        except AccountEmailError as error:
+            raise named(error, prepared.email) from None
+    return naming_prepare, naming_deliver
+
+
+def _two_sends_at_once(root, name):
+    """Two sign-ups that reach the mail provider together, with one message left today.
+
+    The mail transport holds each send until both have arrived or a second
+    has passed. Returns the messages sent, the two answers and the count.
+    """
+    gate, provider = threading.Barrier(2, timeout=1.0), _Provider()
+
+    def mail(request, secret):
+        try:
+            gate.wait()
+        except threading.BrokenBarrierError:
+            pass
+        return provider.mail(request, secret)
+    adapter = _counted(provider, _counted_runtime(root, name, _Clock(LATE_EVENING)), mail=mail)
+    codes = {}
+
+    def run(index):
+        codes[index] = _refused(lambda: _answer_for(adapter, _signup_request("race%d@example.com" % index),
+                                                    address="198.51.100.%d" % (index + 1)))
+    workers = [threading.Thread(target=run, args=(index,)) for index in range(2)]
+    for worker in workers:
+        worker.start()
+    for worker in workers:
+        worker.join(10)
+    return len(provider.mail_requests), sorted(codes.values()), adapter.message_budget()["messages_today"]
+
+
+def _checking_only(self, budget):
+    """The known-wrong count: the day is checked before a send, and nothing is counted until after it."""
+    now = self.now()
+    if day_is_spent(self.read(budget, now), budget):
+        raise module.daily_budget_refusal(now)
+    return ""
+
+
+def _spent_day_keeps_the_allowances(root, name):
+    """Five requests for one address on a spent day all read the daily limit, and none uses the address's allowance."""
+    adapter = _counted(_Provider(), _counted_runtime(root, name, _Clock(LATE_EVENING)), attempts_for_each_email=2)
+    _answer_for(adapter, _signup_request("allowance.spender@example.com"))
+    codes = [_refused(lambda: _answer_for(adapter, _signup_request(NEW_ADDRESS))) for _each in range(5)]
+    return (codes == [DAILY_BUDGET_REACHED] * 5
+            and counted_email_key(NEW_ADDRESS) not in adapter.email_attempts._failures)
+
+
+def _diagnostics_after_two_messages(root, name):
+    """The developer diagnostics of a real application after two messages with a budget of 95."""
+    fixture = _fixture(root, name)
+    fixture.runtime._clock = lambda: LATE_EVENING
+    provider = _Provider()
+    adapter = _counted(provider, fixture.runtime, 95)
+    for address in (NEW_ADDRESS, KNOWN_ADDRESS):
+        _answer_for(adapter, _signup_request(address))
+    application = _shut(ServiceHttpApplication(fixture.runtime, fixture.provisioning, _loopback_configuration(),
+                        browser_identity=_IdentityStandIn(fixture.runtime), account_email=adapter))
+    return application._staff_diagnostics(), provider
+
+
+def _diagnostics_hold_counts_only(root, name):
+    diagnostics, provider = _diagnostics_after_two_messages(root, name)
+    shown = json.dumps(diagnostics)
+    hidden = (NEW_ADDRESS, KNOWN_ADDRESS, TOKEN_HASH_VALUE, IDENTITY_KEY_VALUE, MAIL_KEY_VALUE, "@",
+              *(request.subject for request, _secret in provider.mail_requests))
+    return (diagnostics.get("account_email") == {
+                "record_type": MESSAGE_BUDGET_VERSION, "counted": True, "readable": True, "day": BUDGET_DAY,
+                "messages_today": 2, "daily_message_budget": 95, "remaining_today": 93,
+                "provider_limit_reached_at": None, "provider_asked_again_at": None, "resets_at": NEXT_DAY_STAMP}
+            and diagnostics.get("health") is not None and len(provider.mail_requests) == 2
+            and not any(value in shown for value in hidden))
+
+
+def _diagnostics_checks(check, root):
+    check("the_developer_diagnostics_show_todays_messages_budget_remainder_and_reset_and_no_address",
+          _diagnostics_hold_counts_only(root, "diagnostics"))
+    original = AccountEmailAdapter.message_budget
+    with patch.object(AccountEmailAdapter, "message_budget",
+                      lambda self: {**original(self), "last_recipient": NEW_ADDRESS}):
+        check("a_count_that_names_an_address_is_detected", not _diagnostics_hold_counts_only(root, "diagnostics-mutant"))
+    fixture = _fixture(root, "diagnostics-unreadable")
+    adapter = _counted(_Provider(), fixture.runtime, 95)
+
+    def busy(self, budget, now):
+        raise ServiceRuntimeError("store_busy")
+    with patch.object(module.DailyMessageCount, "read", busy):
+        unreadable = _shut(ServiceHttpApplication(fixture.runtime, fixture.provisioning, _loopback_configuration(),
+                           account_email=adapter))._staff_diagnostics()
+    absent = _shut(ServiceHttpApplication(fixture.runtime, fixture.provisioning,
+                                          _loopback_configuration()))._staff_diagnostics()
+    check("an_unreadable_count_is_reported_as_such_and_a_service_without_account_email_reports_none",
+          unreadable["account_email"]["readable"] is False and unreadable["account_email"]["code"] == "store_busy"
+          and unreadable.get("health") is not None and "account_email" not in absent
+          and _adapter(_Provider()).message_budget()["counted"] is False)
+
+
+def _budget_checks(check, root):
+    """The daily message budget: its setting, its durable count and every way a day is spent."""
+    from .account_origin_checks import mutated
+    _budget_configuration_checks(check, root / "configuration")
+    check("the_day_count_survives_a_restart_and_the_budget_holds_across_it", _count_survives_a_restart(root, "restart"))
+    change, read = _memory_only_count()
+    with patch.object(module.DailyMessageCount, "_change", change), patch.object(module.DailyMessageCount, "read", read):
+        check("removed_durable_day_count_is_detected", not _count_survives_a_restart(root, "restart-mutant"))
+    check("a_spent_day_refuses_sign_up_and_recovery_before_any_provider_request",
+          _spent_day_asks_no_provider(root, "spent"))
+    with mutated(AccountEmailAdapter, "deliver", "self.require_message_budget()", "pass"), \
+            mutated(AccountEmailAdapter, "prepare", "self._refuse_while_known_spent()", "pass"):
+        check("removed_check_before_any_provider_request_is_detected",
+              not _spent_day_asks_no_provider(root, "spent-mutant"))
+    check("the_next_day_in_coordinated_universal_time_starts_a_new_count", _next_day_starts_a_new_count(root, "next-day"))
+    _provider_limit_checks(check, root)
+    check("a_spent_day_answers_every_address_alike_over_the_real_route", _spent_day_answers_alike(root, "alike"))
+    naming_prepare, naming_deliver = _refusal_naming_the_address()
+    with patch.object(AccountEmailAdapter, "prepare", naming_prepare), \
+            patch.object(AccountEmailAdapter, "deliver", naming_deliver):
+        check("a_refusal_that_names_the_address_is_detected", not _spent_day_answers_alike(root, "alike-mutant"))
+    check("two_sends_at_the_same_moment_never_pass_the_budget_together",
+          _two_sends_at_once(root, "race") == (1, ["", DAILY_BUDGET_REACHED], 1))
+    with patch.object(module.DailyMessageCount, "reserve", _checking_only):
+        check("removed_count_before_the_send_lets_two_sends_pass_and_is_detected",
+              _two_sends_at_once(root, "race-mutant")[0] == 2)
+    check("a_spent_day_uses_none_of_the_allowance_of_an_address", _spent_day_keeps_the_allowances(root, "allowance"))
+    with mutated(AccountEmailAdapter, "prepare", "self._refuse_while_known_spent()", "pass"):
+        check("removed_refusal_before_the_attempt_is_counted_is_detected",
+              not _spent_day_keeps_the_allowances(root, "allowance-mutant"))
+    _diagnostics_checks(check, root)
+
+
 def run_checks(check, root):
     _configuration_checks(check)
     _address_and_password_checks(check)
@@ -1618,3 +2109,4 @@ def run_checks(check, root):
     _host_file_checks(check, root / "host-file")
     _mutant_controls(check)
     _email_first_signup_checks(check, root / "email-first")
+    _budget_checks(check, root / "budget")

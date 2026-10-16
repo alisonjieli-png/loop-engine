@@ -215,6 +215,14 @@ CODE_GUIDANCE = {
                                    "Send provider notifications through the configured signed webhook only."),
     "invalid_account_activation": ("This activation link is not valid, or it was already used.",
                                    "Request a new confirmation email, then open the newest link."),
+    # Sign-up and recovery email stop once the day's messages are spent. The
+    # answer is the same for every address and names no account.
+    "account_email_daily_budget_reached": ("Sign-up and recovery email has reached today's limit, so no message "
+                                           "was sent.",
+                                           "Try again after 00:00 UTC, when the limit resets. The refusal's details "
+                                           "and its Retry-After header name the exact time."),
+    "account_mail_busy": ("The email provider asked this service to slow down, so no message was sent.",
+                          "Wait a few seconds, then send the same request again."),
     # The waiting list is the one form a stranger can send without signing in,
     # so each of its refusals says what happened in the words of that form.
     "waitlist_address_invalid": ("That email address is not one this service can write to.",

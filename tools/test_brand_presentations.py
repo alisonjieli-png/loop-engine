@@ -69,7 +69,8 @@ class BrandHttpTests(unittest.TestCase):
                 result = factory(config)
                 result.browser_identity.configuration = replace(result.browser_identity.configuration,
                     allowed_scopes=(*result.browser_identity.configuration.allowed_scopes, "billing:manage"))
-                result.account_email = _adapter(self.mail, _settings(allow_loopback=True))
+                # The adapter counts each day's messages in the shared service store, as the host loader installs it.
+                result.account_email = _adapter(self.mail, _settings(allow_loopback=True), runtime=result.runtime)
                 result.billing_sessions = self.billing
                 # Retain the actual constructed presentations for sharing
                 # assertions without running their setup a second time.
@@ -125,8 +126,9 @@ class BrandHttpTests(unittest.TestCase):
                      "list_cursors", "_workers", "_slots", "_share_operations", "_share_lock", "request_limiter", "failure_journal"):
             self.assertIs(getattr(self.app, name), getattr(self.presentation, name), name)
         self.assertIs(self.app.provisioning.current_view(), self.presentation.provisioning.current_view())
-        for name in ("address_attempts", "email_attempts", "account_origins"):
+        for name in ("address_attempts", "email_attempts", "account_origins", "daily_messages"):
             self.assertIs(getattr(self.app.account_email, name), getattr(self.presentation.account_email, name), name)
+        self.assertIsNotNone(self.app.account_email.daily_messages)
         self.assertIs(self.app.oauth_http._attempts, self.presentation.oauth_http._attempts)
         self.assertIs(self.app.oauth_http._attempt_lock, self.presentation.oauth_http._attempt_lock)
         self.assertIs(self.app.runtime._catalog, self.presentation.oauth_authorization.catalog)

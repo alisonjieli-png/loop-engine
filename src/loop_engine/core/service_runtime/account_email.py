@@ -22,11 +22,22 @@ later confirm. The record is
 `artifacts/architecture-audit-2026-09-19/identity-unconfirmed-signup-probe-1.json`.
 
 Surface: `AccountEmailConfiguration` (the typed host block), `AccountEmailAdapter`
-with `prepare`, `deliver` and `availability`, the two wire records
-`IdentityLinkRequest` and `AccountMailRequest`, their default transports
-`generate_identity_link` and `send_account_mail`, `generated_signup_password`,
-and `ProviderAnswer`, which is what a transport returns. Both operations stay
+with `prepare`, `deliver`, `availability`, `require_message_budget` and
+`message_budget`, the two wire records `IdentityLinkRequest` and
+`AccountMailRequest`, their default transports `generate_identity_link` and
+`send_account_mail`, `generated_signup_password`, `DailyMessageCount`, and
+`ProviderAnswer`, which is what a transport returns. Both operations stay
 closed until the host sets their Boolean and grants network authority.
+
+The mail provider's free plan sends at most 100 messages a day. Every message
+this adapter hands to it is counted in the service store, one record for each
+day in Coordinated Universal Time, so a restart does not start the count
+again. A host may set `daily_message_budget`. Once the day holds that many
+messages, or the provider refused a message for its own daily or monthly cap
+in the last quarter of an hour, sign-up and recovery are refused before any
+provider request with `account_email_daily_budget_reached`, an answer built
+from the clock alone, so it is the same for every address. The count is a
+number, never an address, and the developer diagnostics show it.
 
 The answer to a caller never says whether an address already has an account.
 That holds for every definite answer the identity provider can give, not only
@@ -40,16 +51,18 @@ chooses without limit.
 from __future__ import annotations
 
 from dataclasses import dataclass, field, fields as dataclass_fields, replace
+from datetime import datetime, timezone
 import hashlib
 import json
 import math
 import re
 import secrets
 import string
+import threading
 import time
 from urllib.parse import quote, urlsplit
 
-from .http import ServiceHttpError
+from .http import RETRY_REFUSAL_VERSION, ServiceHttpError
 from .http_auth import validate_public_url
 from .records import ServiceRuntimeError, text
 from .request_limits import (
@@ -124,6 +137,40 @@ GENERATED_PASSWORD_BYTES = 51
 #: person would receive the notice message instead of a link.
 GENERATED_PASSWORD_GROUPS = (string.ascii_lowercase, string.ascii_uppercase, string.digits, "-_")
 SENDER_NAME_CHARACTERS = frozenset(string.ascii_letters + string.digits + " .-")
+#: One record for each day in Coordinated Universal Time counts the messages
+#: this service handed to the mail provider that day. It holds the day and a
+#: number, never an address, a link or a message.
+MESSAGE_DAY_KIND, MESSAGE_DAY_VERSION = "service_account_email_day", "service_account_email_day/v1"
+MESSAGE_DAY_FIELDS = frozenset({"record_type", "day", "messages"})
+#: What the developer diagnostics read about today's messages, and the details
+#: of the refusal a spent day answers with.
+MESSAGE_BUDGET_VERSION = "service_account_email_budget/v1"
+BUDGET_REFUSAL_VERSION = "service_account_email_budget_refusal/v1"
+DAILY_BUDGET_REACHED = "account_email_daily_budget_reached"
+#: The mail provider refused a send for its own rate of requests each second,
+#: which passes in a moment, unlike its daily cap.
+MAIL_BUSY = "account_mail_busy"
+#: The largest daily budget a host may set. Only the provider's free plan has a
+#: daily cap, 100 messages, and its paid plans allow tens of thousands a month,
+#: so a larger number is a typing mistake rather than a plan.
+LARGEST_DAILY_MESSAGE_BUDGET = 100_000
+DAY_SECONDS = 86_400
+#: The status the mail provider answers when one of its own limits refused a
+#: send, and the `name` its error object gives each limit, as its error-code
+#: reference and its own client library state them. The daily cap resets at
+#: midnight in Coordinated Universal Time; both caps count sent and received mail.
+PROVIDER_LIMIT_STATUS = 429
+PROVIDER_CAP_NAMES = frozenset({"daily_quota_exceeded", "monthly_quota_exceeded"})
+PROVIDER_RATE_NAME = "rate_limit_exceeded"
+#: How many times one change to a day's count reads again after a writer in
+#: another process changed the record first.
+COUNT_WRITE_ROUNDS = 5
+#: How long the service remembers that the mail provider refused a message for
+#: its own cap before it asks the provider again: a quarter of an hour, and
+#: never past the end of the day. The memory is not stored, because the
+#: provider is the authority on its own cap: a plan raised there is used within
+#: this time, or at once after a restart.
+PROVIDER_LIMIT_MEMORY_SECONDS = 900
 
 
 def _accepted(status_code):
@@ -232,6 +279,11 @@ class AccountEmailConfiguration:
     tracked_emails: int = 4096
     timeout_seconds: float = 10.0
     maximum_response_bytes: int = 65_536
+    #: The most messages this service hands to the mail provider in one day in
+    #: Coordinated Universal Time, counted in the service store, or None for no
+    #: budget of its own. The count is kept either way. A host on the provider's
+    #: free plan, which sends at most 100 a day, sets 95.
+    daily_message_budget: int | None = None
     record_type: str = CONFIGURATION_RECORD_TYPE
     provider_profile: str = PROVIDER_PROFILE
 
@@ -266,6 +318,12 @@ class AccountEmailConfiguration:
                 or not 1 <= self.maximum_response_bytes <= 262_144):
             raise ServiceRuntimeError("invalid_account_email_request_limits",
                                       "the provider deadline and the response allowance are bounded")
+        # Zero is refused as well: a host that wants no message switches the
+        # operations off with their Booleans, so a budget always lets one through.
+        if self.daily_message_budget is not None and (type(self.daily_message_budget) is not int
+                or not 1 <= self.daily_message_budget <= LARGEST_DAILY_MESSAGE_BUDGET):
+            raise ServiceRuntimeError("invalid_account_email_daily_budget",
+                f"the daily message budget is a whole number from 1 to {LARGEST_DAILY_MESSAGE_BUDGET}, or absent")
         # Building both records here refuses an impossible allowance while the
         # host file is read, before the service serves anything.
         self.email_attempt_limits()
@@ -533,6 +591,180 @@ def no_account_message(name, origin):
             "If you want an account, create one here:\n" + origin + "/signup\n")
 
 
+def utc_day(moment):
+    """The day in Coordinated Universal Time that one moment falls in, and the moment the next day starts."""
+    start = int(moment // DAY_SECONDS) * DAY_SECONDS
+    return datetime.fromtimestamp(start, timezone.utc).strftime("%Y-%m-%d"), start + DAY_SECONDS
+
+
+def utc_stamp(moment):
+    """One moment written as a time in Coordinated Universal Time, to the second."""
+    return datetime.fromtimestamp(int(moment), timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+
+
+def daily_budget_refusal(now):
+    """The refusal for a day whose messages are spent, and when the next day starts.
+
+    It is built from the clock alone. Nothing about the request reaches it, so
+    every address, with or without an account, gets the same answer at the
+    same moment.
+    """
+    _day, resets = utc_day(now)
+    wait = max(1, math.ceil(resets - now))
+    return AccountEmailError(DAILY_BUDGET_REACHED, 503,
+        details={"record_type": BUDGET_REFUSAL_VERSION, "resets_at": utc_stamp(resets), "retry_after_seconds": wait},
+        headers={"Retry-After": str(wait)})
+
+
+def provider_limit_name(answer):
+    """The `name` of a mail provider refusal for one of its own limits, or empty text for any other answer."""
+    if answer.status_code != PROVIDER_LIMIT_STATUS:
+        return ""
+    name = answer.payload.get("name")
+    return name if isinstance(name, str) else ""
+
+
+def _day_count(row, day):
+    """The count one stored record holds for one day, or the empty count of a day with no record yet."""
+    if row is None:
+        return {"record_type": MESSAGE_DAY_VERSION, "day": day, "messages": 0}
+    value = row["payload"]
+    if (set(value) != MESSAGE_DAY_FIELDS or value["record_type"] != MESSAGE_DAY_VERSION or value["day"] != day
+            or type(value["messages"]) is not int or value["messages"] < 0):
+        raise ServiceRuntimeError("unsupported_or_corrupt_record")
+    return dict(value)
+
+
+def day_is_spent(count, budget):
+    """True when the day holds the whole budget. A day without a budget is never spent by its count."""
+    return budget is not None and count["messages"] >= budget
+
+
+class DailyMessageCount:
+    """The messages this service handed to the mail provider on each day in Coordinated Universal Time.
+
+    One record for each day, `service_account_email_day/v1`, keyed by the day,
+    is kept in the service store, so a restart does not start the count again.
+    A message is counted before it is sent, against the exact version of the
+    day's record, so sends that run at the same moment can never pass the
+    budget together. A message the mail provider definitely refused is given
+    back. A message whose outcome is unknown stays counted, because the
+    provider may have sent it.
+
+    The process also remembers two things the store does not hold: the last
+    day it read as spent, so that a request can be refused before its attempt
+    is counted against the allowances of its client address and its email
+    address and without a store read, and the provider's last refusal for its
+    own daily or monthly cap, for `PROVIDER_LIMIT_MEMORY_SECONDS` and never past
+    the end of the day. While either holds, every request is refused before
+    any provider request. A restart forgets both, and the next request reads
+    the store, or asks the provider, again.
+    """
+
+    def __init__(self, runtime):
+        from .runtime import ServiceRuntime
+        if not isinstance(runtime, ServiceRuntime) or runtime.config.writes_authorized is not True:
+            raise ServiceRuntimeError("invalid_account_email_adapter",
+                                      "the message count needs the service runtime with host write authority")
+        self.runtime, self.catalog = runtime, runtime._catalog
+        self._lock = threading.Lock()
+        self._spent_day = ""
+        self._provider_refusal = (0, 0)
+
+    def now(self):
+        return self.runtime._now()
+
+    def _note(self, day, spent):
+        with self._lock:
+            if spent:
+                self._spent_day = day
+            elif self._spent_day == day:
+                self._spent_day = ""
+
+    def known_spent(self, now):
+        """True when this process last read the day of `now` as spent, or remembers the provider's refusal. No store read."""
+        with self._lock:
+            counted = bool(self._spent_day) and self._spent_day == utc_day(now)[0]
+            return counted or now < self._provider_refusal[1]
+
+    def remember_provider_refusal(self, now):
+        """Remember that the provider refused a message for its own cap, for a quarter of an hour and never past the day."""
+        _day, resets = utc_day(now)
+        with self._lock:
+            self._provider_refusal = (int(now), min(int(now) + PROVIDER_LIMIT_MEMORY_SECONDS, resets))
+
+    def provider_refusal(self, now):
+        """The moment of the remembered refusal and the moment the provider is asked again, or None once it has passed."""
+        with self._lock:
+            refused, again = self._provider_refusal
+        return (refused, again) if now < again else None
+
+    def read(self, budget, now):
+        """The count of the day of `now`.
+
+        The store is opened with write authority, which the count always holds,
+        so that a service whose database does not exist yet reads an empty day
+        instead of refusing its first message. Nothing is written.
+        """
+        day, _resets = utc_day(now)
+        with self.catalog.store(write=True) as store:
+            count = _day_count(self.catalog.read(store, MESSAGE_DAY_KIND, day), day)
+        self._note(day, day_is_spent(count, budget))
+        return count
+
+    def _change(self, day, change):
+        """Read one day's count, change it and commit it against the exact version read.
+
+        The changes of this process take turns on the record, and a change that
+        lost to a writer in another process reads again, for a bounded number of
+        rounds, so that no count is ever lost or counted twice.
+        """
+        for attempt in range(COUNT_WRITE_ROUNDS):
+            try:
+                with self.catalog.store(write=True) as store:
+                    with self.catalog.serialized(MESSAGE_DAY_KIND):
+                        row = self.catalog.read(store, MESSAGE_DAY_KIND, day)
+                        changed = change(_day_count(row, day))
+                        record = self.catalog.record(MESSAGE_DAY_KIND, day, changed)
+                        self.catalog.commit(store, (record,), (self.catalog.guard(row, record["record_id"]),))
+                return changed
+            except ServiceRuntimeError as error:
+                if error.code != "concurrent_update" or attempt == COUNT_WRITE_ROUNDS - 1:
+                    raise
+        raise ServiceRuntimeError("concurrent_update")
+
+    def reserve(self, budget):
+        """Count one message before it is sent and return its day, or refuse when the day is spent."""
+        now = self.now()
+        day, _resets = utc_day(now)
+
+        def counted(count):
+            if day_is_spent(count, budget):
+                raise daily_budget_refusal(now)
+            return {**count, "messages": count["messages"] + 1}
+        try:
+            changed = self._change(day, counted)
+        except AccountEmailError:
+            self._note(day, True)
+            raise
+        self._note(day, day_is_spent(changed, budget))
+        return day
+
+    def give_back(self, day, budget):
+        """Give one count back after the mail provider definitely refused the message. It never raises.
+
+        A count that cannot be given back stays counted, which errs only toward
+        sending fewer messages.
+        """
+        def returned(count):
+            return {**count, "messages": max(0, count["messages"] - 1)}
+        try:
+            changed = self._change(day, returned)
+        except Exception:  # noqa: BLE001 - the refusal the caller reads must not become a store failure
+            return
+        self._note(day, day_is_spent(changed, budget))
+
+
 class AccountEmailAdapter:
     """Sign-up and recovery email behind the `account_email/v1` boundary.
 
@@ -540,7 +772,9 @@ class AccountEmailAdapter:
     the attempt. `deliver` makes exactly one request to the identity provider
     and exactly one request to the mail provider. Nothing is repeated after an
     uncertain answer, and the result record is the same whether or not the
-    address already has an account.
+    address already has an account. With the service runtime installed, every
+    message is counted for its day first, and a spent day is refused before
+    any provider request.
     """
 
     protocol_version = "account_email/v1"
@@ -563,7 +797,7 @@ class AccountEmailAdapter:
         return presentation
 
     def __init__(self, configuration, secret_resolver, *, public_base_url, address_limits, display_name,
-                 identity_transport=None, mail_transport=None, account_origins=None):
+                 identity_transport=None, mail_transport=None, account_origins=None, runtime=None):
         if not isinstance(configuration, AccountEmailConfiguration) or not callable(secret_resolver):
             raise ServiceRuntimeError("invalid_account_email_adapter",
                                       "a typed account email configuration and a host secret resolver are required")
@@ -599,6 +833,15 @@ class AccountEmailAdapter:
                 "client_address_source in its http.request_limits block before either Boolean is true")
         self.address_attempts = FailedAttemptLimiter(configuration.address_attempt_limits(stated))
         self.email_attempts = FailedAttemptLimiter(configuration.email_attempt_limits())
+        # The count of each day's messages lives in the service store, which
+        # the host loader always passes. A budget kept in memory would start
+        # again after every restart, so a budget without the store is refused.
+        counted = runtime is not None and getattr(getattr(runtime, "config", None), "writes_authorized", None) is True
+        if configuration.daily_message_budget is not None and not counted:
+            raise ServiceRuntimeError("account_email_budget_needs_the_service_store",
+                "a daily message budget is counted in the service store, so the adapter needs the service runtime "
+                "with host write authority")
+        self.daily_messages = DailyMessageCount(runtime) if counted else None
 
     @property
     def signup_available(self):
@@ -617,6 +860,53 @@ class AccountEmailAdapter:
         """
         return {"signup_available": self.signup_available, "recovery_available": self.recovery_available,
                 "minimum_password_length": self.configuration.minimum_password_length}
+
+    def message_budget(self):
+        """Today's messages, for the developer diagnostics: counts and times, never an address, a link or a message.
+
+        `messages_today` counts the messages handed to the mail provider today
+        that it did not refuse, including any whose answer never arrived.
+        `remaining_today` is None when the host set no budget and no refusal of
+        the provider for its own cap is remembered, and 0 while one is.
+        """
+        budget = self.configuration.daily_message_budget
+        if self.daily_messages is None:
+            return {"record_type": MESSAGE_BUDGET_VERSION, "counted": False, "daily_message_budget": budget}
+        now = self.daily_messages.now()
+        day, resets = utc_day(now)
+        try:
+            count = self.daily_messages.read(budget, now)
+        except ServiceRuntimeError as error:
+            return {"record_type": MESSAGE_BUDGET_VERSION, "counted": True, "readable": False, "code": error.code,
+                    "day": day, "daily_message_budget": budget, "resets_at": utc_stamp(resets)}
+        refusal = self.daily_messages.provider_refusal(now)
+        remaining = 0 if refusal is not None else None if budget is None else max(0, budget - count["messages"])
+        return {"record_type": MESSAGE_BUDGET_VERSION, "counted": True, "readable": True, "day": day,
+                "messages_today": count["messages"], "daily_message_budget": budget, "remaining_today": remaining,
+                "provider_limit_reached_at": utc_stamp(refusal[0]) if refusal else None,
+                "provider_asked_again_at": utc_stamp(refusal[1]) if refusal else None,
+                "resets_at": utc_stamp(resets)}
+
+    def require_message_budget(self):
+        """Refuse before any provider request when today's messages are spent. Without a count it does nothing.
+
+        Public sign-up, recovery and a superadmin's sign-up links call it
+        before they ask the identity provider for anything, so a spent day
+        prepares no account and generates no link.
+        """
+        if self.daily_messages is None:
+            return
+        now, budget = self.daily_messages.now(), self.configuration.daily_message_budget
+        if (self.daily_messages.provider_refusal(now) is not None
+                or day_is_spent(self.daily_messages.read(budget, now), budget)):
+            raise daily_budget_refusal(now)
+
+    def _refuse_while_known_spent(self):
+        """Refuse at once, before the attempt is counted, while this process knows today is spent."""
+        if self.daily_messages is not None:
+            now = self.daily_messages.now()
+            if self.daily_messages.known_spent(now):
+                raise daily_budget_refusal(now)
 
     def _available(self, action):
         return self.signup_available if action == SIGNUP_ACTION else self.recovery_available
@@ -640,6 +930,8 @@ class AccountEmailAdapter:
                 or request_fields.get("record_type") != expected):
             raise AccountEmailError("invalid_account_" + action, 400)
         address = email_address(request_fields["email"])
+        # A spent day sends nothing, so it uses none of the two allowances.
+        self._refuse_while_known_spent()
         self._count(address_key, address)
         return PreparedAccountRequest(action, address)
 
@@ -665,6 +957,7 @@ class AccountEmailAdapter:
         if not isinstance(prepared, PreparedAccountRequest):
             raise ServiceRuntimeError("invalid_prepared_account_request")
         self._require_available(prepared.action)
+        self.require_message_budget()
         token_hash = self._token_hash(prepared)
         signup = prepared.action == SIGNUP_ACTION
         if token_hash:
@@ -770,11 +1063,30 @@ class AccountEmailAdapter:
         configuration = self.configuration
         sender = (configuration.sender_name + " <" + configuration.sender_address + ">"
                   if configuration.sender_name else configuration.sender_address)
-        answer = self._ask(self._mail_transport,
-            AccountMailRequest(configuration.mail_origin + MAIL_SEND_PATH, sender, recipient, subject, body,
-                               configuration.timeout_seconds, configuration.maximum_response_bytes),
-            self._secret(configuration.mail_api_key_ref, MAIL_SECRET_PREFIX), "account_mail_unavailable")
+        request = AccountMailRequest(configuration.mail_origin + MAIL_SEND_PATH, sender, recipient, subject, body,
+                                     configuration.timeout_seconds, configuration.maximum_response_bytes)
+        secret = self._secret(configuration.mail_api_key_ref, MAIL_SECRET_PREFIX)
+        # Counted before it leaves, so two sends at the same moment can never
+        # pass the budget together. It stays counted unless the provider
+        # definitely refuses it.
+        day = (self.daily_messages.reserve(configuration.daily_message_budget)
+               if self.daily_messages is not None else "")
+        answer = self._ask(self._mail_transport, request, secret, "account_mail_unavailable")
         if 400 <= answer.status_code < 500:
+            limit = provider_limit_name(answer)
+            if day:
+                self.daily_messages.give_back(day, configuration.daily_message_budget)
+                if limit in PROVIDER_CAP_NAMES:
+                    self.daily_messages.remember_provider_refusal(self.daily_messages.now())
+            if answer.status_code == PROVIDER_LIMIT_STATUS:
+                # The provider's rate for each second passes in a moment. Every
+                # other refusal of its own limits, named or not, is the cap a
+                # day of messages reaches, and answers like a spent budget.
+                if limit == PROVIDER_RATE_NAME:
+                    raise AccountEmailError(MAIL_BUSY, 503, headers={"Retry-After": "1"},
+                                            details={"record_type": RETRY_REFUSAL_VERSION, "retry_after_seconds": 1})
+                raise daily_budget_refusal(self.daily_messages.now() if self.daily_messages is not None
+                                           else time.time())
             raise AccountEmailError("account_mail_refused", 503)
         if not _accepted(answer.status_code):
             raise AccountEmailError("account_mail_unavailable", 503)

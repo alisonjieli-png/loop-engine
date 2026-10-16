@@ -460,9 +460,11 @@ def load_host_application(path):
                                            timeout_seconds=settings.timeout_seconds))
         def identity_secret(reference=settings.identity_service_key_ref):
             return identity_administration_secret(environment_secret, reference)
+        # The runtime holds the service store, where every message is counted
+        # for its day, so the count and any daily budget survive a restart.
         account_email = AccountEmailAdapter(settings, environment_secret,
             public_base_url=transport.public_base_url, address_limits=transport.request_limits,
-            display_name=transport.display_name, account_origins=origins)
+            display_name=transport.display_name, account_origins=origins, runtime=runtime)
     # The adapter is installed through the constructor, so that the declared
     # `account_email/v1` boundary is validated before the application exists.
     from .oauth_http import default_provider

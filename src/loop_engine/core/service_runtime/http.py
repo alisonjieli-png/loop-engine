@@ -1955,7 +1955,11 @@ class ServiceHttpApplication:
                                   StaffSignUpLinkRequest.from_dict(fields))
 
     def _staff_diagnostics(self):
-        """What a developer reads: the measured health record and the newest refusal codes, counted."""
+        """What a developer reads: the measured health record, the newest refusal codes, counted, and today's account messages.
+
+        The account message count holds numbers and times only: the messages
+        sent today, the daily budget, what remains and when the day resets.
+        """
         from .billing_policy import billing_policy_refusal
         billed = self.billing_sessions is not None or self.billing_processor is not None
         health = readiness_report(config=self.runtime.config, provisioning=self.provisioning,
@@ -1972,9 +1976,17 @@ class ServiceHttpApplication:
                 refusals[name] = refusals.get(name, 0) + 1
         except Exception:
             refusals = {"failure_records_unreadable": 1}
-        return {"record_type": "service_staff_diagnostics/v1", "health": health,
-                "recent_refusals": dict(sorted(refusals.items())),
-                "registration_available": self.registration_available()}
+        result = {"record_type": "service_staff_diagnostics/v1", "health": health,
+                  "recent_refusals": dict(sorted(refusals.items())),
+                  "registration_available": self.registration_available()}
+        messages = getattr(self.account_email, "message_budget", None)
+        if callable(messages):
+            try:
+                result["account_email"] = messages()
+            except Exception:
+                result["account_email"] = {"record_type": "service_account_email_budget/v1", "readable": False,
+                                           "code": "account_email_count_unreadable"}
+        return result
 
     def _redeem_promotion(self, context, request):
         """Revalidate the signed-in account, then redeem for that account only."""

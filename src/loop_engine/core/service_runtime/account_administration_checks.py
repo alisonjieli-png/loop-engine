@@ -392,6 +392,8 @@ def _renewal_checks(check, root):
 
 def _http_checks(check, root):
     import httpx
+    from .account_email import AccountEmailAdapter
+    from .account_email_checks import _secrets, _settings
     from .http import ServiceHttpApplication
     from .http_test_fixtures import running_http
     from .records import ACCESS_MANAGE_SCOPE, TenantKeyIssue, TenantRegistration
@@ -401,8 +403,14 @@ def _http_checks(check, root):
         runtime.register_tenant(TenantRegistration("host-administrator", "host:administrator", (ACCESS_MANAGE_SCOPE,)))
         host_key = runtime.issue_key(TenantKeyIssue("host-administrator", "host administration")).key
         def create(config):
+            # Account email counts its messages in this service's store, with the budget the free mail plan needs.
+            email = AccountEmailAdapter(_settings(signup_enabled=False, recovery_enabled=False, daily_message_budget=95,
+                                                  allow_loopback=True),
+                _secrets, public_base_url=config.public_base_url, address_limits=config.request_limits,
+                display_name=config.display_name, runtime=runtime)
             return ServiceHttpApplication(runtime, identity.fixture.provisioning, config,
-                                          browser_identity=staff.adapter, account_administration=staff.administration)
+                                          browser_identity=staff.adapter, account_administration=staff.administration,
+                                          account_email=email)
         with httpx.Client(trust_env=False, timeout=10) as client, \
                 running_http(identity.fixture, application_factory=create) as (base, _service):
             def call(subject_or_key, path, payload=None, **headers):
@@ -429,6 +437,13 @@ def _http_checks(check, root):
                   and "diagnostics" not in analytics and "@" not in json.dumps(analytics)
                   and developer["role"] == DEVELOPER and "account_counts" not in developer
                   and developer["diagnostics"]["health"]["alive"] is True and "@" not in json.dumps(developer))
+            owner = call(staff.superadmin, "/api/v1/admin/overview").json()["result"]
+            mail = developer["diagnostics"].get("account_email", {})
+            check("developer_and_superadmin_read_todays_account_email_count_and_analytics_reads_none",
+                  mail.get("record_type") == "service_account_email_budget/v1" and mail.get("counted") is True
+                  and mail.get("daily_message_budget") == 95 and mail.get("messages_today") == 0
+                  and mail.get("remaining_today") == 95 and owner["diagnostics"].get("account_email") == mail
+                  and "account_email" not in json.dumps(analytics))
             listing = call(staff.superadmin, "/api/v1/admin/accounts")
             action = call(staff.superadmin, "/api/v1/admin/accounts", {
                 "record_type": "service_account_administration_request/v1", "operation": "grant_free_monthly",

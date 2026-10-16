@@ -23,8 +23,8 @@ from .free_monthly import ACCESS_HELD, plan_state
 from .records import ServiceRuntimeError
 from .request_limits import SOCKET_PEER_SOURCE, ServiceRequestLimits
 from .runtime import BILLING_POLICY, ENTITLEMENT
-from .staff_sign_up_links import (ACTIVATED, HAS_ACCOUNT, LINK, PENDING, SENT, SENT_RECENTLY, StaffSignUpLinkRequest,
-                                  send_sign_up_links)
+from .staff_sign_up_links import (ACTIVATED, FAILED, HAS_ACCOUNT, LINK, PENDING, SENT, SENT_RECENTLY,
+                                  StaffSignUpLinkRequest, send_sign_up_links)
 
 SENDER_NAME = "Sam at Baltor"
 #: The password the person chooses on the confirmation page in these checks.
@@ -37,16 +37,19 @@ TOO_MANY = links_module.MOST_ADDRESSES + 1
 class _World:
     """One service with the one way in, a stand-in identity project, three staff members and a customer."""
 
-    def __init__(self, identity, *, founding=None, attempts=3):
+    def __init__(self, identity, *, founding=None, attempts=3, budget=None):
         from .browser_identity import BrowserIdentityAdapter
         self.identity, self.runtime = identity, identity.fixture.runtime
         self.project = MarkingIdentityProjectStandIn()
         self.origins = AccountOrigins(self.runtime, identity.issuer, SupabaseIdentityAdministration(
             identity.origin, allow_network=True, transport=self.project.admin))
-        self.email = AccountEmailAdapter(_settings(attempts_for_each_email=attempts), _secrets, public_base_url=ORIGIN,
+        # A world with a daily budget counts its messages in its own service store, as the host loader installs it.
+        self.email = AccountEmailAdapter(_settings(attempts_for_each_email=attempts, daily_message_budget=budget),
+            _secrets, public_base_url=ORIGIN,
             address_limits=ServiceRequestLimits(client_address_source=SOCKET_PEER_SOURCE, failures_allowed=100),
             display_name=DISPLAY_NAME, identity_transport=self.project.generate_link,
-            mail_transport=self.project.send_mail, account_origins=self.origins)
+            mail_transport=self.project.send_mail, account_origins=self.origins,
+            runtime=self.runtime if budget is not None else None)
         self.superadmin = identity.person("owner@example.com")
         self.developer = identity.person("developer@example.com")
         self.analytics = identity.person("numbers@example.com")
@@ -232,6 +235,30 @@ def _free_monthly_when_the_account_opens(root, name):
                 and after.get("gifted@example.com") == ACTIVATED)
 
 
+def _spent_day_fails_each_address_before_any_provider_request(root, name):
+    """With one message left today, a batch of two sends one link and fails the other with the daily limit code.
+
+    The next batch, on the spent day, fails its address the same way, asks the
+    identity provider nothing, completes, and replays its first result.
+    """
+    from .account_email import DAILY_BUDGET_REACHED
+    with signed_identity(root / name, operator_access=False) as identity:
+        world = _World(identity, budget=1)
+        first = world.send(world.superadmin, ("budget.first@example.com", "budget.second@example.com"), "budget-batch")
+        asked = (len(world.project.admin_requests), world.project.calls.get("generate_link", 0),
+                 len(world.project.messages))
+        spent = world.send(world.superadmin, ("budget.third@example.com",), "budget-spent")
+        replay = world.send(world.superadmin, ("budget.third@example.com",), "budget-spent")
+        return ([row["outcome"] for row in first["links"]] == [SENT, FAILED] and first["sent"] == 1
+                and first["links"][1].get("code") == DAILY_BUDGET_REACHED
+                and spent["links"] == [{"address": "budget.third@example.com", "outcome": FAILED,
+                                        "code": DAILY_BUDGET_REACHED}]
+                and replay["replayed"] is True and replay["links"] == spent["links"] and asked[1:] == (1, 1)
+                and (len(world.project.admin_requests), world.project.calls.get("generate_link", 0),
+                     len(world.project.messages)) == asked
+                and world.email.message_budget()["messages_today"] == 1)
+
+
 def _http_route(root, name):
     import httpx
     from .http import ServiceHttpApplication
@@ -305,3 +332,8 @@ def run_checks(check, root):
         check("removed_free_monthly_on_activation_is_detected",
               not _free_monthly_when_the_account_opens(root, "opens-mutant"))
     check("the_sign_up_link_route_serves_a_superadmin_and_refuses_everyone_else_over_http", _http_route(root, "http"))
+    check("a_spent_day_fails_each_remaining_address_before_any_provider_request",
+          _spent_day_fails_each_address_before_any_provider_request(root, "budget"))
+    with mutated(links_module, "_sent_once", "adapter.require_message_budget()", "pass"):
+        check("removed_daily_budget_check_for_sign_up_links_is_detected",
+              not _spent_day_fails_each_address_before_any_provider_request(root, "budget-mutant"))

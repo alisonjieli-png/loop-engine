@@ -17,6 +17,8 @@ One request from a superadmin
 │   another version, more than ten addresses, or an address twice
 ├── a durable reservation under the request identity, in the audit record
 ├── for each address
+│   ├── today's account messages are spent: failed with
+│   │   account_email_daily_budget_reached, before any provider request
 │   ├── an account already open under it: refused, and no message
 │   ├── over the allowance for one address that sign-up keeps: refused,
 │   │   and no message
@@ -138,6 +140,9 @@ class _Refused(Exception):
 
 def _sent_once(adapter, origins, request, address, sender, secret):
     """Start Baltor's own sign-up for one address and send its one message, or refuse it before any message."""
+    # A day whose messages are spent fails this address before any provider
+    # request or count; the result names the code, and the batch still completes.
+    adapter.require_message_budget()
     held = origins.administration.find_user(address, secret)
     if held is not None and (origins.bound(held.user_id)
                              or (origins.honoured(held) and bool(held.email_confirmed_at))):
