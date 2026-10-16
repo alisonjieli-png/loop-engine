@@ -96,6 +96,11 @@ dollars per month for 50,000 emails. Do not upgrade for the private pilot.
 The choice is based on its documented Supabase connection, pilot allowance
 and operator tooling, not a measured claim of superior inbox delivery.
 [Resend pricing](https://resend.com/pricing)
+The service counts its own messages for each day and refuses sign-up and
+recovery once the day reaches `account_email.daily_message_budget`. Set it to
+95 on the Free plan, as the
+[account email operations guide](account-email-operations.md#the-mail-providers-daily-cap)
+explains.
 
 1. Reuse the existing Resend account and completed management authorization.
    Inspect domain state before creating anything or retrying an uncertain call.

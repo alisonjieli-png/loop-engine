@@ -993,9 +993,10 @@ needs the lead, because proxying a hostname changes a domain record:
 
 This section describes current behavior. `account_email.py` owns it.
 `http.py` owns the two routes that use it. It is an internal service
-mechanic and an adapter used by Loops. It adds no runtime type, no store and
-no graph vertex. The whole journey stays on the service domain, and no
-setting of the identity provider has to change.
+mechanic and an adapter used by Loops. It adds no runtime type and no graph
+vertex, and its one kind of record, the count of each day's messages, lives
+in the existing service store. The whole journey stays on the service domain,
+and no setting of the identity provider has to change.
 
 ```text
 Public sign-up or password recovery
@@ -1007,9 +1008,16 @@ Public sign-up or password recovery
 ├── prepare: read the request and count the attempt
 │   ├── unknown record version, unknown field, unreadable address or password
 │   │   └── status 400 with a stable code, before any provider request
+│   ├── this process already read today's messages as spent
+│   │   └── status 503, code account_email_daily_budget_reached, before the
+│   │       attempt is counted
 │   └── over the allowance of the client address or of the email address
 │       └── status 429, Retry-After, code failed_attempt_limit_reached
 └── deliver: exactly one request to each provider
+    ├── today's messages are spent: the budget is reached, or the mail
+    │   provider refused a message for its own cap in the last quarter hour
+    │   └── status 503, Retry-After, code account_email_daily_budget_reached,
+    │       before any provider request
     ├── the identity provider generates a link and sends nothing
     │   ├── a token hash for this address and this action
     │   │   └── the message carries this service's link
@@ -1017,7 +1025,11 @@ Public sign-up or password recovery
     │   │   └── the message carries a notice, with no link and no token
     │   └── a refusal of this service itself, status 401, 403 or 429
     │       └── status 503, code identity_link_refused, nothing is sent
+    ├── the message is counted for its day, then sent
     ├── the mail provider sends exactly one message
+    │   └── a refusal for its own daily or monthly cap gives the count back,
+    │       is remembered for a quarter hour and answers
+    │       account_email_daily_budget_reached
     └── status 202 with the same record either way
 ```
 
@@ -1093,6 +1105,79 @@ showed why: a second sign-up link for an address that is not confirmed keeps
 the first password. `GET /api/v1/account/identity` also publishes
 `minimum_password_length`, the shortest password the confirmation page takes.
 
+### The daily message count and budget
+
+The mail provider's free plan, which the owner chose on September 22, 2026,
+sends at most 100 messages a day and counts received mail toward the same
+cap. The service therefore counts every message it hands to the mail provider,
+from public sign-up, recovery and a superadmin's sign-up links alike, in one
+record for each day in Coordinated Universal Time,
+`service_account_email_day/v1`, kept in the service store. A restart does not
+start the count again. The record holds the day and the number of messages,
+never an address, a link or a message.
+
+- A message is counted before it is sent, against the exact version of the
+  day's record, so two sends at the same moment can never pass the budget
+  together. A message the provider definitely refused (status 400 to 499) is
+  given back. A message whose outcome is unknown, such as a timeout or a
+  provider fault, stays counted, because the provider may have sent it.
+- The host may set `daily_message_budget` in the `account_email` block, a
+  whole number from 1 to 100,000, or leave it out for no budget of its own.
+  The count is kept either way. Once the day holds that many messages, sign-up,
+  recovery and sign-up links are refused before any provider request with
+  `account_email_daily_budget_reached`. A budget without the service store is
+  refused before the service starts, with
+  `account_email_budget_needs_the_service_store`; the host loader always
+  passes the store.
+- The refusal is status 503, `Retry-After` with the seconds until the next
+  00:00 in Coordinated Universal Time, and the details
+  `service_account_email_budget_refusal/v1` with `resets_at` and
+  `retry_after_seconds`. It is built from the clock alone, so every address,
+  with or without an account, gets the same answer at the same moment.
+- The provider answers status 429 for its limits and names each one in its
+  error object. `daily_quota_exceeded` and `monthly_quota_exceeded` give the
+  count back and answer `account_email_daily_budget_reached`, and the process
+  remembers the refusal for a quarter of an hour, never past 00:00 UTC. In that
+  time every request is refused before any provider request. The memory is
+  not stored, because the provider is the authority on its own cap: a plan
+  raised there is used within a quarter of an hour, or at once after a
+  restart. A 429 the service cannot name answers the same code and is not
+  remembered. `rate_limit_exceeded`, the provider's limit for each second,
+  answers `account_mail_busy` with `Retry-After: 1` and is not remembered.
+- A process that has read today as spent refuses the next request before its
+  attempt is counted, so a spent day uses none of the two allowances below.
+- A superadmin's batch of sign-up links checks the day before each address.
+  An address after the day is spent fails with the same code, and the batch
+  completes and replays like any other.
+
+The developer diagnostics in `GET /api/v1/admin/overview`, which the
+developer and superadmin roles read, show `account_email`,
+`service_account_email_budget/v1`: `messages_today`, `daily_message_budget`,
+`remaining_today`, `provider_limit_reached_at`, `provider_asked_again_at` and
+`resets_at`, with `counted` false for an adapter without the store and
+`readable` false when the store could not be read. The Administration view
+shows them as two tiles.
+
+| Guard | Named check | Removed-guard control |
+|---|---|---|
+| The setting is a whole number from 1 to 100,000 | `a_daily_message_budget_is_a_whole_number_from_one_to_its_ceiling_or_absent` | `removed_daily_budget_ceiling_is_detected`, `removed_whole_number_rule_for_the_daily_budget_is_detected` |
+| The count is durable | `the_day_count_survives_a_restart_and_the_budget_holds_across_it` | `removed_durable_day_count_is_detected` |
+| No provider request on a spent day | `a_spent_day_refuses_sign_up_and_recovery_before_any_provider_request` | `removed_check_before_any_provider_request_is_detected` |
+| The provider's cap answers the same code | `a_provider_cap_answer_is_the_daily_limit_refusal_and_the_next_request_asks_no_provider` | `removed_provider_limit_mapping_is_detected` |
+| The provider's refusal is remembered for a quarter hour | `a_provider_cap_refusal_is_remembered_for_a_quarter_hour_never_past_the_day_and_not_across_a_restart` | `removed_quarter_hour_end_of_the_provider_memory_is_detected` |
+| A definite refusal gives its count back | `a_definite_mail_refusal_gives_its_count_back_and_an_unknown_outcome_keeps_it` | `removed_give_back_is_detected` |
+| One answer for every address | `a_spent_day_answers_every_address_alike_over_the_real_route` | `a_refusal_that_names_the_address_is_detected` |
+| Counted before the send | `two_sends_at_the_same_moment_never_pass_the_budget_together` | `removed_count_before_the_send_lets_two_sends_pass_and_is_detected` |
+| A spent day uses no allowance | `a_spent_day_uses_none_of_the_allowance_of_an_address` | `removed_refusal_before_the_attempt_is_counted_is_detected` |
+| The host loader passes the store | `a_host_block_with_a_daily_budget_installs_an_adapter_that_counts_in_the_service_store` | `removed_service_store_in_the_host_loader_is_detected` |
+| The diagnostics hold counts only | `the_developer_diagnostics_show_todays_messages_budget_remainder_and_reset_and_no_address` | `a_count_that_names_an_address_is_detected` |
+| Sign-up links check the day first | `a_spent_day_fails_each_remaining_address_before_any_provider_request` | `removed_daily_budget_check_for_sign_up_links_is_detected` |
+
+`tools/test_account_link_page.py` runs the sign-up and recovery code of the
+served page against the refusals the service builds. The page shows the plain
+message and the reset time in the visitor's own time, the same for every
+address, and a page that drops the message or names the address fails it.
+
 ### What this adapter refuses
 
 - A sign-up request that carries a password, in any field or in the retired
@@ -1129,13 +1214,20 @@ the first password. `GET /api/v1/account/identity` also publishes
   stops the request before it leaves.
 - A host block with an unknown key, another record version or another
   provider pair. The loader refuses it before the service serves anything.
+- A `daily_message_budget` that is not a whole number from 1 to 100,000, with
+  `invalid_account_email_daily_budget`, and a budget for an adapter without
+  the service store, with `account_email_budget_needs_the_service_store`.
+  Zero is refused because a host that wants no message switches the
+  operations off with their Booleans.
 
 ### Two allowances
 
 Sign-up and recovery use the same limiter class as the sign-in limit, with
 two tables of their own. Every attempt is counted, accepted or refused,
 because the cost being limited is the message that an accepted attempt
-sends.
+sends. The one exception is an attempt refused because the day's messages
+are spent and this process already knows it: that attempt can send nothing,
+so it is not counted.
 
 | Table | Key | Default allowance | Active when |
 |---|---|---|---|
@@ -1152,9 +1244,19 @@ either operation without a stated source is refused before the service starts.
 
 ### Limits of the account email design
 
-- Nothing is stored. The service keeps no record that a message was asked for
-  or sent. The two tables are in the memory of one service process and are
+- The service keeps no record of who asked for a message or to whom it was
+  sent. It stores only the count of each day's messages, a day and a number.
+  The two allowance tables are in the memory of one service process and are
   empty again after a restart.
+- The count covers the messages this service sends. Mail that other senders
+  send or receive through the same provider account uses the provider's cap as
+  well, and the service learns of it only when the provider refuses a message
+  for that cap. The recommended budget for the free plan, 95, leaves five
+  messages of the provider's 100 for that.
+- A refusal for the provider's monthly cap answers the same daily code, with
+  the next 00:00 UTC as its reset, although that cap resets with the
+  provider's next month. The service asks again every quarter of an hour, so
+  it recovers when the month or the plan changes.
 - A message that the mail provider accepted may still not arrive. The service
   reports what the provider answered, not delivery.
 - The identity provider creates the account when sign-up generates a link.
@@ -1175,8 +1277,8 @@ either operation without a stated source is refused before the service starts.
 - A refusal this release cannot explain is indistinguishable, to the caller,
   from an address that is not eligible. That is deliberate. The operator's
   signal for such a refusal is the identity provider's own log, not this
-  service, because this service stores nothing and its answer must not vary
-  with the address.
+  service, because this service stores nothing about the request and its
+  answer must not vary with the address.
 - The deadline for one provider request bounds the whole body read from the
   moment the request started. The client's own deadline applies separately to
   connecting, writing and waiting for the answer's first line, so the worst
@@ -1279,6 +1381,9 @@ it adds no way in.
   completed identity replays its first result; an identity still in progress
   is refused with `sign_up_links_in_progress`, so an interrupted batch is never
   sent twice under it.
+- For each address, a day whose messages are spent fails the address with
+  `account_email_daily_budget_reached` before any provider request, as
+  described under the daily message count and budget.
 - For each address, an account the service already holds a sign-in for, or a
   confirmed account with both marks, is refused before any count or message.
   Then the allowance for one address that public sign-up keeps is checked and

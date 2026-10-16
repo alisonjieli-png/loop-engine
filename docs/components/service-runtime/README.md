@@ -290,6 +290,8 @@ These are the refusals a client meets most often:
 | `account_administration_forbidden` | The caller's staff role does not include that action. |
 | `sign_up_link_batch_too_large` | One request named more than ten addresses. Nothing was sent. |
 | `sign_up_links_in_progress` | A batch under this request identity started and did not finish. It is never sent again under that identity. |
+| `account_email_daily_budget_reached` | Today's sign-up and recovery email is spent: the host's daily budget is reached, or the mail provider refused a message for its own cap in the last quarter of an hour. Status 503 with `Retry-After` until 00:00 UTC, the same answer for every address. |
+| `account_mail_busy` | The mail provider asked the service to slow down for a second. Nothing was sent; send again after `Retry-After`. |
 
 The request limit is separate. When a client address exceeds the configured
 failed-attempt limit, the service answers with
@@ -455,8 +457,9 @@ each may do is the table `ROLE_PERMISSIONS` in code:
 ```text
 Staff roles
 ├── superadmin: every permission below
-├── developer: service diagnostics, meaning the measured health record and
-│   the newest refusal codes, counted; no account or billing change
+├── developer: service diagnostics, meaning the measured health record, the
+│   newest refusal codes, counted, and today's account email count; no
+│   account or billing change
 └── analytics: account counts and usage counts; no address and no change
 ```
 
@@ -544,6 +547,50 @@ is considered for the founding offer like any other account.
 
 The public pages do not change. Anyone can still sign up on the Get started
 page, and the Administration view calls this a sign-up link.
+
+## Account email and the mail provider's daily cap
+
+This section describes the source in this repository. A deployment serves it
+only after a release that includes it.
+
+Sign-up, recovery and sign-up link messages go through one mail provider
+account. Its free plan, which the owner chose, sends at most 100 messages a
+day in Coordinated Universal Time and counts received mail toward the same
+cap. The service counts every message it hands to the provider in one record
+for each day, `service_account_email_day/v1`, in the service store, so a
+restart keeps the count. The record holds the day and a number, never an
+address.
+
+```text
+One message
+├── the day is spent: the host's daily_message_budget is reached, or the
+│   provider refused a message for its own cap in the last quarter hour
+│   └── refused with account_email_daily_budget_reached before any provider
+│       request: status 503, Retry-After until 00:00 UTC, one answer for
+│       every address
+├── counted for its day, then sent
+├── the provider refuses it (status 400 to 499): the count is given back
+│   ├── daily_quota_exceeded or monthly_quota_exceeded: remembered for a
+│   │   quarter hour, never past 00:00 UTC, and the caller reads
+│   │   account_email_daily_budget_reached
+│   └── rate_limit_exceeded: account_mail_busy, Retry-After 1, the day goes on
+└── no answer, or a provider fault: the count stays, the message may have
+    been sent
+```
+
+The host sets the budget as `daily_message_budget` in the `account_email`
+block; on the free plan the recommended value is 95. A plan without a daily
+cap costs money, so moving to one is the owner's decision. The provider's own
+refusal is remembered only in the service's memory, so a plan raised there is
+used within a quarter of an hour, or at once after a restart. Developers and
+superadmins see today's count, the budget, what remains and the reset time
+in the Administration view. The website's sign-up and recovery forms show
+"Today's limit for sign-up and recovery email is reached, so nothing was
+sent" with the reset time. The
+[service runtime guide](../../../src/loop_engine/core/service_runtime/README.md#the-daily-message-count-and-budget)
+has the rules and the checks that hold them, and the
+[account email operations guide](../../guides/account-email-operations.md)
+the host setting.
 
 ## Free monthly Baltor Pro and the founding offer
 

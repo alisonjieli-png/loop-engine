@@ -1,8 +1,9 @@
 # Account email operations
 
 Kind: operator instructions for public sign-up and password recovery email.
-Provider documentation checked on September 21, 2026. Reading this guide
-creates no account, sends no message and changes no provider setting.
+Provider documentation checked on September 21, 2026, and the mail provider's
+limits on October 16, 2026. Reading this guide creates no account, sends no
+message and changes no provider setting.
 
 The service creates the confirmation or recovery link through the identity
 provider's administration interface, which generates a link and sends nothing,
@@ -69,6 +70,9 @@ and with loopback listeners for the two real transport functions:
   the generated password never appears in an answer, a log record, a stored
   file, the printed form of a record or a message. Each has a removed-guard
   control in `account_email_checks.py`.
+- The count of each day's messages in the service store and the optional
+  daily budget, described in [The mail provider's daily cap](#the-mail-providers-daily-cap),
+  with a removed-guard control for each rule.
 - The website's `/auth/confirm` view, the recovery form on the sign-in page and
   the Get started funnel at `/get-started`, driven in a real browser against the
   identity project stand-in in `tools/check_service_workspace.mjs`. Its shared
@@ -81,7 +85,8 @@ Planned behavior, not done here:
 
 - A live send through the mail provider. The sender domain checks and the
   domain mail policy are separate work, recorded in the roadmap.
-- Any record that a message was asked for or sent. The service stores none.
+- Any record of who asked for a message or to whom it was sent. The service
+  stores only the count of each day's messages, a day and a number.
 
 ## What is not established
 
@@ -155,7 +160,8 @@ serves anything.
     "tracked_addresses": 4096,
     "tracked_emails": 4096,
     "timeout_seconds": 10.0,
-    "maximum_response_bytes": 65536
+    "maximum_response_bytes": 65536,
+    "daily_message_budget": 95
   }
 }
 ```
@@ -180,6 +186,7 @@ serves anything.
 | `tracked_addresses`, `tracked_emails` | How many keys each table holds before the oldest leaves. |
 | `timeout_seconds` | The deadline for one provider request, at most 30. |
 | `maximum_response_bytes` | The ceiling for one provider answer, at most 262,144. |
+| `daily_message_budget` | Optional. The most messages the service hands to the mail provider in one day in Coordinated Universal Time, a whole number from 1 to 100,000. Leave it out for no budget of the service's own; the count is kept either way. Set 95 on the mail provider's free plan, as the next section explains. |
 
 The sender address is `accounts@mail.baltor.ai`, not the `auth.baltor.ai`
 address that the original task described. The saved probe
@@ -216,6 +223,51 @@ overwrites on every request:
 ```
 
 The allowance for the email address is always active.
+
+## The mail provider's daily cap
+
+The owner chose the mail provider's free plan on September 22, 2026. Its
+pricing page and error reference, read on October 16, 2026, say that the free
+plan sends at most 100 messages a day and 3,000 a month, that the daily cap
+resets at 00:00 in Coordinated Universal Time, and that sent and received mail
+both count toward it. Over the cap the provider answers status 429 with the
+error name `daily_quota_exceeded`. Its paid plans have no daily cap. Moving
+to one is a spending decision for the owner, never for engineering.
+
+The service counts every message it hands to the mail provider, from sign-up,
+recovery and a superadmin's sign-up links, in one record for each day in the
+service store, so a restart keeps the count. The record holds the day and a
+number, never an address. Set `daily_message_budget` to 95 on the free plan:
+
+- 95 leaves 5 of the provider's 100 for mail the service does not count, such
+  as a test from the provider's dashboard or mail received on the same
+  account. Lower it by the number of messages that other senders or inbound
+  mail use on a normal day.
+- 95 messages on each of 31 days come to 2,945, inside the plan's 3,000 a
+  month.
+- On a plan without a daily cap, leave the field out, or set the monthly
+  allowance divided by 31 to keep the month inside it.
+
+Once the day holds that many messages, sign-up, recovery and sign-up links
+are refused before any provider request until 00:00 UTC. When the provider
+itself refuses a message for its daily or monthly cap, the service refuses
+every request the same way for a quarter of an hour, never past 00:00 UTC,
+and then asks the provider again. It keeps that memory in the process only,
+so a restart asks at once. The caller reads status 503 with
+`account_email_daily_budget_reached`, a `Retry-After` header with the seconds
+until the reset, and the details `resets_at`. The answer is the same for every
+address, so it says nothing about who has an account. The sign-up and
+recovery forms say "Today's limit for sign-up and recovery email is reached,
+so nothing was sent" and give the reset time in the visitor's own time.
+
+Staff with the developer or superadmin role see the count in the
+Administration view: account emails today, out of the budget, and how many
+remain until 00:00 UTC. `GET /api/v1/admin/overview` carries the same numbers
+as `diagnostics.account_email`, and `recent_refusals` counts the refused
+requests. When the number nears the budget on more than one day, take it to
+the owner with the counts: the choice is a paid plan, or refused sign-ups on
+busy days. After a move to a paid plan, remove `daily_message_budget` or set
+the new value, then restart; the service uses the new plan at once.
 
 ## The environment references the deployment must set
 
@@ -276,7 +328,10 @@ whole block answers status 404 with `account_email_unavailable`.
 
 A release from before this block refuses a host file that contains it. Remove
 the `account_email` block from the host file before starting such a release,
-for example during a rollback.
+for example during a rollback. In the same way, a release from before
+`daily_message_budget` refuses a block that sets it: remove that one field
+before rolling back to such a release. The day records it leaves in the store
+are never read by an older release.
 
 ## What a caller sees
 
@@ -291,6 +346,17 @@ POST /api/v1/account/recovery
   {"record_type": "service_account_recovery_request/v1", "email": ...}
   -> 202 result {"record_type": "service_account_recovery_result/v1",
                  "status": "recovery_sent"}
+```
+
+On a day whose messages are spent, both routes answer before any provider
+request, the same way for every address:
+
+```text
+  -> 503 Retry-After: <seconds until 00:00 UTC>
+     {"record_type": "service_http_error/v1",
+      "error": {"code": "account_email_daily_budget_reached", "message": ..., "next_action": ...,
+                "details": {"record_type": "service_account_email_budget_refusal/v1",
+                            "resets_at": "<next 00:00 UTC>", "retry_after_seconds": ...}}, ...}
 ```
 
 The 202 answer is the same for an address that already has an account and for
@@ -324,8 +390,12 @@ address, a password, a link, a token hash, a provider message or a key.
 | `identity_link_unavailable` | 503 | The identity provider could not be reached, redirected, answered too much, or answered too late. The outcome is unknown. | Read the provider's status. Nothing was sent twice. |
 | `identity_link_refused` | 503 | The identity provider refused this service: the server key was not accepted, this service may not use the interface, or it is over the provider's own rate. The refusal is about this service, never about the address. | Read the provider's logs and the key in `identity_service_key_ref`. |
 | `identity_link_unusable` | 503 | The provider answered without a token hash this service can put in a link, or the answer named another address or another action. | Confirm the project is the one named in `identity_origin`. |
-| `account_mail_refused` | 503 | The mail provider refused the send, for example an unverified sender address. | Verify the sender domain and the sender address. |
-| `account_mail_unavailable` | 503 | The mail provider could not be reached or did not answer in time. The outcome is unknown. | Read the provider's status. Nothing was sent twice. |
+| `account_mail_refused` | 503 | The mail provider refused the send, for example an unverified sender address. Its count is given back. | Verify the sender domain and the sender address. |
+| `account_mail_unavailable` | 503 | The mail provider could not be reached or did not answer in time. The outcome is unknown, so the message stays counted. | Read the provider's status. Nothing was sent twice. |
+| `account_email_daily_budget_reached` | 503 | The day's messages are spent: the count reached `daily_message_budget`, and nothing is asked of a provider until 00:00 UTC; or the mail provider answered 429 for its own daily or monthly cap, and nothing is asked for a quarter of an hour. | Read the count in the Administration view. A larger plan is the owner's decision. |
+| `account_mail_busy` | 503 | The mail provider answered 429 `rate_limit_exceeded`, its limit for each second. Nothing was sent and the day goes on. | Nothing, unless it repeats; then lower the number of concurrent operations. |
+| `invalid_account_email_daily_budget` | none, at start | `daily_message_budget` is not a whole number from 1 to 100,000. The service does not start. | Correct the field and restart. |
+| `account_email_budget_needs_the_service_store` | none, at start | A daily budget was set for an adapter without the service store. The host loader always passes the store, so this means a changed loader. | Report the release. Until it is fixed, the service starts only without the budget. |
 | `unsupported_media_type` | 415 | The request did not declare `application/json`. | The caller sends the documented content type. |
 | `request_limit_exceeded` | 413 | The request body was larger than `maximum_request_bytes`. | Nothing. The caller sends the documented record. |
 | `request_body_deadline` | 408 | The caller did not finish sending its body inside `request_timeout_seconds`. | Nothing. The caller sends the whole body. |
