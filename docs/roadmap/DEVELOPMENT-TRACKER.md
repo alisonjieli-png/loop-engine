@@ -3,7 +3,7 @@
 Kind: generated view. Do not edit by hand. The only task authority is
 [roadmap.yaml](roadmap.yaml); change it, then run
 `PYTHONPATH=src:tools .venv/bin/python tools/build_development_tracker.py`.
-Source fingerprint: `sha256:54dc686fda1811d08eba4c109e454b5a9f386e6e3c1ae41cf30ba11fd57d9aaf`.
+Source fingerprint: `sha256:99949eb86b31056f05063167702a835f72b738f837dc67a9c00c95ed2e60dd3e`.
 
 ## Where things stand
 
@@ -67,7 +67,7 @@ gantt
 
 Each subtask lives in its owning step in roadmap.yaml. A local check does not complete a task that requires publication.
 
-Completed within their stated scope: 22 of 77 subtasks.
+Completed within their stated scope: 23 of 78 subtasks.
 
 Next eligible subtask: S-6.35.11: Bind the systems portal to evidence and staff access
 
@@ -150,6 +150,7 @@ Next eligible subtask: S-6.35.11: Bind the systems portal to evidence and staff 
 | 75 | [ ] S-6.215.14: Reach two million useful served files | proposed | published | Waiting on S-6.215.13 |
 | 76 | [ ] S-6.214.08: Reach ten thousand active qualified sources | proposed | live_qualified | Waiting on S-6.214.07 |
 | 77 | [ ] S-6.35.08: Launch AgentStudios as the independent creative offering | building | live_qualified | Qualify an actual creative retrieval, edit and clean reopen journey. Retain the corrected visible readonly connection checks and earlier reports; diagnose the canceled public-metadata fetches jointly with S-6.35.06 without suppressing failures or claiming a benign cause. Do not replay completed provider operations. |
+| 78 | [x] S-6.30.01: Envelope layers around every functional engine: shared records, a coverage ratchet and the reference adoption | offline_verified | offline_verified | After the October 27 launch, adopt the layers in account_email_delivery, then in catalogue_body_store with catalogue_search_index (retry by identity across a catalogue swap, resync backoff), then in payment_provider (refusals for billing results, BEGIN_ATTEMPTS as a recovery policy), each through the owner of that boundary, raising its baseline row in the same change. |
 
 ## Subtask procedures and evidence
 
@@ -1432,6 +1433,23 @@ Evidence: October 13 owner selects AgentStudios, confirms purchasing agentstudio
 Next: Qualify an actual creative retrieval, edit and clean reopen journey. Retain the corrected visible readonly connection checks and earlier reports; diagnose the canceled public-metadata fetches jointly with S-6.35.06 without suppressing failures or claiming a benign cause. Do not replay completed provider operations.
 
 Comment: Separate presentation does not claim unrelated ownership or require another backend. Release 93's final matrix completes all hosts, views and assertions but retains 21 metadata-fetch failures across Foundry and AgentStudios; functional, accounting and strict results remain false. Narrow public redirect qualification does not complete this creative customer journey.
+
+### S-6.30.01 Envelope layers around every functional engine: shared records, a coverage ratchet and the reference adoption
+
+Owner step: S-6.30. State: offline_verified. Completion requires: offline_verified.
+
+Acceptance: Every slot of engine_slots.yaml declares each of the seven envelope layers in data/component_envelope_coverage.yaml as full, partial, none or not applicable with a named reason; a declaration below the recorded baseline, a slot without declarations and evidence that does not resolve each fail a named check; the shared records refuse an inferred compatibility, a refusal without a next action, a self-repair whose effect is not granted and nesting past the depth bound; and ontology_change_planning applies the layers with its conformance kit, its envelope checks and its tools test passing.
+
+1. Map the owner's words of October 16, 2026 to the envelope layers in docs/architecture/ADR-COMPONENT-ENVELOPE-LAYERS.md and state their rules as LE-LAYER-001 to LE-LAYER-028 in section 14 of the functional component standard.
+2. Keep the shared envelope records in core/engines (envelope.py, envelope_tracking.py, envelope_preflight.py) pure, typed and versioned; add no runtime type, registry, store or scheduler.
+3. Declare every slot's coverage beside the slot catalogue and hold it to the baseline; raise a slot's baseline row in the same change that improves it.
+4. Adopt the layers one boundary at a time through its owner, each with the named checks its statements cite and a known-wrong case for every new guard.
+
+Evidence: October 16, 2026: shared records and 21 named checks in core.engines.envelope_checks, each with its known-wrong case and three removed-guard controls, collected by the main self-test and run by tools/test_component_envelope_layers.py; coverage of 55 slots and 385 declarations, baseline 4 full, 75 partial, 166 none and 140 not applicable after the reference adoption (0 full and 79 partial before it); ontology_change_planning words all 19 failure codes as envelope refusals, records a handshake verdict for each installation and a preflight report for each dispatch, refuses an engine whose effects the host does not grant, and answers a retried apply from its journal (ontology_change_outcome/v2). Commits 1373a4e9, db9f56ad and f4b16de4.
+
+Next: After the October 27 launch, adopt the layers in account_email_delivery, then in catalogue_body_store with catalogue_search_index (retry by identity across a catalogue swap, resync backoff), then in payment_provider (refusals for billing results, BEGIN_ATTEMPTS as a recovery policy), each through the owner of that boundary, raising its baseline row in the same change.
+
+Comment: An incremental ratchet: no customer path, provider or release changed. The coverage declarations move into engine_slot/v2 when the engine records are versioned together (adoption step 4 of the standard).
 
 ## Recorded work in progress
 

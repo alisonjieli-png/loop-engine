@@ -1685,11 +1685,31 @@
    "status": "building",
    "title": "Launch AgentStudios as the independent creative offering",
    "waiting_on": []
+  },
+  {
+   "acceptance": "Every slot of engine_slots.yaml declares each of the seven envelope layers in data/component_envelope_coverage.yaml as full, partial, none or not applicable with a named reason; a declaration below the recorded baseline, a slot without declarations and evidence that does not resolve each fail a named check; the shared records refuse an inferred compatibility, a refusal without a next action, a self-repair whose effect is not granted and nesting past the depth bound; and ontology_change_planning applies the layers with its conformance kit, its envelope checks and its tools test passing.",
+   "comment": "An incremental ratchet: no customer path, provider or release changed. The coverage declarations move into engine_slot/v2 when the engine records are versioned together (adoption step 4 of the standard).",
+   "complete": true,
+   "completion_status": "offline_verified",
+   "depends_on": [],
+   "evidence": "October 16, 2026: shared records and 21 named checks in core.engines.envelope_checks, each with its known-wrong case and three removed-guard controls, collected by the main self-test and run by tools/test_component_envelope_layers.py; coverage of 55 slots and 385 declarations, baseline 4 full, 75 partial, 166 none and 140 not applicable after the reference adoption (0 full and 79 partial before it); ontology_change_planning words all 19 failure codes as envelope refusals, records a handshake verdict for each installation and a preflight report for each dispatch, refuses an engine whose effects the host does not grant, and answers a retried apply from its journal (ontology_change_outcome/v2). Commits 1373a4e9, db9f56ad and f4b16de4.",
+   "id": "S-6.30.01",
+   "next_action": "After the October 27 launch, adopt the layers in account_email_delivery, then in catalogue_body_store with catalogue_search_index (retry by identity across a catalogue swap, resync backoff), then in payment_provider (refusals for billing results, BEGIN_ATTEMPTS as a recovery policy), each through the owner of that boundary, raising its baseline row in the same change.",
+   "owner_step": "S-6.30",
+   "procedure": [
+    "Map the owner's words of October 16, 2026 to the envelope layers in docs/architecture/ADR-COMPONENT-ENVELOPE-LAYERS.md and state their rules as LE-LAYER-001 to LE-LAYER-028 in section 14 of the functional component standard.",
+    "Keep the shared envelope records in core/engines (envelope.py, envelope_tracking.py, envelope_preflight.py) pure, typed and versioned; add no runtime type, registry, store or scheduler.",
+    "Declare every slot's coverage beside the slot catalogue and hold it to the baseline; raise a slot's baseline row in the same change that improves it.",
+    "Adopt the layers one boundary at a time through its owner, each with the named checks its statements cite and a known-wrong case for every new guard."
+   ],
+   "status": "offline_verified",
+   "title": "Envelope layers around every functional engine: shared records, a coverage ratchet and the reference adoption",
+   "waiting_on": []
   }
  ],
  "execution_counts": {
-  "complete": 22,
-  "total": 77
+  "complete": 23,
+  "total": 78
  },
  "lanes": {
   "blocked": [
@@ -7127,7 +7147,7 @@
  ],
  "record_type": "development_tracker/v2",
  "source": "docs/roadmap/roadmap.yaml",
- "source_fingerprint": "sha256:54dc686fda1811d08eba4c109e454b5a9f386e6e3c1ae41cf30ba11fd57d9aaf",
+ "source_fingerprint": "sha256:99949eb86b31056f05063167702a835f72b738f837dc67a9c00c95ed2e60dd3e",
  "working_schedule": {
   "blocks": [
    {
