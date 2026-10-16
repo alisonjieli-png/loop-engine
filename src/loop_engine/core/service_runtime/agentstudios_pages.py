@@ -97,7 +97,7 @@ def _home(items):
     hero = next(item for item in items if item['slug'] == 'plasma-sine-2d')
     previews = ''.join(_tile(item) for item in featured)
     return ('<section class="hero"><div class="hero-copy"><p class="eyebrow"><span class="live-dot"></span> A library for creative work</p>'
-            '<h1>Working files for<br><em>creative projects.</em></h1><p class="lede">Explore visual components, editable source and tools for your next project. Bring the useful parts into the applications and agents you already use.</p>'
+            '<h1>Working files for <br><em>creative projects.</em></h1><p class="lede">Explore visual components, editable source and tools for your next project. Bring the useful parts into the applications and agents you already use.</p>'
             '<div class="actions">' + _link('/library', 'Explore the library ↗', 'button primary') + _link('/connect', 'Connect your agent', 'text-link') + '</div>'
             '<p class="quiet">For designers, game makers, media creators and their agents.</p></div>'
             '<div class="studio-board"><div class="board-label"><span>ON THE WORKBENCH</span><span>EDITABLE / INSPECTABLE</span></div>'

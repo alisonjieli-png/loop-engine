@@ -1,6 +1,7 @@
 """Independent Studios rendering and exact reuse of catalogue/account material."""
 from hashlib import sha256
 from html.parser import HTMLParser
+from importlib.resources import files
 import json
 import re
 import unittest
@@ -185,6 +186,17 @@ class AgentStudiosCreativeTests(unittest.TestCase):
         self.assertIn('noindex', body)
         self.assertIn('Page not found', body)
         self.assertIn('could not be completed', pages.error_page(503).decode())
+
+    def test_phone_hero_keeps_its_words_apart_when_the_break_is_hidden(self):
+        # site.css hides the hero <br> at phone width, so the words either side need their own space.
+        css = files('loop_engine.core.service_runtime').joinpath('web_assets', 'agentstudios', 'site.css').read_text()
+        self.assertIn('.hero h1 br{display:none}', css)
+        def phone_heading(markup):
+            return re.sub(r'\s+', ' ', re.sub(r'<[^>]+>', '', markup.replace('<br>', ''))).strip()
+        heading = re.search(r'<h1>(.*?)</h1>', pages.render('/')[0].decode()).group(1)
+        self.assertEqual(phone_heading(heading), 'Working files for creative projects.')
+        # Known-wrong: the markup served before October 16, 2026 joins two words on a phone.
+        self.assertEqual(phone_heading('Working files for<br><em>creative projects.</em>'), 'Working files forcreative projects.')
 
     def test_no_trademark_or_unqualified_studio_claims(self):
         home = pages.render('/')[0].decode()
