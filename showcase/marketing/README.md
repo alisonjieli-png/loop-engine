@@ -22,5 +22,9 @@ Inspect the frames and play the videos before publishing. The automatic checks
 cover text bounds, slide visibility, duration, decoding and format, not conversion
 rate or customer benefit. Any music, narration or new external asset needs its
 own rights record. Advertising spend stays with the owner. Automatic reference
-video recreation and Public Good downloads remain unavailable until their
-delivery tasks pass.
+video recreation remains unavailable until its delivery task passes. Public
+Good downloads have been available to enabled accounts since release 58.
+
+The [October 2026 launch kit](launch-2026-10/README.md) holds the current
+announcement drafts, press kit, founder deck, launch runbook and an inventory
+of these media sources.

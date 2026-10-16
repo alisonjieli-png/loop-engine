@@ -6,12 +6,15 @@ traced into vector files the same day.
 
 | Mark | File | Use |
 |---|---|---|
-| Tile, variation 52: a white husky head in profile on a navy rounded tile | [`baltor-mark.svg`](../../src/loop_engine/core/service_runtime/web_assets/baltor-mark.svg) | The header and footer mark and the page icon of the website. The icons `favicon-32.png`, `favicon-192.png` and `apple-touch-icon.png` in the same folder are drawn from it. |
+| Tile, variation 52: a cream husky head in profile on an orange rounded tile | [`baltor-mark.svg`](../../src/loop_engine/core/service_runtime/web_assets/baltor-mark.svg) | The header and footer mark and the page icon of the website. The icons `favicon-32.png`, `favicon-192.png` and `apple-touch-icon.png` in the same folder are drawn from it. |
 | Summit, variation 23: the husky head as the peak of a mountain | [`baltor-summit.svg`](baltor-summit.svg) | The standalone mark for large uses. The website does not serve it yet. |
 
-The colours are navy `#0E1E3F` and white. The tile is a navy rounded square
-with a white husky. The summit is navy only, and the face of the husky is left
-open, so the summit belongs on a white or light ground.
+The tile was first traced in navy `#0E1E3F` and white. Since September 28,
+2026 (commit `f36f28f8`) the served tile and its three icons use the site's
+own orange accent, a gradient from `#A03500` to `#FB9D59`, with the husky in
+cream `#FFF6EE`, so the logo cannot drift from the buttons. The traced shapes
+did not change. The summit is still navy only, and the face of the husky is
+left open, so the summit belongs on a white or light ground.
 
 The rule: the tile is the favicon and the header mark. The summit is for large
 uses and does not replace the tile at small sizes.
