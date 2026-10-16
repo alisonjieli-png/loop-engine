@@ -28,11 +28,14 @@ from enum import Enum
 
 
 class ClassKind(str, Enum):
-    """What a class of the reference is, which decides how the engine itself is asked about it."""
+    """What a carded unit of the reference is, which decides how the engine itself is asked about it."""
 
-    OBJECT_CLASS = "class"  # a class ClassDB registers (it has an api_type)
+    OBJECT_CLASS = "class"  # a class ClassDB registers (it has an api_type), or a library's class
     BUILTIN_TYPE = "builtin_type"  # a Variant type (Vector3, String, Array, ...)
     GLOBAL_SCOPE = "global_scope"  # @GlobalScope or @GDScript: global functions, constants and annotations
+    FUNCTION = "function"  # a library's module-level function (a Python adapter's or a JavaScript library's)
+    METHOD = "method"  # one documented method of a library's class, carded on its own
+    PROPERTY = "property"  # one documented property of a library's class, carded on its own
 
 
 #: The surface sections and the XML element of each item (constants are grouped into enumerations after reading).

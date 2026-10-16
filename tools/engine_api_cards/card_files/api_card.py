@@ -1,7 +1,7 @@
 """Engine API contract card: the Markdown documents and api.json of one card describe one surface.
 
 ```text
-One card (one class of one engine version)
+One card (one class of one engine version, or one function, method or property of one library version)
 ├── api.json       engine_api_surface/v1: the class, its inheritance, every item of every section as the engine
 │                  itself reports it, and the renames the engine's own upgrade map lists for the class
 └── README.md      the card a harness reads first; a large class continues in members-2.md, members-3.md, ...
@@ -22,12 +22,13 @@ import re
 
 SURFACE_RECORD = "engine_api_surface/v1"
 #: The sections of a surface, in document order, and the heading each has in the documents.
-(CONSTRUCTORS, METHODS, OPERATORS, MEMBERS, SIGNALS, ENUMS, CONSTANTS, ANNOTATIONS, THEME_ITEMS) = SECTIONS = (
-    "constructors", "methods", "operators", "members", "signals", "enums", "constants", "annotations",
-    "theme_items")
+#: A surface holds the sections it has: an engine class's nine, and a library's function card its "functions".
+(CONSTRUCTORS, METHODS, OPERATORS, MEMBERS, SIGNALS, ENUMS, CONSTANTS, ANNOTATIONS, THEME_ITEMS, FUNCTIONS) = \
+    SECTIONS = ("constructors", "methods", "operators", "members", "signals", "enums", "constants", "annotations",
+                "theme_items", "functions")
 HEADINGS = {CONSTRUCTORS: "Constructors", METHODS: "Methods", OPERATORS: "Operators", MEMBERS: "Properties",
             SIGNALS: "Signals", ENUMS: "Enumerations", CONSTANTS: "Constants", ANNOTATIONS: "Annotations",
-            THEME_ITEMS: "Theme properties"}
+            THEME_ITEMS: "Theme properties", FUNCTIONS: "Functions"}
 #: The line kinds a card checks, each a level of the documents' structure.
 TITLE, INHERITS, INHERITED_BY, RENAMES, RENAME, SECTION, ITEM, VALUE = LINE_KINDS = (
     "title", "inherits", "inherited_by", "renames", "rename", "section", "item", "value")
@@ -41,9 +42,13 @@ RENAME_KINDS = (CLASS_RENAME, METHOD_RENAME, PROPERTY_RENAME, SIGNAL_RENAME, CON
 README, MEMBERS_DOCUMENT = "README.md", "members-{}.md"
 _MEMBERS_DOCUMENT = re.compile(r"members-([2-9]|[1-9][0-9]+)\.md")
 #: The syntax a surface is written in, named by api.json's "syntax": Godot's class reference conventions
-#: ("float get_floor_angle(up_direction: Vector3 = Vector3(0, 1, 0)) const"), or a JavaScript library's JSDoc
-#: conventions in TypeScript notation ("lerp(v: Vector3, alpha: number): Vector3").
-GODOT_SYNTAX, JAVASCRIPT_SYNTAX = SYNTAXES = ("godot", "javascript")
+#: ("float get_floor_angle(up_direction: Vector3 = Vector3(0, 1, 0)) const"), a JavaScript library's JSDoc
+#: conventions in TypeScript notation ("lerp(v: Vector3, alpha: number): Vector3"), or a Python signature as the
+#: inspect module writes one ("linspace(start, stop, num=50, *, device=None) -> ndarray").
+GODOT_SYNTAX, JAVASCRIPT_SYNTAX, PYTHON_SYNTAX = SYNTAXES = ("godot", "javascript", "python")
+#: How a Python parameter is passed (inspect.Parameter.kind, by name).
+PARAMETER_KINDS = (POSITIONAL_ONLY, POSITIONAL_OR_KEYWORD, VAR_POSITIONAL, KEYWORD_ONLY, VAR_KEYWORD) = (
+    "positional_only", "positional_or_keyword", "var_positional", "keyword_only", "var_keyword")
 VARARG, VOID, ELLIPSIS, ANY = "vararg", "void", "...", "any"
 BITFIELD_WRAPPER, ARRAY_WRAPPER, ARRAY_SUFFIX = "BitField[{}]", "Array[{}]", "[]"
 #: What a property heading adds after its declaration, and a theme item's data type.
@@ -91,7 +96,7 @@ def godot_signature(section, item) -> str:
     """The declaration of one item, in Godot's class reference syntax."""
     qualifiers = tuple(item.get("qualifiers", ()))
     tail = "".join(f" {word}" for word in qualifiers)
-    if section in (CONSTRUCTORS, METHODS, OPERATORS):
+    if section in (CONSTRUCTORS, METHODS, OPERATORS, FUNCTIONS):
         returned = type_text(item["returns"]) if item.get("returns") else VOID
         return f"{returned} {item['name']}({parameters_text(item.get('params', ()), qualifiers)}){tail}"
     if section == ANNOTATIONS:
@@ -123,7 +128,7 @@ def javascript_signature(section, item) -> str:
     prefix = "".join(f"{word} " for word in item.get("qualifiers", ()))
     if section == CONSTRUCTORS:
         return f"new {item['name']}({javascript_parameters(item.get('params', ()))})"
-    if section in (METHODS, OPERATORS, ANNOTATIONS):
+    if section in (METHODS, OPERATORS, ANNOTATIONS, FUNCTIONS):
         returned = item["returns"].get("type") or ANY if item.get("returns") else VOID
         return f"{prefix}{item['name']}({javascript_parameters(item.get('params', ()))}): {returned}"
     if section == SIGNALS:
@@ -136,8 +141,56 @@ def javascript_signature(section, item) -> str:
     return f"{prefix}{item['name']} = {item['value']}"
 
 
+def python_parameters(parameters) -> str:
+    """A Python parameter list as inspect writes one: "/" after the positional-only parameters, "*" before the first
+    keyword-only one when no *args comes first, name: type = default (name=default without a type). A signature the
+    interpreter cannot report (None) is "..."."""
+    if parameters is None:
+        return ELLIPSIS
+    parts, positional_only, starred = [], False, False
+    for parameter in parameters:
+        kind = parameter.get("kind", POSITIONAL_OR_KEYWORD)
+        if positional_only and kind != POSITIONAL_ONLY:
+            parts.append("/")
+        if kind == KEYWORD_ONLY and not starred:
+            parts.append("*")
+            starred = True
+        text = str(parameter["name"])
+        if kind == VAR_POSITIONAL:
+            text, starred = "*" + text, True
+        elif kind == VAR_KEYWORD:
+            text = "**" + text
+        if parameter.get("type"):
+            text += f": {parameter['type']}" + (f" = {parameter['default']}" if "default" in parameter else "")
+        elif "default" in parameter:
+            text += f"={parameter['default']}"
+        parts.append(text)
+        positional_only = kind == POSITIONAL_ONLY
+    if positional_only:
+        parts.append("/")
+    return ", ".join(parts)
+
+
+def python_signature(section, item) -> str:
+    """The declaration of one item of a Python library, its qualifiers (async, classmethod, staticmethod,
+    readonly) first and its return annotation after "->"."""
+    prefix = "".join(f"{word} " for word in item.get("qualifiers", ()))
+    if section == CONSTRUCTORS:
+        return f"{item['name']}({python_parameters(item.get('params', ()))})"
+    if section in (METHODS, OPERATORS, ANNOTATIONS, FUNCTIONS, SIGNALS):
+        returned = (item.get("returns") or {}).get("type")
+        return (f"{prefix}{item['name']}({python_parameters(item.get('params', ()))})" +
+                (f" -> {returned}" if returned else ""))
+    if section in (MEMBERS, THEME_ITEMS):
+        text = f"{prefix}{item['name']}" + (f": {item['type']}" if item.get("type") else "")
+        return text + (f" = {item['default']}" if "default" in item else "")
+    if section == ENUMS:
+        return "enum " + str(item["name"])
+    return f"{prefix}{item['name']} = {item['value']}"
+
+
 #: How each syntax writes a declaration.
-SIGNATURES = {GODOT_SYNTAX: godot_signature, JAVASCRIPT_SYNTAX: javascript_signature}
+SIGNATURES = {GODOT_SYNTAX: godot_signature, JAVASCRIPT_SYNTAX: javascript_signature, PYTHON_SYNTAX: python_signature}
 
 
 def item_line(section, item, syntax=GODOT_SYNTAX) -> str:

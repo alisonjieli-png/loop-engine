@@ -60,7 +60,7 @@ class CardTests(unittest.TestCase):
         target = None
         for section in api_card.SECTIONS:
             for item in changed["sections"].get(section) or []:
-                for candidate in [item] + list(item.get("params", ())):
+                for candidate in [item] + list(item.get("params") or ()):
                     if "default" in candidate and target is None:
                         target = candidate
         if target is not None:

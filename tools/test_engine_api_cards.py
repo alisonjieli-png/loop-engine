@@ -477,6 +477,28 @@ class CardFormatTests(unittest.TestCase):
         # Known wrong: a later document left out loses its items.
         self.assertTrue(CARD.disagreements(api, texts[:1]))
 
+    def test_a_surface_holds_only_the_sections_its_adapter_reads(self):
+        # The functions section belongs to a library's function card: a Godot class keeps its nine sections in api.json
+        # and in its counts, so a card of an earlier adapter is written with the same bytes.
+        self.assertNotIn(CARD.FUNCTIONS, self.api["sections"])
+        self.assertNotIn(CARD.FUNCTIONS, cards.surface_counts(self.api))
+        api = {"record_type": CARD.SURFACE_RECORD, "syntax": CARD.PYTHON_SYNTAX, "class": "pkg.make",
+               "engine": {"title": "Pkg", "api_version": "1.2"}, "inherits": [], "inherited_by": [],
+               "sections": {CARD.FUNCTIONS: [{"name": "make", "returns": {"type": "Thing"}, "params": [
+                   {"name": "size", "kind": "positional_or_keyword", "default": "2"},
+                   {"name": "rest", "kind": "var_keyword"}]}]}}
+        text = "# pkg.make (Pkg 1.2)\n\n## Functions\n\n### `make(size=2, **rest) -> Thing`\n\ntext\n"
+        self.assertEqual(CARD.disagreements(api, [text]), [])
+        # Known wrong: a changed Python default and a signature the interpreter could not report.
+        changed = copy.deepcopy(api)
+        changed["sections"][CARD.FUNCTIONS][0]["params"][0]["default"] = "3"
+        unknown = copy.deepcopy(api)
+        unknown["sections"][CARD.FUNCTIONS][0]["params"] = None
+        self.assertTrue(CARD.disagreements(changed, [text]))
+        self.assertEqual(CARD.item_line(CARD.FUNCTIONS, unknown["sections"][CARD.FUNCTIONS][0], CARD.PYTHON_SYNTAX),
+                         "`make(...) -> Thing`")
+        self.assertTrue(CARD.disagreements(unknown, [text]))
+
     def test_documents_are_read_in_number_order_and_code_spans_hold_backticks(self):
         self.assertEqual(CARD.documents(["members-10.md", "README.md", "members-2.md", "members-1.md", "x.md"]),
                          ["README.md", "members-2.md", "members-10.md"])

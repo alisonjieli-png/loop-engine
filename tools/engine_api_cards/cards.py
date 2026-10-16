@@ -38,7 +38,8 @@ MAXIMUM_DOCUMENT_BYTES = 240_000
 NO_DESCRIPTION = "*No description in the class reference.*"
 #: What a card's text says a kind of class is.
 KIND_PHRASES = {ClassKind.OBJECT_CLASS: "the class", ClassKind.BUILTIN_TYPE: "the built-in type",
-                ClassKind.GLOBAL_SCOPE: "the global scope"}
+                ClassKind.GLOBAL_SCOPE: "the global scope", ClassKind.FUNCTION: "the function",
+                ClassKind.METHOD: "the method", ClassKind.PROPERTY: "the property"}
 #: Documentation notes on a class or an item, in the order a card shows them, and their labels.
 NOTE_LABELS = (("deprecated", "Deprecated"), ("experimental", "Experimental"))
 KEYWORDS = "keywords"
@@ -91,6 +92,10 @@ class EngineRelease:
     text_origin: str = ""
     #: The notice file every card carries beside the licence (Apache-2.0 section 4(d)), when there is one.
     notice_file: str = ""
+    #: What the header calls the text under the headings, and how the Source section says the text was taken from
+    #: its file (by default "converted from" the text format).
+    text_phrase: str = "the engine's own reference"
+    text_conversion: str = ""
 
     def identity(self) -> dict:
         return {"name": self.name, "title": self.title, "release": self.release, "version": self.version,
@@ -117,7 +122,8 @@ def surface_record(release: EngineRelease, reference: ClassReference, inherits: 
               "class": reference.name, "kind": reference.kind.value, "api_type": reference.api_type,
               "inherits": list(inherits), "inherited_by": list(inherited_by),
               "dump": {"path": sources.dump_path, "sha256": sources.dump_sha256},
-              "sections": {section: reference.sections[section] for section in card_module().SECTIONS}}
+              "sections": {section: reference.sections[section] for section in card_module().SECTIONS
+                           if section in reference.sections}}
     if renames:
         record["renames"] = {"from_version": release.renames_from_version,
                              "source": {"path": sources.renames_path, "sha256": sources.renames_sha256},
@@ -145,15 +151,17 @@ def _notes(documentation: dict, context) -> list:
 
 def _item_block(section: str, item: dict, documentation: dict, context, syntax: str) -> str:
     module = card_module()
+    # A text interface may say in its own words that an item has no text (a Python adapter's "No docstring").
+    empty = getattr(context, "no_description", NO_DESCRIPTION)
     parts = [module.ITEM_PREFIX + module.item_line(section, item, syntax)]
     if section == ENUMS:
         for value, value_documentation in zip(item["values"], documentation["values"]):
             parts.append(module.VALUE_PREFIX + module.item_line(module.CONSTANTS, value, syntax))
             parts += _notes(value_documentation, context)
-            parts.append(context.markdown(value_documentation["description"]) or NO_DESCRIPTION)
+            parts.append(context.markdown(value_documentation["description"]) or empty)
         return "\n\n".join(parts) + "\n\n"
     parts += _notes(documentation, context)
-    parts.append(context.markdown(documentation["description"]) or NO_DESCRIPTION)
+    parts.append(context.markdown(documentation["description"]) or empty)
     return "\n\n".join(parts) + "\n\n"
 
 
@@ -169,11 +177,12 @@ def _head(api: dict, release: EngineRelease, reference: ClassReference, context)
     if reference.api_type and reference.api_type in release.editor_api_types:
         lines.append(release.editor_note)
     lines.append(f"{release.title} {release.release}. Every heading below is written from `{API_NAME}`, "
-                 f"{release.surface_phrase}; the text under it is the engine's own reference at the same release.")
+                 f"{release.surface_phrase}; the text under it is {release.text_phrase} at the same release.")
     brief = context.markdown(reference.documentation["brief"])
     description = context.markdown(reference.documentation["description"])
     lines.append(module.SECTION_PREFIX + "Description")
-    lines.append("\n\n".join(text for text in (brief, description) if text) or NO_DESCRIPTION)
+    lines.append("\n\n".join(text for text in (brief, description) if text)
+                 or getattr(context, "no_description", NO_DESCRIPTION))
     renames = (api.get("renames") or {}).get("entries") or []
     if renames:
         lines.append(module.SECTION_PREFIX + module.renames_heading(api))
@@ -195,7 +204,8 @@ def _source(api: dict, release: EngineRelease, sources: CardSources, copyright_l
              f"- Surface: {release.surface_source}, and checked against the same build (`verification/native.json`).",
              f"- Text: `{sources.reference_path}` of "
              f"{release.text_origin or release.repository} at tag `{release.release}` (commit `{release.commit}`), "
-             f"converted from {release.text_format}. " + "".join(f"{line} " for line in copyright_lines) +
+             f"{release.text_conversion or 'converted from ' + release.text_format}. " +
+             "".join(f"{line} " for line in copyright_lines) +
              f"{release.licence}, see `UPSTREAM-LICENSE`" +
              (f" and `{release.notice_file}`." if release.notice_file else ".")]
     if api.get("renames"):
@@ -209,8 +219,9 @@ def _body(api: dict, reference: ClassReference, context) -> list:
     module = card_module()
     rows = []
     for section in module.SECTIONS:
-        items = api["sections"][section]
-        documentation = reference.documentation["items"][section]
+        # A surface holds the sections its adapter reads (a Godot class has no functions section).
+        items = api["sections"].get(section, [])
+        documentation = reference.documentation["items"].get(section, [])
         for index, item in enumerate(items):
             rows.append((section, module.SECTION_PREFIX + module.HEADINGS[section] + "\n\n" if not index else None,
                          _item_block(section, item, documentation[index], context, api["syntax"])))
@@ -257,8 +268,9 @@ def card_digest(files: dict) -> str:
 
 
 def surface_counts(api: dict) -> dict:
-    counts = {section: len(api["sections"][section]) for section in card_module().SECTIONS}
-    counts["enum_values"] = sum(len(item["values"]) for item in api["sections"][ENUMS])
+    counts = {section: len(api["sections"][section]) for section in card_module().SECTIONS
+              if section in api["sections"]}
+    counts["enum_values"] = sum(len(item["values"]) for item in api["sections"].get(ENUMS, []))
     return counts
 
 
