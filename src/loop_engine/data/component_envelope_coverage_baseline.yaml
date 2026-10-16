@@ -60,6 +60,6 @@ slots:
   local_credential_source: {frustration_avoidance: none, carrier: none, handshake: none, account: not_applicable, tracking: none, preflight: none, nested_envelopes: not_applicable}
   step_credential_delivery: {frustration_avoidance: none, carrier: none, handshake: none, account: not_applicable, tracking: none, preflight: none, nested_envelopes: none}
   tool_protocol_gateway: {frustration_avoidance: none, carrier: none, handshake: none, account: not_applicable, tracking: none, preflight: none, nested_envelopes: none}
-  ontology_change_planning: {frustration_avoidance: partial, carrier: partial, handshake: partial, account: not_applicable, tracking: partial, preflight: partial, nested_envelopes: not_applicable}
+  ontology_change_planning: {frustration_avoidance: full, carrier: full, handshake: full, account: not_applicable, tracking: partial, preflight: full, nested_envelopes: not_applicable}
   research_query_planner: {frustration_avoidance: none, carrier: none, handshake: none, account: not_applicable, tracking: none, preflight: none, nested_envelopes: not_applicable}
   research_query_executor: {frustration_avoidance: none, carrier: none, handshake: none, account: not_applicable, tracking: none, preflight: none, nested_envelopes: not_applicable}

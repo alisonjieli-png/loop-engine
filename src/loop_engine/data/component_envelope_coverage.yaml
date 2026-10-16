@@ -638,24 +638,34 @@ slots:
     nested_envelopes: {coverage: none, next: S-6.61}
   ontology_change_planning:
     frustration_avoidance:
-      coverage: partial
+      coverage: full
       evidence:
-        - core.ontology_change.contract.OntologyChangeRefused
+        - core.ontology_change.guidance.REFUSAL_GUIDANCE
+        - core.ontology_change.guidance.RECOVERY_POLICY
+        - core.ontology_change.conformance:every_failure_code_has_envelope_guidance
     carrier:
-      coverage: partial
+      coverage: full
       evidence:
         - core.ontology_change.contract.PlanRequest.from_dict
         - core.ontology_change.conformance:a_stale_base_digest_is_refused_before_any_engine_runs
-    handshake: {coverage: partial, evidence: [core.ontology_change.engines.unmet_requirements]}
+        - core.ontology_change.conformance:a_refused_request_never_reaches_an_engine_in_the_envelope_trace
+    handshake:
+      coverage: full
+      evidence:
+        - core.ontology_change.guidance.handshake_for
+        - core.ontology_change.conformance:every_screened_engine_has_a_handshake_verdict_that_agrees_with_its_eligibility
     account: {coverage: not_applicable, reason: no_account_path}
     tracking:
       coverage: partial
       evidence:
-        - core.ontology_change.conformance:apply_is_compare_and_swap_on_the_base_digest
+        - core.ontology_change.guidance.replayed_apply
+        - core.ontology_change.conformance:a_retried_apply_is_answered_from_the_journal_once
+        - core.ontology_change.conformance:an_interrupted_apply_commit_is_never_answered_as_applied
     preflight:
-      coverage: partial
+      coverage: full
       evidence:
-        - core.ontology_change.conformance:a_stale_base_digest_is_refused_before_any_engine_runs
+        - core.ontology_change.guidance.PREFLIGHT_CHECKS
+        - core.ontology_change.conformance:a_refused_request_never_reaches_an_engine_in_the_envelope_trace
     nested_envelopes: {coverage: not_applicable, reason: no_nested_slot}
   research_query_planner:
     frustration_avoidance: {coverage: none}

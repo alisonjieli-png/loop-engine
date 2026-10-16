@@ -46,10 +46,11 @@ _RANK = MappingProxyType({NONE: 0, PARTIAL: 1, FULL: 2})
 #: The reasons whose truth the catalogue can check.
 RELEASE_TIME_REASON, NO_NESTED_SLOT_REASON = "release_time_slot", "no_nested_slot"
 #: The totals of the baseline recorded on October 16, 2026, over all 385 declarations of the 55 slots:
-#: declarations at full, and at partial or better. The baseline file may rise above these and never fall
-#: below them; lowering it is a reviewed change to this line and to the file together. Not applicable has
-#: no floor, because a layer that did not apply may rise to partial or full.
-RECORDED_BASELINE_FLOOR = MappingProxyType({"full": 0, "at_least_partial": 79})
+#: declarations at full, and at partial or better. The survey found 0 and 79; the reference adoption of
+#: ontology_change_planning raised four of its layers to full. The baseline file may rise above these and
+#: never fall below them; lowering it is a reviewed change to this line and to the file together. Not
+#: applicable has no floor, because a layer that did not apply may rise to partial or full.
+RECORDED_BASELINE_FLOOR = MappingProxyType({"full": 4, "at_least_partial": 79})
 _NEXT_STEP = re.compile(r"S-[0-9]+\.[0-9]+(?:\.[0-9]+)?")
 _DATE = re.compile(r"20[0-9]{2}-[01][0-9]-[0-3][0-9]")
 _VERSION = re.compile(r"[0-9]+\.[0-9]+\.[0-9]+")

@@ -10,7 +10,9 @@ OntologyStore (one folder)
 apply_change(store, ontology_change_apply_request/v1)
 ├── the plan read strictly, its digest recomputed (plan_invalid)
 ├── an approval that names this plan's digest (approval_required, approval_mismatch)
-├── under the lock: the current digest equals the plan's base digest (stale_base)
+├── under the lock: the current digest equals the plan's base digest (stale_base), unless the store
+│   still holds the state this exact plan and approval wrote, which answers with the first result
+│   and writes nothing (guidance.replayed_apply, the tracking layer of the envelope)
 ├── every term the store locks was checked by the plan, and none of them is touched (locked_term)
 ├── base minus removed plus added has the plan's proposed digest (plan_invalid)
 └── the new graph written first, then the pointer; the result carries ontology_change_rollback/v1
@@ -35,6 +37,7 @@ from .contract import (
     APPLY_REQUEST_RECORD_TYPE, APPLY_RESULT_RECORD_TYPE, ROLLBACK_RECORD_TYPE, ROLLBACK_REQUEST_RECORD_TYPE,
     ROLLBACK_RESULT_RECORD_TYPE, OntologyChangeRefused, is_sha256, read_approval, read_locked_term, read_plan,
     read_triple, request_record, triples_list)
+from .guidance import replayed_apply
 from .rdf_terms import canonical_ntriples, graph_digest, parse_ntriples
 
 STATE_RECORD_TYPE = "ontology_store_state/v1"
@@ -182,6 +185,11 @@ def apply_change(store: OntologyStore, request) -> dict:
     with store.exclusive():
         state = store.state()
         if state["digest"] != plan["base_digest"]:
+            # A retry of an apply whose answer was lost: the journal and the store state show that this plan
+            # and approval wrote the current state, so the first result is the answer and nothing is applied.
+            first = replayed_apply(store.journal(), state, plan, approval)
+            if first is not None:
+                return first
             raise OntologyChangeRefused("stale_base", f"the store holds {state['digest']}, the plan was made for "
                                                       f"{plan['base_digest']}; plan again", "apply")
         unchecked = sorted(set(state["locked_terms"]) - set(plan["locks"]["checked"]))

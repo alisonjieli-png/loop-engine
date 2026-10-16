@@ -256,5 +256,58 @@ class AdapterAndSlotTests(unittest.TestCase):
         self.assertTrue(report["valid"])
 
 
+class EnvelopeLayerTests(unittest.TestCase):
+    """The envelope layers this slot adopted as their reference: refusals, verdicts, trace and replay."""
+
+    def test_every_failure_code_has_a_next_action_and_a_retry_rule(self):
+        from loop_engine.core.ontology_change.contract import FAILURE_CODES
+        from loop_engine.core.ontology_change.guidance import REFUSAL_GUIDANCE, guidance_gaps, refusal_for
+        self.assertEqual(guidance_gaps(), [])
+        for code in FAILURE_CODES:
+            refusal = refusal_for(code)
+            self.assertTrue(refusal.next_action.endswith("."), code)
+            self.assertEqual(refusal.effect_commitment, "none", code)
+        # Known-wrong: a code left out of the table is reported, not answered with a bare code.
+        partial = {code: item for code, item in REFUSAL_GUIDANCE.items() if code != "locked_term"}
+        self.assertEqual(guidance_gaps(partial), ["locked_term"])
+
+    def test_a_stale_digest_is_refused_at_the_carrier_and_never_reaches_an_engine(self):
+        outcome = plan_change(first_case_request(base_digest="0" * 64), native_host())
+        self.assertEqual(outcome.failure["code"], "base_digest_mismatch")
+        self.assertEqual(outcome.refusal["retry"], "retry_after_fix")
+        self.assertEqual((outcome.trace["refused_by"], outcome.trace["engine_dispatched"]), ("carrier", False))
+        self.assertEqual(outcome.to_dict()["record_type"], "ontology_change_outcome/v2")
+
+    def test_known_wrong_a_narrowed_grant_refuses_the_adapter_by_policy(self):
+        host = HostEngines(engines.default_installations(), engines.default_policy(), {}, False,
+                           granted_effects=("pure",))
+        outcome = plan_change(first_case_request(), host)
+        verdicts = {item["engine"]: item["verdict"] for item in outcome.handshake}
+        self.assertEqual(verdicts, {engines.NATIVE_ENGINE_ID: "compatible",
+                                    engines.ADAPTER_ENGINE_ID: "refused_by_policy"})
+        refusals = {refusal["code"] for entry in outcome.decisions[0]["eligibility"]
+                    if entry["installation_id"] == engines.ADAPTER_ENGINE_ID for refusal in entry["refusals"]}
+        self.assertIn("permission_not_granted", refusals)
+        self.assertIsNotNone(outcome.plan)
+
+    def test_a_retried_apply_returns_its_first_result_and_writes_nothing_more(self):
+        from loop_engine.core.ontology_change.store import OntologyStore, apply_change, plan_store_change
+        base = parse_turtle(conformance.PREFIXES + conformance.CASES[0].base)
+        with tempfile.TemporaryDirectory() as folder:
+            store = OntologyStore.create(Path(folder) / "store", base)
+            plan = plan_store_change(store, added=conformance.CASES[0].added, host=native_host()).plan
+            request = {"record_type": "ontology_change_apply_request/v1", "plan": plan,
+                       "approval": {"approval_ref": "test-approval", "plan_digest": plan["plan_digest"]}}
+            first = apply_change(store, request)
+            again = apply_change(store, request)
+            self.assertEqual(again, first)
+            self.assertEqual(sum(entry["operation"] == "apply" for entry in store.journal()), 1)
+            # Known-wrong: the same plan under another approval is a new request, refused as stale.
+            other = {**request, "approval": {"approval_ref": "other-approval", "plan_digest": plan["plan_digest"]}}
+            with self.assertRaises(OntologyChangeRefused) as caught:
+                apply_change(store, other)
+            self.assertEqual(caught.exception.code, "stale_base")
+
+
 if __name__ == "__main__":
     unittest.main()

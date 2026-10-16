@@ -108,7 +108,7 @@ MODULE_MAP = {
     ),
     "core.step_execution": ("__init__",),
     "core.ontology_change": (
-        "__init__", "component", "conformance", "contract", "engines", "native_engine",
+        "__init__", "component", "conformance", "contract", "engines", "guidance", "native_engine",
         "open_ontologies_engine", "rdf_terms", "store", "trace_checker",
     ),
     "ontology": (

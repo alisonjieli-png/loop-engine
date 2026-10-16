@@ -15,6 +15,12 @@ plan_change(request, host)
 └── write: ontology_change_plan/v1 bound to the base and proposed digests, with plan_digest
 ```
 
+The envelope layers (docs/architecture/ADR-COMPONENT-ENVELOPE-LAYERS.md) are recorded on the outcome,
+``ontology_change_outcome/v2``: the read is the carrier layer, the screen gives one handshake verdict for
+each installation, the account and tracking layers do not apply to planning, the preflight checks the
+selected engine again just before each dispatch, and every failure carries its envelope refusal with the
+next action and the retry rule. The trace records which layers the request passed.
+
 The plan is a proposal; it changes nothing. Apply and rollback are in
 ``store.py`` and need an approval naming this plan's digest.
 """
@@ -34,6 +40,10 @@ from ..configuration_preferences import (
 from ..engines.decision_records import (
     ConsumedAuthority, EligibilityEntry, EligibilityRefusal, EngineSelectionDecision, EvidenceUse,
     FallbackTransition, PolicySource, Propensity, SelectedEngine, SelectionScope, UniverseEntry)
+from ..engines.envelope import (
+    ENGINE_SOURCE, LAYER_ACCEPTED, LAYER_ACCOUNT, LAYER_CARRIER, LAYER_HANDSHAKE, LAYER_NOT_APPLICABLE,
+    LAYER_PREFLIGHT, LAYER_REFUSED, LAYER_TRACKING, REFUSED_BY_POLICY, EnvelopeTrace)
+from ..engines.envelope_preflight import run_preflight
 from ..engines.selection_records import DECLARED_ORDER_ENGINE_REF
 from ..engines.slots import load_engine_slot_catalog
 from . import engines as table
@@ -41,10 +51,19 @@ from .contract import (
     CLOSURE_CEILING, CONSERVATIVE, NOT_CONSERVATIVE, PLAN_FIELDS, PLAN_RECORD_TYPE, REQUEST_RECORD_TYPE,
     RULE_TABLES, SLOT_ID, EngineFailure, OntologyChangeRefused, PlanningInput, PlanRequest, plan_digest,
     triples_list)
+from .guidance import PREFLIGHT_CHECKS, handshake_for, refusal_for
 from .rdf_terms import VOCABULARY_NAMESPACES, RdfSyntaxError, graph_digest, is_iri, parse_graph, user_terms, writable
 from .trace_checker import check_trace
 
 DEFAULT_PROFILE_REF = "practitioner.code_execution@1.0.0"
+OUTCOME_RECORD_TYPE = "ontology_change_outcome/v2"
+#: The effects a host grants the engines of this slot unless it states otherwise: what the two declared
+#: engines need, which is the behaviour before the handshake layer named it. A host narrows the grant to
+#: refuse the adapter by policy; a Loop that owns the slot will grant from its own authority instead.
+HOST_GRANTED_EFFECTS = tuple(sorted({effect for item in table.DECLARED_ENGINES for effect in item.effects}))
+#: The inbound layers that do not apply to planning: no account reaches the slot, and a plan changes
+#: nothing, so there is no effect to journal, replay or reconcile.
+_NOT_APPLICABLE_TO_PLANNING = (LAYER_ACCOUNT, LAYER_TRACKING)
 MAXIMUM_TRACE_STEPS = 10_000
 _SEQUENCE_FAILURES = {"engine_unavailable": "engine_unavailable", "engine_reported_failure": "engine_failed",
                       "capability_requirement_unsatisfied": "engine_unavailable"}
@@ -67,6 +86,7 @@ class HostEngines:
     evidence: Mapping = field(default_factory=dict)
     require_evidence: bool = True
     policy_source: str = "projected:core.ontology_change.engines.DECLARED_ORDER"
+    granted_effects: tuple = HOST_GRANTED_EFFECTS
 
 
 def default_host(binary_path=None, *, evidence=None, require_evidence: bool = True, work_root=None) -> HostEngines:
@@ -77,15 +97,25 @@ def default_host(binary_path=None, *, evidence=None, require_evidence: bool = Tr
 
 @dataclass(frozen=True)
 class PlanOutcome:
-    """The plan or one failure, and every selection decision recorded on the way."""
+    """The plan or one failure, every selection decision, and what each envelope layer recorded.
+
+    A failure carries its envelope refusal (code, what happened, next action and retry rule); the
+    handshake holds one verdict for each screened installation and the preflight one report for each
+    dispatch. The trace records the layers of the final attempt; an earlier attempt that fell back is
+    recorded by its fallback decision and its own preflight report."""
 
     plan: "dict | None"
     failure: "dict | None"
     decisions: tuple = ()
+    refusal: "dict | None" = None
+    handshake: tuple = ()
+    preflight: tuple = ()
+    trace: "dict | None" = None
 
     def to_dict(self) -> dict:
-        return {"record_type": "ontology_change_outcome/v1", "plan": self.plan, "failure": self.failure,
-                "decisions": list(self.decisions)}
+        return {"record_type": OUTCOME_RECORD_TYPE, "plan": self.plan, "failure": self.failure,
+                "refusal": self.refusal, "decisions": list(self.decisions), "handshake": list(self.handshake),
+                "preflight": list(self.preflight), "trace": self.trace}
 
 
 def read_request(request) -> tuple:
@@ -130,8 +160,12 @@ def _slot_digest() -> str:
 
 
 def _screen(host: HostEngines, planning_input: PlanningInput, now: datetime) -> tuple:
-    """(universe, eligibility, descriptors, engines) for every installation of the host."""
-    universe, eligibility, descriptors, engines = [], [], {}, {}
+    """(universe, eligibility, descriptors, engines, handshake verdicts) for every installation of the host.
+
+    Each enabled installation gets one handshake verdict from its declaration and the host's granted
+    effects; a verdict refused by policy is also an eligibility refusal, so an engine whose effects the
+    host does not grant is never selected."""
+    universe, eligibility, descriptors, engines, verdicts = [], [], {}, {}, []
     for installation in host.installations:
         if not installation.enabled:
             eligibility.append(EligibilityEntry(installation.installation_id,
@@ -148,6 +182,10 @@ def _screen(host: HostEngines, planning_input: PlanningInput, now: datetime) -> 
             refusals.append(EligibilityRefusal("engine_unavailable", reason[:300]))
         for need in table.unmet_requirements(engine.declaration, planning_input):
             refusals.append(EligibilityRefusal("capability_requirement_unsatisfied", need))
+        verdict = handshake_for(installation, engine.declaration, descriptor, planning_input, host.granted_effects)
+        verdicts.append(verdict)
+        if verdict.verdict == REFUSED_BY_POLICY:
+            refusals.append(EligibilityRefusal("permission_not_granted", "; ".join(verdict.reasons)[:300]))
         report = host.evidence.get(descriptor.content_digest)
         if host.require_evidence and not (isinstance(report, dict) and report.get("passed") is True):
             refusals.append(EligibilityRefusal(
@@ -155,7 +193,7 @@ def _screen(host: HostEngines, planning_input: PlanningInput, now: datetime) -> 
                 f"conformance_kit: no passing ontology_change conformance report for descriptor "
                 f"{descriptor.content_digest}"))
         eligibility.append(EligibilityEntry(installation.installation_id, tuple(refusals)))
-    return tuple(universe), tuple(eligibility), descriptors, engines
+    return tuple(universe), tuple(eligibility), descriptors, engines, tuple(verdicts)
 
 
 def _ranking(order: tuple, now: datetime) -> dict:
@@ -180,7 +218,8 @@ class _Selector:
 
     def __init__(self, host: HostEngines, planning_input: PlanningInput, context: SelectionContext):
         self.host, self.context, self.now = host, context, _now()
-        self.universe, self.eligibility, self.descriptors, self.engines = _screen(host, planning_input, self.now)
+        self.universe, self.eligibility, self.descriptors, self.engines, self.verdicts = _screen(
+            host, planning_input, self.now)
         eligible = {entry.installation_id for entry in self.eligibility if entry.eligible}
         policy = host.policy
         self.declared = tuple(item for item in policy.initial if item in eligible) or tuple(
@@ -345,29 +384,64 @@ def _admit(outcome, plan_request: PlanRequest, base: frozenset, proposed: frozen
     return plan
 
 
+def _trace(refused_by: str, refusal, *, dispatched: bool, preflight_result: str = LAYER_ACCEPTED) -> dict:
+    """The envelope trace of one planning request, in the declared layer order."""
+    if refused_by == LAYER_CARRIER:
+        steps = [(LAYER_CARRIER, LAYER_REFUSED)]
+    elif refused_by == LAYER_HANDSHAKE:
+        steps = [(LAYER_CARRIER, LAYER_ACCEPTED), (LAYER_HANDSHAKE, LAYER_REFUSED)]
+    else:
+        steps = [(LAYER_CARRIER, LAYER_ACCEPTED), (LAYER_HANDSHAKE, LAYER_ACCEPTED),
+                 *((layer, LAYER_NOT_APPLICABLE) for layer in _NOT_APPLICABLE_TO_PLANNING),
+                 (LAYER_PREFLIGHT, preflight_result)]
+    return EnvelopeTrace(SLOT_ID, tuple(steps), dispatched, refused_by, refusal).to_dict()
+
+
+def _refused_outcome(refused: OntologyChangeRefused, refused_by: str, selector=None, preflight=(), *,
+                     dispatched: bool = False) -> PlanOutcome:
+    """One failure with its envelope refusal, the decisions and verdicts so far, and the trace."""
+    refusal = refusal_for(refused.code)
+    preflight_result = LAYER_REFUSED if refused_by == LAYER_PREFLIGHT else LAYER_ACCEPTED
+    return PlanOutcome(None, refused.to_record(), tuple(selector.decisions) if selector else (), refusal.to_dict(),
+                       tuple(verdict.to_dict() for verdict in selector.verdicts) if selector else (),
+                       tuple(preflight), _trace(refused_by, refusal, dispatched=dispatched,
+                                                preflight_result=preflight_result))
+
+
 def plan_change(request, host: "HostEngines | None" = None, *, context: "SelectionContext | None" = None
                 ) -> PlanOutcome:
-    """Plan one change: the plan or one typed failure, with every selection decision."""
+    """Plan one change: the plan or one typed failure, with every selection decision and envelope record."""
     try:
         plan_request, base, proposed = read_request(request)
     except OntologyChangeRefused as refused:
-        return PlanOutcome(None, refused.to_record())
+        return _refused_outcome(refused, LAYER_CARRIER)
     planning_input = PlanningInput(base, proposed, plan_request.profile, plan_request.maximum_closure)
     selector = _Selector(host or default_host(), planning_input, context or SelectionContext())
     chosen = selector.first()
     if chosen is None:
         failure = OntologyChangeRefused("no_eligible_engine", selector.refusal_summary(), "selection")
-        return PlanOutcome(None, failure.to_record(), tuple(selector.decisions))
+        return _refused_outcome(failure, LAYER_HANDSHAKE, selector)
+    reports = []
     while chosen is not None:
         started = time.monotonic()
+        # The preflight checks the selected engine again just before it runs; a failed check is the
+        # engine_unavailable failure kind, so the declared order moves on exactly as if the engine said so.
+        report = run_preflight(SLOT_ID, PREFLIGHT_CHECKS, (), {"engine": selector.engines[chosen]})
+        reports.append(report.to_dict())
+        source = LAYER_PREFLIGHT
         try:
+            if not report.ready:
+                raise EngineFailure("engine_unavailable", f"preflight refused {chosen}: {report.refusal.code}")
+            source = ENGINE_SOURCE
             outcome = selector.engines[chosen].plan(planning_input)
             plan = _admit(outcome, plan_request, base, proposed, selector.descriptors[chosen])
-            return PlanOutcome(plan, None, tuple(selector.decisions))
+            return PlanOutcome(plan, None, tuple(selector.decisions), None,
+                               tuple(verdict.to_dict() for verdict in selector.verdicts), tuple(reports),
+                               _trace("", None, dispatched=True))
         except EngineFailure as failure:
             if failure.kind == "limit_exceeded":
                 refused = OntologyChangeRefused("limit_exceeded", failure.detail, "engine")
-                return PlanOutcome(None, refused.to_record(), tuple(selector.decisions))
+                return _refused_outcome(refused, ENGINE_SOURCE, selector, reports, dispatched=True)
             kind, code, detail = failure.kind, _SEQUENCE_FAILURES[failure.kind], failure.detail
         except ValueError as error:
             kind, code, detail = "output_validation_failed", "result_invalid", str(error)
@@ -375,6 +449,6 @@ def plan_change(request, host: "HostEngines | None" = None, *, context: "Selecti
         if next_choice is None:
             stage = "result" if code == "result_invalid" else "engine"
             refused = OntologyChangeRefused(code, f"{chosen}: {detail}", stage)
-            return PlanOutcome(None, refused.to_record(), tuple(selector.decisions))
+            return _refused_outcome(refused, source, selector, reports, dispatched=source == ENGINE_SOURCE)
         chosen = next_choice
     raise AssertionError("unreachable")

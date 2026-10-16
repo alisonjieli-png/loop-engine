@@ -18,7 +18,10 @@ run_conformance_kit(engine_id, settings)           ontology_change_conformance_r
 
 The fixtures are written for this kit under example.org and carry no outside
 material. ``self_test`` runs the kit on the native engine, on the adapter when
-its pinned binary is configured, and the selection checks.
+its pinned binary is configured, the selection checks, and the checks of the
+envelope layers this slot adopted as their reference (``_envelope_layer_checks``:
+refusal guidance for every failure code, the trace, the handshake verdicts and
+the apply replay), which sit beside the kit and are not kit controls.
 """
 from __future__ import annotations
 
@@ -31,13 +34,18 @@ from datetime import datetime, timezone
 from pathlib import Path
 from unittest.mock import patch
 
+from ..engines.envelope import COMPATIBLE, EFFECT_NONE, INBOUND_LAYERS, LAYER_CARRIER, REFUSED_BY_POLICY
+from ..engines.envelope_preflight import VERDICT_READY
 from ..engines.host_records import EngineInstallation
+from . import store as store_module
 from .component import HostEngines, plan_change
 from .contract import (
     APPLY_REQUEST_RECORD_TYPE, CONFORMANCE_REPORT_RECORD_TYPE, CONSERVATIVE, NOT_CONSERVATIVE,
     ROLLBACK_REQUEST_RECORD_TYPE, RULE_TABLES, SLOT_ID, OntologyChangeRefused, request_record)
 from .engines import (
     ADAPTER_ENGINE_ID, NATIVE_ENGINE_ID, create_engine, default_installations, default_policy, describe_engine)
+from .guidance import (
+    APPLY_OPERATION, RECOVERY_POLICY, REFUSAL_GUIDANCE, guidance_gaps, refusal_for, replayed_apply)
 from .rdf_terms import OWL, RDF, RDFS, graph_digest, parse_turtle
 from .store import OntologyStore, apply_change, plan_store_change, rollback_change
 from .trace_checker import check_trace, write_certificate
@@ -340,6 +348,63 @@ def _selection_checks(native_report: dict) -> list:
             ("a_failed_engine_falls_back_to_the_next_declared_engine", falls_back)]
 
 
+def _apply_replay_checks(folder: Path) -> list:
+    """A retried apply of the same plan and approval answers its first result once; anything else is stale."""
+    case = CASES[0]
+    store = OntologyStore.create(folder / "replay", parse_turtle(PREFIXES + case.base))
+    host = HostEngines(default_installations(), default_policy(), {}, False)
+    plan = plan_store_change(store, added=case.added, host=host).plan
+    before = store.state()
+    first = _apply(store, plan, approval_ref="replay-approval")
+    again = _apply(store, plan, approval_ref="replay-approval")
+    applies = [entry for entry in store.journal() if entry["operation"] == APPLY_OPERATION]
+    other_approval = _refused(lambda: _apply(store, plan, approval_ref="another-approval"), "stale_base")
+    # The state before the apply stands for a commit whose journal line was written but whose state
+    # replace never happened: the line names this plan and approval, the state is still the base.
+    interrupted = before
+    with patch.object(store_module, "replayed_apply", lambda *_arguments: None):
+        without_replay = _refused(lambda: _apply(store, plan, approval_ref="replay-approval"), "stale_base")
+    return [("a_retried_apply_is_answered_from_the_journal_once",
+             again == first and len(applies) == 1 and other_approval
+             and replayed_apply(store.journal(), store.state(), plan, "replay-approval") == first),
+            ("an_interrupted_apply_commit_is_never_answered_as_applied",
+             replayed_apply(store.journal(), interrupted, plan, "replay-approval") is None),
+            ("removed_apply_replay_is_detected", without_replay)]
+
+
+def _envelope_layer_checks() -> list:
+    """The envelope layers adopted by this slot: refusal guidance, trace, handshake verdicts, apply replay."""
+    case = CASES[0]
+    gaps_without_one = guidance_gaps({code: item for code, item in REFUSAL_GUIDANCE.items() if code != "stale_base"})
+    refusals = [refusal_for(code) for code in REFUSAL_GUIDANCE]
+    stale = plan_change(_request(case, "rdfs", base_digest=graph_digest(())),
+                        HostEngines(default_installations(), default_policy(), {}, False))
+    planned = plan_change(_request(case, "owl-rl"), HostEngines(default_installations(), default_policy(), {}, False))
+    narrow = HostEngines(default_installations(), default_policy(), {}, False, granted_effects=("pure",))
+    narrowed = plan_change(_request(case, "owl-rl"), narrow)
+    by_engine = {item["engine"]: item for item in narrowed.handshake}
+    adapter_refusals = {refusal["code"] for entry in narrowed.decisions[0]["eligibility"]
+                        if entry["installation_id"] == ADAPTER_ENGINE_ID for refusal in entry["refusals"]}
+    with tempfile.TemporaryDirectory(prefix="ontology-change-envelope-") as folder:
+        replay = _apply_replay_checks(Path(folder))
+    return [("every_failure_code_has_envelope_guidance",
+             not guidance_gaps() and gaps_without_one == ["stale_base"]
+             and all(item.next_action and item.effect_commitment == EFFECT_NONE and not item.automatic_retry
+                     for item in refusals) and RECOVERY_POLICY.maximum_automatic_attempts == 0),
+            ("a_refused_request_never_reaches_an_engine_in_the_envelope_trace",
+             stale.trace["refused_by"] == LAYER_CARRIER and not stale.trace["engine_dispatched"]
+             and stale.refusal["code"] == "base_digest_mismatch" and stale.refusal["next_action"]
+             and planned.plan is not None and planned.trace["engine_dispatched"] and planned.refusal is None
+             and [step["layer"] for step in planned.trace["steps"]]
+             == list(INBOUND_LAYERS) and planned.preflight[0]["verdict"] == VERDICT_READY),
+            ("every_screened_engine_has_a_handshake_verdict_that_agrees_with_its_eligibility",
+             by_engine[NATIVE_ENGINE_ID]["verdict"] == COMPATIBLE
+             and by_engine[ADAPTER_ENGINE_ID]["verdict"] == REFUSED_BY_POLICY
+             and "permission_not_granted" in adapter_refusals and narrowed.plan is not None
+             and all(item["verdict"] == COMPATIBLE for item in planned.handshake)),
+            *replay]
+
+
 def self_test() -> dict:
     tests = []
     report = run_conformance_kit(NATIVE_ENGINE_ID)
@@ -350,6 +415,8 @@ def self_test() -> dict:
         tests.append({"test": item["control"], "passed": item["passed"], "detail": "native engine"})
     for name, ok in _selection_checks(report):
         tests.append({"test": name, "passed": ok, "detail": ""})
+    for name, ok in _envelope_layer_checks():
+        tests.append({"test": name, "passed": ok, "detail": "envelope layers, reference adoption"})
     binary = os.environ.get(BINARY_VARIABLE, "")
     adapter = create_engine(ADAPTER_ENGINE_ID, {"binary_path": binary} if binary else {})
     available, reason = adapter.availability()
