@@ -42,6 +42,13 @@ source work, local checks and failed application and edge attempts beside their
 reconciliations. Do not repeat a completed operation or infer broader live
 qualification from a bounded probe.
 
+The owner's requests are tracked one row each, with their roadmap steps and
+state, in the [October 2026 owner requests ledger](OWNER-REQUESTS-LEDGER-2026-10.md)
+and the [September 2026 ledger](OWNER-REQUESTS-LEDGER-2026-09.md) before it.
+The October ledger opens with the measurement of the owner's prompt histories
+that selected its rows. `tools/owner_requests_ledger.py` reports both ledgers
+against the roadmap, and a daily run lists the requests that are not live.
+
 Read the [October 13 release 92 checkpoint](SESSION-HANDOFF-2026-10-13-RELEASE92.md)
 for the earlier AgentStudios application deployment, completed both-host public
 DNS/TLS qualification, twenty-host live check limits, the reviewed local-only
