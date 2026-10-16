@@ -1,0 +1,181 @@
+{
+ "record_type": "agentbriefs_demo_brief/v1",
+ "as_of": "2026-10-16",
+ "status": "demonstration written by engineering from dated public sources and the pilot's records; no experiment has run and no benefit is realized or claimed",
+ "shape_note": "Candidate fields follow the local AgentBriefs prototype (design/prototypes/agentbriefs): id, title, kind, label and ready. This is a demonstration record, not a registered contract.",
+ "evidence_floor": "A candidate is offered only with at least one dated source and an experiment with a baseline, a metric and an acceptance rule. Anything else is withheld with its reason and raises no alert.",
+ "project": {
+  "name": "Spaceship Titanic baseline (pilot task c)",
+  "competition": "https://www.kaggle.com/competitions/spaceship-titanic",
+  "train_sha256": "17336d553f49ebdf6ecb266d2b5d3746e5dd308445f7c7864141c4f28d2a88d0",
+  "split": "20 percent of travel groups held out, seed 20261016",
+  "environment": {
+   "python": "3.14.4",
+   "pandas": "3.0.6",
+   "numpy": "2.5.4",
+   "scikit-learn": "1.9.1"
+  },
+  "pilot_task": "c-spaceship-titanic"
+ },
+ "observations": [
+  {
+   "fact": "all four pilot runs used RandomForestClassifier(n_estimators=100, random_state=42) on label-encoded columns and scored 0.8120, 0.7992, 0.8108 and 0.7847 on the held-out groups",
+   "source": "results/trials/c-*.json and results/solutions/"
+  },
+  {
+   "fact": "the runs' own random-split estimates were 0.8106, 0.8056, 0.8121 and 0.7991, between 0.0014 below and 0.0144 above the held-out results",
+   "source": "results/trials/c-*.json final summaries"
+  },
+  {
+   "fact": "frozen reference lines: gradient boosting 0.8131, logistic regression 0.7841, CryoSleep rule 0.7226",
+   "source": "design/design.json"
+  },
+  {
+   "fact": "the most-voted public notebook is gusthema/spaceship-titanic-with-tfdf with 8,050 votes",
+   "source": "kaggle kernels list, 2026-10-16"
+  }
+ ],
+ "candidates": [
+  {
+   "id": "ST-1",
+   "title": "A tabular in-context model against the boosting reference",
+   "kind": "experiment",
+   "label": "Experimental fit",
+   "ready": true,
+   "evidence": [
+    {
+     "url": "https://pypi.org/project/tabicl/",
+     "date": "2026-09-02",
+     "fact": "TabICL 2.2.0, BSD-3-Clause; weights jingang/TabICL-clf BSD-3-Clause"
+    },
+    {
+     "url": "https://pypi.org/project/tabpfn/",
+     "date": "2026-10-12",
+     "fact": "TabPFN 9.2.0, package Apache-2.0; weights priorlabs-1-1 (v2) and gated tabpfn-2.5-license-v1.1 (2.5)"
+    },
+    {
+     "url": "https://baltor.ai/models",
+     "date": "2026-10-16",
+     "fact": "no tabular model among the directory's 2,146 rows"
+    }
+   ],
+   "estimated_benefit": {
+    "statement": "0.5 to 1.5 accuracy points over 0.8131 without feature engineering",
+    "status": "hypothesis"
+   },
+   "experiment": {
+    "baseline": "the frozen gradient boosting reference on the same split",
+    "treatment": "TabICL with the reference preprocessing; TabPFN only after an owner licence review",
+    "metric": "held-out accuracy and McNemar's test",
+    "acceptance": "p below 0.05 in favour of TabICL and CPU training plus prediction under 10 minutes",
+    "effects": "a package and weights download into a copy of the environment",
+    "rights": "TabICL BSD-3-Clause; TabPFN 2.5 needs accepting gated terms, an owner decision"
+   }
+  },
+  {
+   "id": "ST-2",
+   "title": "Boosting libraries with native categorical handling",
+   "kind": "experiment",
+   "label": "Experimental fit",
+   "ready": true,
+   "evidence": [
+    {
+     "url": "https://pypi.org/project/catboost/",
+     "date": "2026-02-18",
+     "fact": "CatBoost 1.2.10"
+    },
+    {
+     "url": "https://pypi.org/project/lightgbm/",
+     "date": "2026-07-18",
+     "fact": "LightGBM 4.7.0"
+    },
+    {
+     "url": "https://pypi.org/project/xgboost/",
+     "date": "2026-08-15",
+     "fact": "XGBoost 3.4.1"
+    }
+   ],
+   "estimated_benefit": {
+    "statement": "0.3 to 1.0 points over the pilot runs, reaching or passing 0.8131",
+    "status": "hypothesis"
+   },
+   "experiment": {
+    "baseline": "the pilot runs and the frozen reference",
+    "treatment": "each library with defaults, then at most 30 settings validated by travel group",
+    "metric": "held-out accuracy and McNemar's test",
+    "acceptance": "report every library; adopt only one with p below 0.05 against the reference",
+    "effects": "package downloads into a copy of the environment",
+    "rights": "Apache-2.0 or MIT packages"
+   }
+  },
+  {
+   "id": "ST-3",
+   "title": "Validate by travel group and use Baltor's split checks",
+   "kind": "experiment",
+   "label": "Experimental fit",
+   "ready": true,
+   "evidence": [
+    {
+     "url": "results/retrieval-diagnostic.json",
+     "date": "2026-10-16",
+     "fact": "Baltor search offers Verified skills audit_data_splits_for_errors_and_leakage and read_the_train_validation_gap; no Baltor-arm run searched"
+    },
+    {
+     "url": "results/trials/c-*.json",
+     "date": "2026-10-16",
+     "fact": "one run's own estimate was 1.4 points above its held-out accuracy"
+    }
+   ],
+   "estimated_benefit": {
+    "statement": "grouped validation estimates held-out accuracy at least as well as a random split and picks models more reliably; the gain may be small for this model",
+    "status": "hypothesis"
+   },
+   "experiment": {
+    "baseline": "five-fold random-row validation",
+    "treatment": "five-fold grouped validation",
+    "metric": "absolute error against the frozen holdout over five seeds",
+    "acceptance": "grouped error lower in at least four of five seeds",
+    "effects": "local computation only",
+    "rights": "competition data stays out of the repository"
+   }
+  }
+ ],
+ "withheld": [
+  {
+   "id": "ST-W1",
+   "title": "Fine-tune a hosted language model on the training rows",
+   "alert": false,
+   "reason": "competition rules section 7.B forbid making the data available to anyone not in the competition, and a hosted fine-tuning service would hold a copy; no source read for this brief shows such a model beating tree ensembles on a 7,000-row tabular task",
+   "evidence": [
+    {
+     "url": "https://www.kaggle.com/competitions/spaceship-titanic/rules",
+     "date": "read 2026-10-16 through the Kaggle command line"
+    }
+   ]
+  }
+ ],
+ "not_current": [
+  {
+   "title": "AutoGluon",
+   "reason": "autogluon.tabular 1.6.3 (2026-09-18) declares requires-python <3.14,>=3.10 and cannot be installed in this Python 3.14 environment"
+  },
+  {
+   "title": "A Kaggle MCP server",
+   "reason": "Baltor's MCP directory lists io.github.Seif-Sameh/Kaggle-mcp (MIT, 2026-06-11) and io.github.parkseokjune/kaggle-mcp (2026-06-16); either needs a credential review before an agent holds a Kaggle token"
+  },
+  {
+   "title": "Known advisories",
+   "reason": "OSV queries for PyPI scikit-learn 1.9.1, pandas 3.0.6 and numpy 2.5.4 on 2026-10-16 returned no advisory; an empty answer is not a security certificate, so nothing is raised"
+  }
+ ],
+ "sources_read": [
+  "kaggle competitions list, pages --content --page-name rules, kernels list (2026-10-16)",
+  "https://pypi.org/pypi/{tabicl,tabpfn,catboost,lightgbm,xgboost,autogluon.tabular}/json",
+  "https://huggingface.co/api/models/Prior-Labs/TabPFN-v2-clf, Prior-Labs/tabpfn_2_5, jingang/TabICL-clf",
+  "https://baltor.ai/assets/model-directory/search-index.json",
+  "https://baltor.ai/assets/directory/manifest.json and rows-0..7.json",
+  "results/retrieval-diagnostic.json",
+  "results/trials/c-*.json",
+  "https://api.osv.dev/v1/query (OSV queries for PyPI scikit-learn 1.9.1, pandas 3.0.6 and numpy 2.5.4)"
+ ]
+}

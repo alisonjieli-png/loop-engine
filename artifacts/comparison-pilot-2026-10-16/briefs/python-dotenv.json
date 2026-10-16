@@ -1,0 +1,167 @@
+{
+ "record_type": "agentbriefs_demo_brief/v1",
+ "as_of": "2026-10-16",
+ "status": "demonstration written by engineering from dated public sources and the pilot's records; no experiment has run and no benefit is realized or claimed",
+ "shape_note": "Candidate fields follow the local AgentBriefs prototype (design/prototypes/agentbriefs): id, title, kind, label and ready. This is a demonstration record, not a registered contract.",
+ "evidence_floor": "A candidate is offered only with at least one dated source and an experiment with a baseline, a metric and an acceptance rule. Anything else is withheld with its reason and raises no alert.",
+ "project": {
+  "name": "python-dotenv",
+  "version": "1.2.4",
+  "repository": "https://github.com/theskumar/python-dotenv",
+  "revision": "a565c2cc41599c48eabc6b7b7f5b826d43c5a6d7",
+  "licence": "BSD-3-Clause",
+  "stars_on_2026_10_16": 8900,
+  "listed_in": "awesome-python, Configuration Files",
+  "pilot_task": "b-dotenv-backslash"
+ },
+ "observations": [
+  {
+   "fact": "1.2.3 (2026-08-16) shipped pull request 680 on backslash round trips; 1.2.4 (2026-10-01) fixed 663 and 700",
+   "source": "CHANGELOG.md at a565c2cc"
+  },
+  {
+   "fact": "no pilot run changed the library within 20 requests; two opened parser.py; three spent 6 to 16 of 20 tool calls on shell heredocs",
+   "source": "results/trials/b-*.json"
+  },
+  {
+   "fact": "the test workflow covers 3.10 to 3.14, 3.14t and PyPy 3.11; classifiers stop at 3.14",
+   "source": ".github/workflows/test.yml at a565c2cc and the PyPI classifiers"
+  }
+ ],
+ "candidates": [
+  {
+   "id": "DV-1",
+   "title": "Property-based round-trip tests for the writer and the parser",
+   "kind": "experiment",
+   "label": "Experimental fit",
+   "ready": true,
+   "evidence": [
+    {
+     "url": "https://github.com/theskumar/python-dotenv/pull/680",
+     "date": "2026-08-16",
+     "fact": "the backslash round-trip fix"
+    },
+    {
+     "url": "https://pypi.org/project/hypothesis/",
+     "date": "2026-10-15",
+     "fact": "Hypothesis 6.170.0"
+    }
+   ],
+   "estimated_benefit": {
+    "statement": "a set_key/get_key round-trip property would have caught the defect that pull request 680 fixed and may catch the next one",
+    "status": "hypothesis"
+   },
+   "experiment": {
+    "baseline": "v1.2.2 (known positive) and v1.2.4",
+    "treatment": "generated values with backslashes, quotes, #, $, spaces, tabs and line breaks in the always, auto and never quote modes, each followed by a sentinel key",
+    "metric": "counterexamples per version",
+    "acceptance": "finds the backslash failure on v1.2.2, and every v1.2.4 failure is a real defect or documented behaviour",
+    "effects": "local tests only",
+    "rights": "test-only dependency under MPL-2.0"
+   }
+  },
+  {
+   "id": "DV-2",
+   "title": "A conformance table against two other .env readers",
+   "kind": "experiment",
+   "label": "Experimental fit",
+   "ready": true,
+   "evidence": [
+    {
+     "url": "https://nodejs.org/api/util.html#utilparseenvcontent",
+     "date": "page for Node.js v26.12.0, read 2026-10-16",
+     "fact": "util.parseEnv added in v21.7.0 and v20.12.0; no longer experimental since v24.10.0 and v22.21.0"
+    },
+    {
+     "url": "https://docs.docker.com/compose/how-tos/environment-variables/variable-interpolation/",
+     "date": "read 2026-10-16",
+     "fact": "Compose uses single-quoted values literally"
+    },
+    {
+     "url": "https://github.com/theskumar/python-dotenv/blob/v1.2.4/tests/test_main.py",
+     "date": "2026-10-01",
+     "fact": "python-dotenv expects a='${b}' to expand b"
+    },
+    {
+     "url": "https://baltor.ai/directory",
+     "date": "2026-10-14",
+     "fact": "agent MCP servers parse or compare .env files with their own code, such as EnvSync-LE (updated 2026-10-07)"
+    }
+   ],
+   "estimated_benefit": {
+    "statement": "a published agreement table would spare users who share one .env file across Python, Node and Compose some silent surprises",
+    "status": "hypothesis"
+   },
+   "experiment": {
+    "baseline": "none",
+    "treatment": "60 fixtures through dotenv_values, util.parseEnv and docker compose config",
+    "metric": "disagreements traced to an upstream documentation line",
+    "acceptance": "at least three disagreements, each traced to a source",
+    "effects": "local processes only; nothing published without the maintainers",
+    "rights": "fixtures written for the experiment"
+   }
+  },
+  {
+   "id": "DV-3",
+   "title": "Add Python 3.15 to the test matrix",
+   "kind": "experiment",
+   "label": "Maintenance",
+   "ready": true,
+   "evidence": [
+    {
+     "url": "https://endoflife.date/python",
+     "date": "2026-10-09",
+     "fact": "Python 3.15.0 released"
+    },
+    {
+     "url": "https://github.com/theskumar/python-dotenv/blob/v1.2.4/.github/workflows/test.yml",
+     "date": "2026-10-01",
+     "fact": "the matrix stops at 3.14 and 3.14t"
+    }
+   ],
+   "estimated_benefit": {
+    "statement": "users learn early whether 3.15 works, at the cost of one more matrix job",
+    "status": "hypothesis"
+   },
+   "experiment": {
+    "baseline": "the current matrix",
+    "treatment": "3.15 and 3.15t in a fork",
+    "metric": "suite result",
+    "acceptance": "passes, or every failure is reported upstream",
+    "effects": "CI minutes in a fork",
+    "rights": "none needed"
+   }
+  }
+ ],
+ "withheld": [
+  {
+   "id": "DV-W1",
+   "title": "A model that repairs malformed .env files while loading",
+   "alert": false,
+   "reason": "no source read for this brief supports it; it would send secrets to a model provider, make a deterministic parser nondeterministic and could rewrite a value silently",
+   "evidence": []
+  }
+ ],
+ "not_current": [
+  {
+   "title": "Dropping Python 3.10",
+   "reason": "3.10 reached end of life on 2026-10-01; the timing is the maintainers' choice, so no recommendation"
+  },
+  {
+   "title": "Known advisories",
+   "reason": "OSV queries for PyPI python-dotenv 1.2.4 and click 8.5.0 on 2026-10-16 returned no advisory; an empty answer is not a security certificate, so nothing is raised"
+  }
+ ],
+ "sources_read": [
+  "https://pypi.org/pypi/python-dotenv/json",
+  "https://pypi.org/pypi/hypothesis/json",
+  "https://github.com/theskumar/python-dotenv at a565c2cc and f7b18d9c",
+  "https://endoflife.date/api/v1/products/python",
+  "https://nodejs.org/api/util.html",
+  "https://docs.docker.com/compose/how-tos/environment-variables/variable-interpolation/",
+  "https://baltor.ai/assets/directory/manifest.json and rows-0..7.json (generated 2026-10-14)",
+  "https://baltor.ai/assets/model-directory/search-index.json (no relevant row)",
+  "tools/research_source_watch.json (no relevant source)",
+  "https://api.osv.dev/v1/query (OSV queries for PyPI python-dotenv 1.2.4 and click 8.5.0)"
+ ]
+}

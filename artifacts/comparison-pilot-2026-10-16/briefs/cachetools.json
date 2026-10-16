@@ -1,0 +1,147 @@
+{
+ "record_type": "agentbriefs_demo_brief/v1",
+ "as_of": "2026-10-16",
+ "status": "demonstration written by engineering from dated public sources and the pilot's records; no experiment has run and no benefit is realized or claimed",
+ "shape_note": "Candidate fields follow the local AgentBriefs prototype (design/prototypes/agentbriefs): id, title, kind, label and ready. This is a demonstration record, not a registered contract.",
+ "evidence_floor": "A candidate is offered only with at least one dated source and an experiment with a baseline, a metric and an acceptance rule. Anything else is withheld with its reason and raises no alert.",
+ "project": {
+  "name": "cachetools",
+  "version": "7.2.2",
+  "repository": "https://github.com/tkem/cachetools",
+  "revision": "be0b2eba99f676fbd525a8bc83a4dd62611c6821",
+  "licence": "MIT",
+  "stars_on_2026_10_16": 2787,
+  "listed_in": "awesome-python, Caching",
+  "pilot_task": "a-cachetools-tlru"
+ },
+ "observations": [
+  {
+   "fact": "CI at v7.2.2 runs Python 3.10 to 3.15, 3.13t, 3.14t, 3.15t, PyPy 3.10 and 3.11",
+   "source": ".github/workflows/ci.yml at be0b2eba"
+  },
+  {
+   "fact": "7.1.5 (2026-07-23) fixed TLRUCache keeping stale values on expired overwrites; 7.1.7 (2026-08-01) improved Cache.__setitem__ on larger replacements; 7.2.2 (2026-10-15) improved TTLCache when computing expiration fails",
+   "source": "CHANGELOG.rst at be0b2eba"
+  },
+  {
+   "fact": "four pilot regenerations of TLRUCache each passed 31 of 34 held-out tests and failed test_ttu, test_ttu_expired and test_ttu_reverse_insert",
+   "source": "results/trials/a-*.json"
+  },
+  {
+   "fact": "an AI-assisted review record dated 2026-10-15 and Copilot instructions are in the repository",
+   "source": ".github/copilot-review.md and .github/copilot-instructions.md at be0b2eba"
+  }
+ ],
+ "candidates": [
+  {
+   "id": "CT-1",
+   "title": "Stateful property tests for the timed caches",
+   "kind": "experiment",
+   "label": "Experimental fit",
+   "ready": true,
+   "evidence": [
+    {
+     "url": "https://pypi.org/project/hypothesis/",
+     "date": "2026-10-15",
+     "fact": "Hypothesis 6.170.0, MPL-2.0, provides rule-based stateful testing"
+    },
+    {
+     "url": "https://github.com/tkem/cachetools/blob/v7.2.2/CHANGELOG.rst",
+     "date": "2026-07-23 to 2026-10-15",
+     "fact": "three cache bookkeeping fixes in three months"
+    }
+   ],
+   "estimated_benefit": {
+    "statement": "a model-based test with a fake timer would have found the 7.1.5 stale-value bug and may find similar faults before release",
+    "status": "hypothesis"
+   },
+   "experiment": {
+    "baseline": "v7.1.4 (known positive) and v7.2.2",
+    "treatment": "one RuleBasedStateMachine against a dictionary-plus-expiry reference",
+    "metric": "failures found per version",
+    "acceptance": "finds the stale-value failure on v7.1.4 and nothing on v7.2.2 within 2,000 examples and 60 seconds",
+    "effects": "local tests only",
+    "rights": "test-only dependency under MPL-2.0"
+   }
+  },
+  {
+   "id": "CT-2",
+   "title": "State that time-to-use values can expire out of insertion order",
+   "kind": "experiment",
+   "label": "Experimental fit",
+   "ready": true,
+   "evidence": [
+    {
+     "url": "results/trials/a-*.json",
+     "date": "2026-10-16",
+     "fact": "all four pilot runs reused TTLCache's insertion-ordered list and failed the same three out-of-order and already-expired tests"
+    },
+    {
+     "url": "https://github.com/tkem/cachetools/blob/v7.2.2/docs/index.rst",
+     "date": "2026-10-15",
+     "fact": "the TLRUCache documentation does not state out-of-order expiry or the already-expired insertion case"
+    }
+   ],
+   "estimated_benefit": {
+    "statement": "one documented sentence and one doctest would stop the same misreading by people and coding agents",
+    "status": "hypothesis"
+   },
+   "experiment": {
+    "baseline": "pilot task a, current documentation, prompt without the pointer to TTLCache, six runs",
+    "treatment": "the same with the added sentence, six runs",
+    "metric": "runs that pass the three tests",
+    "acceptance": "at least four of six with the sentence and at most one of six without it",
+    "effects": "about 12 harness runs within a recorded model allowance",
+    "rights": "documentation change proposed upstream only by the maintainers' process"
+   }
+  }
+ ],
+ "withheld": [
+  {
+   "id": "CT-W1",
+   "title": "An agent-memory server as a smarter cache",
+   "alert": false,
+   "reason": "a word match (Memoize, persistent agent memory, updated 2026-08-29 in Baltor's MCP directory) and a popularity count (vectorize-io/hindsight, 26,652 stars in the monthly Trending view) are not evidence of fit: these store agent memory and do not memoize function results",
+   "evidence": [
+    {
+     "url": "https://github.com/harrisonford/memoize",
+     "date": "2026-08-29"
+    },
+    {
+     "url": "https://github.com/trending",
+     "date": "2026-10-16"
+    }
+   ]
+  }
+ ],
+ "not_current": [
+  {
+   "title": "AI-assisted code review",
+   "reason": "already in place: .github/copilot-review.md dated 2026-10-15; another reviewer would duplicate it without evidence that it finds more"
+  },
+  {
+   "title": "Free-threaded and Python 3.15 testing",
+   "reason": "already in place in the CI matrix; Python 3.15.0 released 2026-10-09"
+  },
+  {
+   "title": "Dropping Python 3.10",
+   "reason": "3.10 reached end of life on 2026-10-01; the timing is the maintainer's choice, so no recommendation"
+  },
+  {
+   "title": "Known advisories",
+   "reason": "OSV query for PyPI cachetools 7.2.2 on 2026-10-16 returned no advisory; an empty answer is not a security certificate, so nothing is raised"
+  }
+ ],
+ "sources_read": [
+  "https://pypi.org/pypi/cachetools/json",
+  "https://pypi.org/pypi/hypothesis/json",
+  "https://github.com/tkem/cachetools at be0b2eba",
+  "https://endoflife.date/api/v1/products/python",
+  "https://coderabbit.ai/blog/one-million-open-source-reviews-september-2026",
+  "https://baltor.ai/assets/directory/manifest.json and rows-0..7.json (generated 2026-10-14)",
+  "https://github.com/trending/python?since=monthly",
+  "https://baltor.ai/assets/model-directory/search-index.json (no relevant row)",
+  "tools/research_source_watch.json (no relevant source)",
+  "https://api.osv.dev/v1/query (OSV query for PyPI cachetools 7.2.2)"
+ ]
+}
