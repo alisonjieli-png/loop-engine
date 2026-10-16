@@ -1,5 +1,11 @@
 schema: hardcoding_allowlist/v1
 entries:
+- finding_id: hardcoding.b3dc617820a9e2501c7706af
+  owner: "loop_engine.core.service_runtime.edge.systems_redirect_worker.js:url"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed October 16, 2026 (roadmap S-6.35.11): this is the one fixed Location of the retired systems.baltor.ai Worker, the staff Systems view on the canonical site. It is a redirect target, not an outbound request; the Worker reads no binding, secret or request field, so nothing a caller sends can change it. tools/test_systems_redirect_worker.py runs the actual Worker over loopback HTTP and refuses a known-wrong copy that reflects the request path. The coordinating session reviews this exception before it reaches main."
+  created_on: '2026-10-16'
+  expires_on: '2027-01-16'
 - finding_id: hardcoding.bedd5dce2609651e16e15157
   owner: "loop_engine.core.service_runtime.edge.site_edge_worker.js:url"
   classification: STRATEGY_OR_PROVIDER_BINDING
