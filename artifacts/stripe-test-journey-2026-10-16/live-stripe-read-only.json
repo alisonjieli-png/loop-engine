@@ -1,0 +1,86 @@
+{
+ "record_type": "live_stripe_read_only/v1",
+ "account": {
+  "id": "acct_1UHZ972IF9bCskLc",
+  "charges_enabled": true,
+  "payouts_enabled": true,
+  "details_submitted": true,
+  "requirements_currently_due": 0,
+  "requirements_past_due": 0,
+  "disabled_reason": null
+ },
+ "active_recurring_prices": [
+  {
+   "id": "price_1UI5ZH2IF9bCskLc80Biijf3",
+   "lookup_key": "baltor_pro_monthly_usd",
+   "unit_amount": 2900,
+   "currency": "usd",
+   "interval": "month",
+   "product": "Agent Feeds + Harness Files",
+   "product_active": true,
+   "livemode": true
+  },
+  {
+   "id": "price_1UPQiE2IF9bCskLcFmNOluzd",
+   "lookup_key": "baltor_pro_monthly_usd_49_20261011",
+   "unit_amount": 4900,
+   "currency": "usd",
+   "interval": "month",
+   "product": "Agent Feeds + Harness Files",
+   "product_active": true,
+   "livemode": true
+  }
+ ],
+ "webhook_endpoints": [
+  {
+   "url": "https://app.baltor.ai/api/v1/billing/webhook",
+   "status": "enabled",
+   "api_version": "2025-03-31.basil",
+   "enabled_events": [
+    "customer.subscription.created",
+    "customer.subscription.deleted",
+    "customer.subscription.updated",
+    "invoice.paid",
+    "invoice.payment_failed"
+   ]
+  }
+ ],
+ "portal_configurations": [
+  {
+   "id": "bpc_1UI5ZH2IF9bCskLchFkSuOSC",
+   "is_default": true,
+   "cancel": true,
+   "cancel_mode": "at_period_end",
+   "update": false,
+   "invoice_history": true,
+   "privacy_policy_url": true,
+   "terms_of_service_url": true
+  }
+ ],
+ "subscriptions_by_status": {
+  "active": {
+   "count_first_page": 0,
+   "has_more": false
+  },
+  "trialing": {
+   "count_first_page": 0,
+   "has_more": false
+  },
+  "past_due": {
+   "count_first_page": 0,
+   "has_more": false
+  },
+  "canceled": {
+   "count_first_page": 0,
+   "has_more": false
+  },
+  "unpaid": {
+   "count_first_page": 0,
+   "has_more": false
+  },
+  "incomplete": {
+   "count_first_page": 0,
+   "has_more": false
+  }
+ }
+}

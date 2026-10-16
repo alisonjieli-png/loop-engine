@@ -1,0 +1,194 @@
+{
+ "all_passed": true,
+ "deliveries": [
+  {
+   "event_id": "evt_1URCrrCCxLfArYEDNwNkerlM",
+   "statuses": [
+    503
+   ],
+   "type": "invoice.paid"
+  },
+  {
+   "event_id": "evt_1URCrsCCxLfArYEDn271RPwm",
+   "statuses": [
+    200
+   ],
+   "type": "customer.subscription.created"
+  },
+  {
+   "event_id": "evt_1URCs1CCxLfArYEDrL87W2Fz",
+   "statuses": [
+    200
+   ],
+   "type": "customer.subscription.updated"
+  },
+  {
+   "event_id": "evt_1URCsCCCxLfArYEDWQqbLPTk",
+   "statuses": [
+    503
+   ],
+   "type": "invoice.payment_failed"
+  },
+  {
+   "event_id": "evt_1URCsDCCxLfArYEDbAYAGgDV",
+   "statuses": [
+    200
+   ],
+   "type": "customer.subscription.updated"
+  }
+ ],
+ "limitations": [
+  "Stripe test mode only: no live account, card or money is involved.",
+  "The identity provider is the loopback stand-in the website checks use; production sign-up is not exercised.",
+  "A test clock moves Stripe's time only. The service keeps its own clock, so an access period that lapses with no event at all is not observed here; the renewal steps observe the events Stripe sends.",
+  "Events reach the service through `stripe listen`, in the account's default API version, not through a registered endpoint."
+ ],
+ "listener_api_version": "2026-08-26.dahlia",
+ "listener_lines": [
+  "<claude-code-hint v=\"1\" type=\"plugin\" value=\"stripe@claude-plugins-official\" />",
+  "Checking for new versions...",
+  "",
+  "A newer version of the Stripe CLI is available, please update to: v1.53.1",
+  "Getting ready...",
+  "Ready! You are using Stripe API Version [2026-08-26.dahlia]. Your webhook signing secret is whsec_[removed] (^C to quit)",
+  "2026-10-16 11:16:24   --> invoice.paid [evt_1URCrrCCxLfArYEDNwNkerlM]",
+  "2026-10-16 11:16:24   --> customer.subscription.created [evt_1URCrsCCxLfArYEDn271RPwm]",
+  "2026-10-16 11:16:25  <--  [503] POST http://127.0.0.1:39691/api/v1/billing/webhook [evt_1URCrrCCxLfArYEDNwNkerlM]",
+  "2026-10-16 11:16:26  <--  [200] POST http://127.0.0.1:39691/api/v1/billing/webhook [evt_1URCrsCCxLfArYEDn271RPwm]",
+  "2026-10-16 11:16:33   --> customer.subscription.updated [evt_1URCs1CCxLfArYEDrL87W2Fz]",
+  "2026-10-16 11:16:34  <--  [200] POST http://127.0.0.1:39691/api/v1/billing/webhook [evt_1URCs1CCxLfArYEDrL87W2Fz]",
+  "2026-10-16 11:16:45   --> invoice.payment_failed [evt_1URCsCCCxLfArYEDWQqbLPTk]",
+  "2026-10-16 11:16:45   --> customer.subscription.updated [evt_1URCsDCCxLfArYEDbAYAGgDV]",
+  "2026-10-16 11:16:46  <--  [503] POST http://127.0.0.1:39691/api/v1/billing/webhook [evt_1URCsCCCxLfArYEDWQqbLPTk]",
+  "2026-10-16 11:16:46  <--  [200] POST http://127.0.0.1:39691/api/v1/billing/webhook [evt_1URCsDCCxLfArYEDbAYAGgDV]",
+  ""
+ ],
+ "livemode": false,
+ "observed_at": "2026-10-16T15:15:27.488745+00:00",
+ "part": "failed_renewal",
+ "passed": 6,
+ "record_type": "stripe_test_journey_report/v1",
+ "sandbox_objects": {
+  "currency": "usd",
+  "plan_label": "Baltor Pro",
+  "plan_ref": "pro-monthly",
+  "portal_configuration_id": "bpc_1UNLOICCxLfArYEDVq73Jv1h",
+  "price_id": "price_1UNLOFCCxLfArYEDLSYsBUWA",
+  "unit_amount": 2900
+ },
+ "service_refusals": [
+  {
+   "at": 1792163806,
+   "method": "POST",
+   "refusal_code": "plan_required",
+   "route": "/api/v1/download",
+   "status": 403
+  },
+  {
+   "at": 1792163806,
+   "method": "POST",
+   "refusal_code": "billing_reconciliation_pending",
+   "route": "/api/v1/billing/webhook",
+   "status": 503
+  },
+  {
+   "at": 1792163785,
+   "method": "POST",
+   "refusal_code": "billing_reconciliation_pending",
+   "route": "/api/v1/billing/webhook",
+   "status": 503
+  }
+ ],
+ "steps": [
+  {
+   "checks": {
+    "billing_policy_current": true,
+    "billing_sessions_installed": true,
+    "billing_webhook_installed": true
+   },
+   "passed": true,
+   "seconds": 0.0,
+   "step": "service_reports_billing_installed"
+  },
+  {
+   "activation_status": 200,
+   "founding_offer": "limit_reached",
+   "link_verified": 200,
+   "passed": true,
+   "password_set": 200,
+   "seconds": 0.3,
+   "signed_in": 200,
+   "signup_status": 202,
+   "step": "sign_up_with_email_link_and_password",
+   "tenant_id": "journey-customers.ec6ff15d5dcf1d93dac5668ca0f9cd6aca0381a730c4fb7304bd4530398c1dc6"
+  },
+  {
+   "clock": "clock_1URCr4CCxLfArYEDXbQEd82L",
+   "customer": "cus_VS75Ao8EaHKVwr",
+   "passed": true,
+   "seconds": 0.8,
+   "step": "customer_on_a_test_clock_bound_by_the_host"
+  },
+  {
+   "authentication_completed": true,
+   "checkout_status": 200,
+   "entitlement": "bodies",
+   "error": null,
+   "passed": true,
+   "seconds": 52.9,
+   "step": "paid_at_checkout_for_the_clock_customer",
+   "subscription": "sub_1URCrmCCxLfArYEDWrUighvp"
+  },
+  {
+   "access_source": "none",
+   "download_status": 403,
+   "entitlement": "metadata",
+   "events": [
+    {
+     "event_id": "evt_1URCs1CCxLfArYEDrL87W2Fz",
+     "statuses": [
+      200
+     ],
+     "type": "customer.subscription.updated"
+    },
+    {
+     "event_id": "evt_1URCsCCCxLfArYEDWQqbLPTk",
+     "statuses": [
+      503
+     ],
+     "type": "invoice.payment_failed"
+    },
+    {
+     "event_id": "evt_1URCsDCCxLfArYEDbAYAGgDV",
+     "statuses": [
+      200
+     ],
+     "type": "customer.subscription.updated"
+    }
+   ],
+   "latest_invoice_status": "open",
+   "passed": true,
+   "seconds": 72.7,
+   "step": "failed_renewal_payment_ends_access",
+   "subscription_status": "past_due"
+  },
+  {
+   "checkout_available": true,
+   "passed": true,
+   "portal_available": true,
+   "seconds": 72.8,
+   "step": "the_portal_stays_offered_to_fix_the_payment"
+  }
+ ],
+ "stripe_account": "acct_1UHZ9KCCxLfArYED",
+ "stripe_objects_created": {
+  "customers": [],
+  "test_clocks": [
+   "clock_1URCr4CCxLfArYEDXbQEd82L"
+  ]
+ },
+ "stripe_objects_removed": [
+  "clock_1URCr4CCxLfArYEDXbQEd82L"
+ ],
+ "total": 6
+}
