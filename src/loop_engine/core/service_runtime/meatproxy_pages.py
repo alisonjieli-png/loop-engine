@@ -122,6 +122,22 @@ def _questions():
             + _link(FEEDS_ORIGIN + '/pricing', 'Read the pricing details ↗', 'text-link') + '</div>')
 
 
+def error_page(status, *, message='', next_action='', reference=''):
+    """An escaped standalone campaign error. It links only to campaign pages and names no account or key."""
+    title = 'Page not found' if status == 404 else 'This request could not be completed'
+    css, mark = _versioned('site.css'), _versioned('mark.svg')
+    return ('<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">'
+            f'<title>{title} | Don\'t be a meat proxy</title><meta name="robots" content="noindex"><link rel="icon" href="{mark}"><link rel="stylesheet" href="{css}"></head>'
+            '<body><header class="site-header"><a class="brand" href="/" aria-label="Don\'t be a meat proxy home">'
+            f'<img src="{mark}" width="36" height="36" alt=""><span>don\'t be a<br>meat proxy.</span></a></header>'
+            '<main id="main"><header class="page-intro"><p class="eyebrow">' + str(status) + '</p><h1>' + title + '</h1><p>'
+            + escape(message or 'Return to the campaign home page or read how the handoff works.') + '</p>'
+            + ('<p>' + escape(next_action) + '</p>' if next_action else '')
+            + ('<p>Reference: <code>' + escape(reference) + '</code></p>' if reference else '')
+            + '<div class="actions">' + _link('/', 'Go to the campaign home', 'button primary') + _link('/how-it-works', 'How it works', 'text-link')
+            + '</div></header></main></body></html>').encode()
+
+
 def render(path, *, origin=ORIGIN, allow_loopback=False):
     """Render an exact public route without network calls or customer effects."""
     validate_public_origin(origin, permit_loopback=allow_loopback)

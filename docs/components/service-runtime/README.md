@@ -33,7 +33,12 @@ another service. A closed selector chooses the packaged pure page renderer
 for that brand. Each renderer supplies its own pages and assets; qualified
 identity, profile, local Run Desk and catalogue-preview assets are reused
 through explicit asset paths, never a wildcard directory grant. Unknown brand
-pages do not fall through to Baltor HTML or another brand's assets.
+pages do not fall through to Baltor HTML or another brand's assets. A browser
+that asks for an unknown page, or meets a failure, gets the selected brand's
+own `error_page`: its stylesheet and mark, links only to its own routes,
+escaped refusal text and no account or key wording on a public-only view.
+`tools/test_standalone_brand_boundaries.py` checks all five over real HTTP,
+with the shared fallback page as the known-wrong control.
 
 AgentFeeds, AgentFoundry and AgentStudios signup and recovery messages return
 to the selected origin. Each has its own OAuth issuer, MCP resource and

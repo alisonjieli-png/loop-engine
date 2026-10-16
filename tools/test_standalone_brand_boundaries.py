@@ -5,6 +5,7 @@ No DNS, remote provider, live account or production state is touched.
 """
 from contextlib import contextmanager
 from dataclasses import replace
+import re
 from types import SimpleNamespace
 import unittest
 from unittest import mock
@@ -30,6 +31,27 @@ PROFILES = tuple(ServiceBrandProfile(brand, origin, display_name=name)
                  for brand, (name, origin) in BRANDS.items())
 PUBLIC_PROFILES = tuple(profile for profile in PROFILES if profile.brand in ('agentafk', 'meatproxy'))
 ACCOUNT_PROFILES = tuple(profile for profile in PROFILES if not profile.public_only)
+
+
+def error_page_problems(renderer, display_name, body):
+    """A brand's browser error keeps its own chrome, assets and routes, and names no account on a public-only view."""
+    problems = []
+    for path in (renderer.ASSET_PREFIX + 'site.css?v=', renderer.ASSET_PREFIX + 'mark.svg?v='):
+        if path not in body:
+            problems.append('missing own asset ' + path)
+    for path in ('/assets/service.css', '/assets/architecture.css', '/assets/baltor-mark.svg'):
+        if path in body:
+            problems.append('foreign Baltor asset ' + path)
+    if 'noindex' not in body or display_name.replace("'", '&#x27;') not in body.replace("'", '&#x27;'):
+        problems.append('missing noindex or brand name')
+    routes = set(renderer.routes())
+    for href in re.findall(r'href="([^"]+)"', body):
+        address = href.split('?', 1)[0]
+        if not (address in routes or address.startswith(renderer.ASSET_PREFIX)):
+            problems.append('link outside this brand ' + href)
+    if renderer.__name__.rsplit('.', 1)[-1] in ('agentafk_pages', 'meatproxy_pages') and re.search(r'account|\bkey\b', body, re.I):
+        problems.append('public-only error names an account or key')
+    return problems
 
 
 def public_effect_refused(response):
@@ -78,6 +100,23 @@ class StandaloneProfileTests(unittest.TestCase):
         for value in bad:
             with self.subTest(value=value), self.assertRaises(ValueError):
                 brand_pages.shared_assets(SimpleNamespace(SHARED_ASSETS=value))
+
+    def test_every_brand_error_page_keeps_its_own_assets_routes_and_escapes_text(self):
+        from loop_engine.core.service_runtime import web_pages
+        for profile in PROFILES:
+            renderer = brand_pages.renderer_for(profile.brand)
+            with self.subTest(brand=profile.brand):
+                body = renderer.error_page(404, message='<script>bad</script>', next_action='<img onerror=bad>', reference='<b>ref</b>').decode()
+                self.assertEqual(error_page_problems(renderer, profile.display_name, body), [])
+                self.assertIn('Page not found', body)
+                for raw, escaped in (('<script>bad', '&lt;script&gt;bad'), ('<img onerror', '&lt;img onerror'), ('<b>ref', '&lt;b&gt;ref')):
+                    self.assertNotIn(raw, body)
+                    self.assertIn(escaped, body)
+                failed = renderer.error_page(503, message='The shared service is busy.', reference='fail-1').decode()
+                self.assertIn('could not be completed', failed)
+                self.assertEqual(error_page_problems(renderer, profile.display_name, failed), [])
+                # The shared fallback that brands without this hook used to serve must fail the same oracle.
+                self.assertTrue(error_page_problems(renderer, profile.display_name, web_pages.missing_address_page(profile.display_name).decode()))
 
     def test_refusal_checker_detects_wrong_status_or_wrong_guard(self):
         self.assertTrue(public_effect_refused(httpx.Response(404, json={'error': {'code': 'route_unavailable'}})))
@@ -217,6 +256,27 @@ class StandalonePublicHttpTests(unittest.TestCase):
             self.assertEqual(metadata.json()['issuer'], profile.public_base_url)
         response = self.fixture.client.get('/api/v1/capabilities')
         self.assertEqual(response.status_code, 200, response.text)
+
+    def test_browser_404_serves_each_brand_error_page_without_reflecting_the_request(self):
+        from loop_engine.core.service_runtime import web_pages
+        for profile in PROFILES:
+            renderer = brand_pages.renderer_for(profile.brand)
+            headers = {'Host': profile.host, 'Origin': profile.public_base_url, 'Accept': 'text/html'}
+            with self.subTest(brand=profile.brand):
+                response = self.client.get('/no-such-brand-page?private-context=must-not-be-reflected', headers=headers)
+                self.assertEqual(response.status_code, 404, response.text[:200])
+                self.assertIn('text/html', response.headers['content-type'])
+                self.assertEqual(error_page_problems(renderer, profile.display_name, response.text), [])
+                self.assertNotIn('must-not-be-reflected', response.text)
+                self.assertIn("default-src 'none'", response.headers['content-security-policy'])
+                for asset in (renderer.ASSET_PREFIX + 'site.css', renderer.ASSET_PREFIX + 'mark.svg'):
+                    self.assertEqual(self.client.get(asset, headers=headers).status_code, 200, asset)
+        profile = PUBLIC_PROFILES[1]
+        renderer = brand_pages.renderer_for(profile.brand)
+        with mock.patch.object(renderer, 'error_page', return_value=web_pages.missing_address_page(profile.display_name)):
+            wrong = self.client.get('/no-such-brand-page', headers={'Host': profile.host, 'Origin': profile.public_base_url, 'Accept': 'text/html'})
+        self.assertEqual(wrong.status_code, 404)
+        self.assertTrue(error_page_problems(renderer, profile.display_name, wrong.text), 'the oracle accepted the shared fallback page')
 
     def test_known_wrong_removed_public_guard_is_detected(self):
         profile = PUBLIC_PROFILES[0]

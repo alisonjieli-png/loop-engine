@@ -250,6 +250,22 @@ def _account(path):
     return '<div class="account-layout">' + _intro('Your account', title, text) + '<section class="account-panel">' + content + '<p data-account-status role="status" aria-live="polite">Checking account availability…</p><p class="quiet">Public feeds work without signing in. <a href="/collections">Browse collections</a>.</p></section></div>'
 
 
+def error_page(status, *, message='', next_action='', reference=''):
+    """An escaped standalone error on AgentFeeds assets, with no request address or foreign asset."""
+    title = 'Page not found' if status == 404 else 'This request could not be completed'
+    css = _versioned(ASSET_PREFIX + 'site.css', _asset('site.css'))
+    mark = _versioned(ASSET_PREFIX + 'mark.svg', _asset('mark.svg'))
+    return ('<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">'
+            f'<title>{title} | AgentFeeds</title><meta name="robots" content="noindex"><link rel="icon" href="{mark}"><link rel="stylesheet" href="{css}"></head>'
+            '<body><header class="site-header"><a class="brand" href="/" aria-label="AgentFeeds home">'
+            f'<img src="{mark}" width="32" height="32" alt=""><span>Agent<span class="brand-light">Feeds</span></span></a></header>'
+            '<main id="main">' + _intro(str(status), title, message or 'Browse the source collections or return to the home page.')
+            + ('<p>' + escape(next_action) + '</p>' if next_action else '')
+            + ('<p>Reference: <code>' + escape(reference) + '</code></p>' if reference else '')
+            + '<div class="actions">' + _link('/collections', 'Browse collections', 'button primary') + _link('/status', 'Service status', 'text-link')
+            + '</div></main></body></html>').encode()
+
+
 def render(path, *, origin=ORIGIN, directory=None, allow_loopback=False):
     """Render an exact known route; the HTTP owner controls method and host admission."""
     profile = ServiceBrandProfile(brand='agentfeeds', public_base_url=origin)

@@ -168,6 +168,20 @@ def _account(path):
             .replace('href="/collections">Browse collections', 'href="/examples">Browse examples'))
 
 
+def error_page(status, *, message='', next_action='', reference=''):
+    """An escaped standalone error on AgentFoundry assets, with no request address or foreign asset."""
+    title = 'Page not found' if status == 404 else 'This request could not be completed'
+    css, mark = (_versioned(ASSET_PREFIX + name, _asset(name)) for name in ('site.css', 'mark.svg'))
+    return ('<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">'
+            f'<title>{title} | AgentFoundry</title><meta name="robots" content="noindex"><link rel="icon" href="{mark}"><link rel="stylesheet" href="{css}"></head>'
+            f'<body><header class="site-header"><a class="brand" href="/" aria-label="AgentFoundry home"><img src="{mark}" width="30" height="30" alt="">Agent<span>Foundry</span></a></header>'
+            '<main id="main">' + _intro(str(status), title, message or 'Browse the public examples or return to the home page.')
+            + ('<p>' + escape(next_action) + '</p>' if next_action else '')
+            + ('<p>Reference: <code>' + escape(reference) + '</code></p>' if reference else '')
+            + '<div class="actions">' + _link('/examples', 'Explore the examples', 'button primary') + _link('/status', 'Service status', 'text-link')
+            + '</div></main></body></html>').encode()
+
+
 def render(path, *, origin=ORIGIN, allow_loopback=False):
     """Render a known route using a validated origin chosen by the HTTP owner."""
     validate_public_origin(origin, permit_loopback=allow_loopback)
