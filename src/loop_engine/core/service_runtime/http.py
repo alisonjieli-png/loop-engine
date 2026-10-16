@@ -2677,7 +2677,10 @@ class ServiceHttpApplication:
 
     def _page_headers(self, *, creative_preview=False):
         """The headers every served page carries, refusals included."""
-        identity_origin = " " + self.browser_identity.configuration.project_url if self.browser_identity else ""
+        brand = getattr(self, "brand_profile", None)
+        # A public-only presentation loads no identity client, so its pages need no connection to the provider.
+        identity_origin = (" " + self.browser_identity.configuration.project_url
+                           if self.browser_identity and not (brand is not None and brand.public_only) else "")
         local_images = " blob: data:" if creative_preview else ""
         local_connections = " blob:" if creative_preview else ""
         ancestors = "'self'" if creative_preview else "'none'"

@@ -297,6 +297,24 @@ class StandalonePublicHttpTests(unittest.TestCase):
         self.assertEqual(wrong.status_code, 404)
         self.assertTrue(error_page_problems(renderer, profile.display_name, wrong.text), 'the oracle accepted the shared fallback page')
 
+    def test_public_only_pages_cannot_connect_to_the_identity_provider(self):
+        def connections(response):
+            policy = response.headers['content-security-policy']
+            return next(part.split()[1:] for part in policy.split(';') if part.split()[:1] == ['connect-src'])
+        for profile in PROFILES:
+            with self.subTest(brand=profile.brand):
+                page = self.client.get('/', headers={'Host': profile.host, 'Origin': profile.public_base_url})
+                self.assertEqual(page.status_code, 200)
+                if profile.public_only:
+                    self.assertEqual(connections(page), ["'self'"])
+                else:
+                    self.assertEqual(len(connections(page)), 2, connections(page))
+        # Known-wrong: treating a public-only view as account-enabled restores the identity origin.
+        profile = PUBLIC_PROFILES[0]
+        with mock.patch.object(ServiceBrandProfile, 'public_only', property(lambda self: False)):
+            wrong = self.client.get('/', headers={'Host': profile.host, 'Origin': profile.public_base_url})
+        self.assertNotEqual(connections(wrong), ["'self'"])
+
     def test_known_wrong_removed_public_guard_is_detected(self):
         profile = PUBLIC_PROFILES[0]
         before = self.client.get('/api/v1/account/identity', headers=self.headers(profile))
