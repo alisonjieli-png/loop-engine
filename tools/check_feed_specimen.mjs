@@ -118,7 +118,7 @@ with TemporaryDirectory(prefix="feed-specimen-browser-") as folder:
       mode="synthetic";synthetic=structuredClone(feed);const zero=synthetic.items[0]._baltor;
       zero.catalogue_state_revision+=2;zero.notice_id=zero.release_id+":"+zero.catalogue_state_revision;zero.packages=0;zero.distinct_files=0;
       synthetic.items[0].id=zero.notice_id;
-      synthetic.items[0].content_text=synthetic.items[0].content_text.replace(/^[\d,]+ packages and [\d,]+ distinct files/,"0 packages and 0 distinct files");
+      synthetic.items[0].content_text=synthetic.items[0].content_text.replace(/^The served library holds [\d,]+ distinct files in [\d,]+ harness components/,"The served library holds 0 distinct files in 0 harness components");
       await page.locator("#catalogue-specimen-refresh").click();await settled();
       const empty=await facts();check("valid_zero_population_remains_distinct_from_failure",empty.state==="ready"&&empty.packages==="0"&&empty.files==="0");
       mode="redirect";await page.locator("#catalogue-specimen-refresh").click();await settled();

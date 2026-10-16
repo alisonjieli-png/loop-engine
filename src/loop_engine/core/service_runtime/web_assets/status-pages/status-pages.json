@@ -1145,12 +1145,12 @@
      {
       "address": "/random/video",
       "title": "Random video previews",
-      "description": "Browse reviewed public video previews when available, with their source and licence. An empty category stays explicit."
+      "description": "Browse public video previews when available, with their source and licence. An empty category stays explicit."
      },
      {
       "address": "/random/music",
       "title": "Random music previews",
-      "description": "Browse reviewed public music previews when available, with their source and licence. An empty category stays explicit."
+      "description": "Browse public music previews when available, with their source and licence. An empty category stays explicit."
      },
      {
       "address": "/public-good",
@@ -1185,7 +1185,7 @@
      {
       "address": "/pricing",
       "title": "Pricing",
-      "description": "Agent Feeds: $9 a month, free through December 31, 2026. Add the full Harness Files library for $49 a month. No automatic feed-only charge."
+      "description": "Basic: Agent Feeds for $9 a month, free through December 31, 2026, with no automatic charge. Pro adds the full Harness Files library for $49 a month."
      },
      {
       "address": "/examples",

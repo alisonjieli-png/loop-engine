@@ -34,7 +34,7 @@ FEED_VERSION = "https://jsonfeed.org/version/1.1"
 TITLE = "Baltor component updates"
 DESCRIPTION = "The current served catalogue state. Public metadata only; complete history and personalized push are not included."
 LIMITATION = ("Publication metadata does not prove upstream APIs were executed, every workflow was independently reviewed, "
-              "or customer benefit was measured. This notice grants no package access and authorizes no installation or execution.")
+              "or customer benefit was measured. This notice grants no file access and authorizes no installation or execution.")
 MAXIMUM_FEED_BYTES = 32768
 CACHE_CONTROL = "public, max-age=60"
 
@@ -90,8 +90,10 @@ def _origin(value):
 
 def summary_text(record):
     counts = record["release_changes"]
-    return (f"{record['packages']:,} packages and {record['distinct_files']:,} distinct files are in the served catalogue. "
-            f"The release's original publication added {counts['added']:,}, changed {counts['changed']:,} and withdrew {counts['withdrawn']:,} packages. "
+    # Customer words since October 16, 2026: files and harness components, never packages (the owner, October 8, 2026:
+    # "a package is a group of files, from a marketing perspective can't we just say files?"). The record keeps its fields.
+    return (f"The served library holds {record['distinct_files']:,} distinct files in {record['packages']:,} harness components. "
+            f"The release's original publication added {counts['added']:,}, changed {counts['changed']:,} and withdrew {counts['withdrawn']:,} harness components. "
             "Later state changes can also reflect rollback or withdrawal. "
             "These are catalogue counts, not counts of independent capabilities or proven outcomes.")
 

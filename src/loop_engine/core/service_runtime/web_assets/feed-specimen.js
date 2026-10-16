@@ -17,8 +17,8 @@ const number = value => value.toLocaleString("en-US");
 
 export function summaryText(record) {
   const changes = record.release_changes;
-  return `${number(record.packages)} packages and ${number(record.distinct_files)} distinct files are in the served catalogue. `
-    + `The release's original publication added ${number(changes.added)}, changed ${number(changes.changed)} and withdrew ${number(changes.withdrawn)} packages. `
+  return `The served library holds ${number(record.distinct_files)} distinct files in ${number(record.packages)} harness components. `
+    + `The release's original publication added ${number(changes.added)}, changed ${number(changes.changed)} and withdrew ${number(changes.withdrawn)} harness components. `
     + "Later state changes can also reflect rollback or withdrawal. These are catalogue counts, not counts of independent capabilities or proven outcomes.";
 }
 

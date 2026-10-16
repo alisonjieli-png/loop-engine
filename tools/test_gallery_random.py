@@ -328,7 +328,7 @@ class RandomGalleryTests(unittest.TestCase):
         body = gallery_random.body("image")
         self.assertIn("Preview reuse licence", body)
         self.assertIn("Not separately recorded", body)
-        self.assertIn("Source package licence", body)
+        self.assertIn("Source files licence", body)
         self.assertIn("Public display does not grant reuse rights", body)
 
     def test_schema_refuses_unknown_versions_unsafe_paths_formats_and_unbounded_media(self):

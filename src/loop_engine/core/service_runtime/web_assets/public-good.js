@@ -39,7 +39,7 @@
           &&Array.isArray(row.placements)&&row.placements.length>0&&row.placements.every(placement)&&row.placements.some(item=>item.is_useful&&item.matches_filters)))
         throw new Error('Invalid file collection');
     }else if(!record.items.every(row=>identity(row.identity)&&text(row.title)&&text(row.summary)&&text(row.public_benefit)&&text(row.component_form)&&text(row.licence)&&goals(row.sdg_goals)))
-      throw new Error('Invalid package collection');
+      throw new Error('Invalid collection');
     return record;
   }
   const goalText=row=>row.sdg_goals.length?row.sdg_goals.map(id=>'SDG '+id).join(' · '):'Related public-benefit initiative';
@@ -47,7 +47,7 @@
     const node=element('li',undefined,'pg-item');
     node.append(element('h2',row.title),element('p',row.summary),element('p',row.public_benefit),
       element('p',row.component_form+' · '+row.licence,'pg-meta'),element('p',goalText(row),'pg-meta'));
-    const link=element('a','Sign in and open package');link.href='/app?component='+encodeURIComponent(row.identity)+'#browse-heading';node.append(link);
+    const link=element('a','Sign in and open this component');link.href='/app?component='+encodeURIComponent(row.identity)+'#browse-heading';node.append(link);
     return node;
   }
   function fileLink(file,row) {
@@ -61,8 +61,8 @@
       element('p',first.package_purpose),element('p',first.public_benefit),
       element('p',file.media_types.join(' · '),'pg-meta'),element('p',goalText(first),'pg-meta'));
     const details=element('details',undefined,'pg-file-context');
-    details.append(element('summary','Package context, licence and download options'));
-    details.append(element('p','Use the file with its package’s licence, references and dependency instructions. Follow your harness guide to install and run it.'));
+    details.append(element('summary','Component context, licence and download options'));
+    details.append(element('p','Use the file with its component’s licence, references and dependency instructions. Follow your harness guide to install and run it.'));
     const choices=element('ul');
     for(const row of file.placements){
       const item=element('li');
@@ -91,18 +91,18 @@
       if(!answer.ok)throw new Error('Collection unavailable');
       const record=validate((await answer.json()).result,files);if(mine!==requestNumber)return;
       items.replaceChildren(...record.items.map(files?fileCard:packageCard));
-      $('population').textContent=record.distinct_useful_files.toLocaleString('en-US')+' distinct useful '+(record.distinct_useful_files===1?'file':'files')+' in '+record.packages.toLocaleString('en-US')+(record.packages===1?' package':' packages');
+      $('population').textContent=record.distinct_useful_files.toLocaleString('en-US')+' distinct useful '+(record.distinct_useful_files===1?'file':'files')+' in '+record.packages.toLocaleString('en-US')+(record.packages===1?' harness component':' harness components');
       $('library-title').textContent=goal.value==='related'?'Other public-benefit initiatives':labels[goal.value]||'All Public Good components';
       for(const row of record.goals){
         const count=document.querySelector('[data-goal-count="'+row.id+'"]');
-        if(count)count.textContent=row[files?'files':'packages'].toLocaleString('en-US')+' '+(files?'useful files':'packages');
+        if(count)count.textContent=row[files?'files':'packages'].toLocaleString('en-US')+' '+(files?'useful files':'components');
       }
       for(const tile of document.querySelectorAll('.pg-goal-tile'))tile.setAttribute('aria-current',tile.dataset.goal===goal.value?'true':'false');
-      const unit=files?'file':'package';
+      const unit=files?'file':'component';
       status.textContent=record.matches?record.matches.toLocaleString('en-US')+' matching '+unit+(record.matches===1?'':'s')+'. Account required for every download.'
         :'No published '+unit+'s match these filters. Try another goal or search.';
       $('page').textContent='Page '+record.page;previous.disabled=record.page<=1;next.disabled=!record.has_next;
-      $('coverage').replaceChildren(...record.goals.map(row=>element('li',labels[row.id]+': '+row[files?'files':'packages'].toLocaleString('en-US')+' '+(files?'files':'packages'))));
+      $('coverage').replaceChildren(...record.goals.map(row=>element('li',labels[row.id]+': '+row[files?'files':'packages'].toLocaleString('en-US')+' '+(files?'files':'components'))));
       if(files){options(media,record.media_types,'Every file type');options(initiative,record.initiatives,'Every initiative');}
       if(text(record.limits_description))$('limits').textContent=record.limits_description;
     }catch(error){

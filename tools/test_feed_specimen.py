@@ -118,7 +118,7 @@ class FeedSpecimenTests(unittest.TestCase):
         document = feed.json_feed(zero, ORIGIN)
         result = self.javascript([document])
         self.assertTrue(result["results"][0]["accepted"])
-        self.assertIn("0 packages and 0 distinct files", result["results"][0]["summary"])
+        self.assertIn("0 distinct files in 0 harness components", result["results"][0]["summary"])
 
     def test_static_page_has_no_count_guess_and_includes_versioned_same_origin_script(self):
         body, _media = feed.rendered_page("/feeds", "GET", "Baltor")

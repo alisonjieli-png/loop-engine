@@ -142,7 +142,7 @@ class WebsiteExampleTests(unittest.TestCase):
             self.assertIn("Original website demo, not a library item", html)
             self.assertIn("Download editable source ZIP", html)
             self.assertIn("No account is needed for the source ZIP", html)
-            self.assertNotIn("Source package licence", html)
+            self.assertNotIn("Source files licence", html)
             self.assertNotIn("/api/v1/download", html)
 
     def test_source_and_preview_are_both_held_until_review_and_exact_bytes(self):

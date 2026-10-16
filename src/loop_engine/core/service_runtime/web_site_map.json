@@ -1,7 +1,7 @@
 {
   "record_type": "service_web_site_map/v3",
-  "decided_on": "2026-10-09",
-  "decided_by": "engineering, preserving earlier design, hostnames and audience paths, and adding the owner's Feeds direction as a clearly limited catalogue-metadata preview; on October 9, 2026 engineering relabeled the footer link to /overnight from \"Solve problems overnight\" to the offering name \"Overnight / AFK Work\" and rewrote the use cases description to match the page, with no page or link removed; for release 87 the same day engineering added three pages with footer links (Use Agent Feeds at /feeds/setup, Harness Files at /harness-files, Gallery at /gallery), renamed the signed-in workspace page title to Workspace and rewrote the efficiency description to match its page, again with no page or link removed",
+  "decided_on": "2026-10-16",
+  "decided_by": "engineering, preserving earlier design, hostnames and audience paths, and adding the owner's Feeds direction as a clearly limited catalogue-metadata preview; on October 9, 2026 engineering relabeled the footer link to /overnight from \"Solve problems overnight\" to the offering name \"Overnight / AFK Work\" and rewrote the use cases description to match the page, with no page or link removed; for release 87 the same day engineering added three pages with footer links (Use Agent Feeds at /feeds/setup, Harness Files at /harness-files, Gallery at /gallery), renamed the signed-in workspace page title to Workspace and rewrote the efficiency description to match its page, again with no page or link removed; on October 16, 2026 the launch audit took \"reviewed\" out of the two random preview descriptions, as the owner's rule for library copy asks, and named the Basic and Pro plans in the pricing description, with no page or link removed",
   "display_name": "Baltor",
   "canonical_hostname": "baltor.ai",
   "groups": [
@@ -88,7 +88,7 @@
       "address": "/random/video",
       "view": "random-video",
       "title": "Random video previews",
-      "description": "Browse reviewed public video previews when available, with their source and licence. An empty category stays explicit.",
+      "description": "Browse public video previews when available, with their source and licence. An empty category stays explicit.",
       "group": "Product",
       "linked_from": ["page"],
       "unlinked_reason": "",
@@ -100,7 +100,7 @@
       "address": "/random/music",
       "view": "random-music",
       "title": "Random music previews",
-      "description": "Browse reviewed public music previews when available, with their source and licence. An empty category stays explicit.",
+      "description": "Browse public music previews when available, with their source and licence. An empty category stays explicit.",
       "group": "Product",
       "linked_from": ["page"],
       "unlinked_reason": "",
@@ -268,7 +268,7 @@
       "address": "/pricing",
       "view": "pricing",
       "title": "Pricing",
-      "description": "Agent Feeds: $9 a month, free through December 31, 2026. Add the full Harness Files library for $49 a month. No automatic feed-only charge.",
+      "description": "Basic: Agent Feeds for $9 a month, free through December 31, 2026, with no automatic charge. Pro adds the full Harness Files library for $49 a month.",
       "group": "Product",
       "linked_from": [
         "header",

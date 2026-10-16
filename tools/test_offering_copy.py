@@ -23,6 +23,39 @@ PREVIEW_FACTS = ("local", "overnight", "preview", "limits", "checkpoints", "morn
 FUTURE_MARKETING = re.compile(r"\bplanned\b|coming soon|in development|being qualified", re.I)
 
 
+PACKAGE_WORD = re.compile(r"\bpackages?\b", re.I)
+#: The plan names and prices the pricing page states (web_assets/README.md): Basic for Agent Feeds, Pro for Harness Files,
+#: Max for Overnight / AFK Work, shown during a free public preview in which Max is not sold.
+LLMS_PLAN_FACTS = ("Basic, for Agent Feeds, is $9 a month", "Pro adds Harness Files for $49 a month", "Max, $99 a month",
+                   "Max subscriptions are not sold during the preview")
+
+
+def customer_package_words(text):
+    """Every "package" in copy a customer reads."""
+    return PACKAGE_WORD.findall(text)
+
+
+def prose_strings(script):
+    """The quoted strings of a page script that hold a space: the words a person reads. Field names hold none, and the
+    expressions inside a template string are code, not words."""
+    quoted = re.findall(r"'([^'\n]*)'|\"([^\"\n]*)\"|`([^`\n]*)`", script)
+    return [re.sub(r"\$\{[^}]*\}", " ", part) for parts in quoted for part in parts if " " in part]
+
+
+def page_words(html):
+    """The words of served markup a person reads, with its attribute values (option values, addresses) left out."""
+    return re.sub(r"<[^>]+>", " ", re.sub(r"<(script|style)\b.*?</\1>", " ", html, flags=re.S))
+
+
+def llms_plan_problems(text):
+    """llms.txt names each plan by its plan name with its price; a feature name is not a plan."""
+    text = re.sub(r"\s+", " ", text)
+    problems = ["missing " + fact for fact in LLMS_PLAN_FACTS if fact not in text]
+    if re.search(r"\bAgent Feeds is \$|\bHarness Files is \$", text):
+        problems.append("a feature is named as a plan")
+    return problems
+
+
 def marketing_views(page):
     """Check all application views, not only the initially visible homepage."""
     return {row["attrs"]["data-view"]: row["text"] for row in read_marked(page)
@@ -170,6 +203,42 @@ class OfferingCopyTests(unittest.TestCase):
         for name in ("home", "use-cases", "about", "setup"):
             self.assertNotRegex(views[name], r"\bpackages?\b", name)
         self.assertNotIn("data-library-count>", (ASSETS / "index.html").read_text())
+
+    def test_customer_pages_say_files_and_components_not_packages(self):
+        """The owner, October 8, 2026: "a package is a group of files, from a marketing perspective can't we just say
+        files?" The launch audit of October 16 found "packages" on the Public Good page, the random previews and the
+        library updates feed. Field names, code identifiers and the documentation's own definitions are not copy."""
+        from loop_engine.core.service_runtime import catalogue_feed, gallery_random, public_good_page
+        record = {"packages": 256380, "distinct_files": 1560856, "release_changes": {"added": 413, "changed": 0, "withdrawn": 0}}
+        surfaces = {"library updates feed": catalogue_feed.summary_text(record) + " " + catalogue_feed.LIMITATION,
+                    "random previews": page_words("".join(gallery_random.body(kind) for kind in ("all", "image", "video", "music"))),
+                    "Public Good page": page_words(public_good_page.body())}
+        for name in ("public-good.js", "gallery-random.js", "feed-specimen.js"):
+            surfaces[name] = " ".join(prose_strings((ASSETS / name).read_text()))
+        self.assertEqual({name: customer_package_words(text) for name, text in surfaces.items()
+                          if customer_package_words(text)}, {})
+        self.assertIn("1,560,856 distinct files in 256,380 harness components", surfaces["library updates feed"])
+
+    def test_package_guard_reads_copy_and_ignores_field_names(self):
+        for copy in ("1,128 distinct useful files in 448 packages", "Source package licence", "Sign in and open package",
+                     "256,380 packages and 1,560,856 distinct files are in the served catalogue."):
+            self.assertTrue(customer_package_words(copy), copy)
+        self.assertEqual(prose_strings("row[files?'files':'packages']; element('a','Sign in and open package')"),
+                         ["Sign in and open package"])
+        self.assertEqual(customer_package_words(" ".join(prose_strings("record.packages; 'package_display_name'"))), [])
+
+    def test_agent_guide_names_each_plan_with_its_price(self):
+        from loop_engine.core.service_runtime.web_pages import llms_text, packaged_site_map
+        self.assertEqual(llms_plan_problems(llms_text(packaged_site_map()).decode("utf-8")), [])
+
+    def test_agent_guide_guard_refuses_a_feature_named_as_a_plan(self):
+        sold = ("Basic, for Agent Feeds, is $9 a month. Pro adds Harness Files for $49 a month. Max, $99 a month, adds "
+                "Overnight / AFK Work; it is a free public preview, and Max subscriptions are not sold during the preview.")
+        self.assertEqual(llms_plan_problems(sold), [])
+        for known_wrong in ("Agent Feeds is $9 a month, free through December 31, 2026 (Eastern), with no automatic charge. "
+                            "Pro is $49 a month.", sold.replace("Max, $99 a month", "Max, $89 a month"),
+                            sold.replace(" and Max subscriptions are not sold during the preview", "")):
+            self.assertTrue(llms_plan_problems(known_wrong), known_wrong)
 
     def test_generated_guides_have_no_retired_product_label(self):
         pages = list((ASSETS / "docs").glob("*.html"))

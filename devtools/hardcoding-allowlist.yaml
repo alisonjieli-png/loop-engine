@@ -2055,10 +2055,10 @@ entries:
   rationale: 'Reviewed September 30 against official OpenAI authentication documentation: exact approved ChatGPT connector callback prefix, bounded to one safe identifier by the typed OAuth policy. It is a redirect admission rule, not an outbound provider call. Negative policy tests refuse other domains, traversal, query strings and prefix lookalikes.'
   created_on: '2026-09-30'
   expires_on: '2026-12-31'
-- finding_id: hardcoding.0b11ec6804b30a4f9f3d5521
+- finding_id: hardcoding.64ccb1c677bc4dcb31489b4e
   owner: loop_engine.core.service_runtime.public_good_page:body
   classification: RESOURCE_OR_TEMPLATE
-  rationale: 'Reviewed October 1: static HTML for the SDG-first Public Good page, policy and file/package filters, rendered through the existing website frame. This is presentation, not executable harness instructions or access authority. Counts and access come from the versioned domain projections; the 42-check browser journey, 958-check website run and site-map checks cover the controls. User text is never interpolated into this literal. This exact finding replaces the earlier HTML finding, not a broader exemption.'
+  rationale: 'Reviewed October 16: the same static HTML with its browse choice and list label saying components instead of packages, the owner''s files-first wording of October 8. Reviewed October 1: static HTML for the SDG-first Public Good page, policy and file/package filters, rendered through the existing website frame. This is presentation, not executable harness instructions or access authority. Counts and access come from the versioned domain projections; the 42-check browser journey, 958-check website run and site-map checks cover the controls. User text is never interpolated into this literal. This exact finding replaces the earlier HTML finding, not a broader exemption.'
   created_on: '2026-10-01'
   expires_on: '2027-03-30'
 - finding_id: hardcoding.dae9072570234b387ef8bba4

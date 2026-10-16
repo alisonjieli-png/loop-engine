@@ -475,8 +475,9 @@ def llms_text(site_map: SiteMap) -> bytes:
         "It works inside the harness you use, such as Claude Code, Codex, OpenCode, Cursor, VS Code or Pi, with your "
         "own model access.", "",
         "Baltor never asks for a model key. Every download is one item at an exact version, and every file in it names "
-        "its SHA-256 checksum. Agent Feeds is $9 a month, free through December 31, 2026 (Eastern), with no automatic "
-        "charge. Pro is $49 a month.", "",
+        "its SHA-256 checksum. Basic, for Agent Feeds, is $9 a month, free through December 31, 2026 (Eastern), with no "
+        "automatic charge. Pro adds Harness Files for $49 a month. Max, $99 a month, adds Overnight / AFK Work; it is a "
+        "free public preview, and Max subscriptions are not sold during the preview.", "",
         "## Connect over MCP", "",
         f"- MCP endpoint: {origin}/mcp (Streamable HTTP). Sign in with OAuth where your app offers it, or send a "
         "Baltor key in the Authorization header from the variable BALTOR_SERVICE_TOKEN.",

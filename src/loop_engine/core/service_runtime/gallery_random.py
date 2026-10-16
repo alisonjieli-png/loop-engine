@@ -33,7 +33,7 @@ def _facts(item):
         shape += f' · {item["duration_seconds"]:.1f} seconds'
     return [("format", "Format", f'{item["format"]} · {size} · {shape}'),
             ("licence", "Preview reuse licence", item["preview_licence"] or "Not separately recorded"),
-            ("source-licence", "Source licence" if item["source_kind"] == "website_example" else "Source package licence",
+            ("source-licence", "Source licence" if item["source_kind"] == "website_example" else "Source files licence",
              item["source_licence"])]
 
 

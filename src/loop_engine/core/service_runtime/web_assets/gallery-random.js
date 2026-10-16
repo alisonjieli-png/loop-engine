@@ -85,7 +85,7 @@ function start() {
     set("format", `${item.format} · ${(item.bytes / 1024).toFixed(1)} KB · ${shape}`);
     set("licence", item.preview_licence || "Not separately recorded");
     set("source-licence", item.source_licence);
-    set("source-licence-label", website ? "Source licence" : "Source package licence");
+    set("source-licence-label", website ? "Source licence" : "Source files licence");
     set("version-label", website ? "Source ZIP SHA-256" : "Source version");
     set("access", website ? "Original website demo, not a library item. The MIT licence covers this preview and its editable source. No account is needed for the source ZIP."
       : "Public display does not grant reuse rights. Check the preview licence before reuse. Full source files use the account and plan requirements shown on the source page.");

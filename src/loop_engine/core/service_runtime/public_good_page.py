@@ -51,7 +51,7 @@ def collection(view, snapshot, *, query="", goal="", page=1, page_size=20):
         rows.append({"identity":item.identity, "title":title[:120], "summary":item.purpose[:400],
             "public_benefit":grant.public_benefit_reason[:600], "sdg_goals":list(grant.sdg_goals),
             "initiatives":list(grant.initiatives), "component_form":harness_kind_label(kind),
-            "licence":item.license_name or "See package licence", "files":len(entries)})
+            "licence":item.license_name or "See the component licence", "files":len(entries)})
     rows.sort(key=lambda row:(row["title"].casefold(),row["identity"]))
     words = query.casefold().split()
     matched = [row for row in rows if (not goal or goal == "related" and not row["sdg_goals"]
@@ -102,7 +102,7 @@ def body() -> str:
         '<a href="#public-good-goals">Choose another goal ↑</a></div>'
         '<details class="pg-advanced"><summary>More filters</summary>'
         '<div class="pg-options"><label for="public-good-view">Browse<select id="public-good-view">'
-        '<option value="files">Files</option><option value="packages">Packages</option></select></label>'
+        '<option value="files">Files</option><option value="packages">Components</option></select></label>'
         '<label for="public-good-media">File type<select id="public-good-media"><option value="">Every file type</option></select></label>'
         '<label for="public-good-initiative">Related initiative<select id="public-good-initiative"><option value="">Every initiative</option></select></label></div></details>'
         '<form id="public-good-filters" class="pg-filters" role="search">'
@@ -113,7 +113,7 @@ def body() -> str:
         '<option value="related">Other public-benefit initiatives</option></select></label>'
         '<button class="button primary" type="submit">Search</button></form>'
         '<p id="public-good-status" role="status" aria-live="polite">Loading the current collection…</p>'
-        '<ul id="public-good-items" class="pg-items" aria-label="Public Good files and packages"></ul>'
+        '<ul id="public-good-items" class="pg-items" aria-label="Public Good files and components"></ul>'
         '<div class="pg-pagination"><button class="button secondary" type="button" id="public-good-previous" disabled>Previous</button>'
         '<span id="public-good-page"></span><button class="button secondary" type="button" id="public-good-next" disabled>Next</button></div>'
         '<details class="pg-coverage"><summary>Coverage across the 17 goals</summary>'
