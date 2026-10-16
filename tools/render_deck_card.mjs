@@ -1,6 +1,8 @@
 /* Draw the picture a shared link to the deck shows: src/loop_engine/core/service_runtime/web_assets/deck-card.png,
-   1200 by 630 pixels, in the website's typefaces, colours and mark. It carries no number, because a picture cannot
-   carry the source note every number on the deck has. Run it again after the deck's headline changes:
+   1200 by 630 pixels, in the website's typefaces, colours and mark. Since October 16, 2026 it uses the orange design's
+   colours of tools/render_share_cards.mjs; until then it kept the blue of the design before September 26. It carries no
+   number, because a picture cannot carry the source note every number on the deck has. Run it again after the deck's
+   headline changes:
 
      node tools/render_deck_card.mjs
 
@@ -22,16 +24,16 @@ const page = `<!doctype html><html><head><meta charset="utf-8"><style>
 @font-face{font-family:"Geist Mono";src:url(${font("geist-mono.woff2")}) format("woff2");font-weight:100 900}
 *{box-sizing:border-box}html,body{margin:0}
 body{width:1200px;height:630px;display:grid;grid-template-columns:1fr 430px;gap:56px;align-items:center;padding:64px 72px;
-  font-family:Geist,sans-serif;color:#0A1020;background:#F5F6F8;background-image:radial-gradient(#D5DAE2 1.2px,transparent 1.2px);background-size:24px 24px}
-.brand{display:flex;align-items:center;gap:16px;font-size:40px;font-weight:700;letter-spacing:-.02em}
-.brand img{width:64px;height:64px;border-radius:14px}
-.eyebrow{margin:40px 0 0;color:#2E5BFF;font-size:17px;font-weight:700;letter-spacing:.08em;text-transform:uppercase}
-h1{margin:14px 0 0;font-size:56px;line-height:1.05;letter-spacing:-.035em;font-weight:700}
-.site{margin:28px 0 0;color:#3A4456;font-size:22px;font-weight:600}
-.folder{padding:30px;border-radius:18px;background:#060A14;color:#C9D2E3;box-shadow:0 24px 60px rgba(10,16,32,.18)}
+  font-family:Geist,sans-serif;color:#201610;background:#FEFBF8;background-image:radial-gradient(#E4D9D1 1.2px,transparent 1.2px);background-size:24px 24px}
+.brand{display:flex;align-items:center;gap:16px;font-size:40px;font-weight:650;letter-spacing:-.02em}
+.brand img{width:64px;height:64px}
+.eyebrow{margin:40px 0 0;color:#BD4600;font-size:17px;font-weight:700;letter-spacing:.08em;text-transform:uppercase}
+h1{margin:14px 0 0;font-size:56px;line-height:1.05;letter-spacing:-.035em;font-weight:650}
+.site{margin:28px 0 0;color:#BD4600;font-size:22px;font-weight:700}
+.folder{padding:30px;border-radius:18px;background:#110B08;color:#E1DDD8;box-shadow:0 24px 60px rgba(44,30,20,.22)}
 .folder p{margin:0}.caption{color:#FFFFFF;font-weight:650;font-size:18px}
-pre{margin:18px 0;font:500 16px/1.75 "Geist Mono",monospace;white-space:pre}.dim{color:#A3AEC2}
-.check{color:#7FD3A6;font-weight:600;font-size:17px}
+pre{margin:18px 0;font:500 16px/1.75 "Geist Mono",monospace;white-space:pre}.dim{color:#A99E96}
+.check{color:#9BD8A8;font-weight:600;font-size:17px}
 </style></head><body>
 <div><div class="brand"><img src="${mark}" alt="">Baltor</div>
 <p class="eyebrow">Harness and agent optimized operation</p><h1>${headline}</h1><p class="site">baltor.ai</p></div>
