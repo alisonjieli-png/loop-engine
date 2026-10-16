@@ -64,7 +64,10 @@ Search always shows every item your account may use, with its `declared_effects`
 opencode mcp list
 ```
 
-The list shows `baltor` as connected; it does not list the tools. In a session,
+The list shows `baltor` as connected; it does not list the tools. When the
+terminal that runs it has no token, or the key was revoked, OpenCode 1.17.9
+shows `baltor` as failed with `SSE error: Non-200 status code (401)`. Set the
+token in that terminal, or create a new key, and run the command again. In a session,
 use `intelligence_search`, `provisioning_discover`, `provisioning_list`,
 `provisioning_manifest`, `provisioning_read`, `provisioning_report` or
 `public_good_files`. This recipe uses a supplied token and therefore sets

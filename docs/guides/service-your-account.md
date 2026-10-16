@@ -83,13 +83,17 @@ on its next request; material already downloaded is not recalled.
 With the environment variable from the setup guide available to your terminal:
 
 ```bash
-curl -sS -H "Authorization: Bearer $BALTOR_SERVICE_TOKEN" https://app.baltor.ai/api/v1/session
+curl -sS -H "Authorization: Bearer $BALTOR_SERVICE_TOKEN" https://baltor.ai/api/v1/session
 ```
 
 The `service_session/v1` result contains `principal`, `authentication_mode`,
-`token_expires_at` and `access_source`. The source is `subscription`,
-`operator_grant`, `promotion_code` or `none`, and says what currently covers the
-account. Check the principal's `tenant_id`, `entitlement` and scopes
+`token_expires_at` and `access_source`. For an OAuth access token or a browser
+sign-in, `token_expires_at` names the expiry. A Baltor key answers with
+`authentication_mode` `host_key` and `token_expires_at` `null`; its expiry is
+shown under Your Baltor keys. The source is `subscription`,
+`founding_free_monthly` for a founding place, `free_monthly` for another free
+monthly grant, `operator_grant`, `promotion_code` or `none`, and says what
+currently covers the account. Check the principal's `tenant_id`, `entitlement` and scopes
 before using a client on a shared machine. Keep credentials out of logs and
 support messages.
 

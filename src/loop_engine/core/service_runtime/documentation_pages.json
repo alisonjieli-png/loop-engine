@@ -69,13 +69,13 @@
   },
   "quickstart-opencode": {
    "body_address": "/assets/docs/quickstart-opencode.html",
-   "body_digest": "c161a236dadc5133ab5909a60dff23a462998f3d3252cdb936d92d4c33e9c807",
+   "body_digest": "582c66032a3061a0cebdf3eae30f0015b8759e9e4941c398c1341150963f2612",
    "heading": "OpenCode quickstart",
    "id": "quickstart-opencode",
    "kind_line": "Kind: customer quickstart for OpenCode 1.x. It repeats the connection entry that Get set up publishes for OpenCode and adds the first search, the first download and the check that it worked.",
    "record_type": "website_documentation_page/v1",
    "repository_path": "docs/guides/quickstart-opencode.md",
-   "source_digest": "966843f95a7a5ea29d9342a3f92cf364e67c50aa090e6f0ff60529d92b0baba8",
+   "source_digest": "e75628f5addd97ab3af7beb3abea6affe260a7f7aff35d2757f128907d594eb2",
    "title": "OpenCode quickstart"
   },
   "quickstart-pi": {
@@ -102,13 +102,13 @@
   },
   "serving-and-connections": {
    "body_address": "/assets/docs/serving-and-connections.html",
-   "body_digest": "3d34ed34779ab67b85151c87f65b126b877feb7de91928ea4655ef1b97634b23",
+   "body_digest": "d0bf0dfe49e9a65de29fa31c0e901d99a8760000c43c3ca3ceefb1b9567805f6",
    "heading": "Serving and connections",
    "id": "serving-and-connections",
    "kind_line": "Kind: technical reference for the published protocol, direct interface and refusal codes.",
    "record_type": "website_documentation_page/v1",
    "repository_path": "docs/guides/service-serving-and-connections.md",
-   "source_digest": "5d71fbf235c091ebfefbe50f22e1f42f4b17e821fc2c039d2ec1815f91b09c04",
+   "source_digest": "1a2e1025f1a5133c2905d72cdfc39bb22f609c25908d76c72c2397f42bae5fa9",
    "title": "Serving and connections"
   },
   "troubleshooting": {
@@ -157,13 +157,13 @@
   },
   "your-account": {
    "body_address": "/assets/docs/your-account.html",
-   "body_digest": "581a9b46cefddfee17fce3ab3436a4c5b458283dbfc82bb4ad04e051e2755eb8",
+   "body_digest": "d7d1780542855dc50b0a94bdb029bcb8264b2829bfcdf0a2f823193c8b1e68ed",
    "heading": "Your account",
    "id": "your-account",
    "kind_line": "Kind: customer guide to sign-in, personal Baltor keys and access decisions.",
    "record_type": "website_documentation_page/v1",
    "repository_path": "docs/guides/service-your-account.md",
-   "source_digest": "5bb5f8e7cdadcdc133d88f0432a3bd65fcc7c1dc65e92fe445713ff72d8f3904",
+   "source_digest": "c7980f3718a8b39cf28c60a5a5bf05761493ad7c7e187959da2ee81894bac825",
    "title": "Your account"
   }
  },

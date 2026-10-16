@@ -39,6 +39,9 @@ PUBLISHED_BASE = "https://baltor.ai"
 RECIPES_FILE = ROOT / "src/loop_engine/core/service_runtime/web_assets/client-recipes.json"
 PI_EXTENSION = ROOT / "src/loop_engine/core/service_runtime/web_assets/pi/baltor.ts"
 HARNESS_PAGE = ROOT / "docs/guides/quickstart-baltor-harness.md"
+#: The setup guide, which repeats the protocol and Pi recipes of /assets/client-recipes.json.
+SETUP_GUIDE = ROOT / "docs/guides/service-getting-set-up.md"
+SETUP_GUIDE_RECIPES = ("codex", "opencode", "claude-code", "pi")
 #: A two-file package the protocol read delivers one file per page, as a small answer limit makes it do.
 PACKAGE_FILES = (("SKILL.md", b"# Review inputs\n\nRead every input once before you hand the work over.\n",
                   "text/markdown", "skill_definition"),
@@ -563,6 +566,28 @@ class QuickstartCheckTests(unittest.TestCase):
                 self.assertIsNotNone(recipe)
                 text = (ROOT / quickstart.page).read_text(encoding="utf-8")
                 self.assertEqual(tool.recipe_disagreement(text, recipe, PUBLISHED_BASE + "/mcp"), "")
+
+    def test_the_getting_set_up_guide_repeats_the_committed_recipes(self):
+        # The guide says its entries are the formats /assets/client-recipes.json publishes. On October 16, 2026 its
+        # entries had drifted to app.baltor.ai without the Baltor-Step-Effects header while every recipe sent it.
+        recipes, text = committed_recipes(), SETUP_GUIDE.read_text(encoding="utf-8")
+        for identity in SETUP_GUIDE_RECIPES:
+            with self.subTest(recipe=identity):
+                recipe = tool.published_recipe(recipes, identity)
+                self.assertIsNotNone(recipe)
+                self.assertEqual(tool.recipe_disagreement(text, recipe, PUBLISHED_BASE + "/mcp"), "")
+        self.assertEqual(tool.foreign_service_addresses(tool.snippet_addresses(text), PUBLISHED_BASE), [])
+
+    def test_known_wrong_a_guide_entry_without_the_effects_header_or_on_another_host_is_refused(self):
+        recipes, text = committed_recipes(), SETUP_GUIDE.read_text(encoding="utf-8")
+        header = '\n\n[mcp_servers.baltor.http_headers]\nBaltor-Step-Effects = "reads_fs, writes_fs, spawns_process, network"'
+        without_header = text.replace(header, "", 1)
+        self.assertNotEqual(without_header, text)
+        self.assertIn("no toml block holds the codex configuration",
+                      tool.recipe_disagreement(without_header, tool.published_recipe(recipes, "codex"), PUBLISHED_BASE + "/mcp"))
+        other_host = text.replace("https://baltor.ai/mcp", "https://app.baltor.ai/mcp")
+        self.assertIn("https://app.baltor.ai/mcp",
+                      tool.foreign_service_addresses(tool.snippet_addresses(other_host), PUBLISHED_BASE))
 
     def test_the_toml_text_is_the_table_the_get_set_up_page_renders(self):
         codex = tool.published_recipe(committed_recipes(), "codex")

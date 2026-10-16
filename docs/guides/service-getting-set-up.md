@@ -15,14 +15,13 @@ twice on the confirmation page. Signup never asks you to send a password to the
 service's email endpoint. The confirmation page opens your account only after
 the identity provider accepts the password.
 
-Once signed in, open `/account` and
-Your client tokens. Read the terms and privacy notice linked beside account
-creation before submitting.
+Once signed in, open `/account` and find Your Baltor keys. Read the terms and
+privacy notice linked beside account creation before submitting.
 
-Create one token for each client or machine and give it a useful label. The
-secret is shown once; subsequent listings show its identity, expiry and state.
-Use the smallest scopes the client needs. A token cannot create more client
-tokens through the customer management endpoint.
+Create one Baltor key for each client or machine and give it a useful label.
+The secret is shown once; subsequent listings show its label, scopes, expiry
+and state. Use the smallest scopes the client needs. A key cannot create more
+keys through the customer management endpoint.
 
 ## Keep the token in your client's environment
 
@@ -39,9 +38,17 @@ does not automatically reach a separately launched desktop application.
 ## Configure the connection
 
 The recipes below are the formats this service publishes in
-`/assets/client-recipes.json`. Merge the relevant entry into your existing
-configuration. Do not replace unrelated settings. The endpoint shown by the
-interactive guide follows the current website origin.
+`/assets/client-recipes.json`, with the endpoint filled in as
+`https://baltor.ai/mcp`. Use that address. It is the resource that the
+service's OAuth metadata names, so the same entry works for a key and for an
+OAuth sign-in. Merge the relevant entry into your existing configuration. Do
+not replace unrelated settings.
+
+Each entry sends the `Baltor-Step-Effects` header: what your harness's steps
+may do with a Baltor item, here reading and writing files in your project,
+running commands and using the network. Remove any effect your harness does
+not allow. Without the header, your steps hold `reads_fs` only, and a download
+of an item that declares more is refused with `step_effects_required`.
 
 ### Codex
 
@@ -49,10 +56,13 @@ In your existing `config.toml`:
 
 ```toml
 [mcp_servers.baltor]
-url = "https://app.baltor.ai/mcp"
+url = "https://baltor.ai/mcp"
 bearer_token_env_var = "BALTOR_SERVICE_TOKEN"
 startup_timeout_sec = 20
 tool_timeout_sec = 45
+
+[mcp_servers.baltor.http_headers]
+Baltor-Step-Effects = "reads_fs, writes_fs, spawns_process, network"
 ```
 
 Confirm the configured server:
@@ -64,9 +74,17 @@ codex mcp list
 This lists configuration. In a session, inspect `/mcp` and confirm that the
 server's tools are available before relying on the connection.
 
+To sign in with OAuth instead of a key, run
+`codex mcp add baltor --url https://baltor.ai/mcp` without the token setting.
+Codex 0.162.1 detects the OAuth support, prints the sign-in address and
+finishes the sign-in as part of that command. Run `codex mcp login baltor`
+only when that sign-in did not finish.
+
 ### OpenCode 1.x
 
-Merge the entry into `opencode.json`:
+Merge the `baltor` entry into the `mcp` section of your existing
+`opencode.json`, the global `~/.config/opencode/opencode.json` or the
+project's own file:
 
 ```json
 {
@@ -74,10 +92,13 @@ Merge the entry into `opencode.json`:
   "mcp": {
     "baltor": {
       "type": "remote",
-      "url": "https://app.baltor.ai/mcp",
+      "url": "https://baltor.ai/mcp",
       "enabled": true,
       "oauth": false,
-      "headers": {"Authorization": "Bearer {env:BALTOR_SERVICE_TOKEN}"}
+      "headers": {
+        "Authorization": "Bearer {env:BALTOR_SERVICE_TOKEN}",
+        "Baltor-Step-Effects": "reads_fs, writes_fs, spawns_process, network"
+      }
     }
   }
 }
@@ -87,9 +108,11 @@ Merge the entry into `opencode.json`:
 opencode mcp list
 ```
 
-This service uses a supplied token, so do not start an external login flow for
-this entry. The published recipe targets the 1.x layout. Check your installed
-client version before applying it to a different configuration format.
+This entry uses a supplied token, so do not start an external login flow for
+it. For an OAuth sign-in, leave out the Authorization header and the `oauth`
+setting, then run `opencode mcp auth baltor`. The published recipe targets the
+1.x layout. Check your installed client version before applying it to a
+different configuration format.
 
 ### Claude Code
 
@@ -100,8 +123,11 @@ Create or update `.mcp.json` in the project folder:
   "mcpServers": {
     "baltor": {
       "type": "http",
-      "url": "https://app.baltor.ai/mcp",
-      "headers": {"Authorization": "Bearer ${BALTOR_SERVICE_TOKEN}"}
+      "url": "https://baltor.ai/mcp",
+      "headers": {
+        "Authorization": "Bearer ${BALTOR_SERVICE_TOKEN}",
+        "Baltor-Step-Effects": "reads_fs, writes_fs, spawns_process, network"
+      }
     }
   }
 }
@@ -120,25 +146,29 @@ confirm that the tools are listed.
 
 ### Pi
 
-Pi has no built-in Model Context Protocol client, so Baltor connects to Pi
-through a small Pi extension: one TypeScript file, served at
+Check your version with `pi --version`. Pi 0.99.2 has a built-in Model
+Context Protocol client; follow the [Pi quickstart](quickstart-pi.md) for its
+native connection. Pi 0.73.1 has none, so Baltor connects to it through a
+small Pi extension: one TypeScript file, served at
 [`/assets/pi/baltor.ts`](https://app.baltor.ai/assets/pi/baltor.ts). Pi runs
 every extension in `.pi/extensions` with your permissions and does not ask
 first, so read the file before you start Pi. It needs no other packages.
 
 ```bash
 mkdir -p .pi/extensions
-curl -fsSL https://app.baltor.ai/assets/pi/baltor.ts -o .pi/extensions/baltor.ts
+curl -fsSL https://baltor.ai/assets/pi/baltor.ts -o .pi/extensions/baltor.ts
 ```
 
 Create `.pi/baltor.json` beside it. It holds the name of the variable, never
-the token:
+the token. `step_effects` is the list the extension sends in the
+`Baltor-Step-Effects` header:
 
 ```json
 {
   "baltor": {
-    "url": "https://app.baltor.ai/mcp",
-    "token_env": "BALTOR_SERVICE_TOKEN"
+    "url": "https://baltor.ai/mcp",
+    "token_env": "BALTOR_SERVICE_TOKEN",
+    "step_effects": ["reads_fs", "writes_fs", "spawns_process", "network"]
   }
 }
 ```
@@ -194,12 +224,15 @@ A configured server entry is not a completed handshake or a finished task.
 Confirm your account first:
 
 ```bash
-curl -sS -H "Authorization: Bearer $BALTOR_SERVICE_TOKEN" https://app.baltor.ai/api/v1/session
+curl -sS -H "Authorization: Bearer $BALTOR_SERVICE_TOKEN" https://baltor.ai/api/v1/session
 ```
 
-The result identifies the principal, scopes and expiry. Then confirm that your
-client sees `provisioning_discover`, `provisioning_list`,
-`provisioning_manifest`, `provisioning_read` and `intelligence_search`.
+The result identifies the principal and its scopes. For an OAuth access token
+or a browser sign-in, `token_expires_at` gives the expiry. For a Baltor key it
+is `null`; the key's expiry is listed under Your Baltor keys on `/account`.
+Then confirm that your client sees `provisioning_discover`,
+`provisioning_list`, `provisioning_manifest`, `provisioning_read` and
+`intelligence_search`.
 
 Ask the client to search for one relevant item. Inspect its manifest, download
 it and verify its digest. Finally, verify that your harness actually loaded it

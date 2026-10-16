@@ -133,8 +133,14 @@ checks on a later item read.
 | `Retry-After` | Wait interval supplied with a rate refusal. |
 | `WWW-Authenticate` | Authentication challenge information. |
 
-The service lists `provisioning_discover`, `provisioning_list`,
-`provisioning_manifest`, `provisioning_read` and `intelligence_search`. Use each
+A harness connection lists twelve tools. Nine serve a customer:
+`intelligence_search`, `provisioning_discover`, `provisioning_list`,
+`provisioning_manifest`, `provisioning_read`, `public_good_files`,
+`provisioning_rate`, `provisioning_request_material` and `provisioning_report`.
+The other three, `feedback_review`, `staff_work_read` and `staff_work_submit`,
+are for Baltor staff and refuse a customer's credential. A connection whose
+OAuth client redirects to an OpenAI host lists eight tools with other names
+instead, as the [ChatGPT and Codex guide](chatgpt-app.md) describes. Use each
 tool's returned input schema. Search has no read-only annotation in the current
 implementation; it is still not metered. A body read can record usage. Do not
 infer permissions or price from a tool annotation.
