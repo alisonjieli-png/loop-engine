@@ -21,7 +21,14 @@ two defects that were found and fixed after the first claims of correctness.
 
 ## Current context route
 
-Read the [October 15 takeover handoff](SESSION-HANDOFF-2026-10-15-TAKEOVER.md)
+Read the [October 15 Claude takeover handoff](SESSION-HANDOFF-2026-10-15-CLAUDE-TAKEOVER.md)
+first. Antigravity and Gemini ran out of quota, and Claude took over
+operations. The live pulse and Research watch monitors are green again, the
+temp reaper keeps gate environments, and the internal systems portal requires
+sign-in. Release 93 is unchanged. Public Good access grants expire on
+October 31 and November 1 UTC and need renewal before then.
+
+Then read the [October 15 takeover handoff](SESSION-HANDOFF-2026-10-15-TAKEOVER.md)
 and [current deployment](../architecture/MVP-CLIENT-SERVER.md#current-deployment)
 first. Application release 93 is confirmed with its exact image, passing
 service health and a closed deployment gate. GET-only reconciliation confirms
