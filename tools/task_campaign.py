@@ -519,6 +519,10 @@ def run_campaign(cells: list[dict], runs_dir: Path, args) -> int:
         print(json.dumps({"error": "live run needs --settings-file, "
                                    "--provider, and --model-id"}))
         return 2
+    if bool(getattr(args, "health_gate", False)) and not str(getattr(args, "health_url", "") or "").strip():
+        print(json.dumps({"error": "--health-gate needs --health-url: the endpoint "
+                                   "address is configuration, not a default"}))
+        return 2
     runs_dir.mkdir(parents=True, exist_ok=True)
     (runs_dir / "socks").mkdir(parents=True, exist_ok=True)
     done: list[dict] = []
@@ -656,8 +660,9 @@ def main(argv=None) -> int:
                         help="probe the endpoint before each cell; defer "
                              "cells while unhealthy, retry once at the end "
                              "(forces --jobs 1)")
-    parser.add_argument("--health-url", default="https://ai.tacticalengineering.net:6969/v1",
-                        help="base URL probed by --health-gate")
+    parser.add_argument("--health-url", default="",
+                        help="base URL probed by --health-gate; required with it. A private "
+                             "server's address is configuration, never a default in this file")
     parser.add_argument("--health-key-env", default="TACTICAL_API_KEY",
                         help="env var holding the probe credential")
     parser.add_argument("--health-timeout", type=float, default=30.0,

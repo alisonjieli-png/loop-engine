@@ -17,6 +17,7 @@ import ssl
 import sys
 import tempfile
 import time
+import types
 import unittest
 import urllib.request
 from pathlib import Path
@@ -198,6 +199,18 @@ class StageCellChecks(TaskDatabaseFixture):
         self.assertEqual(code, 0)
         listed = json.loads(stdout.getvalue())
         self.assertEqual([item["task"] for item in listed], ["demo_task"])
+
+    def test_a_health_gate_without_a_url_is_refused_before_any_cell(self):
+        # The probed address is configuration: the file carries no default endpoint to fall back on.
+        runs_dir = Path(self.directory.name) / "runs"
+        arguments = types.SimpleNamespace(settings_file="settings.yaml", provider="tactical", model_id="m",
+                                          health_gate=True, health_url="", jobs=1)
+        stdout = io.StringIO()
+        with contextlib.redirect_stdout(stdout):
+            code = task_campaign.run_campaign([{"task": "demo_task", "arm": "arm"}], runs_dir, arguments)
+        self.assertEqual(code, 2)
+        self.assertIn("--health-url", json.loads(stdout.getvalue())["error"])
+        self.assertFalse(runs_dir.exists())
 
 
 class BridgeArtifactsChecks(unittest.TestCase):
