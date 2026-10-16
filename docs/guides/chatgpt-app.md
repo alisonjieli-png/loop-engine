@@ -381,9 +381,10 @@ the issuer the metadata advertises.
    message arrives, then set `http.support_email`; `/support` then shows it.
 6. Make the reviewer account through Baltor's own sign-up with an address the
    owner reads, and grant it free monthly Baltor Pro from Administration.
-7. Revoke the founding place of the check account
-   `baltor-check-2852a122@maxxspace.com`, which the live check made on
-   October 5 and which took one founding place.
+7. Done on October 16, 2026: the founding place of the check account
+   `baltor-check-2852a122@maxxspace.com`, made by the live check on October 5,
+   was returned together with four other check accounts' places
+   ([record](../../artifacts/architecture-audit-2026-09-19/founding-places-check-accounts-2026-10-16.json)).
 
 ## Steps for the owner
 

@@ -1,0 +1,21 @@
+{
+ "record_type": "founding_places_housekeeping_evidence/v1",
+ "recorded_on": "2026-10-16",
+ "application_release": 93,
+ "reason": "The founding offer gives the first 10 accounts that finish Baltor's sign-up Baltor Pro free each month, and is meant for early customers. Before launch, a read-only classification on the host found that 7 of the 8 holders were engineering check accounts created by the live checks, whose generated addresses start with baltor-check- on disposable mail domains, so only 2 places were left.",
+ "method": "Host steps run as the service user on the Machine. A read-only step listed the holders and classified each against the check-address pattern through the identity provider's user listing, with the service's own key, printing only the domain for any other account. The change used free_monthly.revoke_rows and grant_rows, the code staff Administration runs, one tenant at a time, then listed the holders again.",
+ "before": {"holders": 8, "check_accounts": 7, "other_accounts": 1, "granted_total": 14},
+ "changes": [
+  {"tenant_prefix": "customer.091cf4249414788", "account_created": "2026-09-27", "action": "founding place returned"},
+  {"tenant_prefix": "customer.fd3219457ce2576", "account_created": "2026-09-29", "action": "founding place returned"},
+  {"tenant_prefix": "customer.a2e7915c428bc5e", "account_created": "2026-09-30", "action": "founding place returned"},
+  {"tenant_prefix": "customer.2a63a12b3dd70d1", "account_created": "2026-10-05", "action": "founding place returned"},
+  {"tenant_prefix": "customer.3be55a5f1d518de", "account_created": "2026-10-05", "action": "founding place returned"},
+  {"tenant_prefix": "customer.cac8d8104f29d6a", "account_created": "2026-10-06", "action": "founding place returned and replaced by an ordinary free monthly grant", "why": "it is the account of the nightly Claude Code OAuth quickstart check, which keeps the same access"}
+ ],
+ "after": {"holders": 2, "of_which_check_accounts_in_use": 1, "places_free_for_new_accounts": 8},
+ "deferred": "The check account created on October 16 by the launch customer-journey check keeps its place until that check finishes; it is then returned the same way.",
+ "untouched": "The one holder that is not a check account.",
+ "follow_up": "Check accounts are still considered for the founding offer like any other new account. The live account checks should return their places when they finish, or the host should name check-address patterns that the offer skips.",
+ "private_evidence_root": "/home/username/baltor-private/claude-takeover-20261015-dhycum/ops/founding-places"
+}
