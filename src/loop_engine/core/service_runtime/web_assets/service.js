@@ -4,12 +4,12 @@
   let token = "", generation = 0, busy = false, capabilities = null, accessOptions = null, accessRequest = null, accessBusy = false;
   let connectionBusy = false, recipes = null, afterLogin = null, principalScopes = [];
   let identityClient = null, identityConfiguration = null, authenticationMode = "host_key";
-  let clientAccess = null, catalogueBrowser = null, oauthConsent = null, staffWork = null;
+  let clientAccess = null, catalogueBrowser = null, oauthConsent = null, staffWork = null, systemsView = null;
   // What the funnel reads: whether the service reports account creation open, where a signed-in account's paid access comes
   // from, and whether this page has asked for a sign-up link.
   let registrationOpen = false, accessSource = "", funnelSent = false;
   // A signed-in staff member's role, read from the session record. The service decides every permission again.
-  let staffRole = "", staffBusy = false;
+  let staffRole = "", staffBusy = false, staffPermissions = [];
   const coveredSources = ["operator_grant", "free_monthly", "founding_free_monthly"];
   const pending = new Set(), downloads = new Map(), billingRequests = new Map();
   /* A status line states one of four things: nothing wrong, work under way ("loading"), a refusal the service sent ("refused"),
@@ -40,7 +40,7 @@
   // "/setup" opens the guide, Get set up, and "/connect" stays an alias for it, so older links and emails still work.
   // "/get-started" is the sign-up, registration and payment funnel.
   // "/waitlist" is the funnel's older address, so earlier links and emails open the same journey.
-  const routeNames = {"/":"home", "/app":"workspace", "/login":"login", "/signup":"signup", "/pricing":"pricing", "/account":"account", "/admin":"admin", "/docs":"docs", "/docs/getting-set-up":"setup", "/how-it-works":"about", "/setup":"setup", "/connect":"setup", "/get-started":"start", "/use-cases":"use-cases", "/overnight":"overnight", "/efficiency":"efficiency", "/learning":"learning", "/examples":"examples", "/security":"security", "/privacy":"privacy", "/terms":"terms", "/waitlist":"start", "/auth/callback":"login"};
+  const routeNames = {"/":"home", "/app":"workspace", "/login":"login", "/signup":"signup", "/pricing":"pricing", "/account":"account", "/admin":"admin", "/admin/systems":"systems", "/docs":"docs", "/docs/getting-set-up":"setup", "/how-it-works":"about", "/setup":"setup", "/connect":"setup", "/get-started":"start", "/use-cases":"use-cases", "/overnight":"overnight", "/efficiency":"efficiency", "/learning":"learning", "/examples":"examples", "/security":"security", "/privacy":"privacy", "/terms":"terms", "/waitlist":"start", "/auth/callback":"login"};
   if (location.pathname === "/auth/callback") {
     // Confirmation tokens in a provider redirect never enter our logs, storage or links.
     history.replaceState({}, "", "/login");
@@ -98,14 +98,14 @@
   const setMenu = open => { menuButton.setAttribute("aria-expanded", String(open)); menuButton.closest(".header").classList.toggle("menu-open", open); };
   menuButton.addEventListener("click", () => setMenu(menuButton.getAttribute("aria-expanded") !== "true"));
   // Opening a page closes the phone menu, which the page script would otherwise leave open over the new page.
-  const route = () => { const name = routeNames[location.pathname] || (location.pathname.startsWith("/docs/") ? "docs" : "home"); show(name); setMenu(false); const viewTitle = {home:"For engineers, designers and AI agents", "use-cases":"Use cases", overnight:"Local overnight queue and morning reports", efficiency:"More efficient operation", learning:"Learning and optimization, built in", workspace:"Workspace", login:"Sign in", signup:"Account status", pricing:"Pricing", account:"Your account", admin:"Access administration", docs:"Documentation", about:"How it works", setup:"Get set up", waitlist:"Get started", examples:"Examples and case studies", security:"Access and data boundaries", privacy:"Privacy notice", terms:"Terms of service", start:"Get started", confirm:"Choose your password",
+  const route = () => { const name = routeNames[location.pathname] || (location.pathname.startsWith("/docs/") ? "docs" : "home"); show(name); setMenu(false); const viewTitle = {home:"For engineers, designers and AI agents", "use-cases":"Use cases", overnight:"Local overnight queue and morning reports", efficiency:"More efficient operation", learning:"Learning and optimization, built in", workspace:"Workspace", login:"Sign in", signup:"Account status", pricing:"Pricing", account:"Your account", admin:"Access administration", systems:"Systems", docs:"Documentation", about:"How it works", setup:"Get set up", waitlist:"Get started", examples:"Examples and case studies", security:"Access and data boundaries", privacy:"Privacy notice", terms:"Terms of service", start:"Get started", confirm:"Choose your password",
     "for-designers":"Creative work you can change again", "for-coding-agents":"Stop starting from nothing", "for-engineering-teams":"Expertise for the whole team", "for-comparing-tools":"What it is and what it costs",
     "oauth-consent":"Authorize a connection", "for-protocol-and-client":"Protocol, client and setup", demo:"One task, step by step", "demo-kaggle":"A Kaggle competition, start to finish", "case-studies-data-cleanup":"Data cleanup with and without Baltor",
     "case-studies-pi-and-gemma-4":"Pi and Gemma 4 on Ollama Cloud", "case-studies-sign-up-protection":"How sign-up is protected", "creative-arena":"Ashen Wilds: a playable, editable 3D scene", status:"Service status",
     "top-mcps":"Top MCP servers", worker:"Run Baltor on your own computer"}[name];
     // Each title is the site map's (tools/test_website_site_map.py holds the two together). A view without one keeps the
     // title its page was served with: until October 16, 2026 /worker and /top-mcps showed "Baltor | undefined".
-    if (viewTitle) document.title = serviceName + " | " + viewTitle; if (name === "docs") window.BaltorDocumentation?.show(location.pathname); if(name==='oauth-consent')oauthConsent?.show(); };
+    if (viewTitle) document.title = serviceName + " | " + viewTitle; if (name === "docs") window.BaltorDocumentation?.show(location.pathname); if(name==='oauth-consent')oauthConsent?.show(); if (name === "systems") systemsView?.show(); else systemsView?.hide(); };
   // Carry only the explicit catalogue selection across login reloads. No
   // user-supplied return URL, credential or external redirect is accepted.
   const loginPath = path => path === "/login" && afterLogin?.startsWith("/app?")
@@ -247,14 +247,14 @@ const applyPaymentState = name => {
     $("workspace-access-link").textContent = "Sign in to this service"; $("account-access-link").textContent = "Sign in";
     showSignedIn(false);
     accessOptions = null; accessRequest = null; $("admin-nav").hidden = true; $("admin-controls").hidden = true; $("admin-login").hidden = false; $("refresh-access").disabled = true;
-    staffRole = ""; $("staff-admin").hidden = true; $("staff-counts").replaceChildren(); $("staff-accounts").replaceChildren(); $("account-plan").hidden = true;
+    staffRole = ""; staffPermissions = []; $("staff-admin").hidden = true; $("staff-counts").replaceChildren(); $("staff-accounts").replaceChildren(); $("account-plan").hidden = true;
     $("feedback-admin").hidden = true; $("feedback-counts").replaceChildren(); $("feedback-requests").replaceChildren(); $("feedback-gaps").replaceChildren(); message("feedback-message", "");
     $("material-request-description").value = ""; message("material-request-message", materialRequestNote);
     $("issued-token").value = ""; $("issued-access").hidden = true; $("access-list").replaceChildren(); $("token-label").value = "";
     message("admin-message", "Sign in with your staff account or an authorized administrator service token.");
     $("test-protocol").disabled = true; $("setup-identity").textContent = "Sign in with a Baltor key to run the connection check.";
     $("protocol-tools").replaceChildren(); message("protocol-result", "Not tested. No model calls are made by this check.");
-    clientAccess?.reset(); catalogueBrowser?.reset(); staffWork?.reset();
+    clientAccess?.reset(); catalogueBrowser?.reset(); staffWork?.reset(); systemsView?.reset();
     accessSource = ""; renderFunnel();
   }
   /* Signing out. The page forgets the access it holds at once, then asks the service and the identity provider to end the
@@ -340,6 +340,13 @@ const applyPaymentState = name => {
   staffWork = window.BaltorStaffWork?.create({request, element,
     current:() => ({connected:!!token, allowed:staffRole === "superadmin" || principalScopes.includes("access:manage"),
       requestBytes:capabilities?.staff_work?.http_request_bytes || 65536})});
+  /* The staff Systems view at /admin/systems. It reads the staff role and its permissions from the session record to
+     choose what to say; the service checks both again on every request. An answer refused as signed out opens sign-in
+     and comes back here. */
+  systemsView = window.BaltorSystemsView?.create({request, element, message, said, failureState,
+    current:() => ({connected:!!token, staff:!!staffRole, permitted:staffPermissions.includes("service.diagnostics")}),
+    signIn:() => { afterLogin = "/admin/systems"; navigate("/login"); }}) || null;
+  if (document.body.dataset.page === "systems") systemsView?.show();
   /* A fact list drawn as tiles, such as the staff figures, keeps each name and its value together in one group. */
   const tiles = (target, entries) => { facts(target, entries); for (const name of [...target.querySelectorAll("dt")]) { const value = name.nextElementSibling, group = document.createElement("div"); name.before(group); group.append(name, value); } };
   /* The plan tile of the account overview names what covers the account, as the session record states it, and what the
@@ -387,6 +394,7 @@ const applyPaymentState = name => {
       if (authenticationMode === "browser_identity") keptSession.write(supplied);
       accessSource = typeof value.access_source === "string" ? value.access_source : "";
       staffRole = typeof value.staff_role === "string" ? value.staff_role : "";
+      staffPermissions = Array.isArray(value.staff_permissions) ? value.staff_permissions.filter(name => typeof name === "string") : [];
       $("account-plan").hidden = !coveredSources.includes(accessSource); $("account-plan").textContent = "Your account includes Pro.";
       planTile(accessSource, value.principal.entitlement);
       const entries = [["Tenant", value.principal.tenant_id], ["Namespace", value.principal.namespace], ["Scopes", value.principal.scopes.join(", ")], ["Access", value.principal.entitlement]];
@@ -413,7 +421,7 @@ const applyPaymentState = name => {
       if (administrator) await loadAccess();
       if (staffRole) await loadStaff().catch(error => message("staff-message", said(error), failureState(error)));
       if (administrator || ["superadmin", "analytics"].includes(staffRole)) await loadFeedback().catch(error => message("feedback-message", said(error), failureState(error)));
-      staffWork?.connectionChanged();
+      staffWork?.connectionChanged(); systemsView?.connectionChanged();
       clientAccess.connectionChanged(); catalogueBrowser?.connectionChanged();
     } catch (error) { disconnect(); message("connection-message", error.name === "AbortError" ? "Connection timed out. No automatic retry was made." : said(error), failureState(error)); }
   }

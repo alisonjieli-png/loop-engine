@@ -11,6 +11,8 @@ Staff administration
 │   counts and diagnostics that role may read
 ├── GET  /api/v1/admin/accounts   every account with its address, creation,
 │   confirmation, plan and last use (superadmin)
+├── GET  /api/v1/admin/systems    recorded release, catalogue and edge facts and the
+│   health measured now (a role that reads service diagnostics; `systems_view`)
 └── POST /api/v1/admin/accounts   one action (superadmin)
     ├── grant_free_monthly, revoke_free_monthly, disable, enable
     ├── one request identity: a repeat returns the first result, and a
@@ -188,6 +190,19 @@ class AccountAdministration:
         if SERVICE_DIAGNOSTICS in permissions and diagnostics is not None:
             result["diagnostics"] = diagnostics()
         return result
+
+    def systems(self, staff, fields, *, live=None):
+        """The Systems view for a role that reads service diagnostics: recorded facts, and the health measured now.
+
+        The role is checked first, then the query, then the session with its sign-out record and its expiry, so
+        nothing is measured or returned for a refused caller. `live` measures only for the overview."""
+        from . import systems_view
+        self._require(staff, SERVICE_DIAGNOSTICS)
+        query = systems_view.staff_query(fields)
+        with self.runtime._catalog.store() as store:
+            self._current_session(store, staff)
+        reading = live() if live is not None and query["view"] == "overview" else None
+        return systems_view.staff_view(query, live=reading)
 
     def accounts(self, staff):
         """Every account, joined from the identity provider and the service records (superadmin)."""

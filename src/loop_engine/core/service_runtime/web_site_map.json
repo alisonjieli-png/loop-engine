@@ -910,6 +910,20 @@
       "indexed": false
     },
     {
+      "address": "/admin/systems",
+      "view": "systems",
+      "title": "Systems",
+      "description": "Recorded release and check facts and live service health for Baltor staff.",
+      "group": "Account",
+      "linked_from": [
+        "page"
+      ],
+      "unlinked_reason": "",
+      "scroll_budget": "page",
+      "price_in_first_screen": false,
+      "indexed": false
+    },
+    {
       "address": "/auth/callback",
       "view": "login",
       "title": "Sign in",

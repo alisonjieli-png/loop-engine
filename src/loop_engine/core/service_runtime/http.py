@@ -50,6 +50,7 @@ from .feedback import (ASK_FOR_MATERIAL_LINE, FEEDBACK_OPERATIONS as CUSTOMER_FE
                        ServiceFeedback)
 from . import feedback as customer_feedback
 from . import staff_work
+from . import systems_view
 from .model_directory_pages import moved_answer, rendered_page
 from . import library_page
 from . import public_good_page
@@ -220,6 +221,9 @@ ADMIN_SIGN_UP_LINKS_PATH = "/api/v1/admin/sign-up-links"
 #: reads usage counts reads it, as does an operator with the administration scope.
 ADMIN_FEEDBACK_PATH = "/api/v1/admin/feedback"
 ADMIN_FEEDBACK_SUMMARY_PATH = "/api/v1/admin/feedback/summary"
+#: The staff Systems view (roadmap S-6.35.11): recorded release, catalogue and edge facts beside what the running
+#: service measures now, for a staff role that reads service diagnostics. `systems_view` owns the record.
+ADMIN_SYSTEMS_PATH = systems_view.PATH
 #: Where OpenAI's plugin portal reads the domain verification token: the exact token as plain text, nothing else.
 OPENAI_APPS_CHALLENGE_PATH = "/.well-known/openai-apps-challenge"
 # Every address the interface router answers, with the methods it answers for
@@ -257,6 +261,7 @@ API_ROUTES = {
     ADMIN_SIGN_UP_LINKS_PATH: ("POST",),
     ADMIN_FEEDBACK_PATH: ("GET",),
     ADMIN_FEEDBACK_SUMMARY_PATH: ("GET",),
+    ADMIN_SYSTEMS_PATH: ("GET",),
     staff_work.PATH: ("GET", "POST"),
     "/api/v1/session": ("GET",),
     "/api/v1/usage": ("GET",),
@@ -876,14 +881,16 @@ def _status(error):
     if code in ("invalid_step_effects", "library_tiers_invalid"):
         return 400, code
     if code in ("item_unavailable", "managed_access_token_not_found", "waitlist_entry_not_found",
-                "item_withdrawn", "package_file_not_found", "package_files_unavailable", "account_not_found"):
+                "item_withdrawn", "package_file_not_found", "package_files_unavailable", "account_not_found",
+                "systems_entry_not_found"):
         return 404, code
     if code in ("meter_commit_unknown", "commit_unknown", "usage_store_busy", "store_busy", "store_unavailable",
                 "session_operation_in_progress",
                 "session_reconciliation_window_exhausted", "session_network_authority_required",
                 "billing_customer_not_bound", "session_record_unavailable",
                 "waitlist_unavailable", "waitlist_account_directory_unavailable",
-                "waitlist_source_secret_unavailable", "waitlist_source_secret_unusable"):
+                "waitlist_source_secret_unavailable", "waitlist_source_secret_unusable",
+                "systems_record_unavailable"):
         return 503, code
     return 400 if isinstance(error, (ProvisioningError, ServiceRuntimeError)) else 500, code
 
@@ -1954,21 +1961,42 @@ class ServiceHttpApplication:
         return send_sign_up_links(self.account_administration, self.account_email, staff,
                                   StaffSignUpLinkRequest.from_dict(fields))
 
-    def _staff_diagnostics(self):
-        """What a developer reads: the measured health record, the newest refusal codes, counted, and today's account messages.
+    def _staff_systems(self, context, fields):
+        """Revalidate the staff session at the provider, then read the Systems view within its role.
 
-        The account message count holds numbers and times only: the messages
-        sent today, the daily budget, what remains and when the day resets.
-        """
+        A host without staff administration has no staff, so its callers are refused as not staff."""
+        if self.account_administration is None:
+            raise ServiceRuntimeError("staff_role_required")
+        current = self.authenticator.revalidate(context)
+        staff = self.account_administration.staff_session(current, self.authenticator.credential_digest(current))
+        return self.account_administration.systems(staff, fields, live=self._staff_systems_live)
+
+    def _staff_systems_live(self):
+        """The health record this process measures now, with the moment it was read. It calls no provider."""
+        from datetime import datetime, timezone
+        health = self._staff_health()
+        read_at = datetime.fromtimestamp(self.runtime._now(), timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+        return systems_view.live_reading(health, read_at)
+
+    def _staff_health(self):
+        """The measured health record, as the health route measures it."""
         from .billing_policy import billing_policy_refusal
         billed = self.billing_sessions is not None or self.billing_processor is not None
-        health = readiness_report(config=self.runtime.config, provisioning=self.provisioning,
+        return readiness_report(config=self.runtime.config, provisioning=self.provisioning,
             authentication_modes=self.authentication.modes, policy=self.observability,
             browser_identity_installed=self.browser_identity is not None,
             billing_sessions_installed=self.billing_sessions is not None,
             billing_webhook_installed=self.billing_processor is not None,
             billing_policy=(lambda: billing_policy_refusal(self)) if billed else None,
             task_checks=(self.retention_schedule.readiness_check(), self.renewal_schedule.readiness_check()))
+
+    def _staff_diagnostics(self):
+        """What a developer reads: the measured health record, the newest refusal codes, counted, and today's account messages.
+
+        The account message count holds numbers and times only: the messages
+        sent today, the daily budget, what remains and when the day resets.
+        """
+        health = self._staff_health()
         refusals = {}
         try:
             for row in self.failure_journal.recent(limit=100).get("failures", ()):
@@ -3116,6 +3144,15 @@ class ServiceHttpApplication:
                 output = await self._work(lambda: invoke_http_service_as_loop("feedback_administration",
                     lambda: (self._staff_feedback_summary(context) if path == ADMIN_FEEDBACK_SUMMARY_PATH
                              else self._staff_feedback(context))),
+                    shares=(context.principal.tenant_id, EXTERNAL_PROVIDER_SHARE))
+            elif path == ADMIN_SYSTEMS_PATH and method == "GET":
+                # A repeated query field names no single view, so it is refused before any work.
+                if len(request.query_params.multi_items()) != len(set(request.query_params.keys())):
+                    raise ServiceHttpError("unknown_request_field")
+                fields = dict(request.query_params)
+                # The staff session is rechecked at the identity provider, as on every staff route.
+                output = await self._work(lambda: invoke_http_service_as_loop("staff_systems",
+                    lambda: self._staff_systems(context, fields)),
                     shares=(context.principal.tenant_id, EXTERNAL_PROVIDER_SHARE))
             elif (path == "/api/v1/provisioning" and method == "POST"
                   and (payload := _parse_json(await self._body(request))).get("operation") in CUSTOMER_FEEDBACK_OPERATIONS):

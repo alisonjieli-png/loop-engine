@@ -51,6 +51,8 @@ WEB_ASSETS = {
     "/login": ("index.html", HTML_MEDIA_TYPE), "/signup": ("index.html", HTML_MEDIA_TYPE),
     "/account": ("index.html", HTML_MEDIA_TYPE),
     "/admin": ("index.html", HTML_MEDIA_TYPE),
+    # The staff Systems view (roadmap S-6.35.11). The page holds no data; GET /api/v1/admin/systems answers staff only.
+    "/admin/systems": ("index.html", HTML_MEDIA_TYPE),
     "/connect": ("index.html", HTML_MEDIA_TYPE),
     # The guide, Get set up, and the sign-up funnel, Get started. "/connect" above stays the guide's older address.
     "/setup": ("index.html", HTML_MEDIA_TYPE), "/get-started": ("index.html", HTML_MEDIA_TYPE),
@@ -75,6 +77,7 @@ WEB_ASSETS = {
     "/oauth/consent": ("index.html", HTML_MEDIA_TYPE),
     "/assets/oauth-consent.js": ("oauth-consent.js", "text/javascript"),
     "/assets/staff-work.js": ("staff-work.js", "text/javascript"),
+    "/assets/systems-view.js": ("systems-view.js", "text/javascript"),
     "/assets/public-good.js": ("public-good.js", "text/javascript"),
     "/assets/public-good.css": ("public-good.css", "text/css"),
     "/docs": ("index.html", HTML_MEDIA_TYPE), "/how-it-works": ("index.html", HTML_MEDIA_TYPE),

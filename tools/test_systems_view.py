@@ -1,7 +1,7 @@
-"""The staff Systems record holds recorded facts only, with every result state kept apart.
+"""The staff Systems view shows recorded facts only, to staff only, with every result state kept apart.
 
-Kind: development check over the generated record and its generator. It opens no connection, calls no provider and
-needs no credential. Roadmap
+Kind: development check over the generated record, its generator, the real service over loopback HTTP and the page
+script under Node. It opens no connection outside loopback, calls no provider and needs no credential. Roadmap
 S-6.35.11: the systems portal of October 14, 2026 served invented projections and unmeasured pass labels without
 access control; this view must label every result by source revision, environment, attempt and record, keep pending,
 skipped, failed and unknown checks apart, and refuse anyone who is not staff at the service itself.
@@ -14,7 +14,14 @@ Each rule has a known-wrong case beside it:
 - every release record and every recorded attempt is kept, earlier failures included;
 - the current deployment statement is compared field by field with the newest release record, and a changed
   revision is reported as differing;
-- no projection, forecast, revenue or investor word appears, and the generator refuses one.
+- no projection, forecast, revenue or investor word appears, and the generator refuses one;
+- a staff role that reads service diagnostics reads the view; signed-out requests, ordinary accounts, a host key, a
+  forged header, the analytics role and a signed-out staff session are refused, and removing the role table lets the
+  analytics role through;
+- the answers are never cached, queries are strict, unavailable evidence is refused rather than filled in, and the
+  record is served at no public address;
+- the page lists each state in its own list, labels the live reading with its read time, and sends a signed-out answer
+  to sign-in.
 
 Run:
 
@@ -22,10 +29,13 @@ Run:
 """
 from __future__ import annotations
 
+from contextlib import ExitStack
 import copy
 import json
 from pathlib import Path
 import re
+import shutil
+import subprocess
 import sys
 import tempfile
 import unittest
@@ -37,11 +47,13 @@ for folder in (ROOT / "src", ROOT / "tools"):
         sys.path.insert(0, str(folder))
 
 import build_systems_view as tool  # noqa: E402
-from loop_engine.core.service_runtime import systems_view  # noqa: E402
+from loop_engine.core.service_runtime import systems_view, web_pages  # noqa: E402
 from loop_engine.core.service_runtime.records import ServiceRuntimeError  # noqa: E402
 
 RECORD = ROOT / "src" / "loop_engine" / "core" / "service_runtime" / "systems_view.json"
 SCHEMA = ROOT / "src" / "loop_engine" / "core" / "service_runtime" / "systems_view.schema.json"
+SCRIPT = ROOT / "src" / "loop_engine" / "core" / "service_runtime" / "web_assets" / "systems-view.js"
+PAGE = ROOT / "src" / "loop_engine" / "core" / "service_runtime" / "web_assets" / "index.html"
 NUMBER = re.compile(r"(?<![\w.])\d[\d,]*(?:\.\d+)?(?![\w])")
 #: The words the October 14 portal used and this view must never carry.
 FORBIDDEN = re.compile(r"\b(?:ARR|MRR|projections?|projected|forecasts?|investors?|revenue|runway|valuation)\b",
@@ -252,8 +264,11 @@ class GeneratedRecord(unittest.TestCase):
         self.assertEqual(changed["comparison"]["release"], "agrees")
 
     def test_no_projection_forecast_revenue_or_investor_word_appears(self):
-        for name, text in (("record", RECORD.read_text("utf-8")),
-                           ("service module", Path(systems_view.__file__).read_text("utf-8"))):
+        page = PAGE.read_text("utf-8")
+        start = page.index('<section data-view="systems"')
+        view = page[start:page.index("\n    </section>\n", start)]
+        for name, text in (("record", RECORD.read_text("utf-8")), ("page script", SCRIPT.read_text("utf-8")),
+                           ("view", view), ("service module", Path(systems_view.__file__).read_text("utf-8"))):
             with self.subTest(name=name):
                 self.assertIsNone(FORBIDDEN.search(text))
         # KNOWN_WRONG: the generator refuses a row that carries one of the words.
@@ -286,6 +301,265 @@ class GeneratedRecord(unittest.TestCase):
         self.assertIn(RECORD.relative_to(ROOT).as_posix(), view.outputs)
         self.assertIn("tools/build_systems_view.py", view.command)
         self.assertIn("test_systems_view", view.ci_check)
+
+
+class StaffAccess(unittest.TestCase):
+    """The real service over loopback HTTP, with staff signed in through an owned loopback key set."""
+
+    @classmethod
+    def setUpClass(cls):
+        import httpx
+        from loop_engine.core.service_runtime.account_administration_checks import _Staff
+        from loop_engine.core.service_runtime.account_origin_checks import signed_identity
+        from loop_engine.core.service_runtime.http import ServiceHttpApplication
+        from loop_engine.core.service_runtime.http_test_fixtures import running_http
+        from loop_engine.core.service_runtime.records import ACCESS_MANAGE_SCOPE, TenantKeyIssue, TenantRegistration
+        # ExitStack rather than enterClassContext, which Python 3.10 lacks; continuous integration runs 3.10 to 3.12.
+        cls.stack = ExitStack()
+        cls.addClassCleanup(cls.stack.close)
+        folder = Path(cls.stack.enter_context(tempfile.TemporaryDirectory(prefix="systems-access-")))
+        cls.identity = cls.stack.enter_context(signed_identity(folder / "http", operator_access=False))
+        cls.staff = _Staff(cls.identity)
+        runtime = cls.identity.fixture.runtime
+        runtime.register_tenant(TenantRegistration("host-administrator", "host:administrator", (ACCESS_MANAGE_SCOPE,)))
+        cls.host_key = runtime.issue_key(TenantKeyIssue("host-administrator", "host administration")).key
+
+        def create(config):
+            return ServiceHttpApplication(runtime, cls.identity.fixture.provisioning, config,
+                                          browser_identity=cls.staff.adapter,
+                                          account_administration=cls.staff.administration)
+        cls.base, _service = cls.stack.enter_context(running_http(cls.identity.fixture, application_factory=create))
+        cls.client = cls.stack.enter_context(httpx.Client(trust_env=False, timeout=30))
+
+    def get(self, subject=None, query="", *, token=None, **headers):
+        credential = token or (self.identity.token(subject) if subject else None)
+        sent = {**({"Authorization": "Bearer " + credential} if credential else {}), **headers}
+        return self.client.get(self.base + systems_view.PATH + query, headers=sent)
+
+    def test_superadmin_and_developer_read_the_overview_with_a_labelled_live_reading(self):
+        record = committed()
+        for subject in (self.staff.superadmin, self.staff.developer):
+            answer = self.get(subject)
+            self.assertEqual(answer.status_code, 200, answer.text)
+            self.assertEqual(answer.headers["cache-control"], "no-store")
+            body = answer.json()
+            self.assertEqual(body["execution"]["runtime_type"], "Loop")
+            result = body["result"]
+            self.assertEqual(result["record_type"], systems_view.RESULT_VERSION)
+            self.assertEqual(result["states"], list(systems_view.STATES))
+            self.assertEqual(result["live"]["record_type"], systems_view.LIVE_VERSION)
+            self.assertRegex(result["live"]["read_at"], r"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$")
+            self.assertIs(result["live"]["health"]["alive"], True)
+            self.assertEqual(result["current_deployment"], record["current_deployment"])
+            self.assertEqual(result["newest"]["entry"]["id"], "fly-release-93")
+            self.assertEqual(len(result["entries"]), len(record["entries"]))
+            self.assertIsNone(tool.EMAIL.search(json.dumps(result)), "no personal detail reaches a diagnostics role")
+
+    def test_state_pages_hold_only_their_own_state_and_page_on(self):
+        record = committed()
+        for state in systems_view.STATES:
+            expected = [row for row in record["rows"] if row["state"] == state]
+            seen, page = [], 1
+            while True:
+                result = self.get(self.staff.superadmin, f"?state={state}&page={page}").json()["result"]
+                self.assertEqual({row["state"] for row in result["rows"]} - {state}, set())
+                seen += result["rows"]
+                if not result["has_next"]:
+                    break
+                page += 1
+            with self.subTest(state=state):
+                self.assertEqual([(row["entry"], row["pointer"], row["check"]) for row in seen],
+                                 [(row["entry"], row["pointer"], row["check"]) for row in expected])
+
+    def test_an_entry_answer_holds_every_row_with_its_earlier_attempts(self):
+        record = committed()
+        result = self.get(self.staff.developer, "?entry=fly-release-93").json()["result"]
+        self.assertEqual(len(result["rows"]), sum(row["entry"] == "fly-release-93" for row in record["rows"]))
+        self.assertIn("failed", {row["state"] for row in result["rows"] if row["pointer"].startswith("/deployment_attempts")})
+        self.assertIn(result["entry"]["evidence"], {item["path"] for item in result["sources"]})
+
+    def test_signed_out_requests_are_refused_and_asked_to_sign_in(self):
+        answer = self.get()
+        self.assertEqual(answer.status_code, 401)
+        self.assertEqual(answer.json()["error"]["code"], "unauthorized")
+        self.assertIn("www-authenticate", answer.headers)
+        self.assertNotIn("current_deployment", answer.text)
+
+    def test_an_ordinary_account_a_host_key_and_a_forged_header_are_refused(self):
+        customer = self.get(self.staff.customer)
+        host = self.get(token=self.host_key)
+        forged_role = self.get(self.staff.customer, **{"X-Staff-Role": "superadmin", "X-Forwarded-User": "owner@example.com"})
+        forged_token = self.get(token="forged.token.value")
+        self.assertEqual([customer.status_code, host.status_code, forged_role.status_code], [403, 403, 403])
+        self.assertEqual({answer.json()["error"]["code"] for answer in (customer, host, forged_role)}, {"staff_role_required"})
+        self.assertEqual(forged_token.status_code, 401)
+        foreign = self.get(self.staff.superadmin, Origin="https://foreign.invalid")
+        self.assertEqual((foreign.status_code, foreign.json()["error"]["code"]), (403, "invalid_origin"))
+
+    def test_the_analytics_role_is_refused_and_the_role_table_is_what_refuses_it(self):
+        answer = self.get(self.staff.analytics)
+        self.assertEqual((answer.status_code, answer.json()["error"]["code"]), (403, "account_administration_forbidden"))
+        from loop_engine.core.service_runtime import account_administration, account_policy
+        # KNOWN_WRONG: with every permission granted to every role, analytics reads the view.
+        with mock.patch.object(account_administration, "permissions_for",
+                               lambda role: frozenset(account_policy.PERMISSIONS)):
+            self.assertEqual(self.get(self.staff.analytics).status_code, 200)
+
+    def test_a_signed_out_staff_session_is_refused(self):
+        token = self.identity.token(self.staff.developer, jti="systems-sign-out")
+        self.assertEqual(self.get(token=token).status_code, 200)
+        signed_out = self.client.post(self.base + "/api/v1/account/logout", headers={"Authorization": "Bearer " + token},
+                                      json={"record_type": "service_browser_logout_request/v1"})
+        self.assertEqual(signed_out.status_code, 200, signed_out.text)
+        self.assertEqual(self.get(token=token).status_code, 401)
+
+    def test_queries_are_strict(self):
+        for query, status, code in (("?state=bogus", 400, "invalid_systems_query"), ("?page=2", 400, "invalid_systems_query"),
+                                    ("?state=failed&page=0", 400, "invalid_systems_query"),
+                                    ("?state=failed&state=passed", 400, "unknown_request_field"),
+                                    ("?entry=fly-release-93&state=failed", 400, "invalid_systems_query"),
+                                    ("?other=1", 400, "invalid_systems_query"),
+                                    ("?entry=no-such-entry", 404, "systems_entry_not_found")):
+            with self.subTest(query=query):
+                answer = self.get(self.staff.superadmin, query)
+                self.assertEqual((answer.status_code, answer.json()["error"]["code"]), (status, code))
+        # A refused caller learns nothing about the query either: the role is checked first.
+        self.assertEqual(self.get(self.staff.analytics, "?entry=no-such-entry").status_code, 403)
+
+    def test_unavailable_evidence_is_refused_not_invented(self):
+        with mock.patch.object(systems_view, "packaged_record",
+                               side_effect=ServiceRuntimeError("systems_record_unavailable")):
+            answer = self.get(self.staff.superadmin)
+        self.assertEqual((answer.status_code, answer.json()["error"]["code"]), (503, "systems_record_unavailable"))
+        with self.assertRaises(ServiceRuntimeError):
+            systems_view.checked_record(b"{not json", SCHEMA.read_text("utf-8"))
+
+    def test_the_record_is_served_at_no_public_address(self):
+        for path in ("/systems_view.json", "/assets/systems_view.json", "/assets/systems_view.schema.json",
+                     "/src/loop_engine/core/service_runtime/systems_view.json"):
+            with self.subTest(path=path):
+                self.assertEqual(self.client.get(self.base + path).status_code, 404)
+        self.assertFalse([name for name, (packaged, _media) in web_pages.WEB_ASSETS.items()
+                          if "systems_view" in packaged or "systems_view" in name])
+        from loop_engine.core.service_runtime.static_site_export import static_addresses
+        exported = static_addresses(include_model_details=False)
+        self.assertIn("/admin/systems", exported)
+        self.assertFalse([address for address in exported if "systems_view" in address or address.startswith("/api/")])
+        page = self.client.get(self.base + "/admin/systems")
+        self.assertEqual(page.status_code, 200)
+        self.assertIn('<meta name="robots" content="noindex">', page.text)
+        for recorded in ("pilot-release-93", "38708447261", "718c83e8-f624-4a5b-b4b7-a417b657c852"):
+            self.assertNotIn(recorded, page.text, "the page shell carries no recorded fact")
+
+
+SCENARIO = r"""
+const fs = require('node:fs'), vm = require('node:vm'), assert = require('node:assert/strict');
+const [script, fixtures] = process.argv.slice(1);
+const answers = JSON.parse(fs.readFileSync(fixtures, 'utf8'));
+const nodes = {};
+const make = (tag, text = '') => ({tag, textContent:text, children:[], dataset:{}, hidden:false, disabled:false, className:'',
+  listeners:{}, append(...parts) { this.children.push(...parts); }, replaceChildren(...parts) { this.children = parts; },
+  addEventListener(type, listener) { this.listeners[type] = listener; }, focus() {}});
+const $ = id => nodes[id] ??= make('node');
+const context = vm.createContext({window:{}, document:{getElementById:$, createElement:tag => make(tag)}, URLSearchParams});
+vm.runInContext(fs.readFileSync(script, 'utf8'), context);
+const requests = [], messages = {};
+let state = {connected:false}, signIns = 0, refuse = null;
+const view = context.window.BaltorSystemsView.create({
+  request:async path => { requests.push(path); if (refuse) throw refuse; const query = new URLSearchParams(path.split('?')[1] || '');
+    if (query.get('state')) return answers.states[query.get('state')]; if (query.get('entry')) return answers.entry; return answers.overview; },
+  element:(tag, text, className) => Object.assign(make(tag, text), {className:className || ''}),
+  message:(id, text, failure) => { messages[id] = {text, failure}; }, said:error => error.message, failureState:() => 'refused',
+  current:() => state, signIn:() => { signIns++; }});
+const settle = () => new Promise(resolve => setTimeout(resolve, 0));
+(async () => {
+  view.show(); await settle();
+  assert.equal(requests.length, 0, 'a signed-out view asks the service for nothing');
+  assert.equal($('systems-login').hidden, false); assert.match(messages['systems-message'].text, /Sign in/);
+  state = {connected:true, staff:false, permitted:false}; view.connectionChanged(); await settle();
+  assert.equal(requests.length, 0); assert.equal(messages['systems-message'].failure, 'refused');
+  state = {connected:true, staff:true, permitted:false}; view.connectionChanged(); await settle();
+  assert.equal(requests.length, 0); assert.match(messages['systems-message'].text, /role does not include/);
+  state = {connected:true, staff:true, permitted:true}; view.connectionChanged();
+  for (let turn = 0; turn < 20; turn++) await settle();
+  assert.deepEqual(requests, ['/api/v1/admin/systems', ...['failed', 'pending', 'skipped', 'unknown', 'passed']
+    .map(name => '/api/v1/admin/systems?state=' + name + '&page=1')]);
+  assert.equal($('systems-view').hidden, false);
+  for (const name of ['failed', 'pending', 'skipped', 'unknown', 'passed']) {
+    const drawn = $('systems-state-' + name).children;
+    const rows = drawn.filter(item => item.tag === 'article');
+    assert.ok(rows.every(item => item.dataset.state === name), name + ' holds only its own rows');
+    assert.equal(rows.length, answers.states[name].rows.length);
+    if (!rows.length) assert.equal(drawn[0].textContent, 'None recorded in this state.');
+    assert.equal($('systems-more-' + name).hidden, answers.states[name].has_next !== true);
+  }
+  assert.match($('systems-live-note').textContent, /^Live: .* read at \d{4}-\d{2}-\d{2}T/);
+  assert.equal($('systems-current-facts').children.length, Object.keys(answers.overview.current_deployment.stated).length);
+  assert.equal($('systems-entries').children.length, answers.overview.entries.length);
+  const first = $('systems-state-failed').children[0];
+  assert.match(first.children[3].textContent, /Revision: .* · Environment: .* · Attempt: .* · Time: /);
+  assert.match(first.children[4].textContent, /^Record: artifacts\//);
+  refuse = Object.assign(new Error('Service refused the request: unauthorized.'), {status:401});
+  $('refresh-systems').listeners.click(); for (let turn = 0; turn < 5; turn++) await settle();
+  assert.equal(signIns, 1, 'a signed-out answer opens sign-in'); assert.equal($('systems-login').hidden, false);
+  assert.equal($('systems-view').hidden, true, 'nothing recorded stays on screen after a refusal');
+  console.log('systems view scenario passed');
+})().catch(error => { console.error(error); process.exitCode = 1; });
+"""
+
+
+@unittest.skipUnless(shutil.which("node"), "the page script check runs the real script under Node")
+class SystemsPage(unittest.TestCase):
+
+    def fixtures(self, folder):
+        live = systems_view.live_reading({"alive": True, "ready": True, "checks": [
+            {"name": "durable_store_answers", "required": True, "passed": True, "code": ""}],
+            "service_version": "unknown", "release_reference": "", "catalogue_release": None}, "2026-10-16T12:00:00Z")
+        answers = {"overview": systems_view.staff_view({"view": "overview"}, live=live),
+                   "entry": systems_view.staff_view({"view": "entry", "entry": "fly-release-93"}),
+                   "states": {state: systems_view.staff_view({"view": "state", "state": state, "page": 1})
+                              for state in systems_view.STATES}}
+        path = Path(folder) / "answers.json"
+        path.write_text(json.dumps(answers), "utf-8")
+        return path
+
+    def run_scenario(self, script):
+        with tempfile.TemporaryDirectory(prefix="systems-page-") as folder:
+            return subprocess.run(["node", "-e", SCENARIO, str(script), str(self.fixtures(folder))], cwd=ROOT,
+                                  text=True, capture_output=True, timeout=60)
+
+    def test_the_page_lists_each_state_separately_labels_the_live_reading_and_signs_in_again(self):
+        result = self.run_scenario(SCRIPT)
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertIn("systems view scenario passed", result.stdout)
+
+    def test_a_script_that_merges_the_states_is_refused(self):
+        source = SCRIPT.read_text("utf-8")
+        merged = source.replace('const target = $("systems-state-" + state);', 'const target = $("systems-state-failed");')
+        self.assertNotEqual(merged, source)
+        with tempfile.TemporaryDirectory(prefix="systems-page-wrong-") as folder:
+            wrong = Path(folder) / "systems-view.js"
+            wrong.write_text(merged, "utf-8")
+            result = self.run_scenario(wrong)
+        # KNOWN_WRONG: drawing every state into one list fails the scenario.
+        self.assertNotEqual(result.returncode, 0)
+
+    def test_the_page_has_one_systems_view_with_one_heading_and_five_state_lists(self):
+        page = PAGE.read_text("utf-8")
+        self.assertEqual(page.count('<section data-view="systems"'), 1)
+        start = page.index('<section data-view="systems"')
+        view = page[start:page.index("\n    </section>\n", start)]
+        self.assertEqual(view.count("<h1"), 1)
+        self.assertEqual(re.findall(r'id="systems-state-([a-z]+)"', view), ["failed", "pending", "skipped", "unknown", "passed"])
+        self.assertIn('data-after-login="/admin/systems"', view)
+        self.assertIn('<script defer src="/assets/systems-view.js"></script>', page)
+        self.assertIn('href="/admin/systems" data-page="systems"', page)
+        script = (ROOT / "src/loop_engine/core/service_runtime/web_assets/service.js").read_text("utf-8")
+        self.assertIn('"/admin/systems":"systems"', script)
+        self.assertEqual(web_pages.WEB_ASSETS["/admin/systems"], ("index.html", web_pages.HTML_MEDIA_TYPE))
+        from loop_engine.core.service_runtime.web_site_map import load_site_map
+        listed = next(page for page in load_site_map().pages if page.address == "/admin/systems")
+        self.assertEqual((listed.view, listed.title, listed.indexed), ("systems", "Systems", False))
 
 
 if __name__ == "__main__":

@@ -83,8 +83,8 @@ main:has(> [data-view="start"]:not([hidden])),main:has(> [data-view="confirm"]:n
 :is([data-view=account],[data-view=admin]) :is(.button.quiet,button.quiet){background:var(--paper);color:var(--ink);border-color:var(--line-strong)}
 :is([data-view=account],[data-view=admin]) :is(.button.quiet:hover,button.quiet:not(:disabled):hover){border-color:var(--ink);color:var(--ink)}
 :is([data-view=account],[data-view=admin]) :is(.button,button){min-height:44px;border-radius:var(--radius-button);font-size:.9375rem}
-[data-view=account]>.page-heading.account-head,[data-view=admin]>.page-heading.admin-head{gap:1rem 2rem;flex-wrap:wrap}
-[data-view=account] .account-head .intro,[data-view=admin] .admin-head .intro{margin:.5rem 0 0;max-width:40rem;color:var(--muted);font-size:.9375rem;line-height:1.5}
+[data-view=account]>.page-heading.account-head,:is([data-view=admin],[data-view=systems])>.page-heading.admin-head{gap:1rem 2rem;flex-wrap:wrap}
+[data-view=account] .account-head .intro,:is([data-view=admin],[data-view=systems]) .admin-head .intro{margin:.5rem 0 0;max-width:40rem;color:var(--muted);font-size:.9375rem;line-height:1.5}
 [data-view=account] .account-head-actions{display:flex;flex-wrap:wrap;gap:.75rem;flex:0 1 auto;max-width:100%}
 [data-view=account] .account-head-actions .button{white-space:normal;max-width:100%;padding:0 1.125rem}
 
@@ -168,8 +168,24 @@ dl.account-tiles>p{grid-column:1/-1;margin:0}
 [data-view=admin] #issue-access{display:flex;flex-direction:column}
 [data-view=admin] #issue-access button{align-self:flex-start}
 [data-view=admin] #admin-login{display:inline-flex;align-items:center;min-height:44px;font-weight:600}
+/* The staff Systems view. Each result state keeps its own list and its own badge colour; nothing merges them. */
+[data-view=systems]>#systems-message{margin:0 0 1.25rem;color:var(--muted)}
+[data-view=systems] #systems-login{display:inline-flex;align-items:center;min-height:44px;font-weight:600}
+[data-view=systems] .panel.account-card{margin:0 0 1.5rem}
+[data-view=systems] .systems-state{margin:1.5rem 0 0}
+[data-view=systems] .systems-state>summary,[data-view=systems] #systems-index>summary{padding:.7rem 0;cursor:pointer}
+[data-view=systems] .systems-state>summary h3{display:inline;margin:0}
+[data-view=systems] #systems-index>summary{color:var(--accent);font-weight:600}
+#systems-view .admin-rows .result button{min-height:44px}
+[data-view=systems] .systems-state>button{margin-top:.5rem}
+[data-view=systems] #systems-entry-detail:not(:empty){margin-top:1.25rem;padding-top:1rem;border-top:1px solid var(--border)}
+[data-view=systems] .admin-rows .result[data-state=passed] .badge{background:var(--ok-soft);color:var(--ok)}
+[data-view=systems] .admin-rows .result[data-state=failed] .badge{background:var(--error-soft);color:var(--error)}
+[data-view=systems] .admin-rows .result[data-state=pending] .badge{background:var(--warn-soft);color:var(--warn)}
+[data-view=systems] .admin-rows .result:is([data-state=skipped],[data-state=unknown]) .badge{background:var(--planned-soft);color:var(--planned)}
+[data-view=systems] .admin-rows .result p.caption{font-size:.8125rem}
 @media(max-width:600px){
-  :is([data-view=account],[data-view=admin]) .panel.account-card{padding:1.125rem}
+  :is([data-view=account],[data-view=admin],[data-view=systems]) .panel.account-card{padding:1.125rem}
   [data-view=account] .account-head-actions{width:100%}
   [data-view=account] .account-head-actions .button{flex:1 1 auto}
   dl.account-tiles{grid-template-columns:repeat(2,minmax(0,1fr));gap:.5rem}
