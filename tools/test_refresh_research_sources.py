@@ -8,6 +8,7 @@ import unittest
 from copy import deepcopy
 from io import BytesIO
 from pathlib import Path
+from urllib.error import HTTPError
 
 from tools import refresh_research_sources as watch
 
@@ -290,3 +291,50 @@ class ReportChecks(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class GitHubTokenChecks(unittest.TestCase):
+    """The optional token reaches only the GitHub API; a spent request limit is named."""
+
+    COMMITS = json.dumps([{"sha": "b" * 40}]).encode()
+
+    def test_the_token_goes_to_the_github_api(self):
+        opener = FakeOpener(response=FakeResponse(self.COMMITS))
+        report = watch.run_watch([SOURCE], online=True, opener=opener, github_token="token-value")
+        self.assertEqual("Bearer token-value", opener.requests[0][0].get_header("Authorization"))
+        self.assertTrue(report["github_requests_authenticated"])
+        self.assertNotIn("token-value", json.dumps(report))
+
+    def test_known_wrong_a_web_page_never_receives_the_token(self):
+        page = dict(SOURCE, id="example_page", kind="web_page", url="https://arxiv.org/abs/2609.20519")
+        del page["baseline_revision"]
+        opener = FakeOpener(response=FakeResponse(b"page"))
+        watch.run_watch([page], online=True, opener=opener, github_token="token-value")
+        self.assertIsNone(opener.requests[0][0].get_header("Authorization"))
+
+    def test_without_a_token_no_authorization_is_sent(self):
+        opener = FakeOpener(response=FakeResponse(self.COMMITS))
+        report = watch.run_watch([SOURCE], online=True, opener=opener)
+        self.assertIsNone(opener.requests[0][0].get_header("Authorization"))
+        self.assertFalse(report["github_requests_authenticated"])
+
+    def test_a_spent_request_limit_is_reported_as_rate_limited(self):
+        url = "https://api.github.com/repos/example/project/commits?per_page=1"
+        for code, headers in ((403, {"X-RateLimit-Remaining": "0"}), (429, {"Retry-After": "60"})):
+            with self.subTest(code=code):
+                error = HTTPError(url, code, "limit", headers, None)
+                row = watch.run_watch([SOURCE], online=True, opener=FakeOpener(error=error))["sources"][0]
+                self.assertEqual("rate_limited", row["failure"]["kind"])
+                self.assertEqual("unknown", row["change"])
+
+    def test_known_wrong_a_plain_forbidden_answer_stays_an_http_status(self):
+        error = HTTPError("https://api.github.com/repos/example/project/commits?per_page=1", 403, "forbidden",
+                          {"X-RateLimit-Remaining": "41"}, None)
+        row = watch.run_watch([SOURCE], online=True, opener=FakeOpener(error=error))["sources"][0]
+        self.assertEqual({"kind": "http_status", "detail": "HTTP 403"}, row["failure"])
+
+    def test_the_daily_workflow_gives_the_watch_step_its_own_token(self):
+        root = Path(__file__).resolve().parents[1]
+        workflow = (root / ".github/workflows/research-watch.yml").read_text("utf-8")
+        step = workflow.split("- name: Check every watched source", 1)[1].split("- name:", 1)[0]
+        self.assertIn(watch.GITHUB_TOKEN_VARIABLE + ": ${{ github.token }}", step)

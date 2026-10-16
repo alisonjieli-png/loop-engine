@@ -46,6 +46,10 @@ jobs:
           done
       - name: Check every watched source
         id: watch
+        env:
+          # Read-only token for api.github.com requests only; GitHub allows 60
+          # unauthenticated requests an hour per address, which a shared runner can exhaust.
+          GITHUB_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
           report="$RUNNER_TEMP/research-watch.json"

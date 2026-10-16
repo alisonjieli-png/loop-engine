@@ -594,6 +594,24 @@ entries:
   rationale: "Reviewed October 11, 2026: this exact owner-requested repository URL belongs to the validated source-watch manifest, not a hidden implementation endpoint. One bounded anonymous revision read succeeded and its baseline is recorded. The reader enforces HTTPS, the GitHub repository shape, no redirects, unique identities and a 50-request ceiling. Source-specific notes retain code, media and service rights limits. Change detection grants no installation, execution or publication authority; changed URLs remain new findings. tools/test_refresh_research_sources.py checks the manifest and refusal boundaries."
   created_on: '2026-10-11'
   expires_on: '2027-01-11'
+- finding_id: hardcoding.1d719129dcb27e0815f0718a
+  owner: "tools.research_source_watch.json:sources[8].url"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed October 15, 2026: agentplugins.io stopped resolving, so the watch reads the same Agent Plugins specification at its primary repository, which docs/research/HARNESS-PACKAGE-STANDARDS-AND-INTERFACES-2026-09-23.md already cites. One bounded read of public revision metadata succeeded and baseline ff8ab5e392cc87bd88d87c060815a87490e51003 is recorded. Repository licence metadata reports NOASSERTION; change detection grants no installation, execution or publication authority. The reader keeps HTTPS, the GitHub repository shape, no redirects and the 50-request ceiling. Another URL creates a different finding."
+  created_on: '2026-10-15'
+  expires_on: '2027-01-15'
+- finding_id: hardcoding.82d628e6931b7959cc163c3a
+  owner: "tools.research_source_watch.json:sources[13].url"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed October 15, 2026: the earlier jfrog.com/help address answers 301 to docs.jfrog.com, and the watcher refuses redirects. The Markdown form of the same documentation page (26 KB, text/markdown) replaces the 2.5 MB HTML shell, so one bounded read stays under the 512 KB limit; the bounded read succeeded. docs.jfrog.com joins the page-host allowlist in tools/refresh_research_sources.py. JFrog product documentation implies no artifact licence. Another URL creates a different finding."
+  created_on: '2026-10-15'
+  expires_on: '2027-01-15'
+- finding_id: hardcoding.5b3d4e48fd1ebcd2afd90ba8
+  owner: "tools.research_source_watch.json:sources[18].url"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed October 15, 2026: the earlier app-guidelines.md address answers 301 to plugin-guidelines.md on the same allowlisted host, and the watcher refuses redirects. One bounded read of the new page succeeded. Change detection only; exact code, content, asset and service rights are reviewed per intended use. Another URL creates a different finding."
+  created_on: '2026-10-15'
+  expires_on: '2027-01-15'
 - finding_id: hardcoding.c9cf27114430ad12fd7d9055
   owner: "tools.knowledge_radar.greenhouse_intake:GreenhouseGet.__init__"
   classification: DEPLOYMENT_CONFIGURATION

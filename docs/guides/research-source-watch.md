@@ -28,7 +28,11 @@ manifest's exact baseline, and a failure when a check did not complete. Each
 report includes the manifest and tool digests used for that attempt.
 The tool reads at most 12 sources by default, with a five-second timeout and
 512 kilobytes per response. It does not follow redirects or use environment
-proxies or credentials. Page hosts are an explicit small allowlist in the
+proxies. Its only credential is an optional read-only token in `GITHUB_TOKEN`,
+sent to `api.github.com` alone. The daily workflow passes its own token,
+because GitHub allows 60 unauthenticated requests an hour per address and a
+shared runner can spend that before fifty sources are read; a spent limit is
+reported as `rate_limited`. Page hosts are an explicit small allowlist in the
 tool; adding a new host requires source review and a code change. A move,
 authentication requirement, rate limit, or unavailable source appears as a
 failure for human review.

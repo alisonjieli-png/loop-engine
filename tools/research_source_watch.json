@@ -70,11 +70,12 @@
     {
       "id": "agent_plugins_spec",
       "name": "Agent Plugins packaging specification",
-      "kind": "web_page",
-      "url": "https://agentplugins.io",
+      "kind": "github_repository",
+      "url": "https://github.com/agentplugins/agent-plugins-spec",
       "roadmap_step": "S-6.44",
       "license_state": "unknown",
-      "note": "Portable plugin contract; a client may conform while supporting only one component type (skills or MCP servers), so package-level badges cannot replace per-feature compatibility records."
+      "note": "Portable plugin contract; a client may conform while supporting only one component type (skills or MCP servers), so package-level badges cannot replace per-feature compatibility records. The agentplugins.io site stopped resolving by October 16, 2026; the specification repository is watched instead.",
+      "baseline_revision": "ff8ab5e392cc87bd88d87c060815a87490e51003"
     },
     {
       "id": "microsoft_apm",
@@ -116,7 +117,7 @@
       "id": "jfrog_agent_skills",
       "name": "JFrog Artifactory agent-skills repository type (open beta)",
       "kind": "web_page",
-      "url": "https://jfrog.com/help/r/jfrog-artifactory-documentation/skills-repositories",
+      "url": "https://docs.jfrog.com/artifactory/docs/skills-repositories.md",
       "roadmap_step": "S-6.62",
       "license_state": "JFrog product documentation; no artifact licence implied",
       "note": "Actual private package storage with SKILL.md indexing and a ClawHub-compatible API (jf agent skills). Scanning depends on Xray configuration: presence in the registry never means scanned or approved."
@@ -158,7 +159,7 @@
       "id": "openai_plugin_policy",
       "name": "OpenAI public plugin requirements",
       "kind": "web_page",
-      "url": "https://developers.openai.com/plugins/app-guidelines.md",
+      "url": "https://developers.openai.com/plugins/plugin-guidelines.md",
       "roadmap_step": "S-6.183",
       "license_state": "Change detection only; exact code, content, asset and service rights are reviewed per intended use.",
       "note": "A change is a research candidate, not approval to install, execute, copy or publish."

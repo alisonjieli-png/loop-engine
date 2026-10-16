@@ -9,6 +9,7 @@ import argparse
 import hashlib
 import ipaddress
 import json
+import os
 import re
 import socket
 import sys
@@ -32,7 +33,14 @@ MAX_MANIFEST_SOURCES = 50
 MAX_ONLINE_SOURCES = 50
 ALLOWED_PAGE_HOSTS = frozenset({"arxiv.org", "modelcontextprotocol.io",
                                  "agentplugins.io", "skills.sh", "www.skills.sh",
-                                 "jfrog.com", "developers.openai.com"})
+                                 "jfrog.com", "docs.jfrog.com", "developers.openai.com"})
+#: The only host that receives the optional GitHub token. Redirects are refused, so a
+#: token sent here cannot be forwarded to another host.
+GITHUB_API_HOST = "api.github.com"
+#: Environment variable the daily workflow fills with its own read-only token. Without
+#: it, GitHub allows 60 unauthenticated requests an hour per address, which a shared
+#: runner can exhaust before the watch finishes.
+GITHUB_TOKEN_VARIABLE = "GITHUB_TOKEN"
 
 
 class _NoRedirect(HTTPRedirectHandler):
@@ -133,15 +141,18 @@ def _validator_header(value: Any) -> str | None:
 
 
 def fetch_source(source: dict[str, Any], *, timeout_seconds: float,
-                 max_bytes: int, opener: Any = None) -> dict[str, Any]:
+                 max_bytes: int, opener: Any = None, github_token: str | None = None) -> dict[str, Any]:
     """Fetch a bounded public observation. Response bodies are never returned."""
     opener = opener or build_opener(ProxyHandler({}), _NoRedirect())
     request_url = _request_url(source)
-    request = Request(request_url, headers={
+    headers = {
         "User-Agent": "Loop-Engine-research-source-watch/1",
         "Accept": "application/vnd.github+json" if source["kind"] == "github_repository" else "text/html,*/*;q=0.1",
         "Accept-Encoding": "identity",
-    }, method="GET")
+    }
+    if github_token and urlsplit(request_url).hostname == GITHUB_API_HOST:
+        headers["Authorization"] = "Bearer " + github_token
+    request = Request(request_url, headers=headers, method="GET")
     with opener.open(request, timeout=timeout_seconds) as response:
         body = _read_bounded(response, max_bytes)
         observed: dict[str, Any] = {
@@ -166,6 +177,9 @@ def fetch_source(source: dict[str, Any], *, timeout_seconds: float,
 
 def _failure(error: BaseException) -> dict[str, str]:
     if isinstance(error, HTTPError):
+        headers = error.headers if error.headers is not None else {}
+        if error.code in (403, 429) and (headers.get("X-RateLimit-Remaining") == "0" or headers.get("Retry-After")):
+            return {"kind": "rate_limited", "detail": f"HTTP {error.code} request limit reached"}
         return {"kind": "http_status", "detail": f"HTTP {error.code}"}
     if isinstance(error, (TimeoutError, socket.timeout)) or isinstance(getattr(error, "reason", None), TimeoutError):
         return {"kind": "timeout", "detail": "request timed out"}
@@ -204,7 +218,8 @@ def load_prior_observations(directory: Path) -> dict[tuple[str, str, str], tuple
 def run_watch(sources: list[dict[str, Any]], *, online: bool,
               prior: dict[tuple[str, str, str], tuple[str, str]] | None = None,
               timeout_seconds: float = 5.0, max_bytes: int = 512_000,
-              max_online_sources: int = 12, opener: Any = None) -> dict[str, Any]:
+              max_online_sources: int = 12, opener: Any = None,
+              github_token: str | None = None) -> dict[str, Any]:
     if not 0 < timeout_seconds <= 10 or not 1024 <= max_bytes <= 1_000_000:
         raise ValueError("online request limits are out of range")
     if not 1 <= max_online_sources <= MAX_ONLINE_SOURCES:
@@ -226,7 +241,8 @@ def run_watch(sources: list[dict[str, Any]], *, online: bool,
         if online:
             try:
                 observation = fetch_source(source, timeout_seconds=timeout_seconds,
-                                           max_bytes=max_bytes, opener=opener)
+                                           max_bytes=max_bytes, opener=opener,
+                                           github_token=github_token)
             except (HTTPError, URLError, TimeoutError, OSError, ValueError, json.JSONDecodeError) as error:
                 row["failure"] = _failure(error)
             else:
@@ -248,6 +264,7 @@ def run_watch(sources: list[dict[str, Any]], *, online: bool,
             "mode": "online" if online else "offline_validation",
             "limits": {"timeout_seconds": timeout_seconds, "max_bytes": max_bytes,
                        "max_online_sources": max_online_sources},
+            "github_requests_authenticated": bool(github_token) if online else False,
             "sources": rows,
             "interpretation": "Changes are review prompts, not source claims, candidate approval, or runtime authority."}
 
@@ -278,7 +295,8 @@ def main(argv: list[str] | None = None) -> int:
         report = run_watch(sources, online=args.online, prior=prior,
                            timeout_seconds=args.timeout_seconds,
                            max_bytes=args.max_bytes,
-                           max_online_sources=args.max_online_sources)
+                           max_online_sources=args.max_online_sources,
+                           github_token=os.environ.get(GITHUB_TOKEN_VARIABLE) or None)
         report["manifest_sha256"] = hashlib.sha256(raw).hexdigest()
         report["tool_sha256"] = hashlib.sha256(Path(__file__).read_bytes()).hexdigest()
         write_new_report(output, report)
