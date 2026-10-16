@@ -5144,7 +5144,7 @@ steps:
     title: "Every owner request tracked: one ledger row per request with its steps and live state, checked against the roadmap and reported daily"
     status: building
     depends_on: [S-6.76]
-    boundary: [docs/context/OWNER-REQUESTS-LEDGER-2026-09.md, tools/owner_requests_ledger.py, artifacts/owner-requests]
+    boundary: [docs/context/OWNER-REQUESTS-LEDGER-2026-09.md, docs/context/OWNER-REQUESTS-LEDGER-2026-10.md, tools/owner_requests_ledger.py, artifacts/owner-requests]
     verify:
       - "every owner request since September 21, 2026 has one row with the owner's words or a marked summary, its source, the roadmap steps that answer it and one of six states"
       - "the ledger tool reports every request whose steps are not live, every request with no step, every roadmap step no request names and every unknown step identifier, and writes a dated record"

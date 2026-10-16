@@ -25,8 +25,9 @@ Read the [October 15 Claude takeover handoff](SESSION-HANDOFF-2026-10-15-CLAUDE-
 first. Antigravity and Gemini ran out of quota, and Claude took over
 operations. The live pulse and Research watch monitors are green again, the
 temp reaper keeps gate environments, and the internal systems portal requires
-sign-in. Release 93 is unchanged. Public Good access grants expire on
-October 31 and November 1 UTC and need renewal before then.
+sign-in. Release 93 is unchanged. On October 16 the Public Good access grants
+were renewed to February 1, 2027 and the administrator key was rotated to
+January 14, 2027 (records in `artifacts/architecture-audit-2026-09-19/`).
 
 Then read the [October 15 takeover handoff](SESSION-HANDOFF-2026-10-15-TAKEOVER.md)
 and [current deployment](../architecture/MVP-CLIENT-SERVER.md#current-deployment)
