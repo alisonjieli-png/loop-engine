@@ -801,6 +801,20 @@ its health record the same way. Every other route keeps the methods
 still answers 404. `tools/test_http_head_reads.py` holds this on real loopback
 HTTP, with a known-wrong control that removes the rule.
 
+## HTTPS on the brand hostnames
+
+The brand hostnames reach Fly directly, and Fly redirects plain HTTP before
+the service answers (`force_https` in `fly.toml`). Since October 16, 2026
+every answer of a brand presentation whose origin is HTTPS carries
+`Strict-Transport-Security: max-age=31536000`, protocol answers included,
+without `includeSubDomains` or `preload`, which would bind hostnames this
+service does not answer. The Baltor hostnames sit behind the edge zone, which
+sends the same header for every proxied host, so the base presentation sends
+none and a browser never reads it twice. `transport_security_headers` in
+`http.py` decides it, and `tools/test_brand_transport_security.py` holds it
+for all five brands, their `www` hostnames and the Baltor hostnames, with
+known-wrong controls for a missing and a doubled header.
+
 ## Failed-attempt limit for each client address
 
 This section describes current behavior. The HTTP transport counts refused

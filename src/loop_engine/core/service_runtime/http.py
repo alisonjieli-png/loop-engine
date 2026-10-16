@@ -334,6 +334,22 @@ def without_content(response):
     return response
 
 
+#: A browser that reaches a brand hostname keeps to HTTPS there for a year. Those hostnames reach Fly directly, and
+#: Fly's proxy redirects plain HTTP before this service answers (`force_https` in fly.toml), so the service is the one
+#: that says it. The Baltor hostnames sit behind the edge zone, which sends this header for every proxied host, so the
+#: base presentation sends none and no browser reads it twice. No includeSubDomains and no preload: either would bind
+#: hostnames this service does not answer.
+STRICT_TRANSPORT_SECURITY = "max-age=31536000"
+
+
+def transport_security_headers(application):
+    """`Strict-Transport-Security` for a brand presentation on an HTTPS origin; nothing for the base presentation."""
+    profile = getattr(application, "brand_profile", None)
+    if profile is None or not profile.public_base_url.startswith("https://"):
+        return {}
+    return {"Strict-Transport-Security": STRICT_TRANSPORT_SECURITY}
+
+
 class ServiceHttpError(ValueError):
     """A bounded versioned transport refusal with no private exception text; no other failure adds details or headers.
 
@@ -2707,7 +2723,7 @@ class ServiceHttpApplication:
                         if message["type"] == "http.response.start":
                             message = {**message, "headers": list(message.get("headers", ()))
                                        + [(key.lower().encode(), value.encode()) for key, value in {
-                                           **cors, "Cache-Control": "no-store",
+                                           **cors, **transport_security_headers(application), "Cache-Control": "no-store",
                                            "X-Content-Type-Options": "nosniff"}.items()]}
                         await send(message)
                     await managers[profile].handle_request(scope, replay, protocol_send)
@@ -2786,6 +2802,7 @@ class ServiceHttpApplication:
             if cacheable_asset and feed_source_collections.handles(request.url.path):
                 response.headers["Cache-Control"] = feed_source_collections.CACHE_CONTROL
             response.headers["X-Content-Type-Options"] = "nosniff"
+            response.headers.update(transport_security_headers(application))
             await response(scope, receive, send)
         return Starlette(routes=[Mount("/", app=transport)], lifespan=lifespan)
 
