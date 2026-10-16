@@ -159,7 +159,7 @@ class AgentStudiosCreativeTests(unittest.TestCase):
         for item in pages.public_items():
             self.assertTrue(set(pages.media_lenses(item)) <= {key for key, _ in pages.LENSES})
         html = pages.render('/library')[0].decode()
-        self.assertIn('do not claim a complete stock library or a hosted editor', html)
+        self.assertIn('editing happens in the tools you choose', html)
         self.assertIn('name="media"', html)
         self.assertIn('data-public-search', html)
 
@@ -175,7 +175,7 @@ class AgentStudiosCreativeTests(unittest.TestCase):
             self.assertIn(item['sha256'], body)
             self.assertIn(item['source_version'], body)
             self.assertIn('controls preload="none"', body)
-            self.assertIn('not an item from the account-authorized library', body)
+            self.assertIn('separate from the account-authorized library', body)
             self.assertNotIn('autoplay', body)
             self.assertIn(item['url'], pages.SHARED_ASSETS)
             self.assertIn(item['source_page'], pages.SHARED_ASSETS)

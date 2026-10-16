@@ -78,7 +78,8 @@ class AgentFeedsPagesTests(unittest.TestCase):
         self.assertIn(feed_profiles.current_directory().digest, html)
         for field in ('agent_label', 'collection_ids', 'source_ids', 'excluded_source_ids', 'report_format', 'requested_poll_interval_minutes'):
             self.assertIn('name="' + field + '"', html)
-        self.assertIn('No hosted feed or schedule is created', html)
+        self.assertIn('Settings stay in the files you save, ready for your harness.', html)
+        self.assertIn('a preference for your harness, which runs the schedule', html)
         self.assertIn('/assets/feed-profile.js?v=', html)
         self.assertNotIn('type="password"', html)
 
@@ -115,8 +116,8 @@ class AgentFeedsPagesTests(unittest.TestCase):
     def test_saved_collections_are_browser_local_and_reuse_current_directory(self):
         data = feed_profiles.current_directory()
         body = pages.render('/saved')[0].decode()
-        self.assertIn('not synced to an account', body)
-        self.assertIn('no hosted feed or schedule', body)
+        self.assertIn('separate from your account', body)
+        self.assertIn('Your own harness runs any reading schedule.', body)
         self.assertIn('id="saved-clear"', body)
         self.assertIn('id="saved-status" role="status"', body)
         for item in data.collections:

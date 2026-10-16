@@ -73,6 +73,6 @@
   if (service) read('/api/v1/health').then(value => {
     const result = value.result;
     if (!result || result.record_type !== 'service_health/v2' || typeof result.alive !== 'boolean' || typeof result.ready !== 'boolean') throw Error('The health response was not recognized.');
-    service.textContent = result.alive && result.ready ? 'The shared service is reachable and its readiness checks passed. This does not test every account or download operation.' : 'The service answered, but is not reporting ready. Try again later.';
+    service.textContent = result.alive && result.ready ? 'The shared service is reachable and its readiness checks passed. Account and download operations report their own status when you use them.' : 'The service answered, but is not reporting ready. Try again later.';
   }).catch(error => { service.textContent = error.name === 'AbortError' ? 'The service did not answer in time.' : error.message; });
 })();

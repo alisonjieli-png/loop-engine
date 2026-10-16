@@ -85,8 +85,8 @@ def _home(items):
             '<section class="section"><div class="section-heading"><div><p class="eyebrow">Open the actual material</p><h2>See what a component makes.</h2></div>'
             + _link('/examples', f'All {len(items)} public examples →', 'text-link') + '</div><div class="component-grid">' + ''.join(_tile(item) for item in featured) + '</div>'
             '<p class="quiet">Previews come from recorded component checks. Review each component’s limits before using it in your project.</p></section>'
-            '<section class="workflow section"><div><p class="eyebrow">A shorter path to building</p><h2>Find the part.<br>Keep your workflow.</h2><p>AgentFoundry connects to the shared component service. It does not replace your agent or run your model.</p></div>'
-            '<ol><li><span>01</span><div><h3>Ask for what the task needs</h3><p>Your connected agent searches short descriptions. It does not load the whole library into context.</p></div></li>'
+            '<section class="workflow section"><div><p class="eyebrow">A shorter path to building</p><h2>Find the part.<br>Keep your workflow.</h2><p>AgentFoundry connects to the shared component service. Your agent and your model keep doing the work.</p></div>'
+            '<ol><li><span>01</span><div><h3>Ask for what the task needs</h3><p>Your connected agent searches short descriptions and loads only what the task needs.</p></div></li>'
             '<li><span>02</span><div><h3>Inspect before downloading</h3><p>Check the files, licence, requirements, declared effects and recorded tests.</p></div></li>'
             '<li><span>03</span><div><h3>Use it in your own project</h3><p>Retrieve the exact version. Run its checks in the environment where the result needs to work.</p></div></li></ol></section>'
             '<section class="closing"><div><p class="eyebrow">Keep your agent. Improve its starting point.</p><h2>What are you building?</h2></div>' + _link('/connect', 'Connect an agent →', 'button primary') + '</section>')
@@ -111,21 +111,21 @@ def _detail(item):
             + ''.join('<li><code>' + escape(entry['path']) + '</code></li>' for entry in item['files']) + '</ul></section>'
             '<section class="reading"><h2>How it works</h2><dl class="facts">'
             + ''.join('<dt>' + escape(key) + '</dt><dd>' + escape(value) + '</dd>' for key, value in item['contract']) + '</dl></section>'
-            '<section class="reading"><h2>Recorded checks</h2><p>' + escape(checks.get('engine', 'See the package verification files.')) + '</p><ul>'
+            '<section class="reading"><h2>Recorded checks</h2><p>' + escape(checks.get('engine', 'See the component’s verification files.')) + '</p><ul>'
             + ''.join('<li><code>' + escape(name) + '</code></li>' for name in checks.get('names', [])) + '</ul><h3>Limits to consider</h3><p>' + escape(item['limits']) + '</p></section></article>'
             '<aside class="panel"><p class="eyebrow">Retrieve with your agent</p><h2>Inspect, then bring it in.</h2><p>These are public descriptions and previews. The service checks current access before delivering files.</p>'
             + _copy(item['identity'], 'Component identity') + _copy(item['version'], 'Exact version')
             + '<dl class="facts"><dt>Licence</dt><dd>' + escape(item['licence']) + '</dd><dt>Declared effects</dt><dd>' + escape(', '.join(item['declared_effects']) or 'None') + '</dd></dl>'
             '<p>Ask your connected agent to inspect this identity and version, explain its requirements, then request your approval for use.</p>'
-            + _link('/connect', 'Connect your agent →', 'button primary') + '<p class="quiet">A file download does not install or run the component.</p></aside></div>')
+            + _link('/connect', 'Connect your agent →', 'button primary') + '<p class="quiet">You install and run the component yourself after download.</p></aside></div>')
 
 
 def _library():
     return (_intro('The component library', 'Useful files for the next step.', 'Skills and instructions, code modules, tool configurations and native working material. Your connected agent searches the account-authorized library and retrieves only the selected files.')
             + '<div class="split"><section class="reading"><h2>Search from your harness</h2><p>The full library uses authenticated search. Results carry a purpose, exact version, source, licence and declared effects. Your account determines which file bodies can be downloaded.</p>'
-            + _link('/connect', 'Connect and search →', 'button primary') + '</section><section class="panel"><p class="eyebrow">Before you use a component</p><h2>Read the requirements.</h2><p>Check its recorded tests and target tools. A catalogue entry or successful download is not proof that it works in your environment.</p></section></div>'
+            + _link('/connect', 'Connect and search →', 'button primary') + '</section><section class="panel"><p class="eyebrow">Before you use a component</p><h2>Read the requirements.</h2><p>Check its recorded tests and target tools, then run its checks in your own environment to confirm it works there.</p></section></div>'
             '<section class="section"><div class="section-heading"><div><p class="eyebrow">Public discovery</p><h2>Find Public Good components.</h2></div>' + _link('/examples', 'Browse creative examples →', 'text-link') + '</div>'
-            '<p>Search the current shared Public Good collection. Its selected files are available with an enabled account and no paid plan, subject to the published limits.</p>'
+            '<p>Search the current shared Public Good collection. Its selected files are free with an enabled account, subject to the published limits.</p>'
             '<form class="filters" data-public-search role="search"><label>Search component descriptions<input name="query" type="search" maxlength="200" placeholder="Try water, education or accessibility"></label><button class="button primary">Search</button></form>'
             '<p role="status" aria-live="polite" data-public-status>Loading the current collection…</p><div class="public-results" data-public-results></div>'
             '<div class="pagination"><button class="button secondary" type="button" data-public-previous disabled>Previous</button><button class="button secondary" type="button" data-public-next disabled>Next</button></div>'
@@ -139,22 +139,22 @@ def _connect(origin):
             + _link('/get-started', 'Create an account →', 'text-link') + '</section><section class="reading"><span class="step">02</span><h2>Make a small first request</h2><p>Ask your agent:</p>'
             '<blockquote>Search the component library for my task. Show the purpose, licence, required tools and declared effects of the best matches. Do not download or run anything yet.</blockquote>'
             '<p>The service exposes <code>intelligence_search</code>, <code>provisioning_manifest</code> and <code>provisioning_read</code>. Read the manifest before authorizing a download.</p></section>'
-            '<section class="reading"><span class="step">03</span><h2>Use the existing file client when needed</h2><p>The shared library skill supports Claude Code, Codex, OpenCode and Pi. Its Python client requires Python 3.10 or newer and POSIX file operations. It does not sign in or create a key for you.</p>'
+            '<section class="reading"><span class="step">03</span><h2>Use the existing file client when needed</h2><p>The shared library skill supports Claude Code, Codex, OpenCode and Pi. Its Python client requires Python 3.10 or newer and POSIX file operations. You supply your own sign-in and scoped key.</p>'
             '<ul class="file-list">' + ''.join('<li>' + _link('/assets/baltor-library/' + name, name) + '</li>' for name in CLIENT_FILES) + '</ul>'
             '<p>Keep the published files and checksums together. Read the client guide before installation. The upstream example names the shared service; this same-origin configuration uses AgentFoundry:</p>'
             '<a class="button secondary" href="/client.example.json" download="agentfoundry-client.example.json">Download AgentFoundry configuration</a>'
             '<p>Supply an existing scoped service key through the named environment variable. Never paste credentials into a prompt or a configuration file.</p></section></article>'
-            '<aside class="panel"><p class="eyebrow">Availability</p><h2>Files and access are separate.</h2><p>Public examples show metadata and previews. Downloads use your existing account entitlements. Public Good files require an enabled account but no paid plan.</p>'
-            '<p>Paid checkout is not offered on this standalone site. Existing subscriptions and grants remain unchanged. This launch does not include hosted model calls or a general cloud-tool allowance.</p>'
+            '<aside class="panel"><p class="eyebrow">Availability</p><h2>Files and access are separate.</h2><p>Public examples show metadata and previews. Downloads use your existing account entitlements. Public Good files are free with an enabled account.</p>'
+            '<p>Paid checkout is not offered on this standalone site. Existing subscriptions and grants remain unchanged. Model calls and cloud tools run on your own accounts.</p>'
             + _link('/account', 'View your account →', 'text-link') + '</aside></div>')
 
 
 def _help():
     answers = (("What can I use now?", "Public component previews, file manifests and the Public Good discovery view are available here. Connect a supported harness to search and retrieve files using your existing account access."),
-               ("Does AgentFoundry build an entire agent for me?", "The current service supplies reusable parts. Your harness still selects, places and checks them. Automatic whole-agent setup and qualified hosted tools remain separate work."),
-               ("Where do my models run?", "In the environment and provider you choose. This website does not ask for a model key or call a model for you."),
+               ("What does AgentFoundry give my agent?", "Reusable parts for its next task. Your harness selects, places and checks them."),
+               ("Where do my models run?", "In the environment and provider you choose, with your own model key."),
                ("Why do some files require access?", "Public metadata and delivery rights are different. The service checks the account, item version, declared effects and entitlement before delivering a body."),
-               ("Is this a separate account system?", "No. AgentFoundry is an independent interface operated by Baltor.AI over the same backend and account service. Browser sessions remain local to this origin."))
+               ("Which account does AgentFoundry use?", "The same Baltor.AI account service, through an independent interface operated by Baltor.AI. Browser sessions remain local to this origin."))
     return (_intro('Questions and limits', 'Know what you are connecting.', 'Start with a public example or a small metadata search. Inspect the result before giving your agent permission to use it.')
             + '<div class="faq">' + ''.join('<details><summary>' + escape(question) + '</summary><p>' + escape(answer) + '</p></details>' for question, answer in answers) + '</div>'
             '<p>For account trouble, use password recovery on the <a href="/login">sign-in page</a>. You can also <a href="/status">check service availability</a>. Do not include passwords or provider keys in a support request.</p>')

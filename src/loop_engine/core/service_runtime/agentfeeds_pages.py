@@ -66,7 +66,7 @@ def _card(item, number, data):
 
 def _saved(data):
     return (_intro("On this browser", "Your saved collections", "Keep useful collections together, then build a reading profile for your agent.")
-            + '<p class="quiet">Selections stay in this browser on this website. They are not synced to an account, and saving creates no hosted feed or schedule.</p>'
+            + '<p class="quiet">Selections stay in this browser on this website, separate from your account. Your own harness runs any reading schedule.</p>'
             '<div class="actions"><a id="saved-build" class="button primary" href="/build">Build a reading profile</a>'
             '<button id="saved-clear" type="button" class="button secondary">Clear saved collections</button></div>'
             '<p id="saved-empty">No collections saved here yet. <a href="/collections">Browse collections</a> to choose some.</p>'
@@ -82,7 +82,7 @@ def _home(data):
     return ('<section class="hero"><div><p class="eyebrow"><span class="live-dot"></span> A reading plan for every agent</p>'
             '<h1>Good decisions<br>start <em>upstream.</em></h1><p class="hero-copy">Give your agents the sources, comparison questions and reading instructions they need before they choose.</p>'
             '<div class="actions">' + _link("/build", "Build a reading profile", "button primary") + _link("/collections", "Explore collections ↗", "text-link") + '</div>'
-            '<p class="quiet">Public feeds. No account or model key needed.</p></div>'
+            '<p class="quiet">Public feeds, open to everyone. Your agent reads them with its existing access.</p></div>'
             f'<aside class="specimen" aria-label="An actual source collection"><div class="specimen-bar"><span class="specimen-label">Inside a collection</span><span>01 / {len(data.collections)}</span></div>'
             f'<p class="eyebrow">{escape(first.group)}</p><h2>{escape(first.title)}</h2><p>{escape(first.decision_question)}</p>'
             '<ul class="specimen-sources">' + sources + '</ul><div class="specimen-question"><span>One thing to compare</span>'
@@ -96,7 +96,7 @@ def _home(data):
             + "".join(_card(item, index + 1, data) for index, item in enumerate(data.collections[:3])) + '</div></section>'
             '<section class="how section"><div><p class="eyebrow">From source to decision</p><h2>Your agent reads.<br>You keep control.</h2>'
             '<p>These are curated source references and research questions. Your agent checks the original sources and makes a comparison for your task.</p></div>'
-            '<ol><li><span>01</span><div><h3>Choose its reading list</h3><p>Start with a collection. Add individual sources and leave out what does not apply.</p></div></li>'
+            '<ol><li><span>01</span><div><h3>Choose its reading list</h3><p>Start with a collection. Add individual sources and keep only what applies.</p></div></li>'
             '<li><span>02</span><div><h3>Take the files with you</h3><p>Download the profile and its reading guide into your agent’s project.</p></div></li>'
             '<li><span>03</span><div><h3>Read before the next decision</h3><p>Use your own harness to read the sources. Its permissions and schedule stay yours.</p></div></li></ol></section>'
             '<section class="closing"><p class="eyebrow">A useful starting point</p><h2>Build your first reading profile.</h2>'
@@ -129,7 +129,7 @@ def _detail(item, data, origin):
             + _copy(origin + path + '.json', "JSON Feed") + _copy(origin + path + '.rss', "RSS feed")
             + '<div class="actions">' + _link(path + '.md', 'Read Markdown') + _link(path + '.json', 'Read JSON')
             + _link(path + '.rss', 'Read RSS') + '</div><hr><p>Need a different mix?</p>' + _link('/build?collection=' + item.id, 'Customize a profile →', 'button primary')
-            + f'<p class="quiet">Source documentation checked {escape(data.source_docs_checked_on)}. This date does not mean every upstream item was refreshed.</p></aside></div>')
+            + f'<p class="quiet">Source documentation checked {escape(data.source_docs_checked_on)}. Each upstream item keeps its own publication date.</p></aside></div>')
 
 
 def _copy(value, label):
@@ -148,34 +148,34 @@ def _build(data):
             '<p class="quiet">A short name for these files. Do not enter credentials or private project details.</p></section>'
             '<p class="builder-jump"><a href="#profile-output">Review and download ↓</a></p>'
             '<fieldset class="form-step"><legend><span class="step-number">02 / Collections</span> What will it decide?</legend>'
-            '<label class="choice-filter">Find a collection<input type="search" data-choice-search placeholder="Search decisions"></label><p class="quiet">Filtering does not change your selections.</p>'
+            '<label class="choice-filter">Find a collection<input type="search" data-choice-search placeholder="Search decisions"></label><p class="quiet">Filtering keeps your selections.</p>'
             + _choices(data.collections, "collection_ids", "title", "decision_question") + '</fieldset>'
-            '<details class="form-step"><summary>Fine-tune individual sources</summary><p>Add a source, or exclude it from your selected collections. A source cannot be both added and excluded.</p>'
+            '<details class="form-step"><summary>Fine-tune individual sources</summary><p>Add a source, or exclude it from your selected collections. Each source is either added or excluded.</p>'
             '<div class="source-columns"><fieldset><legend>Add sources</legend><label class="choice-filter">Find a source<input type="search" data-choice-search></label>' + _choices(data.sources, "source_ids", "name")
             + '</fieldset><fieldset><legend>Leave sources out</legend><label class="choice-filter">Find a source to exclude<input type="search" data-choice-search></label>' + _choices(data.sources, "excluded_source_ids", "name") + '</fieldset></div></details></div>'
             '<aside class="builder-summary" id="profile-output"><p class="eyebrow">Your reading profile</p><h2>Ready for your harness.</h2>'
             '<label>Report format<select name="report_format"><option value="markdown">Markdown</option><option value="json">JSON</option></select></label>'
             '<label>Requested reading interval<select name="requested_poll_interval_minutes"><option value="1440">Every day</option><option value="60">Every hour</option><option value="360">Every 6 hours</option><option value="10080">Every week</option></select></label>'
-            '<p class="quiet">This is a preference for your harness. Downloading a profile does not start a schedule.</p><button class="button primary" type="submit">Build reading profile</button>'
+            '<p class="quiet">This is a preference for your harness, which runs the schedule.</p><button class="button primary" type="submit">Build reading profile</button>'
             '<button class="reset" type="reset">Start another agent</button><p id="feed-profile-status" role="status" aria-live="polite">Choose at least one collection or individual source.</p>'
             '<div id="feed-profile-downloads" class="download-list" hidden></div><div class="file-note"><strong>Two files, owned by you</strong><code>profile.json</code><code>READING.md</code>'
-            '<p>Settings stay in the files you save. No hosted feed or schedule is created.</p></div></aside></form>'
+            '<p>Settings stay in the files you save, ready for your harness.</p></div></aside></form>'
             '<noscript><p>The profile builder needs JavaScript. You can still read and save the files on <a href="/collections">each collection page</a>.</p></noscript>')
 
 
 def _connect(data, origin):
     item = data.collections[0]
     url = origin + feed_source_collections.COLLECTION_PREFIX + item.id + '.md'
-    return (_intro("Connect an agent", "Bring a feed to the tools you use.", "Public source collections work with any harness that can read an HTTPS URL. No service key is needed.")
+    return (_intro("Connect an agent", "Bring a feed to the tools you use.", "Public source collections work with any harness that can read an HTTPS URL. The link is all it needs.")
             + '<div class="guide-layout"><ol class="guide-steps"><li><h2>Pick the decision</h2><p>Open a collection, or build a custom reading profile. Check the sources and the question before assigning it.</p>'
             + _link('/collections', 'Browse collections →') + '</li><li><h2>Add the reading instruction</h2><p>Put this in the agent’s task or its own project instructions. Replace the example with your chosen collection.</p>'
             + _copy('Read ' + url + ' before choosing. Check the original sources, compare like-for-like evidence, and state what you could not verify.', 'Agent instruction')
-            + '</li><li><h2>Check an actual read</h2><p>Ask the agent to name the directory date, source IDs and the decision question. A copied link alone is not a successful read.</p>'
-            '<pre><code>curl --fail --show-error ' + escape(url) + '</code></pre></li><li><h2>Choose when it reads</h2><p>Use your harness’s own task scheduler, or ask it to read before each decision. AgentFeeds does not activate a hosted schedule.</p>'
+            + '</li><li><h2>Check an actual read</h2><p>Ask the agent to name the directory date, source IDs and the decision question; a successful read can answer all three.</p>'
+            '<pre><code>curl --fail --show-error ' + escape(url) + '</code></pre></li><li><h2>Choose when it reads</h2><p>Use your harness’s own task scheduler, or ask it to read before each decision. Your harness keeps control of the schedule.</p>'
             '<p>Keep the response <code>ETag</code>. Send it as <code>If-None-Match</code> next time; an unchanged collection answers <code>304 Not Modified</code>.</p>'
             '<p>If your reader uses RSS, copy the RSS link from the collection. JSON Feed and Markdown carry the same sources and research questions.</p></li></ol>'
             '<aside class="takeaway"><p class="eyebrow">Working with profile files</p><h2>Keep each agent’s files together.</h2><p>Save <code>profile.json</code> and <code>READING.md</code> in that agent’s project. Follow the reading guide before configuring its cadence.</p>'
-            '<p>Use your existing harness and model access. A source link does not grant permission to copy material or run code.</p>' + _link('/build', 'Build a profile →', 'button primary') + '</aside></div>')
+            '<p>Use your existing harness and model access. Each source’s own licence and terms decide what you may copy or run.</p>' + _link('/build', 'Build a profile →', 'button primary') + '</aside></div>')
 
 
 def _pricing():
@@ -187,9 +187,9 @@ def _pricing():
 
 
 def _help():
-    answers = (("Are these live research results?", "The current collections contain source references and research questions. The date records a source-documentation review, not a refresh of every upstream article or score."),
-               ("Where are my reading profiles saved?", "In the files you download. The builder does not save account settings or configure hosted schedules. Keep a separate pair of files for each agent."),
-               ("A source changed while I was building.", "Reload the collection directory, review your choices and build again. An old selection is not silently expanded to include new sources."),
+    answers = (("Are these live research results?", "The current collections contain source references and research questions. The date records when the source documentation was last checked; each upstream article and score keeps its own date."),
+               ("Where are my reading profiles saved?", "In the files you download, which hold every setting. Your harness handles any schedule. Keep a separate pair of files for each agent."),
+               ("A source changed while I was building.", "Reload the collection directory, review your choices and build again. An old selection keeps exactly the sources you chose; add any new ones yourself."),
                ("The download did not finish.", "Your selections stay on the page after a failed request. Build again when the service is available. Do not use a file whose integrity check failed."),
                ("Can I use sources that need a key?", "A collection can describe such a source. Access comes from your own provider account and permissions; never put provider keys into an agent label or feed URL."))
     return (_intro("Help", "A clear next step.", "Understand the files, freshness and account controls before you depend on them.")

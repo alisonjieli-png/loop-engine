@@ -109,7 +109,7 @@ def _home(items):
             + _link('/library', 'Browse all public examples →', 'text-link') + '</div><div class="component-grid">' + previews + '</div>'
             '<p class="quiet">These are recorded renders of real components. Each detail page includes files, requirements, licence and the checks performed.</p></section>'
             '<section class="sound-stage"><div><p class="eyebrow">Picture. Sound. Source.</p><h2>Play the preview.<br>Open the project.</h2>'
-            '<p>Try the published motion and music demonstrations. Their source ZIP contains the editable score, procedural renderer and checks. No account is needed for these demo downloads.</p></div>'
+            '<p>Try the published motion and music demonstrations. Their source ZIP contains the editable score, procedural renderer and checks. These demo downloads are open to everyone.</p></div>'
             '<div class="demo-grid">' + ''.join(_media_tile(item) for item in original_media()) + '</div></section>'
             '<section class="workflow section"><div><p class="eyebrow">Your tools stay yours</p><h2>Use the material.<br>Keep creative control.</h2>'
             '<p>AgentStudios is a place to discover and retrieve working material. Editing, generation and rendering happen in the tools you choose.</p></div>'
@@ -119,16 +119,16 @@ def _home(items):
 
 
 def _library(items):
-    return (_intro('The creative library', 'Find your next starting point.', 'Browse components and original media demonstrations. The medium filters group public examples; they do not claim a complete stock library or a hosted editor.')
+    return (_intro('The creative library', 'Find your next starting point.', 'Browse components and original media demonstrations. The medium filters group the public examples, and editing happens in the tools you choose.')
             + '<form class="filters" data-example-filters role="search"><label>Search public examples<input name="query" type="search" maxlength="200" placeholder="Try a texture, shader, camera or music cue"></label>'
             '<label>Creative medium<select name="media"><option value="">Every medium</option>'
             + ''.join(f'<option value="{key}">{label}</option>' for key, label in LENSES) + '</select></label><button class="button secondary" type="reset">Clear</button></form>'
             '<p data-example-status role="status" aria-live="polite"></p><div class="component-grid">'
             + ''.join(_media_tile(item) for item in original_media()) + ''.join(_tile(item) for item in items) + '</div>'
-            '<p class="quiet">Component previews show recorded renders, not a general licence to reuse the preview image. Check the source licence and access notes. Original media demos have their own MIT licence.</p>'
+            '<p class="quiet">Component previews show recorded renders, and reuse of each preview follows its licence. Check the source licence and access notes. Original media demos have their own MIT licence.</p>'
             '<noscript><p>All public examples are shown. JavaScript adds search and medium filters.</p></noscript>'
             '<section class="section public-section"><div class="section-heading"><div><p class="eyebrow">Search beyond these examples</p><h2>The Public Good collection.</h2></div></div>'
-            '<p>Search current shared component metadata. Selected Public Good files need an enabled account but no paid plan, subject to the collection limits. Your connected agent can also search the wider account-authorized library.</p>'
+            '<p>Search current shared component metadata. Selected Public Good files are free with an enabled account, subject to the collection limits. Your connected agent can also search the wider account-authorized library.</p>'
             '<form class="filters" data-public-search role="search"><label>Search the shared collection<input name="query" type="search" maxlength="200" placeholder="Describe the task or tool you need"></label><button class="button primary">Search</button></form>'
             '<p role="status" aria-live="polite" data-public-status>Loading the current collection…</p><div class="public-results" data-public-results></div>'
             '<div class="pagination"><button class="button secondary" type="button" data-public-previous disabled>Previous</button><button class="button secondary" type="button" data-public-next disabled>Next</button></div>'
@@ -140,13 +140,13 @@ def _media_detail(item):
     return (_link('/library', '← Back to the library', 'back') + _intro('Original website demonstration', item['title'], item['summary'])
             + '<div class="detail-layout"><article><div class="media-player ' + tag + '"><' + tag + ' controls preload="none" aria-label="' + escape(item['title'], quote=True) + '">'
             '<source src="' + item['url'] + '" type="' + item['media_type'] + '">Use the preview download if your browser cannot play this format.</' + tag + '></div>'
-            '<section class="reading"><h2>Editable source, included.</h2><p>This is an original website demo, not an item from the account-authorized library. Its MIT licence covers the preview and the editable source. The ZIP includes the source, instructions and checks.</p>'
+            '<section class="reading"><h2>Editable source, included.</h2><p>This is an original website demo, separate from the account-authorized library. Its MIT licence covers the preview and the editable source. The ZIP includes the source, instructions and checks.</p>'
             + _link(item['source_page'], 'Download the source ZIP ↗', 'button primary') + '</section><section class="reading"><h2>Provenance</h2><p>' + escape(item['provenance']) + '</p>'
-            '<p>A short demonstration and its recorded checks do not prove a complete production workflow for your project.</p></section></article><aside class="panel"><p class="eyebrow">File details</p><h2>Inspect the version.</h2>'
+            '<p>Treat it as a starting point and run your project’s own checks before production use.</p></section></article><aside class="panel"><p class="eyebrow">File details</p><h2>Inspect the version.</h2>'
             '<dl class="facts"><dt>Format</dt><dd>' + escape(item['format']) + '</dd><dt>Duration</dt><dd>' + str(item['duration_seconds']) + ' seconds</dd>'
             '<dt>Preview and source licence</dt><dd>' + escape(item['preview_licence']) + '</dd><dt>Preview SHA-256</dt><dd><code>' + item['sha256'] + '</code></dd>'
             '<dt>Source ZIP SHA-256</dt><dd><code>' + item['source_version'] + '</code></dd></dl>'
-            + _link(item['url'], 'Download the preview', 'button secondary') + '<p class="quiet">No account is needed for these two downloads.</p></aside></div>')
+            + _link(item['url'], 'Download the preview', 'button secondary') + '<p class="quiet">These two downloads are open to everyone.</p></aside></div>')
 
 
 def _rebrand(body):
@@ -155,10 +155,10 @@ def _rebrand(body):
 
 def _help():
     answers = (("What can I use here?", "Browse public component details and recorded previews, play the original media demonstrations and download their editable source ZIP. Connect your agent for library search and authorized file delivery."),
-               ("Does the website edit or generate media?", "No. Your chosen applications and agents do the editing, generation and rendering. This site supplies discoverable material, requirements and source files."),
-               ("Are all creative media covered equally?", "No. Current examples are strongest in shaders, procedural textures, 3D geometry and Godot components. Music and video have a small set of original demonstrations. The filters show the available examples without filling gaps with invented items."),
-               ("Can I reuse a preview image?", "Public display does not by itself grant reuse rights. Read the source and preview licences separately. The original music and video demonstrations explicitly include MIT-licensed previews and source."),
-               ("Is this a new account or subscription?", "AgentStudios has a separate creative-facing website over the same backend and account service. Existing entitlements remain unchanged. Sign-in sessions stay on this website's origin; there is no automatic cross-site sign-in."))
+               ("Where do editing and rendering happen?", "In your chosen applications and agents, which do the editing, generation and rendering. This site supplies discoverable material, requirements and source files."),
+               ("Which creative media are covered best?", "Current examples are strongest in shaders, procedural textures, 3D geometry and Godot components. Music and video have a small set of original demonstrations. The filters show only real, available examples."),
+               ("Can I reuse a preview image?", "Reuse rights come from each licence, so read the source and preview licences separately. The original music and video demonstrations explicitly include MIT-licensed previews and source."),
+               ("Is this a new account or subscription?", "AgentStudios has a separate creative-facing website over the same backend and account service. Existing entitlements remain unchanged. Sign-in sessions stay on this website's origin, so you sign in on each website separately."))
     return (_intro('Help & access', 'A clear starting point.', 'Check the material and its requirements before bringing it into a project.')
             + '<div class="faq">' + ''.join('<details><summary>' + escape(question) + '</summary><p>' + escape(answer) + '</p></details>' for question, answer in answers) + '</div>'
             '<p>Recover your password from <a href="/login">sign in</a>, or <a href="/status">check service availability</a>. Never include a password or provider key in a support request.</p>')
