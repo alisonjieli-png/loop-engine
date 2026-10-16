@@ -123,7 +123,8 @@ Hosted intelligence service
 │   ├── customer-owned client keys and their scopes
 │   ├── administrator access grants
 │   ├── staff roles fixed in code, and superadmin account administration
-│   └── sign-up links a superadmin sends through Baltor's own sign-up
+│   ├── sign-up links a superadmin sends through Baltor's own sign-up
+│   └── the staff Systems view of recorded release facts and live health
 ├── Authenticated delivery
 │   ├── catalogue discovery, listing and manifests
 │   ├── one selected body, inline or by download
@@ -596,6 +597,84 @@ sent" with the reset time. The
 has the rules and the checks that hold them, and the
 [account email operations guide](../../guides/account-email-operations.md)
 the host setting.
+
+## The staff Systems view
+
+This section describes the source in this repository. A deployment serves it
+only after a release that includes it.
+
+Staff read the recorded release facts and the live health of the service at
+`/admin/systems`, inside the Administration area. The view replaces the
+separate portal at systems.baltor.ai (roadmap S-6.35.11). That portal ran
+outside the guarded release path, had no access control at first, and showed
+figures that no record holds.
+
+```text
+GET /api/v1/admin/systems
+├── who may read it: a signed-in staff member whose role holds
+│   service.diagnostics, which is superadmin and developer, rechecked against
+│   the sign-out record and the session expiry
+├── refused: a signed-out request (401), an ordinary account, a host key or a
+│   forged header (403 staff_role_required), the analytics role
+│   (403 account_administration_forbidden)
+├── no query         the health the service measures now, with its read time;
+│                    the current deployment statement compared with the newest
+│                    release record; the newest release with every row; and the
+│                    index of every recorded entry
+├── ?state=failed    one result state, 25 rows a page, newest record first
+└── ?entry=ID        one entry and every row it holds, earlier attempts included
+```
+
+Each row names what was checked, its state, the source revision, the
+environment or host, the attempt and its time, and the record that holds it,
+with a pointer into that record. The five states, passed, failed, pending,
+skipped and unknown, are listed separately and never merged. A fact that a
+record does not state stays empty and shows as not recorded. A row whose
+environment is not stated, or that ran locally, is not production
+verification.
+
+The recorded part is the packaged record `systems_view.json`. The generator
+`tools/build_systems_view.py` writes it from the release records, the check
+reports they point to, the current deployment section of the
+[client and server map](../../architecture/MVP-CLIENT-SERVER.md#current-deployment),
+the catalogue publication records and the edge measurements. It checks the
+record against `systems_view.schema.json`. The reading rules are at the top of
+the generator:
+
+- every number is copied from the record that its row cites;
+- a word that the reading table does not name is unknown, never passed;
+- a count of passed checks is read only beside its own total;
+- the generator refuses projection, revenue and investor words and email
+  addresses.
+
+`tools/regenerate_all.py` lists the record as a generated view, and
+`tools/test_systems_view.py` fails when the committed copy is stale. A change
+that adds a release record therefore also commits the regenerated record.
+
+The live part is the health record that the service measures for the request.
+It is the same measurement the health route makes, labelled as live, with its
+read time. It makes no provider call.
+
+The page is the same shell as every other page and holds no recorded fact. The
+data route answers staff only, and every answer is sent with
+`Cache-Control: no-store`. The record is not in the served address table, so
+no public address returns it, and the edge Worker passes every `/api/` request
+to the service.
+
+`edge/systems_redirect_worker.js` replaces the systems.baltor.ai Worker. It
+answers every request with one permanent redirect to the Systems view, with
+noindex and no caching, and it reads nothing from the request.
+`tools/test_systems_redirect_worker.py` runs it over loopback HTTP. Uploading it
+is a provider step outside this repository's release workflow.
+
+Limits. The service cannot see a browser sign-in when it serves the page,
+because the browser keeps the sign-in token in the tab and sends it only as a
+bearer header. A signed-out visitor sees the page with one sign-in action, and
+an expired or signed-out session returns to sign-in; no data leaves the
+service without the staff check. Early release records do not record every
+conclusion, so many early rows are unknown. The generator reads the
+environment from each record's own field names, so a check whose record does
+not say where it ran shows "not stated in the record".
 
 ## Free monthly Baltor Pro and the founding offer
 

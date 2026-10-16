@@ -3,7 +3,7 @@
 Kind: generated view. Do not edit by hand. The only task authority is
 [roadmap.yaml](roadmap.yaml); change it, then run
 `PYTHONPATH=src:tools .venv/bin/python tools/build_development_tracker.py`.
-Source fingerprint: `sha256:99949eb86b31056f05063167702a835f72b738f837dc67a9c00c95ed2e60dd3e`.
+Source fingerprint: `sha256:35f835341de5d730c17343f89c6751ee6985fb43ad6245d2afccf3005739c65d`.
 
 ## Where things stand
 
@@ -74,7 +74,7 @@ Next eligible subtask: S-6.35.11: Bind the systems portal to evidence and staff 
 | Order | Task | State | Completion required | Next action or dependency |
 |---:|---|---|---|---|
 | 1 | [x] S-6.35.10: Redirect public website aliases without changing client origins | live_qualified | live_qualified | Retain the HTTP, edge Worker, callback-query and origin-local negative controls on later releases. Keep the metadata-fetch diagnosis and broader customer journeys under S-6.35.06 and S-6.35.08; narrow redirect qualification does not close them. |
-| 2 | [ ] S-6.35.11: Bind the systems portal to evidence and staff access | ready | live_qualified | Identify the current portal's exact export and source, then implement its staff-access and evidence projections through the existing owners. |
+| 2 | [ ] S-6.35.11: Bind the systems portal to evidence and staff access | building | live_qualified | Review and push the source change, then release the exact CI-passed revision through the guarded workflow and refresh the edge export. Repeat the signed-out, ordinary-account, analytics, staff, desktop and phone checks of /admin/systems live on baltor.ai. After its own review, upload edge/systems_redirect_worker.js as the systems.baltor.ai Worker in place of the sign-in stopgap and keep the earlier version for rollback; deleting the Worker, its route or its DNS record needs the owner. |
 | 3 | [ ] S-6.24.02: Verify OpenCode and another harness against live Baltor | ready | live_qualified | Run the customer path on this PC without borrowing administrator access. |
 | 4 | [ ] S-6.24.01: Prove one bounded overnight customer task | ready | live_qualified | Connect one useful deterministic task to a separate supported worker through the existing queue and history; preserve provider holds and earlier token ceilings. |
 | 5 | [ ] S-6.24.03: Build an adaptive AgentAFK task queue with dependencies and outcome feedback | building | live_qualified | Map the reviewed Antigravity queue and worker candidates to existing task, scheduler, execution and history contracts. Connect the rules-based baseline to S-6.24.01, expose priority and hold reasons, and collect real outcomes before promoting learned ranking. |
@@ -174,7 +174,7 @@ Comment: A blanket canonical redirect would change established client and accoun
 
 ### S-6.35.11 Bind the systems portal to evidence and staff access
 
-Owner step: S-6.35. State: ready. Completion requires: live_qualified.
+Owner step: S-6.35. State: building. Completion requires: live_qualified.
 
 Acceptance: The internal systems portal enforces the existing staff-access boundary and labels every capability or result by exact source revision, environment, attempt and evidence state. Local simulations, estimates, pending reviews and skipped checks are never presented as completed production verification.
 
@@ -185,11 +185,11 @@ Acceptance: The internal systems portal enforces the existing staff-access bound
 5. Generate capability and task views from canonical records, keeping intended behavior, local checks, real dispatch, live qualification and measured customer outcomes distinct.
 6. Release the exact checked candidate and repeat access, evidence, desktop/phone and existing-host checks live; preserve rollback and all incomplete scope.
 
-Evidence: October 15 history review found useful Antigravity portal designs and local checks alongside simulated metrics and unqualified live claims. The original internal-portal assignment requires staff access in addition to crawler exclusion. Current implementation and live access still need qualification.
+Evidence: October 15 history review found useful Antigravity portal designs and local checks alongside simulated metrics and unqualified live claims. The original internal-portal assignment requires staff access in addition to crawler exclusion. October 16 source change, not yet released: the staff Systems view at /admin/systems inside the existing service. GET /api/v1/admin/systems answers only a signed-in staff role holding service.diagnostics (superadmin and developer) through AccountAdministration, which rechecks the sign-out record and session expiry; signed-out requests answer 401, and ordinary accounts, host keys, forged headers and the analytics role answer 403. The page is a data-free shell with noindex, every answer is no-store, the record has no served address and the edge passes /api/ to the origin. tools/build_systems_view.py writes systems_view.json, checked against systems_view.schema.json, from the release records, the check reports they point to, the current deployment section, the catalogue publication records and the edge measurements; each row names its state, source revision, environment or host, attempt, time and record, and passed, failed, pending, skipped and unknown stay separate. tools/regenerate_all.py lists the record and tools/test_systems_view.py fails when it is stale. edge/systems_redirect_worker.js answers every request with one fixed 301 to /admin/systems on baltor.ai, with noindex; it is written, not uploaded. Live access is not yet qualified.
 
-Next: Identify the current portal's exact export and source, then implement its staff-access and evidence projections through the existing owners.
+Next: Review and push the source change, then release the exact CI-passed revision through the guarded workflow and refresh the edge export. Repeat the signed-out, ordinary-account, analytics, staff, desktop and phone checks of /admin/systems live on baltor.ai. After its own review, upload edge/systems_redirect_worker.js as the systems.baltor.ai Worker in place of the sign-in stopgap and keep the earlier version for rollback; deleting the Worker, its route or its DNS record needs the owner.
 
-Comment: Protect the internal reference and make its claims reviewable before adding more dashboard surfaces. This is neither a new backend nor another task database.
+Comment: Protect the internal reference and make its claims reviewable before adding more dashboard surfaces. This is neither a new backend nor another task database: the view reads one generated record of the repository's own release, catalogue and edge records, and its live part is the health record the service already measures.
 
 ### S-6.24.02 Verify OpenCode and another harness against live Baltor
 

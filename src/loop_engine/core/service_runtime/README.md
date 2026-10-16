@@ -56,6 +56,7 @@ Existing service boundary
 ├── account_policy.py: staff roles and permissions fixed in code, and the host's accounts block
 ├── account_administration.py: the staff overview, the account list and superadmin actions
 ├── staff_sign_up_links.py: sign-up links a superadmin sends through Baltor's own sign-up
+├── systems_view.py: the staff Systems view over the packaged systems_view.json record
 ├── free_monthly.py: free monthly Baltor Pro, the founding offer and the monthly renewal
 ├── web_pages.py: the served page address table and the packaged files behind it
 ├── catalogue_*.py: catalogue releases, the body store edge and the served view
@@ -1420,6 +1421,46 @@ reservation leaves any account it prepared without a pending record, so that
 account opens without the free monthly grant; a superadmin grants it from the
 account list. A batch of ten addresses makes up to about fifty requests to the
 identity provider and the mail sender in one staff request.
+
+### The staff Systems view
+
+Roadmap S-6.35.11. `GET /api/v1/admin/systems` serves the Systems view at
+`/admin/systems` to a staff role that holds `service.diagnostics`. The owner's
+request was an internal reference with no internal notes and no systems that
+are not live; the portal another harness deployed on October 14, 2026 instead
+showed invented figures and unmeasured pass labels without access control.
+
+- `AccountAdministration.systems` checks the role first, then the query, then
+  the session with its sign-out record and its expiry, and only then measures
+  or returns anything. A host key never holds a role, and a request header
+  cannot name one.
+- `systems_view.staff_query` accepts the overview, one state with a page, or
+  one entry, and nothing else. A repeated field is refused before any work.
+- `systems_view.packaged_record` reads the packaged record and checks it
+  against `systems_view.schema.json`. Unreadable or refused bytes answer 503
+  `systems_record_unavailable`; nothing is filled in.
+- The live reading is `readiness_report`, measured for the request with its
+  read time, as the health route measures it. It calls no provider.
+- `tools/build_systems_view.py` writes the record from the repository's
+  release, catalogue and edge records with the reading rules stated at its top,
+  and refuses projection, revenue and investor words and email addresses.
+
+| Guard | Named check | Known-wrong control |
+|---|---|---|
+| Staff only, through the existing identity owner | `test_an_ordinary_account_a_host_key_and_a_forged_header_are_refused`, `test_signed_out_requests_are_refused_and_asked_to_sign_in` | the forged role header and forged token cases in the same checks |
+| Only a role that reads service diagnostics | `test_the_analytics_role_is_refused_and_the_role_table_is_what_refuses_it` | every permission granted to every role lets analytics in |
+| A signed-out staff session changes nothing | `test_a_signed_out_staff_session_is_refused` | the same token answered 200 before sign-out |
+| Recorded numbers only | `test_every_number_is_copied_from_the_record_it_cites` | an invented count cited to release 93 is caught |
+| Each state read as itself | `test_each_state_is_read_as_itself_and_an_unnamed_word_is_never_passed` | adding a word to the reading table changes the reading |
+| States drawn apart on the page | `test_the_page_lists_each_state_separately_labels_the_live_reading_and_signs_in_again` | `test_a_script_that_merges_the_states_is_refused` |
+| No public copy of the record | `test_the_record_is_served_at_no_public_address` | the page shell holds no recorded fact |
+| The committed record is current | `test_the_committed_record_is_current` | `test_a_changed_copy_is_reported_as_stale` |
+
+The checks are in `tools/test_systems_view.py`, and the retired hostname's
+Worker is checked by `tools/test_systems_redirect_worker.py`. Limits: the page
+shell is public and data-free, so a signed-out visitor sees a sign-in action
+rather than a server redirect; the record follows the release records only
+when it is regenerated with them.
 
 ## Waiting list
 
