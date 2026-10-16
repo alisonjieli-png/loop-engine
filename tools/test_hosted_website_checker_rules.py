@@ -114,6 +114,123 @@ assert.equal(accepted({...event,method:"POST"}),false);
 assert.equal(accepted({...event,resourceType:"other",url:"https://brand.example/prefetch"}),false);
 ''')
 
+    def test_streamed_fetch_completion_needs_page_evidence_for_the_same_request(self):
+        # The accepted shape is the observed live one: the AgentFoundry /library metadata read on October 16, 2026.
+        self.run_node(r'''
+const origin="https://brand.example",page={end:true,bytes:18870,cancels:0,aborts:0,read_errors:0};
+const event={url:origin+"/api/v1/public-good?query=&page=1",method:"GET",resourceType:"fetch",status:200,error:"net::ERR_ABORTED",
+  canceled:true,received_bytes:18870,declared_length:null,content_encoding:"zstd",page};
+const accepted=value=>check.isVerifiedStreamedFetchCompletion(value,origin);
+assert.equal(accepted(event),true);
+assert.equal(accepted({...event,declared_length:18870,content_encoding:null}),true);
+const wrong=[
+  {...event,page:null},{...event,page:undefined},
+  {...event,page:{...page,end:false,bytes:null,cancels:1}},
+  {...event,page:{...page,end:false,bytes:null,aborts:1,read_errors:1,cancels:1}},
+  {...event,page:{...page,aborts:1}},{...event,page:{...page,cancels:1}},{...event,page:{...page,read_errors:1}},
+  {...event,page:{...page,bytes:18869}},{...event,received_bytes:0,page:{...page,bytes:0}},
+  {...event,declared_length:20000,content_encoding:null},
+  {...event,canceled:false},{...event,error:"net::ERR_CONTENT_LENGTH_MISMATCH"},{...event,error:"net::ERR_FAILED"},
+  {...event,status:206},{...event,status:500},{...event,status:null},
+  {...event,method:"POST"},{...event,url:"https://other.example/api/v1/public-good"},{...event,url:"not a url"}];
+for(const resourceType of ["xhr","script","document","media","other"])wrong.push({...event,resourceType});
+for(const value of wrong)assert.equal(accepted(value),false,JSON.stringify(value));
+''')
+
+    def test_streamed_fetch_join_refuses_ambiguous_or_distant_calls(self):
+        self.run_node(r'''
+const url="https://brand.example/api/v1/public-good?query=&page=1";
+const request={url,started_at:1000},requests=[request];
+const call=(document,number,at)=>({kind:"fetch",document,call:number,url,at});
+const end=(document,number,bytes)=>({kind:"end",document,call:number,url,bytes});
+assert.deepEqual(check.joinStreamedFetchEvidence(request,requests,[call("d1",1,1001),end("d1",1,5)]),
+  {end:true,bytes:5,cancels:0,aborts:0,read_errors:0});
+const later={...request,started_at:1600};
+assert.deepEqual(check.joinStreamedFetchEvidence(later,[request,later],[call("d1",1,1001),end("d1",1,5),call("d1",2,1601),
+  {kind:"cancel",document:"d1",call:2,url,bytes:3}]),{end:false,bytes:null,cancels:1,aborts:0,read_errors:0});
+// Known-wrong joins: another document's completion, a distant call, two candidate calls, two candidate requests, another URL.
+assert.deepEqual(check.joinStreamedFetchEvidence(request,requests,[call("d1",1,1001),end("d2",1,5)]),{end:false,bytes:null,cancels:0,aborts:0,read_errors:0});
+assert.equal(check.joinStreamedFetchEvidence(request,requests,[call("d1",1,1100),end("d1",1,5)]),null);
+assert.equal(check.joinStreamedFetchEvidence(request,requests,[call("d1",1,995),call("d1",2,1005),end("d1",1,5)]),null);
+assert.equal(check.joinStreamedFetchEvidence(request,[request,{...request,started_at:1010}],[call("d1",1,1001),end("d1",1,5)]),null);
+assert.equal(check.joinStreamedFetchEvidence({...request,url:url+"x"},requests,[call("d1",1,1001),end("d1",1,5)]),null);
+assert.equal(check.joinStreamedFetchEvidence(request,requests,[]),null);
+''')
+
+    @unittest.skipUnless(BROWSER_AVAILABLE, BROWSER_REQUIREMENT)
+    def test_real_browser_streamed_completion_is_attributed_and_true_failures_remain(self):
+        # Exact packaged AgentFoundry reader, served from loopback. A complete body may or may not draw Chrome's canceled
+        # report in a given attempt; whenever it does, it must be attributed. Oversize and truncated bodies must never be.
+        self.run_node(f"import {{chromium}} from {PLAYWRIGHT!r};\n" + r'''
+import http from "node:http";
+import {once} from "node:events";
+import {readFileSync} from "node:fs";
+const script=readFileSync("src/loop_engine/core/service_runtime/web_assets/agentfoundry/site.js");
+const markup='<!doctype html><html lang="en"><head><meta charset="utf-8"><title>Streamed fetch fixture</title><script defer src="/site.js"></script></head><body>'
+  +'<form data-public-search role="search"><label>Search<input name="query" type="search"></label><button>Search</button></form>'
+  +'<p role="status" data-public-status>Loading the current collection…</p><div data-public-results></div>'
+  +'<button type="button" data-public-previous disabled>Previous</button><button type="button" data-public-next disabled>Next</button><p data-public-limits></p></body></html>';
+const items=Array.from({length:20},(_,index)=>({identity:"fixture/component-"+index,title:"Fixture component "+index,summary:"Fixture summary. ".repeat(40),component_form:"skill",licence:"MIT",files:3}));
+const body=Buffer.from(JSON.stringify({result:{record_type:"public_good_collection/v1",page:1,items,matches:20,has_next:false,limits_description:"Fixture limits."}}));
+const sleep=ms=>new Promise(done=>setTimeout(done,ms));let variant="complete";
+const sockets=new Set();
+const server=http.createServer(async(req,res)=>{
+  if(req.url==="/"){res.writeHead(200,{"Content-Type":"text/html; charset=utf-8"});res.end(markup);return;}
+  if(req.url==="/site.js"){res.writeHead(200,{"Content-Type":"text/javascript"});res.end(script);return;}
+  if(!req.url.startsWith("/api/v1/public-good")){res.writeHead(404);res.end();return;}
+  const json={"Content-Type":"application/json","Cache-Control":"no-store"},third=Math.floor(body.length/3);
+  if(variant==="complete"){res.writeHead(200,json);res.write(body.subarray(0,third));await sleep(15);res.write(body.subarray(third,2*third));await sleep(15);res.end(body.subarray(2*third));}
+  else if(variant==="oversize"){res.writeHead(200,json);res.write('{"result":');for(let sent=0;sent<1200000&&!res.destroyed;sent+=65536){res.write(Buffer.alloc(65536,32));await sleep(2);}res.end("}");}
+  else{res.writeHead(200,{...json,"Content-Length":body.length});res.write(body.subarray(0,third));await sleep(30);res.socket.destroy();}
+});
+server.on("connection",socket=>{sockets.add(socket);socket.on("close",()=>sockets.delete(socket));});
+server.listen(0,"127.0.0.1");await once(server,"listening");
+const origin=`http://127.0.0.1:${server.address().port}`,target=origin+"/api/v1/public-good?query=&page=1";
+const browser=await chromium.launch({executablePath:process.env.CHROME_BINARY||"/opt/google/chrome/chrome",headless:true,args:["--no-sandbox"]});
+async function attempt(name,{observe=true}={}){
+  variant=name;
+  const context=await browser.newContext(),accounting=check.createStreamedFetchAccounting(origin);
+  if(observe){await context.exposeBinding("__streamedFetch",accounting.report);await context.addInitScript(check.streamedFetchObserver,"__streamedFetch");}
+  const page=await context.newPage(),session=await context.newCDPSession(page);
+  await session.send("Network.enable");accounting.attach(session);
+  await page.goto(origin+"/");
+  await page.waitForFunction(()=>!/Reading|Loading/.test(document.querySelector("[data-public-status]").textContent),null,{timeout:15000});
+  await sleep(400);
+  const ui=await page.evaluate(()=>({text:document.querySelector("[data-public-status]").textContent,cards:document.querySelectorAll(".public-result").length}));
+  await context.close();
+  return {ui,failed:accounting.classify(),events:accounting.events.filter(event=>event.url===target)};
+}
+try{
+  const plain=await attempt("complete",{observe:false});
+  assert.deepEqual(plain.ui,{text:"20 matching components · Page 1",cards:20});
+  let reportedCanceled=0;
+  for(let round=0;round<4;round++){
+    const run=await attempt("complete");
+    assert.deepEqual(run.ui,plain.ui,"the observer must not change what the page shows");
+    assert.deepEqual(run.events.filter(event=>event.kind!=="fetch").map(event=>[event.kind,event.bytes]),[["end",body.length]]);
+    for(const row of run.failed){
+      assert.equal(row.url,target,JSON.stringify(row));
+      assert.equal(row.classification,"complete_streamed_body_reported_canceled",JSON.stringify(row));
+      reportedCanceled++;
+    }
+  }
+  const signatureOnly=row=>row.error==="net::ERR_ABORTED"&&row.canceled===true&&row.status===200&&row.method==="GET"&&row.resourceType==="fetch"&&row.received_bytes>0;
+  const oversize=await attempt("oversize");
+  assert.equal(oversize.ui.text,"The service response was too large.");
+  assert.equal(oversize.failed.length,1,JSON.stringify(oversize.failed));
+  assert.equal(signatureOnly(oversize.failed[0]),true,"oversize shares the network signature, so network events alone cannot qualify a fetch");
+  assert.equal(oversize.failed[0].page.end,false);assert.equal(oversize.failed[0].page.cancels,1);
+  assert.equal(oversize.failed[0].classification,"unverified_delivery_failure");
+  assert.equal(check.isVerifiedStreamedFetchCompletion({...oversize.failed[0],page:null},origin),false);
+  const truncated=await attempt("truncated");
+  assert.equal(truncated.ui.cards,0);
+  assert.equal(truncated.failed.length,1,JSON.stringify(truncated.failed));
+  assert.equal(truncated.failed[0].classification,"unverified_delivery_failure");
+  assert.equal(truncated.events.some(event=>event.kind==="end"),false);
+  console.log(JSON.stringify({complete_attempts:4,reported_canceled_after_complete_body:reportedCanceled}));
+}finally{await browser.close();for(const socket of sockets)socket.destroy();await new Promise(resolve=>server.close(resolve));}
+''')
+
     @unittest.skipUnless(BROWSER_AVAILABLE, BROWSER_REQUIREMENT)
     def test_readonly_values_require_actual_browser_visibility(self):
         self.run_node(f"import {{chromium}} from {PLAYWRIGHT!r};\n" + r'''

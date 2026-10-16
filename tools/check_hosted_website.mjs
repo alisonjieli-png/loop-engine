@@ -64,6 +64,86 @@ export function isVerifiedMediaAbort(event,origin){
     &&/\.(?:mp4|webm|wav)$/i.test(new URL(event.url).pathname));
 }
 
+/* Chrome 148 can report a fetch whose body the page reads through a stream reader as failed (net::ERR_ABORTED, canceled)
+   about a millisecond after the last chunk, although the reader reached the end of the body with every byte and the page
+   showed the result. Real failures carry the same network signature: a page cancelling a body at its size ceiling, or a
+   timeout abort. Network events cannot tell them apart and Chrome keeps no body for either, so a canceled fetch counts as
+   delivered only with page evidence for that one request: its reader reached the end with exactly the bytes the network
+   delivered, and nothing cancelled, aborted or broke it. Investigation: docs/verification/LAUNCH-AUDIT-BRANDS-2026-10-16.md. */
+export function streamedFetchObserver(binding){
+  /* Observation only, for context.addInitScript(streamedFetchObserver,bindingName). The page receives its original values
+     and rejections; reports go to the exposed binding with a per-document identity. */
+  const documentId=globalThis.crypto?.randomUUID?.()||performance.timeOrigin+"-"+Math.random(),calls=new WeakMap(),streams=new WeakMap(),readers=new WeakMap();let sequence=0;
+  const report=event=>{try{void globalThis[binding]({...event,document:documentId,at:performance.timeOrigin+performance.now()});}catch(_){}};
+  const originalFetch=globalThis.fetch;
+  globalThis.fetch=function(input,init){
+    const call=++sequence;let url;
+    try{url=new URL(input instanceof Request?input.url:String(input),location.href).href;}catch(_){url=String(input);}
+    report({kind:"fetch",call,url});
+    (init?.signal||(input instanceof Request?input.signal:null))?.addEventListener("abort",()=>report({kind:"abort",call,url}),{once:true});
+    return originalFetch.apply(this,arguments).then(response=>{calls.set(response,{call,url,bytes:0});return response;});
+  };
+  const body=Object.getOwnPropertyDescriptor(Response.prototype,"body");
+  Object.defineProperty(Response.prototype,"body",{...body,get(){
+    const stream=body.get.call(this),owner=calls.get(this);if(stream&&owner&&!streams.has(stream))streams.set(stream,owner);return stream;}});
+  const getReader=ReadableStream.prototype.getReader,{read,cancel}=ReadableStreamDefaultReader.prototype;
+  ReadableStream.prototype.getReader=function(){const reader=getReader.apply(this,arguments),owner=streams.get(this);if(owner)readers.set(reader,owner);return reader;};
+  ReadableStreamDefaultReader.prototype.read=function(){
+    const owner=readers.get(this),pending=read.apply(this,arguments);
+    if(!owner)return pending;
+    return pending.then(part=>{if(part.done)report({kind:"end",call:owner.call,url:owner.url,bytes:owner.bytes});else owner.bytes+=part.value?.byteLength||0;return part;},
+      error=>{report({kind:"read_error",call:owner.call,url:owner.url,bytes:owner.bytes});throw error;});
+  };
+  ReadableStreamDefaultReader.prototype.cancel=function(){
+    const owner=readers.get(this);if(owner)report({kind:"cancel",call:owner.call,url:owner.url,bytes:owner.bytes});return cancel.apply(this,arguments);};
+}
+
+export function joinStreamedFetchEvidence(request,requests,events,{windowMs=25}={}){
+  /* Exactly one page fetch call of the same URL may start within the window of this network request, and no other network
+     request of that URL may start within the window of that call. Anything else is ambiguous and yields no evidence, so a
+     previous or later same-URL request can never lend its result. */
+  const near=(a,b)=>Number.isFinite(a)&&Number.isFinite(b)&&Math.abs(a-b)<=windowMs;
+  const calls=events.filter(event=>event.kind==="fetch"&&event.url===request.url&&near(event.at,request.started_at));
+  if(calls.length!==1||requests.filter(other=>other.url===request.url&&near(other.started_at,calls[0].at)).length!==1)return null;
+  const own=events.filter(event=>event.document===calls[0].document&&event.call===calls[0].call&&event.kind!=="fetch");
+  const ends=own.filter(event=>event.kind==="end"),count=kind=>own.filter(event=>event.kind===kind).length;
+  return {end:ends.length===1,bytes:ends.length===1?ends[0].bytes:null,cancels:count("cancel"),aborts:count("abort"),read_errors:count("read_error")};
+}
+
+export function isVerifiedStreamedFetchCompletion(event,origin){
+  if(event?.error!=="net::ERR_ABORTED"||event.canceled!==true||event.status!==200||event.method!=="GET"||event.resourceType!=="fetch")return false;
+  try{if(new URL(event.url).origin!==origin)return false;}catch(_){return false;}
+  if(!Number.isSafeInteger(event.received_bytes)||event.received_bytes<1)return false;
+  if(Number.isSafeInteger(event.declared_length)&&!event.content_encoding&&event.declared_length!==event.received_bytes)return false;
+  const page=event.page;
+  return page?.end===true&&page.bytes===event.received_bytes&&page.cancels===0&&page.aborts===0&&page.read_errors===0;
+}
+
+export function createStreamedFetchAccounting(origin){
+  /* Joins one page's CDP network rows with its streamedFetchObserver reports. Call attach(session) after Network.enable and
+     expose report as the observer's binding. classify() returns every failed request with its classification; an
+     unfinished request is not classified here and stays the caller's accounting failure. */
+  const rows=new Map(),events=[],row=id=>rows.get(id);
+  const attach=session=>{
+    session.on("Network.requestWillBeSent",event=>{if(!rows.has(event.requestId))rows.set(event.requestId,{url:event.request.url,method:event.request.method,
+      resourceType:(event.type||"unknown").toLowerCase(),started_at:event.wallTime*1000,status:null,declared_length:null,content_encoding:null,received_bytes:0,terminal:null});});
+    session.on("Network.responseReceived",event=>{const entry=row(event.requestId);if(!entry)return;
+      const headers=Object.fromEntries(Object.entries(event.response.headers||{}).map(([name,value])=>[name.toLowerCase(),String(value)]));
+      Object.assign(entry,{status:event.response.status,content_encoding:headers["content-encoding"]||null,
+        declared_length:/^[0-9]+$/.test(headers["content-length"]||"")?Number(headers["content-length"]):null});});
+    session.on("Network.dataReceived",event=>{const entry=row(event.requestId);if(entry)entry.received_bytes+=event.dataLength;});
+    session.on("Network.loadingFinished",event=>{const entry=row(event.requestId);if(entry)entry.terminal="finished";});
+    session.on("Network.loadingFailed",event=>{const entry=row(event.requestId);if(entry)Object.assign(entry,{terminal:"failed",error:event.errorText,canceled:event.canceled===true});});
+  };
+  return {attach,report:(_source,event)=>{events.push(event);},rows,events,classify(){
+    const all=[...rows.values()];
+    return all.filter(entry=>entry.terminal==="failed").map(entry=>{
+      const event={...entry,page:entry.resourceType==="fetch"?joinStreamedFetchEvidence(entry,all,events):null};
+      return {...event,classification:isVerifiedStreamedFetchCompletion(event,origin)?"complete_streamed_body_reported_canceled":"unverified_delivery_failure"};
+    });
+  }};
+}
+
 export function createRequestAccounting(origin){
   const statuses=new WeakMap(),pending=new Set(),requestFailures=[],httpErrors=[];
   const describe=request=>({url:request.url(),method:request.method(),resourceType:request.resourceType()});
