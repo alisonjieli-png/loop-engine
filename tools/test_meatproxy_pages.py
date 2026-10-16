@@ -106,9 +106,9 @@ class MeatProxyPagesTests(unittest.TestCase):
 
     def test_real_availability_is_disclosed_not_hosted_execution(self):
         home = pages.render('/')[0].decode()
-        self.assertIn('not a live personalized news stream', home)
-        self.assertIn('does not start a hosted schedule', home)
-        self.assertIn('need no account', home)
+        self.assertIn('source references and research questions for your agent to investigate', home)
+        self.assertIn('on the schedule your harness sets', home)
+        self.assertIn('are open to everyone', home)
         self.assertNotIn('token savings', home.lower())
         questions = pages.render('/questions')[0].decode()
         self.assertIn('December 31, 2026', questions)

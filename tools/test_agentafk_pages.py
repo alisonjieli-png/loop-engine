@@ -82,16 +82,19 @@ class AgentAFKPagesTests(unittest.TestCase):
         for identity in ('run-desk-form', 'run-desk-message', 'run-desk-command', 'run-desk-status-command', 'run-desk-download', 'run-desk-report', 'run-desk-summary', 'run-desk-attempts'):
             self.assertIn('id="' + identity + '"', html)
         self.assertIn('/assets/run-desk.js?v=' + sha256(read_packaged_asset('run-desk.js')).hexdigest(), html)
-        self.assertIn('Nothing starts from this page.', html)
-        self.assertIn('Do not queue a dependent task before its prerequisite output is checked.', html)
-        self.assertIn('No sample results are mixed with your record.', html)
+        self.assertIn('You start the run on that worker.', html)
+        self.assertIn('Queue a dependent task once its prerequisite output is checked.', html)
+        self.assertIn('The table shows only your own recorded attempts.', html)
 
     def test_scope_distinguishes_live_tools_from_planned_execution(self):
         home = pages.render('/')[0].decode()
         help_page = pages.render('/help')[0].decode()
-        self.assertIn('Example plan, not a running job or recorded result.', home)
-        self.assertIn('It does not schedule a dependency graph or learn priorities', help_page)
-        self.assertIn('Hosted execution and cloud supervision are not available', help_page)
+        self.assertIn('Illustrative example plan.', home)
+        self.assertIn('runs tasks in the exact order of the task manifest', help_page)
+        self.assertIn('On your own computer or a cloud machine you control.', help_page)
+        # The explicit hosted-execution limit stays where a visitor decides to pay and where agents read scope.
+        self.assertIn('does not start a subscription or offer paid hosted execution', pages.render('/pricing')[0].decode())
+        self.assertIn('Hosted execution and cloud supervision are unavailable.', pages.render('/llms.txt')[0].decode())
         self.assertIn('does not guarantee task completion', help_page)
         self.assertIn('Max subscriptions are not sold', pages.render('/pricing')[0].decode())
 
@@ -112,7 +115,7 @@ class AgentAFKPagesTests(unittest.TestCase):
 
     def test_readiness_is_not_reported_as_worker_status(self):
         html = pages.render('/status')[0].decode()
-        self.assertIn('not the state of your worker or tasks', html)
+        self.assertIn('Your worker reports the state of its own tasks.', html)
         js = pages.render(pages.ASSET_PREFIX + 'site.js')[0].decode()
         self.assertIn("fetch('/api/v1/health'", js)
         self.assertIn('body.result?.ready !== true', js)

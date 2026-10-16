@@ -22,7 +22,7 @@
       .then(async response => {
         const body = await response.json();
         if (!response.ok || body.result?.ready !== true) throw Error('not ready');
-        status.textContent = 'The shared service is reachable and ready. This does not report the state of your worker.';
+        status.textContent = 'The shared service is reachable and ready. Your worker reports its own state.';
       })
       .catch(() => { status.textContent = 'Service readiness could not be confirmed. Reload to check again. Your local worker is separate.'; })
       .finally(() => clearTimeout(timeout));

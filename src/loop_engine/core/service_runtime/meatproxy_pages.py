@@ -80,7 +80,7 @@ def _home():
             '<p class="hero-lede">You have better things to do than read the internet to your agent.</p>'
             '<p class="hero-explanation">Reading newsletters. Scrolling LinkedIn. Pasting somebody’s take into a chat. Give your agent the sources and a question it can investigate instead.</p>'
             '<div class="actions">' + _link(FEEDS_ORIGIN + '/build', 'Build a reading profile ↗', 'button primary')
-            + _link('#try-it', 'Try an instruction ↓', 'text-link') + '</div><p class="small">Opens AgentFeeds. Public collections and profile downloads need no account.</p></div>'
+            + _link('#try-it', 'Try an instruction ↓', 'text-link') + '</div><p class="small">Opens AgentFeeds. Public collections and profile downloads are open to everyone.</p></div>'
             + _relay() + '</section>'
             '<section class="problem-section" id="the-problem"><div class="section-label"><span>01 / The human relay problem</span><span>Keep the judgment. Lose the copying.</span></div>'
             '<div class="problem-grid"><h2>Your attention<br>is not an API.</h2><div><p class="large-copy">A post says a model is better. Your task needs to know: better at what, compared with which version, and under which conditions?</p>'
@@ -89,11 +89,11 @@ def _home():
             + _try_it()
             + '<section class="scope-section"><div><p class="eyebrow">What you can use today</p><h2>A reading list.<br>With a job to do.</h2></div>'
             '<div class="scope-copy"><p>Browse curated collections. Read them as Markdown, RSS or JSON Feed. Build a custom profile and download its settings and reading guide for each agent.</p>'
-            '<p>These are source references and research questions, not a live personalized news stream. Your agent reads the originals. Downloading a profile does not start a hosted schedule.</p>'
+            '<p>These are source references and research questions for your agent to investigate. Your agent reads the originals, on the schedule your harness sets.</p>'
             + _link(FEEDS_ORIGIN + '/collections', 'Explore AgentFeeds collections ↗', 'text-link') + '</div></section>'
             '<section class="closing"><p class="eyebrow">For the agent you already run</p><h2>Point it at the source.</h2><p>Choose the decisions your agent needs to stay informed about.</p>'
             + _link(FEEDS_ORIGIN + '/build', 'Build your AgentFeeds profile ↗', 'button light')
-            + '<p class="small">No model key needed to browse or download a reading profile.</p></section>')
+            + '<p class="small">Browsing and downloading a reading profile take only a browser.</p></section>')
 
 
 def _how_it_works():
@@ -102,17 +102,17 @@ def _how_it_works():
             + _link(FEEDS_ORIGIN + '/collections', 'Browse the collections ↗') + '</div></li>'
             '<li><span class="step-number">02</span><div><h2>Give the reading job to your agent</h2><p>Use the instruction below, or build a custom reading profile. Save the downloaded <code>profile.json</code> and <code>READING.md</code> in that agent’s project. Do not put secrets in its label or feed links.</p>'
             + _link(FEEDS_ORIGIN + '/build', 'Build a custom reading profile ↗') + '</div></li>'
-            '<li><span class="step-number">03</span><div><h2>Check what it actually found</h2><p>Ask for original source links, dates, relevant comparisons and uncertainties. A copied instruction is not evidence that an agent read a source. A release notice is a reason to investigate, not an instruction to change your tools.</p></div></li>'
-            '<li><span class="step-number">04</span><div><h2>Choose when it looks again</h2><p>Ask it to read before a decision, or configure your own harness’s scheduler. A requested reading interval in a profile is a preference. It does not activate a hosted schedule.</p>'
+            '<li><span class="step-number">03</span><div><h2>Check what it actually found</h2><p>Ask for original source links, dates, relevant comparisons and uncertainties: those links show what your agent actually read. Treat a release notice as a reason to investigate before you change your tools.</p></div></li>'
+            '<li><span class="step-number">04</span><div><h2>Choose when it looks again</h2><p>Ask it to read before a decision, or configure your own harness’s scheduler. A requested reading interval in a profile is a preference that your harness’s scheduler applies.</p>'
             + _link(FEEDS_ORIGIN + '/connect', 'Read the AgentFeeds setup guide ↗') + '</div></li></ol>' + _try_it())
 
 
 def _questions():
-    items = (("What is a meat proxy?", "Here it means the person in the middle: reading posts, filtering newsletters and copying information into an agent. You still choose the task and judge the result. The copying does not need to be your job."),
-             ("Is this another agent product?", "No. This is a campaign for AgentFeeds. The links take you to its source collections and reading-profile builder. You keep using your own agent and model access."),
-             ("Does AgentFeeds read every source for me?", "The current public collections provide curated source references and research questions. Your agent reads the original sources with its own tools and permissions. A directory review date does not mean every upstream article was refreshed."),
-             ("Can I give different agents different feeds?", "Yes. Build a reading profile for each agent, choosing collections and individual sources. Download its profile.json and READING.md files. These settings stay in your files; the builder does not create a hosted personalized feed."),
-             ("Will a download start background work?", "No. A profile download does not create a schedule, start a model call or authorize an action. You configure any reading schedule in your own harness."),
+    items = (("What is a meat proxy?", "Here it means the person in the middle: reading posts, filtering newsletters and copying information into an agent. You still choose the task and judge the result. Your agent can do the copying."),
+             ("What is this campaign?", "A campaign for AgentFeeds. The links take you to its source collections and reading-profile builder. You keep using your own agent and model access."),
+             ("Does AgentFeeds read every source for me?", "The current public collections provide curated source references and research questions. Your agent reads the original sources with its own tools and permissions. A directory review date shows when the source list was checked; each upstream article keeps its own date."),
+             ("Can I give different agents different feeds?", "Yes. Build a reading profile for each agent, choosing collections and individual sources. Download its profile.json and READING.md files. These settings stay in your files, where your harness reads them."),
+             ("What happens when I download a profile?", "You get two files to keep. Your own harness runs any reading schedule, model call or action, each with your approval."),
              ("What does it cost?", "AgentFeeds public source collections and reading-profile downloads are free through December 31, 2026, Eastern time. Its published standard price is $9 a month. There is no automatic charge; paid activation requires explicit opt-in. Your model access and upstream provider costs remain yours."),
              ("Who operates this website?", "Baltor.AI operates this campaign and AgentFeeds. They use the same backend. This campaign adds no account form or advertising tracker. The privacy notice and terms below are the existing operator notices."))
     return ('<header class="page-intro"><p class="eyebrow">Before you hand it off</p><h1>Good questions.</h1><p>What the campaign means, what you can use, and what stays under your control.</p></header>'
