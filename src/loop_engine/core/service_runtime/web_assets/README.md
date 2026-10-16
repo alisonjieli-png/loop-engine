@@ -14,7 +14,13 @@ The workspace uses the configured identity provider. Browser sign-up verifies
 the email address before a person chooses a password, and Baltor records the
 account's origin before activating it. A billing session is not an entitlement.
 The service's capability record distinguishes configured behavior from live
-provider qualification.
+provider qualification. When the day's sign-up and recovery email is spent,
+both forms say so in one plain message with the reset time, the same for every
+address, and so do the account pages of AgentFeeds, AgentFoundry and
+AgentStudios, which share `agentfeeds/account.js`. The Administration view
+shows developers and superadmins the day's count, its budget and what remains.
+`tools/test_account_link_page.py` holds the forms to the service's own refusal
+records.
 
 ## Design, offering guides and creative previews
 

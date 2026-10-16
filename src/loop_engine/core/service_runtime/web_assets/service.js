@@ -483,10 +483,19 @@ const applyPaymentState = name => {
      answers the same way whether or not the address has an account, so the page says what either message holds. */
   const accountRequests = {signup:{record_type:"service_account_signup_request/v2", result:"service_account_signup_result/v1", status:"confirmation_sent"},
     recovery:{record_type:"service_account_recovery_request/v1", result:"service_account_recovery_result/v1", status:"recovery_sent"}};
+  /* The day's sign-up and recovery email is spent. The service gives every address the same answer, and the page adds only
+     the moment the limit resets, read from that answer, in the visitor's own time. */
+  const emailLimitAnswer = value => {
+    const resets = Date.parse(typeof value?.error?.details?.resets_at === "string" ? value.error.details.resets_at : "");
+    const local = Number.isFinite(resets) ? " (" + new Date(resets).toLocaleString([], {weekday:"short", hour:"numeric", minute:"2-digit"}) + " your time)" : "";
+    return "Today's limit for sign-up and recovery email is reached, so nothing was sent. Please try again after 00:00 UTC" + local + ".";
+  };
   const accountAnswers = {invalid_email_address:"That does not look like an email address we can write to. Check it and try again.",
     failed_attempt_limit_reached:"Too many requests for this address or from this connection. Please try again later.",
     account_signup_unavailable:"Account creation is not open right now. Nothing was sent.",
     account_recovery_unavailable:"A new password cannot be sent right now. Nothing was sent.",
+    account_email_daily_budget_reached:emailLimitAnswer,
+    account_mail_busy:"The email service is busy for a moment, so nothing was sent. Please try again in a few seconds.",
     deadline_exceeded:"The service ran out of time. A message may still arrive, so wait before asking again."};
   async function requestAccountLink(action, email) {
     const expected = accountRequests[action], controller = new AbortController(), timer = setTimeout(() => controller.abort(), 35000);
@@ -494,8 +503,10 @@ const applyPaymentState = name => {
       const response = await fetch("/api/v1/account/" + action, {method:"POST",credentials:"omit",redirect:"error",cache:"no-store",signal:controller.signal,
         headers:{"Content-Type":"application/json"},body:JSON.stringify({record_type:expected.record_type,email})});
       let value = null; try { value = await response.json(); } catch (_) {}
-      if (response.status !== 202 || value?.result?.record_type !== expected.result || value.result.status !== expected.status)
-        throw new Error(accountAnswers[value?.error?.code] || "The request was not sent. Please try again later.");
+      if (response.status !== 202 || value?.result?.record_type !== expected.result || value.result.status !== expected.status) {
+        const answer = Object.hasOwn(accountAnswers, value?.error?.code ?? "") ? accountAnswers[value.error.code] : "";
+        throw new Error((typeof answer === "function" ? answer(value) : answer) || "The request was not sent. Please try again later.");
+      }
     } catch (error) {
       throw error.name === "AbortError" ? new Error("The service did not answer in time. A message may still arrive, so wait before asking again.") : error;
     } finally { clearTimeout(timer); }
@@ -963,6 +974,18 @@ const applyPaymentState = name => {
      at a time, each action under a new request identity. The service checks the role, the session and the time again. */
   const planNames = {paid:"Paid", free_monthly:"Free monthly", founding_free_monthly:"Founding, free monthly", other_comped:"Other free access", none:"None"};
   const when = value => value ? new Date(typeof value === "number" ? value * 1000 : value).toLocaleDateString() : "Never";
+  /* Today's sign-up and recovery messages, from the diagnostics a developer or superadmin reads: counts and times only. The day
+     and its reset are in Coordinated Universal Time, as the mail provider counts them. */
+  const accountEmailTiles = mail => {
+    if (mail?.record_type !== "service_account_email_budget/v1" || mail.counted !== true) return [];
+    if (mail.readable !== true) return [["Account emails today", "Not readable now"]];
+    const budget = Number.isInteger(mail.daily_message_budget) ? mail.daily_message_budget : null;
+    const time = value => typeof value === "string" ? value.slice(11, 16) + " UTC" : "";
+    const reached = time(mail.provider_limit_reached_at), again = time(mail.provider_asked_again_at);
+    return [["Account emails today", budget === null ? String(mail.messages_today) : mail.messages_today + " of " + budget],
+      ["Account emails left until 00:00 UTC", reached ? "None, the mail provider refused at " + reached + " and is asked again at " + again
+        : mail.remaining_today === null ? "No daily limit set" : String(mail.remaining_today)]];
+  };
   async function loadStaff() {
     const overview = await request("/api/v1/admin/overview");
     $("staff-admin").hidden = false; $("admin-login").hidden = true; $("staff-role").textContent = overview.role;
@@ -970,7 +993,8 @@ const applyPaymentState = name => {
     tiles($("staff-counts"), [...(counts ? [["Accounts", String(counts.accounts)], ["Paid", String(counts.plans.paid)],
       ["Free monthly", String(counts.plans.free_monthly + counts.plans.founding_free_monthly)], ["Founding places", counts.founding_holders + " of " + counts.founding_limit],
       ["Switched off", String(counts.switched_off)]] : []), ...(usage ? [["Downloads in 30 days", String(usage.downloads_in_the_last_30_days)]] : []),
-      ...(health ? [["Service ready", health.ready ? "Yes" : "No"], ["Checks failing", health.checks.filter(row => !row.passed).map(row => row.name).join(", ") || "None"]] : [])]);
+      ...(health ? [["Service ready", health.ready ? "Yes" : "No"], ["Checks failing", health.checks.filter(row => !row.passed).map(row => row.name).join(", ") || "None"]] : []),
+      ...accountEmailTiles(overview.diagnostics?.account_email)]);
     $("staff-accounts").replaceChildren();
     $("staff-links-form").hidden = !overview.permissions.includes("accounts.send_sign_up_links");
     if (!overview.permissions.includes("accounts.list")) { message("staff-message", "Your role reads the figures above. Account changes need a superadmin."); return; }
@@ -1021,7 +1045,8 @@ const applyPaymentState = name => {
       const result = await request("/api/v1/admin/sign-up-links", {...fields, request_id:staffLinkRequest.id});
       staffLinkRequest = null; $("staff-link-addresses").value = ""; $("staff-link-free").checked = false;
       await loadStaff();
-      message("staff-message", result.links.map(row => (linkOutcomes[row.outcome] || row.outcome + ": ") + row.address + ".").join(" "));
+      message("staff-message", result.links.map(row => (row.outcome === "failed" && row.code === "account_email_daily_budget_reached"
+        ? "No email sent, today's limit for account emails is reached: " : linkOutcomes[row.outcome] || row.outcome + ": ") + row.address + ".").join(" "));
     } catch (error) { message("staff-message", said(error) + " Refresh to see the current state; an exact retry reuses this request identity.", failureState(error)); }
     finally { staffBusy = false; $("staff-link-button").disabled = false; }
   });

@@ -46,7 +46,11 @@
         headers:{...(payload ? {'Content-Type':'application/json'} : {}),...(credential ? {Authorization:'Bearer '+credential} : {})},...(payload ? {body:JSON.stringify(payload)} : {})});
       const envelope = await json(response);
       if (before !== epoch) throw stale();
-      if (!response.ok || response.status !== expectedStatus) { const error = Error(envelope.error?.message || 'The service could not finish this request.'); error.code = envelope.error?.code; throw error; }
+      if (!response.ok || response.status !== expectedStatus) {
+        // The day's sign-up and recovery email is spent: the service's own sentence, the same for every address, and when it resets.
+        const resets = envelope.error?.code === 'account_email_daily_budget_reached' ? ' Please try again after 00:00 UTC.' : '';
+        const error = Error((envelope.error?.message || 'The service could not finish this request.') + resets); error.code = envelope.error?.code; throw error;
+      }
       if (!envelope.result || typeof envelope.result !== 'object') throw Error('The service response was not recognized.');
       return envelope.result;
     } catch (error) {
