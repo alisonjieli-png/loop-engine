@@ -1,0 +1,65 @@
+# The recorded envelope layer coverage of every engine slot (component_envelope_coverage_baseline/v1).
+#
+# One row per slot and one level per layer, in the layer order of component_envelope_coverage.yaml.
+# core/engines/envelope_coverage.py refuses a declaration below its row: none may rise to partial
+# or full, partial to full, and not_applicable only to partial or full. A slot that is not listed
+# here is new and must name the roadmap step that closes each of its gaps. Raise a row after an
+# improvement; lowering one also lowers RECORDED_BASELINE_FLOOR in the same reviewed change.
+record_type: component_envelope_coverage_baseline/v1
+recorded_on: "2026-10-16"
+slots:
+  step_executor: {frustration_avoidance: partial, carrier: partial, handshake: partial, account: not_applicable, tracking: none, preflight: partial, nested_envelopes: none}
+  harness_instruction_files: {frustration_avoidance: none, carrier: none, handshake: partial, account: not_applicable, tracking: none, preflight: none, nested_envelopes: not_applicable}
+  process_confinement: {frustration_avoidance: none, carrier: none, handshake: none, account: not_applicable, tracking: none, preflight: none, nested_envelopes: not_applicable}
+  workspace_backend: {frustration_avoidance: none, carrier: none, handshake: none, account: not_applicable, tracking: none, preflight: none, nested_envelopes: not_applicable}
+  model_access: {frustration_avoidance: partial, carrier: none, handshake: partial, account: not_applicable, tracking: partial, preflight: partial, nested_envelopes: none}
+  model_call_strategy: {frustration_avoidance: none, carrier: none, handshake: none, account: not_applicable, tracking: none, preflight: none, nested_envelopes: none}
+  typed_decision: {frustration_avoidance: none, carrier: partial, handshake: partial, account: not_applicable, tracking: none, preflight: none, nested_envelopes: not_applicable}
+  response_evaluator: {frustration_avoidance: none, carrier: none, handshake: none, account: not_applicable, tracking: none, preflight: partial, nested_envelopes: not_applicable}
+  retrieval_lexical_stage: {frustration_avoidance: none, carrier: none, handshake: partial, account: not_applicable, tracking: none, preflight: none, nested_envelopes: not_applicable}
+  retrieval_vector_stage: {frustration_avoidance: none, carrier: none, handshake: partial, account: not_applicable, tracking: none, preflight: none, nested_envelopes: not_applicable}
+  retrieval_rerank_stage: {frustration_avoidance: none, carrier: none, handshake: none, account: not_applicable, tracking: none, preflight: none, nested_envelopes: not_applicable}
+  catalogue_search_policy: {frustration_avoidance: none, carrier: partial, handshake: none, account: not_applicable, tracking: not_applicable, preflight: none, nested_envelopes: none}
+  record_store: {frustration_avoidance: none, carrier: none, handshake: partial, account: not_applicable, tracking: partial, preflight: none, nested_envelopes: not_applicable}
+  similarity_candidate_source: {frustration_avoidance: none, carrier: none, handshake: none, account: not_applicable, tracking: none, preflight: none, nested_envelopes: not_applicable}
+  runtime_memory: {frustration_avoidance: none, carrier: none, handshake: none, account: not_applicable, tracking: none, preflight: none, nested_envelopes: not_applicable}
+  library_ingestion_source: {frustration_avoidance: none, carrier: partial, handshake: none, account: not_applicable, tracking: none, preflight: none, nested_envelopes: not_applicable}
+  library_format_validation: {frustration_avoidance: none, carrier: partial, handshake: partial, account: not_applicable, tracking: none, preflight: none, nested_envelopes: not_applicable}
+  library_safety_scan: {frustration_avoidance: partial, carrier: partial, handshake: none, account: not_applicable, tracking: none, preflight: none, nested_envelopes: not_applicable}
+  library_near_duplicate: {frustration_avoidance: none, carrier: partial, handshake: partial, account: not_applicable, tracking: not_applicable, preflight: none, nested_envelopes: not_applicable}
+  library_outline: {frustration_avoidance: none, carrier: partial, handshake: none, account: not_applicable, tracking: partial, preflight: partial, nested_envelopes: not_applicable}
+  library_step_function_tagging: {frustration_avoidance: none, carrier: partial, handshake: none, account: not_applicable, tracking: not_applicable, preflight: none, nested_envelopes: not_applicable}
+  library_facet_tagging: {frustration_avoidance: none, carrier: partial, handshake: none, account: not_applicable, tracking: not_applicable, preflight: none, nested_envelopes: not_applicable}
+  tool_protocol_transport: {frustration_avoidance: none, carrier: none, handshake: none, account: not_applicable, tracking: none, preflight: none, nested_envelopes: not_applicable}
+  intelligence_search_retrieval_port: {frustration_avoidance: none, carrier: none, handshake: none, account: not_applicable, tracking: none, preflight: none, nested_envelopes: none}
+  web_research_port: {frustration_avoidance: none, carrier: none, handshake: none, account: not_applicable, tracking: none, preflight: none, nested_envelopes: not_applicable}
+  custom_plugins_port: {frustration_avoidance: none, carrier: none, handshake: partial, account: not_applicable, tracking: none, preflight: none, nested_envelopes: not_applicable}
+  ranking_strategy: {frustration_avoidance: none, carrier: none, handshake: none, account: not_applicable, tracking: not_applicable, preflight: partial, nested_envelopes: not_applicable}
+  configuration_setter: {frustration_avoidance: none, carrier: partial, handshake: partial, account: not_applicable, tracking: none, preflight: none, nested_envelopes: not_applicable}
+  run_history_export: {frustration_avoidance: none, carrier: none, handshake: none, account: not_applicable, tracking: none, preflight: none, nested_envelopes: not_applicable}
+  browser_identity_provider: {frustration_avoidance: partial, carrier: partial, handshake: none, account: partial, tracking: none, preflight: none, nested_envelopes: not_applicable}
+  credential_authentication: {frustration_avoidance: partial, carrier: partial, handshake: partial, account: partial, tracking: none, preflight: none, nested_envelopes: not_applicable}
+  account_email_delivery: {frustration_avoidance: partial, carrier: partial, handshake: partial, account: partial, tracking: partial, preflight: partial, nested_envelopes: not_applicable}
+  payment_provider: {frustration_avoidance: partial, carrier: partial, handshake: partial, account: partial, tracking: partial, preflight: none, nested_envelopes: not_applicable}
+  usage_export: {frustration_avoidance: none, carrier: none, handshake: none, account: none, tracking: none, preflight: none, nested_envelopes: not_applicable}
+  catalogue_body_store: {frustration_avoidance: partial, carrier: partial, handshake: partial, account: partial, tracking: partial, preflight: none, nested_envelopes: not_applicable}
+  catalogue_search_index: {frustration_avoidance: partial, carrier: none, handshake: partial, account: not_applicable, tracking: partial, preflight: partial, nested_envelopes: not_applicable}
+  catalogue_qualification_resolver: {frustration_avoidance: none, carrier: partial, handshake: none, account: not_applicable, tracking: none, preflight: none, nested_envelopes: not_applicable}
+  protocol_endpoint: {frustration_avoidance: partial, carrier: partial, handshake: partial, account: not_applicable, tracking: partial, preflight: none, nested_envelopes: not_applicable}
+  request_limit_state: {frustration_avoidance: partial, carrier: partial, handshake: none, account: not_applicable, tracking: none, preflight: partial, nested_envelopes: not_applicable}
+  failure_journal: {frustration_avoidance: partial, carrier: none, handshake: none, account: not_applicable, tracking: partial, preflight: none, nested_envelopes: not_applicable}
+  secret_resolver: {frustration_avoidance: none, carrier: partial, handshake: none, account: not_applicable, tracking: none, preflight: partial, nested_envelopes: not_applicable}
+  domain_name_records: {frustration_avoidance: not_applicable, carrier: not_applicable, handshake: not_applicable, account: not_applicable, tracking: not_applicable, preflight: not_applicable, nested_envelopes: not_applicable}
+  edge_proxy: {frustration_avoidance: partial, carrier: not_applicable, handshake: not_applicable, account: not_applicable, tracking: not_applicable, preflight: not_applicable, nested_envelopes: not_applicable}
+  compute_host: {frustration_avoidance: not_applicable, carrier: not_applicable, handshake: not_applicable, account: not_applicable, tracking: not_applicable, preflight: not_applicable, nested_envelopes: not_applicable}
+  web_server_process: {frustration_avoidance: not_applicable, carrier: not_applicable, handshake: not_applicable, account: not_applicable, tracking: not_applicable, preflight: not_applicable, nested_envelopes: not_applicable}
+  release_executor: {frustration_avoidance: not_applicable, carrier: not_applicable, handshake: not_applicable, account: not_applicable, tracking: not_applicable, preflight: not_applicable, nested_envelopes: not_applicable}
+  web_page_delivery: {frustration_avoidance: partial, carrier: not_applicable, handshake: not_applicable, account: not_applicable, tracking: not_applicable, preflight: not_applicable, nested_envelopes: not_applicable}
+  customer_client_recipe: {frustration_avoidance: not_applicable, carrier: not_applicable, handshake: not_applicable, account: not_applicable, tracking: not_applicable, preflight: not_applicable, nested_envelopes: not_applicable}
+  material_install_layout: {frustration_avoidance: not_applicable, carrier: not_applicable, handshake: not_applicable, account: not_applicable, tracking: not_applicable, preflight: not_applicable, nested_envelopes: not_applicable}
+  local_credential_source: {frustration_avoidance: none, carrier: none, handshake: none, account: not_applicable, tracking: none, preflight: none, nested_envelopes: not_applicable}
+  step_credential_delivery: {frustration_avoidance: none, carrier: none, handshake: none, account: not_applicable, tracking: none, preflight: none, nested_envelopes: none}
+  tool_protocol_gateway: {frustration_avoidance: none, carrier: none, handshake: none, account: not_applicable, tracking: none, preflight: none, nested_envelopes: none}
+  ontology_change_planning: {frustration_avoidance: partial, carrier: partial, handshake: partial, account: not_applicable, tracking: partial, preflight: partial, nested_envelopes: not_applicable}
+  research_query_planner: {frustration_avoidance: none, carrier: none, handshake: none, account: not_applicable, tracking: none, preflight: none, nested_envelopes: not_applicable}
+  research_query_executor: {frustration_avoidance: none, carrier: none, handshake: none, account: not_applicable, tracking: none, preflight: none, nested_envelopes: not_applicable}

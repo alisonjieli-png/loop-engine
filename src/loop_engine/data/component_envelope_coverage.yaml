@@ -1,0 +1,675 @@
+# Envelope layer coverage: what each engine slot declares for each envelope layer.
+#
+# One entry for every slot of engine_slots.yaml, in catalogue order, and one declaration for each
+# layer of docs/architecture/ADR-COMPONENT-ENVELOPE-LAYERS.md (section 14 of the functional
+# component standard): full and partial name evidence, symbols or module:check references that
+# resolve in source; not_applicable names one of the reasons below; none may name the roadmap
+# step that closes the gap, and a slot added after the baseline must. Read and checked by
+# core/engines/envelope_coverage.py against the baseline in
+# component_envelope_coverage_baseline.yaml, which may rise and never fall.
+#
+# The survey of October 16, 2026 is conservative: a layer is partial only where it named code
+# on the slot's own path, and a later survey raises a none with the evidence it finds. The file
+# declares and grants nothing.
+record_type: component_envelope_coverage/v1
+version: 1.0.0
+layers: [frustration_avoidance, carrier, handshake, account, tracking, preflight, nested_envelopes]
+reasons:
+  release_time_slot: >-
+    This slot is chosen once in the release record and no run-time request crosses an edge of it, so
+    the guarded release workflow and its live checks apply this layer, not an envelope Loop.
+  no_nested_slot: >-
+    No catalogued slot is nested under this slot and none of its engines is composite, so no
+    envelope runs inside it.
+  no_account_path: >-
+    No account reaches this slot directly: the hosted service authenticates the credential and reads
+    the entitlement before a request gets here, and a local run has no account, only the owning
+    Loop's grants.
+  before_any_account: >-
+    This slot acts on a request before any account is known, by its client address, so there is no
+    account to check yet.
+  host_start_only: >-
+    This slot runs once when the host starts, before any request or account exists.
+  pure_without_state: >-
+    Every engine of this slot is pure and keeps no state between calls, so there is no effect to
+    journal, replay or reconcile and no desired state to resync; a repeated request is computed
+    again.
+slots:
+  step_executor:
+    frustration_avoidance:
+      coverage: partial
+      evidence:
+        - core.harness_fallback_checks:fallback_never_resets_call_allowance
+    carrier: {coverage: partial, evidence: [core.external_harness.HarnessRunRequest]}
+    handshake:
+      coverage: partial
+      evidence:
+        - core.harness_execution_contracts.unmet_harness_requirements
+        - core.harness_execution_contracts.HarnessExecutionRequirements
+    account: {coverage: not_applicable, reason: no_account_path}
+    tracking: {coverage: none}
+    preflight: {coverage: partial, evidence: [core.harness_process.HarnessProcessSpec.validate_unchanged]}
+    nested_envelopes: {coverage: none, next: S-6.30}
+  harness_instruction_files:
+    frustration_avoidance: {coverage: none}
+    carrier: {coverage: none}
+    handshake: {coverage: partial, evidence: [core.instance_instructions.files_for]}
+    account: {coverage: not_applicable, reason: no_account_path}
+    tracking: {coverage: none}
+    preflight: {coverage: none}
+    nested_envelopes: {coverage: not_applicable, reason: no_nested_slot}
+  process_confinement:
+    frustration_avoidance: {coverage: none}
+    carrier: {coverage: none}
+    handshake: {coverage: none}
+    account: {coverage: not_applicable, reason: no_account_path}
+    tracking: {coverage: none}
+    preflight: {coverage: none}
+    nested_envelopes: {coverage: not_applicable, reason: no_nested_slot}
+  workspace_backend:
+    frustration_avoidance: {coverage: none}
+    carrier: {coverage: none}
+    handshake: {coverage: none}
+    account: {coverage: not_applicable, reason: no_account_path}
+    tracking: {coverage: none}
+    preflight: {coverage: none}
+    nested_envelopes: {coverage: not_applicable, reason: no_nested_slot}
+  model_access:
+    frustration_avoidance: {coverage: partial, evidence: [core.provider_failure_classes]}
+    carrier: {coverage: none}
+    handshake:
+      coverage: partial
+      evidence:
+        - core.model_routes.screen_route
+        - core.model_gateway:unknown_output_capability_refuses_before_provider_use
+    account: {coverage: not_applicable, reason: no_account_path}
+    tracking:
+      coverage: partial
+      evidence:
+        - core.model_gateway_accounting_checks:gateway_aggregates_failed_and_winning_physical_usage
+        - core.model_gateway_accounting_checks:partial_usage_preserves_unknown_instead_of_zero
+    preflight: {coverage: partial, evidence: [core.model_token_preflight]}
+    nested_envelopes: {coverage: none, next: S-6.30}
+  model_call_strategy:
+    frustration_avoidance: {coverage: none}
+    carrier: {coverage: none}
+    handshake: {coverage: none}
+    account: {coverage: not_applicable, reason: no_account_path}
+    tracking: {coverage: none}
+    preflight: {coverage: none}
+    nested_envelopes: {coverage: none, next: S-6.60}
+  typed_decision:
+    frustration_avoidance: {coverage: none}
+    carrier: {coverage: partial, evidence: [core.decisions.contracts.DecisionBatchRequest.from_dict]}
+    handshake:
+      coverage: partial
+      evidence:
+        - core.decisions.station_checks:ungranted_effect_waits_whatever_an_engine_says
+    account: {coverage: not_applicable, reason: no_account_path}
+    tracking: {coverage: none}
+    preflight: {coverage: none}
+    nested_envelopes: {coverage: not_applicable, reason: no_nested_slot}
+  response_evaluator:
+    frustration_avoidance: {coverage: none}
+    carrier: {coverage: none}
+    handshake: {coverage: none}
+    account: {coverage: not_applicable, reason: no_account_path}
+    tracking: {coverage: none}
+    preflight:
+      coverage: partial
+      evidence:
+        - core.harness_selection_checks:missing_evaluator_refuses_before_provider_dispatch
+    nested_envelopes: {coverage: not_applicable, reason: no_nested_slot}
+  retrieval_lexical_stage:
+    frustration_avoidance: {coverage: none}
+    carrier: {coverage: none}
+    handshake: {coverage: partial, evidence: [core.capability_directory.CapabilityHandshake]}
+    account: {coverage: not_applicable, reason: no_account_path}
+    tracking: {coverage: none}
+    preflight: {coverage: none}
+    nested_envelopes: {coverage: not_applicable, reason: no_nested_slot}
+  retrieval_vector_stage:
+    frustration_avoidance: {coverage: none}
+    carrier: {coverage: none}
+    handshake: {coverage: partial, evidence: [core.retrieval.require_same_space]}
+    account: {coverage: not_applicable, reason: no_account_path}
+    tracking: {coverage: none}
+    preflight: {coverage: none}
+    nested_envelopes: {coverage: not_applicable, reason: no_nested_slot}
+  retrieval_rerank_stage:
+    frustration_avoidance: {coverage: none}
+    carrier: {coverage: none}
+    handshake: {coverage: none}
+    account: {coverage: not_applicable, reason: no_account_path}
+    tracking: {coverage: none}
+    preflight: {coverage: none}
+    nested_envelopes: {coverage: not_applicable, reason: no_nested_slot}
+  catalogue_search_policy:
+    frustration_avoidance: {coverage: none}
+    carrier:
+      coverage: partial
+      evidence:
+        - core.service_runtime.http_checks:protocol_search_returns_typed_authorized_references_without_bodies
+    handshake: {coverage: none}
+    account: {coverage: not_applicable, reason: no_account_path}
+    tracking: {coverage: not_applicable, reason: pure_without_state}
+    preflight: {coverage: none}
+    nested_envelopes: {coverage: none, next: S-6.32}
+  record_store:
+    frustration_avoidance: {coverage: none}
+    carrier: {coverage: none}
+    handshake:
+      coverage: partial
+      evidence:
+        - catalog.handshake.negotiate
+        - catalog.handshake:write_against_read_only_store_is_incompatible
+    account: {coverage: not_applicable, reason: no_account_path}
+    tracking:
+      coverage: partial
+      evidence:
+        - core.service_runtime.runtime_checks:unknown_commit_is_not_success_and_exact_retry_reconciles_once
+    preflight: {coverage: none}
+    nested_envelopes: {coverage: not_applicable, reason: no_nested_slot}
+  similarity_candidate_source:
+    frustration_avoidance: {coverage: none}
+    carrier: {coverage: none}
+    handshake: {coverage: none}
+    account: {coverage: not_applicable, reason: no_account_path}
+    tracking: {coverage: none}
+    preflight: {coverage: none}
+    nested_envelopes: {coverage: not_applicable, reason: no_nested_slot}
+  runtime_memory:
+    frustration_avoidance: {coverage: none}
+    carrier: {coverage: none}
+    handshake: {coverage: none}
+    account: {coverage: not_applicable, reason: no_account_path}
+    tracking: {coverage: none}
+    preflight: {coverage: none}
+    nested_envelopes: {coverage: not_applicable, reason: no_nested_slot}
+  library_ingestion_source:
+    frustration_avoidance: {coverage: none}
+    carrier: {coverage: partial, evidence: [core.library_ingestion.record_rules.read_record]}
+    handshake: {coverage: none}
+    account: {coverage: not_applicable, reason: no_account_path}
+    tracking: {coverage: none}
+    preflight: {coverage: none}
+    nested_envelopes: {coverage: not_applicable, reason: no_nested_slot}
+  library_format_validation:
+    frustration_avoidance: {coverage: none}
+    carrier: {coverage: partial, evidence: [core.library_ingestion.record_rules.read_record]}
+    handshake:
+      coverage: partial
+      evidence:
+        - core.library_ingestion.optional_engine_checks:a_missing_schema_or_a_changed_digest_makes_the_schema_validator_ineligible
+    account: {coverage: not_applicable, reason: no_account_path}
+    tracking: {coverage: none}
+    preflight: {coverage: none}
+    nested_envelopes: {coverage: not_applicable, reason: no_nested_slot}
+  library_safety_scan:
+    frustration_avoidance:
+      coverage: partial
+      evidence:
+        - core.library_ingestion.scan_checks:a_finding_names_its_rule_severity_and_line_and_never_copies_the_text
+    carrier: {coverage: partial, evidence: [core.library_ingestion.record_rules.read_record]}
+    handshake: {coverage: none}
+    account: {coverage: not_applicable, reason: no_account_path}
+    tracking: {coverage: none}
+    preflight: {coverage: none}
+    nested_envelopes: {coverage: not_applicable, reason: no_nested_slot}
+  library_near_duplicate:
+    frustration_avoidance: {coverage: none}
+    carrier: {coverage: partial, evidence: [core.library_ingestion.record_rules.read_record]}
+    handshake:
+      coverage: partial
+      evidence:
+        - core.library_ingestion.pipeline_checks:selection_is_recorded_before_use_names_why_an_engine_is_ineligible_and_grants_no_authority
+    account: {coverage: not_applicable, reason: no_account_path}
+    tracking: {coverage: not_applicable, reason: pure_without_state}
+    preflight: {coverage: none}
+    nested_envelopes: {coverage: not_applicable, reason: no_nested_slot}
+  library_outline:
+    frustration_avoidance: {coverage: none}
+    carrier: {coverage: partial, evidence: [core.library_ingestion.record_rules.read_record]}
+    handshake: {coverage: none}
+    account: {coverage: not_applicable, reason: no_account_path}
+    tracking:
+      coverage: partial
+      evidence:
+        - core.library_ingestion.optional_engine_checks:every_model_call_is_recorded_and_unknown_usage_stays_unknown
+    preflight:
+      coverage: partial
+      evidence:
+        - core.library_ingestion.optional_engine_checks:a_sentence_that_copies_the_source_is_refused_and_the_ceiling_stops_before_a_call
+    nested_envelopes: {coverage: not_applicable, reason: no_nested_slot}
+  library_step_function_tagging:
+    frustration_avoidance: {coverage: none}
+    carrier: {coverage: partial, evidence: [core.library_ingestion.record_rules.read_record]}
+    handshake: {coverage: none}
+    account: {coverage: not_applicable, reason: no_account_path}
+    tracking: {coverage: not_applicable, reason: pure_without_state}
+    preflight: {coverage: none}
+    nested_envelopes: {coverage: not_applicable, reason: no_nested_slot}
+  library_facet_tagging:
+    frustration_avoidance: {coverage: none}
+    carrier: {coverage: partial, evidence: [core.library_ingestion.record_rules.read_record]}
+    handshake: {coverage: none}
+    account: {coverage: not_applicable, reason: no_account_path}
+    tracking: {coverage: not_applicable, reason: pure_without_state}
+    preflight: {coverage: none}
+    nested_envelopes: {coverage: not_applicable, reason: no_nested_slot}
+  tool_protocol_transport:
+    frustration_avoidance: {coverage: none}
+    carrier: {coverage: none}
+    handshake: {coverage: none}
+    account: {coverage: not_applicable, reason: no_account_path}
+    tracking: {coverage: none, next: S-6.30}
+    preflight: {coverage: none}
+    nested_envelopes: {coverage: not_applicable, reason: no_nested_slot}
+  intelligence_search_retrieval_port:
+    frustration_avoidance: {coverage: none}
+    carrier: {coverage: none}
+    handshake: {coverage: none}
+    account: {coverage: not_applicable, reason: no_account_path}
+    tracking: {coverage: none}
+    preflight: {coverage: none}
+    nested_envelopes: {coverage: none, next: S-6.32}
+  web_research_port:
+    frustration_avoidance: {coverage: none}
+    carrier: {coverage: none}
+    handshake: {coverage: none}
+    account: {coverage: not_applicable, reason: no_account_path}
+    tracking: {coverage: none}
+    preflight: {coverage: none}
+    nested_envelopes: {coverage: not_applicable, reason: no_nested_slot}
+  custom_plugins_port:
+    frustration_avoidance: {coverage: none}
+    carrier: {coverage: none}
+    handshake: {coverage: partial, evidence: [core.capability_directory.CapabilityHandshake]}
+    account: {coverage: not_applicable, reason: no_account_path}
+    tracking: {coverage: none}
+    preflight: {coverage: none}
+    nested_envelopes: {coverage: not_applicable, reason: no_nested_slot}
+  ranking_strategy:
+    frustration_avoidance: {coverage: none}
+    carrier: {coverage: none}
+    handshake: {coverage: none}
+    account: {coverage: not_applicable, reason: no_account_path}
+    tracking: {coverage: not_applicable, reason: pure_without_state}
+    preflight:
+      coverage: partial
+      evidence:
+        - core.configuration_preference_checks:active_selector_cycle_refuses_without_fallback
+    nested_envelopes: {coverage: not_applicable, reason: no_nested_slot}
+  configuration_setter:
+    frustration_avoidance: {coverage: none}
+    carrier: {coverage: partial, evidence: [core.configuration_setters:unknown_fields_cannot_create_settings]}
+    handshake:
+      coverage: partial
+      evidence:
+        - core.configuration_setters:one_unauthorized_field_prevents_partial_application
+    account: {coverage: not_applicable, reason: no_account_path}
+    tracking: {coverage: none}
+    preflight: {coverage: none}
+    nested_envelopes: {coverage: not_applicable, reason: no_nested_slot}
+  run_history_export:
+    frustration_avoidance: {coverage: none}
+    carrier: {coverage: none}
+    handshake: {coverage: none}
+    account: {coverage: not_applicable, reason: no_account_path}
+    tracking: {coverage: none}
+    preflight: {coverage: none}
+    nested_envelopes: {coverage: not_applicable, reason: no_nested_slot}
+  browser_identity_provider:
+    frustration_avoidance:
+      coverage: partial
+      evidence:
+        - core.service_runtime.refusals.guidance
+        - core.service_runtime.refusals:every_refusal_states_what_happened_and_what_to_do_next
+    carrier: {coverage: partial, evidence: [core.service_runtime.http._parse_json]}
+    handshake: {coverage: none}
+    account:
+      coverage: partial
+      evidence:
+        - core.service_runtime.browser_identity_checks:activation_rejects_client_supplied_tenant_and_authority
+        - core.service_runtime.account_origin_checks:an_unmarked_provider_identity_is_refused_and_only_both_marks_admit
+    tracking: {coverage: none}
+    preflight: {coverage: none}
+    nested_envelopes: {coverage: not_applicable, reason: no_nested_slot}
+  credential_authentication:
+    frustration_avoidance:
+      coverage: partial
+      evidence:
+        - core.service_runtime.refusals.guidance
+        - core.service_runtime.refusals:every_refusal_states_what_happened_and_what_to_do_next
+    carrier: {coverage: partial, evidence: [core.service_runtime.http._parse_json]}
+    handshake:
+      coverage: partial
+      evidence:
+        - core.service_runtime.access_checks:removed_key_version_change_is_detected
+    account:
+      coverage: partial
+      evidence:
+        - core.service_runtime.http_auth.ServiceHttpAuthenticator
+        - core.service_runtime.runtime_checks:key_revocation_invalidates_previously_issued_principals
+    tracking: {coverage: none}
+    preflight: {coverage: none}
+    nested_envelopes: {coverage: not_applicable, reason: no_nested_slot}
+  account_email_delivery:
+    frustration_avoidance:
+      coverage: partial
+      evidence:
+        - core.service_runtime.refusals.guidance
+        - core.service_runtime.refusals:every_refusal_states_what_happened_and_what_to_do_next
+        - core.service_runtime.account_email_checks:the_client_address_allowance_refuses_the_fourth_attempt_and_asks_it_to_wait
+    carrier:
+      coverage: partial
+      evidence:
+        - core.service_runtime.http._parse_json
+        - core.service_runtime.account_email_checks:a_request_this_release_does_not_understand_is_refused_before_any_provider_request
+    handshake:
+      coverage: partial
+      evidence:
+        - core.service_runtime.account_email_checks:an_adapter_that_speaks_another_account_email_boundary_is_refused_before_the_routes_are_served
+    account:
+      coverage: partial
+      evidence:
+        - core.service_runtime.account_email_checks:sign_up_answers_the_same_record_for_a_new_and_an_existing_address
+        - core.service_runtime.account_email_checks:recovery_answers_the_same_record_for_a_known_and_an_unknown_address
+    tracking:
+      coverage: partial
+      evidence:
+        - core.service_runtime.account_email_checks:a_mail_refusal_and_a_mail_deadline_are_separate_and_neither_sends_twice
+    preflight:
+      coverage: partial
+      evidence:
+        - core.service_runtime.account_email_checks:an_open_operation_with_no_stated_client_address_source_is_refused_before_it_serves
+    nested_envelopes: {coverage: not_applicable, reason: no_nested_slot}
+  payment_provider:
+    frustration_avoidance:
+      coverage: partial
+      evidence:
+        - core.service_runtime.refusals.guidance
+        - core.service_runtime.refusals:every_refusal_states_what_happened_and_what_to_do_next
+        - core.service_runtime.billing:a_delivery_that_loses_a_race_with_a_concurrent_one_starts_again_and_applies
+    carrier:
+      coverage: partial
+      evidence:
+        - core.service_runtime.http._parse_json
+        - core.service_runtime.billing:duplicate_json_keys_refuse_even_with_valid_signature
+    handshake:
+      coverage: partial
+      evidence:
+        - core.service_runtime.billing:billing_policy_change_invalidates_old_grants_and_requires_exact_revision
+    account:
+      coverage: partial
+      evidence:
+        - core.service_runtime.billing:duplicate_event_identity_not_delivery_format_controls_replay
+        - core.service_runtime.billing:out_of_order_events_reconcile_current_state_not_created_order
+        - core.service_runtime.billing:reconciliation_outage_invalidates_previous_paid_access
+        - core.service_runtime.account_administration_checks:the_first_ten_accounts_hold_the_founding_offer_and_the_eleventh_does_not
+    tracking:
+      coverage: partial
+      evidence:
+        - core.service_runtime.billing:lost_event_commit_acknowledgment_remains_unknown_until_reconciled
+        - core.service_runtime.billing:verified_pending_events_resume_after_restart_without_raw_payload_storage
+        - core.service_runtime.billing_effects.BillingSessionEffectStore
+    preflight: {coverage: none}
+    nested_envelopes: {coverage: not_applicable, reason: no_nested_slot}
+  usage_export:
+    frustration_avoidance: {coverage: none}
+    carrier: {coverage: none}
+    handshake: {coverage: none}
+    account: {coverage: none, next: S-6.30}
+    tracking: {coverage: none}
+    preflight: {coverage: none}
+    nested_envelopes: {coverage: not_applicable, reason: no_nested_slot}
+  catalogue_body_store:
+    frustration_avoidance:
+      coverage: partial
+      evidence:
+        - core.service_runtime.refusals.guidance
+        - core.service_runtime.refusals:every_refusal_states_what_happened_and_what_to_do_next
+    carrier:
+      coverage: partial
+      evidence:
+        - core.service_runtime.http._parse_json
+        - core.service_runtime.http_checks:selected_digest_mismatch_refuses_before_body_read_and_metering
+    handshake:
+      coverage: partial
+      evidence:
+        - core.service_runtime.catalogue_body_store_checks:a_body_store_engine_record_is_read_exactly_or_refused_before_anything_opens
+    account:
+      coverage: partial
+      evidence:
+        - core.service_runtime.runtime_checks:entitlement_revocation_during_body_read_prevents_meter_and_delivery
+    tracking:
+      coverage: partial
+      evidence:
+        - core.service_runtime.runtime.ServiceRuntime.record_usage
+        - core.provisioning_mcp_checks:unknown_meter_commit_has_one_attempt_without_automatic_retry
+    preflight: {coverage: none}
+    nested_envelopes: {coverage: not_applicable, reason: no_nested_slot}
+  catalogue_search_index:
+    frustration_avoidance:
+      coverage: partial
+      evidence:
+        - core.service_runtime.refusals.guidance
+        - core.service_runtime.refusals:every_refusal_states_what_happened_and_what_to_do_next
+    carrier: {coverage: none}
+    handshake:
+      coverage: partial
+      evidence:
+        - core.service_runtime.catalogue_index_engines.select_engine
+        - core.service_runtime.catalogue_release_checks:an_image_refuses_to_start_on_catalogue_state_it_does_not_understand
+    account: {coverage: not_applicable, reason: no_account_path}
+    tracking:
+      coverage: partial
+      evidence:
+        - core.service_runtime.catalogue_serving.CatalogueRefresher.check_once
+    preflight:
+      coverage: partial
+      evidence:
+        - core.service_runtime.catalogue_index_checks:an_engine_that_cannot_run_here_is_refused_at_start_and_never_replaced
+    nested_envelopes: {coverage: not_applicable, reason: no_nested_slot}
+  catalogue_qualification_resolver:
+    frustration_avoidance: {coverage: none}
+    carrier:
+      coverage: partial
+      evidence:
+        - core.service_runtime.http_boundary_checks:host_review_is_bound_to_exact_bytes_not_only_an_item_name
+    handshake: {coverage: none}
+    account: {coverage: not_applicable, reason: no_account_path}
+    tracking: {coverage: none}
+    preflight: {coverage: none}
+    nested_envelopes: {coverage: not_applicable, reason: no_nested_slot}
+  protocol_endpoint:
+    frustration_avoidance:
+      coverage: partial
+      evidence:
+        - core.service_runtime.refusals.guidance
+        - core.service_runtime.refusals:every_refusal_states_what_happened_and_what_to_do_next
+    carrier:
+      coverage: partial
+      evidence:
+        - core.service_runtime.http._parse_json
+        - core.service_runtime.http.select_protocol_binding
+    handshake:
+      coverage: partial
+      evidence:
+        - core.service_runtime.protocol_checks:a_request_naming_an_unsupported_version_is_refused_before_any_effect
+        - core.service_runtime.protocol_checks:initialize_for_an_unsupported_version_is_answered_with_a_supported_version
+    account: {coverage: not_applicable, reason: no_account_path}
+    tracking:
+      coverage: partial
+      evidence:
+        - core.provisioning_mcp_checks:unknown_meter_commit_has_one_attempt_without_automatic_retry
+    preflight: {coverage: none}
+    nested_envelopes: {coverage: not_applicable, reason: no_nested_slot}
+  request_limit_state:
+    frustration_avoidance:
+      coverage: partial
+      evidence:
+        - core.service_runtime.refusals.guidance
+        - core.service_runtime.refusals:every_refusal_states_what_happened_and_what_to_do_next
+    carrier:
+      coverage: partial
+      evidence:
+        - core.service_runtime.forwarding_proxy_checks:a_forged_forwarding_proxy_header_from_outside_the_ranges_never_moves_the_count
+    handshake: {coverage: none}
+    account: {coverage: not_applicable, reason: before_any_account}
+    tracking: {coverage: none}
+    preflight:
+      coverage: partial
+      evidence:
+        - core.service_runtime.capacity_checks:the_real_serve_command_stops_before_it_serves_the_public_without_the_limit
+    nested_envelopes: {coverage: not_applicable, reason: no_nested_slot}
+  failure_journal:
+    frustration_avoidance: {coverage: partial, evidence: [core.service_runtime.http._error_record]}
+    carrier: {coverage: none}
+    handshake: {coverage: none}
+    account: {coverage: not_applicable, reason: no_account_path}
+    tracking: {coverage: partial, evidence: [core.service_runtime.observability.ServiceFailureJournal]}
+    preflight: {coverage: none}
+    nested_envelopes: {coverage: not_applicable, reason: no_nested_slot}
+  secret_resolver:
+    frustration_avoidance: {coverage: none}
+    carrier:
+      coverage: partial
+      evidence:
+        - core.service_runtime.browser_identity_checks:server_secret_cannot_be_serialized_as_a_publishable_key
+    handshake: {coverage: none}
+    account: {coverage: not_applicable, reason: host_start_only}
+    tracking: {coverage: none}
+    preflight: {coverage: partial, evidence: [core.service_runtime.http_entrypoint.environment_secret]}
+    nested_envelopes: {coverage: not_applicable, reason: no_nested_slot}
+  domain_name_records:
+    frustration_avoidance: {coverage: not_applicable, reason: release_time_slot}
+    carrier: {coverage: not_applicable, reason: release_time_slot}
+    handshake: {coverage: not_applicable, reason: release_time_slot}
+    account: {coverage: not_applicable, reason: release_time_slot}
+    tracking: {coverage: not_applicable, reason: release_time_slot}
+    preflight: {coverage: not_applicable, reason: release_time_slot}
+    nested_envelopes: {coverage: not_applicable, reason: release_time_slot}
+  edge_proxy:
+    frustration_avoidance:
+      coverage: partial
+      evidence:
+        - core.service_runtime.static_site_checks:a_platform_failure_page_from_the_origin_becomes_the_services_unavailable_answer
+    carrier: {coverage: not_applicable, reason: release_time_slot}
+    handshake: {coverage: not_applicable, reason: release_time_slot}
+    account: {coverage: not_applicable, reason: release_time_slot}
+    tracking: {coverage: not_applicable, reason: release_time_slot}
+    preflight: {coverage: not_applicable, reason: release_time_slot}
+    nested_envelopes: {coverage: not_applicable, reason: release_time_slot}
+  compute_host:
+    frustration_avoidance: {coverage: not_applicable, reason: release_time_slot}
+    carrier: {coverage: not_applicable, reason: release_time_slot}
+    handshake: {coverage: not_applicable, reason: release_time_slot}
+    account: {coverage: not_applicable, reason: release_time_slot}
+    tracking: {coverage: not_applicable, reason: release_time_slot}
+    preflight: {coverage: not_applicable, reason: release_time_slot}
+    nested_envelopes: {coverage: not_applicable, reason: release_time_slot}
+  web_server_process:
+    frustration_avoidance: {coverage: not_applicable, reason: release_time_slot}
+    carrier: {coverage: not_applicable, reason: release_time_slot}
+    handshake: {coverage: not_applicable, reason: release_time_slot}
+    account: {coverage: not_applicable, reason: release_time_slot}
+    tracking: {coverage: not_applicable, reason: release_time_slot}
+    preflight: {coverage: not_applicable, reason: release_time_slot}
+    nested_envelopes: {coverage: not_applicable, reason: release_time_slot}
+  release_executor:
+    frustration_avoidance: {coverage: not_applicable, reason: release_time_slot}
+    carrier: {coverage: not_applicable, reason: release_time_slot}
+    handshake: {coverage: not_applicable, reason: release_time_slot}
+    account: {coverage: not_applicable, reason: release_time_slot}
+    tracking: {coverage: not_applicable, reason: release_time_slot}
+    preflight: {coverage: not_applicable, reason: release_time_slot}
+    nested_envelopes: {coverage: not_applicable, reason: release_time_slot}
+  web_page_delivery:
+    frustration_avoidance:
+      coverage: partial
+      evidence:
+        - core.service_runtime.static_site_checks:with_the_origin_down_pages_keep_serving_and_other_requests_get_the_unavailable_answer
+    carrier: {coverage: not_applicable, reason: release_time_slot}
+    handshake: {coverage: not_applicable, reason: release_time_slot}
+    account: {coverage: not_applicable, reason: release_time_slot}
+    tracking: {coverage: not_applicable, reason: release_time_slot}
+    preflight: {coverage: not_applicable, reason: release_time_slot}
+    nested_envelopes: {coverage: not_applicable, reason: release_time_slot}
+  customer_client_recipe:
+    frustration_avoidance: {coverage: not_applicable, reason: release_time_slot}
+    carrier: {coverage: not_applicable, reason: release_time_slot}
+    handshake: {coverage: not_applicable, reason: release_time_slot}
+    account: {coverage: not_applicable, reason: release_time_slot}
+    tracking: {coverage: not_applicable, reason: release_time_slot}
+    preflight: {coverage: not_applicable, reason: release_time_slot}
+    nested_envelopes: {coverage: not_applicable, reason: release_time_slot}
+  material_install_layout:
+    frustration_avoidance: {coverage: not_applicable, reason: release_time_slot}
+    carrier: {coverage: not_applicable, reason: release_time_slot}
+    handshake: {coverage: not_applicable, reason: release_time_slot}
+    account: {coverage: not_applicable, reason: release_time_slot}
+    tracking: {coverage: not_applicable, reason: release_time_slot}
+    preflight: {coverage: not_applicable, reason: release_time_slot}
+    nested_envelopes: {coverage: not_applicable, reason: release_time_slot}
+  local_credential_source:
+    frustration_avoidance: {coverage: none}
+    carrier: {coverage: none}
+    handshake: {coverage: none}
+    account: {coverage: not_applicable, reason: no_account_path}
+    tracking: {coverage: none}
+    preflight: {coverage: none}
+    nested_envelopes: {coverage: not_applicable, reason: no_nested_slot}
+  step_credential_delivery:
+    frustration_avoidance: {coverage: none}
+    carrier: {coverage: none}
+    handshake: {coverage: none}
+    account: {coverage: not_applicable, reason: no_account_path}
+    tracking: {coverage: none}
+    preflight: {coverage: none}
+    nested_envelopes: {coverage: none, next: S-6.61}
+  tool_protocol_gateway:
+    frustration_avoidance: {coverage: none}
+    carrier: {coverage: none}
+    handshake: {coverage: none}
+    account: {coverage: not_applicable, reason: no_account_path}
+    tracking: {coverage: none}
+    preflight: {coverage: none}
+    nested_envelopes: {coverage: none, next: S-6.61}
+  ontology_change_planning:
+    frustration_avoidance:
+      coverage: partial
+      evidence:
+        - core.ontology_change.contract.OntologyChangeRefused
+    carrier:
+      coverage: partial
+      evidence:
+        - core.ontology_change.contract.PlanRequest.from_dict
+        - core.ontology_change.conformance:a_stale_base_digest_is_refused_before_any_engine_runs
+    handshake: {coverage: partial, evidence: [core.ontology_change.engines.unmet_requirements]}
+    account: {coverage: not_applicable, reason: no_account_path}
+    tracking:
+      coverage: partial
+      evidence:
+        - core.ontology_change.conformance:apply_is_compare_and_swap_on_the_base_digest
+    preflight:
+      coverage: partial
+      evidence:
+        - core.ontology_change.conformance:a_stale_base_digest_is_refused_before_any_engine_runs
+    nested_envelopes: {coverage: not_applicable, reason: no_nested_slot}
+  research_query_planner:
+    frustration_avoidance: {coverage: none}
+    carrier: {coverage: none}
+    handshake: {coverage: none}
+    account: {coverage: not_applicable, reason: no_account_path}
+    tracking: {coverage: none}
+    preflight: {coverage: none}
+    nested_envelopes: {coverage: not_applicable, reason: no_nested_slot}
+  research_query_executor:
+    frustration_avoidance: {coverage: none}
+    carrier: {coverage: none}
+    handshake: {coverage: none}
+    account: {coverage: not_applicable, reason: no_account_path}
+    tracking: {coverage: none}
+    preflight: {coverage: none}
+    nested_envelopes: {coverage: not_applicable, reason: no_nested_slot}
