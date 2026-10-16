@@ -168,10 +168,18 @@
 /* The library counts on the live and plan slides. The page is served with the counts of the latest release record, each fact
    naming that record; once the service reports a complete file population, the same elements show the live counts. Nothing
    else inside a slide changes, and a failed or partial answer leaves the recorded counts in place. */
+/* The same one read fills the footer's status line, as the other pages fill theirs: until October 16, 2026 the deck left
+   "Checking service availability" on screen for good. */
 (() => {
   const files = document.querySelectorAll('[data-deck-live="files"]'), items = document.querySelectorAll('[data-deck-live="items"]');
-  if (!files.length && !items.length) return;
-  fetch("/api/v1/capabilities", {credentials: "omit", cache: "no-store"}).then(response => response.ok ? response.json() : null).then(body => {
+  const status = document.getElementById("service-status");
+  const unavailable = () => { if (status) status.textContent = "Service unavailable. Check the host configuration."; };
+  if (!files.length && !items.length && !status) return;
+  fetch("/api/v1/capabilities", {credentials: "omit", cache: "no-store"}).then(response => {
+    if (!response.ok) { unavailable(); return null; }
+    if (status) status.textContent = "Service available";
+    return response.json();
+  }).then(body => {
     const library = body?.result?.library, population = library?.file_population, served = library?.served_items;
     const complete = population?.record_type === "catalogue_file_population/v1" && population.complete === true
       && Number.isSafeInteger(served) && served > 0 && population.packages === served
@@ -179,5 +187,5 @@
     if (!complete) return;
     files.forEach(node => { node.textContent = population.distinct_files.toLocaleString("en-US"); });
     items.forEach(node => { node.textContent = served.toLocaleString("en-US"); });
-  }).catch(() => {});
+  }).catch(unavailable);
 })();

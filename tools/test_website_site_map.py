@@ -954,6 +954,135 @@ class SiteMapRecords(unittest.TestCase):
                     site_map_from_record(KNOWN_WRONG_RECORDS[description](json.loads(json.dumps(FIXTURE_MAP))))
 
 
+SERVICE_SCRIPT = ROOT / "src/loop_engine/core/service_runtime/web_assets/service.js"
+_VIEW_TITLES = re.compile(r"const viewTitle = (\{.*?\})\[name\]", re.S)
+_VIEW_TITLE = re.compile(r'(?:"([^"]+)"|([A-Za-z_][A-Za-z0-9_]*))\s*:\s*"([^"]*)"')
+_ROUTE_TABLE = re.compile(r"const routeNames = (\{.*?\});", re.S)
+_ROUTE_ADDED = re.compile(r'routeNames\["([^"]+)"\]\s*=\s*"([^"]+)"')
+_ROUTES_MERGED = re.compile(r"Object\.assign\(routeNames,\s*(\{.*?\})\)", re.S)
+
+
+def browser_title_problems(script, site_map):
+    """Each page the one-page app routes shows, in the browser tab, the title its site map entry names.
+
+    The served head carries the site map's title, and `service.js` writes the title again from its own table whenever
+    it shows a view. On October 16, 2026 that table lacked the worker and Top MCP views, so `/worker` and `/top-mcps`
+    showed "Baltor | undefined" as soon as the script ran; no check read the table.
+    """
+    table = _VIEW_TITLES.search(script)
+    if table is None:
+        return ["service.js has no view title table"]
+    titles = {quoted or bare: title for quoted, bare, title in _VIEW_TITLE.findall(table.group(1))}
+    routes = {}
+    for match in _ROUTE_TABLE.finditer(script):
+        routes.update(json.loads(match.group(1)))
+    routes.update(dict(_ROUTE_ADDED.findall(script)))
+    for match in _ROUTES_MERGED.finditer(script):
+        routes.update(json.loads(match.group(1)))
+    return [f"{page.address} (view {routes[page.address]}) shows {titles.get(routes[page.address])!r}, and the site map has "
+            f"{page.title!r}" for page in site_map.pages
+            if page.address in routes and titles.get(routes[page.address]) != page.title]
+
+
+class BrowserTitlesFollowTheSiteMap(unittest.TestCase):
+    """The title a routed view writes into the browser tab is the site map's title for its address."""
+
+    def test_every_routed_view_shows_its_site_map_title(self):
+        self.assertEqual(browser_title_problems(SERVICE_SCRIPT.read_text("utf-8"), load_site_map()), [])
+
+    def test_a_missing_or_changed_view_title_is_refused(self):
+        script, site_map = SERVICE_SCRIPT.read_text("utf-8"), load_site_map()
+        for old, new, address in ((', worker:"Run Baltor on your own computer"', "", "/worker"),
+                                  ('"top-mcps":"Top MCP servers", ', "", "/top-mcps"),
+                                  ('pricing:"Pricing"', 'pricing:"Prices"', "/pricing")):
+            with self.subTest(address=address):
+                known_wrong = script.replace(old, new)
+                self.assertNotEqual(known_wrong, script, "the known-wrong case no longer changes service.js")
+                self.assertTrue(any(problem.startswith(address + " ")
+                                    for problem in browser_title_problems(known_wrong, site_map)))
+        self.assertEqual(browser_title_problems("const route = 1;", site_map), ["service.js has no view title table"])
+
+
+def footer_status_problems(site, read_script):
+    """A served page that shows the footer's status line loads a script that fills it.
+
+    The footer starts with "Checking service availability". On October 16, 2026 the deck loaded no script that replaced
+    it, so the line stayed on every visit; the other pages fill it from the capabilities record.
+    """
+    problems = []
+    for document, addresses in site.page_documents():
+        if not any(item.attrs.get("id") == "service-status" for item in document.walk()):
+            continue
+        scripts = [unversioned(item.attrs["src"]) for item in document.walk() if item.tag == "script" and item.attrs.get("src")]
+        if not any('"service-status"' in read_script(address) or "#service-status" in read_script(address)
+                   for address in scripts):
+            problems.append(f"{addresses[0]} shows the footer status line, and none of its scripts {scripts} fills it")
+    return problems
+
+
+def served_script(address):
+    answer = web_pages.served_asset(address, "GET", load_site_map().display_name)
+    return answer[0].decode("utf-8") if answer is not None else ""
+
+
+class FooterStatusLinesAreFilled(unittest.TestCase):
+    """No page leaves the footer's status line at its served placeholder."""
+
+    @classmethod
+    def setUpClass(cls):
+        cls.site = served_site()
+
+    def test_every_page_with_a_status_line_loads_a_script_that_fills_it(self):
+        self.assertEqual(footer_status_problems(self.site, served_script), [])
+
+    def test_a_page_whose_scripts_leave_the_line_alone_is_refused(self):
+        def without_deck_status(address):
+            source = served_script(address)
+            return source.replace('"service-status"', '"another-element"') if address == "/assets/deck.js" else source
+        problems = footer_status_problems(self.site, without_deck_status)
+        self.assertTrue(any(problem.startswith("/deck ") for problem in problems), problems)
+
+
+def fragment_id_problems(site):
+    """A documentation body repeats no id of the page that loads it.
+
+    The one-page app holds every view in one document, and the documentation script scrolls to
+    `document.getElementById(hash)`. On October 16, 2026 the protocol audience view and the Serving and connections guide
+    both had `protocol-versions`, so the guide's own contents link reached the hidden audience card and did not move.
+    """
+    problems = []
+    for address, body in sorted(site.fragment_bodies.items()):
+        shell, fragment = site.document(address), site.document(body)
+        if shell is None or fragment is None:
+            continue
+        shell_ids = {item.attrs["id"] for item in shell.walk() if item.attrs.get("id")}
+        repeated = sorted({item.attrs["id"] for item in fragment.walk() if item.attrs.get("id")} & shell_ids)
+        if repeated:
+            problems.append(f"{address}: the documentation body repeats the page's ids {repeated}")
+    return problems
+
+
+class DocumentationBodiesKeepTheirOwnIds(unittest.TestCase):
+    """A link to a part of a documentation page lands on that page's heading."""
+
+    @classmethod
+    def setUpClass(cls):
+        cls.site = served_site()
+
+    def test_no_documentation_body_repeats_an_id_of_its_page(self):
+        self.assertEqual(fragment_id_problems(self.site), [])
+
+    def test_a_repeated_id_is_refused(self):
+        def serve(address):
+            answer = self.site.serve(address)
+            if address == "/docs/serving-and-connections" and answer is not None:
+                return answer[0].replace('id="protocol-version-choice"', 'id="protocol-versions"'), answer[1]
+            return answer
+        problems = fragment_id_problems(replace(self.site, serve=serve, parsed={}))
+        self.assertTrue(any(problem.startswith("/docs/serving-and-connections:") and "protocol-versions" in problem
+                            for problem in problems), problems)
+
+
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__.split("\n", 1)[0])
     parser.add_argument("--write-inventory", type=Path, help="write the inventory of the served website to a new file")

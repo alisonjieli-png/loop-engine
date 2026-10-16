@@ -15,7 +15,35 @@ const evidence={api:['recorded_catalogue','Recorded starter-catalogue results','
  overnight:['worked_example','Worked example: starter-catalogue references','/demo/kaggle#kaggle-step-3-title','illustration','Illustrated download request'],
  handoff:['worked_example','Worked example: starter-catalogue references','/demo#task-step-5-title','illustration','Illustrated download request']};
 const checks=[],errors=[];let child,browser,lastPage,base=remote;
+/* The folder is drawn the way the served tree is: under each ancestor "│   " while it has a later sibling, else four spaces,
+   then "├── " for a row with a later sibling and "└── " for the last one. Until October 16, 2026 the repaint drew "└── " for
+   every row and "│  " under every ancestor, which no check read. */
+const treeShapeProblems=text=>{
+ const lines=(text||'').replace(/\n$/,'').split('\n'),rows=[],problems=[];
+ lines.forEach((line,index)=>{
+  if(index===0){rows.push({depth:0,last:true,bars:[]});return;}
+  const match=/^((?:│   |    )*)(├── |└── )\S/.exec(line);
+  if(!match){problems.push(`line ${index+1} has no tree connector: ${JSON.stringify(line)}`);rows.push(null);return;}
+  rows.push({depth:match[1].length/4+1,last:match[2]==='└── ',bars:(match[1].match(/│   |    /g)||[]).map(part=>part==='│   ')});
+ });
+ rows.forEach((row,index)=>{
+  if(!row||index===0)return;
+  let sibling=false;
+  for(let next=index+1;next<rows.length;next++){const other=rows[next];if(!other)continue;if(other.depth<row.depth)break;if(other.depth===row.depth){sibling=true;break;}}
+  if(row.last===sibling)problems.push(`line ${index+1} is drawn as ${row.last?'the last row':'a middle row'}${sibling?' before a sibling':' with no later sibling'}`);
+  row.bars.forEach((bar,level)=>{
+   let ancestor=index-1;while(ancestor>0&&(!rows[ancestor]||rows[ancestor].depth!==level+1))ancestor--;
+   const open=ancestor>0&&Boolean(rows[ancestor])&&!rows[ancestor].last;
+   if(bar!==open)problems.push(`line ${index+1} draws ${bar?'a bar':'no bar'} under ${open?'an ancestor with a later sibling':'a last ancestor'}`);
+  });
+ });
+ return problems;
+};
+const servedTree='step-1-plan-api-integration/\n├── CLAUDE.md\n├── .claude/skills/\n│   └── orient-on-a-task-and-write-its-contracts/\n│       └── SKILL.md\n├── .mcp.json\n└── .baltor/step.lock.json';
+const repaintedBeforeTheFix='step-1-plan-api-integration/\n└── CLAUDE.md\n└── .claude/skills/\n│  └── orient-on-a-task-and-write-its-contracts/\n│  │  └── SKILL.md\n└── .mcp.json\n└── .baltor/step.lock.json\n';
 const check=(name,passed,detail={})=>checks.push({name,passed:passed===true,detail});
+check('known_wrong_tree_shape_refused',treeShapeProblems(servedTree).length===0&&treeShapeProblems(repaintedBeforeTheFix).length>0
+  &&treeShapeProblems(servedTree.replace('├── .mcp.json','└── .mcp.json')).length>0,{refused:treeShapeProblems(repaintedBeforeTheFix).slice(0,3)});
 const valid=(state,harness,task)=>{
  const [identity,step]=tasks[task],record=refs.get(identity),[instruction,config]=profiles[harness];
  const rootPath=skillRoots[harness]?.project.replace(/baltor-library$/,'');
@@ -29,7 +57,8 @@ const valid=(state,harness,task)=>{
    &&!(/17,000|15,940|1,060|04:12|no row deleted|without deleting a row|It replaced/).test(state.terminalText)
    &&state.tree.includes(instruction)&&(!config||state.tree.includes(config))
    &&(!rootPath||state.tree.includes(rootPath)&&state.path===rootPath+identity.replaceAll('_','-')+'/SKILL.md')
-   &&(harness==='claude-code'||!state.tree.includes('CLAUDE.md')&&!state.tree.includes('.claude/skills/'));
+   &&(harness==='claude-code'||!state.tree.includes('CLAUDE.md')&&!state.tree.includes('.claude/skills/'))
+   &&treeShapeProblems(state.tree).length===0;
 };
 try{
  if(!base){
@@ -86,6 +115,7 @@ with TemporaryDirectory() as folder:
   await page.reload();await page.waitForFunction(()=>document.querySelector('.hero-terminal')?.dataset.heroScenario==='api');
   check('reload_starts_coherently',valid(await state(),'claude-code','api'),{width});
   const seen=await state();
+  check('repainted_folder_keeps_the_served_tree_shape',treeShapeProblems(seen.tree).length===0,{width,tree:seen.tree,problems:treeShapeProblems(seen.tree)});
   check('known_wrong_profile_refused',!valid({...seen,harness:'codex'},'codex','api'),{width});
   check('known_wrong_read_refused',!valid({...seen,read:'wrong'},'claude-code','api'),{width});
   check('known_wrong_full_digest_refused',!valid({...seen,digest:'0'.repeat(64),expected:'0'.repeat(64)},'claude-code','api'),{width});

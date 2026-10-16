@@ -117,7 +117,7 @@
     const viewCheck = health ? health.checks.find(check => check.name === "catalogue_view_current") : null;
     drawFacts($("status-library"), catalogue ? [
       ["Release", typeof catalogue.release_id === "string" && catalogue.release_id ? code(catalogue.release_id.slice(0, 8) + "…") : "Not reported"],
-      ["Items", Number.isInteger(catalogue.items) ? String(catalogue.items) : "Not reported"],
+      ["Items", Number.isInteger(catalogue.items) ? catalogue.items.toLocaleString("en-US") : "Not reported"],
       ["Library view", viewCheck ? (viewCheck.passed ? "Current" : "Not current") : "Not reported"],
       ["Built", Number.isFinite(catalogue.built_at) && catalogue.built_at > 0 ? new Date(catalogue.built_at * 1000).toLocaleString() : "Not reported"]
     ] : [["Library", health ? "Not reported by the service" : "Could not be read"]]);
@@ -354,14 +354,35 @@
     const rows = root ? [[scenario.step + "/", 0], [files.instructions, 1], [root, 1],
                         [nativeName + "/", 2], ["SKILL.md", 3], [files.tools, 1], [".baltor/step.lock.json", 1]]
                       : [[scenario.step + "/", 0], [files.instructions, 1], [TASK_MATERIAL_FILE, 1], ["baltor-run/", 1]];
-    rows.forEach(([row, depth]) => {
+    /* The connectors of the served tree: "├── " for a row with a later sibling, "└── " for the last one, and under each
+       ancestor "│   " while that ancestor has a later sibling, else four spaces. Until October 16, 2026 every row drew
+       "└── " and every ancestor "│  ", so the repainted folder no longer matched the one the page was served with. */
+    const last = rows.map(([, depth], index) => {
+      for (let next = index + 1; next < rows.length; next++) {
+        if (rows[next][1] < depth) return true;
+        if (rows[next][1] === depth) return false;
+      }
+      return true;
+    });
+    const connectorOf = index => {
+      const depth = rows[index][1];
+      if (depth === 0) return "";
+      let prefix = "";
+      for (let level = 1; level < depth; level++) {
+        let ancestor = index - 1;
+        while (ancestor >= 0 && rows[ancestor][1] !== level) ancestor--;
+        prefix += ancestor >= 0 && !last[ancestor] ? "│   " : "    ";
+      }
+      return prefix + (last[index] ? "└── " : "├── ");
+    };
+    rows.forEach(([row], index) => {
       const span = document.createElement("span");
       span.className = "hero-tree-row";
       if (row === files.instructions) { span.dataset.heroPart = "instructions"; span.dataset.heroFile = "instructions"; }
       else if (row === root) { span.dataset.heroPart = "skills"; span.dataset.heroFile = "skills"; }
       else if (row === files.tools) { span.dataset.heroPart = "tools"; span.dataset.heroFile = "tools"; }
       else if (root && row === "SKILL.md") { span.dataset.demoPath = root + nativeName + "/SKILL.md"; }
-      const connector = depth === 0 ? "" : "│  ".repeat(depth - 1) + "└── ";
+      const connector = connectorOf(index);
       span.textContent = row;
       tree.append(document.createTextNode(connector), span, document.createTextNode("\n"));
     });

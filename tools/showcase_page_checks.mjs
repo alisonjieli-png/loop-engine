@@ -167,7 +167,7 @@ export async function runShowcasePageChecks({root,python,browser,context,fixture
     const live=await read(null);
     note("status_page_reads_the_health_and_capabilities_records",live.state===expectedState(realHealth.result)&&live.required.length===(realHealth.result?.checks||[]).filter(item=>item.required).length
       &&live.required.every(item=>/^Passing /.test(item))&&live.facts["New accounts"]===(realCapabilities.website?.registration_available?"Open":"Closed")
-      &&live.facts["Items"]===String(realHealth.result?.catalogue_release?.items??"Not reported"),{live:{state:live.state,required:live.required,facts:live.facts}});
+      &&live.facts["Items"]===(Number.isInteger(realHealth.result?.catalogue_release?.items)?realHealth.result.catalogue_release.items.toLocaleString("en-US"):"Not reported"),{live:{state:live.state,required:live.required,facts:live.facts}});
     const down=await read({status:503,body:notReady});
     note("status_page_says_not_working_when_a_required_check_fails",down.state==="down"&&down.word==="Not working"&&down.required.some(item=>/^Failing /.test(item)),{down:{state:down.state,word:down.word}});
     const foreign=await read({status:200,body:{...realHealth,result:{...realHealth.result,record_type:"service_health/v3"}}});
