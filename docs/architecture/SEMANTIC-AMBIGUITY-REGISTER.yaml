@@ -470,6 +470,56 @@ findings:
     resolution: Engine swap and swap qualification for a planned change; FallbackTransition keeps its failure meaning.
     representation_decision: two new terms; transition qualification retired.
     status: REQUIRED_NOT_IMPLEMENTED
+  - id: SEM-050
+    subsystem: engines_behind_fixed_edges
+    collision: Envelope names the envelope Loop of a functional component, the IntelligenceItemEnvelope, WorkerAssignmentEnvelope and SemanticReliabilityEnvelope records, the operator envelope of candidate review, and the owner's layers around a functional engine.
+    evidence:
+      - loop_engine.core.engines.envelope:EnvelopeTrace
+      - loop_engine.loop.intelligence_loops:IntelligenceItemEnvelope
+      - loop_engine.core.development_planning:WorkerAssignmentEnvelope
+      - loop_engine.core.semantic_runtime_evidence:SemanticReliabilityEnvelope
+    resolution: Envelope layer for one ordered responsibility of an envelope Loop; a component envelope is the envelope Loop with its envelope layers, never a second record or runtime; the other names keep their meanings.
+    representation_decision: one new term; existing class names unchanged.
+    status: IMPLEMENTED_PARTIALLY
+  - id: SEM-051
+    subsystem: engines_behind_fixed_edges
+    collision: Layer names the four persistent intelligence layers, the wrapper layers inside one installation, the envelope layers of an envelope Loop, the architecture layers of the dependency rules and the owner's layers.
+    evidence:
+      - loop_engine.core.harness_layering:WrapperLayer
+      - loop_engine.core.engines.envelope:ENVELOPE_LAYERS
+    resolution: Bare layer stays the intelligence layer (SEM-021); wrapper layer and envelope layer are always written in full.
+    representation_decision: qualified terms; no rename.
+    status: IMPLEMENTED_PARTIALLY
+  - id: SEM-052
+    subsystem: engines_behind_fixed_edges
+    collision: Journal names the failure journal of refusals, the overnight journal of effects, CandidateJournal (a store), the ontology store journal and the envelope journal entry of the tracking layer.
+    evidence:
+      - loop_engine.core.service_runtime.observability:ServiceFailureJournal
+      - loop_engine.code_nodes.overnight_journal:OvernightJournal
+      - loop_engine.memory.storage.learning_cycle:CandidateJournal
+      - loop_engine.core.engines.envelope_tracking:EnvelopeJournalEntry
+    resolution: Envelope journal entry for the tracking layer's record, kept in the owning component's existing store; no journal store is added and the other journals keep their names.
+    representation_decision: one record shape; no store.
+    status: IMPLEMENTED_PARTIALLY
+  - id: SEM-053
+    subsystem: engines_behind_fixed_edges
+    collision: Handshake names the store handshake, the Capability Directory handshake, the protocol initialization exchange and the envelope handshake verdict.
+    evidence:
+      - loop_engine.catalog.handshake:StoreHandshake
+      - loop_engine.core.capability_directory:CapabilityHandshake
+      - loop_engine.core.engines.envelope:EnvelopeHandshakeVerdict
+    resolution: One verdict vocabulary, the store handshake's, for every handshake verdict; each handshake keeps its own record.
+    representation_decision: reuse the store handshake verdicts; no second vocabulary.
+    status: IMPLEMENTED_PARTIALLY
+  - id: SEM-054
+    subsystem: engines_behind_fixed_edges
+    collision: Repair names the repair field of interaction rows, repair hints, orientation repair, self-improvement repairs and the owner's self resolving before the engine.
+    evidence:
+      - loop_engine.core.adaptive_practitioner_orientation_repair
+      - loop_engine.core.engines.envelope_preflight:EnvelopeSelfRepair
+    resolution: Self-repair for a declared, bounded preflight repair that needs its own grant for any effect; the other meanings keep their names.
+    representation_decision: one new term; no rename.
+    status: IMPLEMENTED_PARTIALLY
 
 verified_clear:
   - MemoryQuery and IntelligenceQuery have distinct lifecycle and cross-layer contracts.

@@ -2197,6 +2197,133 @@ vocabulary:
     must_not_appear:
     - public_website_pages
     status: decided_by_engineering_2026_09_24
+  envelope layer:
+    kind: technical_word
+    definition: >-
+      One ordered responsibility of a functional component's envelope Loop
+      between its edge contract and its engine slot: frustration avoidance,
+      carrier, handshake, account, tracking or preflight, applied again around
+      each nested slot. It is code that the envelope Loop runs for one
+      request, recorded by the records of core/engines/envelope.py; it is not
+      a Loop, a runtime type, a registry, a scheduler, an engine or a wrapper
+      layer, which sits inside one installation. The owner's layers around a
+      functional engine of October 16, 2026 are these, and a component
+      envelope means the envelope Loop with its envelope layers, not a second
+      record.
+    pattern: '\benvelope layers?\b'
+    case_sensitive: false
+    may_appear:
+    - source_code
+    - technical_documents
+    - command_output
+    must_not_appear:
+    - public_website_pages
+    status: decided_by_engineering_2026_10_16
+  frustration avoidance:
+    kind: technical_word
+    definition: >-
+      The owner's words of October 16, 2026 for the outermost envelope layer:
+      every refusal leaves as envelope_refusal/v1 with a stable code, what
+      happened, a plain next action, who acts on it and a retry rule, so that
+      no answer is a dead end, and automatic recovery repeats only a step that
+      wrote nothing, within one allowance that every envelope of a request
+      shares. It grants nothing.
+    pattern: '\bfrustration avoidance\b'
+    case_sensitive: false
+    may_appear:
+    - source_code
+    - technical_documents
+    - command_output
+    must_not_appear:
+    - public_website_pages
+    status: decided_by_engineering_2026_10_16
+  flexible field:
+    kind: technical_word
+    definition: >-
+      An attribute map of an edge record whose keys a schema declares as data,
+      such as the catalogue attributes of catalogue_attribute_schema/v1. It is
+      read only through that schema, and no value of it sets an effect, a
+      licence, a permission, a route or an engine choice.
+    pattern: '\bflexible fields?\b'
+    case_sensitive: false
+    may_appear:
+    - source_code
+    - technical_documents
+    - command_output
+    must_not_appear:
+    - public_website_pages
+    status: decided_by_engineering_2026_10_16
+  pointer carrier:
+    kind: technical_word
+    definition: >-
+      A reference by identity and digest to content that another owner holds,
+      such as a body digest, the active catalogue release pointer or a
+      LoopDefinitionRef. Only that owner resolves it, under the caller's
+      authority, with the digest checked when it is read; a pointer that does
+      not resolve refuses and never falls back to another version.
+    pattern: '\bpointer carriers?\b'
+    case_sensitive: false
+    may_appear:
+    - source_code
+    - technical_documents
+    - command_output
+    must_not_appear:
+    - public_website_pages
+    status: decided_by_engineering_2026_10_16
+  handshake verdict:
+    kind: technical_word
+    definition: >-
+      One verdict of the store handshake vocabulary (compatible,
+      compatible_with_migration, compatible_with_degradation,
+      compatible_read_only, compatible_export_only, incompatible, unknown,
+      refused_by_policy) for one caller and one engine, computed from
+      declarations alone and recorded as envelope_handshake_verdict/v1. A
+      missing declaration gives unknown, which refuses; a verdict grants no
+      authority.
+    pattern: '\bhandshake verdicts?\b'
+    case_sensitive: false
+    may_appear:
+    - source_code
+    - technical_documents
+    - command_output
+    must_not_appear:
+    - public_website_pages
+    status: decided_by_engineering_2026_10_16
+  retry statement:
+    kind: technical_word
+    definition: >-
+      The sentence of the one closed retry rule that an envelope refusal
+      carries: retry now with the same request identity, retry after a wait,
+      retry after a fix, reconcile before any retry, or do not retry. A
+      pending or unknown effect always carries reconcile before any retry.
+    pattern: '\bretry statements?\b'
+    case_sensitive: false
+    may_appear:
+    - source_code
+    - technical_documents
+    - command_output
+    must_not_appear:
+    - public_website_pages
+    status: decided_by_engineering_2026_10_16
+  self-repair:
+    kind: technical_word
+    definition: >-
+      A preflight repair declared with the diagnoses it fixes, its effects and
+      how often it may run in one attempt, at most twice. One that declares
+      only the pure effect changes nothing outside the attempt's memory; any
+      other effect needs the attempt's own grant, and without it the repair is
+      refused before it runs. A self-repair never produces its own evidence,
+      changes a policy or a grant, or repeats an effect, and it is not
+      compensation.
+    pattern: '\bself-repairs?\b'
+    case_sensitive: false
+    may_appear:
+    - source_code
+    - technical_documents
+    - command_output
+    must_not_appear:
+    - public_website_pages
+    status: decided_by_engineering_2026_10_16
   engine (of an engine slot):
     kind: technical_word
     definition: >-

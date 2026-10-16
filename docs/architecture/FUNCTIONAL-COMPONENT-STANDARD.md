@@ -225,6 +225,7 @@ owner's meaning; the terms below are engineering's reading of them.
 | 11 | LE-OUTSIDE-001 to 008 | Outside projects: an engine adapter pinned by revision and licence, and a Baltor-native engine track |
 | 12 | LE-NAME-001 to 008 | Names |
 | 13 | LE-RULE-001 to 005 | Writing and changing this standard |
+| 14 | LE-LAYER-001 to 028 | Envelope layers around every functional engine |
 
 ## Rules that already apply
 
@@ -2160,6 +2161,307 @@ and a withdrawn statement keeps its identifier, marked withdrawn.
 - Enforced by: review by the integration reviewer.
 - Today: the changelog starts with the first draft.
 
+### 14. Envelope layers around every functional engine
+
+The owner asked on October 16, 2026 for functional components "wrapped in
+multiple layers", from flexible edges and a handshake layer to account
+checks, frustration avoidance and self troubleshooting before the engine,
+with the same layers around an engine that is itself made of components. The
+[envelope layer decision](ADR-COMPONENT-ENVELOPE-LAYERS.md) quotes the
+owner's words, maps them to the layers, gives their reasons and the
+alternatives rejected, and records the coverage baseline. This section states
+the rules. The layers are code inside the envelope Loop of one functional
+component, in this order:
+
+| Order | Envelope layer | Owns |
+|---|---|---|
+| 1 | `frustration_avoidance` | `envelope_refusal/v1` on every answer that leaves; bounded automatic recovery |
+| 2 | `carrier` | Exact `name/vN` records, flexible fields and pointer carriers |
+| 3 | `handshake` | `envelope_handshake_verdict/v1` for each caller and engine |
+| 4 | `account` | Principal, entitlement, and account-triggered events and resyncs |
+| 5 | `tracking` | `envelope_journal_entry/v1`, replay, reconciliation and resync |
+| 6 | `preflight` | Declared self-checks and bounded self-repairs before the engine |
+| Rule | `nested_envelopes` | The same layers around each nested slot, within a depth and cost bound |
+
+#### LE-LAYER-001
+
+An envelope Loop MUST apply its envelope layers in the declared order, so
+that a request reaches an inner layer or the engine only after every layer
+outside it accepted the request or did not apply.
+
+- Maps to: `ENVELOPE_LAYERS` and `envelope_trace/v1` in `core/engines/envelope.py`.
+- Enforced by: existing `core.engines.envelope_checks:the_envelope_layers_keep_their_declared_order` (known-wrong: a trace whose layers run in reverse, a refused handshake followed by another layer, a refused request that was dispatched, and a dispatch after three layers).
+- Today: partly. The trace record refuses every known-wrong order (ran, writer); only `ontology_change_planning` records a trace (source).
+
+#### LE-LAYER-002
+
+An envelope layer MUST NOT be a Loop, a runtime type, a graph vertex, a
+registry, a store or a scheduler.
+
+- Maps to: `core/engines/envelope.py`, `envelope_tracking.py`, `envelope_preflight.py` and `envelope_coverage.py`; LE-NODE-001.
+- Enforced by: existing `core.engines.envelope_checks:the_envelope_modules_start_nothing_and_keep_no_registry` (known-wrong: a module that imports `threading`, defines a class whose name ends in `Node` and opens a file); existing gate `operational_graph_vertex_types_outside_canonical_loop`.
+- Today: holds (ran, writer).
+
+#### LE-LAYER-003
+
+Every engine slot of `engine_slots.yaml` MUST declare, for each envelope layer
+and for nested envelopes, full, partial, none, or not applicable with a named
+reason, in `data/component_envelope_coverage.yaml`.
+
+- Maps to: `component_envelope_coverage/v1`; `EnvelopeCoverageCatalog` in `core/engines/envelope_coverage.py`.
+- Enforced by: existing `core.engines.envelope_checks:every_engine_slot_declares_every_envelope_layer` (known-wrong: the declarations with one slot's entry removed, which is how a new slot without declarations looks); existing `core.engines.envelope_checks:removed_declaration_join_is_detected`.
+- Today: holds. 55 slots declare 385 layers (ran, writer).
+
+#### LE-LAYER-004
+
+A coverage declaration MUST NOT fall below the level that its slot recorded in
+`data/component_envelope_coverage_baseline.yaml`: none rises to partial or
+full, partial to full, and not applicable only to partial or full.
+
+- Maps to: `component_envelope_coverage_baseline/v1`; `RECORDED_BASELINE_FLOOR`, which pins the baseline's own totals.
+- Enforced by: existing `core.engines.envelope_checks:envelope_layer_coverage_never_falls_below_its_baseline` (known-wrong: a partial layer lowered to none, a gap declared not applicable, and a baseline lowered below its recorded floor); existing `core.engines.envelope_checks:removed_baseline_ratchet_is_detected`.
+- Today: holds. The baseline of October 16 held 0 full, 79 partial, 166 none and 140 not applicable declarations before the reference adoption raised four layers of `ontology_change_planning` to full (ran, writer).
+
+#### LE-LAYER-005
+
+A full or partial declaration MUST name evidence that resolves in source
+without import, with at least one check for a full declaration.
+
+- Maps to: `evidence` in `component_envelope_coverage/v1`; the symbol and check resolvers of `core/engines/slot_index.py`.
+- Enforced by: existing `core.engines.envelope_checks:covered_layers_name_evidence_that_resolves_and_reasons_that_hold` (known-wrong: a partial layer whose evidence names `core.no_such_module.NoSuchSymbol`, and a full layer that names only a symbol); review by the integration reviewer, because a name that resolves does not prove the layer complete.
+- Today: holds for every declaration (ran, writer).
+
+#### LE-LAYER-006
+
+A slot added after the recorded baseline MUST name, for each layer it
+declares none, the roadmap step that closes the gap.
+
+- Maps to: `next` in `component_envelope_coverage/v1`.
+- Enforced by: existing `core.engines.envelope_checks:a_new_slot_names_the_step_that_closes_each_gap` (known-wrong: `step_executor` read as a new slot, whose tracking gap names no step).
+- Today: holds; no slot is newer than the baseline (ran, writer).
+
+#### LE-LAYER-007
+
+A flexible field, an attribute map whose keys a schema declares as data, MUST
+be read only through its declared schema, and none of its values sets an
+effect, a licence, a permission, a route or an engine choice.
+
+- Maps to: `catalogue_attribute_schema/v1` in `core/service_runtime/catalogue_schema.py`; the S-6.30 rule of `docs/roadmap/DELIVERY-SEQUENCE.md`.
+- Enforced by: existing `core.service_runtime.catalogue_release_checks:an_attribute_named_for_an_effect_licence_or_permission_is_refused`; existing `core.service_runtime.catalogue_release_checks:attribute_values_that_are_undeclared_mistyped_or_unlisted_are_refused`.
+- Today: holds for catalogue attributes (source); no other edge has flexible fields yet.
+
+#### LE-LAYER-008
+
+A pointer carrier, a reference by identity and digest to content that another
+owner holds, MUST be resolved only by that owner under the caller's authority,
+with its digest checked when it is read, and an unresolvable or mismatched
+pointer refuses instead of falling back to another version.
+
+- Maps to: the body read bound to its expected digest; `catalogue_release_pointer/v1`, moved only under an expected-version guard; `OntologyStore.triples`, which checks the digest on every read; the base digest of `ontology_change_request/v1`.
+- Enforced by: existing `core.service_runtime.http_checks:selected_digest_mismatch_refuses_before_body_read_and_metering`; existing `core.ontology_change.conformance:a_stale_base_digest_is_refused_before_any_engine_runs`.
+- Today: partly (source). LE-INSTANCE-021 records the case that breaks it: a retry across a catalogue swap.
+
+#### LE-LAYER-009
+
+A flexible field or a pointer carrier MUST be used only after the handshake
+layer negotiated its record version and the caller's authority for it, so that
+it cannot infer compatibility, start a competing runtime or widen model
+access.
+
+- Maps to: the S-6.30 rule of `docs/roadmap/DELIVERY-SEQUENCE.md`; `envelope_handshake_verdict/v1`.
+- Enforced by: existing `core.engines.envelope_checks:an_inferred_compatibility_is_refused`; review by the integration reviewer for each new carrier.
+- Today: partly (source).
+
+#### LE-LAYER-010
+
+The handshake layer MUST compute one handshake verdict for each caller and
+engine from declarations alone: unknown for a missing declaration,
+incompatible for no version in common or a missing required capability,
+refused by policy for a declared effect without a grant, compatible with
+degradation naming each ignored advisory capability, and compatible only for
+an exact declared match.
+
+- Maps to: `negotiate_handshake` and `envelope_handshake_verdict/v1` in `core/engines/envelope.py`, using the verdicts of `catalog.handshake`; LE-SUPPORT-004 records the verdict on eligibility.
+- Enforced by: existing `core.engines.envelope_checks:an_inferred_compatibility_is_refused` (known-wrong: a hand-written compatible record over versions with nothing in common, a compatible claim over an undeclared version list, and 2.1.0 offered against 2.0.0); existing `core.engines.envelope_checks:a_handshake_verdict_never_grants_and_names_what_it_ignored`; existing `core.engines.envelope_checks:removed_declared_match_requirement_is_detected`.
+- Today: partly. The record computes its verdict again and refuses every known-wrong case (ran, writer); the store handshake and the protocol endpoint compute their own verdicts, `ontology_change_planning` records one for each installation, and the other slots keep binary eligibility (source).
+
+#### LE-LAYER-011
+
+A handshake MUST select the first version of the caller's preference order
+that the engine declares exactly, and no version order, prefix or range
+selects one.
+
+- Maps to: `_judge` in `core/engines/envelope.py`; the pre-launch version decision.
+- Enforced by: existing `core.engines.envelope_checks:an_inferred_compatibility_is_refused` (known-wrong: 2.1.0 offered against an engine that declares 2.0.0).
+- Today: holds for the shared record (ran, writer).
+
+#### LE-LAYER-012
+
+The account layer MUST read the principal and its entitlement from the
+service's own records before the engine runs, and refuse an unknown, pending
+or unreadable account state with its own code.
+
+- Maps to: `ServiceHttpAuthenticator`; the entitlement read of `core/service_runtime/runtime.py`; the refusals `entitlement_required`, `billing_reconciliation_pending` and `account_origin_unverified`.
+- Enforced by: existing `core.service_runtime.runtime_checks:entitlement_revocation_during_body_read_prevents_meter_and_delivery`; existing `core.service_runtime.billing:reconciliation_outage_invalidates_previous_paid_access`; existing `core.service_runtime.account_origin_checks:an_unmarked_provider_identity_is_refused_and_only_both_marks_admit`.
+- Today: partly. Five hosted slots declare the layer partly; no shared account record exists (ran, writer).
+
+#### LE-LAYER-013
+
+An account-triggered event, such as a payment notification, a sign-in created
+outside Baltor's sign-up or a founding-offer grant, MUST be applied once by its
+identity, decided by the current state rather than by event times, and first
+remove access that can no longer be proven.
+
+- Maps to: `StripeEventProcessor` in `core/service_runtime/billing.py`; the founding offer counter in `core/service_runtime/free_monthly.py`; the account origin marks.
+- Enforced by: existing `core.service_runtime.billing:duplicate_event_identity_not_delivery_format_controls_replay`; existing `core.service_runtime.billing:out_of_order_events_reconcile_current_state_not_created_order`; existing `core.service_runtime.billing:reconciliation_outage_invalidates_previous_paid_access`; existing `core.service_runtime.account_administration_checks:a_wrong_founding_decision_still_cannot_pass_the_limit`.
+- Today: holds for payment notifications and the founding offer (source). The identity provider sends no events, so a drifted sign-in is found when it is used, not resynced (source).
+
+#### LE-LAYER-014
+
+An account layer answer MUST NOT reveal whether an address or an identity has
+an account to a caller who has not proven it.
+
+- Maps to: `AccountEmailAdapter` in `core/service_runtime/account_email.py`.
+- Enforced by: existing `core.service_runtime.account_email_checks:sign_up_answers_the_same_record_for_a_new_and_an_existing_address`; existing `core.service_runtime.account_email_checks:recovery_answers_the_same_record_for_a_known_and_an_unknown_address`; existing `core.service_runtime.account_email_checks:the_answer_is_the_same_length_of_work_for_both_addresses`.
+- Today: holds for sign-up and recovery email (source).
+
+#### LE-LAYER-015
+
+An envelope whose engine can cause an effect MUST write the attempt's intent
+before dispatch and its outcome after, under the digest of the request
+identity, with the request outcome, the task outcome and the effect state as
+three fields, in the component's existing store.
+
+- Maps to: `envelope_journal_entry/v1` in `core/engines/envelope_tracking.py`; `code_nodes/overnight_journal.py`; the request identities of `service_usage/v1`; LE-INSTANCE-023.
+- Enforced by: existing `core.engines.envelope_checks:a_retry_of_a_confirmed_effect_is_answered_from_the_first_result` (known-wrong: an entry whose result digest was edited after it was written, and an outcome read without the entry before it).
+- Today: partly. The record and its decision exist (ran, writer); the payment notifications, the account email adapter, the overnight journal and the body read meter keep journals of their own, and no slot writes the shared entry yet (source).
+
+#### LE-LAYER-016
+
+Before any new dispatch, the tracking layer MUST decide from the journal of
+the request identity alone: answer from the first result when the effect is
+confirmed, refuse when that answer is no longer held, reconcile first when an
+effect is pending, unknown or interrupted without being declared repeatable,
+and dispatch otherwise.
+
+- Maps to: `journal_decision` in `core/engines/envelope_tracking.py`; it generalizes LE-INSTANCE-021 and LE-INSTANCE-025 to every envelope.
+- Enforced by: existing `core.engines.envelope_checks:a_retry_of_a_confirmed_effect_is_answered_from_the_first_result` (known-wrong: a new intent while an effect is unknown); existing `core.engines.envelope_checks:a_confirmed_effect_is_never_repeated_even_without_its_answer`; existing `core.ontology_change.conformance:a_retried_apply_is_answered_from_the_journal_once`.
+- Today: partly. `ontology_change_planning` answers a retried apply from its journal (ran, writer); the catalogue swap case of LE-INSTANCE-021 still fails (claim).
+
+#### LE-LAYER-017
+
+A reconciliation MUST settle an uncertain effect only from an observation of
+the effect's owner, as none or confirmed, and leave it unknown when the
+observation cannot tell.
+
+- Maps to: `journal_reconciliation` in `core/engines/envelope_tracking.py`; `resume_event` of the payment notifications; `replayed_apply` in `core/ontology_change/guidance.py`, which observes the store state.
+- Enforced by: existing `core.engines.envelope_checks:a_retry_of_a_confirmed_effect_is_answered_from_the_first_result` (known-wrong: a reconciliation that records unknown); existing `core.service_runtime.billing:lost_event_commit_acknowledgment_remains_unknown_until_reconciled`; existing `core.ontology_change.conformance:an_interrupted_apply_commit_is_never_answered_as_applied`.
+- Today: partly (ran, writer; source).
+
+#### LE-LAYER-018
+
+A component whose desired state can drift from what it serves MUST resync by
+comparing the desired, observed and last rejected identities, preparing a
+changed desired state at the next check and an unchanged rejected one only
+after its capped backoff, while the previous state keeps serving.
+
+- Maps to: `resync_decision` in `core/engines/envelope_tracking.py`; `CatalogueRefresher`; LE-STATUS-006 to LE-STATUS-008.
+- Enforced by: existing `core.engines.envelope_checks:an_unchanged_rejected_desired_state_waits_for_its_backoff` (known-wrong: a rejected release rebuilt at every check).
+- Today: partly. The decision exists (ran, writer); the catalogue refresher still rebuilds an unchanged rejected release at every check (LE-STATUS-008, claim).
+
+#### LE-LAYER-019
+
+Every refusal that leaves an envelope MUST carry a stable code, a sentence
+that says what happened, a plain next action, who acts on it, and a retry rule
+with its sentence.
+
+- Maps to: `envelope_refusal/v1` in `core/engines/envelope.py`; `service_http_error/v1`, built by `_error_record` in `core/service_runtime/http.py` with the wording of `core/service_runtime/refusals.py`.
+- Enforced by: existing `core.engines.envelope_checks:a_refusal_without_a_next_action_is_refused` (known-wrong: an empty next action, a one-word next action, a message that only restates its code, and a retry statement that is not its rule's); existing `core.service_runtime.refusals:every_refusal_states_what_happened_and_what_to_do_next`.
+- Today: partly. The hosted service carries the code, the message and the next action, with retry advice inside the next action's words rather than a closed rule (source); `ontology_change_planning` returns the full record (ran, writer); engine-side slots mostly return failure kinds without wording (source).
+
+#### LE-LAYER-020
+
+A refusal whose effect is durably pending or unknown MUST carry the retry rule
+reconcile before retry.
+
+- Maps to: `effect_commitment` and `retry` of `envelope_refusal/v1`; `effect_commitment: durable_pending` of `service_http_error/v1`.
+- Enforced by: existing `core.engines.envelope_checks:an_uncertain_effect_reconciles_before_any_retry` (known-wrong: retry now over a pending effect and over an unknown one).
+- Today: holds for the shared record (ran, writer).
+
+#### LE-LAYER-021
+
+Automatic recovery MUST repeat only a step whose refusal wrote nothing, within
+a declared maximum of attempts that every envelope of one request shares.
+
+- Maps to: `envelope_recovery_policy/v1`, `RecoveryAllowance` and `may_recover` in `core/engines/envelope.py`; `MAXIMUM_AUTOMATIC_ATTEMPTS`; `BEGIN_ATTEMPTS` in `core/service_runtime/billing.py`.
+- Enforced by: existing `core.engines.envelope_checks:bounded_recovery_never_repeats_an_effect_and_is_shared_by_nested_envelopes` (known-wrong: a fourth attempt across a parent and a nested envelope, and a retry over an unknown effect); existing `core.service_runtime.billing:a_delivery_that_loses_a_race_with_a_concurrent_one_starts_again_and_applies`.
+- Today: partly. The payment notifications follow the rule with their own count (source); `ontology_change_planning` declares that it never retries itself (ran, writer).
+
+#### LE-LAYER-022
+
+Every code that a slot's edge can return MUST have its refusal wording, so
+that no answer leaves its reader without a next action.
+
+- Maps to: `CODE_GUIDANCE` and `STATUS_GUIDANCE` in `core/service_runtime/refusals.py`; `REFUSAL_GUIDANCE` in `core/ontology_change/guidance.py`.
+- Enforced by: existing `core.service_runtime.refusals:the_general_wording_covers_every_status_the_transport_chooses`; existing `core.ontology_change.conformance:every_failure_code_has_envelope_guidance` (known-wrong: the table with one failure code taken out).
+- Today: partly. The hosted service words every status it chooses (source); `ontology_change_planning` words all 19 codes (ran, writer).
+
+#### LE-LAYER-023
+
+A preflight check MUST be effect-free: it reads and compares, and answers
+nothing or an envelope refusal whose code it declares.
+
+- Maps to: `EnvelopePreflightCheck` and `run_preflight` in `core/engines/envelope_preflight.py`; the existing effect-free preflights `run_doctor`, `core/model_token_preflight.py` and `core/local_model_readiness.py`.
+- Enforced by: existing `core.engines.envelope_checks:a_self_repair_is_declared_bounded_and_checked_again` (known-wrong: a check that answers a code it does not declare); review by the independent reviewer of each check, for its effects.
+- Today: partly (source).
+
+#### LE-LAYER-024
+
+A self-repair MUST declare the diagnoses it fixes, its effects and its
+maximum applications, and the runner refuses before it runs a repair whose
+effects other than pure the attempt's grant does not hold.
+
+- Maps to: `EnvelopeSelfRepair` and `EnvelopePreflightGrant` in `core/engines/envelope_preflight.py`; the owning Loop's grants.
+- Enforced by: existing `core.engines.envelope_checks:a_repair_that_declares_an_effect_without_authority_is_refused` (known-wrong: a repair that writes files under an empty grant, which must not run).
+- Today: holds for the runner (ran, writer); no slot declares a self-repair yet (source).
+
+#### LE-LAYER-025
+
+A self-repair MUST NOT produce its own evidence, change a policy or a grant,
+or repeat an effect.
+
+- Maps to: `EnvelopeSelfRepair`; LE-GOV-001; the kit evidence of `ontology_change_planning`, which a repair may never write.
+- Enforced by: review by the independent reviewer of each declared repair; existing `core.engines.envelope_checks:a_self_repair_is_declared_bounded_and_checked_again` (known-wrong: a repair that leaves its check failing, which ends the preflight with the check's refusal).
+- Today: holds; no slot declares a repair (source).
+
+#### LE-LAYER-026
+
+A preflight MUST record every check, its diagnosis, every repair applied or
+refused, and its verdict: ready, repaired or refused.
+
+- Maps to: `envelope_preflight_report/v1` in `core/engines/envelope_preflight.py`; the `preflight` reports of `ontology_change_outcome/v2`.
+- Enforced by: existing `core.engines.envelope_checks:a_repair_that_declares_an_effect_without_authority_is_refused`; existing `core.ontology_change.conformance:a_refused_request_never_reaches_an_engine_in_the_envelope_trace`.
+- Today: partly. `ontology_change_planning` records one report for each dispatch (ran, writer).
+
+#### LE-LAYER-027
+
+A call into a nested slot MUST pass through that slot's own envelope layers,
+with its parent's remaining deadline and recovery allowance, never fresh ones.
+
+- Maps to: `EnvelopeFrame`, `root_frame` and `enter_nested` in `core/engines/envelope.py`; LE-ENGINE-005; LE-SLOT-007.
+- Enforced by: existing `core.engines.envelope_checks:bounded_recovery_never_repeats_an_effect_and_is_shared_by_nested_envelopes` (known-wrong: a nested envelope given its own allowance); existing `core.engines.envelope_checks:recursion_past_the_depth_bound_is_refused`.
+- Today: designed. The frame exists (ran, writer); none of the seven slots that others nest under enters a nested envelope through it yet (source).
+
+#### LE-LAYER-028
+
+Envelope nesting MUST stop four levels below the first envelope of a request,
+so that an envelope entered past that depth, on a slot already on the path or
+after the inherited deadline refuses before any layer runs.
+
+- Maps to: `MAXIMUM_ENVELOPE_DEPTH`, `enter_nested` and `nesting_depths` in `core/engines/envelope.py`; `nested_under` in `engine_slots.yaml`.
+- Enforced by: existing `core.engines.envelope_checks:recursion_past_the_depth_bound_is_refused` (known-wrong: a fifth level, a cycle back to the second level, an expired deadline, and a planted catalogue chain six slots deep).
+- Today: holds for the catalogue, whose deepest slot, `local_credential_source`, sits three levels down (ran, writer).
+
 ## Terms and ambiguity entries
 
 ### Terms this standard uses
@@ -2214,6 +2516,13 @@ proposal beside this standard:
 | stream semantics | Framing, terminal signal, errors, limits, ordering, acknowledgment, replay and partial results of one stream edge | |
 | execution fields | Invocation mechanism, application protocol with its revision, executable format, isolation and locality | "execution binding", "binding specification" |
 | harness compatibility profile | Passive data describing one exact harness release and what it loads | "Harness File Profile", "target profile", "harness layout profile" |
+| envelope layer | One ordered responsibility of an envelope Loop between its edge contract and its engine slot | not a wrapper layer, a Loop or a runtime type; the owner's "layers" around a functional engine |
+| frustration avoidance | The envelope layer that gives every refusal a next action and a retry rule and bounds automatic recovery | the owner's "frustration avoidance tools" |
+| flexible field | An attribute map whose keys a schema declares as data | not an untyped extension point |
+| pointer carrier | A reference by identity and digest to content that another owner holds | not the content it points to |
+| handshake verdict | One store handshake verdict for one caller and one engine, computed from declarations | never an inferred compatibility |
+| retry statement | The sentence of the one closed retry rule that an envelope refusal carries | not retry advice in free text |
+| self-repair | A declared, bounded preflight repair, effect-free unless its own grant is held | not compensation, and never self-approval |
 
 Retired outside names: engine definition, engine configuration, logical plan
 and physical plan, lifecycle profile, preference mode, wrapper engine,
@@ -2260,6 +2569,11 @@ duplicates. New entries:
 | SEM-047 | generation | seeded generation, candidate generation; Kubernetes `generation` and `observedGeneration` | fencing token for ownership, sequence number for desired configuration |
 | SEM-048 | claim | `claim()` of the work lease scheduler; the evidence label "claim"; the Kubernetes `ResourceClaim` for devices | owned resource record for resources to release |
 | SEM-049 | transition | `FallbackTransition` (failure-driven); the outside "transition" and "transition qualification" (planned change) | engine swap and swap qualification |
+| SEM-050 | envelope | envelope Loop; `TriggerEnvelope`, `WorkerAssignmentEnvelope`, `SemanticReliabilityEnvelope`, `IntelligenceItemEnvelope`; the operator envelope of candidate review; the owner's "wrapped in multiple layers" | envelope layer for one ordered responsibility of an envelope Loop; a "component envelope" is the envelope Loop with its layers, never a second record or runtime |
+| SEM-051 | layer | the four persistent intelligence layers; wrapper layers; envelope layers; the architecture layers of the dependency rules; the owner's "layers" | bare "layer" stays the intelligence layer (SEM-021); wrapper layer and envelope layer are written in full |
+| SEM-052 | journal | the failure journal of refusals; the overnight journal of effects; `CandidateJournal`, a store; the ontology store journal; the envelope journal entry | envelope journal entry for the tracking layer's record, kept in the owning component's existing store; no journal store |
+| SEM-053 | handshake | the store handshake; the Capability Directory handshake; the protocol initialization exchange; the envelope handshake verdict | one verdict vocabulary, the store handshake's, for every handshake verdict |
+| SEM-054 | repair | the `repair` field of interaction rows; repair hints; orientation repair; self-improvement repairs; the owner's "self resolving" | self-repair for a declared, bounded preflight repair; the other meanings keep their names |
 
 ## Adoption order
 
@@ -2431,6 +2745,11 @@ slot.
 
 ## Changelog
 
+- October 16, 2026 (on `64ea6d4d`). Added section 14, envelope layers around
+  every functional engine (LE-LAYER-001 to LE-LAYER-028), from the owner's
+  direction of that day, with the decision record
+  `ADR-COMPONENT-ENVELOPE-LAYERS.md`, seven terms and the register entries
+  SEM-050 to SEM-054. No statement of sections 1 to 13 changed.
 - September 24, 2026 (on `e6346075`), third draft. Every probe of the second
   draft ran again on `e6346075` with the same results. Added LE-INSTANCE-026
   (shared model residency), LE-INSTANCE-027 (declared concurrency and queue

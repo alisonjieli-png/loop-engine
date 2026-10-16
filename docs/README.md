@@ -55,6 +55,7 @@ read it.
 | [Constitution](architecture/CONSTITUTION.md) and [taxonomy](architecture/TAXONOMY-ONTOLOGY-AND-CLASS-MAP.md) | Canonical architecture, runtime classification, and invariants. |
 | [Contract index](contracts/README.md) | Exact owning objects, current behavior, and remaining gaps. |
 | [Pre-launch version policy](architecture/ADR-PRELAUNCH-VERSIONED-CONTRACTS.md) | Current contracts, explicit handshakes, and removal of unpublished compatibility code. |
+| [Envelope layers](architecture/ADR-COMPONENT-ENVELOPE-LAYERS.md) | The ordered layers that every functional component's envelope Loop applies around its engines, and what each engine slot covers. |
 | [Component map](components/README.md) | Select the component needed for the task. |
 | [Loop object and profiles](components/loop-object/README.md) | Roles, modes, steps, conditions, and typed connections. |
 | [Practitioner](components/practitioner/README.md) | Task reasoning, actions, verification, and continuation. |

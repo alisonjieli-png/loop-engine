@@ -125,6 +125,13 @@ no additional wrapper as a comparison baseline. The owning Loop's governance
 is always present. More layers are neither automatically better nor
 automatically undesirable.
 
+Wrapper layers are a different structure from envelope layers. A wrapper
+layer sits inside one engine installation, such as one harness, and its
+composition can differ by engine. The
+[envelope layers](ADR-COMPONENT-ENVELOPE-LAYERS.md) sit in the envelope Loop of
+a functional component, around every engine of its slot, in one fixed order:
+frustration avoidance, carrier, handshake, account, tracking and preflight.
+
 A composition description needs exact wrapper identities, versions, order,
 settings, dependencies, typed input and output expectations, and initialization
 and teardown responsibilities. Declare what information each wrapper may
