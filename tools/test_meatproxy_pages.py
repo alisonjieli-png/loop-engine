@@ -112,7 +112,8 @@ class MeatProxyPagesTests(unittest.TestCase):
         self.assertNotIn('token savings', home.lower())
         questions = pages.render('/questions')[0].decode()
         self.assertIn('December 31, 2026', questions)
-        self.assertIn('$9 per month', questions)
+        self.assertIn('$9 a month', questions)
+        self.assertNotIn('per month', questions)  # Price wording matches baltor.ai and AgentFeeds.
         self.assertIn('explicit opt-in', questions)
 
     def test_approved_legal_articles_preserved_exactly(self):

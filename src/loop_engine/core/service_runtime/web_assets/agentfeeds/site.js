@@ -58,7 +58,7 @@
     try {
       localStorage.setItem(savedKey, JSON.stringify({version:1, collectionIds:next}));
       saved = next; storageReady = true; renderSaved();
-      if (savedStatus) savedStatus.textContent = saved.length + ' collections saved in this browser.';
+      if (savedStatus) savedStatus.textContent = saved.length + (saved.length === 1 ? ' collection' : ' collections') + ' saved in this browser.';
       return true;
     } catch {
       if (savedStatus) savedStatus.textContent = 'Could not save this change. Browser storage may be blocked or full; your previous selection is unchanged.';

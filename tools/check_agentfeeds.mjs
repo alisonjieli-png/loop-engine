@@ -73,9 +73,15 @@ try{
   check('required third-party notices '+viewport.width,notices.status===200&&notices.body>0,notices);
   await page.goto(base+'/collections');await page.locator('#collection-search').fill('no-such-topic');check('empty collection state '+viewport.width,await page.locator('#collection-empty').isVisible());
   await page.locator('#collection-search').fill('coding');check('collection search '+viewport.width,await page.locator('[data-collection]:visible').count()>0);
+  // Every topic the placeholder suggests, and an obvious one, must find a collection (all three found none before October 16, 2026).
+  const suggested=(await page.locator('#collection-search').getAttribute('placeholder')).replace(/^Try /,'').split(/, | or /);
+  for(const word of [...suggested,'security']){await page.locator('#collection-search').fill(word);check('collection search finds '+word+' '+viewport.width,await page.locator('[data-collection]:visible').count()>0);}
   await page.locator('#collection-search').fill('');
   const savedIds=await page.locator('[data-save-collection]').evaluateAll(buttons=>buttons.slice(0,2).map(button=>button.dataset.saveCollection));
-  for(const id of savedIds)await page.locator('[data-save-collection="'+id+'"]').click();
+  for(const [index,id] of savedIds.entries()){
+   await page.locator('[data-save-collection="'+id+'"]').click();
+   if(index===0)check('one saved collection is named in the singular '+viewport.width,(await page.locator('#saved-status').textContent()).trim()==='1 collection saved in this browser.');
+  }
   await page.goto(base+'/saved');
   check('saved selections survive navigation '+viewport.width,await page.locator('#saved-collections [data-collection]:visible').count()===2);
   check('saved selection has accessible pressed state '+viewport.width,await page.locator('#saved-collections [aria-pressed=true]').count()===2);

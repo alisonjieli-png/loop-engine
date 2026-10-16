@@ -82,6 +82,36 @@ class AgentFeedsPagesTests(unittest.TestCase):
         self.assertIn('/assets/feed-profile.js?v=', html)
         self.assertNotIn('type="password"', html)
 
+    def test_collection_search_finds_the_suggested_and_obvious_topics(self):
+        # Mirrors site.js: lowercased words, every word must appear in a card's data-search.
+        page = pages.render('/collections')[0].decode()
+        indexes = re.findall(r'data-search="([^"]*)"', page)
+        placeholder = re.search(r'id="collection-search"[^>]*placeholder="Try ([^"]+)"', page).group(1)
+        suggestions = [word.strip().lower() for word in re.split(r',| or ', placeholder) if word.strip()]
+        self.assertEqual(len(suggestions), 3)
+        def matches(word, values):
+            return [value for value in values if all(part in value for part in word.split())]
+        for word in suggestions + ['security', 'benchmark', 'langgraph']:
+            with self.subTest(word=word):
+                self.assertTrue(matches(word, indexes), word)
+        self.assertEqual(len(indexes), len(feed_profiles.current_directory().collections))
+        # Known-wrong: the title-and-group index served before October 16, 2026 found no collection for these.
+        data = feed_profiles.current_directory()
+        old = [(item.title + ' ' + item.group).lower() for item in data.collections]
+        for word in ('finance', 'security', 'benchmark'):
+            self.assertEqual(matches(word, old), [], word)
+
+    def test_price_wording_matches_the_other_sites(self):
+        price = pages.render('/pricing')[0].decode()
+        self.assertIn('$9<span> a month</span>', price)
+        self.assertNotIn('/ month', price)
+        self.assertNotIn('per month', price)
+
+    def test_saved_status_names_one_collection_in_the_singular(self):
+        script = pages.render(pages.ASSET_PREFIX + 'site.js')[0].decode()
+        self.assertIn("(saved.length === 1 ? ' collection' : ' collections') + ' saved in this browser.'", script)
+        self.assertNotIn("saved.length + ' collections saved", script)
+
     def test_saved_collections_are_browser_local_and_reuse_current_directory(self):
         data = feed_profiles.current_directory()
         body = pages.render('/saved')[0].decode()

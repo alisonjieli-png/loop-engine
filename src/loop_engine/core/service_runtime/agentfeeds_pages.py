@@ -43,8 +43,15 @@ def _intro(kicker, title, text):
     return f'<div class="page-intro"><p class="eyebrow">{escape(kicker)}</p><h1>{escape(title)}</h1><p class="lede">{escape(text)}</p></div>'
 
 
-def _card(item, number):
-    return (f'<article class="collection" data-collection data-search="{escape((item.title + " " + item.group).lower(), quote=True)}">'
+def _search_text(item, data):
+    """Words a visitor may type: the card's own text plus its purpose, question and source names."""
+    names = {source.id: source.name for source in data.sources}
+    return " ".join((item.title, item.group, item.id.replace("-", " "), item.purpose, item.decision_question,
+                     *(names[key] for key in item.source_ids if key in names))).lower()
+
+
+def _card(item, number, data):
+    return (f'<article class="collection" data-collection data-search="{escape(_search_text(item, data), quote=True)}">'
             f'<p class="collection-meta"><span>{number:02}</span>{escape(item.group)}</p>'
             f'<h2>{_link("/collections/" + item.id, item.title)}</h2><p>{escape(item.decision_question)}</p>'
             f'<div class="collection-foot"><span>{len(item.source_ids)} sources</span>{_link("/collections/" + item.id, "Open collection →")}</div>'
@@ -58,7 +65,7 @@ def _saved(data):
             '<button id="saved-clear" type="button" class="button secondary">Clear saved collections</button></div>'
             '<p id="saved-empty">No collections saved here yet. <a href="/collections">Browse collections</a> to choose some.</p>'
             '<div id="saved-collections" class="collection-grid">'
-            + "".join(_card(item, index + 1) for index, item in enumerate(data.collections))
+            + "".join(_card(item, index + 1, data) for index, item in enumerate(data.collections))
             + '</div><noscript><p>Saved selections need JavaScript. The collection links above still work.</p></noscript>')
 
 
@@ -80,7 +87,7 @@ def _home(data):
             f'<div><strong>{escape(data.source_docs_checked_on)}</strong><span>source documentation checked</span></div></section>'
             '<section class="section"><div class="section-heading"><div><p class="eyebrow">Start with a question</p><h2>What is your agent deciding?</h2></div>'
             + _link("/collections", "All collections →", "text-link") + '</div><div class="collection-grid">'
-            + "".join(_card(item, index + 1) for index, item in enumerate(data.collections[:3])) + '</div></section>'
+            + "".join(_card(item, index + 1, data) for index, item in enumerate(data.collections[:3])) + '</div></section>'
             '<section class="how section"><div><p class="eyebrow">From source to decision</p><h2>Your agent reads.<br>You keep control.</h2>'
             '<p>These are curated source references and research questions. Your agent checks the original sources and makes a comparison for your task.</p></div>'
             '<ol><li><span>01</span><div><h3>Choose its reading list</h3><p>Start with a collection. Add individual sources and leave out what does not apply.</p></div></li>'
@@ -92,12 +99,12 @@ def _home(data):
 
 def _collections(data):
     return (_intro("Source collections", "Begin with the decision.", "Find the questions and sources that fit your agent’s next task.")
-            + '<div class="catalogue-tools"><label for="collection-search">Find a collection</label><input id="collection-search" type="search" placeholder="Try coding, finance or design" autocomplete="off">'
+            + '<div class="catalogue-tools"><label for="collection-search">Find a collection</label><input id="collection-search" type="search" placeholder="Try coding, finance or 3D" autocomplete="off">'
             f'<p class="quiet">{len(data.collections)} collections · {len(data.sources)} sources · Documentation checked {escape(data.source_docs_checked_on)}</p></div>'
             '<p class="quiet">Get the complete source directory: ' + _link('/feeds/sources.json', 'JSON Feed') + ', '
             + _link('/feeds/sources.rss', 'RSS') + ' or ' + _link('/feeds/sources.md', 'Markdown') + '.</p>'
             '<p id="collection-count" role="status" aria-live="polite"></p><div class="collection-grid">'
-            + "".join(_card(item, index + 1) for index, item in enumerate(data.collections))
+            + "".join(_card(item, index + 1, data) for index, item in enumerate(data.collections))
             + '</div><p id="collection-empty" hidden>No matching collections. Try a broader word or clear the search.</p>')
 
 
@@ -167,7 +174,7 @@ def _connect(data, origin):
 
 def _pricing():
     return (_intro("Pricing", "Start reading. Keep the choice yours.", "Public source collections and reading-profile downloads are free through December 31, 2026, Eastern time.")
-            + '<section class="price-panel"><div><p class="eyebrow">AgentFeeds</p><p class="price">$9<span> / month</span></p><p class="free-label">Free through 2026</p>'
+            + '<section class="price-panel"><div><p class="eyebrow">AgentFeeds</p><p class="price">$9<span> a month</span></p><p class="free-label">Free through 2026</p>'
             '<p>No automatic charge. A paid subscription requires your explicit opt-in.</p></div><div><h2>For the agents you already run</h2><ul class="check-list">'
             '<li>Curated source collections and research questions</li><li>JSON Feed, RSS and Markdown links</li><li>Custom reading profiles for individual agents</li><li>Exact files and source-documentation dates</li></ul>'
             + _link('/build', 'Build a profile for free →', 'button primary') + '<p class="quiet">Your harness, model access and any upstream provider costs remain yours. This page does not start a subscription.</p></div></section>')
