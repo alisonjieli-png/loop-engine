@@ -79,7 +79,7 @@ class Service:
             if row is None or row["state"] != "active" or row["expires_at"] <= NOW or row.get("refused"):
                 return 401, {"record_type": "service_http_error/v1", "error": {"code": "unauthorized"}}
             return 200, {"record_type": "service_http_result/v1", "result": {
-                "record_type": reissue.SESSION_RECORD, "token_expires_at": None,
+                "record_type": reissue.SESSION_RECORD, "token_expires_at": row["expires_at"],
                 "principal": {"tenant_id": row["tenant_id"], "key_id": row["key_id"], "scopes": row["scopes"]}}}
         if token != ADMIN or self.administrator_refused:
             return 401, {"record_type": "service_http_error/v1", "error": {"code": "unauthorized"}}

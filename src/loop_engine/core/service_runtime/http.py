@@ -3148,10 +3148,16 @@ class ServiceHttpApplication:
                 # account that its invitation covers the plan, instead of
                 # offering it a payment.
                 from .access import paid_access_source
-                source = await self._tenant_work(context, lambda: paid_access_source(self.runtime,
-                                                                                     context.principal.tenant_id))
+                from .http_auth import HOST_KEY_AUTHENTICATION
+                # A Baltor key carries no expiry of its own; its record does, and the session names that one.
+                # Only a key created without an expiry answers null.
+                def session_facts():
+                    expiry = (self.runtime.key_expiry(context.principal) if context.mode == HOST_KEY_AUTHENTICATION
+                              else context.expires_at)
+                    return paid_access_source(self.runtime, context.principal.tenant_id), expiry
+                source, expiry = await self._tenant_work(context, session_facts)
                 output = {"record_type": "service_session/v1", "principal": context.principal.to_dict(),
-                          "authentication_mode": context.mode, "token_expires_at": context.expires_at,
+                          "authentication_mode": context.mode, "token_expires_at": expiry,
                           "access_source": source, **self._staff_facts(context)}
                 output["principal"]["scopes"] = list(context.effective_scopes)
             elif path == "/api/v1/account/logout" and method == "POST":

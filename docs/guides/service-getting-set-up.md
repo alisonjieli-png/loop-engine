@@ -227,9 +227,10 @@ Confirm your account first:
 curl -sS -H "Authorization: Bearer $BALTOR_SERVICE_TOKEN" https://baltor.ai/api/v1/session
 ```
 
-The result identifies the principal and its scopes. For an OAuth access token
-or a browser sign-in, `token_expires_at` gives the expiry. For a Baltor key it
-is `null`; the key's expiry is listed under Your Baltor keys on `/account`.
+The result identifies the principal and its scopes. `token_expires_at` is when
+the credential expires, as Unix time in seconds, for a Baltor key as well as
+for an OAuth access token or a browser sign-in. It is `null` only for a key
+created without an expiry. Your Baltor keys on `/account` shows the same date.
 Then confirm that your client sees `provisioning_discover`,
 `provisioning_list`, `provisioning_manifest`, `provisioning_read` and
 `intelligence_search`.

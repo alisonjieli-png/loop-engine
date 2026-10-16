@@ -375,6 +375,22 @@ class ServiceRuntime:
         with self._catalog.store() as store:
             return self._revalidate(store, principal)[0]
 
+    def key_expiry(self, principal):
+        """The expiry, in epoch seconds, of the key a principal signed in with, or None for a key without one.
+
+        A key's expiry lives in its own record, not in the credential, so the
+        session check reads it here (journey finding F-3 of October 16, 2026).
+        The key is revalidated in the same read, so a revoked or expired key is
+        refused as everywhere else, and a principal that signed in another way
+        has no key expiry to read.
+        """
+        with self._catalog.store() as store:
+            current, _guards = self._revalidate(store, principal)
+            if current.authentication_kind != KEY:
+                raise ServiceRuntimeError("invalid_request")
+            row = self._catalog.read_id(store, current.authentication_record_id, kind=KEY)
+            return self._payload(row, KEY).get("expires_at")
+
     def set_grants(self, tenant_id: str, grants):
         grants = tuple(grants)
         if any(not isinstance(grant, ProvisioningGrant) or grant.tenant_id != tenant_id for grant in grants):

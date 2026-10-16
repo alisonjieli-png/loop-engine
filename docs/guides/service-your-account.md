@@ -87,10 +87,11 @@ curl -sS -H "Authorization: Bearer $BALTOR_SERVICE_TOKEN" https://baltor.ai/api/
 ```
 
 The `service_session/v1` result contains `principal`, `authentication_mode`,
-`token_expires_at` and `access_source`. For an OAuth access token or a browser
-sign-in, `token_expires_at` names the expiry. A Baltor key answers with
-`authentication_mode` `host_key` and `token_expires_at` `null`; its expiry is
-shown under Your Baltor keys. The source is `subscription`,
+`token_expires_at` and `access_source`. `token_expires_at` is when the
+credential expires, as Unix time in seconds: an OAuth access token's or a
+browser sign-in's expiry, or for a Baltor key (`authentication_mode`
+`host_key`) the expiry it was created with, the date Your Baltor keys shows.
+It is `null` only for a key created without an expiry. The source is `subscription`,
 `founding_free_monthly` for a founding place, `free_monthly` for another free
 monthly grant, `operator_grant`, `promotion_code` or `none`, and says what
 currently covers the account. Check the principal's `tenant_id`, `entitlement` and scopes

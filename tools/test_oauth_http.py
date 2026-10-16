@@ -28,7 +28,7 @@ from loop_engine.core.service_runtime.oauth_authorization import CODE, GRANT, OA
 from loop_engine.core.service_runtime.oauth_http import client_redirect_policy
 from loop_engine.core.service_runtime.observability import ServiceObservabilityPolicy
 from loop_engine.core.service_runtime.protocol_checks import _protocol_client
-from loop_engine.core.service_runtime.records import ServiceCommitUnknown
+from loop_engine.core.service_runtime.records import ServiceCommitUnknown, ServiceRuntimeError
 from loop_engine.core.service_runtime.storage import ServiceCatalogBinding
 
 EVENTS = []
@@ -226,6 +226,39 @@ class HttpOAuthIntegration(unittest.TestCase):
         self.expect(response, 400, 'code_replay_refused')
         self.assertEqual(safe_error(response), 'invalid_grant')
         self.assertEqual(len(self.rows(GRANT)), 1)
+
+    def test_the_session_names_the_expiry_of_each_kind_of_credential(self):
+        # Journey finding F-3 of October 16, 2026: the session of a Baltor key answered token_expires_at null
+        # although the key expires. Each credential now names its own expiry; only a key made without one is null.
+        def session(headers):
+            return self.expect(self.client.get('/api/v1/session', headers=headers), 200, 'session_read').json()['result']
+        issued = self.expect(self.client.post('/api/v1/account/access', headers=self.browser_headers, json={
+            'record_type': 'service_client_access_request/v1', 'operation': 'issue', 'request_id': 'session-expiry',
+            'label': 'Session expiry check', 'scopes': ['provisioning:metadata'], 'lifetime_seconds': 3600}),
+            200, 'customer_key_issued').json()['result']
+        self.credentials_seen.append(issued['token'])
+        key = session(self.bearer(issued['token']))
+        self.assertEqual(key['authentication_mode'], 'host_key')
+        self.assertEqual(key['token_expires_at'], issued['key']['expires_at'])
+        self.assertIs(type(key['token_expires_at']), int)
+        self.assertGreater(key['token_expires_at'], time.time() + 3000)
+        # The fixture's operator key was made without an expiry, so null is the truth for it.
+        self.assertIsNone(self.fixture.runtime.key_expiry(self.fixture.runtime.authenticate_key(self.fixture.keys['alpha'].key)))
+        self.assertIsNone(session(self.fixture.headers('alpha'))['token_expires_at'])
+        browser = session(self.browser_headers)
+        self.assertEqual(browser['authentication_mode'], 'browser_identity')
+        self.assertEqual(browser['token_expires_at'], jwt.decode(self.browser_token, options={'verify_signature': False})['exp'])
+        delegated = session(self.bearer(self.issue()['access_token']))
+        self.assertEqual(delegated['authentication_mode'], 'oauth_access_token')
+        self.assertGreater(delegated['token_expires_at'], time.time())
+        # A principal that signed in without a key has no key expiry to read.
+        subject = self.fixture.runtime.authenticate_subject(self.identity_base + '/auth/v1', self.subject)
+        with self.assertRaises(ServiceRuntimeError) as refused:
+            self.fixture.runtime.key_expiry(subject)
+        self.assertEqual(refused.exception.code, 'invalid_request')
+        # Known-wrong control: the answer read from the credential alone, as before, fails the comparison above.
+        with mock.patch.object(type(self.fixture.runtime), 'key_expiry', lambda _runtime, _principal: None):
+            self.assertNotEqual(session(self.bearer(issued['token']))['token_expires_at'], issued['key']['expires_at'])
 
     def test_verified_delegation_reaches_api_and_mcp_not_caller_headers_or_arguments(self):
         tokens = self.issue()

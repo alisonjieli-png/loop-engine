@@ -157,13 +157,13 @@
   },
   "your-account": {
    "body_address": "/assets/docs/your-account.html",
-   "body_digest": "d7d1780542855dc50b0a94bdb029bcb8264b2829bfcdf0a2f823193c8b1e68ed",
+   "body_digest": "6fabb064025adac08a66ec8f17c692f0ce52a1fd425c9048a0cc5c0160a4394b",
    "heading": "Your account",
    "id": "your-account",
    "kind_line": "Kind: customer guide to sign-in, personal Baltor keys and access decisions.",
    "record_type": "website_documentation_page/v1",
    "repository_path": "docs/guides/service-your-account.md",
-   "source_digest": "c7980f3718a8b39cf28c60a5a5bf05761493ad7c7e187959da2ee81894bac825",
+   "source_digest": "0739426b32773da41b5774ce36c07c29c604cb9655b378ee3ef62f19bafb245a",
    "title": "Your account"
   }
  },
