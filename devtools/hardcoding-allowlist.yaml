@@ -14724,6 +14724,36 @@ entries:
   rationale: "Reviewed October 13, 2026: extract selects in-memory lexical extraction with a 65536-character input bound and per-match size bounds. It does not extract files, execute matches or create an executable graph vertex. Unsupported operations are refused."
   created_on: '2026-10-13'
   expires_on: '2027-01-13'
+- finding_id: hardcoding.b1d9ce577cee0138046e9cbb
+  owner: "tools.operator_credentials.json:api_keys.tactical-model-endpoint.environment"
+  classification: DEPLOYMENT_CONFIGURATION
+  rationale: "Reviewed October 16, 2026: the public name of the environment variable that supplies the Tactical model server's connect URL at run time, declared in the existing operator reference manifest beside the keyring item of the same reference. It names configuration, never a value: the address stays out of the repository. tools/private_endpoints.py reads it, refuses a missing or malformed URL before any socket opens, and tools/test_private_endpoints.py checks both."
+  created_on: '2026-10-16'
+  expires_on: '2027-01-16'
+- finding_id: hardcoding.ad3a160a2153541601390f2d
+  owner: "tools.operator_credentials.json:api_keys.tactical-model-tls-server-name.environment"
+  classification: DEPLOYMENT_CONFIGURATION
+  rationale: "Reviewed October 16, 2026: the public name of the environment variable that supplies the DNS name the Tactical server's certificate proves. It names configuration, never a value. Hostname checking stays on against it under the pinned root alone; tools/test_private_endpoints.py refuses wildcard, upper-case and single-label names."
+  created_on: '2026-10-16'
+  expires_on: '2027-01-16'
+- finding_id: hardcoding.5512defc41a1d9129bf4e68e
+  owner: "tools.operator_credentials.json:api_keys.tactical-model-endpoint.required_prefixes[0]"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed October 16, 2026: the scheme a stored Tactical connect URL must start with. It is the validation rule of the reference, not an endpoint: the URL is accepted only over HTTPS, as the provider binding and the verified forwarder require, and tools/test_private_endpoints.py refuses an http:// value without echoing it."
+  created_on: '2026-10-16'
+  expires_on: '2027-01-16'
+- finding_id: hardcoding.2a688a459f004f958c5fef4c
+  owner: "tools.operator_credentials.json:api_keys.tactical-model-endpoint.value_pattern"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed October 16, 2026: the exact shape of a stored Tactical connect URL (an https host, an optional port and API path), applied by tools/operator_credentials.py and tools/private_endpoints.py before use. It names no host. tools/test_private_endpoints.py refuses credentials, queries, fragments, upper case and spaces in the value."
+  created_on: '2026-10-16'
+  expires_on: '2027-01-16'
+- finding_id: hardcoding.5d44793d7fc0c29989ac6c35
+  owner: "tools.verified_forwarder:VerifiedForwarder.base_url"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed October 16, 2026: the verified forwarder's own loopback listener. It binds 127.0.0.1 only, behind a random path token, and forwards each request to one upstream held to the pinned TLS trust contract, so plain HTTP never leaves the machine. tools/test_verified_forwarder.py proves the name, anchor, pin, path and truncation refusals."
+  created_on: '2026-10-16'
+  expires_on: '2027-01-16'
 excluded_paths:
 - path: src/loop_engine/core/service_runtime/web_assets/creative-arena/arena.js
   owner: examples.32_creative_arena
