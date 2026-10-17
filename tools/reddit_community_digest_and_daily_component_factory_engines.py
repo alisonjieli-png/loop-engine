@@ -1045,7 +1045,7 @@ class DailyRedditToHarnessComponentSynthesizerSlot:
         digest_card: Mapping[str, Any] = MappingProxyType(
             {
                 "schema": "agentfeeds_daily_digest/v1",
-                "site": "https://agentfeeds.si",
+                "site": "agentfeeds.si",
                 "tagline": "Don't be a meat proxy reading forums — give your agent the digested contract card",
                 "subreddit": spec.canonical_subreddit,
                 "alias_subreddits": spec.alias_subreddits,
