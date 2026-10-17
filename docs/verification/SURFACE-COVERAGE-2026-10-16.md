@@ -7,14 +7,14 @@ its test or component guide coverage, or a new unreviewed gap appears.
 
 ## Summary across the eight categories
 
-- Total surface items inventoried: **667**
-- Fully covered items (no gaps): **664**
+- Total surface items inventoried: **672**
+- Fully covered items (no gaps): **669**
 - Items with an explicit test or live-check gap: **3**
 
 | Category | Total items | Unit / integration tested | Browser tested | Live checked | Component guide mapped | Open gaps |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: |
 | `screens` | 130 | 130 | 130 | 130 | 130 | 0 |
-| `functions` | 345 | 345 | 288 | 300 | 345 | 0 |
+| `functions` | 350 | 350 | 293 | 305 | 350 | 0 |
 | `interactions` | 18 | 18 | 18 | 12 | 18 | 0 |
 | `data_transfer` | 56 | 56 | 11 | 5 | 56 | 0 |
 | `data_computation` | 11 | 11 | 3 | 0 | 11 | 0 |
@@ -288,6 +288,7 @@ Every item below has a mapped component guide in `docs/components/COMPONENT-GUID
 | `operator_tool` | `operator_tool:adaptive_divide.py` | `tools/adaptive_divide.py` | 6 | 6 | 4 | `docs/components/README.md` | covered |
 | `operator_tool` | `operator_tool:adversarial_competition_and_user_suite.py` | `tools/adversarial_competition_and_user_suite.py` | 6 | 6 | 4 | `docs/components/README.md` | covered |
 | `operator_tool` | `operator_tool:adversarial_persona_suite.py` | `tools/adversarial_persona_suite.py` | 6 | 6 | 4 | `docs/components/README.md` | covered |
+| `operator_tool` | `operator_tool:ai_timeseries_cpu_local_and_frontier_radar_engines.py` | `tools/ai_timeseries_cpu_local_and_frontier_radar_engines.py` | 6 | 6 | 4 | `docs/components/README.md` | covered |
 | `operator_tool` | `operator_tool:architecture_audit.py` | `tools/architecture_audit.py` | 6 | 6 | 4 | `docs/components/README.md` | covered |
 | `operator_tool` | `operator_tool:architecture_audit_evidence.py` | `tools/architecture_audit_evidence.py` | 6 | 6 | 4 | `docs/components/README.md` | covered |
 | `operator_tool` | `operator_tool:architecture_audit_view.py` | `tools/architecture_audit_view.py` | 6 | 6 | 4 | `docs/components/README.md` | covered |
@@ -295,6 +296,7 @@ Every item below has a mapped component guide in `docs/components/COMPONENT-GUID
 | `operator_tool` | `operator_tool:audit_public_websites.mjs` | `tools/audit_public_websites.mjs` | 6 | 6 | 4 | `docs/components/README.md` | covered |
 | `operator_tool` | `operator_tool:balance_test_shards.py` | `tools/balance_test_shards.py` | 6 | 6 | 4 | `docs/components/README.md` | covered |
 | `operator_tool` | `operator_tool:baltor_feedback.py` | `tools/baltor_feedback.py` | 6 | 6 | 4 | `docs/components/README.md` | covered |
+| `operator_tool` | `operator_tool:baltor_optimized_harness_opencode_and_pi_engines.py` | `tools/baltor_optimized_harness_opencode_and_pi_engines.py` | 6 | 6 | 4 | `docs/components/README.md` | covered |
 | `operator_tool` | `operator_tool:baltor_preturn_hook.py` | `tools/baltor_preturn_hook.py` | 6 | 6 | 4 | `docs/components/README.md` | covered |
 | `operator_tool` | `operator_tool:benchmark_adoption_engines.py` | `tools/benchmark_adoption_engines.py` | 6 | 6 | 4 | `docs/components/README.md` | covered |
 | `operator_tool` | `operator_tool:browser_appearance_checks.mjs` | `tools/browser_appearance_checks.mjs` | 6 | 6 | 4 | `docs/components/README.md` | covered |
@@ -405,6 +407,7 @@ Every item below has a mapped component guide in `docs/components/COMPONENT-GUID
 | `operator_tool` | `operator_tool:export_component_inventory.py` | `tools/export_component_inventory.py` | 6 | 6 | 4 | `docs/components/README.md` | covered |
 | `operator_tool` | `operator_tool:export_managed_record.py` | `tools/export_managed_record.py` | 6 | 6 | 4 | `docs/components/README.md` | covered |
 | `operator_tool` | `operator_tool:export_organization_opportunities.py` | `tools/export_organization_opportunities.py` | 6 | 6 | 4 | `docs/components/README.md` | covered |
+| `operator_tool` | `operator_tool:extreme_harness_and_cheap_model_gauntlet_benchmark.py` | `tools/extreme_harness_and_cheap_model_gauntlet_benchmark.py` | 6 | 6 | 4 | `docs/components/README.md` | covered |
 | `operator_tool` | `operator_tool:factory_report.py` | `tools/factory_report.py` | 6 | 6 | 4 | `docs/components/README.md` | covered |
 | `operator_tool` | `operator_tool:factory_schedule.py` | `tools/factory_schedule.py` | 6 | 6 | 4 | `docs/components/README.md` | covered |
 | `operator_tool` | `operator_tool:feedback_report.py` | `tools/feedback_report.py` | 6 | 6 | 4 | `docs/components/README.md` | covered |
@@ -517,12 +520,14 @@ Every item below has a mapped component guide in `docs/components/COMPONENT-GUID
 | `operator_tool` | `operator_tool:spectrum_score.py` | `tools/spectrum_score.py` | 6 | 6 | 4 | `docs/components/README.md` | covered |
 | `operator_tool` | `operator_tool:stage_intelligence_candidates.py` | `tools/stage_intelligence_candidates.py` | 6 | 6 | 4 | `docs/components/README.md` | covered |
 | `operator_tool` | `operator_tool:stage_service_secrets.py` | `tools/stage_service_secrets.py` | 6 | 6 | 4 | `docs/components/README.md` | covered |
+| `operator_tool` | `operator_tool:startup_1000_and_job_10000_component_generator_engines.py` | `tools/startup_1000_and_job_10000_component_generator_engines.py` | 6 | 6 | 4 | `docs/components/README.md` | covered |
 | `operator_tool` | `operator_tool:strategies.py` | `tools/strategies.py` | 6 | 6 | 4 | `docs/components/README.md` | covered |
 | `operator_tool` | `operator_tool:streamlined_setup_and_user_profile_engines.py` | `tools/streamlined_setup_and_user_profile_engines.py` | 6 | 6 | 4 | `docs/components/README.md` | covered |
 | `operator_tool` | `operator_tool:stripe_test_checkout.mjs` | `tools/stripe_test_checkout.mjs` | 6 | 6 | 4 | `docs/components/README.md` | covered |
 | `operator_tool` | `operator_tool:summarize_product_proof.py` | `tools/summarize_product_proof.py` | 6 | 6 | 4 | `docs/components/README.md` | covered |
 | `operator_tool` | `operator_tool:summarize_research_watch.py` | `tools/summarize_research_watch.py` | 6 | 6 | 4 | `docs/components/README.md` | covered |
 | `operator_tool` | `operator_tool:surface_inventory.py` | `tools/surface_inventory.py` | 6 | 6 | 4 | `docs/components/README.md` | covered |
+| `operator_tool` | `operator_tool:taedri_invariants_and_cheapest_tool_ladder_engines.py` | `tools/taedri_invariants_and_cheapest_tool_ladder_engines.py` | 6 | 6 | 4 | `docs/components/README.md` | covered |
 | `operator_tool` | `operator_tool:task_campaign.py` | `tools/task_campaign.py` | 6 | 6 | 4 | `docs/components/README.md` | covered |
 | `operator_tool` | `operator_tool:trace_and_self_improvement_engines.py` | `tools/trace_and_self_improvement_engines.py` | 6 | 6 | 4 | `docs/components/README.md` | covered |
 | `operator_tool` | `operator_tool:unicorn_autonomous_ops_sre_and_dataroom_engines.py` | `tools/unicorn_autonomous_ops_sre_and_dataroom_engines.py` | 6 | 6 | 4 | `docs/components/README.md` | covered |

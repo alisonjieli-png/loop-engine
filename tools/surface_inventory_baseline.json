@@ -5,7 +5,7 @@
     "data_computation": 11,
     "data_storage": 59,
     "data_transfer": 56,
-    "functions": 345,
+    "functions": 350,
     "interactions": 18,
     "screens": 130
   },
@@ -294,6 +294,7 @@
       "operator_tool:adaptive_divide.py",
       "operator_tool:adversarial_competition_and_user_suite.py",
       "operator_tool:adversarial_persona_suite.py",
+      "operator_tool:ai_timeseries_cpu_local_and_frontier_radar_engines.py",
       "operator_tool:architecture_audit.py",
       "operator_tool:architecture_audit_evidence.py",
       "operator_tool:architecture_audit_view.py",
@@ -301,6 +302,7 @@
       "operator_tool:audit_public_websites.mjs",
       "operator_tool:balance_test_shards.py",
       "operator_tool:baltor_feedback.py",
+      "operator_tool:baltor_optimized_harness_opencode_and_pi_engines.py",
       "operator_tool:baltor_preturn_hook.py",
       "operator_tool:benchmark_adoption_engines.py",
       "operator_tool:browser_appearance_checks.mjs",
@@ -411,6 +413,7 @@
       "operator_tool:export_component_inventory.py",
       "operator_tool:export_managed_record.py",
       "operator_tool:export_organization_opportunities.py",
+      "operator_tool:extreme_harness_and_cheap_model_gauntlet_benchmark.py",
       "operator_tool:factory_report.py",
       "operator_tool:factory_schedule.py",
       "operator_tool:feedback_report.py",
@@ -523,12 +526,14 @@
       "operator_tool:spectrum_score.py",
       "operator_tool:stage_intelligence_candidates.py",
       "operator_tool:stage_service_secrets.py",
+      "operator_tool:startup_1000_and_job_10000_component_generator_engines.py",
       "operator_tool:strategies.py",
       "operator_tool:streamlined_setup_and_user_profile_engines.py",
       "operator_tool:stripe_test_checkout.mjs",
       "operator_tool:summarize_product_proof.py",
       "operator_tool:summarize_research_watch.py",
       "operator_tool:surface_inventory.py",
+      "operator_tool:taedri_invariants_and_cheapest_tool_ladder_engines.py",
       "operator_tool:task_campaign.py",
       "operator_tool:trace_and_self_improvement_engines.py",
       "operator_tool:unicorn_autonomous_ops_sre_and_dataroom_engines.py",
@@ -714,8 +719,8 @@
   },
   "schema": "surface_inventory_baseline/v1",
   "totals": {
-    "covered_items": 664,
+    "covered_items": 669,
     "total_gaps": 3,
-    "total_items": 667
+    "total_items": 672
   }
 }
