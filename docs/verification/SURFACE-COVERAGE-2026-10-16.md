@@ -7,14 +7,14 @@ its test or component guide coverage, or a new unreviewed gap appears.
 
 ## Summary across the eight categories
 
-- Total surface items inventoried: **704**
-- Fully covered items (no gaps): **701**
+- Total surface items inventoried: **705**
+- Fully covered items (no gaps): **702**
 - Items with an explicit test or live-check gap: **3**
 
 | Category | Total items | Unit / integration tested | Browser tested | Live checked | Component guide mapped | Open gaps |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: |
 | `screens` | 130 | 130 | 130 | 130 | 130 | 0 |
-| `functions` | 382 | 382 | 325 | 337 | 382 | 0 |
+| `functions` | 383 | 383 | 326 | 338 | 383 | 0 |
 | `interactions` | 18 | 18 | 18 | 12 | 18 | 0 |
 | `data_transfer` | 56 | 56 | 11 | 5 | 56 | 0 |
 | `data_computation` | 11 | 11 | 3 | 0 | 11 | 0 |
@@ -531,6 +531,7 @@ Every item below has a mapped component guide in `docs/components/COMPONENT-GUID
 | `operator_tool` | `operator_tool:run_global_component_duplicate_disk.py` | `tools/run_global_component_duplicate_disk.py` | 6 | 6 | 4 | `docs/components/README.md` | covered |
 | `operator_tool` | `operator_tool:run_query_multiplier.py` | `tools/run_query_multiplier.py` | 6 | 6 | 4 | `docs/components/README.md` | covered |
 | `operator_tool` | `operator_tool:run_test_shard.py` | `tools/run_test_shard.py` | 6 | 6 | 4 | `docs/components/README.md` | covered |
+| `operator_tool` | `operator_tool:rust_hotpath_search_embedding_lsh_and_python_swap_engines.py` | `tools/rust_hotpath_search_embedding_lsh_and_python_swap_engines.py` | 6 | 6 | 4 | `docs/components/README.md` | covered |
 | `operator_tool` | `operator_tool:scan_local_volume.py` | `tools/scan_local_volume.py` | 6 | 6 | 4 | `docs/components/README.md` | covered |
 | `operator_tool` | `operator_tool:seo_blog_comparison_and_humanizer_engines.py` | `tools/seo_blog_comparison_and_humanizer_engines.py` | 6 | 6 | 4 | `docs/components/README.md` | covered |
 | `operator_tool` | `operator_tool:service_admin_operator.py` | `tools/service_admin_operator.py` | 6 | 6 | 4 | `docs/components/README.md` | covered |
