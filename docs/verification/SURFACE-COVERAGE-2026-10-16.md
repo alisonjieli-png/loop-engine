@@ -7,14 +7,14 @@ its test or component guide coverage, or a new unreviewed gap appears.
 
 ## Summary across the eight categories
 
-- Total surface items inventoried: **672**
-- Fully covered items (no gaps): **669**
+- Total surface items inventoried: **681**
+- Fully covered items (no gaps): **678**
 - Items with an explicit test or live-check gap: **3**
 
 | Category | Total items | Unit / integration tested | Browser tested | Live checked | Component guide mapped | Open gaps |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: |
 | `screens` | 130 | 130 | 130 | 130 | 130 | 0 |
-| `functions` | 350 | 350 | 293 | 305 | 350 | 0 |
+| `functions` | 359 | 359 | 302 | 314 | 359 | 0 |
 | `interactions` | 18 | 18 | 18 | 12 | 18 | 0 |
 | `data_transfer` | 56 | 56 | 11 | 5 | 56 | 0 |
 | `data_computation` | 11 | 11 | 3 | 0 | 11 | 0 |
@@ -286,9 +286,11 @@ Every item below has a mapped component guide in `docs/components/COMPONENT-GUID
 | `cli_command:service` | `cli:loop-engine-service:index-catalogue` | `src/loop_engine/core/service_runtime/http_entrypoint.py` | 4 | 0 | 0 | `docs/components/service-runtime/README.md` | covered |
 | `operator_tool` | `operator_tool:adapted_reference_candidates.py` | `tools/adapted_reference_candidates.py` | 6 | 6 | 4 | `docs/components/README.md` | covered |
 | `operator_tool` | `operator_tool:adaptive_divide.py` | `tools/adaptive_divide.py` | 6 | 6 | 4 | `docs/components/README.md` | covered |
+| `operator_tool` | `operator_tool:advanced_humanizer_and_design_skill_pack_engines.py` | `tools/advanced_humanizer_and_design_skill_pack_engines.py` | 6 | 6 | 4 | `docs/components/README.md` | covered |
 | `operator_tool` | `operator_tool:adversarial_competition_and_user_suite.py` | `tools/adversarial_competition_and_user_suite.py` | 6 | 6 | 4 | `docs/components/README.md` | covered |
 | `operator_tool` | `operator_tool:adversarial_persona_suite.py` | `tools/adversarial_persona_suite.py` | 6 | 6 | 4 | `docs/components/README.md` | covered |
 | `operator_tool` | `operator_tool:ai_timeseries_cpu_local_and_frontier_radar_engines.py` | `tools/ai_timeseries_cpu_local_and_frontier_radar_engines.py` | 6 | 6 | 4 | `docs/components/README.md` | covered |
+| `operator_tool` | `operator_tool:anti_default_3d_horizon_game_and_cad_engines.py` | `tools/anti_default_3d_horizon_game_and_cad_engines.py` | 6 | 6 | 4 | `docs/components/README.md` | covered |
 | `operator_tool` | `operator_tool:architecture_audit.py` | `tools/architecture_audit.py` | 6 | 6 | 4 | `docs/components/README.md` | covered |
 | `operator_tool` | `operator_tool:architecture_audit_evidence.py` | `tools/architecture_audit_evidence.py` | 6 | 6 | 4 | `docs/components/README.md` | covered |
 | `operator_tool` | `operator_tool:architecture_audit_view.py` | `tools/architecture_audit_view.py` | 6 | 6 | 4 | `docs/components/README.md` | covered |
@@ -447,6 +449,7 @@ Every item below has a mapped component guide in `docs/components/COMPONENT-GUID
 | `operator_tool` | `operator_tool:measure_service_latency.py` | `tools/measure_service_latency.py` | 6 | 6 | 4 | `docs/components/README.md` | covered |
 | `operator_tool` | `operator_tool:measure_step_function_tags.py` | `tools/measure_step_function_tags.py` | 6 | 6 | 4 | `docs/components/README.md` | covered |
 | `operator_tool` | `operator_tool:mirror_catalogue_bodies.py` | `tools/mirror_catalogue_bodies.py` | 6 | 6 | 4 | `docs/components/README.md` | covered |
+| `operator_tool` | `operator_tool:mistral_timestral_and_2026_timeseries_engines.py` | `tools/mistral_timestral_and_2026_timeseries_engines.py` | 6 | 6 | 4 | `docs/components/README.md` | covered |
 | `operator_tool` | `operator_tool:model_directory_browser_checks.mjs` | `tools/model_directory_browser_checks.mjs` | 6 | 6 | 4 | `docs/components/README.md` | covered |
 | `operator_tool` | `operator_tool:morning_report.py` | `tools/morning_report.py` | 6 | 6 | 4 | `docs/components/README.md` | covered |
 | `operator_tool` | `operator_tool:multi_domain_ollama_benchmark.py` | `tools/multi_domain_ollama_benchmark.py` | 6 | 6 | 4 | `docs/components/README.md` | covered |
@@ -464,9 +467,11 @@ Every item below has a mapped component guide in `docs/components/COMPONENT-GUID
 | `operator_tool` | `operator_tool:overnight_queue_state.py` | `tools/overnight_queue_state.py` | 6 | 6 | 4 | `docs/components/README.md` | covered |
 | `operator_tool` | `operator_tool:owner_requests_ledger.py` | `tools/owner_requests_ledger.py` | 6 | 6 | 4 | `docs/components/README.md` | covered |
 | `operator_tool` | `operator_tool:paper_baltor_static_cloudflare_and_gauntlet_engines.py` | `tools/paper_baltor_static_cloudflare_and_gauntlet_engines.py` | 6 | 6 | 4 | `docs/components/README.md` | covered |
+| `operator_tool` | `operator_tool:pixelart_as_code_video_fx_and_portal_scanner_engines.py` | `tools/pixelart_as_code_video_fx_and_portal_scanner_engines.py` | 6 | 6 | 4 | `docs/components/README.md` | covered |
 | `operator_tool` | `operator_tool:plan_catalogue_change.py` | `tools/plan_catalogue_change.py` | 6 | 6 | 4 | `docs/components/README.md` | covered |
 | `operator_tool` | `operator_tool:plan_knowledge_queries.py` | `tools/plan_knowledge_queries.py` | 6 | 6 | 4 | `docs/components/README.md` | covered |
 | `operator_tool` | `operator_tool:policy_edit.py` | `tools/policy_edit.py` | 6 | 6 | 4 | `docs/components/README.md` | covered |
+| `operator_tool` | `operator_tool:portable_two_way_spider_worker_and_self_prioritizing_trend_engines.py` | `tools/portable_two_way_spider_worker_and_self_prioritizing_trend_engines.py` | 6 | 6 | 4 | `docs/components/README.md` | covered |
 | `operator_tool` | `operator_tool:pre_push_check.sh` | `tools/pre_push_check.sh` | 6 | 6 | 4 | `docs/components/README.md` | covered |
 | `operator_tool` | `operator_tool:pre_push_summary.py` | `tools/pre_push_summary.py` | 6 | 6 | 4 | `docs/components/README.md` | covered |
 | `operator_tool` | `operator_tool:preflight_capacity.py` | `tools/preflight_capacity.py` | 6 | 6 | 4 | `docs/components/README.md` | covered |
@@ -491,6 +496,7 @@ Every item below has a mapped component guide in `docs/components/COMPONENT-GUID
 | `operator_tool` | `operator_tool:record_demonstration_steps.py` | `tools/record_demonstration_steps.py` | 6 | 6 | 4 | `docs/components/README.md` | covered |
 | `operator_tool` | `operator_tool:recursive_divide.py` | `tools/recursive_divide.py` | 6 | 6 | 4 | `docs/components/README.md` | covered |
 | `operator_tool` | `operator_tool:red_team_decisions.py` | `tools/red_team_decisions.py` | 6 | 6 | 4 | `docs/components/README.md` | covered |
+| `operator_tool` | `operator_tool:reddit_community_digest_and_daily_component_factory_engines.py` | `tools/reddit_community_digest_and_daily_component_factory_engines.py` | 6 | 6 | 4 | `docs/components/README.md` | covered |
 | `operator_tool` | `operator_tool:refresh_research_sources.py` | `tools/refresh_research_sources.py` | 6 | 6 | 4 | `docs/components/README.md` | covered |
 | `operator_tool` | `operator_tool:refusal_census.py` | `tools/refusal_census.py` | 6 | 6 | 4 | `docs/components/README.md` | covered |
 | `operator_tool` | `operator_tool:regenerate_all.py` | `tools/regenerate_all.py` | 6 | 6 | 4 | `docs/components/README.md` | covered |
@@ -530,6 +536,7 @@ Every item below has a mapped component guide in `docs/components/COMPONENT-GUID
 | `operator_tool` | `operator_tool:taedri_invariants_and_cheapest_tool_ladder_engines.py` | `tools/taedri_invariants_and_cheapest_tool_ladder_engines.py` | 6 | 6 | 4 | `docs/components/README.md` | covered |
 | `operator_tool` | `operator_tool:task_campaign.py` | `tools/task_campaign.py` | 6 | 6 | 4 | `docs/components/README.md` | covered |
 | `operator_tool` | `operator_tool:trace_and_self_improvement_engines.py` | `tools/trace_and_self_improvement_engines.py` | 6 | 6 | 4 | `docs/components/README.md` | covered |
+| `operator_tool` | `operator_tool:trace_mined_agents_rules_memory_and_behavior_engines.py` | `tools/trace_mined_agents_rules_memory_and_behavior_engines.py` | 6 | 6 | 4 | `docs/components/README.md` | covered |
 | `operator_tool` | `operator_tool:unicorn_autonomous_ops_sre_and_dataroom_engines.py` | `tools/unicorn_autonomous_ops_sre_and_dataroom_engines.py` | 6 | 6 | 4 | `docs/components/README.md` | covered |
 | `operator_tool` | `operator_tool:unicorn_enterprise_b2b_governance_and_byok_engines.py` | `tools/unicorn_enterprise_b2b_governance_and_byok_engines.py` | 6 | 6 | 4 | `docs/components/README.md` | covered |
 | `operator_tool` | `operator_tool:unicorn_geo_llms_txt_and_leaderboard_engines.py` | `tools/unicorn_geo_llms_txt_and_leaderboard_engines.py` | 6 | 6 | 4 | `docs/components/README.md` | covered |
@@ -537,6 +544,8 @@ Every item below has a mapped component guide in `docs/components/COMPONENT-GUID
 | `operator_tool` | `operator_tool:unicorn_polyglot_10m_supply_factory_engines.py` | `tools/unicorn_polyglot_10m_supply_factory_engines.py` | 6 | 6 | 4 | `docs/components/README.md` | covered |
 | `operator_tool` | `operator_tool:unicorn_revenue_value_receipts_and_funnel_engines.py` | `tools/unicorn_revenue_value_receipts_and_funnel_engines.py` | 6 | 6 | 4 | `docs/components/README.md` | covered |
 | `operator_tool` | `operator_tool:unicorn_zero_latency_cache_healer_and_swarm_engines.py` | `tools/unicorn_zero_latency_cache_healer_and_swarm_engines.py` | 6 | 6 | 4 | `docs/components/README.md` | covered |
+| `operator_tool` | `operator_tool:universal_100x_question_persona_hardware_and_scenario_engines.py` | `tools/universal_100x_question_persona_hardware_and_scenario_engines.py` | 6 | 6 | 4 | `docs/components/README.md` | covered |
+| `operator_tool` | `operator_tool:universal_role_grid_military_civil_gov_private_nonprofit_engines.py` | `tools/universal_role_grid_military_civil_gov_private_nonprofit_engines.py` | 6 | 6 | 4 | `docs/components/README.md` | covered |
 | `operator_tool` | `operator_tool:validate_procedural_assets.mjs` | `tools/validate_procedural_assets.mjs` | 6 | 6 | 4 | `docs/components/README.md` | covered |
 | `operator_tool` | `operator_tool:verified_forwarder.py` | `tools/verified_forwarder.py` | 6 | 6 | 4 | `docs/components/README.md` | covered |
 | `operator_tool` | `operator_tool:verify_launch_slice.py` | `tools/verify_launch_slice.py` | 6 | 6 | 4 | `docs/components/README.md` | covered |
