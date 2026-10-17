@@ -5,7 +5,7 @@
     "data_computation": 11,
     "data_storage": 59,
     "data_transfer": 56,
-    "functions": 372,
+    "functions": 373,
     "interactions": 18,
     "screens": 130
   },
@@ -412,6 +412,7 @@
       "operator_tool:demo_subdomain_showcase_engines.py",
       "operator_tool:directory_browser_checks.mjs",
       "operator_tool:documentation_readiness_checks.mjs",
+      "operator_tool:downloaded_chat_logs_multi_topology_5w2h_plural_interrogator_engines.py",
       "operator_tool:entity_dedup_messy_data_and_ml_benchmarks.py",
       "operator_tool:expand_community_capabilities.py",
       "operator_tool:expand_occupation_inventory.py",
@@ -741,8 +742,8 @@
   },
   "schema": "surface_inventory_baseline/v1",
   "totals": {
-    "covered_items": 691,
+    "covered_items": 692,
     "total_gaps": 3,
-    "total_items": 694
+    "total_items": 695
   }
 }
