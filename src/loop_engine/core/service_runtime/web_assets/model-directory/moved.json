@@ -96,11 +96,6 @@
    "since": "2026-10-16"
   },
   {
-   "address": "/models/allenai-astabrief-8b",
-   "reason": "not_listed",
-   "since": "2026-10-16"
-  },
-  {
    "address": "/models/allenai-molmo2-4b",
    "reason": "not_listed",
    "since": "2026-09-30"
@@ -329,6 +324,11 @@
    "address": "/models/bigcode-gpt-bigcode-santacoder",
    "reason": "not_listed",
    "since": "2026-09-30"
+  },
+  {
+   "address": "/models/blackfrost-ai-cyber-frost-3-8-bf16",
+   "reason": "not_listed",
+   "since": "2026-10-17"
   },
   {
    "address": "/models/blackfrost-ai-glm-5-3-derisked-int4-int8mix",
@@ -601,11 +601,6 @@
    "since": "2026-10-02"
   },
   {
-   "address": "/models/deepseek-ai-deepseek-vl2-tiny",
-   "reason": "not_listed",
-   "since": "2026-10-15"
-  },
-  {
    "address": "/models/del-taiseiozaki-tengentoppa-llm-jp-13b-reasoning-it",
    "reason": "not_listed",
    "since": "2026-10-06"
@@ -706,11 +701,6 @@
    "since": "2026-10-05"
   },
   {
-   "address": "/models/facebook-incoder-1b",
-   "reason": "not_listed",
-   "since": "2026-10-13"
-  },
-  {
    "address": "/models/facebook-opt-2-7b",
    "reason": "not_listed",
    "since": "2026-10-03"
@@ -726,14 +716,14 @@
    "since": "2026-10-16"
   },
   {
-   "address": "/models/farbodtavakkoli-otel-llm-20b-reasoning",
-   "reason": "not_listed",
-   "since": "2026-10-03"
-  },
-  {
    "address": "/models/farbodtavakkoli-otel-llm-27b-it",
    "reason": "not_listed",
    "since": "2026-10-13"
+  },
+  {
+   "address": "/models/farbodtavakkoli-otel-llm-e4b-it",
+   "reason": "not_listed",
+   "since": "2026-10-17"
   },
   {
    "address": "/models/final-bench-darwin-27b-rsi",
@@ -771,14 +761,14 @@
    "since": "2026-10-01"
   },
   {
+   "address": "/models/forgeworks-forgeplex-m2-1-10m",
+   "reason": "not_listed",
+   "since": "2026-10-17"
+  },
+  {
    "address": "/models/forgeworks-forgeplex-m2-9m",
    "reason": "not_listed",
    "since": "2026-10-12"
-  },
-  {
-   "address": "/models/gnani-gnani-evon-v3-3-30b-a3b",
-   "reason": "not_listed",
-   "since": "2026-10-10"
   },
   {
    "address": "/models/google-gemini-2-5-pro-preview",
@@ -971,16 +961,6 @@
    "since": "2026-10-12"
   },
   {
-   "address": "/models/ibm-granite-granite-4-0-3b-vision",
-   "reason": "not_listed",
-   "since": "2026-10-13"
-  },
-  {
-   "address": "/models/ibm-granite-granite-embedding-30m-sparse",
-   "reason": "not_listed",
-   "since": "2026-10-07"
-  },
-  {
    "address": "/models/ibm-research-powerlm-3b",
    "reason": "not_listed",
    "since": "2026-10-04"
@@ -1159,11 +1139,6 @@
    "address": "/models/laap-ai-qwen-base-invoicev1-01-1-5b",
    "reason": "not_listed",
    "since": "2026-10-02"
-  },
-  {
-   "address": "/models/lajavaness-bilingual-embedding-large",
-   "reason": "not_listed",
-   "since": "2026-10-16"
   },
   {
    "address": "/models/lessthanthreeai-qwen3-8-27b-humanlike-chat-2-0",
@@ -1371,9 +1346,14 @@
    "since": "2026-10-07"
   },
   {
-   "address": "/models/microsoft-promptist",
+   "address": "/models/microsoft-nextcoder-7b",
    "reason": "not_listed",
-   "since": "2026-10-15"
+   "since": "2026-10-17"
+  },
+  {
+   "address": "/models/microsoft-optimind-sft",
+   "reason": "not_listed",
+   "since": "2026-10-17"
   },
   {
    "address": "/models/mindlab-research-macaron-v1-1",
@@ -1481,6 +1461,11 @@
    "since": "2026-09-28"
   },
   {
+   "address": "/models/moonshotai-kimi-linear-48b-a3b-base",
+   "reason": "not_listed",
+   "since": "2026-10-17"
+  },
+  {
    "address": "/models/morph-morph-v3-fast",
    "reason": "refused_source",
    "since": "2026-09-27"
@@ -1524,6 +1509,11 @@
    "address": "/models/nex-agi-nex-n2-5-max",
    "reason": "not_listed",
    "since": "2026-10-07"
+  },
+  {
+   "address": "/models/nielsr-canine-s",
+   "reason": "not_listed",
+   "since": "2026-10-17"
   },
   {
    "address": "/models/notnotsamuel-lfm2-5-350m-rlcd",
@@ -1579,6 +1569,11 @@
    "address": "/models/nvidia-groupvit-gcc-yfcc",
    "reason": "not_listed",
    "since": "2026-10-10"
+  },
+  {
+   "address": "/models/nvidia-mistral-nemo-minitron-8b-instruct",
+   "reason": "not_listed",
+   "since": "2026-10-17"
   },
   {
    "address": "/models/nvidia-nemotron-3-8b-chat-4k-rlhf",
@@ -1751,6 +1746,11 @@
    "since": "2026-09-27"
   },
   {
+   "address": "/models/opencerebral-boris-2-preview-1",
+   "reason": "not_listed",
+   "since": "2026-10-17"
+  },
+  {
    "address": "/models/openchat-openchat-3-6-8b-20240522",
    "reason": "not_listed",
    "since": "2026-10-11"
@@ -1786,6 +1786,11 @@
    "since": "2026-10-09"
   },
   {
+   "address": "/models/orionllm-oxcoder-9b",
+   "reason": "not_listed",
+   "since": "2026-10-17"
+  },
+  {
    "address": "/models/osllmai-community-llama-3-2-1b",
    "reason": "not_listed",
    "since": "2026-10-11"
@@ -1794,11 +1799,6 @@
    "address": "/models/outeai-lite-oute-1-300m",
    "reason": "not_listed",
    "since": "2026-10-04"
-  },
-  {
-   "address": "/models/p-e-w-gpt-oss-20b-heretic",
-   "reason": "not_listed",
-   "since": "2026-10-11"
   },
   {
    "address": "/models/p-e-w-qwen3-4b-instruct-2507-heretic",
@@ -1859,6 +1859,11 @@
    "address": "/models/pipizhao-skillrouter-embedding-0-6b",
    "reason": "not_listed",
    "since": "2026-10-08"
+  },
+  {
+   "address": "/models/pkshatech-glucose-base-ja-v2",
+   "reason": "not_listed",
+   "since": "2026-10-17"
   },
   {
    "address": "/models/pleias-baguettotron-600m",
@@ -1924,11 +1929,6 @@
    "address": "/models/q-project-q-u-164m",
    "reason": "not_listed",
    "since": "2026-10-06"
-  },
-  {
-   "address": "/models/qwen-qwen-72b-chat",
-   "reason": "not_listed",
-   "since": "2026-10-14"
   },
   {
    "address": "/models/qwen-qwen-audio-chat",
@@ -2086,6 +2086,11 @@
    "since": "2026-10-10"
   },
   {
+   "address": "/models/roland-wayne-baihua-gemma4-e4b",
+   "reason": "not_listed",
+   "since": "2026-10-17"
+  },
+  {
    "address": "/models/rwkv-rwkv7-g1k-13-3b-20260930",
    "reason": "not_listed",
    "since": "2026-10-08"
@@ -2119,6 +2124,16 @@
    "address": "/models/sakana-fugu-ultra-v2",
    "reason": "refused_source",
    "since": "2026-09-27"
+  },
+  {
+   "address": "/models/salesforce-codegen-350m-mono",
+   "reason": "not_listed",
+   "since": "2026-10-17"
+  },
+  {
+   "address": "/models/salesforce-ctrl",
+   "reason": "not_listed",
+   "since": "2026-10-17"
   },
   {
    "address": "/models/samsungsds-research-sguard-jailbreakfilter-2b-v1",
@@ -2286,11 +2301,6 @@
    "since": "2026-10-09"
   },
   {
-   "address": "/models/telperionai-qwen3-8-27b-mla",
-   "reason": "not_listed",
-   "since": "2026-10-09"
-  },
-  {
    "address": "/models/tencent-hunyuan-7b-instruct",
    "reason": "not_listed",
    "since": "2026-10-12"
@@ -2346,6 +2356,11 @@
    "since": "2026-10-08"
   },
   {
+   "address": "/models/togethercomputer-tev1-4b-experimental",
+   "reason": "not_listed",
+   "since": "2026-10-17"
+  },
+  {
    "address": "/models/tomaarsen-ms-marco-ettin-17m-reranker",
    "reason": "not_listed",
    "since": "2026-10-04"
@@ -2376,6 +2391,11 @@
    "since": "2026-10-04"
   },
   {
+   "address": "/models/trl-internal-testing-tiny-deepseekv3forcausallm-0528",
+   "reason": "not_listed",
+   "since": "2026-10-17"
+  },
+  {
    "address": "/models/trl-internal-testing-tiny-gemma4forconditionalgeneration",
    "reason": "not_listed",
    "since": "2026-10-09"
@@ -2386,9 +2406,19 @@
    "since": "2026-10-13"
   },
   {
+   "address": "/models/trl-internal-testing-tiny-olmo3forcausallm",
+   "reason": "not_listed",
+   "since": "2026-10-17"
+  },
+  {
    "address": "/models/trl-internal-testing-tiny-qwen2forcausallm-r1-distill",
    "reason": "not_listed",
    "since": "2026-10-04"
+  },
+  {
+   "address": "/models/trl-internal-testing-tiny-qwen2vlforconditionalgeneration",
+   "reason": "not_listed",
+   "since": "2026-10-17"
   },
   {
    "address": "/models/trl-internal-testing-tiny-qwen3-5forconditionalgeneration-3-8",
@@ -2649,6 +2679,11 @@
    "address": "/models/zed-industries-zeta-2-1",
    "reason": "not_listed",
    "since": "2026-10-13"
+  },
+  {
+   "address": "/models/zeroentropy-zerank-1-reranker",
+   "reason": "not_listed",
+   "since": "2026-10-17"
   },
   {
    "address": "/models/zgcagi-zgcm-1-7b",
