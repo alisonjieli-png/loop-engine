@@ -7,14 +7,14 @@ its test or component guide coverage, or a new unreviewed gap appears.
 
 ## Summary across the eight categories
 
-- Total surface items inventoried: **697**
-- Fully covered items (no gaps): **694**
+- Total surface items inventoried: **698**
+- Fully covered items (no gaps): **695**
 - Items with an explicit test or live-check gap: **3**
 
 | Category | Total items | Unit / integration tested | Browser tested | Live checked | Component guide mapped | Open gaps |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: |
 | `screens` | 130 | 130 | 130 | 130 | 130 | 0 |
-| `functions` | 375 | 375 | 318 | 330 | 375 | 0 |
+| `functions` | 376 | 376 | 319 | 331 | 376 | 0 |
 | `interactions` | 18 | 18 | 18 | 12 | 18 | 0 |
 | `data_transfer` | 56 | 56 | 11 | 5 | 56 | 0 |
 | `data_computation` | 11 | 11 | 3 | 0 | 11 | 0 |
@@ -445,6 +445,7 @@ Every item below has a mapped component guide in `docs/components/COMPONENT-GUID
 | `operator_tool` | `operator_tool:invite_beta_user.py` | `tools/invite_beta_user.py` | 6 | 6 | 4 | `docs/components/README.md` | covered |
 | `operator_tool` | `operator_tool:jagged_frontier_llm_trace_and_default_behavior_combat_engines.py` | `tools/jagged_frontier_llm_trace_and_default_behavior_combat_engines.py` | 6 | 6 | 4 | `docs/components/README.md` | covered |
 | `operator_tool` | `operator_tool:jira_emulator.py` | `tools/jira_emulator.py` | 6 | 6 | 4 | `docs/components/README.md` | covered |
+| `operator_tool` | `operator_tool:kaggle_1000_directories_top100_notebooks_and_fuzzy_data_fingerprint_engines.py` | `tools/kaggle_1000_directories_top100_notebooks_and_fuzzy_data_fingerprint_engines.py` | 6 | 6 | 4 | `docs/components/README.md` | covered |
 | `operator_tool` | `operator_tool:listing_text.mjs` | `tools/listing_text.mjs` | 6 | 6 | 4 | `docs/components/README.md` | covered |
 | `operator_tool` | `operator_tool:live_site_readiness.mjs` | `tools/live_site_readiness.mjs` | 6 | 6 | 4 | `docs/components/README.md` | covered |
 | `operator_tool` | `operator_tool:long_horizon_agentic_swe_and_redteam_benchmarks.py` | `tools/long_horizon_agentic_swe_and_redteam_benchmarks.py` | 6 | 6 | 4 | `docs/components/README.md` | covered |
