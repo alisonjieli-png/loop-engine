@@ -94,12 +94,44 @@ export function pyRound(x, digits) {
   return negative ? -value : value;
 }
 
-/** catalogue_search.fuse: reciprocal rank fusion over the authorized candidates, tiers first. */
-export function fuse(pools, allowed, offset, topN, tierOrder) {
+/** catalogue_search.fuse: reciprocal rank fusion over the authorized candidates, tiers first or bounded boost. */
+export function fuse(pools, allowed, offset, topN, tierOrder, policy = null, verifiedTier = "verified") {
+  let activePools = pools;
+  const poolNames = Object.keys(pools);
+  const lexicalOnly = poolNames.length === 1 && poolNames[0] === "lexical";
+  const floorRatio = lexicalOnly && policy ? (policy.lexical_score_floor_ratio || 0) : 0;
+  if (floorRatio > 0) {
+    let bestScore = -1;
+    for (const [identity, score] of pools.lexical) {
+      if (allowed.has(identity) && score > bestScore) bestScore = score;
+    }
+    if (bestScore >= 0) {
+      const floor = bestScore * floorRatio;
+      activePools = { lexical: pools.lexical.filter(([identity, score]) => allowed.has(identity) && score >= floor) };
+    }
+  }
+  const tierRank = (identity) => {
+    const row = allowed.get(identity);
+    return row && row.tier in tierOrder ? tierOrder[row.tier] : 0;
+  };
+  const boundedBoost = lexicalOnly && policy && policy.lexical_tier_order === "bounded_boost";
+  if (boundedBoost) {
+    const multiplier = 1.0 + (policy.lexical_verified_boost || 0);
+    const verifiedRank = verifiedTier in tierOrder ? tierOrder[verifiedTier] : 0;
+    const rows = activePools.lexical.filter(([identity]) => allowed.has(identity));
+    rows.sort((a, b) => {
+      const tierA = tierRank(a[0]);
+      const tierB = tierRank(b[0]);
+      const scoreA = tierA === verifiedRank ? a[1] * multiplier : a[1];
+      const scoreB = tierB === verifiedRank ? b[1] * multiplier : b[1];
+      return scoreB - scoreA || tierA - tierB;
+    });
+    activePools = { lexical: rows };
+  }
   const fused = new Map();
-  for (const name of Object.keys(pools)) {
+  for (const name of Object.keys(activePools)) {
     let rank = 0;
-    for (const [identity] of pools[name]) {
+    for (const [identity] of activePools[name]) {
       if (!allowed.has(identity)) continue;
       let entry = fused.get(identity);
       if (!entry) { entry = [0.0, new Set()]; fused.set(identity, entry); }
@@ -108,12 +140,10 @@ export function fuse(pools, allowed, offset, topN, tierOrder) {
       rank++;
     }
   }
-  const tierRank = (identity) => {
-    const row = allowed.get(identity);
-    return row && row.tier in tierOrder ? tierOrder[row.tier] : 0;
-  };
   const ordered = [...fused.entries()].sort((a, b) =>
-    tierRank(a[0]) - tierRank(b[0]) || b[1][0] - a[1][0] || (a[0] < b[0] ? -1 : a[0] > b[0] ? 1 : 0));
+    boundedBoost
+      ? (b[1][0] - a[1][0] || tierRank(a[0]) - tierRank(b[0]) || (a[0] < b[0] ? -1 : a[0] > b[0] ? 1 : 0))
+      : (tierRank(a[0]) - tierRank(b[0]) || b[1][0] - a[1][0] || (a[0] < b[0] ? -1 : a[0] > b[0] ? 1 : 0)));
   return ordered.slice(0, topN).map(([identity, [score, modes]]) => [identity, pyRound(score, 5), [...modes].sort()]);
 }
 
@@ -472,7 +502,10 @@ async function retrieval(env, timing, build, parsed, headers) {
   const topN = "top_n" in fields ? fields.top_n : 10;
   const mode = "mode" in fields ? fields.mode : "lexical";
   const authority = fields.authority_effects;
-  let pool = Math.max(1, topN * build.policy.candidate_pool_multiplier);
+  const poolMultiplier = mode === "lexical"
+    ? (build.policy.lexical_pool_multiplier ?? build.policy.candidate_pool_multiplier)
+    : build.policy.candidate_pool_multiplier;
+  let pool = Math.max(1, topN * poolMultiplier);
   const total = Math.max(1, build.entries);
   let hits, allowed;
   for (;;) {
@@ -484,7 +517,8 @@ async function retrieval(env, timing, build, parsed, headers) {
         allowed.set(row.identity, { tier: row.tier, position: row.position });
       }
     }
-    hits = fuse(ranked.pools, allowed, build.policy.reciprocal_rank_offset, topN, profile.tier_order);
+    hits = fuse(ranked.pools, allowed, build.policy.reciprocal_rank_offset, topN, profile.tier_order, build.policy,
+      profile.verified_tier);
     if (hits.length >= topN || ranked.exhausted || pool >= total) break;
     pool = Math.min(total, pool * 4);
   }
