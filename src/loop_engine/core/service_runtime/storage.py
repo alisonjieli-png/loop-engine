@@ -8,6 +8,7 @@ and it is refused before any effect by a store that does not declare it.
 """
 from __future__ import annotations
 
+from collections import deque
 from contextlib import contextmanager
 from dataclasses import dataclass, field
 import json
@@ -35,8 +36,35 @@ WRITE_QUEUE_SECONDS = 5.0
 #: A committed batch has this retry window, plus an in-flight store call's timeout, for read-only confirmation.
 #: Exhaustion stays unknown, never a no-write refusal or another write attempt.
 COMMIT_CONFIRMATION_SECONDS, COMMIT_CONFIRMATION_RETRY_SECONDS = 5.0, 0.05
-_WRITE_QUEUES, _WRITE_QUEUES_GUARD = {}, threading.Lock()
-_RECORD_QUEUES = {}
+_WRITE_QUEUES, _RECORD_QUEUES, _WRITE_QUEUES_GUARD = {}, {}, threading.Lock()
+
+
+class _FairQueueLock:
+    """A re-entrant lock that serves waiting threads in arrival order."""
+    def __init__(self): self._guard, self._owner, self._depth, self._waiters = threading.Lock(), None, 0, deque()
+    def acquire(self, blocking=True, timeout=-1):
+        ident = threading.get_ident()
+        with self._guard:
+            if self._owner == ident or (self._owner is None and not self._waiters):
+                self._owner, self._depth = ident, self._depth + 1; return True
+            if not blocking: return False
+            ready = threading.Event(); self._waiters.append(ready)
+        ready.wait(None if timeout is None or timeout < 0 else timeout)
+        with self._guard:
+            if self._owner is None and self._waiters[0] is ready:
+                self._waiters.popleft(); self._owner, self._depth = ident, 1; return True
+            self._waiters.remove(ready)
+            if self._owner is None and self._waiters: self._waiters[0].set()
+            return False
+    def release(self):
+        with self._guard:
+            if self._owner != threading.get_ident(): raise RuntimeError("cannot release un-acquired lock")
+            self._depth -= 1
+            if not self._depth:
+                self._owner = None
+                if self._waiters: self._waiters[0].set()
+    def __enter__(self): self.acquire(); return self
+    def __exit__(self, *_exc): self.release()
 
 
 def write_queue(database_path):
@@ -45,7 +73,7 @@ def write_queue(database_path):
     It is re-entrant, so a write made from inside another write's store call on the same thread, as a check that
     stages a race does, passes instead of waiting on itself."""
     with _WRITE_QUEUES_GUARD:
-        return _WRITE_QUEUES.setdefault(database_path, threading.RLock())
+        return _WRITE_QUEUES.setdefault(database_path, _FairQueueLock())
 
 
 @dataclass(frozen=True)
@@ -142,7 +170,7 @@ class ServiceCatalogBinding:
         change. It is re-entrant, and a wait past WRITE_QUEUE_SECONDS answers store_busy with nothing written.
         """
         with _WRITE_QUEUES_GUARD:
-            queue = _RECORD_QUEUES.setdefault((self.config.database_path, name), threading.RLock())
+            queue = _RECORD_QUEUES.setdefault((self.config.database_path, name), _FairQueueLock())
         if not queue.acquire(timeout=WRITE_QUEUE_SECONDS):
             raise ServiceRuntimeError(STORE_BUSY_CODE, "other writes held the record; nothing was written; retry")
         try:

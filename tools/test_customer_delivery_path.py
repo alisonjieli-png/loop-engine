@@ -733,7 +733,76 @@ class ReadContentionAndOneShotEffects(unittest.TestCase):
             with binding.store() as store:
                 self.assertEqual(binding.read(store, "test", "busy")["payload"]["value"], 2)
 
+    def test_write_queue_serves_waiting_threads_in_arrival_order(self):
+        self.assertTrue(write_queue_serves_waiters_in_arrival_order())
 
+    def test_known_wrong_an_unfair_queue_lets_a_releasing_holder_barge_ahead_of_waiters(self):
+        class UnfairQueueLock(service_storage._FairQueueLock):
+            def acquire(self, blocking=True, timeout=-1):
+                ident = threading.get_ident()
+                with self._guard:
+                    if self._owner == ident or self._owner is None:
+                        self._owner, self._depth = ident, self._depth + 1
+                        return True
+                return super().acquire(blocking=blocking, timeout=timeout)
+        with mock.patch.object(service_storage, "_FairQueueLock", UnfairQueueLock):
+            self.assertFalse(write_queue_serves_waiters_in_arrival_order())
+
+
+def write_queue_serves_waiters_in_arrival_order():
+    """Waiters on a store write queue take the lock in arrival order even when a releasing caller re-acquires at once."""
+    with tempfile.TemporaryDirectory() as folder:
+        queue = service_storage.write_queue(str(Path(folder) / "fair.db"))
+        order, timed_out = [], []
+        queue.acquire()
+        order.append("holder")
+        with queue:
+            order.append("reentrant")
+        def wait_for_queue_length(expected):
+            deadline = time.monotonic() + 5.0
+            while len(queue._waiters) != expected and time.monotonic() < deadline:
+                time.sleep(0.001)
+            return len(queue._waiters) == expected
+        def waiter(name):
+            with queue:
+                order.append(name)
+        first = threading.Thread(target=waiter, args=("first",))
+        first.start()
+        if not wait_for_queue_length(1):
+            return False
+        def expire():
+            timed_out.append(queue.acquire(timeout=0.005))
+        expiring = threading.Thread(target=expire)
+        expiring.start()
+        expiring.join(5)
+        if timed_out != [False] or not wait_for_queue_length(1):
+            return False
+        second = threading.Thread(target=waiter, args=("second",))
+        second.start()
+        if not wait_for_queue_length(2):
+            return False
+        # Hold the wakeup of the head waiter until a barging caller tries to re-acquire the released lock.
+        head_event = queue._waiters[0]
+        real_set = head_event.set
+        head_event.set = lambda: None
+        queue.release()
+        immediate = queue.acquire(blocking=False)
+        if immediate:
+            order.append("barger")
+            queue.release()
+            barger = None
+        else:
+            barger = threading.Thread(target=waiter, args=("barger",))
+            barger.start()
+            if not wait_for_queue_length(3):
+                return False
+        head_event.set = real_set
+        real_set()
+        first.join(5)
+        second.join(5)
+        if barger is not None:
+            barger.join(5)
+        return order == ["holder", "reentrant", "first", "second", "barger"]
 
 def no_plan_is_told_how_to_subscribe(service, key):
     """A download by an account without a plan: 403 plan_required, with the pricing page and nothing counted."""
