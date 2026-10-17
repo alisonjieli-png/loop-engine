@@ -5,7 +5,7 @@
     "data_computation": 11,
     "data_storage": 59,
     "data_transfer": 56,
-    "functions": 389,
+    "functions": 390,
     "interactions": 18,
     "screens": 130
   },
@@ -542,6 +542,7 @@
       "operator_tool:rust_hotpath_search_embedding_lsh_and_python_swap_engines.py",
       "operator_tool:scan_local_volume.py",
       "operator_tool:seo_blog_comparison_and_humanizer_engines.py",
+      "operator_tool:server_mailbox_newsletter_ingestion_and_alphasignal_feed_engines.py",
       "operator_tool:service_admin_operator.py",
       "operator_tool:service_admin_rotation_host.py",
       "operator_tool:session_intake.py",
@@ -758,8 +759,8 @@
   },
   "schema": "surface_inventory_baseline/v1",
   "totals": {
-    "covered_items": 708,
+    "covered_items": 709,
     "total_gaps": 3,
-    "total_items": 711
+    "total_items": 712
   }
 }
