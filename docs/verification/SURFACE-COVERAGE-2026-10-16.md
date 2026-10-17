@@ -7,14 +7,14 @@ its test or component guide coverage, or a new unreviewed gap appears.
 
 ## Summary across the eight categories
 
-- Total surface items inventoried: **695**
-- Fully covered items (no gaps): **692**
+- Total surface items inventoried: **696**
+- Fully covered items (no gaps): **693**
 - Items with an explicit test or live-check gap: **3**
 
 | Category | Total items | Unit / integration tested | Browser tested | Live checked | Component guide mapped | Open gaps |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: |
 | `screens` | 130 | 130 | 130 | 130 | 130 | 0 |
-| `functions` | 373 | 373 | 316 | 328 | 373 | 0 |
+| `functions` | 374 | 374 | 317 | 329 | 374 | 0 |
 | `interactions` | 18 | 18 | 18 | 12 | 18 | 0 |
 | `data_transfer` | 56 | 56 | 11 | 5 | 56 | 0 |
 | `data_computation` | 11 | 11 | 3 | 0 | 11 | 0 |
@@ -408,6 +408,7 @@ Every item below has a mapped component guide in `docs/components/COMPONENT-GUID
 | `operator_tool` | `operator_tool:documentation_readiness_checks.mjs` | `tools/documentation_readiness_checks.mjs` | 6 | 6 | 4 | `docs/components/README.md` | covered |
 | `operator_tool` | `operator_tool:downloaded_chat_logs_multi_topology_5w2h_plural_interrogator_engines.py` | `tools/downloaded_chat_logs_multi_topology_5w2h_plural_interrogator_engines.py` | 6 | 6 | 4 | `docs/components/README.md` | covered |
 | `operator_tool` | `operator_tool:entity_dedup_messy_data_and_ml_benchmarks.py` | `tools/entity_dedup_messy_data_and_ml_benchmarks.py` | 6 | 6 | 4 | `docs/components/README.md` | covered |
+| `operator_tool` | `operator_tool:esoteric_future_moon_crisis_logistics_and_bidirectional_reality_sim_engines.py` | `tools/esoteric_future_moon_crisis_logistics_and_bidirectional_reality_sim_engines.py` | 6 | 6 | 4 | `docs/components/README.md` | covered |
 | `operator_tool` | `operator_tool:expand_community_capabilities.py` | `tools/expand_community_capabilities.py` | 6 | 6 | 4 | `docs/components/README.md` | covered |
 | `operator_tool` | `operator_tool:expand_occupation_inventory.py` | `tools/expand_occupation_inventory.py` | 6 | 6 | 4 | `docs/components/README.md` | covered |
 | `operator_tool` | `operator_tool:export_component_inventory.py` | `tools/export_component_inventory.py` | 6 | 6 | 4 | `docs/components/README.md` | covered |
