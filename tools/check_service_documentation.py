@@ -234,6 +234,7 @@ def source_facts(root: Path) -> dict:
         raise DocumentationDrift("the service source was not found under " + str(root))
     trees = {path: ast.parse(path.read_text(encoding="utf-8")) for path in files}
     constants: dict[str, str] = {}
+    constant_values: set[str] = set()
     for tree in trees.values():
         for node in ast.walk(tree):
             if (isinstance(node, ast.Assign) and isinstance(node.value, ast.Constant)
@@ -241,6 +242,7 @@ def source_facts(root: Path) -> dict:
                 for target in node.targets:
                     if isinstance(target, ast.Name) and target.id.isupper():
                         constants[target.id] = node.value.value
+                        constant_values.add(node.value.value)
 
     def literal(node):
         if isinstance(node, ast.Constant) and isinstance(node.value, str):
@@ -344,7 +346,7 @@ def source_facts(root: Path) -> dict:
                         for target in node.targets)):
             addresses.update(key.value for key in node.value.keys
                              if isinstance(key, ast.Constant) and isinstance(key.value, str) and key.value.startswith("/"))
-    addresses.update(value for value in constants.values() if value.startswith("/"))
+    addresses.update(value for value in constant_values if value.startswith("/"))
 
     scopes = set()
     for node in ast.walk(trees[root / RECORDS_MODULE]):

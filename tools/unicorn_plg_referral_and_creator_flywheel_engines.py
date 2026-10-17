@@ -28,7 +28,7 @@ controls. Nothing in this module performs network I/O or mutates live state.
 from __future__ import annotations
 
 from collections.abc import Callable, Mapping
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 import hashlib
 import re
 import sys
@@ -485,7 +485,7 @@ class ViralArtifactRequest:
     contains_cookie_header: bool = False
     contains_raw_ip_or_fingerprint: bool = False
     custom_summary_text: str = ""
-    simulated_deferrals: Mapping[str, str] = MappingProxyType({})
+    simulated_deferrals: Mapping[str, str] = field(default_factory=lambda: MappingProxyType({}))
 
 
 class ViralArtifactAndBadgeOrchestrator:
@@ -676,7 +676,7 @@ class ReferralConversionRequest:
     public_repo_slug: str = ""
     embedded_contract_cards: int = 0
     sdg_domain: str = "skillsforgood.org"
-    simulated_deferrals: Mapping[str, str] = MappingProxyType({})
+    simulated_deferrals: Mapping[str, str] = field(default_factory=lambda: MappingProxyType({}))
 
 
 class ReferralAndFoundingAdvocateOrchestrator:
@@ -825,7 +825,7 @@ class CreatorComponentSubmissionRequest:
     verified_harness_invocations: int = 250
     reuse_saves_model_calls: int = 180
     marketplace_surface: str = "getagentfoundry.si"
-    simulated_deferrals: Mapping[str, str] = MappingProxyType({})
+    simulated_deferrals: Mapping[str, str] = field(default_factory=lambda: MappingProxyType({}))
 
 
 class CreatorMarketplaceBountyOrchestrator:

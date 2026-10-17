@@ -28,7 +28,7 @@ import threading
 import time
 import types
 import unicodedata
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from pathlib import Path
 from types import MappingProxyType
 from typing import Mapping
@@ -263,7 +263,7 @@ class CompetitionDefenseResult:
     refusal: "EnvelopeRefusal | None" = None
     preflight_report: "EnvelopePreflightReport | None" = None
     handshake_verdict: "EnvelopeHandshakeVerdict | None" = None
-    repaired_metrics: Mapping = MappingProxyType({})
+    repaired_metrics: Mapping = field(default_factory=lambda: MappingProxyType({}))
     detail: str = ""
 
     def to_dict(self) -> dict:

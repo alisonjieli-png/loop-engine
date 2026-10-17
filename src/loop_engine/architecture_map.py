@@ -97,6 +97,7 @@ MODULE_MAP = {
         "catalogue_d1_index", "catalogue_d1_index_checks",
         "catalogue_object_store", "object_store_fake", "catalogue_body_store_checks", "service_engine_body_store",
         "static_site_export", "static_site_checks",
+        "customer_feed_records", "customer_feeds",
     ),
     "core.practitioner_runtime": ("__init__", "capabilities", "observations", "provisioning"),
     "core.library_ingestion": ("__init__", "candidates", "connection_rendering", "duplicates", "effects", "engines", "facet_tag_checks", "facet_tags", "fetch_cache", "format_builtin", "format_connection", "format_json_schema", "format_skills_ref", "github_reader", "https_transport", "licence_checks", "licences", "near_duplicate_builtin", "near_duplicate_datasketch", "optional_engine_checks", "outline_deterministic", "outline_model", "package_resolver", "pipeline", "pipeline_checks", "processes", "provenance", "provenance_checks", "quarantine", "record_rules", "registry_sync", "render_checks", "rendering_types", "request_log", "scan_builtin", "scan_checks", "scan_skillspector", "selection", "skill_rendering", "source_checks", "source_declarations", "source_github", "source_mcp_registry", "staging_rows", "step_function_checks", "step_functions", "topics"),

@@ -81,7 +81,7 @@ rendered card:
   Anchored to saved Ollama Cloud `gemma4:31b` trials in
   [artifacts/comparison-pilot-2026-10-16/results/summary.json](../../artifacts/comparison-pilot-2026-10-16/results/summary.json)
   and
-  [docs/benchmarks/OPEN-SOURCE-COMPARISON-PILOT-2026-10-15.md](../benchmarks/OPEN-SOURCE-COMPARISON-PILOT-2026-10-15.md)
+  `docs/benchmarks/OPEN-SOURCE-COMPARISON-PILOT-2026-10-15.md`
   across `claude_code`, `codex_cli`, `gemini_cli`, and `open_harness_mcp`.
 - **Deterministic contract-verifier simulations (`deterministic_contract_verifier_simulation`, 13 archetypes)**:
   Anchored to deterministic Python AST and invariant verifiers executing
@@ -231,6 +231,6 @@ Current limits:
 
 - [Demo subdomain showcase engines implementation](../../tools/demo_subdomain_showcase_engines.py)
 - [Demo subdomain showcase unit tests](../../tools/test_demo_subdomain_showcase_engines.py)
-- [Open-source comparison pilot report](../benchmarks/OPEN-SOURCE-COMPARISON-PILOT-2026-10-15.md)
+- Open-source comparison pilot report (`docs/benchmarks/OPEN-SOURCE-COMPARISON-PILOT-2026-10-15.md`)
 - [Envelope runtime implementation](../../src/loop_engine/core/engines/envelope.py)
 - [Functional component standard](../architecture/FUNCTIONAL-COMPONENT-STANDARD.md)

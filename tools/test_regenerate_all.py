@@ -30,6 +30,8 @@ NOT_VIEWS = {"owner_requests_ledger.py": "checks the hand-kept monthly ledgers a
              "build_feed_reading_profile.py": "checks a caller-selected private profile folder; no committed view or repository output is generated",
              "build_harness_starter_kit.py": "checks a caller-selected starter kit folder; no committed view or repository output is generated",
              "build_chatgpt_app_package.py": "checks the committed plugin package against OpenAI's submission rules; its --zip archive goes to a path the caller names and is never committed",
+             "build_library_sites.py": "checks a caller-selected library site export directory and writes no committed repository view",
+             "surface_inventory.py": "checks surface coverage against its baseline on demand and is tested directly by test_surface_inventory.py",
              "regenerate_all.py": "the runner itself"}
 GIT = ("git", "-c", "user.name=Regeneration test", "-c", "user.email=regeneration@example.invalid",
        "-c", "core.hooksPath=/dev/null", "-c", "commit.gpgsign=false")

@@ -32,7 +32,7 @@ external endpoints. All checks and benchmarks execute deterministically in memor
 from __future__ import annotations
 
 from collections.abc import Callable, Mapping
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 import hashlib
 import json
 from pathlib import Path
@@ -526,7 +526,7 @@ class GauntletMatrixRequest:
     categories: tuple[str, ...] = tuple(c.category_id for c in GAUNTLET_CATEGORIES)
     max_tokens_per_task: int = 250_000
     max_cost_usd_per_task: float = 5.00
-    simulated_recoverable_failures: Mapping[str, str] = MappingProxyType({})
+    simulated_recoverable_failures: Mapping[str, str] = field(default_factory=lambda: MappingProxyType({}))
     task_attempt_overrides: tuple[GauntletTaskAttempt, ...] = ()
     omit_m0_failure_modes: bool = False
     schema: str = MATRIX_REQUEST_SCHEMA
@@ -544,7 +544,7 @@ class ParetoAnalysisRequest:
     baseline_harness_id: str = "claude_code"
     max_tokens_per_task: int = 60_000
     max_cost_usd_per_task: float = 0.05
-    simulated_recoverable_failures: Mapping[str, str] = MappingProxyType({})
+    simulated_recoverable_failures: Mapping[str, str] = field(default_factory=lambda: MappingProxyType({}))
     task_attempt_overrides: tuple[GauntletTaskAttempt, ...] = ()
     schema: str = PARETO_REQUEST_SCHEMA
 

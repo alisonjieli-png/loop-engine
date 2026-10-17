@@ -29,7 +29,7 @@ and `Without Baltor` vs. `With Baltor` verification benchmarks:
 from __future__ import annotations
 
 from collections.abc import Mapping
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 import hashlib
 import json
 import math
@@ -503,7 +503,7 @@ class StudioComponentRequest:
     slot_id: str
     preferred_engine: str
     material_style: str = "photorealistic_pbr"
-    parameters: Mapping[str, Any] = MappingProxyType({})
+    parameters: Mapping[str, Any] = field(default_factory=lambda: MappingProxyType({}))
     allow_self_repair: bool = True
     simulate_recoverable_deferrals: tuple[str, ...] = ()
     requested_versions: tuple[str, ...] = ("v1",)

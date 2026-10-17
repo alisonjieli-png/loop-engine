@@ -2430,7 +2430,7 @@
      "import_skill_writing_plans_dc741e268643",
      "import_skill_incident_investigation_3ae81b652d82",
      "import_skill_gerrit_task_query_c84b489f6c1a",
-     "import_skill_os_whats_next_68d655f2245c",
+     "import_skill_os_next_action_68d655f2245c",
      "import_skill_circuit_design_39f2f0fd5e43",
      "import_skill_validate_590351804c25"
     ],
@@ -2480,7 +2480,7 @@
      "community"
     ],
     [
-     "import_skill_os_whats_next_68d655f2245c",
+     "import_skill_os_next_action_68d655f2245c",
      39.605108448435836,
      "community"
     ],
@@ -2899,7 +2899,7 @@
      "import_skill_price_optimization_tool_441853e2e32c",
      "import_skill_revenuecat_app_valuation_f4034f9fef94",
      "import_skill_next_642b17fad7e7",
-     "import_skill_os_whats_next_68d655f2245c",
+     "import_skill_os_next_action_68d655f2245c",
      "import_skill_pragmatic_howto_b0e55f0dcb63"
     ],
     "strict_tier_order": [
@@ -2953,7 +2953,7 @@
      "community"
     ],
     [
-     "import_skill_os_whats_next_68d655f2245c",
+     "import_skill_os_next_action_68d655f2245c",
      28.42159007264066,
      "community"
     ],
@@ -11945,7 +11945,7 @@
      "import_skill_bb_methodology_bd71d7c07906",
      "import_skill_hunt_mindset_75f4b28fd5b1",
      "import_skill_journey_82a29ba0955c",
-     "import_skill_os_whats_next_68d655f2245c",
+     "import_skill_os_next_action_68d655f2245c",
      "import_skill_os_step_by_step_7b2289b7534c"
     ],
     "strict_tier_order": [
@@ -12004,7 +12004,7 @@
      "community"
     ],
     [
-     "import_skill_os_whats_next_68d655f2245c",
+     "import_skill_os_next_action_68d655f2245c",
      37.387648955017006,
      "community"
     ],
@@ -13445,7 +13445,7 @@
      "import_skill_explain_02ad8a8a4826",
      "import_skill_catchup_37a842b4feaa",
      "decide_whether_a_step_needs_a_model",
-     "import_skill_os_whats_next_68d655f2245c",
+     "import_skill_os_next_action_68d655f2245c",
      "import_skill_os_step_by_step_7b2289b7534c",
      "escalate_uncertain_values_with_candidates",
      "library.supply.openapi_operations.1d7e44c0e4d9e8e8f104c925.243998556d39073d",
@@ -13461,7 +13461,7 @@
      "check_that_a_result_is_stable_and_generalizes",
      "import_skill_explain_02ad8a8a4826",
      "import_skill_catchup_37a842b4feaa",
-     "import_skill_os_whats_next_68d655f2245c",
+     "import_skill_os_next_action_68d655f2245c",
      "import_skill_os_step_by_step_7b2289b7534c",
      "library.supply.openapi_operations.1d7e44c0e4d9e8e8f104c925.243998556d39073d"
     ]
@@ -13479,7 +13479,7 @@
      "community"
     ],
     [
-     "import_skill_os_whats_next_68d655f2245c",
+     "import_skill_os_next_action_68d655f2245c",
      27.472486323617417,
      "community"
     ],

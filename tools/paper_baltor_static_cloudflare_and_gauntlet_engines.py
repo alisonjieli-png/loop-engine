@@ -32,7 +32,7 @@ connections. All engines operate deterministically in memory.
 from __future__ import annotations
 
 from collections.abc import Callable, Mapping
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 import hashlib
 import json
 from pathlib import Path
@@ -454,7 +454,7 @@ class GauntletSynthesisRequest:
     tracks: tuple[GauntletTrackSpec, ...] = PUBLIC_GAUNTLET_TRACKS
     schema: str = GAUNTLET_SYNTHESIS_REQUEST_SCHEMA
     include_failed_trial_dm_01: bool = True
-    override_evidence_classes: Mapping[str, str] = MappingProxyType({})
+    override_evidence_classes: Mapping[str, str] = field(default_factory=lambda: MappingProxyType({}))
     simulate_matrix_deferral: bool = False
     simulate_pareto_deferral: bool = False
     simulate_merkle_deferral: bool = False
