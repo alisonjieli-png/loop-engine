@@ -7,14 +7,14 @@ its test or component guide coverage, or a new unreviewed gap appears.
 
 ## Summary across the eight categories
 
-- Total surface items inventoried: **692**
-- Fully covered items (no gaps): **689**
+- Total surface items inventoried: **693**
+- Fully covered items (no gaps): **690**
 - Items with an explicit test or live-check gap: **3**
 
 | Category | Total items | Unit / integration tested | Browser tested | Live checked | Component guide mapped | Open gaps |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: |
 | `screens` | 130 | 130 | 130 | 130 | 130 | 0 |
-| `functions` | 370 | 370 | 313 | 325 | 370 | 0 |
+| `functions` | 371 | 371 | 314 | 326 | 371 | 0 |
 | `interactions` | 18 | 18 | 18 | 12 | 18 | 0 |
 | `data_transfer` | 56 | 56 | 11 | 5 | 56 | 0 |
 | `data_computation` | 11 | 11 | 3 | 0 | 11 | 0 |
@@ -463,6 +463,7 @@ Every item below has a mapped component guide in `docs/components/COMPONENT-GUID
 | `operator_tool` | `operator_tool:native_harness_candidates.py` | `tools/native_harness_candidates.py` | 6 | 6 | 4 | `docs/components/README.md` | covered |
 | `operator_tool` | `operator_tool:native_proposals_from_overnight_candidates.py` | `tools/native_proposals_from_overnight_candidates.py` | 6 | 6 | 4 | `docs/components/README.md` | covered |
 | `operator_tool` | `operator_tool:oauth_consent_browser.mjs` | `tools/oauth_consent_browser.mjs` | 6 | 6 | 4 | `docs/components/README.md` | covered |
+| `operator_tool` | `operator_tool:ontology_separated_e2e_testing_and_funnel_iteration_engines.py` | `tools/ontology_separated_e2e_testing_and_funnel_iteration_engines.py` | 6 | 6 | 4 | `docs/components/README.md` | covered |
 | `operator_tool` | `operator_tool:opencode_generation_lanes.py` | `tools/opencode_generation_lanes.py` | 6 | 6 | 4 | `docs/components/README.md` | covered |
 | `operator_tool` | `operator_tool:opencode_loop.py` | `tools/opencode_loop.py` | 6 | 6 | 4 | `docs/components/README.md` | covered |
 | `operator_tool` | `operator_tool:operator_credentials.py` | `tools/operator_credentials.py` | 6 | 6 | 4 | `docs/components/README.md` | covered |

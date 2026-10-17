@@ -5,7 +5,7 @@
     "data_computation": 11,
     "data_storage": 59,
     "data_transfer": 56,
-    "functions": 370,
+    "functions": 371,
     "interactions": 18,
     "screens": 130
   },
@@ -469,6 +469,7 @@
       "operator_tool:native_harness_candidates.py",
       "operator_tool:native_proposals_from_overnight_candidates.py",
       "operator_tool:oauth_consent_browser.mjs",
+      "operator_tool:ontology_separated_e2e_testing_and_funnel_iteration_engines.py",
       "operator_tool:opencode_generation_lanes.py",
       "operator_tool:opencode_loop.py",
       "operator_tool:operator_credentials.py",
@@ -739,8 +740,8 @@
   },
   "schema": "surface_inventory_baseline/v1",
   "totals": {
-    "covered_items": 689,
+    "covered_items": 690,
     "total_gaps": 3,
-    "total_items": 692
+    "total_items": 693
   }
 }
