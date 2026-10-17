@@ -17,7 +17,7 @@ Grounded in:
 Two 7-Layer ComponentEnvelope-governed Engine Slots:
 1. sovereign_open_model_computer_use_router_slot:
    - deepseek_v3_and_r1_unflinching_planner_engine
-   - ui_tars_and_qwen25_vl_pixel_gui_grounding_engine
+   - ui_tars_and_qwen3_5_vl_pixel_gui_grounding_engine
    - gemma4_31b_and_llama4_fast_local_actuator_engine
    - automatic_false_refusal_and_preachiness_failover_engine
 2. paired_computer_full_desktop_actuator_slot:
@@ -274,9 +274,9 @@ def catalog_open_weight_model_backends() -> tuple[OpenWeightModelBackendSpec, ..
             pixel_grounding_capable=True,
         ),
         OpenWeightModelBackendSpec(
-            backend_id="qwen25_vl_72b_backend",
-            model_family="Qwen-3.5-VL",
-            model_identifiers=("qwen2.5-vl:72b", "qwen3-vl:32b"),
+            backend_id="qwen3_5_vl_72b_backend",
+            model_family="Qwen3.5-VL",
+            model_identifiers=("qwen3.5-vl:72b", "qwen3-vl:32b"),
             supported_endpoint_modes=modes,
             primary_role="visual_icon_template_and_cross_window_drag_drop_grounding",
             contract_card_budget_tokens=150,
@@ -331,7 +331,7 @@ def build_sovereign_router_envelopes() -> dict[str, ComponentEnvelope]:
         )
         for engine_id in (
             "deepseek_v3_and_r1_unflinching_planner_engine",
-            "ui_tars_and_qwen25_vl_pixel_gui_grounding_engine",
+            "ui_tars_and_qwen3_5_vl_pixel_gui_grounding_engine",
             "gemma4_31b_and_llama4_fast_local_actuator_engine",
             "automatic_false_refusal_and_preachiness_failover_engine",
         )
@@ -402,7 +402,7 @@ def detect_commercial_preachiness_and_failover(
             attached_contract_card_tokens=148,
         )
     if requires_pixel_grounding:
-        engine = "ui_tars_and_qwen25_vl_pixel_gui_grounding_engine"
+        engine = "ui_tars_and_qwen3_5_vl_pixel_gui_grounding_engine"
         model_id = "ui-tars-72b-dpo"
         tokens = 138
     elif task_category in ("high_speed_loop", "local_cli_daemon"):
@@ -486,7 +486,7 @@ def route_sovereign_open_model_computer_use_task(
     elif commercial_model_response and failover.commercial_refusal_detected:
         engine_id = "automatic_false_refusal_and_preachiness_failover_engine"
     elif requires_pixel_grounding:
-        engine_id = "ui_tars_and_qwen25_vl_pixel_gui_grounding_engine"
+        engine_id = "ui_tars_and_qwen3_5_vl_pixel_gui_grounding_engine"
     elif task_category in ("high_speed_loop", "local_cli_daemon"):
         engine_id = "gemma4_31b_and_llama4_fast_local_actuator_engine"
     else:
@@ -528,7 +528,7 @@ def route_sovereign_open_model_computer_use_task(
     }
     pixel_coords = (
         (int(screenshot_resolution[0] * 0.42), int(screenshot_resolution[1] * 0.64))
-        if (requires_pixel_grounding or engine_id == "ui_tars_and_qwen25_vl_pixel_gui_grounding_engine")
+        if (requires_pixel_grounding or engine_id == "ui_tars_and_qwen3_5_vl_pixel_gui_grounding_engine")
         else None
     )
     trace = EnvelopeTrace(

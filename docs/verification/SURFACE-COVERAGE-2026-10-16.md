@@ -7,14 +7,14 @@ its test or component guide coverage, or a new unreviewed gap appears.
 
 ## Summary across the eight categories
 
-- Total surface items inventoried: **719**
-- Fully covered items (no gaps): **716**
+- Total surface items inventoried: **721**
+- Fully covered items (no gaps): **718**
 - Items with an explicit test or live-check gap: **3**
 
 | Category | Total items | Unit / integration tested | Browser tested | Live checked | Component guide mapped | Open gaps |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: |
 | `screens` | 130 | 130 | 130 | 130 | 130 | 0 |
-| `functions` | 397 | 397 | 340 | 352 | 397 | 0 |
+| `functions` | 399 | 399 | 342 | 354 | 399 | 0 |
 | `interactions` | 18 | 18 | 18 | 12 | 18 | 0 |
 | `data_transfer` | 56 | 56 | 11 | 5 | 56 | 0 |
 | `data_computation` | 11 | 11 | 3 | 0 | 11 | 0 |
@@ -536,6 +536,7 @@ Every item below has a mapped component guide in `docs/components/COMPONENT-GUID
 | `operator_tool` | `operator_tool:run_query_multiplier.py` | `tools/run_query_multiplier.py` | 6 | 6 | 4 | `docs/components/README.md` | covered |
 | `operator_tool` | `operator_tool:run_test_shard.py` | `tools/run_test_shard.py` | 6 | 6 | 4 | `docs/components/README.md` | covered |
 | `operator_tool` | `operator_tool:rust_hotpath_search_embedding_lsh_and_python_swap_engines.py` | `tools/rust_hotpath_search_embedding_lsh_and_python_swap_engines.py` | 6 | 6 | 4 | `docs/components/README.md` | covered |
+| `operator_tool` | `operator_tool:sacp_receipt_chain_and_agentops_doctor_audit_engines.py` | `tools/sacp_receipt_chain_and_agentops_doctor_audit_engines.py` | 6 | 6 | 4 | `docs/components/README.md` | covered |
 | `operator_tool` | `operator_tool:sandbox_restriction_workarounds_and_agent_capability_feeds_engines.py` | `tools/sandbox_restriction_workarounds_and_agent_capability_feeds_engines.py` | 6 | 6 | 4 | `docs/components/README.md` | covered |
 | `operator_tool` | `operator_tool:scan_local_volume.py` | `tools/scan_local_volume.py` | 6 | 6 | 4 | `docs/components/README.md` | covered |
 | `operator_tool` | `operator_tool:seo_blog_comparison_and_humanizer_engines.py` | `tools/seo_blog_comparison_and_humanizer_engines.py` | 6 | 6 | 4 | `docs/components/README.md` | covered |
@@ -555,6 +556,7 @@ Every item below has a mapped component guide in `docs/components/COMPONENT-GUID
 | `operator_tool` | `operator_tool:spectrum_score.py` | `tools/spectrum_score.py` | 6 | 6 | 4 | `docs/components/README.md` | covered |
 | `operator_tool` | `operator_tool:stage_intelligence_candidates.py` | `tools/stage_intelligence_candidates.py` | 6 | 6 | 4 | `docs/components/README.md` | covered |
 | `operator_tool` | `operator_tool:stage_service_secrets.py` | `tools/stage_service_secrets.py` | 6 | 6 | 4 | `docs/components/README.md` | covered |
+| `operator_tool` | `operator_tool:stale_technology_model_freshness_guard_and_enterprise_context_engines.py` | `tools/stale_technology_model_freshness_guard_and_enterprise_context_engines.py` | 6 | 6 | 4 | `docs/components/README.md` | covered |
 | `operator_tool` | `operator_tool:startable_web_server_browser_mcp_cli_and_vision_gui_agent_engines.py` | `tools/startable_web_server_browser_mcp_cli_and_vision_gui_agent_engines.py` | 6 | 6 | 4 | `docs/components/README.md` | covered |
 | `operator_tool` | `operator_tool:startup_10000_super_macro_meso_micro_and_engagement_engines.py` | `tools/startup_10000_super_macro_meso_micro_and_engagement_engines.py` | 6 | 6 | 4 | `docs/components/README.md` | covered |
 | `operator_tool` | `operator_tool:startup_1000_and_job_10000_component_generator_engines.py` | `tools/startup_1000_and_job_10000_component_generator_engines.py` | 6 | 6 | 4 | `docs/components/README.md` | covered |

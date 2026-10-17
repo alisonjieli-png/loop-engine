@@ -26,7 +26,7 @@ class SovereignOpenModelPairedComputerUseTests(unittest.TestCase):
         families = {b.model_family for b in backends}
         self.assertEqual(
             families,
-            {"DeepSeek-V3", "DeepSeek-R1", "UI-Tars", "Qwen-3.5-VL", "Gemma 4", "Llama-4"},
+            {"DeepSeek-V3", "DeepSeek-R1", "UI-Tars", "Qwen3.5-VL", "Gemma 4", "Llama-4"},
         )
         for backend in backends:
             self.assertLess(backend.contract_card_budget_tokens, 200)
@@ -41,7 +41,7 @@ class SovereignOpenModelPairedComputerUseTests(unittest.TestCase):
             set(envelopes.keys()),
             {
                 "deepseek_v3_and_r1_unflinching_planner_engine",
-                "ui_tars_and_qwen25_vl_pixel_gui_grounding_engine",
+                "ui_tars_and_qwen3_5_vl_pixel_gui_grounding_engine",
                 "gemma4_31b_and_llama4_fast_local_actuator_engine",
                 "automatic_false_refusal_and_preachiness_failover_engine",
             },

@@ -5,7 +5,7 @@
     "data_computation": 11,
     "data_storage": 59,
     "data_transfer": 56,
-    "functions": 397,
+    "functions": 399,
     "interactions": 18,
     "screens": 130
   },
@@ -542,6 +542,7 @@
       "operator_tool:run_query_multiplier.py",
       "operator_tool:run_test_shard.py",
       "operator_tool:rust_hotpath_search_embedding_lsh_and_python_swap_engines.py",
+      "operator_tool:sacp_receipt_chain_and_agentops_doctor_audit_engines.py",
       "operator_tool:sandbox_restriction_workarounds_and_agent_capability_feeds_engines.py",
       "operator_tool:scan_local_volume.py",
       "operator_tool:seo_blog_comparison_and_humanizer_engines.py",
@@ -561,6 +562,7 @@
       "operator_tool:spectrum_score.py",
       "operator_tool:stage_intelligence_candidates.py",
       "operator_tool:stage_service_secrets.py",
+      "operator_tool:stale_technology_model_freshness_guard_and_enterprise_context_engines.py",
       "operator_tool:startable_web_server_browser_mcp_cli_and_vision_gui_agent_engines.py",
       "operator_tool:startup_10000_super_macro_meso_micro_and_engagement_engines.py",
       "operator_tool:startup_1000_and_job_10000_component_generator_engines.py",
@@ -766,8 +768,8 @@
   },
   "schema": "surface_inventory_baseline/v1",
   "totals": {
-    "covered_items": 716,
+    "covered_items": 718,
     "total_gaps": 3,
-    "total_items": 719
+    "total_items": 721
   }
 }
