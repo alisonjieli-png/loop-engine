@@ -277,6 +277,46 @@ CODE_GUIDANCE = {
                                    "Send path to read one file, or file_offset to read a page, then retry."),
     "file_offset_out_of_range": ("The package has fewer files than this file_offset counts.",
                                  "Start again at file_offset 0, or use the next_file_offset of the previous answer."),
+    # Saved customer feeds (customer_feeds.py). An agent meets these when it reads a feed, and a signed-in customer
+    # when they change one, so each names what to change and where.
+    "customer_feeds_unavailable": ("Saved feeds for agents are not switched on for this service.",
+                                   "Use the public feed links on the Feeds page instead, which need no account."),
+    "customer_feed_not_found": ("No saved feed with that identity belongs to this account.",
+                                "List the feeds assigned to this key, or check the feed on your account page."),
+    "customer_feed_not_assigned": ("This key has no assignment to read that saved feed.",
+                                   "Assign the key to the feed on your account page, or use a key that is assigned."),
+    "customer_feed_paused": ("The owner of this saved feed paused it, so no agent can read it now.",
+                             "Resume the feed on your account page, then read it again."),
+    "customer_feed_assignment_paused": ("Reading this saved feed with this key is paused.",
+                                        "Resume the assignment on your account page, then read the feed again."),
+    "customer_feed_entitlement_required": ("This account's plan does not include reading saved feeds here.",
+                                           "Check the plan on your account page, then read the feed again."),
+    "customer_feed_agent_credential_required": ("Saved feeds are read with a Baltor key made for one agent, not "
+                                                "with a sign-in.",
+                                                "Create a key on your account page, assign it to the feed, then use "
+                                                "that key."),
+    "customer_feed_cursor_invalid": ("This cursor was not issued for this key, this feed and this account.",
+                                     "Read the feed again without a cursor, then pass each next_cursor back "
+                                     "unchanged."),
+    "customer_feed_definition_changed": ("The saved feed was edited after this cursor was issued, so its pages "
+                                         "no longer apply.",
+                                         "Read the feed again from the first page, without a cursor, and use only "
+                                         "the new pages."),
+    "customer_feed_snapshot_changed": ("The items of this feed changed after this cursor was issued.",
+                                       "Read the feed again from the first page, without a cursor, and use only "
+                                       "the new pages."),
+    "customer_feed_quota_reached": ("This key read this feed more often than the service allows in one minute.",
+                                    "Wait for the period the Retry-After header names, then read the feed again."),
+    "customer_feed_revision_conflict": ("The saved feed or assignment changed after you loaded it, so nothing "
+                                        "was changed.",
+                                        "Reload your feeds, check the current settings, then make the change again."),
+    "customer_feed_custom_source_not_supported": ("Saved feeds read only sources listed in the Baltor directory, "
+                                                  "not an address you supply.",
+                                                  "Choose sources from the directory list on your account page "
+                                                  "instead."),
+    "customer_feed_changed_during_delivery": ("The feed or its assignment changed while this page was prepared, "
+                                              "so it was not delivered.",
+                                              "Read the feed again, and start without a cursor if it was edited."),
 }
 
 

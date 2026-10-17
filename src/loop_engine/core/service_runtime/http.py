@@ -58,6 +58,10 @@ from . import catalogue_feed
 from . import feed_source_collections
 from . import feed_profile_web
 from .feed_profile_web import PATH as FEED_PROFILE_PATH
+# Saved customer feeds with per-agent assignments (roadmap S-6.214.10). Off unless the host file switches them on.
+from . import customer_feeds
+from .customer_feeds import (ASSIGNED_PATH as CUSTOMER_FEEDS_ASSIGNED_PATH, MANAGEMENT_PATH as CUSTOMER_FEEDS_PATH,
+                             PULL_PATH as CUSTOMER_FEED_PULL_PATH)
 from . import dot_pages
 from . import public_good_files
 from . import red_team_page
@@ -273,6 +277,9 @@ API_ROUTES = {
     BILLING_PLANS_PATH: ("GET",),
     BILLING_CHECKOUT_PATH: ("POST",),
     BILLING_PORTAL_PATH: ("POST",),
+    CUSTOMER_FEEDS_PATH: ("GET", "POST"),
+    CUSTOMER_FEED_PULL_PATH: ("GET",),
+    CUSTOMER_FEEDS_ASSIGNED_PATH: ("GET",),
 }
 #: The address the protocol transport answers, ahead of the interface router.
 PROTOCOL_PATH = "/mcp"
@@ -290,9 +297,11 @@ DECLARED_ROUTES = (*API_ROUTES, PROTOCOL_PATH, *WEB_ASSETS, *GENERATED_WEB_FILES
 #: itself is still recorded. A staff sign-up link request carries email
 #: addresses, which the published privacy notice keeps with the identity
 #: provider, so its body is never kept either. Ephemeral reading-profile
-#: selections also stay out of diagnostic bodies at every capture level.
+#: selections also stay out of diagnostic bodies at every capture level, and so do
+#: saved feed settings: the service keeps the settings it was asked to save and
+#: never a copy of a refused request.
 CREDENTIAL_BODY_ROUTES = ("/api/v1/account/signup", PROMOTION_REDEMPTION_PATH, ADMIN_SIGN_UP_LINKS_PATH,
-                          *oauth_http.CREDENTIAL_ROUTES, feed_profile_web.PATH)
+                          *oauth_http.CREDENTIAL_ROUTES, feed_profile_web.PATH, CUSTOMER_FEEDS_PATH)
 
 
 class ServiceHttpError(ValueError):
@@ -920,6 +929,9 @@ class ServiceHttpApplication:
     #: stopped with it. None serves the catalogue loaded at start unchanged.
     catalogue_refresher: object | None = field(default=None, repr=False)
     oauth_authorization: object | None = field(default=None, repr=False)
+    #: Saved customer feeds and their agent assignments (`customer_feeds.CustomerFeeds`). None, or a service whose
+    #: host setting is off, serves none of their routes or protocol tools.
+    customer_feeds: object | None = field(default=None, repr=False)
     brand_profile: ServiceBrandProfile | None = field(default=None, init=False, repr=False)
 
     def __post_init__(self):
@@ -949,6 +961,9 @@ class ServiceHttpApplication:
                     or not isinstance(self.client_access.policy, ServiceClientAccessPolicy)
                     or self.client_access.runtime is not self.runtime or self.browser_identity is None):
                 raise ValueError("customer access must bind the same runtime and a browser identity provider")
+        if self.customer_feeds is not None and (not isinstance(self.customer_feeds, customer_feeds.CustomerFeeds)
+                                                or self.customer_feeds.runtime is not self.runtime):
+            raise ValueError("saved customer feeds must bind the same durable runtime authority")
         if self.account_email is not None and not speaks_the_account_email_boundary(self.account_email):
             raise ValueError(f"an installed account email adapter must speak {ACCOUNT_EMAIL_PROTOCOL}")
         if self.waitlist is not None and (not isinstance(self.waitlist, ServiceWaitlist)
@@ -1040,6 +1055,11 @@ class ServiceHttpApplication:
         return (self.browser_identity is not None and self.browser_identity.configuration.email_signup_enabled
                 and self.account_email is not None and self.account_email.availability()["signup_available"] is True)
 
+    def customer_feeds_available(self):
+        """True when saved feeds are switched on and this host can sign customers in and issue their agent keys."""
+        return (self.customer_feeds is not None and self.customer_feeds.available
+                and self.browser_identity is not None and self.client_access is not None)
+
     def served_item_count(self):
         """How many approved, not withdrawn items the active catalogue serves now, or None when this host serves none.
 
@@ -1096,6 +1116,7 @@ class ServiceHttpApplication:
                             "promotion_redemption_available": self.promotions is not None,
                             "promotion_redemption_endpoint": PROMOTION_REDEMPTION_PATH,
                             "waitlist_available": self.waitlist is not None,
+                            "customer_feeds_available": self.customer_feeds_available(),
                             # The founding offer is stated on the public pages only while a place is
                             # free and a visitor can create an account to take it.
                             "founding_offer_open": (self.browser_identity is not None
@@ -1120,6 +1141,8 @@ class ServiceHttpApplication:
                     "requests_per_minute_per_process":oauth_http.OAUTH_REQUESTS_PER_WINDOW,
                     "token_requests_per_minute_per_process":oauth_http.OAUTH_TOKEN_REQUESTS_PER_WINDOW,
                     "registrations_per_minute_per_process":oauth_http.OAUTH_REGISTRATIONS_PER_WINDOW},
+                "customer_feeds": customer_feeds.capability(self.customer_feeds if self.customer_feeds_available()
+                                                              else None),
                 "operation_scopes": {"metadata_and_search": "provisioning:metadata",
                                      "body_and_download": "provisioning:read", "usage": "usage:read",
                                      "billing_sessions": BILLING_MANAGE_SCOPE},
@@ -1910,6 +1933,62 @@ class ServiceHttpApplication:
         request = ServiceAccessRequest.from_customer_dict(fields, current.principal.tenant_id)
         return self.client_access.apply(current.principal, request, session=session)
 
+    def _customer_feeds_service(self):
+        if not self.customer_feeds_available():
+            raise ServiceHttpError("customer_feeds_unavailable", 404)
+        return self.customer_feeds
+
+    @staticmethod
+    def _customer_feed_answer(function):
+        """Run one saved-feed operation and carry its typed refusal, status, details and headers to the transport."""
+        try:
+            return function()
+        except customer_feeds.CustomerFeedError as error:
+            raise ServiceHttpError(error.code, error.status, details=error.details, headers=error.headers) from None
+
+    def _customer_feed_controls(self, context, fields):
+        """The account controls of saved feeds: a signed-in browser session only, as for customer client keys."""
+        from .access import ServiceAccessSession
+        from .http_auth import BROWSER_IDENTITY_AUTHENTICATION
+        service = self._customer_feeds_service()
+        current = self.authenticator.revalidate(context)
+        if current.mode != BROWSER_IDENTITY_AUTHENTICATION:
+            raise ServiceHttpError("browser_session_required", 403)
+        session = ServiceAccessSession(current.principal.authentication_record_id,
+            self.authenticator.credential_digest(current), current.expires_at, current.effective_scopes)
+        if fields is None:
+            return self._customer_feed_answer(lambda: service.overview(current.principal, session))
+        return self._customer_feed_answer(lambda: service.apply(current.principal, session, fields,
+            view=self.provisioning.current_view, origin=self.configuration.public_base_url))
+
+    def _customer_feed_pull(self, context, fields, *, budget):
+        """One page of a saved feed for the agent credential on this request; the service checks every permission."""
+        service = self._customer_feeds_service()
+        current = self.authenticator.revalidate(context)
+        return self._customer_feed_answer(lambda: service.pull(current.principal, fields,
+            view=self.provisioning.current_view, origin=self.configuration.public_base_url, byte_budget=budget))
+
+    def _customer_feeds_assigned(self, context):
+        service = self._customer_feeds_service()
+        current = self.authenticator.revalidate(context)
+        return self._customer_feed_answer(lambda: service.assigned(current.principal))
+
+    @staticmethod
+    def _customer_feed_query(request):
+        """The pull fields of one GET: `feed`, and optionally `cursor`, `page_size` and `format`, each at most once."""
+        pairs = list(request.query_params.multi_items())
+        names = {"feed": "feed_id", "cursor": "cursor", "page_size": "page_size", "format": "format"}
+        values = dict(pairs)
+        if len(pairs) != len(values) or set(values) - set(names) or "feed" not in values:
+            raise ServiceHttpError("customer_feed_pull_invalid")
+        fields = {names[name]: value for name, value in values.items()}
+        if "page_size" in fields:
+            if not re.fullmatch(r"[1-9][0-9]{0,3}", fields["page_size"]):
+                raise ServiceHttpError("customer_feed_page_size_invalid")
+            fields["page_size"] = int(fields["page_size"])
+        fields["if_none_match"] = request.headers.get("if-none-match", "")[:512]
+        return fields
+
     def _feedback(self, context, operation, fields):
         """Record one report or one flag against the catalogue the service serves now (roadmap S-6.199).
 
@@ -2114,6 +2193,20 @@ class ServiceHttpApplication:
             return await self._work(lambda: invoke_http_service_as_loop("feedback_summary",
                 lambda: self._staff_feedback_summary(context)),
                 shares=(context.principal.tenant_id, EXTERNAL_PROVIDER_SHARE))
+        if name in (customer_feeds.ASSIGNED_TOOL, customer_feeds.PULL_TOOL) and self.customer_feeds_available():
+            if name == customer_feeds.ASSIGNED_TOOL:
+                validate(arguments, {"type": "object", "additionalProperties": False, "properties": {}})
+                return await self._tenant_work(context, lambda: invoke_http_service_as_loop("customer_feeds_assigned",
+                    lambda: self._customer_feeds_assigned(context)))
+            validate(arguments, customer_feeds.pull_schema(self.customer_feeds.policy))
+            # A protocol answer carries its record twice, as structured content and as text, so a page fits half.
+            budget = self.configuration.maximum_response_bytes // 2 - PROTOCOL_ANSWER_RESERVE_BYTES
+            output = await self._tenant_work(context, lambda: invoke_http_service_as_loop("customer_feed_pull",
+                lambda: self._customer_feed_pull(context, dict(arguments), budget=budget)))
+            delivery = output["result"]
+            return {**output, "result": {"record_type": customer_feeds.NOT_MODIFIED_RECORD_TYPE, "etag": delivery["etag"],
+                                         "feed_id": arguments["feed_id"]} if delivery["not_modified"]
+                    else {**delivery["page"], "etag": delivery["etag"]}}
         if name in ("staff_work_read", "staff_work_submit"):
             validate(arguments, staff_work.request_schema() if name == "staff_work_submit" else staff_work.read_schema())
             return await self._work(lambda: invoke_http_service_as_loop("staff_work",
@@ -2342,6 +2435,14 @@ class ServiceHttpApplication:
                 "Same request replays; changed payload conflicts. No execution, fetching, publication or automatic expiry. Leave out credentials.",
                 inputSchema=staff_work.request_schema(),
                 annotations=types.ToolAnnotations(readOnlyHint=False, destructiveHint=False, idempotentHint=True)))
+            if self.customer_feeds_available():
+                tools.append(types.Tool(name=customer_feeds.ASSIGNED_TOOL,
+                    description=customer_feeds.ASSIGNED_TOOL_DESCRIPTION,
+                    inputSchema={"type": "object", "additionalProperties": False, "properties": {}},
+                    annotations=types.ToolAnnotations(readOnlyHint=True, destructiveHint=False, idempotentHint=True)))
+                tools.append(types.Tool(name=customer_feeds.PULL_TOOL, description=customer_feeds.PULL_TOOL_DESCRIPTION,
+                    inputSchema=customer_feeds.pull_schema(self.customer_feeds.policy),
+                    annotations=types.ToolAnnotations(readOnlyHint=True, destructiveHint=False, idempotentHint=True)))
             return types.ListToolsResult(tools=tools)
 
         async def call_tool(ctx, params):
@@ -3004,6 +3105,10 @@ class ServiceHttpApplication:
                 joining = join_request(self.waitlist, _parse_json(await self._body(request)), address)
                 output = await self._work(lambda: invoke_http_service_as_loop("waitlist_join",
                     lambda: self.waitlist.join(joining)))
+        elif (path in (CUSTOMER_FEEDS_PATH, CUSTOMER_FEED_PULL_PATH, CUSTOMER_FEEDS_ASSIGNED_PATH)
+              and not self.customer_feeds_available()):
+            # Switched off, saved feeds answer missing to everyone, before any credential is read.
+            raise ServiceHttpError("customer_feeds_unavailable", 404)
         else:
             context = await self._authenticated(request)
             if path == oauth_http.CONSENT_API_PATH:
@@ -3057,6 +3162,37 @@ class ServiceHttpApplication:
                 fields = _parse_json(await self._body(request)) if method == "POST" else None
                 output = await self._tenant_work(context, lambda: invoke_http_service_as_loop("client_access",
                     lambda: self._client_access(context, fields)))
+            elif path == CUSTOMER_FEEDS_PATH and method in ("GET", "POST"):
+                if request.query_params:
+                    raise ServiceHttpError("unknown_request_field")
+                fields = _parse_json(await self._body(request, maximum_bytes=min(
+                    customer_feeds.MAXIMUM_REQUEST_BYTES, self.configuration.maximum_request_bytes))) if method == "POST" else None
+                output = await self._tenant_work(context, lambda: invoke_http_service_as_loop("customer_feeds",
+                    lambda: self._customer_feed_controls(context, fields)))
+            elif path == CUSTOMER_FEEDS_ASSIGNED_PATH and method == "GET":
+                if request.query_params:
+                    raise ServiceHttpError("unknown_request_field")
+                output = await self._tenant_work(context, lambda: invoke_http_service_as_loop("customer_feeds_assigned",
+                    lambda: self._customer_feeds_assigned(context)))
+            elif path == CUSTOMER_FEED_PULL_PATH and method == "GET":
+                # The ETag names the exact page. A matching If-None-Match answers 304 only after every permission
+                # check of a pull, and writes nothing; a revoked key gets its refusal, never a cached answer.
+                fields = self._customer_feed_query(request)
+                output = await self._tenant_work(context, lambda: invoke_http_service_as_loop("customer_feed_pull",
+                    lambda: self._customer_feed_pull(context, fields,
+                                                     budget=self.configuration.maximum_response_bytes - 4096)))
+                delivery, headers = output["result"], {"ETag": output["result"]["etag"]}
+                if delivery["not_modified"]:
+                    return Response(status_code=304, headers=headers)
+                if delivery["markdown"] is not None:
+                    text = delivery["markdown"].encode("utf-8")
+                    if len(text) > self.configuration.maximum_response_bytes:
+                        raise ServiceHttpError("response_limit_exceeded", 413)
+                    return Response(text, media_type="text/markdown", headers=headers)
+                encoded = _json_bytes({**output, "result": delivery["page"]})
+                if len(encoded) > self.configuration.maximum_response_bytes:
+                    raise ServiceHttpError("response_limit_exceeded", 413)
+                return Response(encoded, media_type="application/json", headers=headers)
             elif path == PROMOTION_REDEMPTION_PATH and method == "POST":
                 from .promotions import PromotionRedemptionRequest
                 if self.promotions is None:

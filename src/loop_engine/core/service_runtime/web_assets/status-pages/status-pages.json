@@ -1656,6 +1656,12 @@
    },
    {
     "section": "Website",
+    "feature": "Customer feeds available",
+    "value": "",
+    "fixed": false
+   },
+   {
+    "section": "Website",
     "feature": "Founding offer open",
     "value": "",
     "fixed": false
@@ -1777,6 +1783,12 @@
    {
     "section": "Authorization server",
     "feature": "Registrations per minute per process",
+    "value": "",
+    "fixed": false
+   },
+   {
+    "section": "Customer feeds",
+    "feature": "Customer feeds",
     "value": "",
     "fixed": false
    },

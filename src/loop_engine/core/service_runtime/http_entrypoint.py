@@ -261,6 +261,19 @@ def account_policy(configuration):
     return ServiceAccountPolicy.from_host(configuration["accounts"])
 
 
+def customer_feeds_service(configuration, runtime):
+    """Return the saved customer feeds a host declares, or None when its `customer_feeds` block is absent.
+
+    The block is `service_customer_feeds_policy/v1`, and every default keeps saved feeds off. A block that switches
+    them on is refused at start until the privacy notice the website serves names saved feed settings and feed
+    delivery history, so a host file alone can never begin that collection.
+    """
+    if "customer_feeds" not in configuration:
+        return None
+    from .customer_feeds import CustomerFeeds, CustomerFeedsPolicy
+    return CustomerFeeds(runtime, CustomerFeedsPolicy.from_host(configuration["customer_feeds"]))
+
+
 def _host_json(path, *, maximum_bytes=2_000_000):
     selected = Path(path)
     if not selected.is_absolute() or selected.resolve() != selected or not selected.is_file():
@@ -380,7 +393,7 @@ def _validated_host_configuration(path):
     configuration = _host_json(path)
     allowed = {"record_type", "runtime", "http", "authentication", "manifest_path", "tenants", "billing", "administration",
                "browser_identity", "client_access", "promotions", "account_email", "observability", "waitlist",
-               "retention", "accounts", LICENSE_POLICY_KEY, FAMILY_POLICY_KEY, "catalogue"}
+               "retention", "accounts", LICENSE_POLICY_KEY, FAMILY_POLICY_KEY, "catalogue", "customer_feeds"}
     if (configuration.get("record_type") != HOST_CONFIGURATION_VERSION or set(configuration) - allowed
             or not {"runtime", "http", "authentication", "manifest_path"} <= set(configuration)):
         raise ServiceRuntimeError("unsupported_host_configuration")
@@ -473,7 +486,7 @@ def load_host_application(path):
         ServiceHttpAuthentication(**configuration["authentication"]), browser_identity=browser_identity,
         client_access=client_access, promotions=promotions, account_email=account_email, waitlist=waitlist,
         observability=observability_policy(configuration), retention=retention_policy(configuration),
-        oauth_authorization=oauth_authorization)
+        oauth_authorization=oauth_authorization, customer_feeds=customer_feeds_service(configuration, runtime))
     if browser_identity is not None:
         from .account_administration import AccountAdministration
         application.account_administration = AccountAdministration(runtime, accounts,
