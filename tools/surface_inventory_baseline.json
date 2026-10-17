@@ -5,7 +5,7 @@
     "data_computation": 11,
     "data_storage": 59,
     "data_transfer": 56,
-    "functions": 381,
+    "functions": 382,
     "interactions": 18,
     "screens": 130
   },
@@ -397,6 +397,7 @@
       "operator_tool:check_website_site_map.py",
       "operator_tool:check_worker_bundle.py",
       "operator_tool:cloud_local_hybrid_proxy_mesh_across_surfaces_fleets_and_research_engines.py",
+      "operator_tool:cloud_string_grep_semantic_cpu_llm_and_ollama_cascade_engines.py",
       "operator_tool:cloudflare_d1_search.py",
       "operator_tool:cloudflare_site_edge.py",
       "operator_tool:combine_reviewed_catalogues.py",
@@ -750,8 +751,8 @@
   },
   "schema": "surface_inventory_baseline/v1",
   "totals": {
-    "covered_items": 700,
+    "covered_items": 701,
     "total_gaps": 3,
-    "total_items": 703
+    "total_items": 704
   }
 }

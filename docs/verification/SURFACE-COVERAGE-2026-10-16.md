@@ -7,14 +7,14 @@ its test or component guide coverage, or a new unreviewed gap appears.
 
 ## Summary across the eight categories
 
-- Total surface items inventoried: **703**
-- Fully covered items (no gaps): **700**
+- Total surface items inventoried: **704**
+- Fully covered items (no gaps): **701**
 - Items with an explicit test or live-check gap: **3**
 
 | Category | Total items | Unit / integration tested | Browser tested | Live checked | Component guide mapped | Open gaps |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: |
 | `screens` | 130 | 130 | 130 | 130 | 130 | 0 |
-| `functions` | 381 | 381 | 324 | 336 | 381 | 0 |
+| `functions` | 382 | 382 | 325 | 337 | 382 | 0 |
 | `interactions` | 18 | 18 | 18 | 12 | 18 | 0 |
 | `data_transfer` | 56 | 56 | 11 | 5 | 56 | 0 |
 | `data_computation` | 11 | 11 | 3 | 0 | 11 | 0 |
@@ -391,6 +391,7 @@ Every item below has a mapped component guide in `docs/components/COMPONENT-GUID
 | `operator_tool` | `operator_tool:check_website_site_map.py` | `tools/check_website_site_map.py` | 6 | 6 | 4 | `docs/components/README.md` | covered |
 | `operator_tool` | `operator_tool:check_worker_bundle.py` | `tools/check_worker_bundle.py` | 6 | 6 | 4 | `docs/components/README.md` | covered |
 | `operator_tool` | `operator_tool:cloud_local_hybrid_proxy_mesh_across_surfaces_fleets_and_research_engines.py` | `tools/cloud_local_hybrid_proxy_mesh_across_surfaces_fleets_and_research_engines.py` | 6 | 6 | 4 | `docs/components/README.md` | covered |
+| `operator_tool` | `operator_tool:cloud_string_grep_semantic_cpu_llm_and_ollama_cascade_engines.py` | `tools/cloud_string_grep_semantic_cpu_llm_and_ollama_cascade_engines.py` | 6 | 6 | 4 | `docs/components/README.md` | covered |
 | `operator_tool` | `operator_tool:cloudflare_d1_search.py` | `tools/cloudflare_d1_search.py` | 6 | 6 | 4 | `docs/components/README.md` | covered |
 | `operator_tool` | `operator_tool:cloudflare_site_edge.py` | `tools/cloudflare_site_edge.py` | 6 | 6 | 4 | `docs/components/README.md` | covered |
 | `operator_tool` | `operator_tool:combine_reviewed_catalogues.py` | `tools/combine_reviewed_catalogues.py` | 6 | 6 | 4 | `docs/components/README.md` | covered |
