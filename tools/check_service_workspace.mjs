@@ -2327,10 +2327,11 @@ try {
   const protocolMethods=[]; const trackProtocol=request=>{if(new URL(request.url()).pathname==="/mcp")protocolMethods.push(request.postDataJSON()?.method);};page.on("request",trackProtocol);
   await page.click("#test-protocol"); await page.waitForFunction(()=>!document.querySelector("#test-protocol").disabled);
   check("protocol_connection_check_reports_actual_success",(await page.locator("#protocol-result").innerText()).includes("Service connection passed"),{message:await page.locator("#protocol-result").innerText()});
-  /* Compare the full protocol surface, including Public Good metadata discovery. */
+  /* Compare the full protocol surface, including Public Good metadata discovery. A customer's key lists no staff tool, which
+     only a credential that may call it is offered (journey finding F-6 of October 16, 2026). */
   const protocolTools=await page.locator("#protocol-tools li").allInnerTexts();
   check("browser_runs_real_initialize_notification_and_tools_list",JSON.stringify(protocolMethods)===JSON.stringify(["initialize","notifications/initialized","tools/list"])
-    &&JSON.stringify(protocolTools)===JSON.stringify(["provisioning_discover","provisioning_list","provisioning_manifest","provisioning_read","intelligence_search","public_good_files","provisioning_report","provisioning_rate","provisioning_request_material","feedback_review","staff_work_read","staff_work_submit"]),
+    &&JSON.stringify(protocolTools)===JSON.stringify(["provisioning_discover","provisioning_list","provisioning_manifest","provisioning_read","intelligence_search","public_good_files","provisioning_report","provisioning_rate","provisioning_request_material"]),
     {methods:[...protocolMethods],tools:protocolTools});
   check("browser_connection_result_leads_to_a_separate_first_task",(await page.locator("#protocol-result").innerText()).includes("Next, follow your harness guide"));
   await page.route("**/mcp",async route=>{const body=route.request().postDataJSON();if(body?.method==="initialize")await route.fulfill({status:200,contentType:"application/json",body:JSON.stringify({jsonrpc:"2.0",id:"wrong-request",result:{protocolVersion:"2025-11-25"}})});else await route.continue();});
@@ -2464,6 +2465,31 @@ try {
     mutants.push({name:control.name,applied,detected,required_checks:control.expected,missed_checks:missed,failed_checks:[...failed].sort(),...(problem?{problem}:{})});
     check("removed_guard_is_detected_"+control.name,detected,{applied,missed_checks:missed,failed_checks:[...failed].sort(),...(problem?{problem}:{})});
   }
+  /* The signed-in workspace (journey findings F-7 and F-8 of October 16, 2026). The results area says what comes next instead
+     of asking to connect, and the client connection note names the protocol versions without the internal qualification state,
+     which only staff read. Each removed-guard control puts one old line back, in memory only. */
+  const signedInWorkspace=async (opened,note)=>{
+    await headerLink(opened,"workspace");await opened.waitForFunction(()=>location.pathname==="/app");
+    const shown=await opened.evaluate(()=>({results:document.querySelector("#results").textContent,count:document.querySelector("#result-count").textContent,
+      protocol:document.querySelector("#protocol-note").textContent}));
+    note("signed_in_workspace_does_not_ask_to_connect",!/\bconnect\b|sign in/i.test(shown.results)
+      &&shown.results.startsWith("Describe what this step needs, then search.")&&shown.count==="Ready",shown);
+    note("customer_workspace_names_no_internal_qualification_state",/^Supported protocol: \S/.test(shown.protocol)&&!/qualif/i.test(shown.protocol),shown);
+  };
+  {const {page:opened}=await openAccount(null);await signedInWorkspace(opened,check);await opened.close();}
+  const workspaceControls=[
+    {name:"keep_asking_a_signed_in_reader_to_connect",find:'$("results").replaceChildren(element("p", value.principal.scopes.includes("provisioning:metadata")',
+     replacement:'void 0 && $("results").replaceChildren(element("p", value.principal.scopes.includes("provisioning:metadata")',expected:["signed_in_workspace_does_not_ask_to_connect"]},
+    {name:"show_the_identity_flow_qualification_to_a_customer",find:'+ (staff ? " External identity flow qualified: "',replacement:'+ (true ? " External identity flow qualified: "',
+     expected:["customer_workspace_names_no_internal_qualification_state"]}];
+  for(const control of workspaceControls){
+    const failed=new Set(),note=(name,passed)=>{if(passed!==true)failed.add(name);};
+    let applied=false,problem="";
+    try{const {page:changed,state}=await openAccount({find:control.find,replacement:control.replacement});applied=state.applied;await signedInWorkspace(changed,note);await changed.close();}catch(error){problem=safeError(error);}
+    const missed=control.expected.filter(name=>!failed.has(name)),detected=applied&&!problem&&missed.length===0;
+    mutants.push({name:control.name,applied,detected,required_checks:control.expected,missed_checks:missed,failed_checks:[...failed].sort(),...(problem?{problem}:{})});
+    check("removed_guard_is_detected_"+control.name,detected,{applied,missed_checks:missed,failed_checks:[...failed].sort(),...(problem?{problem}:{})});
+  }
   await page.click("#refresh-billing"); await page.waitForFunction(()=>document.querySelector("#billing").textContent.includes("unavailable"));
   check("unconfigured_billing_is_not_a_fake_purchase_flow",await page.locator("#billing button").count()===0);
   await headerLink(page,"workspace");
@@ -2517,6 +2543,7 @@ try {
   check("portal_uses_the_real_domain_without_navigating_to_a_provider",(await page.locator("#billing-message a").getAttribute("href")).startsWith("https://billing.stripe.com/"));
   await page.goto(fixture.base+"/login"); await page.fill("#access-token",fixture.admin_token); await page.click("#connect-button"); await page.waitForSelector("#admin-controls:not([hidden])");
   check("email_free_administrator_login_reaches_dashboard",new URL(page.url()).pathname==="/admin"&&await page.locator("#issue-access").isVisible());
+  check("administrator_still_reads_the_identity_flow_qualification",/ External identity flow qualified: (?:yes|no)\.$/.test(await page.locator("#protocol-note").textContent()),{note:await page.locator("#protocol-note").textContent()});
   await page.fill("#token-label","Browser harness trial"); await page.fill("#token-hours","1"); await page.click("#issue-access-button"); await page.waitForSelector("#issued-access:not([hidden])");
   const generated=await page.inputValue("#issued-token"); secrets.push(generated);
   const generatedSession=await page.request.get(fixture.base+"/api/v1/session",{headers:{Authorization:"Bearer "+generated}});

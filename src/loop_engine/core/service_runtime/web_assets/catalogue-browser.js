@@ -275,6 +275,10 @@ window.BaltorCatalogueBrowser = {
     }
     function connectionChanged() {
       controls();
+      // The badge follows the sign-in too, so a signed-in reader is not asked to sign in (journey finding F-7 of
+      // October 16, 2026).
+      if (eligible()) $("browse-count").textContent = "Not loaded";
+      else if (current().connected) $("browse-count").textContent = "Nothing shown";
       if (eligible()) message("browse-message", "Load the library to see every file your account may use.");
       else if (current().connected) message("browse-message",
         "This account may not list material. Ask the person who runs this service for permission to search and list.", true);

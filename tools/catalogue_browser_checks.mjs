@@ -85,6 +85,13 @@ export async function runCatalogueBrowserChecks({browser, fixture, check, mutant
     return {context, page:opened, state, sent};
   }
   const browseScenarios = {
+    /* Signed in, before the library loads, the badge says so instead of asking to sign in (journey finding F-7 of October
+       16, 2026). */
+    signed_in_badge:async (opened, note) => {
+      const badge = await opened.locator("#browse-count").innerText(), message = await opened.locator("#browse-message").innerText();
+      note("browse_badge_follows_the_sign_in_before_the_library_loads", badge === "Not loaded"
+        && message === "Load the library to see every file your account may use.", {badge, message});
+    },
     long_customer_identity:async (opened, note) => {
       await loadBrowse(opened);
       await openItem(opened, "context.brief");
@@ -518,6 +525,9 @@ export async function runCatalogueBrowserChecks({browser, fixture, check, mutant
   /* Removed-guard controls for browsing. The served module is changed in memory only. A control is detected when
      every check it names fails with the guard removed. */
   const browseControls = [
+    {name:"keep_the_signed_out_badge_after_sign_in", scenario:"signed_in_badge",
+     find:'if (eligible()) $("browse-count").textContent = "Not loaded";', replacement:'if (false) $("browse-count").textContent = "Not loaded";',
+     expected:["browse_badge_follows_the_sign_in_before_the_library_loads"]},
     {name:"accept_any_catalogue_record_version", scenario:"wrong_version", find:"value.record_type !== pageVersion", replacement:"false",
      expected:["browse_refuses_a_catalogue_record_version_it_was_not_written_for"]},
     {name:"accept_a_group_the_page_does_not_know", scenario:"unknown_group",

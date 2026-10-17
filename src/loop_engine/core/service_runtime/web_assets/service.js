@@ -2,7 +2,7 @@
 (() => {
   const $ = id => document.getElementById(id);
   let token = "", generation = 0, busy = false, capabilities = null, accessOptions = null, accessRequest = null, accessBusy = false;
-  let connectionBusy = false, recipes = null, afterLogin = null, principalScopes = [];
+  let connectionBusy = false, recipes = null, afterLogin = null, principalScopes = [], protocolUnconfirmed = false;
   let identityClient = null, identityConfiguration = null, authenticationMode = "host_key";
   let clientAccess = null, catalogueBrowser = null, oauthConsent = null, staffWork = null, systemsView = null, customerFeeds = null;
   // What the funnel reads: whether the service reports account creation open, where a signed-in account's paid access comes
@@ -230,6 +230,16 @@ const applyPaymentState = name => {
     $("usage-raw").hidden = true; $("usage-raw").open = false; $("usage").textContent = "";
     downloadsTile("Not loaded", "Counted once for each download.");
   };
+  /* The client connection note names the protocol versions this service speaks. Whether its external identity flow is
+     qualified is an internal qualification state: a signed-in staff member or administrator reads it, a customer never
+     sees it (journey finding F-8 of October 16, 2026). A note that could not be confirmed stays as it was written. */
+  function renderProtocolNote() {
+    const protocol = capabilities?.protocol;
+    if (protocolUnconfirmed || !protocol || !Array.isArray(protocol.versions)) return;
+    const staff = Boolean(token) && (Boolean(staffRole) || principalScopes.includes("access:manage"));
+    $("protocol-note").textContent = "Supported protocol: " + protocol.versions.join(", ") + "."
+      + (staff ? " External identity flow qualified: " + (protocol.external_authorization_flow_qualified ? "yes" : "no") + "." : "");
+  }
   function disconnect() {
     // A pending confirmation belongs to the identity session that verified its link.
     // Connecting another account or signing out invalidates it before any retry.
@@ -255,7 +265,7 @@ const applyPaymentState = name => {
     $("test-protocol").disabled = true; $("setup-identity").textContent = "Sign in with a Baltor key to run the connection check.";
     $("protocol-tools").replaceChildren(); message("protocol-result", "Not tested. No model calls are made by this check.");
     clientAccess?.reset(); catalogueBrowser?.reset(); staffWork?.reset(); systemsView?.reset(); customerFeeds?.reset();
-    accessSource = ""; renderFunnel();
+    accessSource = ""; renderFunnel(); renderProtocolNote();
   }
   /* Signing out. The page forgets the access it holds at once, then asks the service and the identity provider to end the
      session. The sign-in page's Disconnect button and the header's Sign out do the same; Sign out also opens the sign-in page,
@@ -410,8 +420,12 @@ const applyPaymentState = name => {
       showSignedIn(true); showUsageNote("Select Refresh to see the downloads recorded for this account.");
       ["query", "search-button", "search-mode", "refresh-usage", "refresh-billing", "material-request-description", "material-request-button"].forEach(id => { $(id).disabled = false; });
       $("result-count").textContent = "Ready"; message("connection-message", "Access confirmed for this tenant.");
+      // Signed in, the results area says what comes next instead of asking to connect (journey finding F-7 of October 16, 2026).
+      $("results").replaceChildren(element("p", value.principal.scopes.includes("provisioning:metadata")
+        ? "Describe what this step needs, then search. Matches appear here with their source and licence."
+        : "This account may not search the library. Ask the person who runs this service for permission to search.", "empty"));
       const administrator = value.principal.scopes.includes("access:manage");
-      principalScopes = value.principal.scopes;
+      principalScopes = value.principal.scopes; renderProtocolNote();
       $("test-protocol").disabled = authenticationMode === "browser_identity" || !value.principal.scopes.includes("provisioning:metadata") || !capabilities;
       // An email sign-in cannot run the protocol check, which takes a Baltor key, so the guide says where one comes from.
       $("setup-identity").textContent = authenticationMode === "browser_identity"
@@ -1339,7 +1353,7 @@ const applyPaymentState = name => {
     applyLibraryCount(value);
     clientAccess.connectionChanged(); customerFeeds?.connectionChanged();
     waitlistOffer(value);
-    $("protocol-note").textContent = "Supported protocol: " + value.protocol.versions.join(", ") + ". External identity flow qualified: " + (value.protocol.external_authorization_flow_qualified ? "yes" : "no") + ".";
+    renderProtocolNote();
     /* The retrieval note keeps its served words. It named the search backend until September 25, 2026; roadmap steps S-6.39
        and S-6.184 keep the retrieval engines off every public page, so nobody learns how to rebuild the library through search. */
     $("setup-protocol").textContent = value.protocol.versions.join(", ");
@@ -1381,5 +1395,5 @@ const applyPaymentState = name => {
         if (confirmation) message("confirm-message", "Sign-in settings are unavailable, so this link cannot be finished now. Your link was not used; open it again later.", true);
       });
     }
-  }).catch(() => { waitlistOffer(null); renderConnectionWays(); $("service-status").textContent = "Baltor is not responding right now. See the status page."; $("protocol-note").textContent = "Could not confirm the installed protocol. Do not assume client compatibility."; });
+  }).catch(() => { waitlistOffer(null); renderConnectionWays(); $("service-status").textContent = "Baltor is not responding right now. See the status page."; protocolUnconfirmed = true; $("protocol-note").textContent = "Could not confirm the installed protocol. Do not assume client compatibility."; });
 })();
