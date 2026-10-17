@@ -7,14 +7,14 @@ its test or component guide coverage, or a new unreviewed gap appears.
 
 ## Summary across the eight categories
 
-- Total surface items inventoried: **701**
-- Fully covered items (no gaps): **698**
+- Total surface items inventoried: **702**
+- Fully covered items (no gaps): **699**
 - Items with an explicit test or live-check gap: **3**
 
 | Category | Total items | Unit / integration tested | Browser tested | Live checked | Component guide mapped | Open gaps |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: |
 | `screens` | 130 | 130 | 130 | 130 | 130 | 0 |
-| `functions` | 379 | 379 | 322 | 334 | 379 | 0 |
+| `functions` | 380 | 380 | 323 | 335 | 380 | 0 |
 | `interactions` | 18 | 18 | 18 | 12 | 18 | 0 |
 | `data_transfer` | 56 | 56 | 11 | 5 | 56 | 0 |
 | `data_computation` | 11 | 11 | 3 | 0 | 11 | 0 |
@@ -298,6 +298,7 @@ Every item below has a mapped component guide in `docs/components/COMPONENT-GUID
 | `operator_tool` | `operator_tool:architecture_report_data.py` | `tools/architecture_report_data.py` | 6 | 6 | 4 | `docs/components/README.md` | covered |
 | `operator_tool` | `operator_tool:audit_public_websites.mjs` | `tools/audit_public_websites.mjs` | 6 | 6 | 4 | `docs/components/README.md` | covered |
 | `operator_tool` | `operator_tool:balance_test_shards.py` | `tools/balance_test_shards.py` | 6 | 6 | 4 | `docs/components/README.md` | covered |
+| `operator_tool` | `operator_tool:baltor_cloud_proxy_byok_portal_and_7mode_mitm_gateway_engines.py` | `tools/baltor_cloud_proxy_byok_portal_and_7mode_mitm_gateway_engines.py` | 6 | 6 | 4 | `docs/components/README.md` | covered |
 | `operator_tool` | `operator_tool:baltor_feedback.py` | `tools/baltor_feedback.py` | 6 | 6 | 4 | `docs/components/README.md` | covered |
 | `operator_tool` | `operator_tool:baltor_optimized_harness_opencode_and_pi_engines.py` | `tools/baltor_optimized_harness_opencode_and_pi_engines.py` | 6 | 6 | 4 | `docs/components/README.md` | covered |
 | `operator_tool` | `operator_tool:baltor_preturn_hook.py` | `tools/baltor_preturn_hook.py` | 6 | 6 | 4 | `docs/components/README.md` | covered |

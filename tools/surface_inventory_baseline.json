@@ -5,7 +5,7 @@
     "data_computation": 11,
     "data_storage": 59,
     "data_transfer": 56,
-    "functions": 379,
+    "functions": 380,
     "interactions": 18,
     "screens": 130
   },
@@ -304,6 +304,7 @@
       "operator_tool:architecture_report_data.py",
       "operator_tool:audit_public_websites.mjs",
       "operator_tool:balance_test_shards.py",
+      "operator_tool:baltor_cloud_proxy_byok_portal_and_7mode_mitm_gateway_engines.py",
       "operator_tool:baltor_feedback.py",
       "operator_tool:baltor_optimized_harness_opencode_and_pi_engines.py",
       "operator_tool:baltor_preturn_hook.py",
@@ -748,8 +749,8 @@
   },
   "schema": "surface_inventory_baseline/v1",
   "totals": {
-    "covered_items": 698,
+    "covered_items": 699,
     "total_gaps": 3,
-    "total_items": 701
+    "total_items": 702
   }
 }
