@@ -5,7 +5,7 @@
     "data_computation": 11,
     "data_storage": 59,
     "data_transfer": 56,
-    "functions": 396,
+    "functions": 397,
     "interactions": 18,
     "screens": 130
   },
@@ -458,6 +458,7 @@
       "operator_tool:jagged_frontier_llm_trace_and_default_behavior_combat_engines.py",
       "operator_tool:jira_emulator.py",
       "operator_tool:kaggle_1000_directories_top100_notebooks_and_fuzzy_data_fingerprint_engines.py",
+      "operator_tool:launch_readiness_disaster_recovery_and_surface_status_engines.py",
       "operator_tool:listing_text.mjs",
       "operator_tool:live_site_readiness.mjs",
       "operator_tool:long_horizon_agentic_swe_and_redteam_benchmarks.py",
@@ -765,8 +766,8 @@
   },
   "schema": "surface_inventory_baseline/v1",
   "totals": {
-    "covered_items": 715,
+    "covered_items": 716,
     "total_gaps": 3,
-    "total_items": 718
+    "total_items": 719
   }
 }
