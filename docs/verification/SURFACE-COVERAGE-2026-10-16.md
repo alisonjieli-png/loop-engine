@@ -7,14 +7,14 @@ its test or component guide coverage, or a new unreviewed gap appears.
 
 ## Summary across the eight categories
 
-- Total surface items inventoried: **716**
-- Fully covered items (no gaps): **713**
+- Total surface items inventoried: **718**
+- Fully covered items (no gaps): **715**
 - Items with an explicit test or live-check gap: **3**
 
 | Category | Total items | Unit / integration tested | Browser tested | Live checked | Component guide mapped | Open gaps |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: |
 | `screens` | 130 | 130 | 130 | 130 | 130 | 0 |
-| `functions` | 394 | 394 | 337 | 349 | 394 | 0 |
+| `functions` | 396 | 396 | 339 | 351 | 396 | 0 |
 | `interactions` | 18 | 18 | 18 | 12 | 18 | 0 |
 | `data_transfer` | 56 | 56 | 11 | 5 | 56 | 0 |
 | `data_computation` | 11 | 11 | 3 | 0 | 11 | 0 |
@@ -399,6 +399,7 @@ Every item below has a mapped component guide in `docs/components/COMPONENT-GUID
 | `operator_tool` | `operator_tool:component_verification_plan.py` | `tools/component_verification_plan.py` | 6 | 6 | 4 | `docs/components/README.md` | covered |
 | `operator_tool` | `operator_tool:conformance_explain.py` | `tools/conformance_explain.py` | 6 | 6 | 4 | `docs/components/README.md` | covered |
 | `operator_tool` | `operator_tool:connection_endpoint_checks.mjs` | `tools/connection_endpoint_checks.mjs` | 6 | 6 | 4 | `docs/components/README.md` | covered |
+| `operator_tool` | `operator_tool:content_addressable_cas_store_and_multi_index_retrieval_engines.py` | `tools/content_addressable_cas_store_and_multi_index_retrieval_engines.py` | 6 | 6 | 4 | `docs/components/README.md` | covered |
 | `operator_tool` | `operator_tool:continuous_n_scale_hierarchy_and_logjam_anti_convergence_engines.py` | `tools/continuous_n_scale_hierarchy_and_logjam_anti_convergence_engines.py` | 6 | 6 | 4 | `docs/components/README.md` | covered |
 | `operator_tool` | `operator_tool:create_studio_acceptance_fixture.py` | `tools/create_studio_acceptance_fixture.py` | 6 | 6 | 4 | `docs/components/README.md` | covered |
 | `operator_tool` | `operator_tool:creative_and_personal_agent_engines.py` | `tools/creative_and_personal_agent_engines.py` | 6 | 6 | 4 | `docs/components/README.md` | covered |
@@ -579,6 +580,7 @@ Every item below has a mapped component guide in `docs/components/COMPONENT-GUID
 | `operator_tool` | `operator_tool:universal_100x_question_persona_hardware_and_scenario_engines.py` | `tools/universal_100x_question_persona_hardware_and_scenario_engines.py` | 6 | 6 | 4 | `docs/components/README.md` | covered |
 | `operator_tool` | `operator_tool:universal_agent_superintelligence_fabric_and_cognitive_fingerprint_engines.py` | `tools/universal_agent_superintelligence_fabric_and_cognitive_fingerprint_engines.py` | 6 | 6 | 4 | `docs/components/README.md` | covered |
 | `operator_tool` | `operator_tool:universal_role_grid_military_civil_gov_private_nonprofit_engines.py` | `tools/universal_role_grid_military_civil_gov_private_nonprofit_engines.py` | 6 | 6 | 4 | `docs/components/README.md` | covered |
+| `operator_tool` | `operator_tool:unnerfed_virtual_desktop_and_website_posting_automation_engines.py` | `tools/unnerfed_virtual_desktop_and_website_posting_automation_engines.py` | 6 | 6 | 4 | `docs/components/README.md` | covered |
 | `operator_tool` | `operator_tool:user_customizable_restraints_aggressiveness_compaction_and_antifragile_engines.py` | `tools/user_customizable_restraints_aggressiveness_compaction_and_antifragile_engines.py` | 6 | 6 | 4 | `docs/components/README.md` | covered |
 | `operator_tool` | `operator_tool:validate_procedural_assets.mjs` | `tools/validate_procedural_assets.mjs` | 6 | 6 | 4 | `docs/components/README.md` | covered |
 | `operator_tool` | `operator_tool:verified_forwarder.py` | `tools/verified_forwarder.py` | 6 | 6 | 4 | `docs/components/README.md` | covered |
@@ -753,7 +755,7 @@ Every item below has a mapped component guide in `docs/components/COMPONENT-GUID
 | `store_backend` | `store_backend:duckdb_files` | `src/loop_engine/catalog/stores/duckdb_files.py` | 3 | 0 | 0 | `docs/components/core-architecture/SEARCH-AND-STORAGE.md` | covered |
 | `store_backend` | `store_backend:in_memory` | `src/loop_engine/catalog/stores/in_memory.py` | 6 | 2 | 0 | `docs/components/core-architecture/SEARCH-AND-STORAGE.md` | covered |
 | `store_backend` | `store_backend:package_jsonl` | `src/loop_engine/catalog/stores/package_jsonl.py` | 3 | 0 | 0 | `docs/components/core-architecture/SEARCH-AND-STORAGE.md` | covered |
-| `store_backend` | `store_backend:object_store` | `src/loop_engine/core/service_runtime/object_store.py` | 5 | 0 | 0 | `docs/components/service-runtime/README.md` | covered |
+| `store_backend` | `store_backend:object_store` | `src/loop_engine/core/service_runtime/object_store.py` | 6 | 0 | 0 | `docs/components/service-runtime/README.md` | covered |
 
 ## Category detail: `customer_account_states`
 

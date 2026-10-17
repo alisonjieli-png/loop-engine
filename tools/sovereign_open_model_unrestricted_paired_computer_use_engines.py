@@ -275,7 +275,7 @@ def catalog_open_weight_model_backends() -> tuple[OpenWeightModelBackendSpec, ..
         ),
         OpenWeightModelBackendSpec(
             backend_id="qwen25_vl_72b_backend",
-            model_family="Qwen-2.5/3-VL",
+            model_family="Qwen-3.5-VL",
             model_identifiers=("qwen2.5-vl:72b", "qwen3-vl:32b"),
             supported_endpoint_modes=modes,
             primary_role="visual_icon_template_and_cross_window_drag_drop_grounding",

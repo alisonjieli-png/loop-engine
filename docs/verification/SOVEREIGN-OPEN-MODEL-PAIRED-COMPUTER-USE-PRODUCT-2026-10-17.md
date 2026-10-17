@@ -7,7 +7,7 @@ Verification suite: [`tools/test_sovereign_open_model_unrestricted_paired_comput
 
 ## Scope
 
-This record documents the implementation, 7-layer `ComponentEnvelope` verification (`frustration_avoidance`, `carrier`, `handshake`, `account`, `tracking`, `preflight`, `nested_envelopes`), 30-task computer-use benchmark, and 4 known-wrong preflight refusal controls for the Baltor Sovereign Paired-Computer and Open-Weight Model (`DeepSeek-V3/R1`, `Qwen-2.5/3-VL`, `UI-Tars`, `Gemma 4`, `Llama-4`) Zero-Preach Full-Desktop Computer-Use Suite, grounded in [`docs/architecture/NORTH-STAR.md`](../architecture/NORTH-STAR.md) and [`AGENTS.md`](../../AGENTS.md):
+This record documents the implementation, 7-layer `ComponentEnvelope` verification (`frustration_avoidance`, `carrier`, `handshake`, `account`, `tracking`, `preflight`, `nested_envelopes`), 30-task computer-use benchmark, and 4 known-wrong preflight refusal controls for the Baltor Sovereign Paired-Computer and Open-Weight Model (`DeepSeek-V3/R1`, `Qwen-3.5-VL`, `UI-Tars`, `Gemma 4`, `Llama-4`) Zero-Preach Full-Desktop Computer-Use Suite, grounded in [`docs/architecture/NORTH-STAR.md`](../architecture/NORTH-STAR.md) and [`AGENTS.md`](../../AGENTS.md):
 
 1. Slot Family 1: Open-Weight and Low-Friction Model Router for Sovereign Computer Use (`sovereign_open_model_computer_use_router_slot`).
 2. Slot Family 2: Owner-Authorized Paired-Computer Full-Desktop Effect Actuator (`paired_computer_full_desktop_actuator_slot`).
@@ -21,7 +21,7 @@ The `sovereign_open_model_computer_use_router_slot` routes owner-authorized desk
 | `deepseek_v3_0324_backend` | `DeepSeek-V3` | `deepseek-v3-0324`, `deepseek-chat` | `unflinching_multi_step_planner_and_code_synthesizer` | `165 tokens` (`< 200`) | `0.0%` | `false` |
 | `deepseek_r1_671b_backend` | `DeepSeek-R1` | `deepseek-r1:671b`, `deepseek-reasoner` | `deep_reasoning_workaround_and_redteam_verifier` | `180 tokens` (`< 200`) | `0.0%` | `false` |
 | `ui_tars_72b_7b_backend` | `UI-Tars` | `ui-tars-72b-dpo`, `ui-tars-7b-sft` | `direct_screenshot_pixel_coordinate_and_dialog_grounding` | `140 tokens` (`< 200`) | `0.0%` | `true` |
-| `qwen25_vl_72b_backend` | `Qwen-2.5/3-VL` | `qwen2.5-vl:72b`, `qwen3-vl:32b` | `visual_icon_template_and_cross_window_drag_drop_grounding` | `150 tokens` (`< 200`) | `0.0%` | `true` |
+| `qwen25_vl_72b_backend` | `Qwen-3.5-VL` | `qwen2.5-vl:72b`, `qwen3-vl:32b` | `visual_icon_template_and_cross_window_drag_drop_grounding` | `150 tokens` (`< 200`) | `0.0%` | `true` |
 | `gemma4_31b_local_backend` | `Gemma 4` | `gemma4:31b`, `gemma4:12b` | `sub_second_local_and_ollama_cloud_action_loop_actuator` | `125 tokens` (`< 200`) | `0.0%` | `true` |
 | `llama4_maverick_backend` | `Llama-4` | `llama-4-maverick:17b-128e`, `llama-4-scout:17b-16e` | `fast_multimodal_tool_dispatch_and_shell_automation` | `135 tokens` (`< 200`) | `0.0%` | `true` |
 

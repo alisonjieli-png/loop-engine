@@ -26,7 +26,7 @@ class SovereignOpenModelPairedComputerUseTests(unittest.TestCase):
         families = {b.model_family for b in backends}
         self.assertEqual(
             families,
-            {"DeepSeek-V3", "DeepSeek-R1", "UI-Tars", "Qwen-2.5/3-VL", "Gemma 4", "Llama-4"},
+            {"DeepSeek-V3", "DeepSeek-R1", "UI-Tars", "Qwen-3.5-VL", "Gemma 4", "Llama-4"},
         )
         for backend in backends:
             self.assertLess(backend.contract_card_budget_tokens, 200)
