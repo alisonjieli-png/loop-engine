@@ -2106,6 +2106,28 @@ still passes provisioning authorization; a tag alone grants nothing. This
 avoids parsing the whole community catalogue when a verified-only request asks
 for more results than its small matching population contains.
 
+`catalogue_search.py` defines `CatalogueRankingPolicy`, `CatalogueRankingEngine`
+and the named `RANKING_ENGINES` table (`strict_tier_order` and its `tier_first`
+alias, `bounded_tier_boost`, `field_weighted_lexical`,
+`phrase_and_symbol_boost`, `gated_relevance_fusion` and
+`flexible_lsh_fallback`), resolved by `select_ranking_engine`. The default
+`CATALOGUE_RANKING_POLICY` is `bounded_tier_boost`, with
+`lexical_score_floor_ratio=0.2` and `lexical_verified_boost=1.0`. On a
+lexical-only request it checks the 0.2 relative score floor against raw
+authorized scores first, then multiplies each verified candidate's lexical
+score by `1.0 + lexical_verified_boost` and breaks an exact tie in favor of the
+verified tier. A verified item therefore leads when its raw lexical score is at
+least half of a community candidate's score, while a much stronger community
+match outranks an incidental verified hit. Hybrid requests keep the strict tier
+order. When an engine enables `enable_query_fallback`, `rank_with_fallbacks`
+runs three relaxation stages after an empty or sparse exact FTS5 lookup
+(sub-token splitting and conversational filler removal, developer alias
+expansion from `TECHNICAL_ALIASES`, and character-shingle MinHash banding in
+`LSHShingleBlocker`), and `fuse` falls back to `_strict_fuse` on an unexpected
+runtime scoring error without masking a `ServiceRuntimeError` refusal. The
+head-to-head measurements across the 256,380-item release are in
+[the search ranking verification record](../../../../docs/verification/SEARCH-RANKING-2026-10-16.md).
+
 **Packages.** An item's files each carry a placement path, digest, size, media
 type and role. A one-file UTF-8 text package serves the file itself. Any other
 package serves its canonical `catalogue_package/v1` document, and
