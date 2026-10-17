@@ -5,7 +5,7 @@
     "data_computation": 11,
     "data_storage": 59,
     "data_transfer": 56,
-    "functions": 383,
+    "functions": 384,
     "interactions": 18,
     "screens": 130
   },
@@ -575,6 +575,7 @@
       "operator_tool:universal_100x_question_persona_hardware_and_scenario_engines.py",
       "operator_tool:universal_agent_superintelligence_fabric_and_cognitive_fingerprint_engines.py",
       "operator_tool:universal_role_grid_military_civil_gov_private_nonprofit_engines.py",
+      "operator_tool:user_customizable_restraints_aggressiveness_compaction_and_antifragile_engines.py",
       "operator_tool:validate_procedural_assets.mjs",
       "operator_tool:verified_forwarder.py",
       "operator_tool:verify_launch_slice.py",
@@ -752,8 +753,8 @@
   },
   "schema": "surface_inventory_baseline/v1",
   "totals": {
-    "covered_items": 702,
+    "covered_items": 703,
     "total_gaps": 3,
-    "total_items": 705
+    "total_items": 706
   }
 }

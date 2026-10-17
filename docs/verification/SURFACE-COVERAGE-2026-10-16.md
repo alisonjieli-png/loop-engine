@@ -7,14 +7,14 @@ its test or component guide coverage, or a new unreviewed gap appears.
 
 ## Summary across the eight categories
 
-- Total surface items inventoried: **705**
-- Fully covered items (no gaps): **702**
+- Total surface items inventoried: **706**
+- Fully covered items (no gaps): **703**
 - Items with an explicit test or live-check gap: **3**
 
 | Category | Total items | Unit / integration tested | Browser tested | Live checked | Component guide mapped | Open gaps |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: |
 | `screens` | 130 | 130 | 130 | 130 | 130 | 0 |
-| `functions` | 383 | 383 | 326 | 338 | 383 | 0 |
+| `functions` | 384 | 384 | 327 | 339 | 384 | 0 |
 | `interactions` | 18 | 18 | 18 | 12 | 18 | 0 |
 | `data_transfer` | 56 | 56 | 11 | 5 | 56 | 0 |
 | `data_computation` | 11 | 11 | 3 | 0 | 11 | 0 |
@@ -569,6 +569,7 @@ Every item below has a mapped component guide in `docs/components/COMPONENT-GUID
 | `operator_tool` | `operator_tool:universal_100x_question_persona_hardware_and_scenario_engines.py` | `tools/universal_100x_question_persona_hardware_and_scenario_engines.py` | 6 | 6 | 4 | `docs/components/README.md` | covered |
 | `operator_tool` | `operator_tool:universal_agent_superintelligence_fabric_and_cognitive_fingerprint_engines.py` | `tools/universal_agent_superintelligence_fabric_and_cognitive_fingerprint_engines.py` | 6 | 6 | 4 | `docs/components/README.md` | covered |
 | `operator_tool` | `operator_tool:universal_role_grid_military_civil_gov_private_nonprofit_engines.py` | `tools/universal_role_grid_military_civil_gov_private_nonprofit_engines.py` | 6 | 6 | 4 | `docs/components/README.md` | covered |
+| `operator_tool` | `operator_tool:user_customizable_restraints_aggressiveness_compaction_and_antifragile_engines.py` | `tools/user_customizable_restraints_aggressiveness_compaction_and_antifragile_engines.py` | 6 | 6 | 4 | `docs/components/README.md` | covered |
 | `operator_tool` | `operator_tool:validate_procedural_assets.mjs` | `tools/validate_procedural_assets.mjs` | 6 | 6 | 4 | `docs/components/README.md` | covered |
 | `operator_tool` | `operator_tool:verified_forwarder.py` | `tools/verified_forwarder.py` | 6 | 6 | 4 | `docs/components/README.md` | covered |
 | `operator_tool` | `operator_tool:verify_launch_slice.py` | `tools/verify_launch_slice.py` | 6 | 6 | 4 | `docs/components/README.md` | covered |
