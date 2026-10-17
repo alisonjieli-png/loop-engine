@@ -5,7 +5,7 @@
     "data_computation": 11,
     "data_storage": 59,
     "data_transfer": 56,
-    "functions": 393,
+    "functions": 394,
     "interactions": 18,
     "screens": 130
   },
@@ -571,6 +571,7 @@
       "operator_tool:surface_inventory.py",
       "operator_tool:taedri_invariants_and_cheapest_tool_ladder_engines.py",
       "operator_tool:task_campaign.py",
+      "operator_tool:thin_wrapper_architecture_index_and_boundary_organizer_engines.py",
       "operator_tool:trace_and_self_improvement_engines.py",
       "operator_tool:trace_mined_agents_rules_memory_and_behavior_engines.py",
       "operator_tool:unbounded_composable_retrieval_action_graph_and_self_improving_rag_engines.py",
@@ -762,8 +763,8 @@
   },
   "schema": "surface_inventory_baseline/v1",
   "totals": {
-    "covered_items": 712,
+    "covered_items": 713,
     "total_gaps": 3,
-    "total_items": 715
+    "total_items": 716
   }
 }
