@@ -5,7 +5,7 @@
     "data_computation": 11,
     "data_storage": 59,
     "data_transfer": 56,
-    "functions": 385,
+    "functions": 386,
     "interactions": 18,
     "screens": 130
   },
@@ -551,6 +551,7 @@
       "operator_tool:social_videos_material_and_product_engines.py",
       "operator_tool:social_videos_sims_atlases_and_fx_engines.py",
       "operator_tool:social_videos_studio_archetypes_and_worlds_engines.py",
+      "operator_tool:spawnable_processes_sidecar_daemons_and_detached_task_engines.py",
       "operator_tool:spectrum_score.py",
       "operator_tool:stage_intelligence_candidates.py",
       "operator_tool:stage_service_secrets.py",
@@ -754,8 +755,8 @@
   },
   "schema": "surface_inventory_baseline/v1",
   "totals": {
-    "covered_items": 704,
+    "covered_items": 705,
     "total_gaps": 3,
-    "total_items": 707
+    "total_items": 708
   }
 }

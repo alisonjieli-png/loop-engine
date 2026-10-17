@@ -7,14 +7,14 @@ its test or component guide coverage, or a new unreviewed gap appears.
 
 ## Summary across the eight categories
 
-- Total surface items inventoried: **707**
-- Fully covered items (no gaps): **704**
+- Total surface items inventoried: **708**
+- Fully covered items (no gaps): **705**
 - Items with an explicit test or live-check gap: **3**
 
 | Category | Total items | Unit / integration tested | Browser tested | Live checked | Component guide mapped | Open gaps |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: |
 | `screens` | 130 | 130 | 130 | 130 | 130 | 0 |
-| `functions` | 385 | 385 | 328 | 340 | 385 | 0 |
+| `functions` | 386 | 386 | 329 | 341 | 386 | 0 |
 | `interactions` | 18 | 18 | 18 | 12 | 18 | 0 |
 | `data_transfer` | 56 | 56 | 11 | 5 | 56 | 0 |
 | `data_computation` | 11 | 11 | 3 | 0 | 11 | 0 |
@@ -545,6 +545,7 @@ Every item below has a mapped component guide in `docs/components/COMPONENT-GUID
 | `operator_tool` | `operator_tool:social_videos_material_and_product_engines.py` | `tools/social_videos_material_and_product_engines.py` | 6 | 6 | 4 | `docs/components/README.md` | covered |
 | `operator_tool` | `operator_tool:social_videos_sims_atlases_and_fx_engines.py` | `tools/social_videos_sims_atlases_and_fx_engines.py` | 6 | 6 | 4 | `docs/components/README.md` | covered |
 | `operator_tool` | `operator_tool:social_videos_studio_archetypes_and_worlds_engines.py` | `tools/social_videos_studio_archetypes_and_worlds_engines.py` | 6 | 6 | 4 | `docs/components/README.md` | covered |
+| `operator_tool` | `operator_tool:spawnable_processes_sidecar_daemons_and_detached_task_engines.py` | `tools/spawnable_processes_sidecar_daemons_and_detached_task_engines.py` | 6 | 6 | 4 | `docs/components/README.md` | covered |
 | `operator_tool` | `operator_tool:spectrum_score.py` | `tools/spectrum_score.py` | 6 | 6 | 4 | `docs/components/README.md` | covered |
 | `operator_tool` | `operator_tool:stage_intelligence_candidates.py` | `tools/stage_intelligence_candidates.py` | 6 | 6 | 4 | `docs/components/README.md` | covered |
 | `operator_tool` | `operator_tool:stage_service_secrets.py` | `tools/stage_service_secrets.py` | 6 | 6 | 4 | `docs/components/README.md` | covered |
