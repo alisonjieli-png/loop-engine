@@ -3398,7 +3398,10 @@ try {
     &&!correctAssetVersions(["/assets/service.js"])
     &&!correctAssetVersions(["https://other.invalid/assets/creative-arena/index.html"])
     &&!correctAssetVersions(["/assets/creative-arena/index.html?v=wrong"]));
-  const namedGallery=namedAssets.find(value=>/\/gallery\/.*\.webp$/.test(value));
+  const galleryPage=await plainContext.request.get(fixture.browse_base+"/gallery");
+  const galleryText=galleryPage.status()===200?await galleryPage.text():"";
+  const galleryAssets=[...galleryText.matchAll(/(?:href|src)="([^\"]+)"/g)].map(found=>found[1]).filter(value=>{try{return new URL(value,fixture.browse_base).pathname.startsWith("/assets/");}catch(_){return false;}});
+  const namedGallery=[...namedAssets,...galleryAssets].find(value=>/\/gallery\/.*\.webp$/.test(value));
   check("digest_named_gallery_assets_reject_wrong_content_names_and_other_origins",Boolean(namedGallery)
     &&correctAssetVersions([namedGallery])
     &&!correctAssetVersions([namedGallery.replace(/-[a-f0-9]{12}\.webp$/,"-000000000000.webp")])

@@ -827,7 +827,7 @@ html [data-view="home"] .offering-combined{border-color:var(--accent)}
 @media(max-width:700px){.run-desk-grid{grid-template-columns:minmax(0,1fr)}.run-desk{padding:1rem}.run-desk .actions{align-items:stretch;flex-direction:column}}
 
 /* One shared, theme-aware surface; creative previews are real catalogue renders. */
-html [data-view="home"] .band-hero .hero.product-hero{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,1fr);gap:3rem;align-items:center}
+html [data-view="home"] .band-hero .hero.product-hero{display:grid;grid-template-columns:minmax(0,1fr);gap:2rem;align-items:center}
 html [data-view="home"] .band-hero .hero-copy{gap:1rem}
 .hero-preview{min-width:0;padding:1.25rem;border:1px solid var(--border);border-radius:var(--radius-panel);background:var(--paper);box-shadow:var(--card-shadow)}
 .hero-preview-heading{display:flex;align-items:center;justify-content:space-between;gap:1rem;margin-bottom:1rem}.hero-preview-heading>*{margin:0}.hero-preview-heading>a{white-space:nowrap;font-size:.875rem}
