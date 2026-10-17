@@ -5,7 +5,7 @@
     "data_computation": 11,
     "data_storage": 59,
     "data_transfer": 56,
-    "functions": 380,
+    "functions": 381,
     "interactions": 18,
     "screens": 130
   },
@@ -501,6 +501,7 @@
       "operator_tool:probe_web_research.py",
       "operator_tool:proforma_simulator.py",
       "operator_tool:promotion_codes.py",
+      "operator_tool:proxy_vs_native_vs_mcp_cross_harness_benchmark_and_migration_engines.py",
       "operator_tool:public_good_10000_sdg_duecare_and_gemma4good_engines.py",
       "operator_tool:public_wording_rules.mjs",
       "operator_tool:publish_catalogue_delta.py",
@@ -749,8 +750,8 @@
   },
   "schema": "surface_inventory_baseline/v1",
   "totals": {
-    "covered_items": 699,
+    "covered_items": 700,
     "total_gaps": 3,
-    "total_items": 702
+    "total_items": 703
   }
 }

@@ -7,14 +7,14 @@ its test or component guide coverage, or a new unreviewed gap appears.
 
 ## Summary across the eight categories
 
-- Total surface items inventoried: **702**
-- Fully covered items (no gaps): **699**
+- Total surface items inventoried: **703**
+- Fully covered items (no gaps): **700**
 - Items with an explicit test or live-check gap: **3**
 
 | Category | Total items | Unit / integration tested | Browser tested | Live checked | Component guide mapped | Open gaps |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: |
 | `screens` | 130 | 130 | 130 | 130 | 130 | 0 |
-| `functions` | 380 | 380 | 323 | 335 | 380 | 0 |
+| `functions` | 381 | 381 | 324 | 336 | 381 | 0 |
 | `interactions` | 18 | 18 | 18 | 12 | 18 | 0 |
 | `data_transfer` | 56 | 56 | 11 | 5 | 56 | 0 |
 | `data_computation` | 11 | 11 | 3 | 0 | 11 | 0 |
@@ -495,6 +495,7 @@ Every item below has a mapped component guide in `docs/components/COMPONENT-GUID
 | `operator_tool` | `operator_tool:probe_web_research.py` | `tools/probe_web_research.py` | 6 | 6 | 4 | `docs/components/README.md` | covered |
 | `operator_tool` | `operator_tool:proforma_simulator.py` | `tools/proforma_simulator.py` | 6 | 6 | 4 | `docs/components/README.md` | covered |
 | `operator_tool` | `operator_tool:promotion_codes.py` | `tools/promotion_codes.py` | 6 | 6 | 4 | `docs/components/README.md` | covered |
+| `operator_tool` | `operator_tool:proxy_vs_native_vs_mcp_cross_harness_benchmark_and_migration_engines.py` | `tools/proxy_vs_native_vs_mcp_cross_harness_benchmark_and_migration_engines.py` | 6 | 6 | 4 | `docs/components/README.md` | covered |
 | `operator_tool` | `operator_tool:public_good_10000_sdg_duecare_and_gemma4good_engines.py` | `tools/public_good_10000_sdg_duecare_and_gemma4good_engines.py` | 6 | 6 | 4 | `docs/components/README.md` | covered |
 | `operator_tool` | `operator_tool:public_wording_rules.mjs` | `tools/public_wording_rules.mjs` | 6 | 6 | 4 | `docs/components/README.md` | covered |
 | `operator_tool` | `operator_tool:publish_catalogue_delta.py` | `tools/publish_catalogue_delta.py` | 6 | 6 | 4 | `docs/components/README.md` | covered |
