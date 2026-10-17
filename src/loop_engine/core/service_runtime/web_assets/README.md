@@ -338,6 +338,17 @@ answer HEAD like GET, with a strong validator. The checks are
 `web_surface_checks.py` in the service self-test and
 `tools/showcase_page_checks.mjs` in the browser suite.
 
+Since October 16, 2026 the root also answers `/favicon.ico`, the packaged
+`favicon-32.png` byte for byte inside a one-image icon container, which the
+edge export serves like the other icons, and `/.well-known/security.txt`
+(RFC 9116), which the edge passes to the service. `support_page.py` writes it
+from the distribution's project addresses: the repository's private
+vulnerability report as the contact, as `SECURITY.md` asks, its security
+policy, an expiry less than a year away, English and the file's canonical
+address on every hostname of the site map. `tools/test_site_root_files.py`
+checks both, and fails once the expiry has passed so that the contact is
+checked again.
+
 ## The showcase pages
 
 `public-pages.js` and `public-pages.css` serve the pages of September 24,

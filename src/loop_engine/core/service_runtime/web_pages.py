@@ -261,6 +261,8 @@ GENERATED_WEB_FILES = {
     # A plain-text guide for agents (llmstxt.org): what Baltor is, how to connect, the read routes, the feeds and the
     # licence rules, written from the site map and the packaged feed directory (October 9, 2026).
     "/llms.txt": "text/plain; charset=utf-8",
+    # The site icon at the address browsers and crawlers ask for first (October 16, 2026), from the packaged icon.
+    "/favicon.ico": "image/vnd.microsoft.icon",
 }
 #: Addresses a crawler is asked to leave alone besides the unlisted pages: the
 #: interface routes, the protocol endpoint and its authorization metadata, and
@@ -557,7 +559,18 @@ def llms_text(site_map: SiteMap) -> bytes:
     return "\n".join(lines).encode("utf-8")
 
 
-GENERATORS = {"/robots.txt": robots_text, "/sitemap.xml": sitemap_xml, "/llms.txt": llms_text}
+def favicon_ico(_site_map: SiteMap) -> bytes:
+    """`/favicon.ico`: the packaged 32-pixel page icon, byte for byte, inside a one-image icon container.
+
+    The container names the image's width, height and length and holds the PNG itself, which every browser that reads
+    an icon file accepts, so the icon is the same picture as the page head's and is never drawn a second time."""
+    from struct import pack, unpack
+    png = read_packaged_asset("favicon-32.png")
+    width, height = unpack(">II", png[16:24])
+    return pack("<HHH", 0, 1, 1) + pack("<BBBBHHII", width % 256, height % 256, 0, 0, 1, 32, len(png), 22) + png
+
+
+GENERATORS = {"/robots.txt": robots_text, "/sitemap.xml": sitemap_xml, "/llms.txt": llms_text, "/favicon.ico": favicon_ico}
 
 
 #: The mark of an element that shows how many packages the library holds. The packaged page carries the count of the

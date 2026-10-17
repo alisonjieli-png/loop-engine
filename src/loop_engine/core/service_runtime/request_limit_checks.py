@@ -563,15 +563,16 @@ def _transport_checks(check, root):
     try:
         # The addresses answer differently on purpose. `/api/v1/session` is an
         # address this service serves, so a request without a credential is
-        # refused for the credential. `/favicon.ico` and `/wp-login.php` are
+        # refused for the credential. `/xmlrpc.php` and `/wp-login.php` are
         # addresses it does not serve at all, so the answer is that the address
         # is missing; saying "unauthorized" to those sent the reader looking for
         # a credential fault that did not exist. Neither kind reaches a worker
         # slot, an authentication or the failed-attempt count, which is what
         # this check is for. `/robots.txt` served as the missing address here
         # until September 24, 2026, when the service began to write it from the
-        # site map.
-        anonymous = [service.status("GET", path) for path in ("/api/v1/session", "/favicon.ico", "/wp-login.php") * 4]
+        # site map, and `/favicon.ico` until October 16, 2026, when the service
+        # began to serve the page icon there.
+        anonymous = [service.status("GET", path) for path in ("/api/v1/session", "/xmlrpc.php", "/wp-login.php") * 4]
         doubled = service.status("GET", "/api/v1/session", headers=[*WRONG.items(), *WRONG.items()])
         check("a_request_without_one_credential_uses_no_worker_slot_and_is_not_counted",
               anonymous == [401, 404, 404] * 4 and doubled == 401

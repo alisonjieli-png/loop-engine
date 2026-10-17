@@ -35,6 +35,46 @@ def issues_address() -> str:
     return ""
 
 
+#: Where a security researcher reads how to report a vulnerability (RFC 9116), October 16, 2026.
+SECURITY_TEXT_ADDRESS = "/.well-known/security.txt"
+SECURITY_TEXT_MEDIA_TYPE = "text/plain; charset=utf-8"
+#: When the security contact goes stale; RFC 9116 asks for less than a year. Check the contact again and set a new date
+#: before then: tools/test_site_root_files.py fails once this moment has passed.
+SECURITY_TEXT_EXPIRES = "2027-10-15T23:59:59Z"
+
+
+def repository_address() -> str:
+    """The public GitHub repository the distribution's own metadata names, or empty. pyproject.toml owns the address;
+    an older installed distribution names it as its homepage only, so that label counts when it names a repository."""
+    from .library_page import REPOSITORY_LABELS, _project_urls
+    for entry in _project_urls():
+        label, _, address = entry.partition(",")
+        address = address.strip().rstrip("/")
+        scheme, _, rest = address.partition("://")
+        if (label.strip().lower() in (*REPOSITORY_LABELS, "homepage") and scheme == "https"
+                and rest.split("/", 1)[0] == "github.com" and len(rest.split("/")) == 3
+                and not any(character.isspace() for character in address)):
+            return address
+    return ""
+
+
+def security_text(site_map) -> bytes:
+    """`/.well-known/security.txt`: the repository's private vulnerability report, as SECURITY.md asks, its policy, the
+    expiry, the language and the file's canonical address on every hostname the site map names. Without a repository
+    address the support page, the site's own contact route, keeps the file valid."""
+    repository = repository_address()
+    lines = ["# " + site_map.display_name + " security contact (RFC 9116), written from the site map and the "
+             "distribution's project addresses.",
+             f"Contact: {repository}/security/advisories/new" if repository else f"Contact: {site_map.canonical_origin}{ADDRESS}",
+             f"Expires: {SECURITY_TEXT_EXPIRES}"]
+    lines += [f"Policy: {repository}/security/policy"] if repository else []
+    lines += ["Preferred-Languages: en"]
+    hostnames = [site_map.canonical_hostname] + [surface.hostname for surface in site_map.hostnames
+                                                 if surface.hostname != site_map.canonical_hostname]
+    lines += [f"Canonical: https://{hostname}{SECURITY_TEXT_ADDRESS}" for hostname in hostnames]
+    return ("\n".join(lines) + "\n").encode("utf-8")
+
+
 def handles(address: str) -> bool:
     return address == ADDRESS
 
@@ -99,6 +139,8 @@ def _framed(display_name: str, support_email: str) -> bytes:
 def rendered(path: str, method: str, display_name: str, host: "str | None" = None, support_email: str = ""):
     """`(body, media_type)` for the support page on any hostname, or None for another address or method."""
     from . import web_pages
+    if method in ("GET", "HEAD") and path == SECURITY_TEXT_ADDRESS:
+        return security_text(web_pages.packaged_site_map()), SECURITY_TEXT_MEDIA_TYPE
     if method not in ("GET", "HEAD") or not handles(path):
         return None
     body = _framed(display_name, support_email or "")
