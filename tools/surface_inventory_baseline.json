@@ -5,7 +5,7 @@
     "data_computation": 11,
     "data_storage": 59,
     "data_transfer": 56,
-    "functions": 384,
+    "functions": 385,
     "interactions": 18,
     "screens": 130
   },
@@ -447,6 +447,7 @@
       "operator_tool:hundred_plus_global_sources_and_spinout_trigger_engines.py",
       "operator_tool:identity_qualification_host.py",
       "operator_tool:import_licensed_harness_files.py",
+      "operator_tool:indexed_cli_registry_and_website_to_cli_synthesizer_engines.py",
       "operator_tool:ingest_newsletter_email.py",
       "operator_tool:ingest_outside_material.py",
       "operator_tool:install_selected_material.py",
@@ -753,8 +754,8 @@
   },
   "schema": "surface_inventory_baseline/v1",
   "totals": {
-    "covered_items": 703,
+    "covered_items": 704,
     "total_gaps": 3,
-    "total_items": 706
+    "total_items": 707
   }
 }

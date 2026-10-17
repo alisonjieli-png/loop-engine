@@ -7,14 +7,14 @@ its test or component guide coverage, or a new unreviewed gap appears.
 
 ## Summary across the eight categories
 
-- Total surface items inventoried: **706**
-- Fully covered items (no gaps): **703**
+- Total surface items inventoried: **707**
+- Fully covered items (no gaps): **704**
 - Items with an explicit test or live-check gap: **3**
 
 | Category | Total items | Unit / integration tested | Browser tested | Live checked | Component guide mapped | Open gaps |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: |
 | `screens` | 130 | 130 | 130 | 130 | 130 | 0 |
-| `functions` | 384 | 384 | 327 | 339 | 384 | 0 |
+| `functions` | 385 | 385 | 328 | 340 | 385 | 0 |
 | `interactions` | 18 | 18 | 18 | 12 | 18 | 0 |
 | `data_transfer` | 56 | 56 | 11 | 5 | 56 | 0 |
 | `data_computation` | 11 | 11 | 3 | 0 | 11 | 0 |
@@ -441,6 +441,7 @@ Every item below has a mapped component guide in `docs/components/COMPONENT-GUID
 | `operator_tool` | `operator_tool:hundred_plus_global_sources_and_spinout_trigger_engines.py` | `tools/hundred_plus_global_sources_and_spinout_trigger_engines.py` | 6 | 6 | 4 | `docs/components/README.md` | covered |
 | `operator_tool` | `operator_tool:identity_qualification_host.py` | `tools/identity_qualification_host.py` | 6 | 6 | 4 | `docs/components/README.md` | covered |
 | `operator_tool` | `operator_tool:import_licensed_harness_files.py` | `tools/import_licensed_harness_files.py` | 6 | 6 | 4 | `docs/components/README.md` | covered |
+| `operator_tool` | `operator_tool:indexed_cli_registry_and_website_to_cli_synthesizer_engines.py` | `tools/indexed_cli_registry_and_website_to_cli_synthesizer_engines.py` | 6 | 6 | 4 | `docs/components/README.md` | covered |
 | `operator_tool` | `operator_tool:ingest_newsletter_email.py` | `tools/ingest_newsletter_email.py` | 6 | 6 | 4 | `docs/components/README.md` | covered |
 | `operator_tool` | `operator_tool:ingest_outside_material.py` | `tools/ingest_outside_material.py` | 6 | 6 | 4 | `docs/components/README.md` | covered |
 | `operator_tool` | `operator_tool:install_selected_material.py` | `tools/install_selected_material.py` | 6 | 6 | 4 | `docs/components/README.md` | covered |
