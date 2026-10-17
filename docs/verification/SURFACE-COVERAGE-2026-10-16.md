@@ -7,14 +7,14 @@ its test or component guide coverage, or a new unreviewed gap appears.
 
 ## Summary across the eight categories
 
-- Total surface items inventoried: **723**
-- Fully covered items (no gaps): **720**
+- Total surface items inventoried: **727**
+- Fully covered items (no gaps): **724**
 - Items with an explicit test or live-check gap: **3**
 
 | Category | Total items | Unit / integration tested | Browser tested | Live checked | Component guide mapped | Open gaps |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: |
 | `screens` | 130 | 130 | 130 | 130 | 130 | 0 |
-| `functions` | 401 | 401 | 344 | 356 | 401 | 0 |
+| `functions` | 405 | 405 | 348 | 360 | 405 | 0 |
 | `interactions` | 18 | 18 | 18 | 12 | 18 | 0 |
 | `data_transfer` | 56 | 56 | 11 | 5 | 56 | 0 |
 | `data_computation` | 11 | 11 | 3 | 0 | 11 | 0 |
@@ -428,6 +428,7 @@ Every item below has a mapped component guide in `docs/components/COMPONENT-GUID
 | `operator_tool` | `operator_tool:fly_reconcile_remote.py` | `tools/fly_reconcile_remote.py` | 6 | 6 | 4 | `docs/components/README.md` | covered |
 | `operator_tool` | `operator_tool:fresh_account_journey.mjs` | `tools/fresh_account_journey.mjs` | 6 | 6 | 4 | `docs/components/README.md` | covered |
 | `operator_tool` | `operator_tool:full_solve.py` | `tools/full_solve.py` | 6 | 6 | 4 | `docs/components/README.md` | covered |
+| `operator_tool` | `operator_tool:game_analysis_and_parametric_noun_project_asset_remixer_engines.py` | `tools/game_analysis_and_parametric_noun_project_asset_remixer_engines.py` | 6 | 6 | 4 | `docs/components/README.md` | covered |
 | `operator_tool` | `operator_tool:generate_item_variations.py` | `tools/generate_item_variations.py` | 6 | 6 | 4 | `docs/components/README.md` | covered |
 | `operator_tool` | `operator_tool:generate_original_native_candidates.py` | `tools/generate_original_native_candidates.py` | 6 | 6 | 4 | `docs/components/README.md` | covered |
 | `operator_tool` | `operator_tool:global_component_duplicate_disk.py` | `tools/global_component_duplicate_disk.py` | 6 | 6 | 4 | `docs/components/README.md` | covered |
@@ -458,6 +459,7 @@ Every item below has a mapped component guide in `docs/components/COMPONENT-GUID
 | `operator_tool` | `operator_tool:live_site_readiness.mjs` | `tools/live_site_readiness.mjs` | 6 | 6 | 4 | `docs/components/README.md` | covered |
 | `operator_tool` | `operator_tool:long_horizon_agentic_swe_and_redteam_benchmarks.py` | `tools/long_horizon_agentic_swe_and_redteam_benchmarks.py` | 6 | 6 | 4 | `docs/components/README.md` | covered |
 | `operator_tool` | `operator_tool:make_checkpoint.py` | `tools/make_checkpoint.py` | 6 | 6 | 4 | `docs/components/README.md` | covered |
+| `operator_tool` | `operator_tool:malformed_json_recovery_junk_stripper_and_iterative_verifier_engines.py` | `tools/malformed_json_recovery_junk_stripper_and_iterative_verifier_engines.py` | 6 | 6 | 4 | `docs/components/README.md` | covered |
 | `operator_tool` | `operator_tool:measure_catalogue_disk_index.py` | `tools/measure_catalogue_disk_index.py` | 6 | 6 | 4 | `docs/components/README.md` | covered |
 | `operator_tool` | `operator_tool:measure_catalogue_release_scale.py` | `tools/measure_catalogue_release_scale.py` | 6 | 6 | 4 | `docs/components/README.md` | covered |
 | `operator_tool` | `operator_tool:measure_catalogue_serving.py` | `tools/measure_catalogue_serving.py` | 6 | 6 | 4 | `docs/components/README.md` | covered |
@@ -501,10 +503,12 @@ Every item below has a mapped component guide in `docs/components/COMPONENT-GUID
 | `operator_tool` | `operator_tool:probe_web_research.py` | `tools/probe_web_research.py` | 6 | 6 | 4 | `docs/components/README.md` | covered |
 | `operator_tool` | `operator_tool:proforma_simulator.py` | `tools/proforma_simulator.py` | 6 | 6 | 4 | `docs/components/README.md` | covered |
 | `operator_tool` | `operator_tool:promotion_codes.py` | `tools/promotion_codes.py` | 6 | 6 | 4 | `docs/components/README.md` | covered |
+| `operator_tool` | `operator_tool:prompt_attention_and_output_recovery_remix_feeds_and_components_engines.py` | `tools/prompt_attention_and_output_recovery_remix_feeds_and_components_engines.py` | 6 | 6 | 4 | `docs/components/README.md` | covered |
 | `operator_tool` | `operator_tool:proxy_vs_native_vs_mcp_cross_harness_benchmark_and_migration_engines.py` | `tools/proxy_vs_native_vs_mcp_cross_harness_benchmark_and_migration_engines.py` | 6 | 6 | 4 | `docs/components/README.md` | covered |
 | `operator_tool` | `operator_tool:public_good_10000_sdg_duecare_and_gemma4good_engines.py` | `tools/public_good_10000_sdg_duecare_and_gemma4good_engines.py` | 6 | 6 | 4 | `docs/components/README.md` | covered |
 | `operator_tool` | `operator_tool:public_wording_rules.mjs` | `tools/public_wording_rules.mjs` | 6 | 6 | 4 | `docs/components/README.md` | covered |
 | `operator_tool` | `operator_tool:publish_catalogue_delta.py` | `tools/publish_catalogue_delta.py` | 6 | 6 | 4 | `docs/components/README.md` | covered |
+| `operator_tool` | `operator_tool:pull_time_recheck_fragile_context_nerf_reset_and_cve_tracker_engines.py` | `tools/pull_time_recheck_fragile_context_nerf_reset_and_cve_tracker_engines.py` | 6 | 6 | 4 | `docs/components/README.md` | covered |
 | `operator_tool` | `operator_tool:qualify_generated_components.py` | `tools/qualify_generated_components.py` | 6 | 6 | 4 | `docs/components/README.md` | covered |
 | `operator_tool` | `operator_tool:read_endoflife_cycles.py` | `tools/read_endoflife_cycles.py` | 6 | 6 | 4 | `docs/components/README.md` | covered |
 | `operator_tool` | `operator_tool:read_greenhouse_jobs.py` | `tools/read_greenhouse_jobs.py` | 6 | 6 | 4 | `docs/components/README.md` | covered |

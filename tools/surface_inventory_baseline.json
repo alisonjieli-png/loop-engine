@@ -5,7 +5,7 @@
     "data_computation": 11,
     "data_storage": 59,
     "data_transfer": 56,
-    "functions": 401,
+    "functions": 405,
     "interactions": 18,
     "screens": 130
   },
@@ -434,6 +434,7 @@
       "operator_tool:fly_reconcile_remote.py",
       "operator_tool:fresh_account_journey.mjs",
       "operator_tool:full_solve.py",
+      "operator_tool:game_analysis_and_parametric_noun_project_asset_remixer_engines.py",
       "operator_tool:generate_item_variations.py",
       "operator_tool:generate_original_native_candidates.py",
       "operator_tool:global_component_duplicate_disk.py",
@@ -464,6 +465,7 @@
       "operator_tool:live_site_readiness.mjs",
       "operator_tool:long_horizon_agentic_swe_and_redteam_benchmarks.py",
       "operator_tool:make_checkpoint.py",
+      "operator_tool:malformed_json_recovery_junk_stripper_and_iterative_verifier_engines.py",
       "operator_tool:measure_catalogue_disk_index.py",
       "operator_tool:measure_catalogue_release_scale.py",
       "operator_tool:measure_catalogue_serving.py",
@@ -507,10 +509,12 @@
       "operator_tool:probe_web_research.py",
       "operator_tool:proforma_simulator.py",
       "operator_tool:promotion_codes.py",
+      "operator_tool:prompt_attention_and_output_recovery_remix_feeds_and_components_engines.py",
       "operator_tool:proxy_vs_native_vs_mcp_cross_harness_benchmark_and_migration_engines.py",
       "operator_tool:public_good_10000_sdg_duecare_and_gemma4good_engines.py",
       "operator_tool:public_wording_rules.mjs",
       "operator_tool:publish_catalogue_delta.py",
+      "operator_tool:pull_time_recheck_fragile_context_nerf_reset_and_cve_tracker_engines.py",
       "operator_tool:qualify_generated_components.py",
       "operator_tool:read_endoflife_cycles.py",
       "operator_tool:read_greenhouse_jobs.py",
@@ -770,8 +774,8 @@
   },
   "schema": "surface_inventory_baseline/v1",
   "totals": {
-    "covered_items": 720,
+    "covered_items": 724,
     "total_gaps": 3,
-    "total_items": 723
+    "total_items": 727
   }
 }
