@@ -48,7 +48,8 @@ HF_ROUTER_PROVIDER = "huggingface"
 HF_LISTS = (("text-generation", "downloads", 1000), ("text-generation", "likes", 1000),
             ("text-generation", "trendingScore", 500), ("image-text-to-text", "downloads", 400),
             ("image-text-to-text", "likes", 200), ("feature-extraction", "downloads", 250),
-            ("sentence-similarity", "downloads", 250), ("text-ranking", "downloads", 120))
+            ("sentence-similarity", "downloads", 250), ("text-ranking", "downloads", 120),
+            ("text-classification", "downloads", 150), ("zero-shot-classification", "downloads", 100))
 HF_EXPAND = ("safetensors", "cardData", "downloads", "likes", "gated", "createdAt", "lastModified",
              "pipeline_tag", "tags", "library_name", "baseModels", "author", "sha", "config")
 #: Repository kinds that are a copy of another model in another format. Their files become the

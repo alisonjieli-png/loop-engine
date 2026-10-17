@@ -32,9 +32,11 @@ ARENA_PAGE_ADDRESS = "arena.ai/leaderboard"
 _CODE_NAME = re.compile(r"(?i)(?:coder|codestral|devstral|starcoder|codellama|codegemma|codegen|(?<![a-z])code(?![a-z]))")
 _MODALITY_BY_TASK = {"text-generation": (["text"], ["text"]), "image-text-to-text": (["text", "image"], ["text"]),
                      "feature-extraction": (["text"], ["embeddings"]), "sentence-similarity": (["text"], ["embeddings"]),
-                     "text-ranking": (["text"], ["scores"])}
+                     "text-ranking": (["text"], ["scores"]), "text-classification": (["text"], ["labels"]),
+                     "zero-shot-classification": (["text"], ["labels"]), "token-classification": (["text"], ["labels"])}
 _USE_BY_TASK = {"feature-extraction": "embeddings", "sentence-similarity": "embeddings", "text-ranking": "rerank",
-                "image-text-to-text": "vision"}
+                "image-text-to-text": "vision", "text-classification": "classification",
+                "zero-shot-classification": "classification", "token-classification": "classification"}
 
 
 def _licence(record: dict) -> "tuple[str, str]":

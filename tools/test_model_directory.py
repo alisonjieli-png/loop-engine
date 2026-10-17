@@ -782,5 +782,39 @@ class PagesAndSetup(unittest.TestCase):
                 self.assertIsNotNone(pages.rendered_page(address, "HEAD", "Baltor"))
 
 
+class ClassificationUseCases(unittest.TestCase):
+    """Classification pipeline tags map to the classification use case and text-to-labels modalities."""
+
+    def _build_task_row(self, pipeline_tag: str) -> dict:
+        record = {"id": f"knowledgator/{pipeline_tag}-m", "author": "knowledgator", "cardData": {"license": "apache-2.0"},
+                  "tags": [], "pipeline_tag": pipeline_tag, "createdAt": "2026-03-15T00:00:00.000Z",
+                  "downloads": 500, "likes": 25}
+        answer = Answer(record, "2026-10-16", "read", "huggingface.co/api/models/" + record["id"])
+        row, sources_of = model_rows._hugging_face_row(record, answer, None, "", ("", {}, None), "2026-10-16")
+        row["slug"], row["sources"] = f"knowledgator-{pipeline_tag}-m", sources_of.items
+        return records.validate_model_row(row)
+
+    def test_classification_pipeline_tags_map_to_classification_use_case_and_label_modalities(self):
+        self.assertIn(("text-classification", "downloads", 150), source_engines.HF_LISTS)
+        self.assertIn(("zero-shot-classification", "downloads", 100), source_engines.HF_LISTS)
+        for task in ("text-classification", "zero-shot-classification", "token-classification"):
+            with self.subTest(task=task):
+                row = self._build_task_row(task)
+                self.assertEqual([item["value"] for item in row["use_cases"]], ["classification"])
+                self.assertEqual(row["facts"]["modalities"]["input"], ["text"])
+                self.assertEqual(row["facts"]["modalities"]["output"], ["labels"])
+                self.assertEqual(len(fmt.filter_models([row], "classification")), 1)
+
+    def test_a_builder_that_omits_classification_pipeline_tags_is_caught(self):
+        """The known-wrong control: omitting classification from _USE_BY_TASK leaves 0 classification models."""
+        without_classification = {k: v for k, v in model_rows._USE_BY_TASK.items() if v != "classification"}
+        with mock.patch.object(model_rows, "_USE_BY_TASK", without_classification):
+            result = unittest.TestResult()
+            ClassificationUseCases(
+                "test_classification_pipeline_tags_map_to_classification_use_case_and_label_modalities"
+            ).run(result)
+        self.assertEqual(len(result.failures), 3)
+
+
 if __name__ == "__main__":
     unittest.main()
