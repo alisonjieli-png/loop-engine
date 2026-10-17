@@ -1,0 +1,595 @@
+{
+ "record_type": "website_library_sites/v1",
+ "decided_on": "2026-10-16",
+ "decided_by": "engineering, for the owner's request of October 16, 2026 for library sites for deterministic skills, harness tools and corner cases; every item is an exact identity the live library release serves",
+ "hosts": [
+  {
+   "id": "deterministic-skills",
+   "address": "/deterministic-skills",
+   "name": "Deterministic skills",
+   "headline": "Skills that give the same answer every time",
+   "lede": "These skills and modules compute their results with ordinary code, so your agent gets the same answer for the same input and can check it. Every one here carries its own tests and declares no network access.",
+   "why": "A model can explain a Brier score; a tested function computes it. Handing arithmetic, date math and parsing to code keeps model calls for the steps that need judgment, and the result can be checked against the component's own known answers.",
+   "card_alt": "Baltor Deterministic skills. Skills that give the same answer every time.",
+   "rule": {
+    "no_network": true,
+    "tests_required": true
+   },
+   "categories": [
+    {
+     "slug": "statistics",
+     "title": "Statistics for comparing results",
+     "description": "Calibration, conformal intervals, anytime-valid confidence sequences, shrinkage and kernel two-sample tests as tested Python modules with known answers.",
+     "lede": "Compare two models, two prompts or two harness setups with statistics that hold up: calibration, conformal intervals, confidence sequences, covariance shrinkage and kernel two-sample tests.",
+     "watch_for": [
+      "A point estimate without an interval cannot say whether two runs differ.",
+      "Checking a running experiment again and again inflates false positives unless the interval is anytime-valid.",
+      "With many features and few rows a sample covariance is unstable, so shrink it before you invert it."
+     ],
+     "items": [
+      "library.supply.creative_originals.12ec014894c83d8bbd49b4c2.9e958209c99b3896",
+      "library.supply.creative_originals.d14ec4f066a67babbfed2113.a12faaa2ff0abd67",
+      "library.supply.creative_originals.bbe09180a8d78f621c60fe21.84f408d3c7d3573c",
+      "library.supply.creative_originals.20f4678e03288208e88145fe.e7d9db3913cbe480",
+      "library.supply.creative_originals.e9e146ec1aab31bae287f33c.20713d30419828ad",
+      "library.supply.creative_originals.008598e6b349a5ea60d9bb72.979b66d3ba7053bd",
+      "library.supply.creative_originals.2a7d0f8a404ed3a20994566d.7f83db0bc60ccbd6",
+      "library.supply.creative_originals.1bf44a7f3f379f065daff8ba.83a7496600633927",
+      "library.supply.creative_originals.7bf6c1bf99d5a50a9d870a48.587989e08e0b0bec",
+      "library.supply.creative_originals.f24863ff4a709ae8965d2026.10d84ed931befc05",
+      "library.supply.creative_originals.129ff1439cef30a090f27917.6f75e7c178401239",
+      "library.supply.creative_originals.0468786c2ae2e0134b0e3e62.48018416d96a426a",
+      "library.supply.creative_originals.5c1ca3c79d0070383def2428.047a4c5f595a9b5f",
+      "library.supply.creative_originals.722a507b5a43e56ea42bbcd8.9134093b5a8acc48",
+      "library.supply.creative_originals.478cb86a446827a9ece45ab1.b492f4e762a8fad5"
+     ],
+     "library_count": null
+    },
+    {
+     "slug": "agent-work-checks",
+     "title": "Checks for agent work",
+     "description": "Typed work outcomes, independent evidence counts, equal-cohort comparisons and append-only ledgers that check agent work with code instead of a second model.",
+     "lede": "Give each unit of agent work one typed outcome, count the independent evidence behind a claim, and compare candidates only on the rows they all completed.",
+     "watch_for": [
+      "Two reports that quote one source are one observation, not two.",
+      "A candidate that skipped the hard rows can look better on its average.",
+      "A claim of done needs evidence attached, or it is only a status."
+     ],
+     "items": [
+      "library.supply.creative_originals.7cdb64948768161f7ca878a2.8b2840730438214d",
+      "library.supply.creative_originals.2bfa1be2424d349acfbd1635.c1a2c7fc3731b903",
+      "library.supply.creative_originals.f64b783bd5c48bd069805a19.6964167f851ebbec",
+      "library.supply.creative_originals.798fe8aba4715cb91897c3bd.cdb6fd11aab18c96",
+      "library.supply.creative_originals.44c5bd74ff487e1b822ae423.437c9550773b47a2",
+      "library.supply.creative_originals.74a90e1d8357d3e7fc9991b4.7daecd2fa08fee3b",
+      "baltor_evidence_learning_ledger",
+      "baltor_iterative_improvement_record",
+      "baltor_percentage_comparison",
+      "baltor_plain_technical_writing_check"
+     ],
+     "library_count": null
+    },
+    {
+     "slug": "public-statistics",
+     "title": "Calculators for public statistics",
+     "description": "Rates, ratios and indices from published definitions, with confidence bounds and explicit denominators: mortality, poverty, food security, vaccination and more.",
+     "lede": "Rates, ratios and indices from published definitions, with their confidence bounds and the denominators written out. Each skill states its inputs as a schema and refuses data it cannot use.",
+     "watch_for": [
+      "A rate per 100,000 means nothing without its denominator and its year.",
+      "Small counts need exact Poisson bounds, not a normal approximation.",
+      "Age structure changes crude rates, so compare standardized rates across places."
+     ],
+     "items": [
+      "baltor_maternal_mortality_ratio",
+      "baltor_homicide_rate",
+      "baltor_gender_pay_gap",
+      "baltor_fgt_poverty_measures",
+      "baltor_alkire_foster_poverty",
+      "baltor_direct_age_standardization",
+      "baltor_vaccination_coverage_dropout",
+      "baltor_dietary_diversity",
+      "baltor_fies_prevalence",
+      "baltor_undernourishment_prevalence",
+      "baltor_crop_yield_gap",
+      "baltor_degree_day_coverage",
+      "baltor_women_representation_share",
+      "baltor_social_protection_coverage"
+     ],
+     "library_count": null
+    },
+    {
+     "slug": "records-and-schedules",
+     "title": "Records, schedules and budgets",
+     "description": "Critical paths, earned value, rosters, appointment slots and retention dates as pure functions of JSON input, each with a known good and a known wrong example.",
+     "lede": "Critical paths, earned value, shift rosters, appointment slots and retention dates as pure functions of JSON input. Each kit ships a known good example and a known wrong example its command refuses.",
+     "watch_for": [
+      "A schedule with a cycle has no critical path; the calculation must refuse it.",
+      "Retention periods count from a trigger date that differs by record class.",
+      "A roster that ignores minimum rest between shifts looks complete and is wrong."
+     ],
+     "items": [
+      "library.supply.creative_originals.2068890b938401c2eea28456.15c8005288d6ca2e",
+      "library.supply.creative_originals.4b7a00c286f5b81fbe7b9d78.e6be83556eaa195e",
+      "library.supply.creative_originals.63b985a57d6d26dc99fd94b4.966c71a58c2ecf74",
+      "library.supply.creative_originals.89126c7c48e6fee34be9a975.6e0cb486e0d2cfe5",
+      "library.supply.creative_originals.6fccd047de766c8191c34e3b.79427df908c77e62",
+      "library.supply.creative_originals.ec7260eaf066e02d28b0edfa.68dd03b1f1fae60a",
+      "library.supply.creative_originals.ce1e1dc014075e14bf7ab0de.9cc6f077d368fe42"
+     ],
+     "library_count": null
+    },
+    {
+     "slug": "algorithms",
+     "title": "Algorithms that show their work",
+     "description": "Principal components without NumPy, sorting and union-find traces, RDFS and OWL 2 RL closures, collision clearance and render plans, with schemas and tests.",
+     "lede": "Algorithms that report each step: principal components without NumPy, sorting and union-find traces, rule based inference closures, collision clearance and resumable render plans.",
+     "watch_for": [
+      "A trace lets a reviewer check every step, not only the final answer.",
+      "Floating point eigenvectors need a sign convention to compare runs.",
+      "An inference closure must say which rule produced each new triple."
+     ],
+     "items": [
+      "baltor_pca_2d",
+      "baltor_insertion_sort_trace",
+      "baltor_union_find_trace",
+      "baltor_transform_order",
+      "baltor_elastic_collision_1d",
+      "baltor_rotating_frame_orbit",
+      "baltor_rdfs_owl_rl_closure",
+      "baltor_derivation_trace_checker",
+      "baltor_ontology_change_consequences",
+      "baltor_capsule_path_clearance",
+      "baltor_reversible_voxel_build",
+      "baltor_resumable_render_plan"
+     ],
+     "library_count": null
+    },
+    {
+     "slug": "geometry",
+     "title": "Geometry and mesh algorithms",
+     "description": "Pure Python triangulation, convex hulls, polyline simplification, offsets, subdivision, curves and gears whose glTF output loads in Godot.",
+     "lede": "Pure Python geometry whose glTF output loads in Godot: triangulation, convex hulls, polyline simplification, polygon offsets, subdivision, curves and gears. Their pages are in the gallery, with the render each check recorded.",
+     "watch_for": [
+      "Coplanar and duplicate points are where hull and triangulation code fails.",
+      "glTF is Y-up and in metres, so a mesh in another frame needs converting.",
+      "Offsetting a polygon can make it self-intersect; the result must be checked."
+     ],
+     "items": [
+      "library.supply.creative_originals.f52e7a6018568728d13f9eed.9ad5be3ac433f355",
+      "library.supply.creative_originals.5b21a3e813eae9feab1ab48d.224a25cdb27bdda5",
+      "library.supply.creative_originals.ccbed6c9c02469805014b93d.f8cbb6ec0a8bbc1a",
+      "library.supply.creative_originals.beffd11add42a3130ea65e52.416269675e68142a",
+      "library.supply.creative_originals.f96a2d8a3e0706e53a1f61b7.ea0d779a94f8f766",
+      "library.supply.creative_originals.52460955ea8ff38a9a214b4e.109e7811ba4dba36",
+      "library.supply.creative_originals.8e3f2f7165334aa9e99a8371.48f6324d1ca0a5e9",
+      "library.supply.creative_originals.0dc84a43ffc3121d06f46407.c82b812faaa72318",
+      "library.supply.creative_originals.a68af3064b07c99f4ba084be.914a373cd1040dad",
+      "library.supply.creative_originals.009fc66404342135edc29213.15f24d872bdc4b90",
+      "library.supply.creative_originals.2cc758a1fbd76dca5e559ba4.d18e53a12b3bff65",
+      "library.supply.creative_originals.cd0a90a65f78add3bc5a98d1.f582515a00c85c5e"
+     ],
+     "library_count": null
+    }
+   ]
+  },
+  {
+   "id": "harness-tools",
+   "address": "/tools",
+   "name": "Harness tools",
+   "headline": "Tools your coding agent can call",
+   "lede": "Connect an MCP server, install a command-line program with checked downloads, or add a command or a hook to your harness. Every tool here names its source, its licence and what it may touch before your agent downloads it.",
+   "why": "Your agent spends less time searching and installing when the tool, its settings and its checks arrive together. Each download is one tool at an exact version, so a setup that works today works the same way next week.",
+   "card_alt": "Baltor Harness tools. Tools your coding agent can call.",
+   "rule": {},
+   "categories": [
+    {
+     "slug": "mcp-server-settings",
+     "title": "MCP server settings",
+     "description": "Connection entries for MCP servers, written for Claude Code, Codex, Cursor and OpenCode, with the package each one starts and the variables it reads.",
+     "lede": "Connection entries for MCP servers, written for Claude Code, Codex, Cursor and OpenCode. Each names the package it starts and the environment variables it reads, so nothing is guessed at setup.",
+     "watch_for": [
+      "A server that reads a key needs it in the environment, never in the settings file.",
+      "Pin the package version so the server your agent tested is the one it starts.",
+      "Each harness reads its own settings file in its own place."
+     ],
+     "items": [
+      "library.supply.mcp_registry.5d9ae89fc549727689d49baa.134603796c2e0092",
+      "library.supply.mcp_registry.534eaef05de2e34ca9bf6cc9.4f9b05b9d22f8567",
+      "library.supply.mcp_registry.a230bd0b1eab75670828248d.2665425130691dbf",
+      "library.supply.mcp_registry.8de893f89ea36cd7becca091.42d891dc8f6b031e",
+      "library.supply.mcp_registry.978db387448bb621f3377879.85c83b6cbf4fbbe5",
+      "library.supply.mcp_registry.6f1a9aa5e8c7020417b64570.3568c8b9ced4d8d6",
+      "library.supply.mcp_registry.5a48f9e963c868f8a774103e.fbec8bdbd0609bcf",
+      "library.supply.mcp_registry.a657c326ef9185ac57bda82a.53730016cb4e8f64",
+      "library.supply.mcp_registry.8dcb2e1043643926fafc103e.c6fb67da5991270e",
+      "library.supply.mcp_registry.1461f365ffdf80490450c87f.f7db14d627b9c1e7",
+      "library.supply.mcp_registry.5b6c46e00338115c0a2a754d.5f8d4726bcb40f38",
+      "library.supply.mcp_registry.3fa5c5db6d5a063d3883bceb.df714b62ea2ddd9b"
+     ],
+     "library_count": {
+      "prefixes": [
+       "library.supply.mcp_registry."
+      ],
+      "label": "MCP server settings"
+     }
+    },
+    {
+     "slug": "command-line-programs",
+     "title": "Command-line programs",
+     "description": "Install recipes with the published checksum for each platform and a typed wrapper that checks arguments before the program runs.",
+     "lede": "Install recipes with the published checksum for each platform, and a typed wrapper that checks the arguments before the program runs. CSV, JSON, SQL and text tools your agent can call from a step.",
+     "watch_for": [
+      "An install without a checksum cannot show the download is the one published.",
+      "Wrapping a program lets a step refuse a bad argument before anything runs.",
+      "A program's licence travels with it, beside the recipe's own."
+     ],
+     "items": [
+      "library.supply.program_installs.0a3778a4c4b8f8e1e337d06a.cd59b4b92152becb",
+      "library.supply.program_installs.b0909330df1323a1f19ad89b.b25433e379c8ec24",
+      "library.supply.program_installs.733c97e4817ad0c209b1d2cf.72180a924b412fa0",
+      "library.supply.program_installs.27424fe386f4bda38dd2b6b2.eb6750543569ab36",
+      "library.supply.program_installs.6544e563f1d83be2530d7879.19fcb50ff11a5265",
+      "library.supply.program_installs.76bd93c6ece3ad9f94f4d31b.2a28896fb5c81d24",
+      "library.supply.program_installs.a01499b7faa0392191cd1cd7.6ee677a1e9daa57c",
+      "library.supply.program_installs.261c9759788a45040e37d07c.daf430aa468e2f3f",
+      "library.supply.program_installs.6df29f84eeb6552c218e55d0.838cabc628685fb4",
+      "library.supply.program_installs.f5c54f78993ee9889d47635d.fa12d7d0237a1425",
+      "library.supply.program_installs.21af9bc86b19b7ea03bd7ddc.e38f82dac6f39242",
+      "library.supply.program_installs.45910eb4aab3c87c7dae716f.0187cee160c46c84",
+      "library.supply.program_installs.ac7bb9b420b51d7e1e74930d.01718b37dddb47f1",
+      "library.supply.program_installs.311ff54effe1db3bac7223fc.6ea63de350d563bd"
+     ],
+     "library_count": {
+      "prefixes": [
+       "library.supply.program_installs."
+      ],
+      "label": "program install recipes"
+     }
+    },
+    {
+     "slug": "slash-commands",
+     "title": "Slash commands",
+     "description": "Saved prompts your harness runs as commands: debugging, reviews, changelogs, audits, refactors and migrations, each from its source repository.",
+     "lede": "Saved prompts your harness runs as a command: debugging, reviews, changelogs, audits, refactors and migrations. Each keeps its source repository and licence.",
+     "watch_for": [
+      "A command that writes files should say so before it runs.",
+      "Commands work best with one clear job and a defined output.",
+      "Keep the command's source so an update can be compared with it."
+     ],
+     "items": [
+      "import_command_debug_358772d544af",
+      "import_command_changelog_6cdabb9c7f85",
+      "import_command_babysit_pr_ba5bd850a485",
+      "import_command_audit_changes_5e1f3c096ea2",
+      "import_command_audit_deps_8ba6e0b0ce82",
+      "import_command_fec_refactor_11236870147c",
+      "import_command_adr_492d54fb8a3b",
+      "import_command_audit_ci_a1b30d123ae9",
+      "import_command_audit_docker_063276a6c3f5",
+      "import_command_write_test_cases_81eff1d6785a",
+      "import_command_a11y_1aebe1227b89"
+     ],
+     "library_count": {
+      "prefixes": [
+       "import_command"
+      ],
+      "harness_kinds": [
+       "command"
+      ],
+      "label": "commands"
+     }
+    },
+    {
+     "slug": "hooks",
+     "title": "Hooks",
+     "description": "Scripts your harness runs before or after a step: block risky commands, check for secrets, enforce commit messages, format and lint after edits.",
+     "lede": "Scripts your harness runs before or after a step: block risky commands, check for secrets, enforce commit messages, and format or lint after an edit.",
+     "watch_for": [
+      "A hook runs with your permissions, so read its declared effects first.",
+      "A pre-commit check is cheaper than a reverted push.",
+      "Hooks that read secrets should only check for them, never print them."
+     ],
+     "items": [
+      "import_hook_block_dangerous_sh_b8417047dce8",
+      "import_hook_block_git_add_all_sh_9c5f67973c57",
+      "import_hook_check_secrets_sh_679481dd2701",
+      "import_hook_conventional_commits_sh_7040c184573e",
+      "import_hook_format_python_sh_62bf3a440437",
+      "import_hook_lint_after_edit_sh_4c0bbf162a44",
+      "import_hook_gate_git_commit_sh_810f1c068a19",
+      "import_hook_check_versions_sh_8f8409e023b5"
+     ],
+     "library_count": {
+      "prefixes": [
+       "import_hook"
+      ],
+      "harness_kinds": [
+       "hook"
+      ],
+      "label": "hooks"
+     }
+    },
+    {
+     "slug": "tested-functions",
+     "title": "Tested functions",
+     "description": "One upstream Python function at a time, copied with the code it needs and a test: validators, parsers and formatters your agent can import.",
+     "lede": "One upstream Python function at a time, copied with the code it needs and a test: validators, parsers and formatters your agent can import without adding a dependency.",
+     "watch_for": [
+      "A copied function keeps its upstream licence beside it.",
+      "Validators answer true or false; parsers should also say why they refused.",
+      "Pin the upstream commit so the copy can be compared later."
+     ],
+     "items": [
+      "library.supply.function_extracts.43e35205de7370bf2238bf77.f425827a223664e8",
+      "library.supply.function_extracts.0498cfa5c815a57624a17a5c.d97e703562764553",
+      "library.supply.function_extracts.5d79de3a8355b6c23267ca09.4ecfadd6a4cf9b32",
+      "library.supply.function_extracts.218ba58219546605016db17d.09d7c2098c9dc192",
+      "library.supply.function_extracts.16146c35c2f1d7a5fe8ae067.e2f754967253ce5e",
+      "library.supply.function_extracts.3b2f846617804f071426e7f1.036c09447381ee20",
+      "library.supply.function_extracts.5c3fd6aa6ac9052d7ff6f1b0.67977ac62c62df61",
+      "library.supply.function_extracts.9c1cc6ad76dd001dc9697911.c9de0f4a34471d9b",
+      "library.supply.function_extracts.909b46dc84f1747e7637cb20.ed6c0935a6511652",
+      "library.supply.function_extracts.55411503e0a79afea11dbaad.bf90eacd8e4ef068",
+      "library.supply.function_extracts.09da25c29c38b1cf1e17f6c4.ba2cb575ead80ac6",
+      "library.supply.function_extracts.6e4dc112dae35f24079b551d.4e778db460ba919c",
+      "library.supply.function_extracts.135d5082a23a6a7f13cf7d0c.36d11f2111e3c66c",
+      "library.supply.function_extracts.1db4c9e8b64f268ff7d267ef.811947fdd2b95e66"
+     ],
+     "library_count": {
+      "prefixes": [
+       "library.supply.function_extracts."
+      ],
+      "label": "tested functions"
+     }
+    },
+    {
+     "slug": "3d-file-checkers",
+     "title": "3D and game file checkers",
+     "description": "Standard-library checkers for glTF and Godot files that catch what an engine drops or misreads, compared with Godot 4.7.2 and Blender 5.2.1.",
+     "lede": "Standard-library checkers for glTF and Godot files that catch what an engine would drop or misread. Their pages are in the gallery, with the facts each check compared with Godot and Blender.",
+     "watch_for": [
+      "An export can keep every mesh and still lose its animation or its joints.",
+      "A missing resource file in a Godot scene fails at load time, not at save time.",
+      "Check the up axis and the unit before you compare dimensions."
+     ],
+     "items": [
+      "library.supply.creative_originals.ddd810c65b3eb99b2cb16900.3e4c2290897a4b07",
+      "library.supply.creative_originals.7365e10861d200abf32ef393.04537202fc3186da",
+      "library.supply.creative_originals.9f98050d034dd353539b92ab.503b2dfe8ab68c6f",
+      "library.supply.creative_originals.f6ba574decda59d983a0d5ef.8d15b0a4f3d668c8",
+      "library.supply.creative_originals.482848e5d7855191bf04a2c8.10e6f512870999ce",
+      "library.supply.creative_originals.b64bece851b5d45dd2d4b3af.a06c57aa28840f3f",
+      "library.supply.creative_originals.984c4330b465711a8de1434d.88a0b783e2f9115a",
+      "library.supply.creative_originals.622dfd6ff09f6c87c1baa0d0.6ab6a95b2d9142fa"
+     ],
+     "library_count": null
+    }
+   ]
+  },
+  {
+   "id": "corner-cases",
+   "address": "/corner-cases",
+   "name": "Corner cases",
+   "headline": "The inputs that break code, ready to test",
+   "lede": "Time zone aliases, look-alike Unicode characters, decimal commas, malformed CSV rows and API requests one field away from valid. These test packs, reference tables and checkers let your agent try the hard inputs before your users do.",
+   "why": "Most bugs arrive with inputs nobody wrote a test for. A test pack that already holds the awkward cases turns them into one more check your agent runs, instead of a report from production.",
+   "card_alt": "Baltor Corner cases. The inputs that break code, ready to test.",
+   "rule": {},
+   "categories": [
+    {
+     "slug": "dates-and-times",
+     "title": "Dates, times and time zones",
+     "description": "IANA time zone tables with aliases and offsets, RFC 3339 helpers, date formats by country, and checkers for out-of-order timestamps and missed deadlines.",
+     "lede": "IANA time zone tables with aliases, abbreviations and offsets, RFC 3339 helpers, date formats by country, and checkers for out-of-order timestamps and missed deadlines.",
+     "watch_for": [
+      "An abbreviation such as CST or IST names more than one zone, so store the IANA name.",
+      "Some offsets are not whole hours, such as +05:30 and +05:45.",
+      "03/04 is March 4 in one country and 3 April in another."
+     ],
+     "items": [
+      "library.supply.data_tables.138a8301dca0c57a9e50b4f8.1dca627cb246ac1b",
+      "library.supply.data_tables.1ae6b08af02e1c9ac92f3d8f.0b83730dd39846ad",
+      "library.supply.data_tables.671f039a3b262dcb6a1ddf9a.a356618357a09607",
+      "library.supply.data_tables.6947b28b5a7c198a6e917ff2.269b9f499e9cdae7",
+      "library.supply.data_tables.d2e4e73830024561ca02c2e3.b6d57b42ee2731fd",
+      "library.supply.function_extracts.09c7660d21bc31e57987df09.8ca19374eb0652f4",
+      "library.supply.function_extracts.44bc59824409d0e4baa53bf0.79b46a2aaec1ae6c",
+      "library.supply.function_extracts.40b2e76730fa4c6d5bc03eb4.32434b0fd0eb6b89",
+      "library.supply.function_extracts.805fa8d0d8d9edf5aecb9a6b.df2ccf53d776eef8",
+      "library.supply.function_extracts.610ba71a28c72bb6ffd218ac.3dd37dec44c64d12",
+      "library.supply.creative_originals.4b7a00c286f5b81fbe7b9d78.e6be83556eaa195e",
+      "library.supply.creative_originals.4914c21de05db2cd3852c41e.6e5ed7747e9b3a1c",
+      "baltor_statistical_release_timeliness",
+      "baltor_records_request_timeliness",
+      "baltor_transit_headway_audit"
+     ],
+     "library_count": null
+    },
+    {
+     "slug": "text-and-encodings",
+     "title": "Text, Unicode and encodings",
+     "description": "Look-alike Unicode characters, Unicode blocks and emoji tables, base64 and base58 validators, and text normalizers for whitespace and personal data.",
+     "lede": "Look-alike Unicode characters, Unicode blocks and emoji tables, base64 and base58 validators, and normalizers for whitespace, Unicode and personal data in free text.",
+     "watch_for": [
+      "Cyrillic а and Latin a look the same and compare as different strings.",
+      "A non-breaking space looks like a space and survives a plain split.",
+      "One emoji can be several code points joined, so its length is not one."
+     ],
+     "items": [
+      "library.supply.data_tables.4e8b8f1851b694188ef1c51c.0a7acf786d67585c",
+      "library.supply.data_tables.245f5bf5aeac55a2a92b928d.b49d264041be1ed4",
+      "library.supply.data_tables.6308737c122820e502908f16.5d2b388fd1441872",
+      "library.supply.data_tables.79329e78e5fe3fa5702e1050.25123c0cf92bd796",
+      "library.supply.function_extracts.6df972ae6ff484fed7b900a1.7a1588e7013311ab",
+      "library.supply.function_extracts.4279a2d773c6956c58d41bdd.b64861ab5545135d",
+      "library.supply.function_extracts.670d26887e3f3fd3d400d240.2b8d9c0dca9e0bf8",
+      "library.supply.function_extracts.794533a13c3d44607c468025.29ad30ec786e4bf7",
+      "normalize_whitespace_and_unicode_text",
+      "baltor_exact_content_groups",
+      "library.supply.creative_originals.7a09f7ac445d891a26e0ad2e.2636cba2402d8ad0"
+     ],
+     "library_count": null
+    },
+    {
+     "slug": "numbers-and-money",
+     "title": "Numbers, currencies and locales",
+     "description": "Decimal and group separators by locale, currency formats and minor units, phone number formats, radix parsing and exact proportion comparison.",
+     "lede": "Decimal and group separators by locale, currency formats and their minor units, phone number formats, radix parsing and exact comparison of two proportions.",
+     "watch_for": [
+      "1.234 is one thousand two hundred thirty-four in German and about one and a quarter in English.",
+      "The yen has no minor unit and the Bahraini dinar has three.",
+      "Two percentages cannot be compared without their denominators."
+     ],
+     "items": [
+      "library.supply.data_tables.2653817fdaec56e51316dcd0.abc707c88c785519",
+      "library.supply.data_tables.31a3a48d0879225949677b1c.b641dac1f7d20c0f",
+      "library.supply.data_tables.839c0e541e75701189155ab3.97580133e6abde06",
+      "library.supply.data_tables.38c31992339dbd9cd4a4fd94.61c6fc70db198972",
+      "library.supply.data_tables.b9b36cdb59e871b4635a4776.7809a3d5c5cd7496",
+      "library.supply.data_tables.7497bc47659da752cc867cef.82454dcfa8af53e3",
+      "library.supply.function_extracts.1c7575c1442c553fb53ff084.938eab613d1dd23a",
+      "library.supply.function_extracts.4f675f88ff083984a3bef84e.1429ce5f866f1806",
+      "baltor_percentage_comparison"
+     ],
+     "library_count": null
+    },
+    {
+     "slug": "csv-and-records",
+     "title": "CSV files and records",
+     "description": "Column profiles, field rule checks, multi-source merges and duplicate finders for CSV records, with corrections written to a copy, never in place.",
+     "lede": "Column profiles, field rule checks, merges of several sources and duplicate finders for CSV records. Corrections go to a new copy, never into the original file.",
+     "watch_for": [
+      "An empty cell, an empty string and the text NULL are three different values.",
+      "Duplicates rarely match exactly, so compare normalized keys within blocks.",
+      "Correct a copy of the table and keep the original for comparison."
+     ],
+     "items": [
+      "library.supply.creative_originals.4b34f569a96c4fe3210b361e.a07efb6d4361cb46",
+      "library.supply.creative_originals.99bd6dbb60428ae52b7d5020.c7330118274c12ec",
+      "library.supply.creative_originals.7161bf8ab35b138362bfc693.8ad96aa9c29c347d",
+      "library.supply.creative_originals.155023e1c0dc7d674b9d7dd2.6431b4781647eb11",
+      "find_duplicate_records_with_blocking_keys",
+      "score_duplicate_pairs_by_weakest_signal",
+      "propose_a_dedupe_without_deleting_rows",
+      "copy_a_table_with_corrections_never_in_place",
+      "detect_malformed_values_by_dominant_pattern",
+      "profile_text_column_before_cleaning",
+      "layer_exception_catalogs_with_precedence"
+     ],
+     "library_count": null
+    },
+    {
+     "slug": "names-addresses-and-ids",
+     "title": "Names, addresses and identifiers",
+     "description": "Address line parsing, name capitalisation, company suffixes, email and website repair, postal code formats and check digit validators.",
+     "lede": "Address line parsing, name capitalisation, company suffixes, email and website repair, postal code formats for 246 countries, and validators with check digits.",
+     "watch_for": [
+      "Names typed in capitals lose information a rule cannot fully restore, such as McDonald.",
+      "Postal codes differ by country in length, letters and spacing.",
+      "Card numbers and securities identifiers carry check digits that catch a mistyped digit."
+     ],
+     "items": [
+      "split_address_lines_into_components",
+      "restore_capitalisation_of_names",
+      "canonicalize_company_legal_suffixes",
+      "normalize_and_recover_email_addresses",
+      "normalize_website_addresses",
+      "library.supply.data_tables.09faeb4625ee67e2fa697eea.45d0ec0b6a2aa343",
+      "library.supply.data_tables.03b2ba7727fe36f51e18bd5a.22726b9e7ba590df",
+      "library.supply.function_extracts.0ac7c14432d64911f9efe883.9eddfa90de82bf04",
+      "library.supply.function_extracts.030e19fbc21ba48aee269fda.246f0eda271f44cf",
+      "library.supply.function_extracts.47e6a2356e4590619e93f480.1b757f89ecfa59e4",
+      "library.supply.function_extracts.3d1e4d7baed24d9739e12516.db8b68714b2ea02f"
+     ],
+     "library_count": null
+    },
+    {
+     "slug": "json-schema-and-api-requests",
+     "title": "JSON Schema and API requests",
+     "description": "JSON Schema 2020-12 conformance test groups and API request cases that each change one field and expect one validation error.",
+     "lede": "JSON Schema 2020-12 conformance test groups, and API request cases that each change one field of a valid request and expect exactly one validation error.",
+     "watch_for": [
+      "format only annotates in JSON Schema 2020-12 unless a validator is asked to assert it.",
+      "Integers above 2^53 lose precision as JavaScript numbers.",
+      "A pattern in JSON Schema follows ECMA-262 regular expressions, not every engine's dialect."
+     ],
+     "items": [
+      "library.supply.data_tables.0aea4526b333f586711d8d90.496a0f05df25de79",
+      "library.supply.data_tables.831e0ff62cc1fcb96f2233b6.d3830f76cb7600b7",
+      "library.supply.data_tables.fec236861533a1f1152ce6d3.167525cb646abb80",
+      "library.supply.data_tables.a642686ddb1da1240d79d86d.461d8118f10d7be7",
+      "library.supply.data_tables.da444e939297b19fdc0dc116.7cea8f2fb11ab7e2",
+      "library.supply.data_tables.90277976d4e7345f59ad22a3.131483a396d7a2a7",
+      "library.supply.data_tables.e39174f729a93acb3dd13bc5.ac41c42f4a467d2e",
+      "library.supply.data_tables.79abdabb5fd94a44a2cf0e0b.fb215285ecd182db",
+      "library.supply.data_tables.6e4ccc6a170b01c29d0b158a.f2dc25dc38f63b1c",
+      "library.supply.data_tables.79b95a583d4393cb424f70ac.27139fdc953726e9",
+      "library.supply.data_tables.22bb0fe1b5ed977317328f37.2ada3f3e2c6d5839",
+      "library.supply.data_tables.0096284cc34f954cafec4e5e.af571ab6547fc883",
+      "library.supply.data_tables.987054a43e174e5331344652.e6bb744389f0c335",
+      "library.supply.json_schemas.213dfaefb5577a4618e1449e.628f349fdab77a4e",
+      "library.supply.json_schemas.0d2f214f5d56cacd4fa1a05b.01012f6d0219a9ba",
+      "library.supply.json_schemas.d37995b848b41d04ca5e29df.02d5984fc2cc942f",
+      "library.supply.json_schemas.d6ce78e9a0ac8acbccae191b.7b6b542acddec915",
+      "library.supply.json_schemas.63729f6f0db7453d1002bb39.dd92054d620654a9"
+     ],
+     "library_count": {
+      "evidence": "artifacts/architecture-audit-2026-09-19/catalogue-api-cases-2026-10-09.json",
+      "fields": [
+       "admission",
+       "groups"
+      ],
+      "label": "API request case groups"
+     }
+    },
+    {
+     "slug": "files-and-3d-exports",
+     "title": "Files, transfers and 3D exports",
+     "description": "File transfers in checked parts, glTF and Godot checkers, and conformance tools for TOML, HTTP/2 and Matroska files.",
+     "lede": "File transfers in checked parts, glTF and Godot checkers that catch lost animation and joints, and conformance tools for TOML parsers, HTTP/2 servers and Matroska files.",
+     "watch_for": [
+      "A file split into parts needs a manifest with checksums to be rebuilt exactly.",
+      "glTF is Y-up and in metres; a Z-up or centimetre export looks right in one tool and wrong in the next.",
+      "A conformance suite finds the parser bugs your own tests never thought of."
+     ],
+     "items": [
+      "baltor_multipart_file_transfer",
+      "library.supply.creative_originals.ddd810c65b3eb99b2cb16900.3e4c2290897a4b07",
+      "library.supply.creative_originals.9f98050d034dd353539b92ab.503b2dfe8ab68c6f",
+      "library.supply.creative_originals.f6ba574decda59d983a0d5ef.8d15b0a4f3d668c8",
+      "library.supply.creative_originals.482848e5d7855191bf04a2c8.10e6f512870999ce",
+      "library.supply.creative_originals.7365e10861d200abf32ef393.04537202fc3186da",
+      "library.supply.program_installs.20e1b61b6f10c1cf2ba960cb.dffc8a8c44f97789",
+      "library.supply.program_installs.df40878dafcba9bbd1f54a13.f8b86e497f8c16b9",
+      "library.supply.program_installs.f6ac19258266b126ef5a8ed9.759b250fc736becf",
+      "library.supply.program_installs.4e7ba6317e92dd9fe8983fd4.f3933c63b94756b3"
+     ],
+     "library_count": null
+    }
+   ]
+  }
+ ],
+ "titles": {
+  "baltor_derivation_trace_checker": "Check an RDFS or OWL 2 RL derivation trace step by step",
+  "baltor_dietary_diversity": "Score minimum dietary diversity for women and young children",
+  "baltor_elastic_collision_1d": "Compute one-dimensional elastic collisions with momentum and energy checks",
+  "baltor_fgt_poverty_measures": "Calculate Foster-Greer-Thorbecke poverty measures",
+  "baltor_records_request_timeliness": "Audit public records request timeliness against a statutory deadline",
+  "baltor_rotating_frame_orbit": "Express a planar motion in an inertial and a rotating frame",
+  "baltor_undernourishment_prevalence": "Calculate the prevalence of undernourishment",
+  "baltor_union_find_trace": "Trace union-find operations with union by rank and path compression",
+  "baltor_vaccination_coverage_dropout": "Calculate administrative vaccination coverage against target populations",
+  "baltor_women_representation_share": "Calculate the share of seats held by women in elected bodies",
+  "canonicalize_company_legal_suffixes": "Standardize company legal suffixes such as Inc, LLC and GmbH",
+  "copy_a_table_with_corrections_never_in_place": "Copy a table with corrections and an approved dedupe, never in place",
+  "find_duplicate_records_with_blocking_keys": "Find duplicate customer, company or contact records with blocking keys",
+  "library.supply.data_tables.09faeb4625ee67e2fa697eea.45d0ec0b6a2aa343": "Postal code formats and validation patterns for 246 countries",
+  "library.supply.data_tables.138a8301dca0c57a9e50b4f8.1dca627cb246ac1b": "Every IANA time zone identifier, including link names",
+  "library.supply.data_tables.1ae6b08af02e1c9ac92f3d8f.0b83730dd39846ad": "Time zones with abbreviations, UTC offsets and daylight saving",
+  "library.supply.data_tables.31a3a48d0879225949677b1c.b641dac1f7d20c0f": "Locales with their decimal and group separators",
+  "library.supply.data_tables.4e8b8f1851b694188ef1c51c.0a7acf786d67585c": "Unicode homoglyphs mapped to their ASCII-like base characters",
+  "library.supply.data_tables.987054a43e174e5331344652.e6bb744389f0c335": "JSON Schema 2020-12 tests for regexes with non-BMP characters",
+  "library.supply.data_tables.b9b36cdb59e871b4635a4776.7809a3d5c5cd7496": "Common world currencies with decimal digits and rounding",
+  "library.supply.data_tables.d2e4e73830024561ca02c2e3.b6d57b42ee2731fd": "US federal holidays with their date rules"
+ }
+}
