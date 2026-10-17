@@ -345,7 +345,7 @@ STRICT_TRANSPORT_SECURITY = "max-age=31536000"
 def transport_security_headers(application):
     """`Strict-Transport-Security` for a brand presentation on an HTTPS origin; nothing for the base presentation."""
     profile = getattr(application, "brand_profile", None)
-    if profile is None or not profile.public_base_url.startswith("https://"):
+    if profile is None or urlsplit(profile.public_base_url).scheme != "https":
         return {}
     return {"Strict-Transport-Security": STRICT_TRANSPORT_SECURITY}
 
