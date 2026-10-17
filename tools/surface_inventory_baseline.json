@@ -5,7 +5,7 @@
     "data_computation": 11,
     "data_storage": 59,
     "data_transfer": 56,
-    "functions": 386,
+    "functions": 387,
     "interactions": 18,
     "screens": 130
   },
@@ -567,6 +567,7 @@
       "operator_tool:task_campaign.py",
       "operator_tool:trace_and_self_improvement_engines.py",
       "operator_tool:trace_mined_agents_rules_memory_and_behavior_engines.py",
+      "operator_tool:unbounded_composable_retrieval_action_graph_and_self_improving_rag_engines.py",
       "operator_tool:unicorn_autonomous_ops_sre_and_dataroom_engines.py",
       "operator_tool:unicorn_enterprise_b2b_governance_and_byok_engines.py",
       "operator_tool:unicorn_geo_llms_txt_and_leaderboard_engines.py",
@@ -755,8 +756,8 @@
   },
   "schema": "surface_inventory_baseline/v1",
   "totals": {
-    "covered_items": 705,
+    "covered_items": 706,
     "total_gaps": 3,
-    "total_items": 708
+    "total_items": 709
   }
 }

@@ -7,14 +7,14 @@ its test or component guide coverage, or a new unreviewed gap appears.
 
 ## Summary across the eight categories
 
-- Total surface items inventoried: **708**
-- Fully covered items (no gaps): **705**
+- Total surface items inventoried: **709**
+- Fully covered items (no gaps): **706**
 - Items with an explicit test or live-check gap: **3**
 
 | Category | Total items | Unit / integration tested | Browser tested | Live checked | Component guide mapped | Open gaps |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: |
 | `screens` | 130 | 130 | 130 | 130 | 130 | 0 |
-| `functions` | 386 | 386 | 329 | 341 | 386 | 0 |
+| `functions` | 387 | 387 | 330 | 342 | 387 | 0 |
 | `interactions` | 18 | 18 | 18 | 12 | 18 | 0 |
 | `data_transfer` | 56 | 56 | 11 | 5 | 56 | 0 |
 | `data_computation` | 11 | 11 | 3 | 0 | 11 | 0 |
@@ -561,6 +561,7 @@ Every item below has a mapped component guide in `docs/components/COMPONENT-GUID
 | `operator_tool` | `operator_tool:task_campaign.py` | `tools/task_campaign.py` | 6 | 6 | 4 | `docs/components/README.md` | covered |
 | `operator_tool` | `operator_tool:trace_and_self_improvement_engines.py` | `tools/trace_and_self_improvement_engines.py` | 6 | 6 | 4 | `docs/components/README.md` | covered |
 | `operator_tool` | `operator_tool:trace_mined_agents_rules_memory_and_behavior_engines.py` | `tools/trace_mined_agents_rules_memory_and_behavior_engines.py` | 6 | 6 | 4 | `docs/components/README.md` | covered |
+| `operator_tool` | `operator_tool:unbounded_composable_retrieval_action_graph_and_self_improving_rag_engines.py` | `tools/unbounded_composable_retrieval_action_graph_and_self_improving_rag_engines.py` | 6 | 6 | 4 | `docs/components/README.md` | covered |
 | `operator_tool` | `operator_tool:unicorn_autonomous_ops_sre_and_dataroom_engines.py` | `tools/unicorn_autonomous_ops_sre_and_dataroom_engines.py` | 6 | 6 | 4 | `docs/components/README.md` | covered |
 | `operator_tool` | `operator_tool:unicorn_enterprise_b2b_governance_and_byok_engines.py` | `tools/unicorn_enterprise_b2b_governance_and_byok_engines.py` | 6 | 6 | 4 | `docs/components/README.md` | covered |
 | `operator_tool` | `operator_tool:unicorn_geo_llms_txt_and_leaderboard_engines.py` | `tools/unicorn_geo_llms_txt_and_leaderboard_engines.py` | 6 | 6 | 4 | `docs/components/README.md` | covered |
