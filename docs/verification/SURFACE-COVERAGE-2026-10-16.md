@@ -7,14 +7,14 @@ its test or component guide coverage, or a new unreviewed gap appears.
 
 ## Summary across the eight categories
 
-- Total surface items inventoried: **712**
-- Fully covered items (no gaps): **709**
+- Total surface items inventoried: **714**
+- Fully covered items (no gaps): **711**
 - Items with an explicit test or live-check gap: **3**
 
 | Category | Total items | Unit / integration tested | Browser tested | Live checked | Component guide mapped | Open gaps |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: |
 | `screens` | 130 | 130 | 130 | 130 | 130 | 0 |
-| `functions` | 390 | 390 | 333 | 345 | 390 | 0 |
+| `functions` | 392 | 392 | 335 | 347 | 392 | 0 |
 | `interactions` | 18 | 18 | 18 | 12 | 18 | 0 |
 | `data_transfer` | 56 | 56 | 11 | 5 | 56 | 0 |
 | `data_computation` | 11 | 11 | 3 | 0 | 11 | 0 |
@@ -534,6 +534,7 @@ Every item below has a mapped component guide in `docs/components/COMPONENT-GUID
 | `operator_tool` | `operator_tool:run_query_multiplier.py` | `tools/run_query_multiplier.py` | 6 | 6 | 4 | `docs/components/README.md` | covered |
 | `operator_tool` | `operator_tool:run_test_shard.py` | `tools/run_test_shard.py` | 6 | 6 | 4 | `docs/components/README.md` | covered |
 | `operator_tool` | `operator_tool:rust_hotpath_search_embedding_lsh_and_python_swap_engines.py` | `tools/rust_hotpath_search_embedding_lsh_and_python_swap_engines.py` | 6 | 6 | 4 | `docs/components/README.md` | covered |
+| `operator_tool` | `operator_tool:sandbox_restriction_workarounds_and_agent_capability_feeds_engines.py` | `tools/sandbox_restriction_workarounds_and_agent_capability_feeds_engines.py` | 6 | 6 | 4 | `docs/components/README.md` | covered |
 | `operator_tool` | `operator_tool:scan_local_volume.py` | `tools/scan_local_volume.py` | 6 | 6 | 4 | `docs/components/README.md` | covered |
 | `operator_tool` | `operator_tool:seo_blog_comparison_and_humanizer_engines.py` | `tools/seo_blog_comparison_and_humanizer_engines.py` | 6 | 6 | 4 | `docs/components/README.md` | covered |
 | `operator_tool` | `operator_tool:server_mailbox_newsletter_ingestion_and_alphasignal_feed_engines.py` | `tools/server_mailbox_newsletter_ingestion_and_alphasignal_feed_engines.py` | 6 | 6 | 4 | `docs/components/README.md` | covered |
@@ -547,6 +548,7 @@ Every item below has a mapped component guide in `docs/components/COMPONENT-GUID
 | `operator_tool` | `operator_tool:social_videos_material_and_product_engines.py` | `tools/social_videos_material_and_product_engines.py` | 6 | 6 | 4 | `docs/components/README.md` | covered |
 | `operator_tool` | `operator_tool:social_videos_sims_atlases_and_fx_engines.py` | `tools/social_videos_sims_atlases_and_fx_engines.py` | 6 | 6 | 4 | `docs/components/README.md` | covered |
 | `operator_tool` | `operator_tool:social_videos_studio_archetypes_and_worlds_engines.py` | `tools/social_videos_studio_archetypes_and_worlds_engines.py` | 6 | 6 | 4 | `docs/components/README.md` | covered |
+| `operator_tool` | `operator_tool:sovereign_open_model_unrestricted_paired_computer_use_engines.py` | `tools/sovereign_open_model_unrestricted_paired_computer_use_engines.py` | 6 | 6 | 4 | `docs/components/README.md` | covered |
 | `operator_tool` | `operator_tool:spawnable_processes_sidecar_daemons_and_detached_task_engines.py` | `tools/spawnable_processes_sidecar_daemons_and_detached_task_engines.py` | 6 | 6 | 4 | `docs/components/README.md` | covered |
 | `operator_tool` | `operator_tool:spectrum_score.py` | `tools/spectrum_score.py` | 6 | 6 | 4 | `docs/components/README.md` | covered |
 | `operator_tool` | `operator_tool:stage_intelligence_candidates.py` | `tools/stage_intelligence_candidates.py` | 6 | 6 | 4 | `docs/components/README.md` | covered |
