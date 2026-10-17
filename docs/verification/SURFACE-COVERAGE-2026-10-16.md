@@ -7,14 +7,14 @@ its test or component guide coverage, or a new unreviewed gap appears.
 
 ## Summary across the eight categories
 
-- Total surface items inventoried: **709**
-- Fully covered items (no gaps): **706**
+- Total surface items inventoried: **711**
+- Fully covered items (no gaps): **708**
 - Items with an explicit test or live-check gap: **3**
 
 | Category | Total items | Unit / integration tested | Browser tested | Live checked | Component guide mapped | Open gaps |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: |
 | `screens` | 130 | 130 | 130 | 130 | 130 | 0 |
-| `functions` | 387 | 387 | 330 | 342 | 387 | 0 |
+| `functions` | 389 | 389 | 332 | 344 | 389 | 0 |
 | `interactions` | 18 | 18 | 18 | 12 | 18 | 0 |
 | `data_transfer` | 56 | 56 | 11 | 5 | 56 | 0 |
 | `data_computation` | 11 | 11 | 3 | 0 | 11 | 0 |
@@ -445,6 +445,7 @@ Every item below has a mapped component guide in `docs/components/COMPONENT-GUID
 | `operator_tool` | `operator_tool:ingest_newsletter_email.py` | `tools/ingest_newsletter_email.py` | 6 | 6 | 4 | `docs/components/README.md` | covered |
 | `operator_tool` | `operator_tool:ingest_outside_material.py` | `tools/ingest_outside_material.py` | 6 | 6 | 4 | `docs/components/README.md` | covered |
 | `operator_tool` | `operator_tool:install_selected_material.py` | `tools/install_selected_material.py` | 6 | 6 | 4 | `docs/components/README.md` | covered |
+| `operator_tool` | `operator_tool:interactive_resume_story_cartographer_and_fellowship_showcase_engines.py` | `tools/interactive_resume_story_cartographer_and_fellowship_showcase_engines.py` | 6 | 6 | 4 | `docs/components/README.md` | covered |
 | `operator_tool` | `operator_tool:inventory_harness_library.py` | `tools/inventory_harness_library.py` | 6 | 6 | 4 | `docs/components/README.md` | covered |
 | `operator_tool` | `operator_tool:invite_beta_user.py` | `tools/invite_beta_user.py` | 6 | 6 | 4 | `docs/components/README.md` | covered |
 | `operator_tool` | `operator_tool:jagged_frontier_llm_trace_and_default_behavior_combat_engines.py` | `tools/jagged_frontier_llm_trace_and_default_behavior_combat_engines.py` | 6 | 6 | 4 | `docs/components/README.md` | covered |
@@ -552,6 +553,7 @@ Every item below has a mapped component guide in `docs/components/COMPONENT-GUID
 | `operator_tool` | `operator_tool:startup_10000_super_macro_meso_micro_and_engagement_engines.py` | `tools/startup_10000_super_macro_meso_micro_and_engagement_engines.py` | 6 | 6 | 4 | `docs/components/README.md` | covered |
 | `operator_tool` | `operator_tool:startup_1000_and_job_10000_component_generator_engines.py` | `tools/startup_1000_and_job_10000_component_generator_engines.py` | 6 | 6 | 4 | `docs/components/README.md` | covered |
 | `operator_tool` | `operator_tool:strategies.py` | `tools/strategies.py` | 6 | 6 | 4 | `docs/components/README.md` | covered |
+| `operator_tool` | `operator_tool:streamer_video_editing_influencer_and_n8n_workflow_graph_engines.py` | `tools/streamer_video_editing_influencer_and_n8n_workflow_graph_engines.py` | 6 | 6 | 4 | `docs/components/README.md` | covered |
 | `operator_tool` | `operator_tool:streamlined_setup_and_user_profile_engines.py` | `tools/streamlined_setup_and_user_profile_engines.py` | 6 | 6 | 4 | `docs/components/README.md` | covered |
 | `operator_tool` | `operator_tool:stripe_test_checkout.mjs` | `tools/stripe_test_checkout.mjs` | 6 | 6 | 4 | `docs/components/README.md` | covered |
 | `operator_tool` | `operator_tool:summarize_product_proof.py` | `tools/summarize_product_proof.py` | 6 | 6 | 4 | `docs/components/README.md` | covered |
