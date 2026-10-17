@@ -29,8 +29,10 @@ build_library_supply.py
 ├── creative-originals  one package per item of Baltor's own creative families (tools/creative_originals:
 │                    Godot, Blender, textures, 2D, 2.5D, 3D and 4D tools), with its native evidence
 ├── engine-api-cards  one version-pinned API contract card per class of a pinned engine release (Godot
-│                    4.7.2-stable, three.js r186): the engine's own surface and reference text, the renames
-│                    map, and one native check of every card by the same engine (tools/engine_api_cards)
+│                    4.7.2-stable, three.js r186, Babylon.js 9.30.0), or per public class, function, method and
+│                    property of a pinned Python library release (python_libraries.json): the engine's own surface
+│                    and reference text, and one native check of every card by the same engine or interpreter
+│                    (tools/engine_api_cards)
 ├── kaggle-public-good  one dataset contract (schema, typed reader, tests, SDG proposal) per downloaded Kaggle
 │                    dataset whose own files grant an allowlisted licence; every other dataset inventoried and held
 ├── container-image-cards  one contract card per repository and tag family of the Docker Official Images: the
@@ -529,8 +531,46 @@ def _babylonjs_cards(args, run_folder: Path, workspace: Path, only: tuple) -> tu
     return reader, lambda: line.read_babylon(reader, workspace, only=only, observe=observe), verifier
 
 
+def _python_cards(args, run_folder: Path, workspace: Path, only: tuple) -> tuple:
+    """(reader, read, verifier) of the Python adapter: one release of python_libraries.json, its wheels imported by
+    the pinned interpreter in a sandbox with no network, and every card checked by a second sandboxed run."""
+    from supply_lines import engine_api_cards_python as python
+    if not args.library:
+        raise SystemExit("--engine python needs --library, a row identity of python_libraries.json")
+    cache = Path(args.wheel_cache).resolve() if args.wheel_cache else run_folder / "wheels"
+    # A wheel's digest record lives beside its unpacked folder, so a later run neither downloads nor unpacks it again.
+    reader = FactReader(run_folder, python.HOSTS, maximum_requests=args.maximum_requests,
+                        pause_seconds=args.pause_seconds, maximum_bytes=64 * 1024 * 1024,
+                        digest_cache=cache / "digests")
+
+    def verifier(sources):
+        # Each card's evidence travels in its package (verification/native.json); no second copy is written.
+        return lambda prepared: python.python_evidence(sources, prepared, workspace, None,
+                                                       timeout=args.sandbox_seconds)
+
+    return (reader, lambda: python.read_python(reader, workspace, args.library, cache_root=cache, only=only,
+                                               timeout=args.sandbox_seconds,
+                                               surface_engine=args.surface_engine), verifier)
+
+
+def _jsdoc_cards(args, run_folder: Path, workspace: Path, only: tuple) -> tuple:
+    """(reader, read, verifier) of the JavaScript member adapter: one release of javascript_packages.json, its JSDoc
+    members, and every card checked by Node requiring the published module."""
+    from supply_lines import engine_api_cards_jsdoc as jsdoc
+    if not args.library:
+        raise SystemExit("--engine jsdoc needs --library, a row identity of javascript_packages.json")
+    reader = FactReader(run_folder, jsdoc.HOSTS, maximum_requests=args.maximum_requests,
+                        pause_seconds=args.pause_seconds, maximum_bytes=64 * 1024 * 1024)
+
+    def verifier(sources):
+        return lambda prepared: jsdoc.package_evidence(sources, prepared, workspace, None)
+
+    return reader, lambda: jsdoc.read_package(reader, workspace, args.library, only=only), verifier
+
+
 #: The engine adapters of the engine-api-cards command.
-CARD_ADAPTERS = {"godot": _godot_cards, "threejs": _threejs_cards, "babylonjs": _babylonjs_cards}
+CARD_ADAPTERS = {"godot": _godot_cards, "threejs": _threejs_cards, "babylonjs": _babylonjs_cards,
+                 "python": _python_cards, "jsdoc": _jsdoc_cards}
 
 
 def engine_api_cards(args) -> dict:
@@ -551,7 +591,8 @@ def engine_api_cards(args) -> dict:
                       complete=False, scope="")
     built, refusals, facts, summary = line.generate(
         sources, verifier=verifier(sources), code_revision=revision, licence_text=LICENCE_FILE.read_bytes(),
-        generated_on=now_utc()[:10], staging=run_folder / "staging", workers=args.workers, only=only)
+        generated_on=now_utc()[:10], staging=Path(args.staging) if args.staging else run_folder / "staging",
+        workers=args.workers, only=only)
     (run_folder / "summary.json").write_text(json.dumps(summary, indent=1, sort_keys=True) + "\n", encoding="utf-8")
     unread = any(row["reason"] in line.UNREAD_REASONS for row in refusals)
     return finish(args, records.ENGINE_API_CARDS, built, refusals, {"summary": summary, **payload_counts(built)},
@@ -872,10 +913,26 @@ def parser() -> argparse.ArgumentParser:
     originals.add_argument("--item", action="append", help="only these item identities")
     cards_command = commands.add_parser("engine-api-cards")
     common(cards_command)
-    cards_command.add_argument("--engine", choices=("godot", "threejs", "babylonjs"), default="godot",
+    cards_command.add_argument("--engine", choices=tuple(CARD_ADAPTERS), default="godot",
                                help="the engine adapter (godot: the pinned 4.7.2-stable build and tag; threejs: the "
                                     "r186 tag and the three@0.186.1 package built from it; babylonjs: the 9.30.0 tag "
-                                    "and the @babylonjs/core package built from it)")
+                                    "and the @babylonjs/core package built from it; python: the release --library "
+                                    "names in tools/engine_api_cards/python_libraries.json; jsdoc: the release "
+                                    "--library names in tools/engine_api_cards/javascript_packages.json)")
+    cards_command.add_argument("--library", help="the python or jsdoc adapter's release: a row identity of "
+                                                 "python_libraries.json (pandas-3.0, requests-2.34, ...) or of "
+                                                 "javascript_packages.json (lodash-4.18, express-5.3, ...)")
+    cards_command.add_argument("--wheel-cache", help="a folder of wheels unpacked by their SHA-256, shared by several "
+                                                     "runs (default: the run folder's wheels)")
+    cards_command.add_argument("--surface-engine", choices=("sandbox_import", "wheel_ast"), default="sandbox_import",
+                               help="the Python surface-reading engine behind python_api_introspection/v1 "
+                                    "(sandbox_import: import the wheel in bubblewrap; wheel_ast: read its .py syntax "
+                                    "trees without importing)")
+    cards_command.add_argument("--sandbox-seconds", type=float, default=3600.0,
+                               help="the longest one sandboxed import or check of a Python release runs")
+    cards_command.add_argument("--staging", help="where each card's own tests run on its exact files, one folder at a "
+                                                 "time, removed after its run (default: the run folder's staging); a "
+                                                 "fast disk shortens a run whose run folder is on a slow one")
     cards_command.add_argument("--godot", help="the Godot build (default: the pinned build tools/creative_originals/"
                                                "engines.py finds); it must be the release's own")
     cards_command.add_argument("--class", dest="engine_class", action="append",

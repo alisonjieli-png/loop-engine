@@ -36,6 +36,7 @@ class ClassKind(str, Enum):
     FUNCTION = "function"  # a library's module-level function (a Python adapter's or a JavaScript library's)
     METHOD = "method"  # one documented method of a library's class, carded on its own
     PROPERTY = "property"  # one documented property of a library's class, carded on its own
+    OBJECT = "object"  # an object a JavaScript library exports with documented members (Express's application)
 
 
 #: The surface sections and the XML element of each item (constants are grouped into enumerations after reading).

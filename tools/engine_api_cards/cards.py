@@ -39,7 +39,7 @@ NO_DESCRIPTION = "*No description in the class reference.*"
 #: What a card's text says a kind of class is.
 KIND_PHRASES = {ClassKind.OBJECT_CLASS: "the class", ClassKind.BUILTIN_TYPE: "the built-in type",
                 ClassKind.GLOBAL_SCOPE: "the global scope", ClassKind.FUNCTION: "the function",
-                ClassKind.METHOD: "the method", ClassKind.PROPERTY: "the property"}
+                ClassKind.METHOD: "the method", ClassKind.PROPERTY: "the property", ClassKind.OBJECT: "the object"}
 #: Documentation notes on a class or an item, in the order a card shows them, and their labels.
 NOTE_LABELS = (("deprecated", "Deprecated"), ("experimental", "Experimental"))
 KEYWORDS = "keywords"

@@ -153,14 +153,19 @@ REFUSAL_REASONS = {
                          "package_path_invalid", "media_resource_manifest_invalid"),
     # Version-pinned engine API cards (tools/engine_api_cards): an unreadable fact, a licence the line cannot copy,
     # a build that is not the release's, a class the reference cannot describe, native evidence that does not hold
-    # for the card's bytes, a failing package test, and the shared packaging refusals.
+    # for the card's bytes, a failing package test, and the shared packaging refusals. The Python adapter adds a
+    # module whose import failed, touched the network, started a process or wrote a file; an object without a
+    # docstring of three words; a text too little of which occurs in the tag's source files; and a source file under
+    # another licence (its nearest licence file, or its own statement).
     ENGINE_API_CARDS: ("source_unreadable", "licence_not_on_allowlist", "licence_signals_disagree", "licence_unknown",
                        "engine_binary_unverified", "published_source_differs", "reference_unreadable",
                        "duplicate_class", "documentation_missing",
                        "documentation_structure_differs", "no_api_surface", "native_evidence_missing",
                        "native_evidence_stale", "native_evidence_invalid", "native_check_failed",
                        "generated_test_failed", "blocked_by_static_check", "package_above_review_bound",
-                       "package_path_invalid"),
+                       "package_path_invalid", "import_failed", "import_touches_network", "import_starts_process",
+                       "import_writes_files", "no_documentation", "text_not_traced_to_the_tag",
+                       "nested_licence_differs", "module_licence_differs"),
     # A downloaded Kaggle dataset (tools/supply_lines/kaggle_public_good.py): held when its own files grant no
     # allowlisted licence, when it holds no table a strict schema fits, and by the shared packaging refusals.
     KAGGLE_PUBLIC_GOOD: ("source_unreadable", "licence_unknown", "licence_not_on_allowlist", "licence_signals_disagree",
@@ -294,6 +299,15 @@ def record_id(line: str, key: str, package_digest: str) -> str:
     return f"library.supply.{line}.{key}.{package_digest[:16]}"
 
 
+#: The state scope of each Python library release the engine API card line cards (python_libraries.json).
+PYTHON_CARD_SCOPES = tuple(f"python_{name}" for name in (
+    "pandas_3_0", "pandas_2_3", "scikit_learn_1_9", "requests_2_34", "httpx_0_28", "fastapi_0_143",
+    "starlette_1_8", "pydantic_2_14", "flask_3_1", "werkzeug_3_1", "jinja2_3_1", "click_8_5", "sqlalchemy_2_1",
+    "sqlalchemy_2_0", "pytest_9_1", "attrs_26_1", "typer_0_27", "rich_15_0", "aiohttp_3_14", "urllib3_2_8",
+    "pyyaml_6_0", "marshmallow_4_3", "alembic_1_20", "uvicorn_0_54", "tenacity_9_2", "redis_8_1", "polars_2_0",
+    "polars_1_44", "statsmodels_0_15"))
+#: The state scope of each JavaScript package release the line cards through its JSDoc members (javascript_packages.json).
+JAVASCRIPT_CARD_SCOPES = ("javascript_express_5_3", "javascript_express_4_22")
 #: The state scopes of a line. A line written by two modes keeps one state per mode, so a complete run of one
 #: mode never withdraws what the other supplies (the curated and the directory mode of the API line).
 OPERATION_CONTRACT_SCOPE = "operation_contracts"
@@ -305,8 +319,9 @@ STATE_SCOPES = ("", "apis_guru_directory", "google_discovery", "api_components",
                 # another's packages.
                 "polyhaven", "ambientcg", "godot_demo_projects",
                 # The engine API card line keeps one state per engine and API version, so a complete run of one
-                # release never withdraws the cards of another.
-                "godot_4_7", "threejs_r186", "babylonjs_9_30",
+                # release never withdraws the cards of another; each Python library release of
+                # tools/engine_api_cards/python_libraries.json names its own (a test holds the two lists equal).
+                "godot_4_7", "threejs_r186", "babylonjs_9_30", *PYTHON_CARD_SCOPES, *JAVASCRIPT_CARD_SCOPES,
                 # The container image card line keeps one state per collection of images (the Docker Official
                 # Images now), so a complete run of one collection never withdraws another's cards.
                 "docker_official_images")

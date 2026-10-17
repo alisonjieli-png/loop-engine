@@ -1,0 +1,644 @@
+{
+ "record_type": "javascript_api_card_sources/v1",
+ "curated_on": "2026-10-16",
+ "curated_by": "engineering (Claude, the supply worktree of the October 15 takeover)",
+ "rule": "A row is a JavaScript package release coding agents use daily whose published files are the blobs of its release tag (the tag's commit is the package's gitHead), whose licence GitHub's licence interface, its licence file and its package.json name alike, and whose public members its own JSDoc marks (rules: the files read, the marker, the object each owner name stands for, the public name of a function exported under another one). dependencies pins every runtime package the module needs to be required in Node, from an npm lock resolved on the curated date (path and version; the registry's own record gives each tarball and integrity). A rejected row says why, with what was measured.",
+ "packages": [
+  {
+   "identity": "express-5.3",
+   "package": "express",
+   "version": "5.3.0",
+   "title": "Express",
+   "repository": "expressjs/express",
+   "tag": "v5.3.0",
+   "module": "index.js",
+   "prefix": "",
+   "state_scope": "javascript_express_5_3",
+   "rules": [
+    {
+     "files": "lib/application\\.js",
+     "marker": "public",
+     "owners": {
+      "app": "application"
+     }
+    },
+    {
+     "files": "lib/request\\.js",
+     "marker": "public",
+     "owners": {
+      "req": "request"
+     }
+    },
+    {
+     "files": "lib/response\\.js",
+     "marker": "public",
+     "owners": {
+      "res": "response"
+     }
+    },
+    {
+     "files": "lib/express\\.js",
+     "marker": "public",
+     "exports": {
+      "createApplication": ""
+     },
+     "export_name": "express"
+    }
+   ],
+   "dependencies": [
+    {
+     "path": "node_modules/accepts",
+     "version": "2.0.0"
+    },
+    {
+     "path": "node_modules/body-parser",
+     "version": "2.3.0"
+    },
+    {
+     "path": "node_modules/bytes",
+     "version": "3.1.2"
+    },
+    {
+     "path": "node_modules/call-bind-apply-helpers",
+     "version": "1.0.2"
+    },
+    {
+     "path": "node_modules/call-bound",
+     "version": "1.0.4"
+    },
+    {
+     "path": "node_modules/content-disposition",
+     "version": "2.0.1"
+    },
+    {
+     "path": "node_modules/content-type",
+     "version": "2.1.0"
+    },
+    {
+     "path": "node_modules/cookie",
+     "version": "0.7.2"
+    },
+    {
+     "path": "node_modules/cookie-signature",
+     "version": "1.2.2"
+    },
+    {
+     "path": "node_modules/debug",
+     "version": "4.4.3"
+    },
+    {
+     "path": "node_modules/depd",
+     "version": "2.0.0"
+    },
+    {
+     "path": "node_modules/dunder-proto",
+     "version": "1.0.1"
+    },
+    {
+     "path": "node_modules/ee-first",
+     "version": "1.1.1"
+    },
+    {
+     "path": "node_modules/encodeurl",
+     "version": "2.0.0"
+    },
+    {
+     "path": "node_modules/es-define-property",
+     "version": "1.0.1"
+    },
+    {
+     "path": "node_modules/es-errors",
+     "version": "1.3.0"
+    },
+    {
+     "path": "node_modules/es-object-atoms",
+     "version": "1.1.2"
+    },
+    {
+     "path": "node_modules/escape-html",
+     "version": "1.0.3"
+    },
+    {
+     "path": "node_modules/etag",
+     "version": "1.8.1"
+    },
+    {
+     "path": "node_modules/finalhandler",
+     "version": "2.1.1"
+    },
+    {
+     "path": "node_modules/forwarded",
+     "version": "0.2.0"
+    },
+    {
+     "path": "node_modules/fresh",
+     "version": "2.0.0"
+    },
+    {
+     "path": "node_modules/function-bind",
+     "version": "1.1.2"
+    },
+    {
+     "path": "node_modules/get-intrinsic",
+     "version": "1.3.0"
+    },
+    {
+     "path": "node_modules/get-proto",
+     "version": "1.0.1"
+    },
+    {
+     "path": "node_modules/gopd",
+     "version": "1.2.0"
+    },
+    {
+     "path": "node_modules/has-symbols",
+     "version": "1.1.0"
+    },
+    {
+     "path": "node_modules/hasown",
+     "version": "2.0.4"
+    },
+    {
+     "path": "node_modules/http-errors",
+     "version": "2.0.1"
+    },
+    {
+     "path": "node_modules/iconv-lite",
+     "version": "0.7.3"
+    },
+    {
+     "path": "node_modules/inherits",
+     "version": "2.0.4"
+    },
+    {
+     "path": "node_modules/ipaddr.js",
+     "version": "1.9.1"
+    },
+    {
+     "path": "node_modules/is-promise",
+     "version": "4.0.0"
+    },
+    {
+     "path": "node_modules/math-intrinsics",
+     "version": "1.1.0"
+    },
+    {
+     "path": "node_modules/media-typer",
+     "version": "1.1.1"
+    },
+    {
+     "path": "node_modules/merge-descriptors",
+     "version": "2.0.0"
+    },
+    {
+     "path": "node_modules/mime-db",
+     "version": "1.54.0"
+    },
+    {
+     "path": "node_modules/mime-types",
+     "version": "3.0.2"
+    },
+    {
+     "path": "node_modules/ms",
+     "version": "2.1.3"
+    },
+    {
+     "path": "node_modules/negotiator",
+     "version": "1.1.0"
+    },
+    {
+     "path": "node_modules/object-inspect",
+     "version": "1.13.4"
+    },
+    {
+     "path": "node_modules/on-finished",
+     "version": "2.4.1"
+    },
+    {
+     "path": "node_modules/once",
+     "version": "1.4.0"
+    },
+    {
+     "path": "node_modules/parseurl",
+     "version": "1.3.3"
+    },
+    {
+     "path": "node_modules/path-to-regexp",
+     "version": "8.4.2"
+    },
+    {
+     "path": "node_modules/proxy-addr",
+     "version": "2.0.8"
+    },
+    {
+     "path": "node_modules/qs",
+     "version": "6.16.1"
+    },
+    {
+     "path": "node_modules/range-parser",
+     "version": "1.3.0"
+    },
+    {
+     "path": "node_modules/raw-body",
+     "version": "3.0.2"
+    },
+    {
+     "path": "node_modules/router",
+     "version": "2.2.0"
+    },
+    {
+     "path": "node_modules/safer-buffer",
+     "version": "2.1.2"
+    },
+    {
+     "path": "node_modules/send",
+     "version": "1.2.1"
+    },
+    {
+     "path": "node_modules/serve-static",
+     "version": "2.2.1"
+    },
+    {
+     "path": "node_modules/setprototypeof",
+     "version": "1.2.0"
+    },
+    {
+     "path": "node_modules/side-channel",
+     "version": "1.1.1"
+    },
+    {
+     "path": "node_modules/side-channel-list",
+     "version": "1.0.1"
+    },
+    {
+     "path": "node_modules/side-channel-map",
+     "version": "1.0.1"
+    },
+    {
+     "path": "node_modules/side-channel-weakmap",
+     "version": "1.0.2"
+    },
+    {
+     "path": "node_modules/statuses",
+     "version": "2.0.2"
+    },
+    {
+     "path": "node_modules/toidentifier",
+     "version": "1.0.1"
+    },
+    {
+     "path": "node_modules/type-is",
+     "version": "2.1.0"
+    },
+    {
+     "path": "node_modules/unpipe",
+     "version": "1.0.0"
+    },
+    {
+     "path": "node_modules/vary",
+     "version": "1.1.2"
+    },
+    {
+     "path": "node_modules/wrappy",
+     "version": "1.0.2"
+    }
+   ],
+   "chosen": "The most used Node web framework; version 5 removed and changed calls that agents still write in version 4 style."
+  },
+  {
+   "identity": "express-4.22",
+   "package": "express",
+   "version": "4.22.3",
+   "title": "Express",
+   "repository": "expressjs/express",
+   "tag": "v4.22.3",
+   "module": "index.js",
+   "prefix": "",
+   "state_scope": "javascript_express_4_22",
+   "rules": [
+    {
+     "files": "lib/application\\.js",
+     "marker": "public",
+     "owners": {
+      "app": "application"
+     }
+    },
+    {
+     "files": "lib/request\\.js",
+     "marker": "public",
+     "owners": {
+      "req": "request"
+     }
+    },
+    {
+     "files": "lib/response\\.js",
+     "marker": "public",
+     "owners": {
+      "res": "response"
+     }
+    },
+    {
+     "files": "lib/express\\.js",
+     "marker": "public",
+     "exports": {
+      "createApplication": ""
+     },
+     "export_name": "express"
+    }
+   ],
+   "dependencies": [
+    {
+     "path": "node_modules/accepts",
+     "version": "1.3.8"
+    },
+    {
+     "path": "node_modules/array-flatten",
+     "version": "1.1.1"
+    },
+    {
+     "path": "node_modules/body-parser",
+     "version": "1.20.8"
+    },
+    {
+     "path": "node_modules/bytes",
+     "version": "3.1.2"
+    },
+    {
+     "path": "node_modules/call-bind-apply-helpers",
+     "version": "1.0.2"
+    },
+    {
+     "path": "node_modules/call-bound",
+     "version": "1.0.4"
+    },
+    {
+     "path": "node_modules/content-disposition",
+     "version": "0.5.4"
+    },
+    {
+     "path": "node_modules/content-type",
+     "version": "1.0.5"
+    },
+    {
+     "path": "node_modules/cookie",
+     "version": "0.7.2"
+    },
+    {
+     "path": "node_modules/cookie-signature",
+     "version": "1.0.7"
+    },
+    {
+     "path": "node_modules/debug",
+     "version": "2.6.9"
+    },
+    {
+     "path": "node_modules/depd",
+     "version": "2.0.0"
+    },
+    {
+     "path": "node_modules/destroy",
+     "version": "1.2.0"
+    },
+    {
+     "path": "node_modules/dunder-proto",
+     "version": "1.0.1"
+    },
+    {
+     "path": "node_modules/ee-first",
+     "version": "1.1.1"
+    },
+    {
+     "path": "node_modules/encodeurl",
+     "version": "2.0.0"
+    },
+    {
+     "path": "node_modules/es-define-property",
+     "version": "1.0.1"
+    },
+    {
+     "path": "node_modules/es-errors",
+     "version": "1.3.0"
+    },
+    {
+     "path": "node_modules/es-object-atoms",
+     "version": "1.1.2"
+    },
+    {
+     "path": "node_modules/escape-html",
+     "version": "1.0.3"
+    },
+    {
+     "path": "node_modules/etag",
+     "version": "1.8.1"
+    },
+    {
+     "path": "node_modules/finalhandler",
+     "version": "1.3.2"
+    },
+    {
+     "path": "node_modules/forwarded",
+     "version": "0.2.0"
+    },
+    {
+     "path": "node_modules/fresh",
+     "version": "0.5.2"
+    },
+    {
+     "path": "node_modules/function-bind",
+     "version": "1.1.2"
+    },
+    {
+     "path": "node_modules/get-intrinsic",
+     "version": "1.3.0"
+    },
+    {
+     "path": "node_modules/get-proto",
+     "version": "1.0.1"
+    },
+    {
+     "path": "node_modules/gopd",
+     "version": "1.2.0"
+    },
+    {
+     "path": "node_modules/has-symbols",
+     "version": "1.1.0"
+    },
+    {
+     "path": "node_modules/hasown",
+     "version": "2.0.4"
+    },
+    {
+     "path": "node_modules/http-errors",
+     "version": "2.0.1"
+    },
+    {
+     "path": "node_modules/iconv-lite",
+     "version": "0.4.24"
+    },
+    {
+     "path": "node_modules/inherits",
+     "version": "2.0.4"
+    },
+    {
+     "path": "node_modules/ipaddr.js",
+     "version": "1.9.1"
+    },
+    {
+     "path": "node_modules/math-intrinsics",
+     "version": "1.1.0"
+    },
+    {
+     "path": "node_modules/media-typer",
+     "version": "0.3.0"
+    },
+    {
+     "path": "node_modules/merge-descriptors",
+     "version": "1.0.3"
+    },
+    {
+     "path": "node_modules/methods",
+     "version": "1.1.2"
+    },
+    {
+     "path": "node_modules/mime",
+     "version": "1.6.0"
+    },
+    {
+     "path": "node_modules/mime-db",
+     "version": "1.52.0"
+    },
+    {
+     "path": "node_modules/mime-types",
+     "version": "2.1.35"
+    },
+    {
+     "path": "node_modules/ms",
+     "version": "2.0.0"
+    },
+    {
+     "path": "node_modules/negotiator",
+     "version": "0.6.3"
+    },
+    {
+     "path": "node_modules/object-inspect",
+     "version": "1.13.4"
+    },
+    {
+     "path": "node_modules/on-finished",
+     "version": "2.4.1"
+    },
+    {
+     "path": "node_modules/parseurl",
+     "version": "1.3.3"
+    },
+    {
+     "path": "node_modules/path-to-regexp",
+     "version": "0.1.13"
+    },
+    {
+     "path": "node_modules/proxy-addr",
+     "version": "2.0.8"
+    },
+    {
+     "path": "node_modules/qs",
+     "version": "6.16.1"
+    },
+    {
+     "path": "node_modules/range-parser",
+     "version": "1.2.1"
+    },
+    {
+     "path": "node_modules/raw-body",
+     "version": "2.5.3"
+    },
+    {
+     "path": "node_modules/safe-buffer",
+     "version": "5.2.1"
+    },
+    {
+     "path": "node_modules/safer-buffer",
+     "version": "2.1.2"
+    },
+    {
+     "path": "node_modules/send",
+     "version": "0.19.2"
+    },
+    {
+     "path": "node_modules/send/node_modules/ms",
+     "version": "2.1.3"
+    },
+    {
+     "path": "node_modules/serve-static",
+     "version": "1.16.3"
+    },
+    {
+     "path": "node_modules/setprototypeof",
+     "version": "1.2.0"
+    },
+    {
+     "path": "node_modules/side-channel",
+     "version": "1.1.1"
+    },
+    {
+     "path": "node_modules/side-channel-list",
+     "version": "1.0.1"
+    },
+    {
+     "path": "node_modules/side-channel-map",
+     "version": "1.0.1"
+    },
+    {
+     "path": "node_modules/side-channel-weakmap",
+     "version": "1.0.2"
+    },
+    {
+     "path": "node_modules/statuses",
+     "version": "2.0.2"
+    },
+    {
+     "path": "node_modules/toidentifier",
+     "version": "1.0.1"
+    },
+    {
+     "path": "node_modules/type-is",
+     "version": "1.6.18"
+    },
+    {
+     "path": "node_modules/unpipe",
+     "version": "1.0.0"
+    },
+    {
+     "path": "node_modules/utils-merge",
+     "version": "1.0.1"
+    },
+    {
+     "path": "node_modules/vary",
+     "version": "1.1.2"
+    }
+   ],
+   "chosen": "The previous major release: most deployed Node services still pin Express 4, whose routing and response methods differ from Express 5."
+  }
+ ],
+ "rejected": [
+  {
+   "package": "lodash",
+   "release": "4.18.1, 4.17.23",
+   "reason": "Licence not proven by the shared rule: GitHub's licence interface answers NOASSERTION for lodash/lodash at both releases' commits (4.18.1-npm, 4.17.23-npm) and at the default branch, and the template matcher scores LICENSE at 0.733 (it adds paragraphs to the MIT text), measured October 16, 2026. Source identity holds: all 1,048 JavaScript files of each package are the blobs of its tag."
+  },
+  {
+   "package": "ramda",
+   "release": "0.32.0",
+   "reason": "Source identity not provable: 2 of the package's 740 JavaScript files are blobs of the tag v0.32.0; its src and es folders are compiled from the repository's ES modules (measured October 16, 2026)."
+  },
+  {
+   "package": "zod",
+   "release": "4.6.7",
+   "reason": "Not attempted in this pass: this adapter reads the JSDoc of CommonJS sources, and Zod's public surface is published as TypeScript declarations, which need a declaration reader of their own."
+  },
+  {
+   "package": "date-fns",
+   "release": "4.4.0",
+   "reason": "Not attempted in this pass: its npm record names no gitHead, so the release tag cannot be bound to the published package."
+  }
+ ]
+}

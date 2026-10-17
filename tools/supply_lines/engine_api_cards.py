@@ -170,6 +170,16 @@ class EngineSources:
     notices: list = field(default_factory=list)
     #: The text whose copyright lines a card quotes, when it is not the licence (an Apache NOTICE file).
     copyright_text: bytes = b""
+    #: An adapter that decides inheritance itself (a Python class's method resolution order) gives each card's
+    #: listed ancestors and the cards that list it first; None derives both from each reference's parent.
+    chains: "dict | None" = None
+    children: "dict | None" = None
+    #: Where a native check finds each card's object (module, qualified name, member, ancestors), and how the
+    #: release fact is described when it is not an engine build.
+    locations: dict = field(default_factory=dict)
+    release_basis: str = "official_build_of_the_tag_surface_read_never_copied"
+    #: What the adapter's native check runs with (the Python adapter's interpreter and wheel folders).
+    native: object = None
 
 
 #: How the licence of the tag was decided: GitHub's interface at the tag, or (when it names none there) GitHub's
@@ -640,7 +650,8 @@ def _copyright_lines(licence_bytes: bytes) -> list:
 def prepare(sources: EngineSources, licence_text: bytes, only=()) -> tuple:
     """({class: PreparedCard}, refusals) for every class with a surface and its class reference (only the classes
     named, when some are)."""
-    chains, children = inheritance(sources.references)
+    chains, children = (sources.chains, sources.children) if sources.chains is not None else \
+        inheritance(sources.references)
     known = frozenset(sources.references)
     module = cards.card_module()
     prepared, refused = {}, []
@@ -659,8 +670,10 @@ def prepare(sources: EngineSources, licence_text: bytes, only=()) -> tuple:
         dump_path, dump_bytes = sources.dump[name]
         pinned = sources.pinned[sources.reference_paths[name]]
         renames = sources.renames.get(name, [])
+        # A dump given by its digest (a compiled module of a wheel) is not read again for every card.
         card_sources = cards.CardSources(
-            dump_path=dump_path, dump_sha256=hashlib.sha256(dump_bytes).hexdigest(),
+            dump_path=dump_path, dump_sha256=dump_bytes if isinstance(dump_bytes, str) else
+            hashlib.sha256(dump_bytes).hexdigest(),
             reference_path=sources.reference_paths[name], reference_sha256=pinned["sha256"],
             renames_path=godot_renames.MAP_PATH if renames else "",
             renames_sha256=sources.renames_map["sha256"] if renames else "")
@@ -750,8 +763,7 @@ def _package(card: PreparedCard, files: dict, sources: EngineSources, *, code_re
     if sources.release_asset:
         asset = sources.release_asset
         facts.append(fact_source(asset["url"], asset["retrieved_at"], asset["sha256"], asset["size_bytes"] or 0,
-                                 "release", spdx=GENERATED_CODE_LICENCE,
-                                 basis="official_build_of_the_tag_surface_read_never_copied"))
+                                 "release", spdx=GENERATED_CODE_LICENCE, basis=sources.release_basis))
     notice_rows, notice_facts = notice_files(sources.notices)
     rows += notice_rows
     facts += notice_facts
