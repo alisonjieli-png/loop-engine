@@ -5,13 +5,13 @@ Implements two swappable engine slot families wrapped in the 7-layer ComponentEn
 
 1. Slot Family 1 (`four_mode_interactive_resume_and_story_compiler_slot`):
    - Compiles a single canonical, fact-verified Career, Research Proposal & Investigative Story Graph
-     (`Taylor Amarel: Anthropic Fellowship / DueCare / TAEDRI / Baltor / IVANS / Migrasia`) into
-     4 synchronized, switchable reviewer experiences on `baltor.ai` and `paper.baltor.ai`:
+     (`Taylor Amarel: Anthropic Fellowship / DueCare / TAEDRI / IVANS / Migrasia`) into
+     4 synchronized, switchable reviewer experiences on the isolated personal subdomain `tayloramarel.baltor.ai` (never conflated with `baltor.ai`):
      - Mode 1 (`print_monograph_with_tufte_svg_diagrams_engine`): "The Boring PDF" (5-page print-ready
        monograph with 4 embedded vector Tufte SVG diagrams, passion/pride-first paragraph openings,
        and QR/deep-link badges to Modes 2, 3, and 4).
      - Mode 2 (`interactive_story_and_live_experiment_webpage_engine`): Zero-cookie, WCAG AAA interactive
-       web experience (`baltor.ai/fellowship` and `paper.baltor.ai/bad-investigator`) with the interactive
+       web experience (`tayloramarel.baltor.ai` and `tayloramarel.baltor.ai/bad-investigator`) with the interactive
        Clue-Trail Inspector (`A0` vs `A3..A5`), 6 live Stakeholder Lenses, and the TAEDRI Composable Code
        Graph explorer (`~19,000` tested configurations, `~60%` verified transform reuse).
      - Mode 3 (`programmatic_research_and_story_video_engine`): Deterministic `16:9` (`1920x1080`) and
@@ -95,28 +95,28 @@ FOUR_SHOWCASE_MODES: dict[str, dict[str, Any]] = {
         "mode_index": 1,
         "label": "The Boring PDF (5-Page Print Monograph + Tufte Vector SVGs)",
         "engine_id": "print_monograph_with_tufte_svg_diagrams_engine",
-        "route_path": "baltor.ai/fellowship/pdf",
+        "route_path": "tayloramarel.baltor.ai/pdf",
         "page_count": 5,
     },
     "mode_2_interactive_story_and_sandbox_webpage": {
         "mode_index": 2,
         "label": "Interactive Story, Timeline & Live Experiment Sandbox Webpage",
         "engine_id": "interactive_story_and_live_experiment_webpage_engine",
-        "route_path": "baltor.ai/fellowship",
-        "companion_route_path": "paper.baltor.ai/bad-investigator",
+        "route_path": "tayloramarel.baltor.ai",
+        "companion_route_path": "tayloramarel.baltor.ai/bad-investigator",
     },
     "mode_3_programmatic_3_act_explainer_video": {
         "mode_index": 3,
         "label": "Programmatically Generated 3-Act Explainer Video (16:9 + 9:16)",
         "engine_id": "programmatic_research_and_story_video_engine",
-        "route_path": "baltor.ai/fellowship/video",
+        "route_path": "tayloramarel.baltor.ai/video",
         "duration_seconds": 75.0,
     },
     "mode_4_signal_space_cartographer_atlas": {
         "mode_index": 4,
         "label": "Interactive Cartographer Map of Signal Spaces (2D/3D Atlas)",
         "engine_id": "signal_space_cartographer_atlas_engine",
-        "route_path": "baltor.ai/fellowship/cartographer",
+        "route_path": "tayloramarel.baltor.ai/cartographer",
         "region_count": 4,
     },
 }
@@ -453,10 +453,10 @@ def compile_four_synchronized_modes(
             "embedded_tufte_svg_diagrams": list(TUFTE_SVG_DIAGRAMS),
             "opening_sentence": manifest.story_paragraphs[0],
             "qr_deep_link_badges": [
-                "baltor.ai/fellowship",
-                "paper.baltor.ai/bad-investigator",
-                "baltor.ai/fellowship/video",
-                "baltor.ai/fellowship/cartographer",
+                "tayloramarel.baltor.ai",
+                "tayloramarel.baltor.ai/bad-investigator",
+                "tayloramarel.baltor.ai/video",
+                "tayloramarel.baltor.ai/cartographer",
             ],
         },
         "mode_2_interactive_story_and_sandbox_webpage": {
@@ -464,7 +464,7 @@ def compile_four_synchronized_modes(
             "engine_id": "interactive_story_and_live_experiment_webpage_engine",
             "source_manifest_sha256": digest,
             "proposal_status": manifest.proposal_status,
-            "routes": ["baltor.ai/fellowship", "paper.baltor.ai/bad-investigator"],
+            "routes": ["tayloramarel.baltor.ai", "tayloramarel.baltor.ai/bad-investigator"],
             "wcag_level": "AAA",
             "zero_cookie_telemetry": True,
             "clue_trail_inspector": {

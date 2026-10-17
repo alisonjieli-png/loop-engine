@@ -56,6 +56,8 @@ class FourModeInteractiveResumeAndStoryShowcaseTests(unittest.TestCase):
 
         pdf_mode = res.compiled_modes["mode_1_the_boring_pdf"]
         self.assertEqual(pdf_mode["page_count"], 5)
+        self.assertTrue(all(r.startswith("tayloramarel.baltor.ai") for r in pdf_mode["qr_deep_link_badges"]))
+        self.assertTrue(all(not r.startswith("baltor.ai/") for r in pdf_mode["qr_deep_link_badges"]))
         self.assertEqual(len(pdf_mode["embedded_tufte_svg_diagrams"]), 4)
 
         web_mode = res.compiled_modes["mode_2_interactive_story_and_sandbox_webpage"]
