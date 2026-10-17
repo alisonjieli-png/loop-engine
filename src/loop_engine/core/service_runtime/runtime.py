@@ -763,12 +763,9 @@ class ServiceRuntime:
             updated = {**tenant, "record_version": uuid.uuid4().hex,
                        "payload": {**data, "billing_customer_id": "", "billing_account_id": ""}}
             self._catalog.commit(store, (updated,), (self._catalog.guard(tenant),))
-        return {"record_type": BILLING_CUSTOMER_ACCOUNT_RELEASE_VERSION, "committed": True,
-                "tenant_id": request.tenant_id,
-                "released_provider_account_id": request.released_provider_account_id,
-                "released_provider_customer_id": released_customer,
-                "current_provider_account_id": request.current_provider_account_id,
-                "released_at": now}
+        return {"record_type": BILLING_CUSTOMER_ACCOUNT_RELEASE_VERSION, "committed": True, "tenant_id": request.tenant_id,
+                "released_provider_account_id": request.released_provider_account_id, "released_provider_customer_id": released_customer,
+                "current_provider_account_id": request.current_provider_account_id, "released_at": now}
 
     def billing_customer_for(self, principal: ServicePrincipal):
         """Resolve the exact durable provider mapping after current scope validation."""
@@ -789,9 +786,7 @@ class ServiceRuntime:
                     "record_id": row["record_id"], "record_version": row["record_version"]}
 
     def record_usage(self, request: ProvisioningMeterRequest, principal: ServicePrincipal, *, guards=()):
-        """Record one metered unit, or acknowledge the unit this item version already holds this month.
-
-        The rule and its retries are in `usage_meter`: one unit for each account, item version and calendar month."""
+        """Record one metered unit, or acknowledge the unit this item version already holds this month."""
         from .usage_meter import record_usage
         return record_usage(self, request, principal, guards)
 

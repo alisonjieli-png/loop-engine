@@ -10,7 +10,7 @@ Verification suite: [`tools/test_seo_blog_comparison_and_humanizer_engines.py`](
 
 This record documents the implementation, 7-layer envelope verification, head-to-head engine benchmarks, and known-wrong refusal probes for three swappable engine families:
 
-1. Swappable humanizer and public prose quality engines (`public_prose_humanizer_slot`) enforcing [`humanizer-context.md`](../../humanizer-context.md) and [`src/loop_engine/core/service_runtime/web_assets/public_wording_rules.mjs`](../../src/loop_engine/core/service_runtime/web_assets/public_wording_rules.mjs).
+1. Swappable humanizer and public prose quality engines (`public_prose_humanizer_slot`) enforcing [`humanizer-context.md`](../../humanizer-context.md) and [`tools/public_wording_rules.mjs`](../../tools/public_wording_rules.mjs).
 2. Front-end design-skill and multi-brand visual separation auditors (`multi_brand_visual_separation_slot`) across 11 customer-facing Baltor and standalone brand surfaces coupled to synchronized shared backend planes at release digest `29a2bc33`.
 3. Programmatic SEO, side-by-side comparison guide, and technical blog generators (`programmatic_seo_comparison_blog_slot`) producing 6 side-by-side comparison guides and 8 technical blog articles with `noindex` `.md` twins, `/llms.txt` entries, and `TechArticle` / `FAQPage` / `SoftwareSourceCode` JSON-LD schemas.
 

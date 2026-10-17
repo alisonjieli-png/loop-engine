@@ -58,7 +58,6 @@ from dataclasses import asdict, dataclass
 import json
 import re
 from typing import Any
-from urllib.parse import urlsplit
 
 SITE_MAP_RECORD_TYPE = "service_web_site_map/v4"
 LAYOUT_STANDARD_RECORD_TYPE = "service_web_layout_standard/v2"
@@ -243,17 +242,20 @@ class SiteMap:
         section's own page, a root file is the section's own copy and any other path is itself. A query or a fragment
         is left out; an address with a user part, a port or another scheme names nothing here.
         """
-        try:
-            parts = urlsplit(url)
-            port = parts.port
-        except ValueError:
+        if not isinstance(url, str):
             return None
-        if parts.scheme != SCHEME or parts.username or parts.password or port is not None or not parts.hostname:
+        scheme, sep, rest = url.partition("://")
+        if not sep or scheme.lower() != SCHEME:
             return None
-        path = parts.path or "/"
-        if parts.hostname == self.canonical_hostname:
+        rest = rest.split("#", 1)[0].split("?", 1)[0]
+        host, slash, tail = rest.partition("/")
+        if not host or "@" in host or ":" in host or any(ch.isspace() for ch in url):
+            return None
+        hostname = host.lower()
+        path = "/" + tail if slash else "/"
+        if hostname == self.canonical_hostname:
             return path
-        section = next((surface for surface in self.canonical_sections() if surface.hostname == parts.hostname), None)
+        section = next((surface for surface in self.canonical_sections() if surface.hostname == hostname), None)
         if section is None:
             return None
         return section.address if path == "/" else (self.section_file(section.hostname, path) or path)

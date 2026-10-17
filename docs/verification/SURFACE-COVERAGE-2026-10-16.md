@@ -7,14 +7,14 @@ its test or component guide coverage, or a new unreviewed gap appears.
 
 ## Summary across the eight categories
 
-- Total surface items inventoried: **643**
-- Fully covered items (no gaps): **640**
+- Total surface items inventoried: **648**
+- Fully covered items (no gaps): **645**
 - Items with an explicit test or live-check gap: **3**
 
 | Category | Total items | Unit / integration tested | Browser tested | Live checked | Component guide mapped | Open gaps |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: |
 | `screens` | 130 | 130 | 130 | 130 | 130 | 0 |
-| `functions` | 321 | 321 | 264 | 276 | 321 | 0 |
+| `functions` | 326 | 326 | 269 | 281 | 326 | 0 |
 | `interactions` | 18 | 18 | 18 | 12 | 18 | 0 |
 | `data_transfer` | 56 | 56 | 11 | 5 | 56 | 0 |
 | `data_computation` | 11 | 11 | 3 | 0 | 11 | 0 |
@@ -70,9 +70,9 @@ Every item below has a mapped component guide in `docs/components/COMPONENT-GUID
 | `baltor_hostname` | `hostname:app.baltor.ai` | `src/loop_engine/core/service_runtime/web_site_map.json` | 6 | 5 | 2 | `docs/components/service-runtime/README.md` | covered |
 | `baltor_hostname` | `hostname:deck.baltor.ai` | `src/loop_engine/core/service_runtime/web_site_map.json` | 5 | 5 | 2 | `docs/components/service-runtime/README.md` | covered |
 | `baltor_hostname` | `hostname:redteam.baltor.ai` | `src/loop_engine/core/service_runtime/web_site_map.json` | 4 | 5 | 2 | `docs/components/service-runtime/README.md` | covered |
-| `baltor_hostname` | `hostname:deterministicskills.baltor.ai` | `src/loop_engine/core/service_runtime/web_site_map.json` | 5 | 5 | 2 | `docs/components/service-runtime/README.md` | covered |
-| `baltor_hostname` | `hostname:tools.baltor.ai` | `src/loop_engine/core/service_runtime/web_site_map.json` | 4 | 5 | 2 | `docs/components/service-runtime/README.md` | covered |
-| `baltor_hostname` | `hostname:cornercases.baltor.ai` | `src/loop_engine/core/service_runtime/web_site_map.json` | 4 | 5 | 2 | `docs/components/service-runtime/README.md` | covered |
+| `baltor_hostname` | `hostname:deterministicskills.baltor.ai` | `src/loop_engine/core/service_runtime/web_site_map.json` | 6 | 5 | 2 | `docs/components/service-runtime/README.md` | covered |
+| `baltor_hostname` | `hostname:tools.baltor.ai` | `src/loop_engine/core/service_runtime/web_site_map.json` | 5 | 5 | 2 | `docs/components/service-runtime/README.md` | covered |
+| `baltor_hostname` | `hostname:cornercases.baltor.ai` | `src/loop_engine/core/service_runtime/web_site_map.json` | 5 | 5 | 2 | `docs/components/service-runtime/README.md` | covered |
 | `baltor_site_map_page` | `page:baltor:/feeds` | `src/loop_engine/core/service_runtime/web_site_map.json` | 6 | 6 | 2 | `docs/components/service-runtime/README.md` | covered |
 | `baltor_site_map_page` | `page:baltor:/feeds/setup` | `src/loop_engine/core/service_runtime/web_site_map.json` | 4 | 6 | 2 | `docs/components/service-runtime/README.md` | covered |
 | `baltor_site_map_page` | `page:baltor:/harness-files` | `src/loop_engine/core/service_runtime/web_site_map.json` | 6 | 6 | 2 | `docs/components/service-runtime/README.md` | covered |
@@ -294,6 +294,8 @@ Every item below has a mapped component guide in `docs/components/COMPONENT-GUID
 | `operator_tool` | `operator_tool:audit_public_websites.mjs` | `tools/audit_public_websites.mjs` | 6 | 6 | 4 | `docs/components/README.md` | covered |
 | `operator_tool` | `operator_tool:balance_test_shards.py` | `tools/balance_test_shards.py` | 6 | 6 | 4 | `docs/components/README.md` | covered |
 | `operator_tool` | `operator_tool:baltor_feedback.py` | `tools/baltor_feedback.py` | 6 | 6 | 4 | `docs/components/README.md` | covered |
+| `operator_tool` | `operator_tool:baltor_preturn_hook.py` | `tools/baltor_preturn_hook.py` | 6 | 6 | 4 | `docs/components/README.md` | covered |
+| `operator_tool` | `operator_tool:benchmark_adoption_engines.py` | `tools/benchmark_adoption_engines.py` | 6 | 6 | 4 | `docs/components/README.md` | covered |
 | `operator_tool` | `operator_tool:browser_appearance_checks.mjs` | `tools/browser_appearance_checks.mjs` | 6 | 6 | 4 | `docs/components/README.md` | covered |
 | `operator_tool` | `operator_tool:build_asset_site_previews.py` | `tools/build_asset_site_previews.py` | 6 | 6 | 4 | `docs/components/README.md` | covered |
 | `operator_tool` | `operator_tool:build_catalogue_release_bundle.py` | `tools/build_catalogue_release_bundle.py` | 6 | 6 | 4 | `docs/components/README.md` | covered |
@@ -412,6 +414,7 @@ Every item below has a mapped component guide in `docs/components/COMPONENT-GUID
 | `operator_tool` | `operator_tool:global_component_duplicate_disk.py` | `tools/global_component_duplicate_disk.py` | 6 | 6 | 4 | `docs/components/README.md` | covered |
 | `operator_tool` | `operator_tool:global_component_duplicate_sources.py` | `tools/global_component_duplicate_sources.py` | 6 | 6 | 4 | `docs/components/README.md` | covered |
 | `operator_tool` | `operator_tool:global_component_duplicates.py` | `tools/global_component_duplicates.py` | 6 | 6 | 4 | `docs/components/README.md` | covered |
+| `operator_tool` | `operator_tool:graph_coordinator_and_harness_catalog_engines.py` | `tools/graph_coordinator_and_harness_catalog_engines.py` | 6 | 6 | 4 | `docs/components/README.md` | covered |
 | `operator_tool` | `operator_tool:harness_idea_matrix.py` | `tools/harness_idea_matrix.py` | 6 | 6 | 4 | `docs/components/README.md` | covered |
 | `operator_tool` | `operator_tool:harness_t1_gates.py` | `tools/harness_t1_gates.py` | 6 | 6 | 4 | `docs/components/README.md` | covered |
 | `operator_tool` | `operator_tool:heavy.sh` | `tools/heavy.sh` | 6 | 6 | 4 | `docs/components/README.md` | covered |
@@ -492,6 +495,7 @@ Every item below has a mapped component guide in `docs/components/COMPONENT-GUID
 | `operator_tool` | `operator_tool:run_query_multiplier.py` | `tools/run_query_multiplier.py` | 6 | 6 | 4 | `docs/components/README.md` | covered |
 | `operator_tool` | `operator_tool:run_test_shard.py` | `tools/run_test_shard.py` | 6 | 6 | 4 | `docs/components/README.md` | covered |
 | `operator_tool` | `operator_tool:scan_local_volume.py` | `tools/scan_local_volume.py` | 6 | 6 | 4 | `docs/components/README.md` | covered |
+| `operator_tool` | `operator_tool:seo_blog_comparison_and_humanizer_engines.py` | `tools/seo_blog_comparison_and_humanizer_engines.py` | 6 | 6 | 4 | `docs/components/README.md` | covered |
 | `operator_tool` | `operator_tool:service_admin_operator.py` | `tools/service_admin_operator.py` | 6 | 6 | 4 | `docs/components/README.md` | covered |
 | `operator_tool` | `operator_tool:service_admin_rotation_host.py` | `tools/service_admin_rotation_host.py` | 6 | 6 | 4 | `docs/components/README.md` | covered |
 | `operator_tool` | `operator_tool:session_intake.py` | `tools/session_intake.py` | 6 | 6 | 4 | `docs/components/README.md` | covered |
@@ -508,6 +512,7 @@ Every item below has a mapped component guide in `docs/components/COMPONENT-GUID
 | `operator_tool` | `operator_tool:summarize_research_watch.py` | `tools/summarize_research_watch.py` | 6 | 6 | 4 | `docs/components/README.md` | covered |
 | `operator_tool` | `operator_tool:surface_inventory.py` | `tools/surface_inventory.py` | 6 | 6 | 4 | `docs/components/README.md` | covered |
 | `operator_tool` | `operator_tool:task_campaign.py` | `tools/task_campaign.py` | 6 | 6 | 4 | `docs/components/README.md` | covered |
+| `operator_tool` | `operator_tool:trace_and_self_improvement_engines.py` | `tools/trace_and_self_improvement_engines.py` | 6 | 6 | 4 | `docs/components/README.md` | covered |
 | `operator_tool` | `operator_tool:validate_procedural_assets.mjs` | `tools/validate_procedural_assets.mjs` | 6 | 6 | 4 | `docs/components/README.md` | covered |
 | `operator_tool` | `operator_tool:verified_forwarder.py` | `tools/verified_forwarder.py` | 6 | 6 | 4 | `docs/components/README.md` | covered |
 | `operator_tool` | `operator_tool:verify_launch_slice.py` | `tools/verify_launch_slice.py` | 6 | 6 | 4 | `docs/components/README.md` | covered |
@@ -582,7 +587,7 @@ Every item below has a mapped component guide in `docs/components/COMPONENT-GUID
 | `outbound_network_module` | `outbound_module:src/loop_engine/core/service_runtime/feed_source_collections.py` | `src/loop_engine/core/service_runtime/feed_source_collections.py` | 6 | 1 | 0 | `docs/components/service-runtime/README.md` | covered |
 | `outbound_network_module` | `outbound_module:src/loop_engine/core/service_runtime/stripe_provider.py` | `src/loop_engine/core/service_runtime/stripe_provider.py` | 6 | 0 | 0 | `docs/components/service-runtime/README.md` | covered |
 | `outbound_network_module` | `outbound_module:src/loop_engine/core/service_runtime/stripe_sessions.py` | `src/loop_engine/core/service_runtime/stripe_sessions.py` | 6 | 0 | 0 | `docs/components/service-runtime/README.md` | covered |
-| `outbound_network_module` | `outbound_module:src/loop_engine/core/decisions/http_transport.py` | `src/loop_engine/core/decisions/http_transport.py` | 5 | 0 | 0 | `docs/components/typed-decisions/README.md` | covered |
+| `outbound_network_module` | `outbound_module:src/loop_engine/core/decisions/http_transport.py` | `src/loop_engine/core/decisions/http_transport.py` | 6 | 0 | 0 | `docs/components/typed-decisions/README.md` | covered |
 | `outbound_network_module` | `outbound_module:src/loop_engine/core/decisions/configuration.py` | `src/loop_engine/core/decisions/configuration.py` | 6 | 6 | 1 | `docs/components/typed-decisions/README.md` | covered |
 | `outbound_network_module` | `outbound_module:src/loop_engine/core/decisions/system_one.py` | `src/loop_engine/core/decisions/system_one.py` | 6 | 0 | 0 | `docs/components/typed-decisions/README.md` | covered |
 | `outbound_network_module` | `outbound_module:src/loop_engine/core/service_runtime/browser_identity.py` | `src/loop_engine/core/service_runtime/browser_identity.py` | 6 | 3 | 0 | `docs/components/service-runtime/README.md` | covered |
@@ -592,7 +597,7 @@ Every item below has a mapped component guide in `docs/components/COMPONENT-GUID
 | `outbound_network_module` | `outbound_module:src/loop_engine/core/library_ingestion/https_transport.py` | `src/loop_engine/core/library_ingestion/https_transport.py` | 6 | 0 | 0 | `docs/components/core-architecture/README.md` | covered |
 | `outbound_network_module` | `outbound_module:src/loop_engine/core/service_runtime/account_origin.py` | `src/loop_engine/core/service_runtime/account_origin.py` | 6 | 1 | 0 | `docs/components/service-runtime/README.md` | covered |
 | `outbound_network_module` | `outbound_module:src/loop_engine/core/service_runtime/catalogue_d1_index.py` | `src/loop_engine/core/service_runtime/catalogue_d1_index.py` | 6 | 0 | 0 | `docs/components/service-runtime/README.md` | covered |
-| `oauth_hosted_redirect` | `oauth_redirect:S5:https://chatgpt.com/connector_platform_oauth_redirect` | `src/loop_engine/core/service_runtime/oauth_authorization.py` | 4 | 0 | 0 | `docs/components/service-runtime/README.md` | covered |
+| `oauth_hosted_redirect` | `oauth_redirect:S5:https://chatgpt.com/connector_platform_oauth_redirect` | `src/loop_engine/core/service_runtime/oauth_authorization.py` | 5 | 0 | 0 | `docs/components/service-runtime/README.md` | covered |
 | `oauth_hosted_redirect` | `oauth_redirect:S19:https://claude.ai/api/mcp/auth_callback` | `src/loop_engine/core/service_runtime/oauth_authorization.py` | 3 | 0 | 0 | `docs/components/service-runtime/README.md` | covered |
 | `oauth_hosted_redirect` | `oauth_redirect:S20:https://www.cursor.com/agents/mcp/oauth/callback` | `src/loop_engine/core/service_runtime/oauth_authorization.py` | 3 | 0 | 0 | `docs/components/service-runtime/README.md` | covered |
 | `oauth_hosted_redirect` | `oauth_redirect:S21:https://vscode.dev/redirect` | `src/loop_engine/core/service_runtime/oauth_authorization.py` | 3 | 0 | 0 | `docs/components/service-runtime/README.md` | covered |

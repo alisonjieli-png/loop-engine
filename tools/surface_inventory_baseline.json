@@ -5,7 +5,7 @@
     "data_computation": 11,
     "data_storage": 59,
     "data_transfer": 56,
-    "functions": 321,
+    "functions": 326,
     "interactions": 18,
     "screens": 130
   },
@@ -300,6 +300,8 @@
       "operator_tool:audit_public_websites.mjs",
       "operator_tool:balance_test_shards.py",
       "operator_tool:baltor_feedback.py",
+      "operator_tool:baltor_preturn_hook.py",
+      "operator_tool:benchmark_adoption_engines.py",
       "operator_tool:browser_appearance_checks.mjs",
       "operator_tool:build_asset_site_previews.py",
       "operator_tool:build_catalogue_release_bundle.py",
@@ -418,6 +420,7 @@
       "operator_tool:global_component_duplicate_disk.py",
       "operator_tool:global_component_duplicate_sources.py",
       "operator_tool:global_component_duplicates.py",
+      "operator_tool:graph_coordinator_and_harness_catalog_engines.py",
       "operator_tool:harness_idea_matrix.py",
       "operator_tool:harness_t1_gates.py",
       "operator_tool:heavy.sh",
@@ -498,6 +501,7 @@
       "operator_tool:run_query_multiplier.py",
       "operator_tool:run_test_shard.py",
       "operator_tool:scan_local_volume.py",
+      "operator_tool:seo_blog_comparison_and_humanizer_engines.py",
       "operator_tool:service_admin_operator.py",
       "operator_tool:service_admin_rotation_host.py",
       "operator_tool:session_intake.py",
@@ -514,6 +518,7 @@
       "operator_tool:summarize_research_watch.py",
       "operator_tool:surface_inventory.py",
       "operator_tool:task_campaign.py",
+      "operator_tool:trace_and_self_improvement_engines.py",
       "operator_tool:validate_procedural_assets.mjs",
       "operator_tool:verified_forwarder.py",
       "operator_tool:verify_launch_slice.py",
@@ -690,8 +695,8 @@
   },
   "schema": "surface_inventory_baseline/v1",
   "totals": {
-    "covered_items": 640,
+    "covered_items": 645,
     "total_gaps": 3,
-    "total_items": 643
+    "total_items": 648
   }
 }

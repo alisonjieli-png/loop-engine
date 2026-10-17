@@ -354,6 +354,14 @@
         "States are found by node name among direct children.",
         "set_initial(parent_name: StringName, child_name: StringName)"
       ],
+      "core/service_runtime/web_assets/library-sites/items.json": [
+        "for children aged 6 to 23 months",
+        "women and young children",
+        "deduplicate children counted in two areas"
+      ],
+      "core/service_runtime/web_assets/library-sites/hosts.json": [
+        "women and young children"
+      ],
       "nomenclature_conformance.py": [
         "chronicle",
         "A chronicle.",
