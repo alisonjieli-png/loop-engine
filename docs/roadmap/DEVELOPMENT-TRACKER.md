@@ -3,7 +3,7 @@
 Kind: generated view. Do not edit by hand. The only task authority is
 [roadmap.yaml](roadmap.yaml); change it, then run
 `PYTHONPATH=src:tools .venv/bin/python tools/build_development_tracker.py`.
-Source fingerprint: `sha256:35f835341de5d730c17343f89c6751ee6985fb43ad6245d2afccf3005739c65d`.
+Source fingerprint: `sha256:dd6164ff44a8b546a0b287f99768a1b405c4675fe9637d7e8c93d9672cdcb22c`.
 
 ## Where things stand
 
@@ -114,8 +114,8 @@ Next eligible subtask: S-6.35.11: Bind the systems portal to evidence and staff 
 | 39 | [ ] S-6.214.07: Expand to one thousand qualified sources | proposed | live_qualified | Waiting on S-6.214.06 |
 | 40 | [ ] S-6.214.09: Produce useful source-backed feeds | ready | live_qualified | Waiting on S-6.214.06 |
 | 41 | [x] S-6.214.12: Let customers build a distinct reading profile for each agent | live_qualified | live_qualified | Preserve exact per-agent export behavior while implementing saved assignments and maintained delivery through their separate owning subtasks. |
-| 42 | [ ] S-6.214.10: Save customer feed preferences per agent | proposed | live_qualified | Waiting on S-6.214.09 |
-| 43 | [ ] S-6.214.11: Deliver and measure personalized feeds | proposed | live_qualified | Waiting on S-6.214.10 |
+| 42 | [ ] S-6.214.10: Save customer feed preferences per agent | offline_verified | live_qualified | Waiting on S-6.214.09 |
+| 43 | [ ] S-6.214.11: Deliver and measure personalized feeds | building | live_qualified | Waiting on S-6.214.10 |
 | 44 | [ ] S-6.214.14: Show top feeds and components with distinct popularity and agent-use rankings | proposed | live_qualified | Waiting on S-6.214.09, S-6.214.11 |
 | 45 | [ ] S-6.207.01: Complete the approved SMB metadata inventory | building | offline_verified | Use the completed selected-scope inventory for project ownership, revision and dirty-state review; preserve unresolved authorship and dependency findings. Keep the previous inventory queue and resolve its measured storage allocation before resuming that scan; do not infer whole-share completion from the selected roots. |
 | 46 | [x] S-6.207.02: Extract the priority RapidAPI coding session | offline_verified | offline_verified | Use the exact chunks for substantive review and missing-artifact recovery. |
@@ -853,7 +853,7 @@ Comment: Profiles are customer-owned files. Hosted saved assignments, opt-in pri
 
 ### S-6.214.10 Save customer feed preferences per agent
 
-Owner step: S-6.214. State: proposed. Completion requires: live_qualified.
+Owner step: S-6.214. State: offline_verified. Completion requires: live_qualified.
 
 Acceptance: Two customers and two agents can create, change and revoke isolated feed definitions.
 
@@ -861,15 +861,15 @@ Acceptance: Two customers and two agents can create, change and revoke isolated 
 2. Expose scoped setup through the website and MCP/API.
 3. Test cross-account access, cursor isolation, edits, export and revocation.
 
-Evidence: Not yet recorded.
+Evidence: October 16, 2026, local only: implementation order steps 1 to 4 of DELIVERY-SEQUENCE.md Checklist 4 behind the host setting service_customer_feeds_policy/v1 (host block customer_feeds), off by default. Versioned definition, assignment, delivery-history and owner records live in the existing service collection and reuse customer client keys, verified_customer_session and the runtime entitlement. Account controls at GET and POST /api/v1/account/feeds, agent reads at GET /api/v1/feeds/pull and /api/v1/feeds/assigned and the protocol tools feeds_assigned and feeds_pull. tools/test_customer_feeds.py and tools/test_customer_feeds_page.py passed 32 of 32 local checks, each guard beside a known-wrong control; the concurrent-create control found a limit race that was fixed before commit. The HTTP self-test passed 767 of 767 checks. The approved privacy notice does not clearly cover saved settings or delivery history, so the service refuses an enabled host setting until the served notice names them. Nothing was enabled, released or measured live.
 
-Next: Implement a narrow working customer journey before advertising personalized feeds.
+Next: Owner gate: approve or change docs/legal/CUSTOMER-FEEDS-NOTICE-CHANGES-DRAFT.md. After approval, publish the approved words in PRIVACY-NOTICE.md and the served privacy view in one commit, add the customer_feeds block with enabled true to the host file, release, and repeat the two-customer, two-agent journey live through the account page, HTTP and MCP before any page advertises saved feeds.
 
 Comment: Customer projects and histories are not inspected automatically.
 
 ### S-6.214.11 Deliver and measure personalized feeds
 
-Owner step: S-6.214. State: proposed. Completion requires: live_qualified.
+Owner step: S-6.214. State: building. Completion requires: live_qualified.
 
 Acceptance: Opted-in agents receive the correct feed revision with observable freshness, cost and delivery outcomes.
 
@@ -877,9 +877,9 @@ Acceptance: Opted-in agents receive the correct feed revision with observable fr
 2. Use idempotent delivery and bounded retry accounting.
 3. Measure source contribution, useful items, customer consumption and failures.
 
-Evidence: Not yet recorded.
+Evidence: October 16, 2026, local only and switched off: pull delivery over HTTP and the protocol service. Cursors are bound to the account, assignment, key, feed, definition version, filter digest and population digest; an edit or a changed population refuses an old cursor by name. ETag validators answer 304 after the same permission checks and write nothing. Six delivery states (current, empty, stale, partial, failed, quota_limited) and a 429 pull allowance are distinct. Delivery history keeps pages, items, bytes, repeats and completion per feed version. No push receiver, daily snapshot, cost measurement or live delivery exists.
 
-Next: Connect delivery to the existing entitlement and subscription boundaries.
+Next: After S-6.214.10 is live, build daily snapshots from one shared admitted population (implementation step 5), then measure useful agent retrieval, cost per delivered page and unsubscribe rates from the delivery history. Push receivers wait for step 6.
 
 Comment: Receiving a feed never grants permission to execute it.
 

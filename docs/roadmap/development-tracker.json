@@ -914,16 +914,16 @@
    "depends_on": [
     "S-6.214.09"
    ],
-   "evidence": "",
+   "evidence": "October 16, 2026, local only: implementation order steps 1 to 4 of DELIVERY-SEQUENCE.md Checklist 4 behind the host setting service_customer_feeds_policy/v1 (host block customer_feeds), off by default. Versioned definition, assignment, delivery-history and owner records live in the existing service collection and reuse customer client keys, verified_customer_session and the runtime entitlement. Account controls at GET and POST /api/v1/account/feeds, agent reads at GET /api/v1/feeds/pull and /api/v1/feeds/assigned and the protocol tools feeds_assigned and feeds_pull. tools/test_customer_feeds.py and tools/test_customer_feeds_page.py passed 32 of 32 local checks, each guard beside a known-wrong control; the concurrent-create control found a limit race that was fixed before commit. The HTTP self-test passed 767 of 767 checks. The approved privacy notice does not clearly cover saved settings or delivery history, so the service refuses an enabled host setting until the served notice names them. Nothing was enabled, released or measured live.",
    "id": "S-6.214.10",
-   "next_action": "Implement a narrow working customer journey before advertising personalized feeds.",
+   "next_action": "Owner gate: approve or change docs/legal/CUSTOMER-FEEDS-NOTICE-CHANGES-DRAFT.md. After approval, publish the approved words in PRIVACY-NOTICE.md and the served privacy view in one commit, add the customer_feeds block with enabled true to the host file, release, and repeat the two-customer, two-agent journey live through the account page, HTTP and MCP before any page advertises saved feeds.",
    "owner_step": "S-6.214",
    "procedure": [
     "Store topics, source allowlists, exclusions, cadence, format and agent assignment through existing account records.",
     "Expose scoped setup through the website and MCP/API.",
     "Test cross-account access, cursor isolation, edits, export and revocation."
    ],
-   "status": "proposed",
+   "status": "offline_verified",
    "title": "Save customer feed preferences per agent",
    "waiting_on": [
     "S-6.214.09"
@@ -937,16 +937,16 @@
    "depends_on": [
     "S-6.214.10"
    ],
-   "evidence": "",
+   "evidence": "October 16, 2026, local only and switched off: pull delivery over HTTP and the protocol service. Cursors are bound to the account, assignment, key, feed, definition version, filter digest and population digest; an edit or a changed population refuses an old cursor by name. ETag validators answer 304 after the same permission checks and write nothing. Six delivery states (current, empty, stale, partial, failed, quota_limited) and a 429 pull allowance are distinct. Delivery history keeps pages, items, bytes, repeats and completion per feed version. No push receiver, daily snapshot, cost measurement or live delivery exists.",
    "id": "S-6.214.11",
-   "next_action": "Connect delivery to the existing entitlement and subscription boundaries.",
+   "next_action": "After S-6.214.10 is live, build daily snapshots from one shared admitted population (implementation step 5), then measure useful agent retrieval, cost per delivered page and unsubscribe rates from the delivery history. Push receivers wait for step 6.",
    "owner_step": "S-6.214",
    "procedure": [
     "Test polling and any supported push receiver separately.",
     "Use idempotent delivery and bounded retry accounting.",
     "Measure source contribution, useful items, customer consumption and failures."
    ],
-   "status": "proposed",
+   "status": "building",
    "title": "Deliver and measure personalized feeds",
    "waiting_on": [
     "S-6.214.10"
@@ -7147,7 +7147,7 @@
  ],
  "record_type": "development_tracker/v2",
  "source": "docs/roadmap/roadmap.yaml",
- "source_fingerprint": "sha256:35f835341de5d730c17343f89c6751ee6985fb43ad6245d2afccf3005739c65d",
+ "source_fingerprint": "sha256:dd6164ff44a8b546a0b287f99768a1b405c4675fe9637d7e8c93d9672cdcb22c",
  "working_schedule": {
   "blocks": [
    {

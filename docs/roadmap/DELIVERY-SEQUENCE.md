@@ -1264,7 +1264,13 @@ Decision: customization belongs in Feeds itself, not only in the expensive
 Components plan. Both offerings use one account and the same feed controls.
 Components adds the entitled reusable library. Higher limits can differ by
 plan; a Markdown wrapper never makes a restricted component freely readable.
-These controls are designed, not implemented by the current-state preview.
+Steps 1 to 4 of the implementation order below exist in the source behind the
+host setting `customer_feeds`, which is off by default (S-6.214.10). The
+service refuses to switch it on until the served privacy notice covers saved
+settings and delivery history, and that wording waits for the owner in the
+[saved feeds notice draft](../legal/CUSTOMER-FEEDS-NOTICE-CHANGES-DRAFT.md).
+The public preview pages do not offer these controls, and steps 5 to 7 are
+not implemented.
 
 The customer journey is **create a feed, preview it, assign agents, choose
 delivery, then inspect delivery history**. Start with a template such as MCP

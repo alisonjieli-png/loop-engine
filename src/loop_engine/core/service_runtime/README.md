@@ -58,6 +58,7 @@ Existing service boundary
 ├── staff_sign_up_links.py: sign-up links a superadmin sends through Baltor's own sign-up
 ├── systems_view.py: the staff Systems view over the packaged systems_view.json record
 ├── free_monthly.py: free monthly Baltor Pro, the founding offer and the monthly renewal
+├── customer_feed_records.py and customer_feeds.py: saved feeds and their agent key assignments, off by default
 ├── web_pages.py: the served page address table and the packaged files behind it
 ├── catalogue_*.py: catalogue releases, the body store edge and the served view
 └── http*.py: separately owned remote transport and host configuration
@@ -432,6 +433,136 @@ public registration, subscription processing or useful native task execution.
 `set_operator_entitlement` is an explicit local host grant with an evidence
 reference and expiry. It is not evidence of payment. Billing projections do
 not override an administrative access revocation.
+
+## Saved customer feeds for agents
+
+This section describes the source in this repository. Saved feeds are off
+unless the host file switches them on, and the service refuses a host file that
+switches them on until the privacy notice it serves covers them. The
+[proposed notice change](../../../../docs/legal/CUSTOMER-FEEDS-NOTICE-CHANGES-DRAFT.md)
+waits for the owner.
+
+A signed-in customer saves a feed definition, previews what it would send, and
+assigns it to one or more of their own customer client keys. Each key is one
+agent. An agent reads only the feeds assigned to its key, through
+`GET /api/v1/feeds/pull` or the `feeds_pull` protocol tool.
+`customer_feed_records.py` holds the host setting, the records and the
+selection. `customer_feeds.py` holds permission, storage and delivery. Neither
+adds an account system, a store or a notification registry: the records live
+in the service collection beside the client keys they name, and the browser
+session check is `verified_customer_session` in `access.py`, the same check
+customer client keys use.
+
+```text
+Saved customer feeds
+├── Host setting: service_customer_feeds_policy/v1, the customer_feeds block of the host file
+│   ├── absent, or enabled false: no route answers, no protocol tool is listed, the account section stays hidden
+│   └── enabled true: refused at start unless the served privacy notice names saved feed settings
+│       and feed delivery history
+├── Records in the service collection
+│   ├── customer_feed_definition/v1: streams, topics, collections and sources with exclusions,
+│   │   source kinds, update types, evidence requirement, freshness, cadence, format and context limits
+│   ├── customer_feed_assignment/v1: one saved feed and one customer client key, active or paused
+│   ├── customer_feed_delivery_history/v1: bounded delivery metadata for one assignment
+│   └── customer_feed_owner/v1: one revision for each owner, so the limits hold under concurrency
+├── Account controls: GET and POST /api/v1/account/feeds, a signed-in browser session only
+│   └── create, edit, copy, preview, pause, resume and delete a definition or an assignment,
+│       and export every saved setting
+└── Agent reads: a customer client key that holds provisioning:metadata
+    ├── GET /api/v1/feeds/assigned and feeds_assigned: the feeds assigned to this key
+    └── GET /api/v1/feeds/pull and feeds_pull: one page, with a cursor and an ETag
+```
+
+### Selection is separate from permission
+
+`select` in `customer_feed_records.py` reads no account and no credential. It
+chooses items from the population of the selected streams: `source_references`,
+the registered source directory read afresh on every read, and
+`library_updates`, the public library updates notice of the served catalogue.
+A topic, collection or source can only narrow that population. Every included
+item names what matched it, and every excluded item names its reason, such as
+`excluded_source`, `evidence_below_requirement`, `stale_source`, `item_limit`
+or `byte_limit`. A saved topic, collection or source that the directory no
+longer holds is reported in `withdrawn_references`.
+
+Permission is checked before every pull and again inside the write that
+records the delivery:
+
+1. The credential is a current customer client key with the metadata scope,
+   and its owner sign-in and account are enabled. A browser session, an
+   operator key and a delegated sign-in are refused with
+   `customer_feed_agent_credential_required`.
+2. The account holds the entitlement the host requires. The default is the
+   metadata entitlement every enabled account holds, because Agent Feeds are
+   free through 2026. A host that requires the library plan names
+   `required_entitlement` `bodies`, and a downgrade or an expired plan then
+   refuses with `customer_feed_entitlement_required`.
+3. The feed was saved by the key's owner in the same account, and it is
+   active.
+4. An active assignment names this exact key.
+5. Each item's access class is one the account holds. An unknown class is
+   refused, so a population cannot widen delivery by naming a new one.
+
+### Cursors, validators and delivery states
+
+A pull answers one page of one population, ordered by stream and then by item
+identity (`stream_then_item_identity/v1`). The cursor carries no secret. It is
+checked against the request's own account, assignment, credential and feed,
+and against the definition version, the filter digest and the population
+digest. A cursor of another key or account is refused as
+`customer_feed_cursor_invalid`. An edit refuses an old cursor as
+`customer_feed_definition_changed`, and a changed or withdrawn item as
+`customer_feed_snapshot_changed`, so an agent starts again from the first page
+instead of skipping or repeating items without being told. Within one
+population delivery is at least once: a page read twice is the same page, and
+the delivery history counts it as repeated.
+
+Each page carries an ETag: over the canonical page record for the JSON form,
+whose envelope also names the Loop that ran, and over the exact bytes for the
+Markdown form, so the two forms have different validators. A matching
+`If-None-Match` answers 304 with no body after every permission check and
+writes nothing; a revoked key gets its refusal, never a cached answer. The
+page is still built to compare it, so the saving is the write and the
+transfer, not the selection.
+
+A definition's cadence records how often the customer means an agent to read
+it, and the preview estimates reads from it. No schedule runs on the service;
+the agent's own harness decides when to pull.
+
+`delivery_state` tells six states apart:
+
+| State | Meaning |
+|---|---|
+| `current` | Every selected stream was read and at least one item is delivered |
+| `empty` | Every selected stream was read and nothing matched the settings |
+| `stale` | An included or withheld item is older than the feed's age limit |
+| `partial` | One selected stream failed and another was read |
+| `failed` | No selected stream could be read |
+| `quota_limited` | A stream reported that its own allowance was used up |
+
+A key that reads one feed more often than `maximum_pulls_per_minute` is refused
+with status 429 and `customer_feed_quota_reached`, never answered with an empty
+page. That count lives in the memory of one service process.
+
+### Feed text is data
+
+Item titles, descriptions, notes and links are untrusted data. Nothing in an
+item is parsed as a request, a setting or a tool call, and a pull writes only
+its delivery metadata. The Markdown form collapses item text to one line and
+escapes every structural character, so an item cannot add a heading, a link, a
+code block or markup to an agent's context. Feed names pass the same text rules
+as reading-profile labels. A custom source address is refused as
+`customer_feed_custom_source_not_supported`.
+
+### Limits of this slice
+
+Daily snapshots, notifications, custom sources and a separate Feeds price are
+not part of this source. The two stream readers sit behind one typed edge,
+`StreamRead`, but have no engine slot yet. The account page section appears
+only when the capabilities record reports `customer_feeds_available`. Request
+bodies of the account controls never reach a failure record, whatever the host
+captures. The acceptance checks are
+[the saved feeds tests](../../../../tools/test_customer_feeds.py).
 
 ## Promotion codes
 
@@ -1738,10 +1869,11 @@ No credentials, model calls, upstream source reads or library downloads occur.
 
 The requested reading interval belongs to the customer's harness. The export
 does not create a schedule, newsletter, live research feed or private hosted
-assignment. Saved authenticated profiles remain separate work requiring scoped
-agent authority, revision conflicts and revocation checks. The current approved
-privacy notice covers explicitly submitted content in the Fly service database;
-this increment needs neither persistence nor a change to that notice.
+assignment. Saved feeds with an assignment for each agent key are the separate
+[saved customer feeds](#saved-customer-feeds-for-agents) component, which is off
+by default. The current approved privacy notice covers explicitly submitted
+content in the Fly service database; this stateless export needs neither
+persistence nor a change to that notice.
 Check with `PYTHONPATH=src:tools python -m unittest
 tools.test_feed_reading_profiles tools.test_feed_profile_web` and
 `node tools/check_feed_profiles.mjs --local /path/to/new-report.json`.
