@@ -7,14 +7,14 @@ its test or component guide coverage, or a new unreviewed gap appears.
 
 ## Summary across the eight categories
 
-- Total surface items inventoried: **700**
-- Fully covered items (no gaps): **697**
+- Total surface items inventoried: **701**
+- Fully covered items (no gaps): **698**
 - Items with an explicit test or live-check gap: **3**
 
 | Category | Total items | Unit / integration tested | Browser tested | Live checked | Component guide mapped | Open gaps |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: |
 | `screens` | 130 | 130 | 130 | 130 | 130 | 0 |
-| `functions` | 378 | 378 | 321 | 333 | 378 | 0 |
+| `functions` | 379 | 379 | 322 | 334 | 379 | 0 |
 | `interactions` | 18 | 18 | 18 | 12 | 18 | 0 |
 | `data_transfer` | 56 | 56 | 11 | 5 | 56 | 0 |
 | `data_computation` | 11 | 11 | 3 | 0 | 11 | 0 |
@@ -389,6 +389,7 @@ Every item below has a mapped component guide in `docs/components/COMPONENT-GUID
 | `operator_tool` | `operator_tool:check_website_layout.mjs` | `tools/check_website_layout.mjs` | 6 | 6 | 4 | `docs/components/README.md` | covered |
 | `operator_tool` | `operator_tool:check_website_site_map.py` | `tools/check_website_site_map.py` | 6 | 6 | 4 | `docs/components/README.md` | covered |
 | `operator_tool` | `operator_tool:check_worker_bundle.py` | `tools/check_worker_bundle.py` | 6 | 6 | 4 | `docs/components/README.md` | covered |
+| `operator_tool` | `operator_tool:cloud_local_hybrid_proxy_mesh_across_surfaces_fleets_and_research_engines.py` | `tools/cloud_local_hybrid_proxy_mesh_across_surfaces_fleets_and_research_engines.py` | 6 | 6 | 4 | `docs/components/README.md` | covered |
 | `operator_tool` | `operator_tool:cloudflare_d1_search.py` | `tools/cloudflare_d1_search.py` | 6 | 6 | 4 | `docs/components/README.md` | covered |
 | `operator_tool` | `operator_tool:cloudflare_site_edge.py` | `tools/cloudflare_site_edge.py` | 6 | 6 | 4 | `docs/components/README.md` | covered |
 | `operator_tool` | `operator_tool:combine_reviewed_catalogues.py` | `tools/combine_reviewed_catalogues.py` | 6 | 6 | 4 | `docs/components/README.md` | covered |
