@@ -4,7 +4,7 @@
   let token = "", generation = 0, busy = false, capabilities = null, accessOptions = null, accessRequest = null, accessBusy = false;
   let connectionBusy = false, recipes = null, afterLogin = null, principalScopes = [];
   let identityClient = null, identityConfiguration = null, authenticationMode = "host_key";
-  let clientAccess = null, catalogueBrowser = null, oauthConsent = null, staffWork = null, systemsView = null;
+  let clientAccess = null, catalogueBrowser = null, oauthConsent = null, staffWork = null, systemsView = null, customerFeeds = null;
   // What the funnel reads: whether the service reports account creation open, where a signed-in account's paid access comes
   // from, and whether this page has asked for a sign-up link.
   let registrationOpen = false, accessSource = "", funnelSent = false;
@@ -254,7 +254,7 @@ const applyPaymentState = name => {
     message("admin-message", "Sign in with your staff account or an authorized administrator service token.");
     $("test-protocol").disabled = true; $("setup-identity").textContent = "Sign in with a Baltor key to run the connection check.";
     $("protocol-tools").replaceChildren(); message("protocol-result", "Not tested. No model calls are made by this check.");
-    clientAccess?.reset(); catalogueBrowser?.reset(); staffWork?.reset(); systemsView?.reset();
+    clientAccess?.reset(); catalogueBrowser?.reset(); staffWork?.reset(); systemsView?.reset(); customerFeeds?.reset();
     accessSource = ""; renderFunnel();
   }
   /* Signing out. The page forgets the access it holds at once, then asks the service and the identity provider to end the
@@ -366,6 +366,10 @@ const applyPaymentState = name => {
       available:capabilities?.record_type === CAPABILITIES_RECORD_TYPE && capabilities.website.client_access_available === true})}) || {
     reset(){}, connectionChanged(){}, async refresh(){}
   };
+  /* Saved feeds for agents read the same connection state; the service says in its capabilities whether this host offers them. */
+  customerFeeds = window.BaltorCustomerFeeds?.create({request, element, message, said, failureState,
+    current:() => ({connected:!!token, mode:authenticationMode, generation,
+      available:capabilities?.record_type === CAPABILITIES_RECORD_TYPE && capabilities.website?.customer_feeds_available === true})}) || null;
   if (!window.BaltorClientAccess) {
     const warning = element("p", "Client-token controls could not be loaded. Reload this page to use them. OAuth sign-in is separate.", "error");
     warning.dataset.clientControlsUnavailable = "true";
@@ -422,7 +426,7 @@ const applyPaymentState = name => {
       if (staffRole) await loadStaff().catch(error => message("staff-message", said(error), failureState(error)));
       if (administrator || ["superadmin", "analytics"].includes(staffRole)) await loadFeedback().catch(error => message("feedback-message", said(error), failureState(error)));
       staffWork?.connectionChanged(); systemsView?.connectionChanged();
-      clientAccess.connectionChanged(); catalogueBrowser?.connectionChanged();
+      clientAccess.connectionChanged(); catalogueBrowser?.connectionChanged(); customerFeeds?.connectionChanged();
     } catch (error) { disconnect(); message("connection-message", error.name === "AbortError" ? "Connection timed out. No automatic retry was made." : said(error), failureState(error)); }
   }
   $("connect-form").addEventListener("submit", async event => {
@@ -1333,7 +1337,7 @@ const applyPaymentState = name => {
     $("copy-endpoint").disabled = !connectionEndpoint;
     renderRecipe(); renderHomeRecipe(); renderConnectionWays();
     applyLibraryCount(value);
-    clientAccess.connectionChanged();
+    clientAccess.connectionChanged(); customerFeeds?.connectionChanged();
     waitlistOffer(value);
     $("protocol-note").textContent = "Supported protocol: " + value.protocol.versions.join(", ") + ". External identity flow qualified: " + (value.protocol.external_authorization_flow_qualified ? "yes" : "no") + ".";
     /* The retrieval note keeps its served words. It named the search backend until September 25, 2026; roadmap steps S-6.39
