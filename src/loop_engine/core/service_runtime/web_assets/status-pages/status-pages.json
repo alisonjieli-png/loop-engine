@@ -1133,6 +1133,21 @@
       "description": "Browse Baltor's original Godot shaders, procedural textures, meshes and Blender tools, each with the render its engine check recorded."
      },
      {
+      "address": "/deterministic-skills",
+      "title": "Deterministic skills",
+      "description": "Skills and modules your agent runs without a model: tested programs with schemas, contract cards and known answers, at exact versions from the Baltor library."
+     },
+     {
+      "address": "/tools",
+      "title": "Harness tools",
+      "description": "MCP server settings, command-line programs, slash commands, hooks and tested functions your coding agent can call, each at an exact version with its source."
+     },
+     {
+      "address": "/corner-cases",
+      "title": "Corner cases",
+      "description": "Test packs and checkers for the inputs that break code: time zones, Unicode, locale numbers, CSV records, addresses, JSON Schema requests and 3D exports."
+     },
+     {
       "address": "/random",
       "title": "Random creative previews",
       "description": "Find a creative starting point: public previews with source details, licences and exact versions. Browse images, video and music by availability."
