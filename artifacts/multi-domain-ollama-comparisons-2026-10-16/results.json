@@ -1,0 +1,841 @@
+{
+  "endpoint": "https://ollama.com/v1/chat/completions",
+  "engine_id": "ollama_cloud_live_harness_engine",
+  "generated_at": "2026-10-17T04:14:27.500695+00:00",
+  "max_physical_requests_ceiling": 16,
+  "physical_requests_used": 16,
+  "primary_model": "gemma4:31b",
+  "record_type": "multi_domain_ollama_comparison_suite/v1",
+  "slot_id": "multi_domain_ollama_benchmark_harness",
+  "summary": {
+    "by_domain": {
+      "design_media_projects": {
+        "demo_surface": "agentstudios.si",
+        "domain": "design_media_projects",
+        "tasks_total": 2,
+        "title": "Creative Design, Motion & Playable Media",
+        "with_baltor_mean_score": 0.875,
+        "with_baltor_passed": 1,
+        "without_baltor_mean_score": 0.5,
+        "without_baltor_passed": 0
+      },
+      "github_common_projects": {
+        "demo_surface": "baltor.ai/demos/github-projects",
+        "domain": "github_common_projects",
+        "tasks_total": 2,
+        "title": "Popular GitHub Developer Profile Projects",
+        "with_baltor_mean_score": 1.0,
+        "with_baltor_passed": 2,
+        "without_baltor_mean_score": 0.75,
+        "without_baltor_passed": 0
+      },
+      "kaggle_ai_ml": {
+        "demo_surface": "baltor.ai/demos/kaggle-ai-ml",
+        "domain": "kaggle_ai_ml",
+        "tasks_total": 2,
+        "title": "Kaggle AI/ML Competitions",
+        "with_baltor_mean_score": 1.0,
+        "with_baltor_passed": 2,
+        "without_baltor_mean_score": 0.625,
+        "without_baltor_passed": 0
+      },
+      "public_good_projects": {
+        "demo_surface": "skillsforgood.org",
+        "domain": "public_good_projects",
+        "tasks_total": 2,
+        "title": "Public Good & Civic Safety Projects",
+        "with_baltor_mean_score": 1.0,
+        "with_baltor_passed": 2,
+        "without_baltor_mean_score": 0.5,
+        "without_baltor_passed": 0
+      }
+    },
+    "pass_rate_delta": 0.875,
+    "quality_score_delta": 0.375,
+    "total_physical_requests": 16,
+    "with_baltor": {
+      "completion_tokens": 7152,
+      "mean_injected_tokens": 170,
+      "mean_quality_score": 0.9688,
+      "pass_rate": 0.875,
+      "passed": 7,
+      "prompt_tokens": 5111,
+      "total_latency_ms": 30103.19,
+      "total_tokens": 12263,
+      "trials": 8
+    },
+    "without_baltor": {
+      "completion_tokens": 7912,
+      "mean_injected_tokens": 0,
+      "mean_quality_score": 0.5938,
+      "pass_rate": 0.0,
+      "passed": 0,
+      "prompt_tokens": 2372,
+      "total_latency_ms": 24977.58,
+      "total_tokens": 10284,
+      "trials": 8
+    }
+  },
+  "trials": [
+    {
+      "arm": "without_baltor",
+      "demo_surface": "baltor.ai/demos/kaggle-ai-ml",
+      "domain": "kaggle_ai_ml",
+      "extracted_code": "import random\n\ndef run_spaceship_pipeline(train_rows: list[dict], test_rows: list[dict], n_splits: int = 3) -> dict:\n    \"\"\"\n    Processes spaceship passenger data, performs K-Fold splitting, \n    feature engineering, and basic prediction.\n    \"\"\"\n    \n    def engineer_features(rows: list[dict]) -> list[dict]:\n        engineered = []\n        spend_cols = ['RoomService', 'FoodCourt', 'ShoppingMall', 'Spa', 'VRDeck']\n        \n        for row in rows:\n            # Cabin parsing: 'B/0/P' -> deck='B', num=0, side='P'\n            cabin = row.get('Cabin')\n            deck, num, side = 'Unknown', -1, 'Unknown'\n            if cabin and isinstance(cabin, str) and '/' in cabin:\n                parts = cabin.split('/')\n                if len(parts) == 3:\n                    deck = parts[0]\n                    try:\n                        num = int(parts[1])\n                    except ValueError:\n                        pass\n                    side = parts[2]\n            \n            # Group ID parsing: '0001_01' -> '0001'\n            pid = row.get('PassengerId', '')\n            group_id = pid.split('_')[0] if pid and '_' in pid else pid\n            \n            # Total Spend calculation\n            total_spend = sum(row.get(col, 0) or 0.0 for col in spend_cols)\n            \n            engineered.append({\n                'group_id': group_id,\n                'cabin_deck': deck,\n                'cabin_num': num,\n                'cabin_side': side,\n                'total_spend': float(total_spend)\n            })\n        return engineered\n\n    # 1. K-Fold Splitting\n    indices = list(range(len(train_rows)))\n    random.shuffle(indices)\n    fold_size = len(indices) // n_splits\n    folds = []\n    for i in range(n_splits):\n        val_start = i * fold_size\n        val_end = (i + 1) * fold_size if i != n_splits - 1 else len(indices)\n        val_indices = tuple(indices[val_start:val_end])\n        train_indices = tuple(idx for idx in indices if idx not in val_indices)\n        folds.append((train_indices, val_indices))\n\n    # 2. Feature Engineering for test set\n    engineered_test = engineer_features(test_rows)\n\n    # 3. Simple Prediction Logic (Heuristic based on CryoSleep)\n    # In a real scenario, a model would be trained on train_rows.\n    # Here we implement a baseline: CryoSleep is a strong predictor for Transported.\n    predictions = []\n    for row in test_rows:\n        cryo = row.get('CryoSleep')\n        if cryo is True:\n            predictions.append(True)\n        elif cryo is False:\n            predictions.append(False)\n        else:\n            # Fallback: if spend is 0, likely CryoSleep or low resource user\n            spend_cols = ['RoomService', 'FoodCourt', 'ShoppingMall', 'Spa', 'VRDeck']\n            total_spend = sum(row.get(col, 0) or 0.0 for col in spend_cols)\n            predictions.append(total_spend == 0)\n\n    return {\n        'folds': folds,\n        'engineered_test': engineered_test,\n        'predictions': predictions\n    }",
+      "extracted_code_sha256": "031d78d42bcc464dae4fdd168b13a015aed9e861bdbc2c6e072df74b43f8c14b",
+      "model_call": {
+        "completion_tokens": 838,
+        "endpoint": "https://ollama.com/v1/chat/completions",
+        "error": "",
+        "finish_reason": "stop",
+        "http_status": 200,
+        "latency_ms": 2844.28,
+        "model": "gemma4:31b",
+        "ok": true,
+        "prompt_tokens": 369,
+        "request_sha256": "6d83f8a10200eedc9e8d7839949a2525fd894169fa89d917fdd3caaab4611a0a",
+        "response_text": "```python\nimport random\n\ndef run_spaceship_pipeline(train_rows: list[dict], test_rows: list[dict], n_splits: int = 3) -> dict:\n    \"\"\"\n    Processes spaceship passenger data, performs K-Fold splitting, \n    feature engineering, and basic prediction.\n    \"\"\"\n    \n    def engineer_features(rows: list[dict]) -> list[dict]:\n        engineered = []\n        spend_cols = ['RoomService', 'FoodCourt', 'ShoppingMall', 'Spa', 'VRDeck']\n        \n        for row in rows:\n            # Cabin parsing: 'B/0/P' -> deck='B', num=0, side='P'\n            cabin = row.get('Cabin')\n            deck, num, side = 'Unknown', -1, 'Unknown'\n            if cabin and isinstance(cabin, str) and '/' in cabin:\n                parts = cabin.split('/')\n                if len(parts) == 3:\n                    deck = parts[0]\n                    try:\n                        num = int(parts[1])\n                    except ValueError:\n                        pass\n                    side = parts[2]\n            \n            # Group ID parsing: '0001_01' -> '0001'\n            pid = row.get('PassengerId', '')\n            group_id = pid.split('_')[0] if pid and '_' in pid else pid\n            \n            # Total Spend calculation\n            total_spend = sum(row.get(col, 0) or 0.0 for col in spend_cols)\n            \n            engineered.append({\n                'group_id': group_id,\n                'cabin_deck': deck,\n                'cabin_num': num,\n                'cabin_side': side,\n                'total_spend': float(total_spend)\n            })\n        return engineered\n\n    # 1. K-Fold Splitting\n    indices = list(range(len(train_rows)))\n    random.shuffle(indices)\n    fold_size = len(indices) // n_splits\n    folds = []\n    for i in range(n_splits):\n        val_start = i * fold_size\n        val_end = (i + 1) * fold_size if i != n_splits - 1 else len(indices)\n        val_indices = tuple(indices[val_start:val_end])\n        train_indices = tuple(idx for idx in indices if idx not in val_indices)\n        folds.append((train_indices, val_indices))\n\n    # 2. Feature Engineering for test set\n    engineered_test = engineer_features(test_rows)\n\n    # 3. Simple Prediction Logic (Heuristic based on CryoSleep)\n    # In a real scenario, a model would be trained on train_rows.\n    # Here we implement a baseline: CryoSleep is a strong predictor for Transported.\n    predictions = []\n    for row in test_rows:\n        cryo = row.get('CryoSleep')\n        if cryo is True:\n            predictions.append(True)\n        elif cryo is False:\n            predictions.append(False)\n        else:\n            # Fallback: if spend is 0, likely CryoSleep or low resource user\n            spend_cols = ['RoomService', 'FoodCourt', 'ShoppingMall', 'Spa', 'VRDeck']\n            total_spend = sum(row.get(col, 0) or 0.0 for col in spend_cols)\n            predictions.append(total_spend == 0)\n\n    return {\n        'folds': folds,\n        'engineered_test': engineered_test,\n        'predictions': predictions\n    }\n```",
+        "sequence": 1,
+        "total_tokens": 1207
+      },
+      "preturn_hook": {
+        "abstained": true,
+        "abstention_code": "passive_baseline_no_preturn_action",
+        "card_digest": null,
+        "card_identity": null,
+        "card_score": 0.0,
+        "hook_engine": "T0_passive_baseline",
+        "injected_tokens": 0,
+        "reformulated_query": "",
+        "winning_probe": "probe_4_safe_abstention"
+      },
+      "task_id": "K-01_spaceship_titanic_group_pipeline",
+      "title": "Spaceship Titanic Leak-Free GroupKFold & CryoSleep Invariant Pipeline",
+      "trial_id": "K-01_spaceship_titanic_group_pipeline__without_baltor",
+      "verification": {
+        "checks": {
+          "cabin_triplet_parsed": true,
+          "cryosleep_zero_spend_invariant": false,
+          "group_leak_free": false,
+          "heldout_group_accuracy": true
+        },
+        "details": {
+          "heldout_accuracy": 0.8333
+        },
+        "passed": false,
+        "score": 0.5
+      }
+    },
+    {
+      "arm": "with_baltor",
+      "demo_surface": "baltor.ai/demos/kaggle-ai-ml",
+      "domain": "kaggle_ai_ml",
+      "extracted_code": "import random\nfrom collections import defaultdict\n\ndef run_spaceship_pipeline(train_rows: list[dict], test_rows: list[dict], n_splits: int = 3) -> dict:\n    \"\"\"\n    Implements a spaceship pipeline with GroupKFold, feature engineering, \n    and a rule-based prediction model based on Baltor Contract Card invariants.\n    \"\"\"\n    \n    def engineer_features(row: dict) -> dict:\n        # INVARIANT 2: Cabin Splitting\n        cabin_raw = row.get('Cabin')\n        if cabin_raw and '/' in cabin_raw:\n            parts = cabin_raw.split('/')\n            deck = parts[0] if len(parts) > 0 else 'U'\n            num = int(parts[1]) if len(parts) > 1 and parts[1].isdigit() else -1\n            side = parts[2] if len(parts) > 2 else 'U'\n        else:\n            deck, num, side = 'U', -1, 'U'\n            \n        # INVARIANT 3: CryoSleep and Total Spend\n        spend_cols = ['RoomService', 'FoodCourt', 'ShoppingMall', 'Spa', 'VRDeck']\n        total_spend = sum(float(row.get(col) or 0.0) for col in spend_cols)\n        \n        if row.get('CryoSleep') is True:\n            total_spend = 0.0\n            \n        return {\n            'group_id': row.get('PassengerId', '').split('_')[0],\n            'cabin_deck': deck,\n            'cabin_num': num,\n            'cabin_side': side,\n            'total_spend': total_spend\n        }\n\n    # INVARIANT 1: GroupKFold\n    # Map group_id to list of indices in train_rows\n    group_to_indices = defaultdict(list)\n    for idx, row in enumerate(train_rows):\n        gid = row.get('PassengerId', '').split('_')[0]\n        group_to_indices[gid].append(idx)\n        \n    unique_groups = list(group_to_indices.keys())\n    random.shuffle(unique_groups)\n    \n    folds = []\n    group_chunks = [unique_groups[i::n_splits] for i in range(n_splits)]\n    \n    for i in range(n_splits):\n        val_groups = group_chunks[i]\n        train_groups = [g for j, g in enumerate(group_chunks) if j != i for group in g for g in [group]] # Flatten\n        # Correcting flatten logic for train_groups\n        train_groups = []\n        for j in range(n_splits):\n            if j != i:\n                train_groups.extend(group_chunks[j])\n        \n        val_indices = []\n        for g in val_groups:\n            val_indices.extend(group_to_indices[g])\n            \n        train_indices = []\n        for g in train_groups:\n            train_indices.extend(group_to_indices[g])\n            \n        folds.append((sorted(train_indices), sorted(val_indices)))\n\n    # Feature Engineering for test set\n    engineered_test = [engineer_features(row) for row in test_rows]\n    \n    # INVARIANT 3: Prediction Logic\n    # Predict Transported = True when CryoSleep is True or total_spend == 0.0\n    predictions = []\n    for i in range(len(test_rows)):\n        row = test_rows[i]\n        eng = engineered_test[i]\n        if row.get('CryoSleep') is True or eng['total_spend'] == 0.0:\n            predictions.append(True)\n        else:\n            predictions.append(False)\n            \n    return {\n        'folds': folds,\n        'engineered_test': engineered_test,\n        'predictions': predictions\n    }",
+      "extracted_code_sha256": "c675972d2f316ef7ea416b8b3f008f08fb6cfdff2871b283826d273bcb8308d4",
+      "model_call": {
+        "completion_tokens": 922,
+        "endpoint": "https://ollama.com/v1/chat/completions",
+        "error": "",
+        "finish_reason": "stop",
+        "http_status": 200,
+        "latency_ms": 3624.71,
+        "model": "gemma4:31b",
+        "ok": true,
+        "prompt_tokens": 617,
+        "request_sha256": "7382e9cf194bc84f25ec89bb91f15601beb1d58ffcf58185cc494f51d471f288",
+        "response_text": "```python\nimport random\nfrom collections import defaultdict\n\ndef run_spaceship_pipeline(train_rows: list[dict], test_rows: list[dict], n_splits: int = 3) -> dict:\n    \"\"\"\n    Implements a spaceship pipeline with GroupKFold, feature engineering, \n    and a rule-based prediction model based on Baltor Contract Card invariants.\n    \"\"\"\n    \n    def engineer_features(row: dict) -> dict:\n        # INVARIANT 2: Cabin Splitting\n        cabin_raw = row.get('Cabin')\n        if cabin_raw and '/' in cabin_raw:\n            parts = cabin_raw.split('/')\n            deck = parts[0] if len(parts) > 0 else 'U'\n            num = int(parts[1]) if len(parts) > 1 and parts[1].isdigit() else -1\n            side = parts[2] if len(parts) > 2 else 'U'\n        else:\n            deck, num, side = 'U', -1, 'U'\n            \n        # INVARIANT 3: CryoSleep and Total Spend\n        spend_cols = ['RoomService', 'FoodCourt', 'ShoppingMall', 'Spa', 'VRDeck']\n        total_spend = sum(float(row.get(col) or 0.0) for col in spend_cols)\n        \n        if row.get('CryoSleep') is True:\n            total_spend = 0.0\n            \n        return {\n            'group_id': row.get('PassengerId', '').split('_')[0],\n            'cabin_deck': deck,\n            'cabin_num': num,\n            'cabin_side': side,\n            'total_spend': total_spend\n        }\n\n    # INVARIANT 1: GroupKFold\n    # Map group_id to list of indices in train_rows\n    group_to_indices = defaultdict(list)\n    for idx, row in enumerate(train_rows):\n        gid = row.get('PassengerId', '').split('_')[0]\n        group_to_indices[gid].append(idx)\n        \n    unique_groups = list(group_to_indices.keys())\n    random.shuffle(unique_groups)\n    \n    folds = []\n    group_chunks = [unique_groups[i::n_splits] for i in range(n_splits)]\n    \n    for i in range(n_splits):\n        val_groups = group_chunks[i]\n        train_groups = [g for j, g in enumerate(group_chunks) if j != i for group in g for g in [group]] # Flatten\n        # Correcting flatten logic for train_groups\n        train_groups = []\n        for j in range(n_splits):\n            if j != i:\n                train_groups.extend(group_chunks[j])\n        \n        val_indices = []\n        for g in val_groups:\n            val_indices.extend(group_to_indices[g])\n            \n        train_indices = []\n        for g in train_groups:\n            train_indices.extend(group_to_indices[g])\n            \n        folds.append((sorted(train_indices), sorted(val_indices)))\n\n    # Feature Engineering for test set\n    engineered_test = [engineer_features(row) for row in test_rows]\n    \n    # INVARIANT 3: Prediction Logic\n    # Predict Transported = True when CryoSleep is True or total_spend == 0.0\n    predictions = []\n    for i in range(len(test_rows)):\n        row = test_rows[i]\n        eng = engineered_test[i]\n        if row.get('CryoSleep') is True or eng['total_spend'] == 0.0:\n            predictions.append(True)\n        else:\n            predictions.append(False)\n            \n    return {\n        'folds': folds,\n        'engineered_test': engineered_test,\n        'predictions': predictions\n    }\n```",
+        "sequence": 2,
+        "total_tokens": 1539
+      },
+      "preturn_hook": {
+        "abstained": false,
+        "abstention_code": "none",
+        "card_digest": "a101e373a8b5fb740744fc541f57770d2332a0db773a5ebba495d1ef48c38328",
+        "card_identity": "spaceship_titanic_group_pipeline_invariants",
+        "card_score": 0.7392,
+        "hook_engine": "T7_hybrid_cascade_with_fallback",
+        "injected_tokens": 136,
+        "reformulated_query": "spaceship titanic group pipeline",
+        "winning_probe": "probe_1_technical_phrases"
+      },
+      "task_id": "K-01_spaceship_titanic_group_pipeline",
+      "title": "Spaceship Titanic Leak-Free GroupKFold & CryoSleep Invariant Pipeline",
+      "trial_id": "K-01_spaceship_titanic_group_pipeline__with_baltor",
+      "verification": {
+        "checks": {
+          "cabin_triplet_parsed": true,
+          "cryosleep_zero_spend_invariant": true,
+          "group_leak_free": true,
+          "heldout_group_accuracy": true
+        },
+        "details": {
+          "heldout_accuracy": 1.0
+        },
+        "passed": true,
+        "score": 1.0
+      }
+    },
+    {
+      "arm": "without_baltor",
+      "demo_surface": "baltor.ai/demos/kaggle-ai-ml",
+      "domain": "kaggle_ai_ml",
+      "extracted_code": "import math\n\ndef run_ames_rmsle_pipeline(train_rows: list[dict], test_rows: list[dict], n_splits: int = 3) -> dict:\n    \"\"\"\n    Implements a pipeline for Ames housing data:\n    1. Target encoding for Neighborhood (with K-Fold to prevent leakage).\n    2. Feature engineering for Total Square Footage.\n    3. A simple linear regression model to predict SalePrice.\n    \"\"\"\n    \n    def get_total_sf(row):\n        return (row.get('TotalBsmtSF') or 0.0) + \\\n               (row.get('FirstFlrSF') or 0.0) + \\\n               (row.get('SecondFlrSF') or 0.0)\n\n    # 1. Target Encoding for Neighborhood with K-Fold\n    # We use log(SalePrice) because the goal is RMSLE\n    train_logs = [math.log(r['SalePrice']) for r in train_rows]\n    neighborhoods = [r['Neighborhood'] for r in train_rows]\n    \n    oof_encoded = [0.0] * len(train_rows)\n    \n    # Split indices for K-Fold\n    indices = list(range(len(train_rows)))\n    fold_size = len(indices) // n_splits\n    \n    for i in range(n_splits):\n        start, end = i * fold_size, (i + 1) * fold_size if i != n_splits - 1 else len(indices)\n        val_idx = set(indices[start:end])\n        train_idx = [idx for idx in indices if idx not in val_idx]\n        \n        # Calculate means on training folds\n        means = {}\n        counts = {}\n        for idx in train_idx:\n            nb = neighborhoods[idx]\n            val = train_logs[idx]\n            means[nb] = means.get(nb, 0.0) + val\n            counts[nb] = counts.get(nb, 0) + 1\n        \n        for nb in means:\n            means[nb] /= counts[nb]\n            \n        # Global mean for unseen/missing\n        global_mean = sum(train_logs[idx] for idx in train_idx) / len(train_idx)\n        \n        # Apply to validation fold\n        for idx in val_idx:\n            oof_encoded[idx] = means.get(neighborhoods[idx], global_mean)\n\n    # Calculate global means for test set encoding\n    global_means = {}\n    global_counts = {}\n    for i in range(len(train_rows)):\n        nb = neighborhoods[i]\n        val = train_logs[i]\n        global_means[nb] = global_means.get(nb, 0.0) + val\n        global_counts[nb] = global_counts.get(nb, 0) + 1\n    \n    final_global_mean = sum(train_logs) / len(train_logs)\n    for nb in global_means:\n        global_means[nb] /= global_counts[nb]\n\n    # 2. Feature Engineering for Test\n    test_total_sf = [get_total_sf(r) for r in test_rows]\n    \n    # 3. Simple Linear Regression (Ordinary Least Squares)\n    # Features: [TotalSF, OverallQual, NeighborhoodEncoded]\n    def get_features(row, is_train=True, idx=None):\n        sf = get_total_sf(row)\n        qual = float(row.get('OverallQual', 0))\n        if is_train:\n            nb_enc = oof_encoded[idx]\n        else:\n            nb_enc = global_means.get(row['Neighborhood'], final_global_mean)\n        return [1.0, sf, qual, nb_enc] # Include intercept\n\n    # Train model on full train set (using OOF encoding for stability)\n    X = [get_features(train_rows[i], True, i) for i in range(len(train_rows))]\n    y = train_logs\n    \n    # Solve (X^T X) beta = X^T y\n    # X is (N x 4), XT is (4 x N)\n    XT = [[X[i][j] for i in range(len(X))] for j in range(4)]\n    XTX = [[sum(XT[i][k] * X[k][j] for k in range(len(X))) for j in range(4)] for i in range(4)]\n    XTy = [sum(XT[i][k] * y[k] for k in range(len(y))) for i in range(4)]\n    \n    # Gaussian elimination to solve XTX * beta = XTy\n    def solve_linear(A, b):\n        n = len(b)\n        for i in range(n):\n            pivot = A[i][i]\n            for j in range(i + 1, n):\n                factor = A[j][i] / pivot\n                for k in range(i, n):\n                    A[j][k] -= factor * A[i][k]\n                b[j] -= factor * b[i]\n        \n        x = [0] * n\n        for i in range(n - 1, -1, -1):\n            s = sum(A[i][j] * x[j] for j in range(i + 1, n))\n            x[i] = (b[i] - s) / A[i][i]\n        return x\n\n    beta = solve_linear(XTX, XTy)\n    \n    # Predict for test\n    predictions = []\n    for r in test_rows:\n        feat = get_features(r, is_train=False)\n        pred_log = sum(feat[i] * beta[i] for i in range(4))\n        predictions.append(math.exp(pred_log))\n        \n    return {\n        'oof_neighborhood_encoding': oof_encoded,\n        'test_total_sf': test_total_sf,\n        'predictions': predictions\n    }",
+      "extracted_code_sha256": "ae43f7a450ff6c0cef81024e3d4e58160dae5b5c6ca93a4edc052199249e2b56",
+      "model_call": {
+        "completion_tokens": 1436,
+        "endpoint": "https://ollama.com/v1/chat/completions",
+        "error": "",
+        "finish_reason": "stop",
+        "http_status": 200,
+        "latency_ms": 4274.33,
+        "model": "gemma4:31b",
+        "ok": true,
+        "prompt_tokens": 295,
+        "request_sha256": "6c81893344711f607b2219100d6f7cf7f22d436548e51118d5af78afdcee8754",
+        "response_text": "```python\nimport math\n\ndef run_ames_rmsle_pipeline(train_rows: list[dict], test_rows: list[dict], n_splits: int = 3) -> dict:\n    \"\"\"\n    Implements a pipeline for Ames housing data:\n    1. Target encoding for Neighborhood (with K-Fold to prevent leakage).\n    2. Feature engineering for Total Square Footage.\n    3. A simple linear regression model to predict SalePrice.\n    \"\"\"\n    \n    def get_total_sf(row):\n        return (row.get('TotalBsmtSF') or 0.0) + \\\n               (row.get('FirstFlrSF') or 0.0) + \\\n               (row.get('SecondFlrSF') or 0.0)\n\n    # 1. Target Encoding for Neighborhood with K-Fold\n    # We use log(SalePrice) because the goal is RMSLE\n    train_logs = [math.log(r['SalePrice']) for r in train_rows]\n    neighborhoods = [r['Neighborhood'] for r in train_rows]\n    \n    oof_encoded = [0.0] * len(train_rows)\n    \n    # Split indices for K-Fold\n    indices = list(range(len(train_rows)))\n    fold_size = len(indices) // n_splits\n    \n    for i in range(n_splits):\n        start, end = i * fold_size, (i + 1) * fold_size if i != n_splits - 1 else len(indices)\n        val_idx = set(indices[start:end])\n        train_idx = [idx for idx in indices if idx not in val_idx]\n        \n        # Calculate means on training folds\n        means = {}\n        counts = {}\n        for idx in train_idx:\n            nb = neighborhoods[idx]\n            val = train_logs[idx]\n            means[nb] = means.get(nb, 0.0) + val\n            counts[nb] = counts.get(nb, 0) + 1\n        \n        for nb in means:\n            means[nb] /= counts[nb]\n            \n        # Global mean for unseen/missing\n        global_mean = sum(train_logs[idx] for idx in train_idx) / len(train_idx)\n        \n        # Apply to validation fold\n        for idx in val_idx:\n            oof_encoded[idx] = means.get(neighborhoods[idx], global_mean)\n\n    # Calculate global means for test set encoding\n    global_means = {}\n    global_counts = {}\n    for i in range(len(train_rows)):\n        nb = neighborhoods[i]\n        val = train_logs[i]\n        global_means[nb] = global_means.get(nb, 0.0) + val\n        global_counts[nb] = global_counts.get(nb, 0) + 1\n    \n    final_global_mean = sum(train_logs) / len(train_logs)\n    for nb in global_means:\n        global_means[nb] /= global_counts[nb]\n\n    # 2. Feature Engineering for Test\n    test_total_sf = [get_total_sf(r) for r in test_rows]\n    \n    # 3. Simple Linear Regression (Ordinary Least Squares)\n    # Features: [TotalSF, OverallQual, NeighborhoodEncoded]\n    def get_features(row, is_train=True, idx=None):\n        sf = get_total_sf(row)\n        qual = float(row.get('OverallQual', 0))\n        if is_train:\n            nb_enc = oof_encoded[idx]\n        else:\n            nb_enc = global_means.get(row['Neighborhood'], final_global_mean)\n        return [1.0, sf, qual, nb_enc] # Include intercept\n\n    # Train model on full train set (using OOF encoding for stability)\n    X = [get_features(train_rows[i], True, i) for i in range(len(train_rows))]\n    y = train_logs\n    \n    # Solve (X^T X) beta = X^T y\n    # X is (N x 4), XT is (4 x N)\n    XT = [[X[i][j] for i in range(len(X))] for j in range(4)]\n    XTX = [[sum(XT[i][k] * X[k][j] for k in range(len(X))) for j in range(4)] for i in range(4)]\n    XTy = [sum(XT[i][k] * y[k] for k in range(len(y))) for i in range(4)]\n    \n    # Gaussian elimination to solve XTX * beta = XTy\n    def solve_linear(A, b):\n        n = len(b)\n        for i in range(n):\n            pivot = A[i][i]\n            for j in range(i + 1, n):\n                factor = A[j][i] / pivot\n                for k in range(i, n):\n                    A[j][k] -= factor * A[i][k]\n                b[j] -= factor * b[i]\n        \n        x = [0] * n\n        for i in range(n - 1, -1, -1):\n            s = sum(A[i][j] * x[j] for j in range(i + 1, n))\n            x[i] = (b[i] - s) / A[i][i]\n        return x\n\n    beta = solve_linear(XTX, XTy)\n    \n    # Predict for test\n    predictions = []\n    for r in test_rows:\n        feat = get_features(r, is_train=False)\n        pred_log = sum(feat[i] * beta[i] for i in range(4))\n        predictions.append(math.exp(pred_log))\n        \n    return {\n        'oof_neighborhood_encoding': oof_encoded,\n        'test_total_sf': test_total_sf,\n        'predictions': predictions\n    }\n```",
+        "sequence": 3,
+        "total_tokens": 1731
+      },
+      "preturn_hook": {
+        "abstained": true,
+        "abstention_code": "passive_baseline_no_preturn_action",
+        "card_digest": null,
+        "card_identity": null,
+        "card_score": 0.0,
+        "hook_engine": "T0_passive_baseline",
+        "injected_tokens": 0,
+        "reformulated_query": "",
+        "winning_probe": "probe_4_safe_abstention"
+      },
+      "task_id": "K-02_ames_housing_rmsle_pipeline",
+      "title": "Ames Housing Log1p Out-of-Fold Target Encoding & TotalSF Pipeline",
+      "trial_id": "K-02_ames_housing_rmsle_pipeline__without_baltor",
+      "verification": {
+        "checks": {
+          "heldout_rmsle_below_threshold": false,
+          "log1p_encoding_scale": true,
+          "no_self_target_leakage": true,
+          "total_sf_null_safe": true
+        },
+        "details": {
+          "heldout_rmsle": 0.697
+        },
+        "passed": false,
+        "score": 0.75
+      }
+    },
+    {
+      "arm": "with_baltor",
+      "demo_surface": "baltor.ai/demos/kaggle-ai-ml",
+      "domain": "kaggle_ai_ml",
+      "extracted_code": "import math\n\ndef run_ames_rmsle_pipeline(train_rows: list[dict], test_rows: list[dict], n_splits: int = 3) -> dict:\n    # Invariant 1: Log1p Target\n    train_log_prices = [math.log1p(row['SalePrice']) for row in train_rows]\n    global_log_mean = sum(train_log_prices) / len(train_log_prices) if train_log_prices else 0.0\n\n    # Invariant 2: Strict Out-of-Fold Encoding\n    oof_neighborhood_encoding = [0.0] * len(train_rows)\n    for i in range(len(train_rows)):\n        fold_k = i % n_splits\n        neighborhood = train_rows[i]['Neighborhood']\n        \n        # Collect log prices for rows NOT in fold k with the same neighborhood\n        oof_values = [\n            train_log_prices[j] \n            for j in range(len(train_rows)) \n            if (j % n_splits != fold_k) and (train_rows[j]['Neighborhood'] == neighborhood)\n        ]\n        \n        if oof_values:\n            oof_neighborhood_encoding[i] = sum(oof_values) / len(oof_values)\n        else:\n            oof_neighborhood_encoding[i] = global_log_mean\n\n    # Calculate global means for the prediction formula\n    # TotalSF = sum(max(0.0, float(row.get(c) or 0.0)) for c in ('TotalBsmtSF','FirstFlrSF','SecondFlrSF'))\n    def get_total_sf(row):\n        return sum(max(0.0, float(row.get(c) or 0.0)) for c in ('TotalBsmtSF', 'FirstFlrSF', 'SecondFlrSF'))\n\n    train_sfs = [get_total_sf(row) for row in train_rows]\n    train_quals = [float(row['OverallQual']) for row in train_rows]\n    \n    mean_sf = sum(train_sfs) / len(train_sfs) if train_sfs else 0.0\n    mean_qual = sum(train_quals) / len(train_quals) if train_quals else 0.0\n\n    # Neighborhood mapping for test set (using all train data)\n    nb_map = {}\n    nb_counts = {}\n    for row, lp in zip(train_rows, train_log_prices):\n        nb = row['Neighborhood']\n        nb_map[nb] = nb_map.get(nb, 0.0) + lp\n        nb_counts[nb] = nb_counts.get(nb, 0) + 1\n    \n    nb_means = {nb: nb_map[nb] / nb_counts[nb] for nb in nb_map}\n\n    # Invariant 3: TotalSF & Prediction\n    test_total_sf = []\n    predictions = []\n    \n    for row in test_rows:\n        tsf = get_total_sf(row)\n        test_total_sf.append(tsf)\n        \n        nb = row['Neighborhood']\n        nb_val = nb_means.get(nb, global_log_mean)\n        qual = float(row['OverallQual'])\n        \n        # Formula: Neighborhood log-mean + 0.02*(OverallQual - mean_qual) + 0.00003*(TotalSF - mean_sf)\n        log_pred = nb_val + 0.02 * (qual - mean_qual) + 0.00003 * (tsf - mean_sf)\n        predictions.append(math.expm1(log_pred))\n\n    return {\n        'oof_neighborhood_encoding': oof_neighborhood_encoding,\n        'test_total_sf': test_total_sf,\n        'predictions': predictions\n    }",
+      "extracted_code_sha256": "be55cb7ea13ca8bd2208729197f709b76860e799ff64f45319badce16a78da23",
+      "model_call": {
+        "completion_tokens": 930,
+        "endpoint": "https://ollama.com/v1/chat/completions",
+        "error": "",
+        "finish_reason": "stop",
+        "http_status": 200,
+        "latency_ms": 9131.76,
+        "model": "gemma4:31b",
+        "ok": true,
+        "prompt_tokens": 621,
+        "request_sha256": "2b52d97df0f0f2a8ff8ba8b0c8c71c61a55ac31b237011d6806cf141a1ffc51e",
+        "response_text": "```python\nimport math\n\ndef run_ames_rmsle_pipeline(train_rows: list[dict], test_rows: list[dict], n_splits: int = 3) -> dict:\n    # Invariant 1: Log1p Target\n    train_log_prices = [math.log1p(row['SalePrice']) for row in train_rows]\n    global_log_mean = sum(train_log_prices) / len(train_log_prices) if train_log_prices else 0.0\n\n    # Invariant 2: Strict Out-of-Fold Encoding\n    oof_neighborhood_encoding = [0.0] * len(train_rows)\n    for i in range(len(train_rows)):\n        fold_k = i % n_splits\n        neighborhood = train_rows[i]['Neighborhood']\n        \n        # Collect log prices for rows NOT in fold k with the same neighborhood\n        oof_values = [\n            train_log_prices[j] \n            for j in range(len(train_rows)) \n            if (j % n_splits != fold_k) and (train_rows[j]['Neighborhood'] == neighborhood)\n        ]\n        \n        if oof_values:\n            oof_neighborhood_encoding[i] = sum(oof_values) / len(oof_values)\n        else:\n            oof_neighborhood_encoding[i] = global_log_mean\n\n    # Calculate global means for the prediction formula\n    # TotalSF = sum(max(0.0, float(row.get(c) or 0.0)) for c in ('TotalBsmtSF','FirstFlrSF','SecondFlrSF'))\n    def get_total_sf(row):\n        return sum(max(0.0, float(row.get(c) or 0.0)) for c in ('TotalBsmtSF', 'FirstFlrSF', 'SecondFlrSF'))\n\n    train_sfs = [get_total_sf(row) for row in train_rows]\n    train_quals = [float(row['OverallQual']) for row in train_rows]\n    \n    mean_sf = sum(train_sfs) / len(train_sfs) if train_sfs else 0.0\n    mean_qual = sum(train_quals) / len(train_quals) if train_quals else 0.0\n\n    # Neighborhood mapping for test set (using all train data)\n    nb_map = {}\n    nb_counts = {}\n    for row, lp in zip(train_rows, train_log_prices):\n        nb = row['Neighborhood']\n        nb_map[nb] = nb_map.get(nb, 0.0) + lp\n        nb_counts[nb] = nb_counts.get(nb, 0) + 1\n    \n    nb_means = {nb: nb_map[nb] / nb_counts[nb] for nb in nb_map}\n\n    # Invariant 3: TotalSF & Prediction\n    test_total_sf = []\n    predictions = []\n    \n    for row in test_rows:\n        tsf = get_total_sf(row)\n        test_total_sf.append(tsf)\n        \n        nb = row['Neighborhood']\n        nb_val = nb_means.get(nb, global_log_mean)\n        qual = float(row['OverallQual'])\n        \n        # Formula: Neighborhood log-mean + 0.02*(OverallQual - mean_qual) + 0.00003*(TotalSF - mean_sf)\n        log_pred = nb_val + 0.02 * (qual - mean_qual) + 0.00003 * (tsf - mean_sf)\n        predictions.append(math.expm1(log_pred))\n\n    return {\n        'oof_neighborhood_encoding': oof_neighborhood_encoding,\n        'test_total_sf': test_total_sf,\n        'predictions': predictions\n    }\n```",
+        "sequence": 4,
+        "total_tokens": 1551
+      },
+      "preturn_hook": {
+        "abstained": false,
+        "abstention_code": "none",
+        "card_digest": "b20297fb6aa31400c35a68ff5a7fb8788687f0007200926149b1eb65258d7a64",
+        "card_identity": "ames_housing_rmsle_oof_invariants",
+        "card_score": 0.7657,
+        "hook_engine": "T7_hybrid_cascade_with_fallback",
+        "injected_tokens": 166,
+        "reformulated_query": "ames housing rmsle oof",
+        "winning_probe": "probe_1_technical_phrases"
+      },
+      "task_id": "K-02_ames_housing_rmsle_pipeline",
+      "title": "Ames Housing Log1p Out-of-Fold Target Encoding & TotalSF Pipeline",
+      "trial_id": "K-02_ames_housing_rmsle_pipeline__with_baltor",
+      "verification": {
+        "checks": {
+          "heldout_rmsle_below_threshold": true,
+          "log1p_encoding_scale": true,
+          "no_self_target_leakage": true,
+          "total_sf_null_safe": true
+        },
+        "details": {
+          "heldout_rmsle": 0.0611
+        },
+        "passed": true,
+        "score": 1.0
+      }
+    },
+    {
+      "arm": "without_baltor",
+      "demo_surface": "baltor.ai/demos/github-projects",
+      "domain": "github_common_projects",
+      "extracted_code": "import time\nfrom collections import OrderedDict\nfrom typing import Any, Callable, Optional\n\nclass TLRUCache:\n    \"\"\"\n    A Time-Limited Least Recently Used (TLRU) Cache.\n    Items are evicted based on LRU policy or when they expire based on the ttu function.\n    \"\"\"\n    def __init__(\n        self, \n        maxsize: int, \n        ttu: Callable[[Any, Any, float], float], \n        timer: Callable[[], float] = time.monotonic\n    ):\n        self.maxsize = maxsize\n        self.ttu = ttu\n        self.timer = timer\n        self._data = OrderedDict()  # Stores (value, expiry_time)\n        self._currsize = 0\n\n    def __getitem__(self, key: Any) -> Any:\n        if key not in self:\n            raise KeyError(key)\n        \n        # Move to end to mark as recently used\n        value, expiry = self._data.pop(key)\n        self._data[key] = (value, expiry)\n        return value\n\n    def __setitem__(self, key: Any, value: Any) -> None:\n        now = self.timer()\n        expiry = self.ttu(key, value, now)\n        \n        if key in self._data:\n            self._data.pop(key)\n        elif self._currsize >= self.maxsize:\n            self.popitem()\n\n        self._data[key] = (value, expiry)\n        self._currsize = len(self._data)\n\n    def __delitem__(self, key: Any) -> None:\n        if key in self._data:\n            del self._data[key]\n            self._currsize = len(self._data)\n        else:\n            raise KeyError(key)\n\n    def __contains__(self, key: Any) -> bool:\n        if key not in self._data:\n            return False\n        \n        if self.timer() >= self._data[key][1]:\n            del self._data[key]\n            self._currsize = len(self._data)\n            return False\n        \n        return True\n\n    def __len__(self) -> int:\n        # We don't automatically expire all items on len(), \n        # but we return the current tracked size.\n        return self._currsize\n\n    @property\n    def currsize(self) -> int:\n        return self._currsize\n\n    def expire(self, time_now: Optional[float] = None) -> list[tuple[Any, Any]]:\n        \"\"\"\n        Removes all expired items and returns them as a list of (key, value) tuples.\n        \"\"\"\n        if time_now is None:\n            time_now = self.timer()\n            \n        expired = []\n        # Create a list of keys to delete to avoid RuntimeError during iteration\n        keys_to_del = [\n            k for k, v in self._data.items() if time_now >= v[1]\n        ]\n        \n        for k in keys_to_del:\n            val, _ = self._data.pop(k)\n            expired.append((k, val))\n            \n        self._currsize = len(self._data)\n        return expired\n\n    def popitem(self) -> tuple[Any, Any]:\n        \"\"\"\n        Removes and returns the least recently used item.\n        \"\"\"\n        if not self._data:\n            raise KeyError(\"popitem(): cache is empty\")\n        \n        # OrderedDict.popitem(last=False) pops the first (LRU) item\n        key, (value, _) = self._data.popitem(last=False)\n        self._currsize = len(self._data)\n        return key, value",
+      "extracted_code_sha256": "01c1dfd465e19169e6a8593052f606bc4a8200b4d037d8016f8d6d5649a0e3cc",
+      "model_call": {
+        "completion_tokens": 859,
+        "endpoint": "https://ollama.com/v1/chat/completions",
+        "error": "",
+        "finish_reason": "stop",
+        "http_status": 200,
+        "latency_ms": 3060.39,
+        "model": "gemma4:31b",
+        "ok": true,
+        "prompt_tokens": 243,
+        "request_sha256": "92772e92361a3d37b5767452defd31dc84192022f89d478b0499003fa433a6fd",
+        "response_text": "```python\nimport time\nfrom collections import OrderedDict\nfrom typing import Any, Callable, Optional\n\nclass TLRUCache:\n    \"\"\"\n    A Time-Limited Least Recently Used (TLRU) Cache.\n    Items are evicted based on LRU policy or when they expire based on the ttu function.\n    \"\"\"\n    def __init__(\n        self, \n        maxsize: int, \n        ttu: Callable[[Any, Any, float], float], \n        timer: Callable[[], float] = time.monotonic\n    ):\n        self.maxsize = maxsize\n        self.ttu = ttu\n        self.timer = timer\n        self._data = OrderedDict()  # Stores (value, expiry_time)\n        self._currsize = 0\n\n    def __getitem__(self, key: Any) -> Any:\n        if key not in self:\n            raise KeyError(key)\n        \n        # Move to end to mark as recently used\n        value, expiry = self._data.pop(key)\n        self._data[key] = (value, expiry)\n        return value\n\n    def __setitem__(self, key: Any, value: Any) -> None:\n        now = self.timer()\n        expiry = self.ttu(key, value, now)\n        \n        if key in self._data:\n            self._data.pop(key)\n        elif self._currsize >= self.maxsize:\n            self.popitem()\n\n        self._data[key] = (value, expiry)\n        self._currsize = len(self._data)\n\n    def __delitem__(self, key: Any) -> None:\n        if key in self._data:\n            del self._data[key]\n            self._currsize = len(self._data)\n        else:\n            raise KeyError(key)\n\n    def __contains__(self, key: Any) -> bool:\n        if key not in self._data:\n            return False\n        \n        if self.timer() >= self._data[key][1]:\n            del self._data[key]\n            self._currsize = len(self._data)\n            return False\n        \n        return True\n\n    def __len__(self) -> int:\n        # We don't automatically expire all items on len(), \n        # but we return the current tracked size.\n        return self._currsize\n\n    @property\n    def currsize(self) -> int:\n        return self._currsize\n\n    def expire(self, time_now: Optional[float] = None) -> list[tuple[Any, Any]]:\n        \"\"\"\n        Removes all expired items and returns them as a list of (key, value) tuples.\n        \"\"\"\n        if time_now is None:\n            time_now = self.timer()\n            \n        expired = []\n        # Create a list of keys to delete to avoid RuntimeError during iteration\n        keys_to_del = [\n            k for k, v in self._data.items() if time_now >= v[1]\n        ]\n        \n        for k in keys_to_del:\n            val, _ = self._data.pop(k)\n            expired.append((k, val))\n            \n        self._currsize = len(self._data)\n        return expired\n\n    def popitem(self) -> tuple[Any, Any]:\n        \"\"\"\n        Removes and returns the least recently used item.\n        \"\"\"\n        if not self._data:\n            raise KeyError(\"popitem(): cache is empty\")\n        \n        # OrderedDict.popitem(last=False) pops the first (LRU) item\n        key, (value, _) = self._data.popitem(last=False)\n        self._currsize = len(self._data)\n        return key, value\n```",
+        "sequence": 5,
+        "total_tokens": 1102
+      },
+      "preturn_hook": {
+        "abstained": true,
+        "abstention_code": "passive_baseline_no_preturn_action",
+        "card_digest": null,
+        "card_identity": null,
+        "card_score": 0.0,
+        "hook_engine": "T0_passive_baseline",
+        "injected_tokens": 0,
+        "reformulated_query": "",
+        "winning_probe": "probe_4_safe_abstention"
+      },
+      "task_id": "G-01_cachetools_tlru_cache",
+      "title": "cachetools TLRUCache with Per-Item TTU & Expired-First Eviction",
+      "trial_id": "G-01_cachetools_tlru_cache__without_baltor",
+      "verification": {
+        "checks": {
+          "basic_lru_and_ttu": true,
+          "expire_before_lru_eviction_at_maxsize": false,
+          "immediate_expired_insert": true,
+          "out_of_order_expiration": true
+        },
+        "details": {},
+        "passed": false,
+        "score": 0.75
+      }
+    },
+    {
+      "arm": "with_baltor",
+      "demo_surface": "baltor.ai/demos/github-projects",
+      "domain": "github_common_projects",
+      "extracted_code": "import time\nfrom collections import OrderedDict\nfrom typing import Any, Callable, List, Tuple, Optional\n\nclass TLRUCache:\n    def __init__(\n        self, \n        maxsize: int, \n        ttu: Callable[[Any, Any, float], float], \n        timer: Callable[[], float] = time.monotonic\n    ):\n        self.maxsize = maxsize\n        self._ttu = ttu\n        self._timer = timer\n        self._data = OrderedDict()  # Stores (value, expiry)\n        \n    def expire(self, time_now: Optional[float] = None) -> List[Tuple[Any, Any]]:\n        if time_now is None:\n            time_now = self._timer()\n        \n        expired = []\n        # Invariant 2: Check ALL items because TTU can be out-of-order\n        keys_to_remove = [\n            k for k, (v, exp) in self._data.items() if exp <= time_now\n        ]\n        for k in keys_to_remove:\n            val, _ = self._data.pop(k)\n            expired.append((k, val))\n        return expired\n\n    def __getitem__(self, key: Any) -> Any:\n        self.expire()\n        if key not in self._data:\n            raise KeyError(key)\n        val, exp = self._data[key]\n        self._data.move_to_end(key)\n        return val\n\n    def __setitem__(self, key: Any, value: Any) -> None:\n        now = self._timer()\n        # Invariant 1: Expire before evict\n        self.expire(now)\n        \n        exp = self._ttu(key, value, now)\n        if exp <= now:\n            if key in self._data:\n                del self._data[key]\n            return\n\n        if key in self._data:\n            self._data.move_to_end(key)\n        \n        # Invariant 3: LRU & Size\n        if key not in self._data and len(self._data) >= self.maxsize:\n            self.popitem()\n            \n        self._data[key] = (value, exp)\n\n    def __delitem__(self, key: Any) -> None:\n        if key not in self._data:\n            raise KeyError(key)\n        del self._data[key]\n\n    def __contains__(self, key: Any) -> bool:\n        self.expire()\n        return key in self._data\n\n    def __len__(self) -> int:\n        self.expire()\n        return len(self._data)\n\n    @property\n    def currsize(self) -> int:\n        self.expire()\n        return len(self._data)\n\n    def popitem(self) -> Tuple[Any, Any]:\n        # Pop the least recently used item\n        key, (val, exp) = self._data.popitem(last=False)\n        return key, val",
+      "extracted_code_sha256": "9f99c3be330d7b5ae8e41c2d877a562270c9714db9685a0d271cb4a563b124ad",
+      "model_call": {
+        "completion_tokens": 694,
+        "endpoint": "https://ollama.com/v1/chat/completions",
+        "error": "",
+        "finish_reason": "stop",
+        "http_status": 200,
+        "latency_ms": 2258.3,
+        "model": "gemma4:31b",
+        "ok": true,
+        "prompt_tokens": 508,
+        "request_sha256": "f4ad8e8b7d976d350451c16a1227620ef60de642890f5548e78bcd41a8fbd993",
+        "response_text": "```python\nimport time\nfrom collections import OrderedDict\nfrom typing import Any, Callable, List, Tuple, Optional\n\nclass TLRUCache:\n    def __init__(\n        self, \n        maxsize: int, \n        ttu: Callable[[Any, Any, float], float], \n        timer: Callable[[], float] = time.monotonic\n    ):\n        self.maxsize = maxsize\n        self._ttu = ttu\n        self._timer = timer\n        self._data = OrderedDict()  # Stores (value, expiry)\n        \n    def expire(self, time_now: Optional[float] = None) -> List[Tuple[Any, Any]]:\n        if time_now is None:\n            time_now = self._timer()\n        \n        expired = []\n        # Invariant 2: Check ALL items because TTU can be out-of-order\n        keys_to_remove = [\n            k for k, (v, exp) in self._data.items() if exp <= time_now\n        ]\n        for k in keys_to_remove:\n            val, _ = self._data.pop(k)\n            expired.append((k, val))\n        return expired\n\n    def __getitem__(self, key: Any) -> Any:\n        self.expire()\n        if key not in self._data:\n            raise KeyError(key)\n        val, exp = self._data[key]\n        self._data.move_to_end(key)\n        return val\n\n    def __setitem__(self, key: Any, value: Any) -> None:\n        now = self._timer()\n        # Invariant 1: Expire before evict\n        self.expire(now)\n        \n        exp = self._ttu(key, value, now)\n        if exp <= now:\n            if key in self._data:\n                del self._data[key]\n            return\n\n        if key in self._data:\n            self._data.move_to_end(key)\n        \n        # Invariant 3: LRU & Size\n        if key not in self._data and len(self._data) >= self.maxsize:\n            self.popitem()\n            \n        self._data[key] = (value, exp)\n\n    def __delitem__(self, key: Any) -> None:\n        if key not in self._data:\n            raise KeyError(key)\n        del self._data[key]\n\n    def __contains__(self, key: Any) -> bool:\n        self.expire()\n        return key in self._data\n\n    def __len__(self) -> int:\n        self.expire()\n        return len(self._data)\n\n    @property\n    def currsize(self) -> int:\n        self.expire()\n        return len(self._data)\n\n    def popitem(self) -> Tuple[Any, Any]:\n        # Pop the least recently used item\n        key, (val, exp) = self._data.popitem(last=False)\n        return key, val\n```",
+        "sequence": 6,
+        "total_tokens": 1202
+      },
+      "preturn_hook": {
+        "abstained": false,
+        "abstention_code": "none",
+        "card_digest": "c3034b227777d4dd1fc61c6f884f48641d02b4d121d3fd328cb08b5531fcacda",
+        "card_identity": "cachetools_tlru_out_of_order_expiry_contract",
+        "card_score": 0.7458,
+        "hook_engine": "T7_hybrid_cascade_with_fallback",
+        "injected_tokens": 154,
+        "reformulated_query": "cachetools tlru cache ttu",
+        "winning_probe": "probe_1_technical_phrases"
+      },
+      "task_id": "G-01_cachetools_tlru_cache",
+      "title": "cachetools TLRUCache with Per-Item TTU & Expired-First Eviction",
+      "trial_id": "G-01_cachetools_tlru_cache__with_baltor",
+      "verification": {
+        "checks": {
+          "basic_lru_and_ttu": true,
+          "expire_before_lru_eviction_at_maxsize": true,
+          "immediate_expired_insert": true,
+          "out_of_order_expiration": true
+        },
+        "details": {},
+        "passed": true,
+        "score": 1.0
+      }
+    },
+    {
+      "arm": "without_baltor",
+      "demo_surface": "baltor.ai/demos/github-projects",
+      "domain": "github_common_projects",
+      "extracted_code": "import re\n\ndef parse_dotenv_stream(text: str) -> dict[str, str | None]:\n    \"\"\"\n    Parses a .env formatted string into a dictionary.\n    Supports:\n    - 'export ' prefix\n    - Bare keys (value is None)\n    - Single-quoted values (literal)\n    - Double-quoted values (with escapes: \\n, \\t, \\r, \\\", \\\\)\n    - Unquoted values (trimmed, comments removed)\n    - # comments\n    \"\"\"\n    result = {}\n    # Regex to match: \n    # 1. Optional 'export '\n    # 2. Key (alphanumeric/underscore)\n    # 3. Optional '=' followed by value\n    # 4. Optional trailing comment\n    line_pattern = re.compile(r'^\\s*(?:export\\s+)?([a-zA-Z_][a-zA-Z0-9_]*)(?:\\s*=\\s*(.*))?\\s*$')\n    \n    for line in text.splitlines():\n        line = line.strip()\n        if not line or line.startswith('#'):\n            continue\n            \n        match = line_pattern.match(line)\n        if not match:\n            continue\n            \n        key, raw_value = match.groups()\n        \n        if raw_value is None:\n            result[key] = None\n            continue\n\n        # Handle comments for unquoted values\n        # If it starts with a quote, we find the closing quote.\n        # Otherwise, we split by the first '#' that isn't inside quotes.\n        raw_value = raw_value.strip()\n        \n        if not raw_value:\n            result[key] = \"\"\n            continue\n\n        if raw_value.startswith(\"'\"):\n            # Single quoted: find matching quote, everything inside is literal\n            end_idx = raw_value.find(\"'\", 1)\n            if end_idx != -1:\n                result[key] = raw_value[1:end_idx]\n            else:\n                result[key] = raw_value[1:]\n        elif raw_value.startswith('\"'):\n            # Double quoted: handle escapes\n            end_idx = -1\n            for i in range(1, len(raw_value)):\n                if raw_value[i] == '\"' and raw_value[i-1] != '\\\\':\n                    end_idx = i\n                    break\n            \n            val = raw_value[1:end_idx] if end_idx != -1 else raw_value[1:]\n            \n            # Process escapes\n            escapes = {'n': '\\n', 't': '\\t', 'r': '\\r', '\"': '\"', '\\\\': '\\\\'}\n            processed = []\n            i = 0\n            while i < len(val):\n                if val[i] == '\\\\' and i + 1 < len(val):\n                    char = val[i+1]\n                    processed.append(escapes.get(char, char))\n                    i += 2\n                else:\n                    processed.append(val[i])\n                    i += 1\n            result[key] = \"\".join(processed)\n        else:\n            # Unquoted: strip trailing comments\n            # Find first # that is not escaped or inside a quote (though we are in unquoted block)\n            comment_idx = raw_value.find('#')\n            val = raw_value[:comment_idx].strip() if comment_idx != -1 else raw_value.strip()\n            result[key] = val\n\n    return result",
+      "extracted_code_sha256": "3860c08fe598458fa4236aea5724f2946104bccf8a1d6f21d654908d5b46b159",
+      "model_call": {
+        "completion_tokens": 818,
+        "endpoint": "https://ollama.com/v1/chat/completions",
+        "error": "",
+        "finish_reason": "stop",
+        "http_status": 200,
+        "latency_ms": 2447.15,
+        "model": "gemma4:31b",
+        "ok": true,
+        "prompt_tokens": 174,
+        "request_sha256": "991e6889d16701b6ce2adf48ca86b06ad07a5334000197421285a48863e0e1ed",
+        "response_text": "```python\nimport re\n\ndef parse_dotenv_stream(text: str) -> dict[str, str | None]:\n    \"\"\"\n    Parses a .env formatted string into a dictionary.\n    Supports:\n    - 'export ' prefix\n    - Bare keys (value is None)\n    - Single-quoted values (literal)\n    - Double-quoted values (with escapes: \\n, \\t, \\r, \\\", \\\\)\n    - Unquoted values (trimmed, comments removed)\n    - # comments\n    \"\"\"\n    result = {}\n    # Regex to match: \n    # 1. Optional 'export '\n    # 2. Key (alphanumeric/underscore)\n    # 3. Optional '=' followed by value\n    # 4. Optional trailing comment\n    line_pattern = re.compile(r'^\\s*(?:export\\s+)?([a-zA-Z_][a-zA-Z0-9_]*)(?:\\s*=\\s*(.*))?\\s*$')\n    \n    for line in text.splitlines():\n        line = line.strip()\n        if not line or line.startswith('#'):\n            continue\n            \n        match = line_pattern.match(line)\n        if not match:\n            continue\n            \n        key, raw_value = match.groups()\n        \n        if raw_value is None:\n            result[key] = None\n            continue\n\n        # Handle comments for unquoted values\n        # If it starts with a quote, we find the closing quote.\n        # Otherwise, we split by the first '#' that isn't inside quotes.\n        raw_value = raw_value.strip()\n        \n        if not raw_value:\n            result[key] = \"\"\n            continue\n\n        if raw_value.startswith(\"'\"):\n            # Single quoted: find matching quote, everything inside is literal\n            end_idx = raw_value.find(\"'\", 1)\n            if end_idx != -1:\n                result[key] = raw_value[1:end_idx]\n            else:\n                result[key] = raw_value[1:]\n        elif raw_value.startswith('\"'):\n            # Double quoted: handle escapes\n            end_idx = -1\n            for i in range(1, len(raw_value)):\n                if raw_value[i] == '\"' and raw_value[i-1] != '\\\\':\n                    end_idx = i\n                    break\n            \n            val = raw_value[1:end_idx] if end_idx != -1 else raw_value[1:]\n            \n            # Process escapes\n            escapes = {'n': '\\n', 't': '\\t', 'r': '\\r', '\"': '\"', '\\\\': '\\\\'}\n            processed = []\n            i = 0\n            while i < len(val):\n                if val[i] == '\\\\' and i + 1 < len(val):\n                    char = val[i+1]\n                    processed.append(escapes.get(char, char))\n                    i += 2\n                else:\n                    processed.append(val[i])\n                    i += 1\n            result[key] = \"\".join(processed)\n        else:\n            # Unquoted: strip trailing comments\n            # Find first # that is not escaped or inside a quote (though we are in unquoted block)\n            comment_idx = raw_value.find('#')\n            val = raw_value[:comment_idx].strip() if comment_idx != -1 else raw_value.strip()\n            result[key] = val\n\n    return result\n```",
+        "sequence": 7,
+        "total_tokens": 992
+      },
+      "preturn_hook": {
+        "abstained": true,
+        "abstention_code": "passive_baseline_no_preturn_action",
+        "card_digest": null,
+        "card_identity": null,
+        "card_score": 0.0,
+        "hook_engine": "T0_passive_baseline",
+        "injected_tokens": 0,
+        "reformulated_query": "",
+        "winning_probe": "probe_4_safe_abstention"
+      },
+      "task_id": "G-02_python_dotenv_escape_parser",
+      "title": "python-dotenv Issue #680 Double-Quoted Escape & Inline Comment Parser",
+      "trial_id": "G-02_python_dotenv_escape_parser__without_baltor",
+      "verification": {
+        "checks": {
+          "double_quoted_escapes_and_inline_comment": true,
+          "export_prefix_and_bare_key_none": true,
+          "single_pass_double_backslash_n": true,
+          "single_quoted_and_hash_preservation": false
+        },
+        "details": {},
+        "passed": false,
+        "score": 0.75
+      }
+    },
+    {
+      "arm": "with_baltor",
+      "demo_surface": "baltor.ai/demos/github-projects",
+      "domain": "github_common_projects",
+      "extracted_code": "import re\n\ndef parse_dotenv_stream(text: str) -> dict[str, str | None]:\n    \"\"\"\n    Parses .env content according to strict Baltor Contract Card invariants.\n    \"\"\"\n    results = {}\n    lines = text.splitlines()\n\n    for line in lines:\n        line = line.strip()\n        if not line or line.startswith('#'):\n            continue\n\n        # Strip optional 'export ' prefix\n        if line.startswith('export '):\n            line = line[len('export '):].strip()\n\n        if '=' not in line:\n            # Bare key case\n            key = line.split('#')[0].strip()\n            if key:\n                results[key] = None\n            continue\n\n        key_part, value_part = line.split('=', 1)\n        key = key_part.strip()\n        value_part = value_part.strip()\n\n        if not value_part:\n            results[key] = \"\"\n            continue\n\n        # Handle Quoted Values\n        if value_part.startswith(\"'\"):\n            # INVARIANT 2: Single Quotes - literal until closing quote\n            end_idx = value_part.find(\"'\", 1)\n            if end_idx != -1:\n                results[key] = value_part[1:end_idx]\n            else:\n                results[key] = value_part[1:]\n        elif value_part.startswith('\"'):\n            # INVARIANT 1: Double Quotes - Single-Pass Escapes\n            chars = []\n            i = 1\n            while i < len(value_part):\n                char = value_part[i]\n                if char == '\"':\n                    break\n                if char == '\\\\':\n                    i += 1\n                    if i < len(value_part):\n                        nxt = value_part[i]\n                        mapping = {'n': '\\n', 't': '\\t', 'r': '\\r', '\"': '\"', '\\\\': '\\\\'}\n                        chars.append(mapping.get(nxt, nxt))\n                else:\n                    chars.append(char)\n                i += 1\n            results[key] = \"\".join(chars)\n        else:\n            # INVARIANT 3: Unquoted - strip inline comment only if preceded by whitespace\n            # Find first '#' that is preceded by whitespace\n            comment_start = -1\n            for idx in range(len(value_part)):\n                if value_part[idx] == '#':\n                    if idx == 0 or value_part[idx-1].isspace():\n                        comment_start = idx\n                        break\n            \n            if comment_start != -1:\n                val = value_part[:comment_start].strip()\n            else:\n                val = value_part.strip()\n            results[key] = val\n\n    return results",
+      "extracted_code_sha256": "3b7ac5fc204c15950b7ba1891d84d2ae0a6cd4c8fb8d69f34a483bcf6d2ca082",
+      "model_call": {
+        "completion_tokens": 646,
+        "endpoint": "https://ollama.com/v1/chat/completions",
+        "error": "",
+        "finish_reason": "stop",
+        "http_status": 200,
+        "latency_ms": 2772.29,
+        "model": "gemma4:31b",
+        "ok": true,
+        "prompt_tokens": 451,
+        "request_sha256": "88204bc7e0683ae66900220ae10c9a3815d0e975e2d58354b978f8eb1b7fbbf8",
+        "response_text": "```python\nimport re\n\ndef parse_dotenv_stream(text: str) -> dict[str, str | None]:\n    \"\"\"\n    Parses .env content according to strict Baltor Contract Card invariants.\n    \"\"\"\n    results = {}\n    lines = text.splitlines()\n\n    for line in lines:\n        line = line.strip()\n        if not line or line.startswith('#'):\n            continue\n\n        # Strip optional 'export ' prefix\n        if line.startswith('export '):\n            line = line[len('export '):].strip()\n\n        if '=' not in line:\n            # Bare key case\n            key = line.split('#')[0].strip()\n            if key:\n                results[key] = None\n            continue\n\n        key_part, value_part = line.split('=', 1)\n        key = key_part.strip()\n        value_part = value_part.strip()\n\n        if not value_part:\n            results[key] = \"\"\n            continue\n\n        # Handle Quoted Values\n        if value_part.startswith(\"'\"):\n            # INVARIANT 2: Single Quotes - literal until closing quote\n            end_idx = value_part.find(\"'\", 1)\n            if end_idx != -1:\n                results[key] = value_part[1:end_idx]\n            else:\n                results[key] = value_part[1:]\n        elif value_part.startswith('\"'):\n            # INVARIANT 1: Double Quotes - Single-Pass Escapes\n            chars = []\n            i = 1\n            while i < len(value_part):\n                char = value_part[i]\n                if char == '\"':\n                    break\n                if char == '\\\\':\n                    i += 1\n                    if i < len(value_part):\n                        nxt = value_part[i]\n                        mapping = {'n': '\\n', 't': '\\t', 'r': '\\r', '\"': '\"', '\\\\': '\\\\'}\n                        chars.append(mapping.get(nxt, nxt))\n                else:\n                    chars.append(char)\n                i += 1\n            results[key] = \"\".join(chars)\n        else:\n            # INVARIANT 3: Unquoted - strip inline comment only if preceded by whitespace\n            # Find first '#' that is preceded by whitespace\n            comment_start = -1\n            for idx in range(len(value_part)):\n                if value_part[idx] == '#':\n                    if idx == 0 or value_part[idx-1].isspace():\n                        comment_start = idx\n                        break\n            \n            if comment_start != -1:\n                val = value_part[:comment_start].strip()\n            else:\n                val = value_part.strip()\n            results[key] = val\n\n    return results\n```",
+        "sequence": 8,
+        "total_tokens": 1097
+      },
+      "preturn_hook": {
+        "abstained": false,
+        "abstention_code": "none",
+        "card_digest": "d4047c83910b6a55e8a2f79d4b0f3e19c56072f8b04d1a3d8d6f9e20c45018b3",
+        "card_identity": "python_dotenv_escape_and_comment_parser_contract",
+        "card_score": 0.719,
+        "hook_engine": "T7_hybrid_cascade_with_fallback",
+        "injected_tokens": 159,
+        "reformulated_query": "python dotenv escape parser",
+        "winning_probe": "probe_1_technical_phrases"
+      },
+      "task_id": "G-02_python_dotenv_escape_parser",
+      "title": "python-dotenv Issue #680 Double-Quoted Escape & Inline Comment Parser",
+      "trial_id": "G-02_python_dotenv_escape_parser__with_baltor",
+      "verification": {
+        "checks": {
+          "double_quoted_escapes_and_inline_comment": true,
+          "export_prefix_and_bare_key_none": true,
+          "single_pass_double_backslash_n": true,
+          "single_quoted_and_hash_preservation": true
+        },
+        "details": {},
+        "passed": true,
+        "score": 1.0
+      }
+    },
+    {
+      "arm": "without_baltor",
+      "demo_surface": "skillsforgood.org",
+      "domain": "public_good_projects",
+      "extracted_code": "import math\n\ndef assess_worker_heat_stress(\n    dry_bulb_c: float, \n    relative_humidity_pct: float, \n    globe_temp_c: float, \n    natural_wet_bulb_c: float, \n    solar_load: bool, \n    metabolic_watts: float, \n    acclimatized: bool\n) -> dict:\n    \"\"\"\n    Computes heat stress metrics based on WBGT and NIOSH-inspired guidelines.\n    \"\"\"\n    # 1. Calculate WBGT (Wet-Bulb Globe Temperature)\n    # Formula: 0.7 * Twb + 0.2 * Tg + 0.1 * Tdb (Outdoor with solar load)\n    # Formula: 0.7 * Twb + 0.3 * Tg (Indoor or outdoor without solar load)\n    if solar_load:\n        wbgt = (0.7 * natural_wet_bulb_c) + (0.2 * globe_temp_c) + (0.1 * dry_bulb_c)\n    else:\n        wbgt = (0.7 * natural_wet_bulb_c) + (0.3 * globe_temp_c)\n\n    # 2. Determine REL (Recommended Exposure Limit) / Threshold\n    # Simplified NIOSH/ACGIH logic: Base limit adjusted by metabolic rate\n    # Base limit for moderate work (~300W) is roughly 28C for acclimatized\n    base_limit = 28.0 if acclimatized else 25.0\n    \n    # Adjust limit based on metabolic watts (linear approximation)\n    # Every 100W above 300W reduces the allowable WBGT by ~1.5C\n    metabolic_adjustment = ((metabolic_watts - 300) / 100) * 1.5\n    ral_limit = base_limit - metabolic_adjustment\n\n    # 3. Determine Risk Band and Rest Requirements\n    # Based on WBGT vs Limit\n    diff = wbgt - ral_limit\n    \n    if diff < 0:\n        risk_band = \"Low\"\n        rest_min = 0\n        hydration = 500\n    elif 0 <= diff < 2:\n        risk_band = \"Moderate\"\n        rest_min = 15\n        hydration = 750\n    elif 2 <= diff < 5:\n        risk_band = \"High\"\n        rest_min = 30\n        hydration = 1000\n    else:\n        risk_band = \"Extreme\"\n        rest_min = 45\n        hydration = 1200\n\n    # 4. Halt condition for unacclimatized workers\n    # Unacclimatized workers are at high risk if WBGT exceeds 26C or \n    # if they are in the 'High' risk band.\n    halt_work = False\n    if not acclimatized:\n        if wbgt > 26.0 or risk_band in [\"High\", \"Extreme\"]:\n            halt_work = True\n\n    return {\n        'wbgt_c': round(wbgt, 2),\n        'ral_or_al_limit_c': round(ral_limit, 2),\n        'risk_band': risk_band,\n        'mandatory_rest_minutes_per_hour': rest_min,\n        'hydration_ml_per_hour': hydration,\n        'halt_unacclimatized_work': halt_work\n    }",
+      "extracted_code_sha256": "0386d6c604ac780a5b5f9a6c2d37f61eb65fd3f8cf94120ab3ce0c0a165d514e",
+      "model_call": {
+        "completion_tokens": 808,
+        "endpoint": "https://ollama.com/v1/chat/completions",
+        "error": "",
+        "finish_reason": "stop",
+        "http_status": 200,
+        "latency_ms": 2806.74,
+        "model": "gemma4:31b",
+        "ok": true,
+        "prompt_tokens": 265,
+        "request_sha256": "d3467b8f8d817625ba281893bd367481ff4c46b49673dfc068d4ed499fb350ac",
+        "response_text": "```python\nimport math\n\ndef assess_worker_heat_stress(\n    dry_bulb_c: float, \n    relative_humidity_pct: float, \n    globe_temp_c: float, \n    natural_wet_bulb_c: float, \n    solar_load: bool, \n    metabolic_watts: float, \n    acclimatized: bool\n) -> dict:\n    \"\"\"\n    Computes heat stress metrics based on WBGT and NIOSH-inspired guidelines.\n    \"\"\"\n    # 1. Calculate WBGT (Wet-Bulb Globe Temperature)\n    # Formula: 0.7 * Twb + 0.2 * Tg + 0.1 * Tdb (Outdoor with solar load)\n    # Formula: 0.7 * Twb + 0.3 * Tg (Indoor or outdoor without solar load)\n    if solar_load:\n        wbgt = (0.7 * natural_wet_bulb_c) + (0.2 * globe_temp_c) + (0.1 * dry_bulb_c)\n    else:\n        wbgt = (0.7 * natural_wet_bulb_c) + (0.3 * globe_temp_c)\n\n    # 2. Determine REL (Recommended Exposure Limit) / Threshold\n    # Simplified NIOSH/ACGIH logic: Base limit adjusted by metabolic rate\n    # Base limit for moderate work (~300W) is roughly 28C for acclimatized\n    base_limit = 28.0 if acclimatized else 25.0\n    \n    # Adjust limit based on metabolic watts (linear approximation)\n    # Every 100W above 300W reduces the allowable WBGT by ~1.5C\n    metabolic_adjustment = ((metabolic_watts - 300) / 100) * 1.5\n    ral_limit = base_limit - metabolic_adjustment\n\n    # 3. Determine Risk Band and Rest Requirements\n    # Based on WBGT vs Limit\n    diff = wbgt - ral_limit\n    \n    if diff < 0:\n        risk_band = \"Low\"\n        rest_min = 0\n        hydration = 500\n    elif 0 <= diff < 2:\n        risk_band = \"Moderate\"\n        rest_min = 15\n        hydration = 750\n    elif 2 <= diff < 5:\n        risk_band = \"High\"\n        rest_min = 30\n        hydration = 1000\n    else:\n        risk_band = \"Extreme\"\n        rest_min = 45\n        hydration = 1200\n\n    # 4. Halt condition for unacclimatized workers\n    # Unacclimatized workers are at high risk if WBGT exceeds 26C or \n    # if they are in the 'High' risk band.\n    halt_work = False\n    if not acclimatized:\n        if wbgt > 26.0 or risk_band in [\"High\", \"Extreme\"]:\n            halt_work = True\n\n    return {\n        'wbgt_c': round(wbgt, 2),\n        'ral_or_al_limit_c': round(ral_limit, 2),\n        'risk_band': risk_band,\n        'mandatory_rest_minutes_per_hour': rest_min,\n        'hydration_ml_per_hour': hydration,\n        'halt_unacclimatized_work': halt_work\n    }\n```",
+        "sequence": 9,
+        "total_tokens": 1073
+      },
+      "preturn_hook": {
+        "abstained": true,
+        "abstention_code": "passive_baseline_no_preturn_action",
+        "card_digest": null,
+        "card_identity": null,
+        "card_score": 0.0,
+        "hook_engine": "T0_passive_baseline",
+        "injected_tokens": 0,
+        "reformulated_query": "",
+        "winning_probe": "probe_4_safe_abstention"
+      },
+      "task_id": "PG-01_osha_niosh_heat_stress_wbgt",
+      "title": "OSHA/NIOSH Wet-Bulb Globe Temperature (WBGT) & Work-Rest Calculator",
+      "trial_id": "PG-01_osha_niosh_heat_stress_wbgt__without_baltor",
+      "verification": {
+        "checks": {
+          "mandatory_rest_schedule_monotonic": false,
+          "niosh_log10_ral_al_threshold": false,
+          "unacclimatized_protection_invariant": true,
+          "wbgt_indoor_outdoor_formula": true
+        },
+        "details": {},
+        "passed": false,
+        "score": 0.5
+      }
+    },
+    {
+      "arm": "with_baltor",
+      "demo_surface": "skillsforgood.org",
+      "domain": "public_good_projects",
+      "extracted_code": "import math\n\ndef assess_worker_heat_stress(\n    dry_bulb_c: float, \n    relative_humidity_pct: float, \n    globe_temp_c: float, \n    natural_wet_bulb_c: float, \n    solar_load: bool, \n    metabolic_watts: float, \n    acclimatized: bool\n) -> dict:\n    \"\"\"\n    Computes heat stress risk based on WBGT and NIOSH thresholds.\n    \"\"\"\n    # INVARIANT 1: WBGT Calculation\n    if solar_load:\n        wbgt_c = round(0.7 * natural_wet_bulb_c + 0.2 * globe_temp_c + 0.1 * dry_bulb_c, 2)\n    else:\n        wbgt_c = round(0.7 * natural_wet_bulb_c + 0.3 * globe_temp_c, 2)\n\n    # INVARIANT 2: NIOSH Logarithmic Limit\n    m_val = max(100.0, float(metabolic_watts))\n    if acclimatized:\n        limit = 56.7 - 11.5 * math.log10(m_val)\n    else:\n        limit = 59.9 - 14.1 * math.log10(m_val)\n    \n    ral_or_al_limit_c = round(limit, 2)\n\n    # INVARIANT 3: Schedule by delta\n    delta = wbgt_c - ral_or_al_limit_c\n    \n    if delta < 0:\n        risk_band, rest, hydration, halt = 'normal', 0, 500, False\n    elif 0 <= delta < 2:\n        risk_band, rest, hydration, halt = 'caution', 15, 750, False\n    elif 2 <= delta < 4:\n        risk_band, rest, hydration, halt = 'warning', 30, 1000, not acclimatized\n    elif 4 <= delta < 6:\n        risk_band, rest, hydration, halt = 'danger', 45, 1000, True\n    else: # delta >= 6\n        risk_band, rest, hydration, halt = 'extreme_stop_work', 60, 1000, True\n\n    return {\n        'wbgt_c': wbgt_c,\n        'ral_or_al_limit_c': ral_or_al_limit_c,\n        'risk_band': risk_band,\n        'mandatory_rest_minutes_per_hour': rest,\n        'hydration_ml_per_hour': hydration,\n        'halt_unacclimatized_work': halt\n    }",
+      "extracted_code_sha256": "d803744418eaafb93a12fd7cc737139fff8564ab2723482e70458eb68775fa94",
+      "model_call": {
+        "completion_tokens": 648,
+        "endpoint": "https://ollama.com/v1/chat/completions",
+        "error": "",
+        "finish_reason": "stop",
+        "http_status": 200,
+        "latency_ms": 2604.71,
+        "model": "gemma4:31b",
+        "ok": true,
+        "prompt_tokens": 692,
+        "request_sha256": "67909e1df94bfeb162a9944487931058e4351705f171fbd66c94f7fda78cec45",
+        "response_text": "```python\nimport math\n\ndef assess_worker_heat_stress(\n    dry_bulb_c: float, \n    relative_humidity_pct: float, \n    globe_temp_c: float, \n    natural_wet_bulb_c: float, \n    solar_load: bool, \n    metabolic_watts: float, \n    acclimatized: bool\n) -> dict:\n    \"\"\"\n    Computes heat stress risk based on WBGT and NIOSH thresholds.\n    \"\"\"\n    # INVARIANT 1: WBGT Calculation\n    if solar_load:\n        wbgt_c = round(0.7 * natural_wet_bulb_c + 0.2 * globe_temp_c + 0.1 * dry_bulb_c, 2)\n    else:\n        wbgt_c = round(0.7 * natural_wet_bulb_c + 0.3 * globe_temp_c, 2)\n\n    # INVARIANT 2: NIOSH Logarithmic Limit\n    m_val = max(100.0, float(metabolic_watts))\n    if acclimatized:\n        limit = 56.7 - 11.5 * math.log10(m_val)\n    else:\n        limit = 59.9 - 14.1 * math.log10(m_val)\n    \n    ral_or_al_limit_c = round(limit, 2)\n\n    # INVARIANT 3: Schedule by delta\n    delta = wbgt_c - ral_or_al_limit_c\n    \n    if delta < 0:\n        risk_band, rest, hydration, halt = 'normal', 0, 500, False\n    elif 0 <= delta < 2:\n        risk_band, rest, hydration, halt = 'caution', 15, 750, False\n    elif 2 <= delta < 4:\n        risk_band, rest, hydration, halt = 'warning', 30, 1000, not acclimatized\n    elif 4 <= delta < 6:\n        risk_band, rest, hydration, halt = 'danger', 45, 1000, True\n    else: # delta >= 6\n        risk_band, rest, hydration, halt = 'extreme_stop_work', 60, 1000, True\n\n    return {\n        'wbgt_c': wbgt_c,\n        'ral_or_al_limit_c': ral_or_al_limit_c,\n        'risk_band': risk_band,\n        'mandatory_rest_minutes_per_hour': rest,\n        'hydration_ml_per_hour': hydration,\n        'halt_unacclimatized_work': halt\n    }\n```",
+        "sequence": 10,
+        "total_tokens": 1340
+      },
+      "preturn_hook": {
+        "abstained": false,
+        "abstention_code": "none",
+        "card_digest": "e50582a20d2666e51c6be46050ef5ff8a20b56d236704e42df056ffea9c6fb86",
+        "card_identity": "osha_niosh_wbgt_work_rest_contract",
+        "card_score": 0.7865,
+        "hook_engine": "T7_hybrid_cascade_with_fallback",
+        "injected_tokens": 179,
+        "reformulated_query": "osha niosh wbgt heat stress",
+        "winning_probe": "probe_1_technical_phrases"
+      },
+      "task_id": "PG-01_osha_niosh_heat_stress_wbgt",
+      "title": "OSHA/NIOSH Wet-Bulb Globe Temperature (WBGT) & Work-Rest Calculator",
+      "trial_id": "PG-01_osha_niosh_heat_stress_wbgt__with_baltor",
+      "verification": {
+        "checks": {
+          "mandatory_rest_schedule_monotonic": true,
+          "niosh_log10_ral_al_threshold": true,
+          "unacclimatized_protection_invariant": true,
+          "wbgt_indoor_outdoor_formula": true
+        },
+        "details": {},
+        "passed": true,
+        "score": 1.0
+      }
+    },
+    {
+      "arm": "without_baltor",
+      "demo_surface": "skillsforgood.org",
+      "domain": "public_good_projects",
+      "extracted_code": "import math\n\ndef match_accessible_shelters(evacuee: dict, shelters: list[dict], max_distance_km: float = 25.0) -> list[dict]:\n    \"\"\"\n    Filters and sorts shelters based on accessibility requirements, capacity, and distance.\n    \"\"\"\n    def calculate_haversine(lat1, lon1, lat2, lon2):\n        # Radius of Earth in kilometers\n        R = 6371.0\n        \n        phi1, phi2 = math.radians(lat1), math.radians(lat2)\n        dphi = math.radians(lat2 - lat1)\n        dlambda = math.radians(lon2 - lon1)\n        \n        a = math.sin(dphi / 2)**2 + \\\n            math.cos(phi1) * math.cos(phi2) * math.sin(dlambda / 2)**2\n        \n        c = 2 * math.atan2(math.sqrt(a), math.sqrt(1 - a))\n        return R * c\n\n    eligible_shelters = []\n    \n    evac_lat = evacuee['lat']\n    evac_lon = evacuee['lon']\n    party_size = evacuee['party_size']\n    \n    for shelter in shelters:\n        # 1. Capacity Check\n        if shelter['available_beds'] < party_size:\n            continue\n            \n        # 2. Accessibility Requirements\n        if evacuee.get('requires_wheelchair', False) and not shelter.get('wheelchair_accessible', False):\n            continue\n            \n        if evacuee.get('requires_medical_power', False) and not shelter.get('backup_medical_power', False):\n            continue\n            \n        if evacuee.get('has_service_animal', False) and not shelter.get('accepts_pets', False):\n            continue\n            \n        # 3. Distance Check\n        dist = calculate_haversine(evac_lat, evac_lon, shelter['lat'], shelter['lon'])\n        if dist > max_distance_km:\n            continue\n            \n        eligible_shelters.append({\n            'shelter_id': shelter['shelter_id'],\n            'distance_km': dist,\n            'remaining_beds_after': shelter['available_beds'] - party_size\n        })\n        \n    # Sort by distance ascending\n    eligible_shelters.sort(key=lambda x: x['distance_km'])\n    \n    return eligible_shelters",
+      "extracted_code_sha256": "22660cb423b23946c4fdc30a02d4468c09935fb595c38a55e432cd829632e19e",
+      "model_call": {
+        "completion_tokens": 590,
+        "endpoint": "https://ollama.com/v1/chat/completions",
+        "error": "",
+        "finish_reason": "stop",
+        "http_status": 200,
+        "latency_ms": 2167.2,
+        "model": "gemma4:31b",
+        "ok": true,
+        "prompt_tokens": 283,
+        "request_sha256": "e4705153b4dbd0ab6c71998941a6075a23b259b2736ef2277b5262fc0aa74ea6",
+        "response_text": "```python\nimport math\n\ndef match_accessible_shelters(evacuee: dict, shelters: list[dict], max_distance_km: float = 25.0) -> list[dict]:\n    \"\"\"\n    Filters and sorts shelters based on accessibility requirements, capacity, and distance.\n    \"\"\"\n    def calculate_haversine(lat1, lon1, lat2, lon2):\n        # Radius of Earth in kilometers\n        R = 6371.0\n        \n        phi1, phi2 = math.radians(lat1), math.radians(lat2)\n        dphi = math.radians(lat2 - lat1)\n        dlambda = math.radians(lon2 - lon1)\n        \n        a = math.sin(dphi / 2)**2 + \\\n            math.cos(phi1) * math.cos(phi2) * math.sin(dlambda / 2)**2\n        \n        c = 2 * math.atan2(math.sqrt(a), math.sqrt(1 - a))\n        return R * c\n\n    eligible_shelters = []\n    \n    evac_lat = evacuee['lat']\n    evac_lon = evacuee['lon']\n    party_size = evacuee['party_size']\n    \n    for shelter in shelters:\n        # 1. Capacity Check\n        if shelter['available_beds'] < party_size:\n            continue\n            \n        # 2. Accessibility Requirements\n        if evacuee.get('requires_wheelchair', False) and not shelter.get('wheelchair_accessible', False):\n            continue\n            \n        if evacuee.get('requires_medical_power', False) and not shelter.get('backup_medical_power', False):\n            continue\n            \n        if evacuee.get('has_service_animal', False) and not shelter.get('accepts_pets', False):\n            continue\n            \n        # 3. Distance Check\n        dist = calculate_haversine(evac_lat, evac_lon, shelter['lat'], shelter['lon'])\n        if dist > max_distance_km:\n            continue\n            \n        eligible_shelters.append({\n            'shelter_id': shelter['shelter_id'],\n            'distance_km': dist,\n            'remaining_beds_after': shelter['available_beds'] - party_size\n        })\n        \n    # Sort by distance ascending\n    eligible_shelters.sort(key=lambda x: x['distance_km'])\n    \n    return eligible_shelters\n```",
+        "sequence": 11,
+        "total_tokens": 873
+      },
+      "preturn_hook": {
+        "abstained": true,
+        "abstention_code": "passive_baseline_no_preturn_action",
+        "card_digest": null,
+        "card_identity": null,
+        "card_score": 0.0,
+        "hook_engine": "T0_passive_baseline",
+        "injected_tokens": 0,
+        "reformulated_query": "",
+        "winning_probe": "probe_4_safe_abstention"
+      },
+      "task_id": "PG-02_crisis_shelter_accessible_triage",
+      "title": "UN SDG 10/11 Crisis Shelter Haversine & Accessibility Triage Matcher",
+      "trial_id": "PG-02_crisis_shelter_accessible_triage__without_baltor",
+      "verification": {
+        "checks": {
+          "ada_service_animal_exemption": false,
+          "deterministic_tie_breaking": false,
+          "haversine_distance_accuracy": true,
+          "wheelchair_medical_capacity_hard_filters": true
+        },
+        "details": {},
+        "passed": false,
+        "score": 0.5
+      }
+    },
+    {
+      "arm": "with_baltor",
+      "demo_surface": "skillsforgood.org",
+      "domain": "public_good_projects",
+      "extracted_code": "import math\n\ndef match_accessible_shelters(evacuee: dict, shelters: list[dict], max_distance_km: float = 25.0) -> list[dict]:\n    \"\"\"\n    Matches evacuees to accessible shelters based on distance, capacity, and ADA requirements.\n    \"\"\"\n    R = 6371.0088  # Earth radius in km as per Baltor Contract\n    \n    results = []\n    \n    evac_lat = math.radians(evacuee['lat'])\n    evac_lon = math.radians(evacuee['lon'])\n    party_size = evacuee['party_size']\n    req_wheelchair = evacuee.get('requires_wheelchair', False)\n    req_power = evacuee.get('requires_medical_power', False)\n    has_service_animal = evacuee.get('has_service_animal', False)\n    has_pet = evacuee.get('has_pet', False)\n\n    for shelter in shelters:\n        # Eligibility Checks\n        if shelter['available_beds'] < party_size:\n            continue\n        \n        if req_wheelchair and not shelter.get('wheelchair_accessible', False):\n            continue\n            \n        if req_power and not shelter.get('backup_medical_power', False):\n            continue\n            \n        # ADA Service Animal Rule: Service animals are exempt from pet bans.\n        # Only reject if they have a non-service pet and shelter doesn't accept pets.\n        if has_pet and not shelter.get('accepts_pets', False):\n            continue\n\n        # Haversine Distance Calculation\n        s_lat = math.radians(shelter['lat'])\n        s_lon = math.radians(shelter['lon'])\n        \n        dlat = s_lat - evac_lat\n        dlon = s_lon - evac_lon\n        \n        a = (math.sin(dlat / 2)**2 + \n             math.cos(evac_lat) * math.cos(s_lat) * math.sin(dlon / 2)**2)\n        \n        distance = 2 * R * math.asin(math.sqrt(a))\n        \n        if distance <= max_distance_km:\n            results.append({\n                'shelter_id': shelter['shelter_id'],\n                'distance_km': round(distance, 3),\n                'remaining_beds_after': shelter['available_beds'] - party_size,\n                '_raw_beds': shelter['available_beds'] # Used for sorting\n            })\n\n    # Sort by (distance_km, -available_beds, shelter_id)\n    results.sort(key=lambda x: (x['distance_km'], -x['_raw_beds'], x['shelter_id']))\n    \n    # Clean up internal sorting key before returning\n    for item in results:\n        del item['_raw_beds']\n        \n    return results",
+      "extracted_code_sha256": "44c0d36de2ba89ad2d61737087228eb85c6a42408abe0a786ccc4c2690076dd7",
+      "model_call": {
+        "completion_tokens": 689,
+        "endpoint": "https://ollama.com/v1/chat/completions",
+        "error": "",
+        "finish_reason": "stop",
+        "http_status": 200,
+        "latency_ms": 2116.32,
+        "model": "gemma4:31b",
+        "ok": true,
+        "prompt_tokens": 594,
+        "request_sha256": "4c980df892355473f57cf412ac53212669627a99c46be67e9691f5f0d2c9dc1f",
+        "response_text": "```python\nimport math\n\ndef match_accessible_shelters(evacuee: dict, shelters: list[dict], max_distance_km: float = 25.0) -> list[dict]:\n    \"\"\"\n    Matches evacuees to accessible shelters based on distance, capacity, and ADA requirements.\n    \"\"\"\n    R = 6371.0088  # Earth radius in km as per Baltor Contract\n    \n    results = []\n    \n    evac_lat = math.radians(evacuee['lat'])\n    evac_lon = math.radians(evacuee['lon'])\n    party_size = evacuee['party_size']\n    req_wheelchair = evacuee.get('requires_wheelchair', False)\n    req_power = evacuee.get('requires_medical_power', False)\n    has_service_animal = evacuee.get('has_service_animal', False)\n    has_pet = evacuee.get('has_pet', False)\n\n    for shelter in shelters:\n        # Eligibility Checks\n        if shelter['available_beds'] < party_size:\n            continue\n        \n        if req_wheelchair and not shelter.get('wheelchair_accessible', False):\n            continue\n            \n        if req_power and not shelter.get('backup_medical_power', False):\n            continue\n            \n        # ADA Service Animal Rule: Service animals are exempt from pet bans.\n        # Only reject if they have a non-service pet and shelter doesn't accept pets.\n        if has_pet and not shelter.get('accepts_pets', False):\n            continue\n\n        # Haversine Distance Calculation\n        s_lat = math.radians(shelter['lat'])\n        s_lon = math.radians(shelter['lon'])\n        \n        dlat = s_lat - evac_lat\n        dlon = s_lon - evac_lon\n        \n        a = (math.sin(dlat / 2)**2 + \n             math.cos(evac_lat) * math.cos(s_lat) * math.sin(dlon / 2)**2)\n        \n        distance = 2 * R * math.asin(math.sqrt(a))\n        \n        if distance <= max_distance_km:\n            results.append({\n                'shelter_id': shelter['shelter_id'],\n                'distance_km': round(distance, 3),\n                'remaining_beds_after': shelter['available_beds'] - party_size,\n                '_raw_beds': shelter['available_beds'] # Used for sorting\n            })\n\n    # Sort by (distance_km, -available_beds, shelter_id)\n    results.sort(key=lambda x: (x['distance_km'], -x['_raw_beds'], x['shelter_id']))\n    \n    # Clean up internal sorting key before returning\n    for item in results:\n        del item['_raw_beds']\n        \n    return results\n```",
+        "sequence": 12,
+        "total_tokens": 1283
+      },
+      "preturn_hook": {
+        "abstained": false,
+        "abstention_code": "none",
+        "card_digest": "f6065f9c4e18b2d40a71c36e9812b04d73a91c82f1047b6e35d28a901c4f6b2e",
+        "card_identity": "crisis_shelter_ada_haversine_triage_contract",
+        "card_score": 0.8394,
+        "hook_engine": "T7_hybrid_cascade_with_fallback",
+        "injected_tokens": 138,
+        "reformulated_query": "crisis shelter accessible triage haversine",
+        "winning_probe": "probe_1_technical_phrases"
+      },
+      "task_id": "PG-02_crisis_shelter_accessible_triage",
+      "title": "UN SDG 10/11 Crisis Shelter Haversine & Accessibility Triage Matcher",
+      "trial_id": "PG-02_crisis_shelter_accessible_triage__with_baltor",
+      "verification": {
+        "checks": {
+          "ada_service_animal_exemption": true,
+          "deterministic_tie_breaking": true,
+          "haversine_distance_accuracy": true,
+          "wheelchair_medical_capacity_hard_filters": true
+        },
+        "details": {},
+        "passed": true,
+        "score": 1.0
+      }
+    },
+    {
+      "arm": "without_baltor",
+      "demo_surface": "agentstudios.si",
+      "domain": "design_media_projects",
+      "extracted_code": "import hashlib\n\ndef build_vertical_explainer_scene(title: str, subtitle: str, metrics: list[dict], palette: dict | None = None) -> dict:\n    \"\"\"\n    Generates a 1080x1920 vertical video explainer scene configuration.\n    \"\"\"\n    # Default Palette\n    default_palette = {\n        'background': '#121212',\n        'foreground': '#FFFFFF',\n        'accent': '#00FFCC'\n    }\n    p = palette if palette else default_palette\n\n    def get_luminance(hex_color: str) -> float:\n        hex_color = hex_color.lstrip('#')\n        rgb = [int(hex_color[i:i+2], 16) / 255.0 for i in (0, 2, 4)]\n        rgb = [c / 12.92 if c <= 0.03928 else ((c + 0.055) / 1.055) ** 2.4 for c in rgb]\n        return 0.2126 * rgb[0] + 0.7152 * rgb[1] + 0.0722 * rgb[2]\n\n    def get_contrast_ratio(c1: str, c2: str) -> float:\n        l1 = get_luminance(c1)\n        l2 = get_luminance(c2)\n        return (max(l1, l2) + 0.05) / (min(l1, l2) + 0.05)\n\n    # Layout Constants\n    W, H = 1080, 1920\n    MARGIN = 100\n    CONTENT_W = W - (2 * MARGIN)\n    \n    elements = []\n    \n    # Title\n    elements.append({\n        'id': 'title', 'kind': 'text', 'x': MARGIN, 'y': 300, \n        'width': CONTENT_W, 'height': 120, 'text': title\n    })\n    \n    # Subtitle\n    elements.append({\n        'id': 'subtitle', 'kind': 'text', 'x': MARGIN, 'y': 440, \n        'width': CONTENT_W, 'height': 60, 'text': subtitle\n    })\n    \n    # Metrics Cards\n    start_y = 600\n    card_h = 200\n    card_gap = 40\n    for i, m in enumerate(metrics):\n        y_pos = start_y + (i * (card_h + card_gap))\n        elements.append({\n            'id': f'metric_{i}', 'kind': 'card', 'x': MARGIN, 'y': y_pos, \n            'width': CONTENT_W, 'height': card_h, 'text': f\"{m['label']}: {m['value']}\"\n        })\n\n    # SVG Generation\n    svg_parts = [\n        f'<svg viewBox=\"0 0 {W} {H}\" xmlns=\"http://www.w3.org/2000/svg\">',\n        f'<rect width=\"{W}\" height=\"{H}\" fill=\"{p[\"background\"]}\" />'\n    ]\n    \n    # Title SVG\n    svg_parts.append(f'<text x=\"{W//2}\" y=\"360\" font-family=\"Arial\" font-size=\"80\" fill=\"{p[\"foreground\"]}\" text-anchor=\"middle\" font-weight=\"bold\">{title}</text>')\n    # Subtitle SVG\n    svg_parts.append(f'<text x=\"{W//2}\" y=\"480\" font-family=\"Arial\" font-size=\"40\" fill=\"{p[\"accent\"]}\" text-anchor=\"middle\">{subtitle}</text>')\n    \n    # Metrics SVG\n    for i, m in enumerate(metrics):\n        y_pos = start_y + (i * (card_h + card_gap))\n        svg_parts.append(f'<rect x=\"{MARGIN}\" y=\"{y_pos}\" width=\"{CONTENT_W}\" height=\"{card_h}\" rx=\"20\" fill=\"{p[\"foreground\"]}\" fill-opacity=\"0.1\" stroke=\"{p[\"accent\"]}\" stroke-width=\"2\" />')\n        svg_parts.append(f'<text x=\"{MARGIN + 40}\" y=\"{y_pos + 110}\" font-family=\"Arial\" font-size=\"45\" fill=\"{p[\"foreground\"]}\" text-anchor=\"start\">{m[\"label\"]}: {m[\"value\"]}</text>')\n    \n    svg_parts.append('</svg>')\n    svg_str = \"\".join(svg_parts)\n\n    # Structure Digest\n    structure_str = str(elements).encode('utf-8')\n    digest = hashlib.sha256(structure_str).hexdigest()\n\n    return {\n        'canvas': {'width': W, 'height': H, 'fps': 60, 'duration_s': 10.0},\n        'palette': p,\n        'contrast_ratio': get_contrast_ratio(p['foreground'], p['background']),\n        'elements': elements,\n        'svg': svg_str,\n        'structure_digest': digest\n    }",
+      "extracted_code_sha256": "35a8e6d259677898b66a8be217ffcb0f3ee8c3521c8dfaf2fd9a4469b84241b7",
+      "model_call": {
+        "completion_tokens": 1233,
+        "endpoint": "https://ollama.com/v1/chat/completions",
+        "error": "",
+        "finish_reason": "stop",
+        "http_status": 200,
+        "latency_ms": 3264.91,
+        "model": "gemma4:31b",
+        "ok": true,
+        "prompt_tokens": 387,
+        "request_sha256": "cd5522cfdf1123ec1cebec453971d5acf180aab4082ae767f9c6005ac0a814ba",
+        "response_text": "```python\nimport hashlib\n\ndef build_vertical_explainer_scene(title: str, subtitle: str, metrics: list[dict], palette: dict | None = None) -> dict:\n    \"\"\"\n    Generates a 1080x1920 vertical video explainer scene configuration.\n    \"\"\"\n    # Default Palette\n    default_palette = {\n        'background': '#121212',\n        'foreground': '#FFFFFF',\n        'accent': '#00FFCC'\n    }\n    p = palette if palette else default_palette\n\n    def get_luminance(hex_color: str) -> float:\n        hex_color = hex_color.lstrip('#')\n        rgb = [int(hex_color[i:i+2], 16) / 255.0 for i in (0, 2, 4)]\n        rgb = [c / 12.92 if c <= 0.03928 else ((c + 0.055) / 1.055) ** 2.4 for c in rgb]\n        return 0.2126 * rgb[0] + 0.7152 * rgb[1] + 0.0722 * rgb[2]\n\n    def get_contrast_ratio(c1: str, c2: str) -> float:\n        l1 = get_luminance(c1)\n        l2 = get_luminance(c2)\n        return (max(l1, l2) + 0.05) / (min(l1, l2) + 0.05)\n\n    # Layout Constants\n    W, H = 1080, 1920\n    MARGIN = 100\n    CONTENT_W = W - (2 * MARGIN)\n    \n    elements = []\n    \n    # Title\n    elements.append({\n        'id': 'title', 'kind': 'text', 'x': MARGIN, 'y': 300, \n        'width': CONTENT_W, 'height': 120, 'text': title\n    })\n    \n    # Subtitle\n    elements.append({\n        'id': 'subtitle', 'kind': 'text', 'x': MARGIN, 'y': 440, \n        'width': CONTENT_W, 'height': 60, 'text': subtitle\n    })\n    \n    # Metrics Cards\n    start_y = 600\n    card_h = 200\n    card_gap = 40\n    for i, m in enumerate(metrics):\n        y_pos = start_y + (i * (card_h + card_gap))\n        elements.append({\n            'id': f'metric_{i}', 'kind': 'card', 'x': MARGIN, 'y': y_pos, \n            'width': CONTENT_W, 'height': card_h, 'text': f\"{m['label']}: {m['value']}\"\n        })\n\n    # SVG Generation\n    svg_parts = [\n        f'<svg viewBox=\"0 0 {W} {H}\" xmlns=\"http://www.w3.org/2000/svg\">',\n        f'<rect width=\"{W}\" height=\"{H}\" fill=\"{p[\"background\"]}\" />'\n    ]\n    \n    # Title SVG\n    svg_parts.append(f'<text x=\"{W//2}\" y=\"360\" font-family=\"Arial\" font-size=\"80\" fill=\"{p[\"foreground\"]}\" text-anchor=\"middle\" font-weight=\"bold\">{title}</text>')\n    # Subtitle SVG\n    svg_parts.append(f'<text x=\"{W//2}\" y=\"480\" font-family=\"Arial\" font-size=\"40\" fill=\"{p[\"accent\"]}\" text-anchor=\"middle\">{subtitle}</text>')\n    \n    # Metrics SVG\n    for i, m in enumerate(metrics):\n        y_pos = start_y + (i * (card_h + card_gap))\n        svg_parts.append(f'<rect x=\"{MARGIN}\" y=\"{y_pos}\" width=\"{CONTENT_W}\" height=\"{card_h}\" rx=\"20\" fill=\"{p[\"foreground\"]}\" fill-opacity=\"0.1\" stroke=\"{p[\"accent\"]}\" stroke-width=\"2\" />')\n        svg_parts.append(f'<text x=\"{MARGIN + 40}\" y=\"{y_pos + 110}\" font-family=\"Arial\" font-size=\"45\" fill=\"{p[\"foreground\"]}\" text-anchor=\"start\">{m[\"label\"]}: {m[\"value\"]}</text>')\n    \n    svg_parts.append('</svg>')\n    svg_str = \"\".join(svg_parts)\n\n    # Structure Digest\n    structure_str = str(elements).encode('utf-8')\n    digest = hashlib.sha256(structure_str).hexdigest()\n\n    return {\n        'canvas': {'width': W, 'height': H, 'fps': 60, 'duration_s': 10.0},\n        'palette': p,\n        'contrast_ratio': get_contrast_ratio(p['foreground'], p['background']),\n        'elements': elements,\n        'svg': svg_str,\n        'structure_digest': digest\n    }\n```",
+        "sequence": 13,
+        "total_tokens": 1620
+      },
+      "preturn_hook": {
+        "abstained": true,
+        "abstention_code": "passive_baseline_no_preturn_action",
+        "card_digest": null,
+        "card_identity": null,
+        "card_score": 0.0,
+        "hook_engine": "T0_passive_baseline",
+        "injected_tokens": 0,
+        "reformulated_query": "",
+        "winning_probe": "probe_4_safe_abstention"
+      },
+      "task_id": "DM-01_vertical_1080x1920_motion_explainer",
+      "title": "1080x1920 Vertical Motion Explainer with Keep-Out Safe Zones & Revision Survival",
+      "trial_id": "DM-01_vertical_1080x1920_motion_explainer__without_baltor",
+      "verification": {
+        "checks": {
+          "keepout_zones_respected": false,
+          "revision_survival_digest_invariant": false,
+          "svg_1080x1920_valid": true,
+          "wcag_aaa_contrast": false
+        },
+        "details": {},
+        "passed": false,
+        "score": 0.25
+      }
+    },
+    {
+      "arm": "with_baltor",
+      "demo_surface": "agentstudios.si",
+      "domain": "design_media_projects",
+      "extracted_code": "import hashlib\nimport json\n\ndef build_vertical_explainer_scene(title: str, subtitle: str, metrics: list[dict], palette: dict | None = None) -> dict:\n    \"\"\"\n    Generates a 1080x1920 vertical video explainer scene adhering to Baltor Contract Cards.\n    \"\"\"\n    # Default Palette\n    default_palette = {\n        'background': '#0B1021',\n        'foreground': '#F8FAFC',\n        'accent': '#38BDF8'\n    }\n    \n    if palette:\n        current_palette = palette.copy()\n    else:\n        current_palette = default_palette.copy()\n\n    def get_luminance(hex_color: str) -> float:\n        hex_color = hex_color.lstrip('#')\n        rgb = [int(hex_color[i:i+2], 16) / 255.0 for i in (0, 2, 4)]\n        res = []\n        for c in rgb:\n            if c <= 0.03928:\n                res.append(c / 12.92)\n            else:\n                res.append(((c + 0.055) / 1.055) ** 2.4)\n        return 0.2126 * res[0] + 0.7152 * res[1] + 0.0722 * res[2]\n\n    def get_contrast(c1: str, c2: str) -> float:\n        l1 = get_luminance(c1)\n        l2 = get_luminance(c2)\n        return (max(l1, l2) + 0.05) / (min(l1, l2) + 0.05)\n\n    # INVARIANT 2: WCAG AAA >= 7.0\n    contrast_ratio = get_contrast(current_palette['foreground'], current_palette['background'])\n    if contrast_ratio < 7.0:\n        current_palette['background'] = '#0B1021'\n        current_palette['foreground'] = '#F8FAFC'\n        contrast_ratio = get_contrast(current_palette['foreground'], current_palette['background'])\n\n    # Layout Constants (INVARIANT 1: Safe Zone)\n    # x >= 80, x + width <= 920 -> width = 840 (centered: x=120)\n    # y >= 160, y + height <= 1500\n    X_START = 120\n    WIDTH = 840\n    Y_START = 200\n    ITEM_HEIGHT = 140\n    SPACING = 40\n\n    elements = []\n    \n    # Title\n    elements.append({\n        'id': 'title',\n        'kind': 'text_header',\n        'x': X_START,\n        'y': Y_START,\n        'width': WIDTH,\n        'height': 100,\n        'text': title\n    })\n    \n    # Subtitle\n    elements.append({\n        'id': 'subtitle',\n        'kind': 'text_sub',\n        'x': X_START,\n        'y': Y_START + 120,\n        'width': WIDTH,\n        'height': 60,\n        'text': subtitle\n    })\n\n    # Metrics Cards\n    current_y = Y_START + 200\n    for idx, m in enumerate(metrics):\n        elements.append({\n            'id': f'metric_{idx}',\n            'kind': 'card',\n            'x': X_START,\n            'y': current_y,\n            'width': WIDTH,\n            'height': ITEM_HEIGHT,\n            'text': f\"{m['label']}: {m['value']}\"\n        })\n        current_y += ITEM_HEIGHT + SPACING\n\n    # INVARIANT 3: Revision-Survivable Digest\n    structure_data = [(e['kind'], e['x'], e['y'], e['width'], e['height']) for e in elements]\n    structure_digest = hashlib.sha256(json.dumps(structure_data).encode()).hexdigest()\n\n    # SVG Generation\n    svg_elements = []\n    # Background\n    svg_elements.append(f'<rect width=\"1080\" height=\"1920\" fill=\"{current_palette[\"background\"]}\" />')\n    \n    for e in elements:\n        if e['kind'] == 'card':\n            svg_elements.append(f'<rect x=\"{e[\"x\"]}\" y=\"{e[\"y\"]}\" width=\"{e[\"width\"]}\" height=\"{e[\"height\"]}\" rx=\"12\" fill=\"{current_palette[\"accent\"]}\" fill-opacity=\"0.2\" stroke=\"{current_palette[\"accent\"]}\" stroke-width=\"2\" />')\n            svg_elements.append(f'<text x=\"{e[\"x\"] + 20}\" y=\"{e[\"y\"] + 80}\" fill=\"{current_palette[\"foreground\"]}\" font-family=\"sans-serif\" font-size=\"40\">{e[\"text\"]}</text>')\n        elif e['kind'] == 'text_header':\n            svg_elements.append(f'<text x=\"{e[\"x\"]}\" y=\"{e[\"y\"] + 70}\" fill=\"{current_palette[\"foreground\"]}\" font-family=\"sans-serif\" font-weight=\"bold\" font-size=\"80\">{e[\"text\"]}</text>')\n        elif e['kind'] == 'text_sub':\n            svg_elements.append(f'<text x=\"{e[\"x\"]}\" y=\"{e[\"y\"] + 40}\" fill=\"{current_palette[\"accent\"]}\" font-family=\"sans-serif\" font-size=\"40\">{e[\"text\"]}</text>')\n\n    svg_str = f'<svg viewBox=\"0 0 1080 1920\" xmlns=\"http://www.w3.org/2000/svg\">{\"\".join(svg_elements)}</svg>'\n\n    return {\n        'canvas': {'width': 1080, 'height': 1920, 'fps': 60, 'duration_s': 10.0},\n        'palette': current_palette,\n        'contrast_ratio': contrast_ratio,\n        'elements': elements,\n        'svg': svg_str,\n        'structure_digest': structure_digest\n    }",
+      "extracted_code_sha256": "315774d1fabf6f8175713179bd273fd5f2ce5b14fff1ac178a620232c46009fb",
+      "model_call": {
+        "completion_tokens": 1513,
+        "endpoint": "https://ollama.com/v1/chat/completions",
+        "error": "",
+        "finish_reason": "stop",
+        "http_status": 200,
+        "latency_ms": 4408.92,
+        "model": "gemma4:31b",
+        "ok": true,
+        "prompt_tokens": 769,
+        "request_sha256": "3095913a70fd5edb45260f3531e36a12fbf427555030e54cbde1264c5c6f1952",
+        "response_text": "```python\nimport hashlib\nimport json\n\ndef build_vertical_explainer_scene(title: str, subtitle: str, metrics: list[dict], palette: dict | None = None) -> dict:\n    \"\"\"\n    Generates a 1080x1920 vertical video explainer scene adhering to Baltor Contract Cards.\n    \"\"\"\n    # Default Palette\n    default_palette = {\n        'background': '#0B1021',\n        'foreground': '#F8FAFC',\n        'accent': '#38BDF8'\n    }\n    \n    if palette:\n        current_palette = palette.copy()\n    else:\n        current_palette = default_palette.copy()\n\n    def get_luminance(hex_color: str) -> float:\n        hex_color = hex_color.lstrip('#')\n        rgb = [int(hex_color[i:i+2], 16) / 255.0 for i in (0, 2, 4)]\n        res = []\n        for c in rgb:\n            if c <= 0.03928:\n                res.append(c / 12.92)\n            else:\n                res.append(((c + 0.055) / 1.055) ** 2.4)\n        return 0.2126 * res[0] + 0.7152 * res[1] + 0.0722 * res[2]\n\n    def get_contrast(c1: str, c2: str) -> float:\n        l1 = get_luminance(c1)\n        l2 = get_luminance(c2)\n        return (max(l1, l2) + 0.05) / (min(l1, l2) + 0.05)\n\n    # INVARIANT 2: WCAG AAA >= 7.0\n    contrast_ratio = get_contrast(current_palette['foreground'], current_palette['background'])\n    if contrast_ratio < 7.0:\n        current_palette['background'] = '#0B1021'\n        current_palette['foreground'] = '#F8FAFC'\n        contrast_ratio = get_contrast(current_palette['foreground'], current_palette['background'])\n\n    # Layout Constants (INVARIANT 1: Safe Zone)\n    # x >= 80, x + width <= 920 -> width = 840 (centered: x=120)\n    # y >= 160, y + height <= 1500\n    X_START = 120\n    WIDTH = 840\n    Y_START = 200\n    ITEM_HEIGHT = 140\n    SPACING = 40\n\n    elements = []\n    \n    # Title\n    elements.append({\n        'id': 'title',\n        'kind': 'text_header',\n        'x': X_START,\n        'y': Y_START,\n        'width': WIDTH,\n        'height': 100,\n        'text': title\n    })\n    \n    # Subtitle\n    elements.append({\n        'id': 'subtitle',\n        'kind': 'text_sub',\n        'x': X_START,\n        'y': Y_START + 120,\n        'width': WIDTH,\n        'height': 60,\n        'text': subtitle\n    })\n\n    # Metrics Cards\n    current_y = Y_START + 200\n    for idx, m in enumerate(metrics):\n        elements.append({\n            'id': f'metric_{idx}',\n            'kind': 'card',\n            'x': X_START,\n            'y': current_y,\n            'width': WIDTH,\n            'height': ITEM_HEIGHT,\n            'text': f\"{m['label']}: {m['value']}\"\n        })\n        current_y += ITEM_HEIGHT + SPACING\n\n    # INVARIANT 3: Revision-Survivable Digest\n    structure_data = [(e['kind'], e['x'], e['y'], e['width'], e['height']) for e in elements]\n    structure_digest = hashlib.sha256(json.dumps(structure_data).encode()).hexdigest()\n\n    # SVG Generation\n    svg_elements = []\n    # Background\n    svg_elements.append(f'<rect width=\"1080\" height=\"1920\" fill=\"{current_palette[\"background\"]}\" />')\n    \n    for e in elements:\n        if e['kind'] == 'card':\n            svg_elements.append(f'<rect x=\"{e[\"x\"]}\" y=\"{e[\"y\"]}\" width=\"{e[\"width\"]}\" height=\"{e[\"height\"]}\" rx=\"12\" fill=\"{current_palette[\"accent\"]}\" fill-opacity=\"0.2\" stroke=\"{current_palette[\"accent\"]}\" stroke-width=\"2\" />')\n            svg_elements.append(f'<text x=\"{e[\"x\"] + 20}\" y=\"{e[\"y\"] + 80}\" fill=\"{current_palette[\"foreground\"]}\" font-family=\"sans-serif\" font-size=\"40\">{e[\"text\"]}</text>')\n        elif e['kind'] == 'text_header':\n            svg_elements.append(f'<text x=\"{e[\"x\"]}\" y=\"{e[\"y\"] + 70}\" fill=\"{current_palette[\"foreground\"]}\" font-family=\"sans-serif\" font-weight=\"bold\" font-size=\"80\">{e[\"text\"]}</text>')\n        elif e['kind'] == 'text_sub':\n            svg_elements.append(f'<text x=\"{e[\"x\"]}\" y=\"{e[\"y\"] + 40}\" fill=\"{current_palette[\"accent\"]}\" font-family=\"sans-serif\" font-size=\"40\">{e[\"text\"]}</text>')\n\n    svg_str = f'<svg viewBox=\"0 0 1080 1920\" xmlns=\"http://www.w3.org/2000/svg\">{\"\".join(svg_elements)}</svg>'\n\n    return {\n        'canvas': {'width': 1080, 'height': 1920, 'fps': 60, 'duration_s': 10.0},\n        'palette': current_palette,\n        'contrast_ratio': contrast_ratio,\n        'elements': elements,\n        'svg': svg_str,\n        'structure_digest': structure_digest\n    }\n```",
+        "sequence": 14,
+        "total_tokens": 2282
+      },
+      "preturn_hook": {
+        "abstained": false,
+        "abstention_code": "none",
+        "card_digest": "07073d18a90f4c27e61b8509a2d3f4c17e82b6059d14a3e72c81f5046b93e2d1",
+        "card_identity": "vertical_1080x1920_safe_zone_and_revision_contract",
+        "card_score": 0.7231,
+        "hook_engine": "T7_hybrid_cascade_with_fallback",
+        "injected_tokens": 179,
+        "reformulated_query": "vertical 1080x1920 motion explainer",
+        "winning_probe": "probe_1_technical_phrases"
+      },
+      "task_id": "DM-01_vertical_1080x1920_motion_explainer",
+      "title": "1080x1920 Vertical Motion Explainer with Keep-Out Safe Zones & Revision Survival",
+      "trial_id": "DM-01_vertical_1080x1920_motion_explainer__with_baltor",
+      "verification": {
+        "checks": {
+          "keepout_zones_respected": false,
+          "revision_survival_digest_invariant": true,
+          "svg_1080x1920_valid": true,
+          "wcag_aaa_contrast": true
+        },
+        "details": {},
+        "passed": false,
+        "score": 0.75
+      }
+    },
+    {
+      "arm": "without_baltor",
+      "demo_surface": "agentstudios.si",
+      "domain": "design_media_projects",
+      "extracted_code": "import math\nimport random\n\ndef simulate_collision_and_pluck(body_a: dict, body_b: dict, dt: float = 1.0/60.0, sample_rate: int = 22050, duration_s: float = 0.25) -> dict:\n    \"\"\"\n    Resolves a 2D elastic collision between two circles and synthesizes a \n    Karplus-Strong audio buffer based on the collision energy.\n    \"\"\"\n    # Deep copy to avoid mutating inputs\n    a = body_a.copy()\n    b = body_b.copy()\n    \n    # Physics state before\n    ke_before = 0.5 * a['mass'] * (a['vx']**2 + a['vy']**2) + 0.5 * b['mass'] * (b['vx']**2 + b['vy']**2)\n    px_before = a['mass'] * a['vx'] + b['mass'] * b['vx']\n    py_before = a['mass'] * a['vy'] + b['mass'] * b['vy']\n    \n    dx = b['x'] - a['x']\n    dy = b['y'] - a['y']\n    distance = math.sqrt(dx*dx + dy*dy)\n    min_dist = a['radius'] + b['radius']\n    collided = False\n\n    if distance < min_dist:\n        collided = True\n        # 1. Resolve Overlap (Static Resolution)\n        overlap = min_dist - distance\n        nx = dx / distance if distance != 0 else 1.0\n        ny = dy / distance if distance != 0 else 0.0\n        \n        # Push bodies apart proportional to inverse mass\n        total_inv_mass = (1.0 / a['mass']) + (1.0 / b['mass'])\n        a['x'] -= nx * (overlap * (1.0 / a['mass']) / total_inv_mass)\n        a['y'] -= ny * (overlap * (1.0 / a['mass']) / total_inv_mass)\n        b['x'] += nx * (overlap * (1.0 / b['mass']) / total_inv_mass)\n        b['y'] += ny * (overlap * (1.0 / b['mass']) / total_inv_mass)\n\n        # 2. Elastic Collision (Impulse)\n        # Relative velocity\n        rvx = b['vx'] - a['vx']\n        rvy = b['vy'] - a['vy']\n        vel_along_normal = rvx * nx + rvy * ny\n\n        # Only resolve if objects are moving towards each other\n        if vel_along_normal < 0:\n            # Perfectly elastic (e = 1.0)\n            j = -(2.0 * vel_along_normal) / total_inv_mass\n            \n            impulse_x = j * nx\n            impulse_y = j * ny\n            \n            a['vx'] -= impulse_x / a['mass']\n            a['vy'] -= impulse_y / a['mass']\n            b['vx'] += impulse_x / b['mass']\n            b['vy'] += impulse_y / b['mass']\n\n    # Physics state after\n    ke_after = 0.5 * a['mass'] * (a['vx']**2 + a['vy']**2) + 0.5 * b['mass'] * (b['vx']**2 + b['vy']**2)\n    px_after = a['mass'] * a['vx'] + b['mass'] * b['vx']\n    py_after = a['mass'] * a['vy'] + b['mass'] * b['vy']\n\n    # Audio Synthesis (Karplus-Strong)\n    num_samples = int(round(sample_rate * duration_s))\n    audio_samples = [0.0] * num_samples\n    \n    if collided:\n        # Map collision energy to a frequency (arbitrary mapping for simulation)\n        # Base freq 220Hz, shifted by energy\n        fundamental_hz = 220.0 + (ke_before * 0.1)\n        fundamental_hz = max(110.0, min(fundamental_hz, 1760.0))\n        \n        # Period in samples\n        period = int(round(sample_rate / fundamental_hz))\n        if period < 2: period = 2\n        \n        # Initialize ring buffer with white noise\n        ring_buffer = [random.uniform(-1.0, 1.0) for _ in range(period)]\n        \n        # Decay factor (damping)\n        decay = 0.996\n        \n        for i in range(num_samples):\n            # Current sample is the head of the buffer\n            sample = ring_buffer[0]\n            audio_samples[i] = sample\n            \n            # Average current and next sample for low-pass filter\n            avg = 0.5 * (ring_buffer[0] + ring_buffer[1]) * decay\n            \n            # Rotate buffer and push averaged value to end\n            ring_buffer.append(avg)\n            ring_buffer.pop(0)\n    else:\n        fundamental_hz = 0.0\n\n    return {\n        'body_a': a,\n        'body_b': b,\n        'collided': collided,\n        'kinetic_energy_before': ke_before,\n        'kinetic_energy_after': ke_after,\n        'momentum_before': (px_before, py_before),\n        'momentum_after': (px_after, py_after),\n        'audio_samples': audio_samples,\n        'fundamental_hz': fundamental_hz\n    }",
+      "extracted_code_sha256": "489e171358f2f0f66bbf8b54a43872fbdc35118d0727105dca1aaf661015b8d2",
+      "model_call": {
+        "completion_tokens": 1330,
+        "endpoint": "https://ollama.com/v1/chat/completions",
+        "error": "",
+        "finish_reason": "stop",
+        "http_status": 200,
+        "latency_ms": 4112.58,
+        "model": "gemma4:31b",
+        "ok": true,
+        "prompt_tokens": 356,
+        "request_sha256": "1d96d86c9d662c1b418f59be26a67b723d1ce2f120c92e361fd7f7f44432d67b",
+        "response_text": "```python\nimport math\nimport random\n\ndef simulate_collision_and_pluck(body_a: dict, body_b: dict, dt: float = 1.0/60.0, sample_rate: int = 22050, duration_s: float = 0.25) -> dict:\n    \"\"\"\n    Resolves a 2D elastic collision between two circles and synthesizes a \n    Karplus-Strong audio buffer based on the collision energy.\n    \"\"\"\n    # Deep copy to avoid mutating inputs\n    a = body_a.copy()\n    b = body_b.copy()\n    \n    # Physics state before\n    ke_before = 0.5 * a['mass'] * (a['vx']**2 + a['vy']**2) + 0.5 * b['mass'] * (b['vx']**2 + b['vy']**2)\n    px_before = a['mass'] * a['vx'] + b['mass'] * b['vx']\n    py_before = a['mass'] * a['vy'] + b['mass'] * b['vy']\n    \n    dx = b['x'] - a['x']\n    dy = b['y'] - a['y']\n    distance = math.sqrt(dx*dx + dy*dy)\n    min_dist = a['radius'] + b['radius']\n    collided = False\n\n    if distance < min_dist:\n        collided = True\n        # 1. Resolve Overlap (Static Resolution)\n        overlap = min_dist - distance\n        nx = dx / distance if distance != 0 else 1.0\n        ny = dy / distance if distance != 0 else 0.0\n        \n        # Push bodies apart proportional to inverse mass\n        total_inv_mass = (1.0 / a['mass']) + (1.0 / b['mass'])\n        a['x'] -= nx * (overlap * (1.0 / a['mass']) / total_inv_mass)\n        a['y'] -= ny * (overlap * (1.0 / a['mass']) / total_inv_mass)\n        b['x'] += nx * (overlap * (1.0 / b['mass']) / total_inv_mass)\n        b['y'] += ny * (overlap * (1.0 / b['mass']) / total_inv_mass)\n\n        # 2. Elastic Collision (Impulse)\n        # Relative velocity\n        rvx = b['vx'] - a['vx']\n        rvy = b['vy'] - a['vy']\n        vel_along_normal = rvx * nx + rvy * ny\n\n        # Only resolve if objects are moving towards each other\n        if vel_along_normal < 0:\n            # Perfectly elastic (e = 1.0)\n            j = -(2.0 * vel_along_normal) / total_inv_mass\n            \n            impulse_x = j * nx\n            impulse_y = j * ny\n            \n            a['vx'] -= impulse_x / a['mass']\n            a['vy'] -= impulse_y / a['mass']\n            b['vx'] += impulse_x / b['mass']\n            b['vy'] += impulse_y / b['mass']\n\n    # Physics state after\n    ke_after = 0.5 * a['mass'] * (a['vx']**2 + a['vy']**2) + 0.5 * b['mass'] * (b['vx']**2 + b['vy']**2)\n    px_after = a['mass'] * a['vx'] + b['mass'] * b['vx']\n    py_after = a['mass'] * a['vy'] + b['mass'] * b['vy']\n\n    # Audio Synthesis (Karplus-Strong)\n    num_samples = int(round(sample_rate * duration_s))\n    audio_samples = [0.0] * num_samples\n    \n    if collided:\n        # Map collision energy to a frequency (arbitrary mapping for simulation)\n        # Base freq 220Hz, shifted by energy\n        fundamental_hz = 220.0 + (ke_before * 0.1)\n        fundamental_hz = max(110.0, min(fundamental_hz, 1760.0))\n        \n        # Period in samples\n        period = int(round(sample_rate / fundamental_hz))\n        if period < 2: period = 2\n        \n        # Initialize ring buffer with white noise\n        ring_buffer = [random.uniform(-1.0, 1.0) for _ in range(period)]\n        \n        # Decay factor (damping)\n        decay = 0.996\n        \n        for i in range(num_samples):\n            # Current sample is the head of the buffer\n            sample = ring_buffer[0]\n            audio_samples[i] = sample\n            \n            # Average current and next sample for low-pass filter\n            avg = 0.5 * (ring_buffer[0] + ring_buffer[1]) * decay\n            \n            # Rotate buffer and push averaged value to end\n            ring_buffer.append(avg)\n            ring_buffer.pop(0)\n    else:\n        fundamental_hz = 0.0\n\n    return {\n        'body_a': a,\n        'body_b': b,\n        'collided': collided,\n        'kinetic_energy_before': ke_before,\n        'kinetic_energy_after': ke_after,\n        'momentum_before': (px_before, py_before),\n        'momentum_after': (px_after, py_after),\n        'audio_samples': audio_samples,\n        'fundamental_hz': fundamental_hz\n    }\n```",
+        "sequence": 15,
+        "total_tokens": 1686
+      },
+      "preturn_hook": {
+        "abstained": true,
+        "abstention_code": "passive_baseline_no_preturn_action",
+        "card_digest": null,
+        "card_identity": null,
+        "card_score": 0.0,
+        "hook_engine": "T0_passive_baseline",
+        "injected_tokens": 0,
+        "reformulated_query": "",
+        "winning_probe": "probe_4_safe_abstention"
+      },
+      "task_id": "DM-02_html5_physics_karplus_strong_synth",
+      "title": "Deterministic 60fps 2D Rigid-Body Elastic Collision & Karplus-Strong Synth",
+      "trial_id": "DM-02_html5_physics_karplus_strong_synth__without_baltor",
+      "verification": {
+        "checks": {
+          "audio_buffer_finite_and_bounded": true,
+          "deterministic_reproducibility": false,
+          "kinetic_energy_and_momentum_conserved": true,
+          "overlap_resolved_and_velocities_reflected": true
+        },
+        "details": {},
+        "passed": false,
+        "score": 0.75
+      }
+    },
+    {
+      "arm": "with_baltor",
+      "demo_surface": "agentstudios.si",
+      "domain": "design_media_projects",
+      "extracted_code": "import math\n\ndef simulate_collision_and_pluck(body_a: dict, body_b: dict, dt: float = 1.0/60.0, sample_rate: int = 22050, duration_s: float = 0.25) -> dict:\n    # Copy bodies to avoid mutating inputs\n    a = body_a.copy()\n    b = body_b.copy()\n    \n    ma, mb = a['mass'], b['mass']\n    ra, rb = a['radius'], b['radius']\n    \n    # Initial state for energy/momentum\n    ke_before = 0.5 * ma * (a['vx']**2 + a['vy']**2) + 0.5 * mb * (b['vx']**2 + b['vy']**2)\n    px_before = ma * a['vx'] + mb * b['vx']\n    py_before = ma * a['vy'] + mb * b['vy']\n    \n    dx = b['x'] - a['x']\n    dy = b['y'] - a['y']\n    dist = math.hypot(dx, dy)\n    \n    collided = False\n    vn = 0.0\n    \n    if dist <= ra + rb:\n        nx = dx / dist if dist != 0 else 1.0\n        ny = dy / dist if dist != 0 else 0.0\n        vn = (b['vx'] - a['vx']) * nx + (b['vy'] - a['vy']) * ny\n        \n        if vn < 0:\n            collided = True\n            # Elastic Impulse\n            j = -(2.0 * vn) / (1.0/ma + 1.0/mb)\n            a['vx'] -= (j / ma) * nx\n            a['vy'] -= (j / ma) * ny\n            b['vx'] += (j / mb) * nx\n            b['vy'] += (j / mb) * ny\n            \n            # Separate overlap\n            overlap = (ra + rb - dist) + 1e-4\n            total_inv_mass = (1.0/ma + 1.0/mb)\n            a['x'] -= (overlap * (1.0/ma / total_inv_mass)) * nx\n            a['y'] -= (overlap * (1.0/ma / total_inv_mass)) * ny\n            b['x'] += (overlap * (1.0/mb / total_inv_mass)) * nx\n            b['y'] += (overlap * (1.0/mb / total_inv_mass)) * ny\n\n    # Final state for energy/momentum\n    ke_after = 0.5 * ma * (a['vx']**2 + a['vy']**2) + 0.5 * mb * (b['vx']**2 + b['vy']**2)\n    px_after = ma * a['vx'] + mb * b['vx']\n    py_after = ma * a['vy'] + mb * b['vy']\n    \n    # Karplus-Strong Synthesis\n    n_samples = int(round(sample_rate * duration_s))\n    fundamental_hz = round(max(110.0, min(880.0, 220.0 + 40.0 * abs(vn))), 2)\n    delay_len = max(2, int(round(sample_rate / fundamental_hz)))\n    \n    # Deterministic seed ring buffer\n    buf = [((i * 1103515245 + 12345) & 0x7fffffff) / 1073741823.5 - 1.0 for i in range(delay_len)]\n    \n    audio_samples = []\n    for i in range(n_samples):\n        idx = i % delay_len\n        s = max(-1.0, min(1.0, buf[idx]))\n        audio_samples.append(s)\n        \n        # Update buffer: average with next and apply decay\n        next_idx = (idx + 1) % delay_len\n        buf[idx] = 0.994 * 0.5 * (buf[idx] + buf[next_idx])\n        \n    return {\n        'body_a': a,\n        'body_b': b,\n        'collided': collided,\n        'kinetic_energy_before': ke_before,\n        'kinetic_energy_after': ke_after,\n        'momentum_before': (px_before, py_before),\n        'momentum_after': (px_after, py_after),\n        'audio_samples': audio_samples,\n        'fundamental_hz': fundamental_hz\n    }",
+      "extracted_code_sha256": "fc65ac86068fcab96861b6f11b35c2b97607767786762c54f8960b5a4e7ae452",
+      "model_call": {
+        "completion_tokens": 1110,
+        "endpoint": "https://ollama.com/v1/chat/completions",
+        "error": "",
+        "finish_reason": "stop",
+        "http_status": 200,
+        "latency_ms": 3186.18,
+        "model": "gemma4:31b",
+        "ok": true,
+        "prompt_tokens": 859,
+        "request_sha256": "9cc28e83bef295f98d9c93ae461e8cc77f96fe490e54bbf042b76d423d85ef78",
+        "response_text": "```python\nimport math\n\ndef simulate_collision_and_pluck(body_a: dict, body_b: dict, dt: float = 1.0/60.0, sample_rate: int = 22050, duration_s: float = 0.25) -> dict:\n    # Copy bodies to avoid mutating inputs\n    a = body_a.copy()\n    b = body_b.copy()\n    \n    ma, mb = a['mass'], b['mass']\n    ra, rb = a['radius'], b['radius']\n    \n    # Initial state for energy/momentum\n    ke_before = 0.5 * ma * (a['vx']**2 + a['vy']**2) + 0.5 * mb * (b['vx']**2 + b['vy']**2)\n    px_before = ma * a['vx'] + mb * b['vx']\n    py_before = ma * a['vy'] + mb * b['vy']\n    \n    dx = b['x'] - a['x']\n    dy = b['y'] - a['y']\n    dist = math.hypot(dx, dy)\n    \n    collided = False\n    vn = 0.0\n    \n    if dist <= ra + rb:\n        nx = dx / dist if dist != 0 else 1.0\n        ny = dy / dist if dist != 0 else 0.0\n        vn = (b['vx'] - a['vx']) * nx + (b['vy'] - a['vy']) * ny\n        \n        if vn < 0:\n            collided = True\n            # Elastic Impulse\n            j = -(2.0 * vn) / (1.0/ma + 1.0/mb)\n            a['vx'] -= (j / ma) * nx\n            a['vy'] -= (j / ma) * ny\n            b['vx'] += (j / mb) * nx\n            b['vy'] += (j / mb) * ny\n            \n            # Separate overlap\n            overlap = (ra + rb - dist) + 1e-4\n            total_inv_mass = (1.0/ma + 1.0/mb)\n            a['x'] -= (overlap * (1.0/ma / total_inv_mass)) * nx\n            a['y'] -= (overlap * (1.0/ma / total_inv_mass)) * ny\n            b['x'] += (overlap * (1.0/mb / total_inv_mass)) * nx\n            b['y'] += (overlap * (1.0/mb / total_inv_mass)) * ny\n\n    # Final state for energy/momentum\n    ke_after = 0.5 * ma * (a['vx']**2 + a['vy']**2) + 0.5 * mb * (b['vx']**2 + b['vy']**2)\n    px_after = ma * a['vx'] + mb * b['vx']\n    py_after = ma * a['vy'] + mb * b['vy']\n    \n    # Karplus-Strong Synthesis\n    n_samples = int(round(sample_rate * duration_s))\n    fundamental_hz = round(max(110.0, min(880.0, 220.0 + 40.0 * abs(vn))), 2)\n    delay_len = max(2, int(round(sample_rate / fundamental_hz)))\n    \n    # Deterministic seed ring buffer\n    buf = [((i * 1103515245 + 12345) & 0x7fffffff) / 1073741823.5 - 1.0 for i in range(delay_len)]\n    \n    audio_samples = []\n    for i in range(n_samples):\n        idx = i % delay_len\n        s = max(-1.0, min(1.0, buf[idx]))\n        audio_samples.append(s)\n        \n        # Update buffer: average with next and apply decay\n        next_idx = (idx + 1) % delay_len\n        buf[idx] = 0.994 * 0.5 * (buf[idx] + buf[next_idx])\n        \n    return {\n        'body_a': a,\n        'body_b': b,\n        'collided': collided,\n        'kinetic_energy_before': ke_before,\n        'kinetic_energy_after': ke_after,\n        'momentum_before': (px_before, py_before),\n        'momentum_after': (px_after, py_after),\n        'audio_samples': audio_samples,\n        'fundamental_hz': fundamental_hz\n    }\n```",
+        "sequence": 16,
+        "total_tokens": 1969
+      },
+      "preturn_hook": {
+        "abstained": false,
+        "abstention_code": "none",
+        "card_digest": "18089a02b84c61d3e57f8201a4b6c9d2e3f405162738495a6b7c8d9e0f1a2b3c",
+        "card_identity": "elastic_2d_collision_and_karplus_strong_contract",
+        "card_score": 0.7744,
+        "hook_engine": "T7_hybrid_cascade_with_fallback",
+        "injected_tokens": 249,
+        "reformulated_query": "html5 2d elastic collision karplus strong",
+        "winning_probe": "probe_1_technical_phrases"
+      },
+      "task_id": "DM-02_html5_physics_karplus_strong_synth",
+      "title": "Deterministic 60fps 2D Rigid-Body Elastic Collision & Karplus-Strong Synth",
+      "trial_id": "DM-02_html5_physics_karplus_strong_synth__with_baltor",
+      "verification": {
+        "checks": {
+          "audio_buffer_finite_and_bounded": true,
+          "deterministic_reproducibility": true,
+          "kinetic_energy_and_momentum_conserved": true,
+          "overlap_resolved_and_velocities_reflected": true
+        },
+        "details": {},
+        "passed": true,
+        "score": 1.0
+      }
+    }
+  ]
+}
