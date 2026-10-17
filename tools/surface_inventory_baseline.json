@@ -5,7 +5,7 @@
     "data_computation": 11,
     "data_storage": 59,
     "data_transfer": 56,
-    "functions": 371,
+    "functions": 372,
     "interactions": 18,
     "screens": 130
   },
@@ -402,6 +402,7 @@
       "operator_tool:component_verification_plan.py",
       "operator_tool:conformance_explain.py",
       "operator_tool:connection_endpoint_checks.mjs",
+      "operator_tool:continuous_n_scale_hierarchy_and_logjam_anti_convergence_engines.py",
       "operator_tool:create_studio_acceptance_fixture.py",
       "operator_tool:creative_and_personal_agent_engines.py",
       "operator_tool:cross_dataset_no_id_fuzzy_deterministic_llm_hybrid_matcher_engines.py",
@@ -740,8 +741,8 @@
   },
   "schema": "surface_inventory_baseline/v1",
   "totals": {
-    "covered_items": 690,
+    "covered_items": 691,
     "total_gaps": 3,
-    "total_items": 693
+    "total_items": 694
   }
 }

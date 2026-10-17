@@ -7,14 +7,14 @@ its test or component guide coverage, or a new unreviewed gap appears.
 
 ## Summary across the eight categories
 
-- Total surface items inventoried: **693**
-- Fully covered items (no gaps): **690**
+- Total surface items inventoried: **694**
+- Fully covered items (no gaps): **691**
 - Items with an explicit test or live-check gap: **3**
 
 | Category | Total items | Unit / integration tested | Browser tested | Live checked | Component guide mapped | Open gaps |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: |
 | `screens` | 130 | 130 | 130 | 130 | 130 | 0 |
-| `functions` | 371 | 371 | 314 | 326 | 371 | 0 |
+| `functions` | 372 | 372 | 315 | 327 | 372 | 0 |
 | `interactions` | 18 | 18 | 18 | 12 | 18 | 0 |
 | `data_transfer` | 56 | 56 | 11 | 5 | 56 | 0 |
 | `data_computation` | 11 | 11 | 3 | 0 | 11 | 0 |
@@ -396,6 +396,7 @@ Every item below has a mapped component guide in `docs/components/COMPONENT-GUID
 | `operator_tool` | `operator_tool:component_verification_plan.py` | `tools/component_verification_plan.py` | 6 | 6 | 4 | `docs/components/README.md` | covered |
 | `operator_tool` | `operator_tool:conformance_explain.py` | `tools/conformance_explain.py` | 6 | 6 | 4 | `docs/components/README.md` | covered |
 | `operator_tool` | `operator_tool:connection_endpoint_checks.mjs` | `tools/connection_endpoint_checks.mjs` | 6 | 6 | 4 | `docs/components/README.md` | covered |
+| `operator_tool` | `operator_tool:continuous_n_scale_hierarchy_and_logjam_anti_convergence_engines.py` | `tools/continuous_n_scale_hierarchy_and_logjam_anti_convergence_engines.py` | 6 | 6 | 4 | `docs/components/README.md` | covered |
 | `operator_tool` | `operator_tool:create_studio_acceptance_fixture.py` | `tools/create_studio_acceptance_fixture.py` | 6 | 6 | 4 | `docs/components/README.md` | covered |
 | `operator_tool` | `operator_tool:creative_and_personal_agent_engines.py` | `tools/creative_and_personal_agent_engines.py` | 6 | 6 | 4 | `docs/components/README.md` | covered |
 | `operator_tool` | `operator_tool:cross_dataset_no_id_fuzzy_deterministic_llm_hybrid_matcher_engines.py` | `tools/cross_dataset_no_id_fuzzy_deterministic_llm_hybrid_matcher_engines.py` | 6 | 6 | 4 | `docs/components/README.md` | covered |
