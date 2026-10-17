@@ -12,7 +12,7 @@ import unittest
 import httpx
 
 from loop_engine.core.service_runtime import openapi_tool_server as tool
-from loop_engine.core.service_runtime.http import API_ROUTES
+from loop_engine.core.service_runtime.http import API_ROUTES, PROTOCOL_INSTRUCTIONS, PROTOCOL_TOOL_DESCRIPTIONS
 from loop_engine.core.service_runtime.http_test_fixtures import HttpDomainFixture, running_http
 
 
@@ -42,8 +42,66 @@ class OpenApiToolServerChecks(unittest.TestCase):
         wrong = copy.deepcopy(document)
         wrong["paths"].pop("/manifest")
         self.assertTrue(tool.document_problems(wrong, API_ROUTES, self.service.tool_server_tools(), self.base))
+        wrong = copy.deepcopy(document)
+        wrong["info"]["description"] = "Search Baltor."
+        self.assertTrue(tool.document_problems(wrong, API_ROUTES, self.service.tool_server_tools(), self.base))
         self.assertEqual(self.fixture.reads, [])
         self.assertEqual(self.fixture.usage()["records"], 0)
+
+    def test_protocol_initialize_instructions_and_search_guidance_cover_query_and_contract_card_rules(self):
+        document = self.client.get(tool.DOCUMENT_PATH, headers={"Origin": self.origin}).json()
+        search_description, search_schema = self.service.tool_server_tools()["intelligence_search"]
+        self.assertEqual(
+            tool.adoption_guidance_problems(PROTOCOL_INSTRUCTIONS, search_description, document["info"]["description"]),
+            [],
+        )
+        self.assertIn("2 to 5 word", search_schema["properties"]["query"]["description"])
+        self.assertIn("technical domain", search_schema["properties"]["query"]["description"])
+        init_headers = {**self.fixture.headers("alpha"), "Accept": "application/json, text/event-stream"}
+        init_response = self.client.post(
+            "/mcp",
+            headers=init_headers,
+            json={
+                "jsonrpc": "2.0",
+                "id": 1,
+                "method": "initialize",
+                "params": {
+                    "protocolVersion": "2025-11-25",
+                    "capabilities": {},
+                    "clientInfo": {"name": "adoption-check", "version": "1.0.0"},
+                },
+            },
+        )
+        self.assertEqual(init_response.status_code, 200, init_response.text)
+        if init_response.headers.get("content-type", "").startswith("text/event-stream"):
+            import json as _json
+            data_lines = [line[5:].strip() for line in init_response.text.splitlines() if line.startswith("data:")]
+            message = _json.loads(data_lines[-1])
+        else:
+            message = init_response.json()
+        self.assertEqual(message["result"]["instructions"], PROTOCOL_INSTRUCTIONS)
+        # Known-wrong controls: omitting 2-to-5-word query rules, contract card fields, or abstention rule must fail.
+        self.assertTrue(
+            tool.adoption_guidance_problems(
+                "Search the Baltor library's metadata.",
+                PROTOCOL_TOOL_DESCRIPTIONS["search"],
+                document["info"]["description"],
+            )
+        )
+        self.assertTrue(
+            tool.adoption_guidance_problems(
+                PROTOCOL_INSTRUCTIONS,
+                PROTOCOL_TOOL_DESCRIPTIONS["search"].replace("2 to 5 word", "arbitrary"),
+                document["info"]["description"],
+            )
+        )
+        self.assertTrue(
+            tool.adoption_guidance_problems(
+                PROTOCOL_INSTRUCTIONS,
+                PROTOCOL_TOOL_DESCRIPTIONS["search"],
+                document["info"]["description"].replace("effects_to_declare", "permissions"),
+            )
+        )
 
     def test_preflight_is_scoped_to_the_documented_method_and_headers(self):
         headers = {"Origin": self.origin, "Access-Control-Request-Method": "POST",

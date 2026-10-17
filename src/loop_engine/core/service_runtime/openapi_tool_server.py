@@ -128,10 +128,42 @@ DOCUMENT_DESCRIPTION = (
     "Search Baltor's library of harness components, inspect one item version, and read its exact files. Every "
     "operation reads; none installs, runs or changes anything. Send a Baltor client token as a bearer token in "
     "the Authorization header: create one on your account page, and keep it out of prompts and files. Search and "
-    "manifests are never counted; the first read of an item version in a calendar month counts once. Check each "
+    "manifests are never counted; the first read of an item version in a calendar month counts once. "
+    "Call intelligence_search at the start of non-trivial algorithm, parser, data-split, validation, cache, 3D or "
+    "CAD, shader, audio or verification work before coding from scratch, and skip it on trivial edits or questions "
+    "answered by open project files. Pass a concise 2 to 5 word technical domain or method query (for example 'data "
+    "split leakage audit', 'train validation gap' or 'ttl lru cache'), never a competition or project title (such as "
+    "'Spaceship Titanic'), file path, stack trace or generic verb (such as 'recreate a class'). Inspect each hit's "
+    "contract card (purpose, kind, library_tier, score, body_digest, declared_effects and effects_to_declare) or "
+    "call provisioning_manifest before calling provisioning_read; when no hit fits the task, abstain from "
+    "provisioning_read with zero downloads. Check each "
     "file's SHA-256 against its digest before you use it. Browsers may call these operations from any site with "
     "the bearer token alone; no cookie is accepted. The same operations are the intelligence_search, "
     "provisioning_manifest and provisioning_read tools of the Model Context Protocol endpoint at /mcp.")
+
+REQUIRED_ADOPTION_CLAUSES = (
+    ("when_to_search", ("non-trivial", "trivial")),
+    ("query_length_and_domain", ("2 to 5 word", "technical domain")),
+    ("negative_query_examples", ("Spaceship Titanic", "stack trace")),
+    ("contract_card_inspection", ("purpose", "kind", "library_tier", "declared_effects", "effects_to_declare")),
+    ("abstain_when_unmatched", ("abstain", "zero downloads")),
+)
+
+
+def adoption_guidance_problems(instructions, search_description, document_description):
+    """Every missing adoption rule across MCP initialize instructions, search tool description, and OpenAPI info."""
+    problems = []
+    for surface, text in (("protocol_instructions", instructions),
+                          ("intelligence_search_description", search_description),
+                          ("openapi_document_description", document_description)):
+        if not isinstance(text, str) or not text.strip():
+            problems.append(f"{surface} is empty")
+            continue
+        for rule_name, phrases in REQUIRED_ADOPTION_CLAUSES:
+            missing = [phrase for phrase in phrases if phrase not in text]
+            if missing:
+                problems.append(f"{surface} omits {rule_name}: {', '.join(missing)}")
+    return problems
 
 
 def document(base_url, tools):
@@ -172,6 +204,8 @@ def document_problems(served, routes, tools, base_url):
     problems = []
     if served.get("openapi") != OPENAPI_VERSION:
         problems.append("the document is not OpenAPI " + OPENAPI_VERSION)
+    if (served.get("info") or {}).get("description") != DOCUMENT_DESCRIPTION:
+        problems.append("the document's info.description does not match DOCUMENT_DESCRIPTION")
     servers = served.get("servers") or []
     base = servers[0].get("url") if servers and isinstance(servers[0], dict) else None
     if base != base_url + BASE_PATH:
