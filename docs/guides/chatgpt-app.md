@@ -410,12 +410,14 @@ the issuer the metadata advertises.
 
 As of October 9, 2026, after the integration reached main and before the
 release that serves it. The ChatGPT steps above stay the detailed list for that
-directory.
+directory. Since October 16, 2026 the source lists the three staff tools only
+to a credential that may call them, which was a Claude connector step; it
+reaches the live service with the next release.
 
 | Channel | Engineering | Owner |
 |---|---|---|
 | ChatGPT and Codex plugin directory | Release, then run the live proof with `--expect-presentation` and remake the screenshots. Serve the domain token, route the support mail and set `http.support_email`, make the reviewer account, revoke the October 5 check account's founding place, and rebuild the package once the video address exists. | Identity verification, a project with global data residency, the privacy notice draft, the upload, the portal connection and scan, the reviewer details, the video, the attestations, submission and publication |
-| Claude connector directory | Release. Add tool titles and annotations and hide staff tools for connections that are not staff, replace generic refusals such as `operation_failed`, build client ID metadata documents or raise the 128-client ceiling, and capture screenshots at least 1,000 pixels wide if the view is listed. | A paid Claude plan to submit, a first custom connector test from claude.ai, the directory terms and policy acknowledgements, which are a legal commitment, and the submission with its permanent slug |
+| Claude connector directory | Release. Add tool titles and annotations, replace generic refusals such as `operation_failed`, build client ID metadata documents or raise the 128-client ceiling, and capture screenshots at least 1,000 pixels wide if the view is listed. | A paid Claude plan to submit, a first custom connector test from claude.ai, the directory terms and policy acknowledgements, which are a legal commitment, and the submission with its permanent slug |
 | Cursor | Release, test sign-in from the desktop app and from Cursor Agents, publish an install link, and prepare an Agent Plugins package in a small public repository for the marketplace. | The marketplace submission, which requires an open-source plugin and is reviewed by hand |
 | VS Code | Release, test sign-in with VS Code's own registration on port 33418 and on a chosen port, publish an install link, then submit the Agent Plugins package and ask about the GitHub MCP Registry once the official MCP Registry entry exists. | Nothing required; any submission that must come from the owner's GitHub account |
 | OpenCode | Nothing in the redirect rules: its address was admitted before. Test `opencode mcp auth`, publish the configuration snippet and open the ecosystem page pull request. | Nothing |

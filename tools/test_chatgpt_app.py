@@ -33,9 +33,11 @@ import test_oauth_http
 ROOT = Path(__file__).resolve().parents[1]
 OPENAI_NAMES = ["search_library", "get_package", "download_package_files", "find_public_good_files",
                 "check_library_access", "rate_item", "request_material", "report_item_problem"]
+# What a customer's harness connection lists: the three staff tools are offered only to a credential that may call
+# them (journey finding F-6 of October 16, 2026), and every credential below is a customer's.
 HARNESS_NAMES = {"provisioning_discover", "provisioning_list", "provisioning_manifest", "provisioning_read",
                  "intelligence_search", "provisioning_report", "provisioning_rate", "provisioning_request_material",
-                 "feedback_review", "public_good_files", "staff_work_read", "staff_work_submit"}
+                 "public_good_files"}
 CHATGPT_REDIRECT = "https://chatgpt.com/connector_platform_oauth_redirect"
 
 

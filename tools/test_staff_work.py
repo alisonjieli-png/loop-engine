@@ -244,6 +244,54 @@ class StaffWork(unittest.TestCase):
                 self.assertIn('/mcp does not accept a browser session',tools[name])
                 self.assertNotRegex(tools[name],r'browser session or|browser or operator|eligible staff browser session')
 
+    def test_staff_tools_are_listed_only_to_a_caller_their_gates_admit(self):
+        # Journey finding F-6 of October 16, 2026: every customer connection listed the three staff tools, which can
+        # only refuse a customer and add their definitions to every request. Now only a caller a gate admits sees one.
+        staff=set(service_http.STAFF_PROTOCOL_TOOLS)
+        self.assertEqual(staff,{'feedback_review','staff_work_read','staff_work_submit'})
+        async def names(tenant):
+            listed={}
+            for mode in ('legacy','2026-07-28'):
+                async with _protocol_client(self.base,self.fixture,mode,tenant=tenant) as client:
+                    listed[mode]=[tool.name for tool in (await client.list_tools()).tools]
+            return listed
+        customer,operator=asyncio.run(names('alpha')),asyncio.run(names('operator'))
+        for mode in ('legacy','2026-07-28'):
+            with self.subTest(mode=mode):
+                self.assertEqual(set(customer[mode])&staff,set())
+                self.assertEqual(len(customer[mode]),9)
+                self.assertEqual(set(operator[mode]),set(customer[mode])|staff)
+                self.assertEqual(len(operator[mode]),12)
+        # The calls keep their own gates: a customer that names a staff tool is refused as before.
+        async def called():
+            async with _protocol_client(self.base,self.fixture,'2026-07-28',tenant='alpha') as client:
+                return [await client.call_tool(name,self.fields() if name=='staff_work_submit' else {}) for name in sorted(staff)]
+        for result in asyncio.run(called()):
+            self.assertTrue(result.is_error)
+            self.assertEqual(result.structured_content['error']['code'],'account_administration_forbidden')
+        # Known-wrong control: the listing before this change, which offered every staff tool to every caller, is
+        # caught by the customer check above.
+        with mock.patch.object(service_http.ServiceHttpApplication,'_staff_tools_listed',
+                               lambda _app,_context:frozenset(service_http.STAFF_PROTOCOL_TOOLS)):
+            unfiltered=asyncio.run(names('alpha'))
+        self.assertTrue(all(set(listed)&staff==staff for listed in unfiltered.values()))
+
+    def test_a_staff_role_lists_the_staff_tools_its_permissions_admit(self):
+        # /mcp accepts no browser session today, so no role reaches tools/list over it. The listing still reads the
+        # role table the calls' gates read, so a role that a later release admits there sees only what it may call.
+        from types import SimpleNamespace
+        from loop_engine.core.service_runtime.account_policy import ANALYTICS, DEVELOPER, SUPERADMIN
+        staff=frozenset(service_http.STAFF_PROTOCOL_TOOLS)
+        customer=SimpleNamespace(effective_scopes=('provisioning:metadata','provisioning:read'))
+        expected={SUPERADMIN:staff,ANALYTICS:{'feedback_review'},DEVELOPER:set(),'':set()}
+        for role,listed in expected.items():
+            with self.subTest(role=role),mock.patch.object(self.app,'account_administration',
+                                                            SimpleNamespace(role_of=lambda _context,role=role:role)):
+                self.assertEqual(self.app._staff_tools_listed(customer),listed)
+        with mock.patch.object(self.app,'account_administration',None):
+            self.assertEqual(self.app._staff_tools_listed(customer),set())
+            self.assertEqual(self.app._staff_tools_listed(SimpleNamespace(effective_scopes=('access:manage',))),staff)
+
     def test_host_limits_are_validated(self):
         for field in ('maximum_staff_work_request_bytes','maximum_staff_work_response_bytes'):
             for value in (0,True,1.5,1048577):

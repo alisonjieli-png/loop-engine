@@ -79,7 +79,10 @@ class FeedbackAdapters(unittest.TestCase):
             for mode in ('legacy', '2026-07-28'):
                 async with _protocol_client(self.base, self.fixture, mode) as client:
                     listed = await client.list_tools()
-                    self.assertTrue({'provisioning_rate', 'provisioning_request_material', 'feedback_review'} <= {tool.name for tool in listed.tools})
+                    names = {tool.name for tool in listed.tools}
+                    self.assertTrue({'provisioning_rate', 'provisioning_request_material'} <= names)
+                    # The staff summary is offered only to a credential that may read it, never to a customer.
+                    self.assertNotIn('feedback_review', names)
                     rated = await client.call_tool('provisioning_rate', self.rate_fields())
                     self.assertFalse(rated.is_error)
                     self.assertEqual(rated.structured_content['result']['record_type'], feedback.RATING_RESULT_VERSION)
@@ -98,7 +101,7 @@ class FeedbackAdapters(unittest.TestCase):
 
     def test_rating_tool_does_not_advertise_exact_idempotency(self):
         async def listed():
-            async with _protocol_client(self.base, self.fixture, '2026-07-28') as client:
+            async with _protocol_client(self.base, self.fixture, '2026-07-28', tenant='operator') as client:
                 return {tool.name: tool for tool in (await client.list_tools()).tools}
         tools = asyncio.run(listed())
         self.assertFalse(tools['provisioning_rate'].annotations.idempotent_hint)

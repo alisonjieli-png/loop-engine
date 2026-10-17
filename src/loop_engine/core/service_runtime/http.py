@@ -39,6 +39,7 @@ from .observability import (
     CAPTURED_BODY_KEY, SCOPE_REFERENCE_KEY, ServiceFailureJournal, ServiceObservabilityPolicy,
     new_request_reference, readiness_deadline_report, readiness_report,
 )
+from .account_policy import ACCOUNTS_LIST, USAGE_COUNTS, permissions_for
 from .records import ACCESS_MANAGE_SCOPE, BILLING_MANAGE_SCOPE, ServiceCommitUnknown, ServiceRuntimeError
 from .refusals import guidance as _refusal_guidance
 from .request_limits import LIMIT_REACHED_CODE, FailedAttemptLimiter, ServiceRequestLimits
@@ -171,9 +172,18 @@ QUALIFIED_PROTOCOL_VERSIONS = HANDSHAKE_PROTOCOL_VERSIONS + PER_REQUEST_PROTOCOL
 #: How long a client may reuse a tool list or a discovery answer, in
 #: milliseconds. Both change only with a release or a host configuration
 #: change, and both are answers to an authenticated caller, so a shared cache
-#: must not hand them to anyone else.
+#: must not hand them to anyone else. A tool list also depends on that caller,
+#: because staff tools are listed only to a credential that may call them.
 PROTOCOL_CACHE_TTL_MS = 300_000
 PROTOCOL_CACHE_SCOPE = "private"
+#: The staff protocol tools, each with the staff-role permission its gate
+#: admits; an operator credential holding access:manage passes every one of
+#: these gates. tools/list offers a staff tool only to a caller that passes its
+#: gate, so a customer's connection carries no tool that can only refuse it
+#: (journey finding F-6 of October 16, 2026). A call by name is still checked
+#: by the tool's own gate, which the listing never replaces.
+STAFF_PROTOCOL_TOOLS = {customer_feedback.REVIEW_TOOL: USAGE_COUNTS,
+                        "staff_work_read": ACCOUNTS_LIST, "staff_work_submit": ACCOUNTS_LIST}
 #: The account email boundary this release serves. An installed adapter states
 #: the version it speaks, and an adapter that speaks another one is refused
 #: before the application serves either public account route.
@@ -1840,6 +1850,20 @@ class ServiceHttpApplication:
         staff = self.account_administration.staff_session(current, self.authenticator.credential_digest(current))
         return current, {"staff": staff, "administration": self.account_administration}
 
+    def _staff_tools_listed(self, context):
+        """The staff protocol tools a caller's gates admit, for tools/list alone.
+
+        The same two ways in as the calls: an operator credential holding
+        access:manage, or a staff role whose permissions include the tool's
+        permission. /mcp accepts no browser session, so today only the first
+        can hold there. Listing grants nothing; each call keeps its own gate.
+        """
+        if ACCESS_MANAGE_SCOPE in context.effective_scopes:
+            return frozenset(STAFF_PROTOCOL_TOOLS)
+        role = self.account_administration.role_of(context) if self.account_administration is not None else ""
+        held = permissions_for(role)
+        return frozenset(name for name, permission in STAFF_PROTOCOL_TOOLS.items() if permission in held)
+
     def _staff_feedback(self, context):
         """The unchanged private full view behind the existing staff/operator gate."""
         current, authority = self._staff_feedback_authority(context)
@@ -2378,7 +2402,7 @@ class ServiceHttpApplication:
         self._protocol_library()
 
         async def list_tools(ctx, _params):
-            self.authenticator.revalidate(ctx.request.scope["service_authentication"])
+            current = self.authenticator.revalidate(ctx.request.scope["service_authentication"])
             tools = [types.Tool(name=name, description=PROTOCOL_TOOL_DESCRIPTIONS[operation],
                 inputSchema=protocol_tool_schema(operation), annotations=types.ToolAnnotations(
                     readOnlyHint=operation != READ_OPERATION, destructiveHint=False, idempotentHint=True))
@@ -2444,7 +2468,10 @@ class ServiceHttpApplication:
                 tools.append(types.Tool(name=customer_feeds.PULL_TOOL, description=customer_feeds.PULL_TOOL_DESCRIPTION,
                     inputSchema=customer_feeds.pull_schema(self.customer_feeds.policy),
                     annotations=types.ToolAnnotations(readOnlyHint=True, destructiveHint=False, idempotentHint=True)))
-            return types.ListToolsResult(tools=tools)
+            # A staff tool is offered only to a caller its gate admits, so a customer's harness never carries one.
+            staff = self._staff_tools_listed(current)
+            return types.ListToolsResult(tools=[tool for tool in tools
+                                                if tool.name not in STAFF_PROTOCOL_TOOLS or tool.name in staff])
 
         async def call_tool(ctx, params):
             # The library passes the arguments as sent; this transport has

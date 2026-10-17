@@ -25,9 +25,11 @@ from .http_test_fixtures import HttpDomainFixture, running_http
 
 #: The per-request protocol version these checks qualify.
 _PER_REQUEST = "2026-07-28"
+#: The tools a customer's credential lists. Every fixture key here is a customer's, so the three staff tools,
+#: which `http.STAFF_PROTOCOL_TOOLS` offers only to a credential that may call them, are not among them.
 _EXPECTED_TOOLS = {"provisioning_discover", "provisioning_list", "provisioning_manifest", "provisioning_read",
                    "intelligence_search", "provisioning_report", "provisioning_rate", "provisioning_request_material",
-                   "feedback_review", "public_good_files", "staff_work_read", "staff_work_submit"}
+                   "public_good_files"}
 
 
 @asynccontextmanager

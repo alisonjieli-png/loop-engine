@@ -129,6 +129,8 @@ identity, request digest, filter value or timestamp is returned.
 This summary retains the existing staff gate. Over MCP, `feedback_review`
 needs an operator credential with `access:manage`, because `/mcp`
 authenticates service credentials and does not accept a browser session.
+`tools/list` offers the tool only to such a credential, so a customer's
+connection does not list it.
 `GET /api/v1/admin/feedback/summary` on the website accepts that credential or
 a current staff browser session permitted to read usage counts (superadmin or
 analytics). Ordinary OAuth delegation cannot acquire that scope or a staff role.
@@ -248,7 +250,7 @@ and sets `complete` to false, instead of failing the whole day.
 The MCP tools `staff_work_read` and `staff_work_submit` accept the same read
 or write fields without the HTTP `record_type`. Both require an operator
 credential with `access:manage`, because `/mcp` does not accept a browser
-session. A superadmin's signed-in browser uses the work log at
+session, and `tools/list` offers them only to such a credential. A superadmin's signed-in browser uses the work log at
 `/admin#dot-work` and `/api/v1/admin/work` instead. Ordinary customer OAuth
 does not inherit staff access. The browser work log is the route for the
 owner's already signed-in Dot; no session credential needs to be copied into a
