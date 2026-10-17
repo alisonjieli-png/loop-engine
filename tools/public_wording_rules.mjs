@@ -27,7 +27,8 @@ export const cardStatusWords=/available now|being built|\bplanned\b|coming soon|
    describe Baltor's own checks or repeat the navigation instead of telling a visitor something. They are read in the
    rendered words of every page; keep the list short so it never pins other copy. */
 export const retiredPhrases=["creates your account.","connects your harness.","Bytes match the digest","Recorded from this release's library",
-  "digest checked","typed in by hand","from saved evidence","Seen in the run"];
+  "digest checked","typed in by hand","from saved evidence","Seen in the run","What Baltor is not","Not a model provider",
+  "Not a program that runs your code","Not a copy of your repository"];
 
 /* The same rules as data, for a page an owner reads and adjusts. */
 export const RULES=[

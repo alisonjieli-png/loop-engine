@@ -484,7 +484,7 @@
       "address": "/for/comparing-tools",
       "view": "for-comparing-tools",
       "title": "What it is and what it costs",
-      "description": "What Baltor is, what it is not and what it costs, for someone comparing tools before anything else.",
+      "description": "What Baltor is, what stays in your environment and what it costs, for someone comparing tools before anything else.",
       "group": "Use cases",
       "linked_from": [
         "footer"

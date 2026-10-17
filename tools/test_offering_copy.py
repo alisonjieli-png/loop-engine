@@ -28,6 +28,27 @@ PACKAGE_WORD = re.compile(r"\bpackages?\b", re.I)
 #: Max for Overnight / AFK Work, shown during a free public preview in which Max is not sold.
 LLMS_PLAN_FACTS = ("Basic, for Agent Feeds, is $9 a month", "Pro adds Harness Files for $49 a month", "Max, $99 a month",
                    "Max subscriptions are not sold during the preview")
+NEGATIVE_POSITIONING = re.compile(
+    r"\bWhat Baltor is not\b|\bNot a model provider\b|\bNot a program that runs your code\b"
+    r"|\bNot a copy of your repository\b|\bwhat it is not\b|\bNot every step needs a large model\b"
+    r"|\bNot available yet:|\bThey are not rigged characters\b|\bno agent to install and no framework to adopt\b",
+    re.I,
+)
+COMPARING_BOUNDARY_FACTS = (
+    "What stays in your environment",
+    "Baltor collects no model key",
+    "your harness runs the work on your machine",
+    "your project stays on your machine while the service answers requests for files",
+)
+
+
+def comparing_tools_problems(text):
+    """The comparing-tools view states what stays in the customer's environment positively while keeping the three boundaries."""
+    text = re.sub(r"\s+", " ", text)
+    problems = ["missing " + fact for fact in COMPARING_BOUNDARY_FACTS if fact not in text]
+    if NEGATIVE_POSITIONING.search(text):
+        problems.append("negative positioning phrase")
+    return problems
 
 
 def customer_package_words(text):
@@ -308,6 +329,32 @@ class OfferingCopyTests(unittest.TestCase):
         self.assertEqual(hashlib.sha256(untouched.encode()).hexdigest(), expected)
         self.assertNotEqual(hashlib.sha256(untouched.replace(
             "three months", "one month").encode()).hexdigest(), expected)
+
+    def test_audience_and_how_it_works_views_state_boundaries_positively(self):
+        views = marketing_views((ASSETS / "index.html").read_text())
+        self.assertEqual(comparing_tools_problems(views["for-comparing-tools"]), [])
+        for name in ("home", "about", "for-coding-agents", "for-comparing-tools", "for-protocol-and-client", "for-designers"):
+            self.assertIsNone(NEGATIVE_POSITIONING.search(views[name]), name)
+        self.assertIn("your code and repository stay on your machine", views["for-coding-agents"])
+        self.assertIn("Match the model or code to each step.", views["about"])
+        site_map = (RUNTIME / "web_site_map.json").read_text()
+        self.assertIsNone(NEGATIVE_POSITIONING.search(site_map))
+
+    def test_positive_boundary_guard_refuses_negative_framing_and_missing_facts(self):
+        valid = " ".join(COMPARING_BOUNDARY_FACTS)
+        self.assertEqual(comparing_tools_problems(valid), [])
+        for fact in COMPARING_BOUNDARY_FACTS:
+            self.assertTrue(comparing_tools_problems(valid.replace(fact, "")), fact)
+        for wrong in (
+            "What Baltor is not",
+            "Not a model provider: no model is included and no model key is collected",
+            "Not a program that runs your code",
+            "Not a copy of your repository",
+            "What Baltor is, what it is not and what it costs",
+            "Not every step needs a large model.",
+            "Not available yet: free Public Good components",
+        ):
+            self.assertTrue(comparing_tools_problems(valid + " " + wrong), wrong)
 
 
 if __name__ == "__main__":
