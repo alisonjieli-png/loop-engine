@@ -7,14 +7,14 @@ its test or component guide coverage, or a new unreviewed gap appears.
 
 ## Summary across the eight categories
 
-- Total surface items inventoried: **721**
-- Fully covered items (no gaps): **718**
+- Total surface items inventoried: **722**
+- Fully covered items (no gaps): **719**
 - Items with an explicit test or live-check gap: **3**
 
 | Category | Total items | Unit / integration tested | Browser tested | Live checked | Component guide mapped | Open gaps |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: |
 | `screens` | 130 | 130 | 130 | 130 | 130 | 0 |
-| `functions` | 399 | 399 | 342 | 354 | 399 | 0 |
+| `functions` | 400 | 400 | 343 | 355 | 400 | 0 |
 | `interactions` | 18 | 18 | 18 | 12 | 18 | 0 |
 | `data_transfer` | 56 | 56 | 11 | 5 | 56 | 0 |
 | `data_computation` | 11 | 11 | 3 | 0 | 11 | 0 |
@@ -545,6 +545,7 @@ Every item below has a mapped component guide in `docs/components/COMPONENT-GUID
 | `operator_tool` | `operator_tool:service_admin_rotation_host.py` | `tools/service_admin_rotation_host.py` | 6 | 6 | 4 | `docs/components/README.md` | covered |
 | `operator_tool` | `operator_tool:session_intake.py` | `tools/session_intake.py` | 6 | 6 | 4 | `docs/components/README.md` | covered |
 | `operator_tool` | `operator_tool:setup_stripe_sandbox.py` | `tools/setup_stripe_sandbox.py` | 6 | 6 | 4 | `docs/components/README.md` | covered |
+| `operator_tool` | `operator_tool:sharded_leaf_comparison_deduplication_and_anti_convergence_retrieval_engines.py` | `tools/sharded_leaf_comparison_deduplication_and_anti_convergence_retrieval_engines.py` | 6 | 6 | 4 | `docs/components/README.md` | covered |
 | `operator_tool` | `operator_tool:showcase_page_checks.mjs` | `tools/showcase_page_checks.mjs` | 6 | 6 | 4 | `docs/components/README.md` | covered |
 | `operator_tool` | `operator_tool:signup_session_boundary_checks.mjs` | `tools/signup_session_boundary_checks.mjs` | 6 | 6 | 4 | `docs/components/README.md` | covered |
 | `operator_tool` | `operator_tool:slot_handshake_hardening_engines.py` | `tools/slot_handshake_hardening_engines.py` | 6 | 6 | 4 | `docs/components/README.md` | covered |
