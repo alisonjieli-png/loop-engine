@@ -221,24 +221,28 @@ Supply lines (each writes library_supply_candidate/v1 records)
 │   │   refuses the item by name
 │   └── qualification runs the package's own Python tests and mutation in the sandbox; the engine-side
 │       behavior is the native record's observation, which the sandbox does not repeat
-├── engine_api_cards: one version-pinned API contract card per class of a pinned engine release (engine_api_cards.py)
+├── engine_api_cards: one version-pinned API contract card per class, function or member of a pinned release
 │   ├── kind contract_schema, form schema; one card format (tools/engine_api_cards), one adapter per engine
 │   │   (Godot 4.7.2-stable; three.js r186 from the npm package built from the tag, its JSDoc checked by Node
 │   │   importing the module; Babylon.js 9.30.0 from @babylonjs/core's declaration files, checked the same way,
-│   │   Apache-2.0 with its NOTICE.md as UPSTREAM-NOTICE), the job key component.json job.engine, job.version
-│   │   and job.class
+│   │   Apache-2.0 with its NOTICE.md as UPSTREAM-NOTICE; pinned Python library releases in
+│   │   python_libraries.json with sandbox_import and wheel_ast surface engines and python_native.verify;
+│   │   pinned JavaScript package releases in javascript_packages.json with jsdoc_public and node_require),
+│   │   the job key component.json job.engine, job.version and job.class
 │   ├── surface: the official build's --doctool dump (1,076 classes); the build proven the member of the release
-│   │   asset whose SHA-256 GitHub publishes, its version naming the tag's commit
+│   │   asset whose SHA-256 GitHub publishes, its version naming the tag's commit; for Python, sandboxed module
+│   │   introspection or wheel AST; for JSDoc packages, @public / @api public member blocks
 │   ├── text: the class reference XML at the tag, each file proven by blob identity, MIT by LICENSE.txt and the
 │   │   last matching COPYRIGHT.txt stanza (Expat); its structure must equal the dump's; BBCode to Markdown as
-│   │   the engine's make_rst.py reads it; the CC BY 3.0 documentation site is never read
+│   │   the engine's make_rst.py reads it; the CC BY 3.0 documentation site is never read; for Python, docstrings
+│   │   traced line by line to licence-cleared tag source files
 │   ├── renames: the engine's own Godot 3 to 4 map, only where it attributes a rename to the class and the new
 │   │   name is on the class's surface
 │   ├── files: README.md (members-N.md past 240,000 bytes), api.json, component.json, the shared api_card.py and
 │   │   test_api_card.py (the documents agree with api.json; known-wrong controls), verification/native.json,
 │   │   LICENSE, UPSTREAM-LICENSE (the engine's LICENSE.txt) and ATTRIBUTION.md
-│   └── native evidence: one run of the same build checks every card (ClassDB, Variant types, the global
-│       scopes); a missing, stale, invalid or failed record refuses the class by name
+│   └── native evidence: one run of the same build or runtime checks every card (Godot, Node or sandboxed Python);
+│       a missing, stale, invalid or failed record refuses the card by name
 └── kaggle_public_good: one dataset contract per downloaded Kaggle dataset whose own files grant an allowlisted licence
     ├── source: a local download (one folder per dataset and its backup-manifest.json, which names the account);
     │   kaggle_profile.py reads every file once, streamed, for its SHA-256 and, for tables, a schema profile
@@ -518,8 +522,9 @@ PYTHONPATH=src:tools python tools/build_library_supply.py creative-assets \
   [--asset ID] [--maximum-assets N] [--resolution 4k] [--digest-cache FOLDER] [--godot PATH]
 PYTHONPATH=src:tools python tools/build_library_supply.py engine-api-cards \
   --run-folder /home/username/baltor-library/supply/engine-api-cards/DATE \
-  --authorize-network-reads --authorize-store-writes [--engine godot|threejs|babylonjs] [--class NAME] \
-  [--godot PATH] [--workers 8]
+  --authorize-network-reads --authorize-store-writes \
+  [--engine godot|threejs|babylonjs|python|jsdoc] [--release RELEASE] \
+  [--surface-engine sandbox_import|wheel_ast] [--class NAME] [--godot PATH] [--workers 8]
 PYTHONPATH=src:tools python tools/build_library_supply.py report \
   --library-bundle /home/username/baltor-bundles/RELEASE --output REPORT.json [--admission-folder ADMISSION]
 ```
@@ -544,6 +549,7 @@ keeps it a candidate.
 
 ```bash
 PYTHONPATH=src:tools python -m unittest tools.test_supply_lines
+PYTHONPATH=src:tools:. python -m unittest tools.test_engine_api_cards_python
 PYTHONPATH=src:tools:. python -m unittest tools.test_kaggle_public_good_line
 PYTHONPATH=src:tools python -m unittest tools.test_container_image_cards
 PYTHONPATH=src:tools:. python -m unittest tools.test_container_image_cards_line

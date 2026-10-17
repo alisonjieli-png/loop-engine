@@ -63,12 +63,19 @@ engine_api_surface/v1 (api.json) and engine_api_card/v1 (component.json): the fi
 │   javascript_verify.mjs, and the fact reading in the same line module), syntax "javascript"
 ├── babylonjs adapter: Babylon.js 9.30.0, the npm package @babylonjs/core@9.30.0 (typescript_declarations.py,
 │   the same Node check, and the fact reading in the same line module), syntax "javascript"
+├── python adapter: pinned Python library releases in python_libraries.json (python_wheels.py,
+│   python_native.py, python_introspect.py, python_reference.py, and ../supply_lines/engine_api_cards_python.py),
+│   syntax "python", with two swappable surface engines behind python_api_introspection/v1 (sandbox_import by
+│   default, wheel_ast as the non-importing AST variation) and python_native.verify as the native check
+├── jsdoc adapter: pinned JavaScript package releases in javascript_packages.json (jsdoc_members.py,
+│   node_members.py, javascript_members_verify.mjs, and ../supply_lines/engine_api_cards_jsdoc.py),
+│   syntax "javascript", one card per exported function, prototype object, method or property
 └── a further adapter writes the same two records, with its own reader, text interface, syntax (when its
     declarations read differently) and native check; the card writer, checker and packaging stay as they are
 ```
 
 An adapter gives the card writer its text through one interface (`markdown`, `title`, `address`: the
-BBCode converter's `Context` for Godot, `JsDocText` for three.js and Babylon.js), and says in its `EngineRelease` where the
+BBCode converter's `Context` for Godot, `JsDocText` for three.js, Babylon.js and JSDoc packages, `DocstringText` for Python), and says in its `EngineRelease` where the
 surface was read, the format and licence of the text, and which classes exist only in an editor.
 
 A card is the same files whatever the engine: `README.md` (and `members-2.md`,
@@ -134,7 +141,7 @@ default branch's licence file has the commit's own blob identity
 
 | Kind | Checks |
 |---|---|
-| ClassDB class | the class exists; its parent is the expected one; every listed method, signal, integer constant and enumeration is the class's own; every property is its own, an element of one of its arrays (`point_{index}/position`), a per-child property of a container holding one child (`tab_{index}/title`), or a setting its settings object holds (ProjectSettings, EditorSettings); a property that overrides an ancestor's default is looked up with inheritance |
+| ClassDB class | the class exists; its parent is the expected one; every listed method, signal, integer constant and enumeration is the class's own; every property is its own, an element of one of its arrays (`point_{index}/position`), a per-member property of a container holding one node (`tab_{index}/title`), or a setting its settings object holds (ProjectSettings, EditorSettings); a property that overrides an ancestor's default is looked up with inheritance |
 | Variant type | the type exists; every method is callable on a value of the type (`Callable.create(value, name).is_valid()`); every member can be read from one |
 | Global scope | every function compiles in a script, with untyped arguments, one more for a variadic call, or constants of the declared types (`preload` needs a constant path); every member is an engine singleton (no reflection could fail to know a global scope, so no check claims it) |
 
@@ -267,18 +274,95 @@ commit ("Read Apache-2.0's clause 4(c) as licence text, not a copyright
 notice"), changes `_NOTICE_LINE` in licences.py and the Apache-2.0 template's
 words, and nothing else.
 
+## The Python library adapter
+
+```text
+Pinned Python releases in python_libraries.json (syntax "python")
+├── facts: the PyPI JSON record of the release and each pinned dependency; the wheel the local interpreter
+│   would install (chosen by wheel_rank, streamed once, SHA-256 checked, unpacked only where its RECORD
+│   vouches for every member); the tag's commit and tree, which must prove the wheel's Python files by git
+│   blob identity; the licence from GitHub and the wheel's METADATA (License-Expression, License, classifiers),
+│   which must agree
+├── surface (two swappable engines behind python_api_introspection/v1, selected by --surface-engine):
+│   ├── sandbox_import (default, python_native.py + python_introspect.py): imports the declared public
+│   │   modules inside bubblewrap (--unshare-net, read-only root, audit-hook guard that refuses any network
+│   │   connect or write outside the scratch directory) and inspects classes, functions, methods, properties,
+│   │   fields and constants with inspect.signature
+│   └── wheel_ast (python_wheels.read_wheel_ast): reads the unpacked wheel's .py syntax trees without
+│       importing the library, follows relative re-exports and __all__, and emits the same
+│       python_api_introspection/v1 record shape
+├── text: docstrings traced line by line (at least half of the lines of 12+ characters) to licence-cleared
+│   source files at the tag (proven wheel .py files plus Cython/Rust/Python source files under the package's
+│   repository prefix); files under a nested or in-file foreign licence are excluded before tracing;
+│   converted from NumPy, Google or Sphinx sections to Markdown (python_reference.py)
+└── native check: python_native.verify runs inside the same bubblewrap sandbox and checks every card against
+    the live imported module (callable, parent class, signature parameter kinds and defaults, methods,
+    properties and constants)
+```
+
+One release yields atomic cards for its exported classes, functions, documented
+class methods and documented properties (`python_reference.prepare_python`).
+A candidate without prose (`no_documentation`) or whose docstring lines do not
+trace to the tag's licence-cleared source files (`text_not_traced_to_the_tag`,
+such as docstrings synthesized by a macro or inherited from an external
+dependency) is refused by name.
+
+| Release (`--release`) | Top-module `__all__` walk (objects) | `wheel_ast` static AST units (class / func / member) | `sandbox_import` + `python_native.verify` packaged cards (class / func / method / prop) | Refused (by reason) |
+|---|---:|---:|---:|---|
+| `pandas-3.0` (`3.0.6`) | not run | 1,103 (121 / 103 / 879) | 1,524 (167 / 101 / 876 / 380) | 119 (`no_documentation`, `text_not_traced_to_the_tag`) |
+| `sqlalchemy-2.1` (`2.1.4`) | 254 | 1,909 (497 / 142 / 1,270) | 1,697 (507 / 148 / 846 / 196) | 174 (`text_not_traced_to_the_tag`: 133, `no_documentation`: 40, `import_failed`: 1) |
+| `polars-2.0` (`2.0.0`) | 273 | 1,517 (89 / 195 / 1,233) | 1,517 (87 / 200 / 1,172 / 58) | 26 (`no_documentation`: 25, `text_not_traced_to_the_tag`: 1) |
+| `scikit-learn-1.9` (`1.9.1`) | not run | 255 (47 / 166 / 42) | 1,511 (321 / 355 / 718 / 117) | 116 (`no_documentation`: 80, `text_not_traced_to_the_tag`: 30, `module_licence_differs`: 6) |
+| `pydantic-2.14` (`2.14.1`) | not run | 295 (83 / 29 / 183) | 317 (99 / 36 / 159 / 23) | 3 (`no_documentation`: 2, `blocked_by_static_check`: 1) |
+| `requests-2.34` (`2.34.2`) | 67 | 178 (44 / 55 / 79) | 174 (40 / 55 / 70 / 9) | 10 (`no_documentation`: 6, `native_check_failed`: 4) |
+| `fastapi-0.143` (`0.143.3`) | 15 | 82 (32 / 15 / 35) | 82 (32 / 15 / 35 / 0) | 139 (`no_documentation`: 129, `text_not_traced_to_the_tag`: 7, `import_failed`: 3) |
+| `scipy-1.18` (`1.18.1`) | not run | not run | 0 | Held in `rejected`: `LICENSE.txt` bundles submodule notices so template similarity is 0.9835 (`licence_unknown`) |
+
+`wheel_ast` matches `sandbox_import` on pure-Python modules with explicit
+imports (`polars-2.0`: 1,517 vs 1,517; `fastapi-0.143`: 82 vs 82), while
+`sandbox_import` sees dynamic `__getattr__` exports (`scikit-learn`
+`_LazyModule`, `pydantic` lazy `__getattr__`), Cython extensions (`pandas._libs`),
+and runtime metaclass or descriptor attributes that static AST does not
+evaluate. Pairing `wheel_ast` with `python_native.verify` catches any card
+whose static AST default or metaclass constructor differs from the live module
+(`native_check_failed`).
+
+## The JSDoc member adapter
+
+```text
+Pinned JavaScript packages in javascript_packages.json (syntax "javascript")
+├── facts: the npm registry record of the package and each pinned runtime dependency (tarball, SHA-512
+│   integrity, gitHead); the tag's commit and tree, which must prove every non-test .js file in the tarball
+│   by git blob identity; the licence from GitHub and package.json, which must agree
+├── surface (jsdoc_members.py, surface_engine "jsdoc_public"): reads @public / @api public JSDoc blocks and
+│   CommonJS prototype assignments (app.method = ..., req.method = ..., defineGetter(res, name, ...)),
+│   emitting one atomic card per exported function, prototype object, method or property
+└── native check (node_members.py + javascript_members_verify.mjs, verifier_engine "node_require"): Node
+    imports the unpacked package with its pinned dependencies in node_modules and verifies that every
+    exported function is callable, every prototype object exists, every method is a function on its
+    prototype with a compatible arity, and every property exists on its prototype or an instance
+```
+
+| Package (`--release`) | Surface engine | Verifier engine | Packaged cards (func / obj / method / prop) | Refused / status |
+|---|---|---|---:|---|
+| `express-5.3` (`5.3.0`) | `jsdoc_public` | `node_require` | 55 (1 / 3 / 39 / 12) | 0 |
+| `express-4.22` (`4.22.3`) | `jsdoc_public` | `node_require` | 55 (1 / 3 / 41 / 10) | 0 |
+| `lodash-4.18` (`4.18.1`) | `jsdoc_public` | `node_require` | 0 (306 JSDoc functions offline) | Held in `rejected`: custom licence header + `NOASSERTION` (`licence_unknown`) |
+| `ramda` (`0.32.0`) | `jsdoc_public` | not run | 0 | Held in `rejected`: 738 of 740 tarball `.js` files are transpiled at publish time and absent from `v0.32.0` (`published_source_differs`) |
+
 ## Commands
 
 ```bash
-PYTHONPATH=src:tools python tools/build_library_supply.py engine-api-cards [--engine godot|threejs|babylonjs] \
+PYTHONPATH=src:tools python tools/build_library_supply.py engine-api-cards \
+  [--engine godot|threejs|babylonjs|python|jsdoc] [--release RELEASE] [--surface-engine sandbox_import|wheel_ast] \
   --run-folder RUN --authorize-network-reads [--authorize-store-writes --store-root STORE] \
   [--materialize] [--class Node --class Vector3] [--godot PATH] [--workers 8]
 PYTHONPATH=src:tools python -m unittest tools.test_engine_api_cards tools.test_engine_api_cards_line \
-  tools.test_engine_api_cards_threejs tools.test_engine_api_cards_babylonjs
+  tools.test_engine_api_cards_threejs tools.test_engine_api_cards_babylonjs tools.test_engine_api_cards_python
 ```
 
 The run folder keeps every fetched fact (cached by address), the dump, the
-evidence records (`evidence/godot/<Class>.json`), `summary.json` and the
+evidence records (`evidence/<engine>/<Class>.json`), `summary.json` and the
 refusals.
 
 ## Existing work: adopted, adapted and rejected
@@ -292,6 +376,8 @@ refusals.
 | `tools/creative_originals/engines.py` | Adopted to locate and run the pinned build, in its memory-capped scope with an isolated HOME and XDG folders. systemd-run reaches the session's service manager and the engine inside the scope keeps only the isolated environment (main's commit `d5ebb57d`; this line first carried its own repair of the same fault, dropped in favor of main's). The card run passes no environment of its own. |
 | `supply_lines` reading, packaging, records and licences | Adopted: FactReader, pinned files by blob identity, the shared packaging and the licence decision, with the same-blob rule above. |
 | Microsoft API Extractor (`.api.json` doc model) and TypeDoc | Rejected for Babylon.js: both run from packages installed out of the registry at build time and model far more than a card needs. The package's own `.d.ts` files are the compiler's output in a regular shape (one member per line at a fixed indent, TSDoc above it), so a small reader suffices, and the Node import checks what it reads. |
+| CPython's `inspect.signature`, `ast` and `sys.addaudithook` | Adopted for the Python adapter: `sandbox_import` uses `inspect.signature` under a `sys.addaudithook` guard inside bubblewrap, and `wheel_ast` uses `ast` for non-importing static surface extraction behind the same `python_api_introspection/v1` record schema. |
+| Sphinx `autodoc`, `griffe` and `pydoc` | Rejected as runtime dependencies: `autodoc` runs arbitrary Sphinx extensions, `pydoc` renders unstructured text, and `griffe` adds an external parser without verifying cards against the live module or tracing docstring lines to tag blobs. |
 
 ## Limits
 
@@ -315,4 +401,12 @@ refusals.
   `@babylonjs/*` packages, and the members other modules add to a class by
   module augmentation are not. The types are the declarations' claims, which
   the running module cannot confirm.
+- Python libraries: only the curated modules in `python_libraries.json` are
+  walked; optional extras whose dependencies are not pinned in the library's
+  row (such as `fastapi.security.openid_connect`) fail import and are recorded
+  as `import_failed`. Docstrings synthesized at import time or inherited from
+  an external dependency do not trace to the tag's blobs and are refused as
+  `text_not_traced_to_the_tag`.
+- JSDoc packages: only members marked `@public` or `@api public` in packages
+  whose tarball `.js` files match the git tag's blobs are carded.
 - Nothing here was loaded by a harness.
