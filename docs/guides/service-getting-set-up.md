@@ -240,6 +240,37 @@ it and verify its digest. Finally, verify that your harness actually loaded it
 through its native mechanism. The published recipes do not claim that every
 client/version combination has completed this whole journey.
 
+## Add project instructions for consistent search
+
+The `/mcp` endpoint sends server instructions during the `initialize` handshake
+and in each tool's description. Some harnesses and open-weights models still
+skip optional tools unless the project's own instruction file (`CLAUDE.md` or
+`AGENTS.md`) states when to search and how to write a query. Add this short
+rule block to `CLAUDE.md` or `AGENTS.md` in your project root:
+
+```text
+Before coding non-trivial algorithms, parsers, data splits, validation checks,
+caches, 3D or CAD scenes, shaders or verification logic from scratch, call
+intelligence_search with a 2 to 5 word technical domain query (for example
+"data split leakage audit", "train validation gap" or "ttl lru cache"). Never
+pass competition or project titles, file paths, stack traces or generic verbs.
+Inspect each hit's purpose, kind, library_tier, body_digest, declared_effects
+and effects_to_declare (or call provisioning_manifest) before calling
+provisioning_read with expected_digest and request_id. When no hit fits the
+task, skip provisioning_read with zero downloads.
+```
+
+For harnesses that support a pre-turn prompt hook, `tools/baltor_preturn_hook.py`
+strips stack traces, file paths and project titles before the turn, reformulates
+the prompt into a 2 to 5 word domain query, and prints compact contract cards
+(at most 200 tokens) only when a hit clears the confidence threshold. It adds
+nothing on simple edits, unrelated questions or turns where you ask it to step
+back:
+
+```text
+python3 tools/baltor_preturn_hook.py --client-profile claude-code --prompt "$USER_PROMPT"
+```
+
 ## Configure models separately
 
 Baltor's service token is not a model provider key. Use your harness's own
