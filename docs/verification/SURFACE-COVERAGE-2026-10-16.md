@@ -7,14 +7,14 @@ its test or component guide coverage, or a new unreviewed gap appears.
 
 ## Summary across the eight categories
 
-- Total surface items inventoried: **689**
-- Fully covered items (no gaps): **686**
+- Total surface items inventoried: **690**
+- Fully covered items (no gaps): **687**
 - Items with an explicit test or live-check gap: **3**
 
 | Category | Total items | Unit / integration tested | Browser tested | Live checked | Component guide mapped | Open gaps |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: |
 | `screens` | 130 | 130 | 130 | 130 | 130 | 0 |
-| `functions` | 367 | 367 | 310 | 322 | 367 | 0 |
+| `functions` | 368 | 368 | 311 | 323 | 368 | 0 |
 | `interactions` | 18 | 18 | 18 | 12 | 18 | 0 |
 | `data_transfer` | 56 | 56 | 11 | 5 | 56 | 0 |
 | `data_computation` | 11 | 11 | 3 | 0 | 11 | 0 |
@@ -470,6 +470,7 @@ Every item below has a mapped component guide in `docs/components/COMPONENT-GUID
 | `operator_tool` | `operator_tool:overnight_candidate_batch.py` | `tools/overnight_candidate_batch.py` | 6 | 6 | 4 | `docs/components/README.md` | covered |
 | `operator_tool` | `operator_tool:overnight_queue.py` | `tools/overnight_queue.py` | 6 | 6 | 4 | `docs/components/README.md` | covered |
 | `operator_tool` | `operator_tool:overnight_queue_state.py` | `tools/overnight_queue_state.py` | 6 | 6 | 4 | `docs/components/README.md` | covered |
+| `operator_tool` | `operator_tool:owner_pc_120_projects_trades_and_subtask_graph_harness_engines.py` | `tools/owner_pc_120_projects_trades_and_subtask_graph_harness_engines.py` | 6 | 6 | 4 | `docs/components/README.md` | covered |
 | `operator_tool` | `operator_tool:owner_requests_ledger.py` | `tools/owner_requests_ledger.py` | 6 | 6 | 4 | `docs/components/README.md` | covered |
 | `operator_tool` | `operator_tool:paper_baltor_static_cloudflare_and_gauntlet_engines.py` | `tools/paper_baltor_static_cloudflare_and_gauntlet_engines.py` | 6 | 6 | 4 | `docs/components/README.md` | covered |
 | `operator_tool` | `operator_tool:pixelart_as_code_video_fx_and_portal_scanner_engines.py` | `tools/pixelart_as_code_video_fx_and_portal_scanner_engines.py` | 6 | 6 | 4 | `docs/components/README.md` | covered |

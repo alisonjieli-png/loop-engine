@@ -5,7 +5,7 @@
     "data_computation": 11,
     "data_storage": 59,
     "data_transfer": 56,
-    "functions": 367,
+    "functions": 368,
     "interactions": 18,
     "screens": 130
   },
@@ -476,6 +476,7 @@
       "operator_tool:overnight_candidate_batch.py",
       "operator_tool:overnight_queue.py",
       "operator_tool:overnight_queue_state.py",
+      "operator_tool:owner_pc_120_projects_trades_and_subtask_graph_harness_engines.py",
       "operator_tool:owner_requests_ledger.py",
       "operator_tool:paper_baltor_static_cloudflare_and_gauntlet_engines.py",
       "operator_tool:pixelart_as_code_video_fx_and_portal_scanner_engines.py",
@@ -736,8 +737,8 @@
   },
   "schema": "surface_inventory_baseline/v1",
   "totals": {
-    "covered_items": 686,
+    "covered_items": 687,
     "total_gaps": 3,
-    "total_items": 689
+    "total_items": 690
   }
 }
