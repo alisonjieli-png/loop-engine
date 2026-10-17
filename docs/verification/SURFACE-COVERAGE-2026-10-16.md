@@ -7,14 +7,14 @@ its test or component guide coverage, or a new unreviewed gap appears.
 
 ## Summary across the eight categories
 
-- Total surface items inventoried: **696**
-- Fully covered items (no gaps): **693**
+- Total surface items inventoried: **697**
+- Fully covered items (no gaps): **694**
 - Items with an explicit test or live-check gap: **3**
 
 | Category | Total items | Unit / integration tested | Browser tested | Live checked | Component guide mapped | Open gaps |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: |
 | `screens` | 130 | 130 | 130 | 130 | 130 | 0 |
-| `functions` | 374 | 374 | 317 | 329 | 374 | 0 |
+| `functions` | 375 | 375 | 318 | 330 | 375 | 0 |
 | `interactions` | 18 | 18 | 18 | 12 | 18 | 0 |
 | `data_transfer` | 56 | 56 | 11 | 5 | 56 | 0 |
 | `data_computation` | 11 | 11 | 3 | 0 | 11 | 0 |
@@ -517,6 +517,7 @@ Every item below has a mapped component guide in `docs/components/COMPONENT-GUID
 | `operator_tool` | `operator_tool:render_deck_card.mjs` | `tools/render_deck_card.mjs` | 6 | 6 | 4 | `docs/components/README.md` | covered |
 | `operator_tool` | `operator_tool:render_share_cards.mjs` | `tools/render_share_cards.mjs` | 6 | 6 | 4 | `docs/components/README.md` | covered |
 | `operator_tool` | `operator_tool:repodir_scanner_video_studio_and_auto_discovery_ad_engines.py` | `tools/repodir_scanner_video_studio_and_auto_discovery_ad_engines.py` | 6 | 6 | 4 | `docs/components/README.md` | covered |
+| `operator_tool` | `operator_tool:repodir_siblings_scientific_papers_facebook_and_top100_github_engines.py` | `tools/repodir_siblings_scientific_papers_facebook_and_top100_github_engines.py` | 6 | 6 | 4 | `docs/components/README.md` | covered |
 | `operator_tool` | `operator_tool:rescan_served_catalogue.py` | `tools/rescan_served_catalogue.py` | 6 | 6 | 4 | `docs/components/README.md` | covered |
 | `operator_tool` | `operator_tool:review_catalogue_candidates.py` | `tools/review_catalogue_candidates.py` | 6 | 6 | 4 | `docs/components/README.md` | covered |
 | `operator_tool` | `operator_tool:review_sample_source.py` | `tools/review_sample_source.py` | 6 | 6 | 4 | `docs/components/README.md` | covered |

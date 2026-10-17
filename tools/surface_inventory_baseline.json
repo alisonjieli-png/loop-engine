@@ -5,7 +5,7 @@
     "data_computation": 11,
     "data_storage": 59,
     "data_transfer": 56,
-    "functions": 374,
+    "functions": 375,
     "interactions": 18,
     "screens": 130
   },
@@ -523,6 +523,7 @@
       "operator_tool:render_deck_card.mjs",
       "operator_tool:render_share_cards.mjs",
       "operator_tool:repodir_scanner_video_studio_and_auto_discovery_ad_engines.py",
+      "operator_tool:repodir_siblings_scientific_papers_facebook_and_top100_github_engines.py",
       "operator_tool:rescan_served_catalogue.py",
       "operator_tool:review_catalogue_candidates.py",
       "operator_tool:review_sample_source.py",
@@ -743,8 +744,8 @@
   },
   "schema": "surface_inventory_baseline/v1",
   "totals": {
-    "covered_items": 693,
+    "covered_items": 694,
     "total_gaps": 3,
-    "total_items": 696
+    "total_items": 697
   }
 }
