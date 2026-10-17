@@ -5,7 +5,7 @@
     "data_computation": 11,
     "data_storage": 59,
     "data_transfer": 56,
-    "functions": 377,
+    "functions": 378,
     "interactions": 18,
     "screens": 130
   },
@@ -465,6 +465,7 @@
       "operator_tool:measure_step_function_tags.py",
       "operator_tool:mirror_catalogue_bodies.py",
       "operator_tool:mistral_timestral_and_2026_timeseries_engines.py",
+      "operator_tool:mitm_proxy_security_governance_and_always_on_action_trigger_engines.py",
       "operator_tool:model_directory_browser_checks.mjs",
       "operator_tool:morning_report.py",
       "operator_tool:multi_domain_ollama_benchmark.py",
@@ -746,8 +747,8 @@
   },
   "schema": "surface_inventory_baseline/v1",
   "totals": {
-    "covered_items": 696,
+    "covered_items": 697,
     "total_gaps": 3,
-    "total_items": 699
+    "total_items": 700
   }
 }

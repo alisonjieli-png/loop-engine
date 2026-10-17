@@ -7,14 +7,14 @@ its test or component guide coverage, or a new unreviewed gap appears.
 
 ## Summary across the eight categories
 
-- Total surface items inventoried: **699**
-- Fully covered items (no gaps): **696**
+- Total surface items inventoried: **700**
+- Fully covered items (no gaps): **697**
 - Items with an explicit test or live-check gap: **3**
 
 | Category | Total items | Unit / integration tested | Browser tested | Live checked | Component guide mapped | Open gaps |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: |
 | `screens` | 130 | 130 | 130 | 130 | 130 | 0 |
-| `functions` | 377 | 377 | 320 | 332 | 377 | 0 |
+| `functions` | 378 | 378 | 321 | 333 | 378 | 0 |
 | `interactions` | 18 | 18 | 18 | 12 | 18 | 0 |
 | `data_transfer` | 56 | 56 | 11 | 5 | 56 | 0 |
 | `data_computation` | 11 | 11 | 3 | 0 | 11 | 0 |
@@ -459,6 +459,7 @@ Every item below has a mapped component guide in `docs/components/COMPONENT-GUID
 | `operator_tool` | `operator_tool:measure_step_function_tags.py` | `tools/measure_step_function_tags.py` | 6 | 6 | 4 | `docs/components/README.md` | covered |
 | `operator_tool` | `operator_tool:mirror_catalogue_bodies.py` | `tools/mirror_catalogue_bodies.py` | 6 | 6 | 4 | `docs/components/README.md` | covered |
 | `operator_tool` | `operator_tool:mistral_timestral_and_2026_timeseries_engines.py` | `tools/mistral_timestral_and_2026_timeseries_engines.py` | 6 | 6 | 4 | `docs/components/README.md` | covered |
+| `operator_tool` | `operator_tool:mitm_proxy_security_governance_and_always_on_action_trigger_engines.py` | `tools/mitm_proxy_security_governance_and_always_on_action_trigger_engines.py` | 6 | 6 | 4 | `docs/components/README.md` | covered |
 | `operator_tool` | `operator_tool:model_directory_browser_checks.mjs` | `tools/model_directory_browser_checks.mjs` | 6 | 6 | 4 | `docs/components/README.md` | covered |
 | `operator_tool` | `operator_tool:morning_report.py` | `tools/morning_report.py` | 6 | 6 | 4 | `docs/components/README.md` | covered |
 | `operator_tool` | `operator_tool:multi_domain_ollama_benchmark.py` | `tools/multi_domain_ollama_benchmark.py` | 6 | 6 | 4 | `docs/components/README.md` | covered |
