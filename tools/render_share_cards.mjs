@@ -5,6 +5,11 @@
      share-card-feeds.png           /feeds/setup, Use Agent Feeds
      share-card-harness-files.png   /harness-files, Harness Files
      share-card-gallery.png         /gallery, with six renders from the gallery record
+     share-card-deterministic-skills.png, share-card-tools.png, share-card-corner-cases.png
+                                    the three showcase hostnames, each with the headline and first groups its
+                                    showcase record names and its own hostname
+
+   Name card files after the command to draw only those:  node tools/render_share_cards.mjs share-card-tools.png
 
    Each headline is read from the page that shows it, so a card cannot drift from its page. A card carries no number,
    because a picture cannot carry a source note. Run it again after a headline changes:
@@ -66,9 +71,9 @@ pre{margin:18px 0 0;font:500 16px/1.75 "Geist Mono",monospace;white-space:pre-wr
 .check{margin-top:16px!important;color:#9BD8A8;font-weight:600;font-size:17px}
 .mosaic{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
 .mosaic img{width:100%;aspect-ratio:1/1;border-radius:12px;display:block;object-fit:cover;border:1px solid #3A2F28}`;
-const card = (eyebrow, headline, line, panel) => `<!doctype html><html><head><meta charset="utf-8"><style>${style}</style></head><body>
+const card = (eyebrow, headline, line, panel, site = "baltor.ai") => `<!doctype html><html><head><meta charset="utf-8"><style>${style}</style></head><body>
 <div><div class="brand"><img src="${mark}" alt="">Baltor</div><p class="eyebrow">${escape(eyebrow)}</p><h1>${escape(headline)}</h1>
-<p class="line">${escape(line)}</p><p class="site">baltor.ai</p></div><div class="panel">${panel}</div></body></html>`;
+<p class="line">${escape(line)}</p><p class="site">${escape(site)}</p></div><div class="panel">${panel}</div></body></html>`;
 
 const cards = [
   ["share-card.png", card("Harness and agent optimized operation", homeHeadline,
@@ -93,12 +98,28 @@ const cards = [
     "Godot shaders, procedural textures, meshes and Blender tools, each with the render its check recorded.",
     `<div class="mosaic">${renders.map(item => `<img src="${item.src}" alt="">`).join("")}</div>`)],
 ];
+/* The showcase hostnames: each card's headline and groups come from the showcase record, and its hostname from the site
+   map's canonical section for the host, so a card cannot name a hostname or a group the pages do not have. */
+const showcase = JSON.parse(readFileSync(resolve(assets, "library-sites/hosts.json"), "utf8"));
+const siteMapRecord = JSON.parse(readFileSync(resolve(runtime, "web_site_map.json"), "utf8"));
+const showcaseFiles = {"deterministic-skills": "share-card-deterministic-skills.png", "harness-tools": "share-card-tools.png",
+  "corner-cases": "share-card-corner-cases.png"};
+for (const host of showcase.hosts) {
+  const section = siteMapRecord.hostnames.find(row => row.canonical_section && row.address === host.address);
+  if (!section) throw new Error("No canonical section holds " + host.address);
+  if (/\d/.test(host.headline)) throw new Error("A card carries no number, and the headline of " + host.id + " has one");
+  const groups = host.categories.slice(0, 3).map(category => `<li><strong>${escape(category.title)}</strong></li>`).join("");
+  cards.push([showcaseFiles[host.id], card(host.name, host.headline, host.lede.split(". ")[0] + ".",
+    `<p class="caption">Browse by job</p><ul class="offers">${groups}</ul>`, section.hostname)]);
+}
+const only = process.argv.slice(2);
 const browser = await chromium.launch({executablePath: process.env.LOOP_WEBSITE_BROWSER || "/opt/google/chrome/chrome", headless: true, args: ["--no-sandbox"]});
 try {
   const tab = await browser.newPage({viewport: {width: 1200, height: 630}, deviceScaleFactor: 1});
   await tab.route("**/*", route => (route.request().url().startsWith("data:") ? route.continue() : route.abort()));
   const written = [];
   for (const [name, page] of cards) {
+    if (only.length && !only.includes(name)) continue;
     await tab.setContent(page, {waitUntil: "load"});
     await tab.evaluate(() => document.fonts.ready);
     await tab.screenshot({path: resolve(assets, name), type: "png"});

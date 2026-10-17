@@ -294,10 +294,12 @@ def chrome_href(site_map, addresses, href):
     """The address a page's header or footer must name for a site map entry.
 
     A page of a canonical section names every page of the canonical hostname by its whole address, because a link from
-    the root would keep the reader on the section's hostname, where sign-in and sign-up do not run. Every other page
-    names it from the root, as the site map writes it.
+    the root would keep the reader on the section's hostname, where sign-in and sign-up do not run. A packaged file under
+    /assets/ is the same on every hostname, so it stays named from the root. Every other page names everything from the
+    root, as the site map writes it.
     """
-    if href and href.startswith("/") and addresses and all(site_map.section_of(address) for address in addresses):
+    if (href and href.startswith("/") and not href.startswith("/assets/") and addresses
+            and all(site_map.section_of(address) for address in addresses)):
         return site_map.canonical_origin + href
     return href
 
@@ -567,7 +569,7 @@ def served_site():
 
     from loop_engine.core.service_runtime import (catalogue_feed, dot_pages, feed_source_collections, gallery_page,
                                                   library_page, offering_guides, openapi_tool_server, public_good_page, red_team_page,
-                                                  status_pages, support_page)
+                                                  library_site_pages, status_pages, support_page)
     from loop_engine.core.service_runtime.model_directory_pages import rendered_page
     from loop_engine.core.service_runtime.public_links import PublicListLinks
     site_map = load_site_map()
@@ -599,7 +601,8 @@ def served_site():
                   or status_pages.rendered(address, "GET", site_map.display_name)
                   or support_page.rendered(address, "GET", site_map.display_name)
                   or offering_guides.rendered(address, "GET", site_map.display_name, None, library_page.empty_view())
-                  or gallery_page.rendered(address, "GET", site_map.display_name))
+                  or gallery_page.rendered(address, "GET", site_map.display_name)
+                  or library_site_pages.rendered(address, "GET", site_map.display_name))
         if answer is None:
             return ("", COUNTED_LINK_ANSWER) if counted_links.destination(unquote(address)) else None
         return (answer[0].decode("utf-8"), answer[1]) if answer[1] == HTML else ("", answer[1])
@@ -1031,7 +1034,7 @@ def _section_fixture(absolute):
     """The fixture site with /guide as the canonical section of guide.example.com, served as a page of its own whose
     header and footer name the canonical hostname's pages by their whole addresses, or from the root."""
     state = fixture()
-    whole = lambda part: part.replace('href="/', 'href="https://example.com/')  # noqa: E731
+    whole = lambda part: re.sub(r'href="/(?!assets/)', 'href="https://example.com/', part)  # noqa: E731
     header, footer = ((whole(state.parts[name]) if absolute else state.parts[name]) for name in ("header", "footer"))
     guide = (state.parts["head"] + header + "<main>" + state.parts["guide"].replace(" hidden", "", 1) + "</main>"
              + footer + state.parts["tail"])
@@ -1057,7 +1060,7 @@ class CanonicalSectionChrome(unittest.TestCase):
                 self.assertTrue(any("/guide" in problem for problem in rule(site)))
 
     def test_a_page_outside_a_section_that_links_by_whole_addresses_is_refused(self):
-        whole = lambda part: part.replace('href="/', 'href="https://example.com/')  # noqa: E731
+        whole = lambda part: re.sub(r'href="/(?!assets/)', 'href="https://example.com/', part)  # noqa: E731
         state = fixture()
         site = replace(state, parts={**state.parts, "header": whole(state.parts["header"])}).site()
         self.assertTrue(header_matches_the_site_map(site))

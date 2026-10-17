@@ -69,6 +69,7 @@ from . import status_pages
 from . import support_page
 from . import offering_guides
 from . import gallery_page
+from . import library_site_pages
 from . import oauth_http
 from . import chatgpt_app
 from . import openapi_tool_server
@@ -2731,7 +2732,8 @@ class ServiceHttpApplication:
                     response.headers["WWW-Authenticate"] = application._oauth_challenge(code)
             cacheable_asset = (response.status_code in (200, 304) and request.method in ("GET", "HEAD")
                                and (request.url.path in CACHEABLE_WEB_ASSETS or request.url.path in catalogue_feed.FORMATS
-                                    or feed_source_collections.handles(request.url.path)))
+                                    or feed_source_collections.handles(request.url.path)
+                                    or library_site_pages.is_section_file(request.url.path)))
             response.headers["Cache-Control"] = PUBLIC_ASSET_CACHE_CONTROL if cacheable_asset else "no-store"
             if cacheable_asset and request.url.path in catalogue_feed.FORMATS:
                 response.headers["Cache-Control"] = catalogue_feed.CACHE_CONTROL
@@ -2915,6 +2917,10 @@ class ServiceHttpApplication:
             # The gallery, its item pages and its site map, from the packaged gallery record. A private item's address
             # answers the standard missing page below.
             asset = gallery_page.rendered(path, method, self.configuration.display_name, request.headers.get("host"))
+        if asset is None:
+            # The library sites' hubs, categories, Markdown versions and own root files, and the component pages
+            # their lists link to, from the packaged library site records.
+            asset = library_site_pages.rendered(path, method, self.configuration.display_name, request.headers.get("host"))
         if asset is not None:
             body, media_type = asset
             headers = self._page_headers(creative_preview=path == CREATIVE_PREVIEW_PATH)
@@ -2923,11 +2929,14 @@ class ServiceHttpApplication:
                 headers["ETag"] = asset_etag(body)
                 if validator_matches(request.headers.get("if-none-match", ""), headers["ETag"]):
                     return Response(status_code=304, headers=headers)
+            if library_site_pages.is_alternate(path):
+                # A Markdown version of a library site page is for agents; a search engine lists the page itself.
+                headers["X-Robots-Tag"] = "noindex"
             if media_type == HTML_MEDIA_TYPE and path.startswith("/assets/"):
                 # A documentation body is part of a page, fetched by the page's
                 # script. A search engine may read it and must not list it alone.
                 headers["X-Robots-Tag"] = "noindex"
-            if path in CACHEABLE_WEB_ASSETS:
+            if path in CACHEABLE_WEB_ASSETS or library_site_pages.is_section_file(path):
                 headers["ETag"] = asset_etag(body)
                 if validator_matches(request.headers.get("if-none-match", ""), headers["ETag"]):
                     return Response(status_code=304, headers=headers)

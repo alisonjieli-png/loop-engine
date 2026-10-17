@@ -20,7 +20,7 @@ import tempfile
 from . import static_site_export as export_module
 from .catalogue_d1_index_checks import edge_source, node_runtime
 
-HOSTS = ("baltor.ai", "docs.baltor.ai", "redteam.baltor.ai", "deck.baltor.ai")
+HOSTS = ("baltor.ai", "docs.baltor.ai", "redteam.baltor.ai", "deck.baltor.ai", "deterministicskills.baltor.ai")
 ALIAS = "edge.test"
 #: The headers a reader's browser acts on; each must be the same at the edge as at the origin.
 COMPARED_HEADERS = ("content-type", "content-security-policy", "x-frame-options", "referrer-policy",
@@ -29,6 +29,8 @@ SITE_MUTATIONS = {
     "no_feed_query_guard": ('  if (entry.class === "feed_source" && new URL(request.url).search) return null;\n', ""),
     "replace_robot_directives": ('  const prior = headers.get("x-robots-tag") || "";', '  const prior = "";'),
     "no_root_meta": ("  if (entry.head && root !== \"/\") bytes = withRootMeta(bytes, root);\n", ""),
+    "no_section_file": ("  const address = path === \"/\" ? root : (sectionFile || path);\n",
+                        "  const address = path === \"/\" ? root : path;\n"),
     "no_page_headers": ("  const headers = new Headers(kind.headers);\n  headers.set(\"content-type\", entry.media_type);",
                         "  const headers = new Headers();\n  headers.set(\"content-type\", entry.media_type);"),
     "no_read_only_guard": ('  if ((aliased || env.ORIGIN_MODE !== "all") && request.method !== "GET" && request.method !== "HEAD") {',
@@ -200,7 +202,7 @@ def _site_checks(check, root, node):
             compared = [(_fetch(site.port, "GET", address, "baltor.ai"), _fetch(origin_port, "GET", address, "baltor.ai"))
                         for address in static]
             hosted = [(_fetch(site.port, "GET", address, host), _fetch(origin_port, "GET", address, host))
-                      for host in HOSTS[1:] for address in ["/", *heads[:12]]]
+                      for host in HOSTS[1:] for address in ["/", "/robots.txt", "/sitemap.xml", "/llms.txt", *heads[:12]]]
             check("every_page_asset_and_hostname_root_the_edge_serves_equals_the_services_own_answer",
                   len(compared) > 100 and all(_same(*pair) for pair in compared + hosted)
                   and all(edge[1].get("x-baltor-edge", "").startswith("static") for edge, _origin in compared))
@@ -259,11 +261,13 @@ def _site_checks(check, root, node):
                   _fetch(site.port, "POST", "/api/v1/retrieval", "baltor.ai",
                          {**fixture.headers(), "Content-Type": "application/json"}, request)[0] == 200)
         for mutation, name in (("no_root_meta", "removed_root_meta_rule_is_detected"),
+                               ("no_section_file", "removed_section_file_rule_is_detected"),
                                ("no_page_headers", "removed_page_headers_are_detected")):
             with local_site(root / f"edge-{mutation}", folder, export.export_id, base, node=node,
                             source=site_worker(mutation)) as site:
                 probe = [(_fetch(site.port, "GET", address, host), _fetch(origin_port, "GET", address, host))
-                         for host in HOSTS[:2] for address in ["/", "/pricing", "/docs"]]
+                         for host in ("baltor.ai", "docs.baltor.ai", "deterministicskills.baltor.ai")
+                         for address in ["/", "/robots.txt", "/pricing", "/docs"]]
                 check(name, not all(_same(*pair) for pair in probe))
         with local_site(root / "edge-robot-control", folder, export.export_id, base, node=node,
                         source=site_worker("replace_robot_directives")) as site:

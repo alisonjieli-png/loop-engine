@@ -1,7 +1,7 @@
 {
   "record_type": "service_web_site_map/v4",
   "decided_on": "2026-10-16",
-  "decided_by": "engineering, preserving earlier design, hostnames and audience paths, and adding the owner's Feeds direction as a clearly limited catalogue-metadata preview; on October 9, 2026 engineering relabeled the footer link to /overnight from \"Solve problems overnight\" to the offering name \"Overnight / AFK Work\" and rewrote the use cases description to match the page, with no page or link removed; for release 87 the same day engineering added three pages with footer links (Use Agent Feeds at /feeds/setup, Harness Files at /harness-files, Gallery at /gallery), renamed the signed-in workspace page title to Workspace and rewrote the efficiency description to match its page, again with no page or link removed; on October 16, 2026 the launch audit took \"reviewed\" out of the two random preview descriptions, as the owner's rule for library copy asks, and named the Basic and Pro plans in the pricing description, with no page or link removed; later the same day engineering moved the record to version 4, which states for each hostname whether it holds a canonical section, and no existing hostname holds one, so every canonical address stays where it was",
+  "decided_by": "engineering, preserving earlier design, hostnames and audience paths, and adding the owner's Feeds direction as a clearly limited catalogue-metadata preview; on October 9, 2026 engineering relabeled the footer link to /overnight from \"Solve problems overnight\" to the offering name \"Overnight / AFK Work\" and rewrote the use cases description to match the page, with no page or link removed; for release 87 the same day engineering added three pages with footer links (Use Agent Feeds at /feeds/setup, Harness Files at /harness-files, Gallery at /gallery), renamed the signed-in workspace page title to Workspace and rewrote the efficiency description to match its page, again with no page or link removed; on October 16, 2026 the launch audit took \"reviewed\" out of the two random preview descriptions, as the owner's rule for library copy asks, and named the Basic and Pro plans in the pricing description, with no page or link removed; later the same day engineering moved the record to version 4, which states for each hostname whether it holds a canonical section, and no existing hostname holds one, so every canonical address stays where it was; then, for the owner's request of the same day, it added three pages, Deterministic skills, Harness tools and Corner cases, and the hostnames deterministicskills.baltor.ai, tools.baltor.ai and cornercases.baltor.ai, each the canonical section of its page, with no page or link removed",
   "display_name": "Baltor",
   "canonical_hostname": "baltor.ai",
   "groups": [
@@ -55,6 +55,42 @@
       "description": "Browse Baltor's original Godot shaders, procedural textures, meshes and Blender tools, each with the render its engine check recorded.",
       "group": "Product",
       "linked_from": ["footer", "page"],
+      "unlinked_reason": "",
+      "scroll_budget": "long",
+      "price_in_first_screen": false,
+      "indexed": true
+    },
+    {
+      "address": "/deterministic-skills",
+      "view": "deterministic-skills",
+      "title": "Deterministic skills",
+      "description": "Skills and modules your agent runs without a model: tested programs with schemas, contract cards and known answers, at exact versions from the Baltor library.",
+      "group": "Product",
+      "linked_from": ["page"],
+      "unlinked_reason": "",
+      "scroll_budget": "long",
+      "price_in_first_screen": false,
+      "indexed": true
+    },
+    {
+      "address": "/tools",
+      "view": "harness-tools",
+      "title": "Harness tools",
+      "description": "MCP server settings, command-line programs, slash commands, hooks and tested functions your coding agent can call, each at an exact version with its source.",
+      "group": "Product",
+      "linked_from": ["page"],
+      "unlinked_reason": "",
+      "scroll_budget": "long",
+      "price_in_first_screen": false,
+      "indexed": true
+    },
+    {
+      "address": "/corner-cases",
+      "view": "corner-cases",
+      "title": "Corner cases",
+      "description": "Test packs and checkers for the inputs that break code: time zones, Unicode, locale numbers, CSV records, addresses, JSON Schema requests and 3D exports.",
+      "group": "Product",
+      "linked_from": ["page"],
       "unlinked_reason": "",
       "scroll_budget": "long",
       "price_in_first_screen": false,
@@ -1520,6 +1556,24 @@
       "address": "/case-studies/decision-red-team",
       "anchor": "",
       "canonical_section": false
+    },
+    {
+      "hostname": "deterministicskills.baltor.ai",
+      "address": "/deterministic-skills",
+      "anchor": "",
+      "canonical_section": true
+    },
+    {
+      "hostname": "tools.baltor.ai",
+      "address": "/tools",
+      "anchor": "",
+      "canonical_section": true
+    },
+    {
+      "hostname": "cornercases.baltor.ai",
+      "address": "/corner-cases",
+      "anchor": "",
+      "canonical_section": true
     }
   ],
   "removed": [

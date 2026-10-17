@@ -163,7 +163,9 @@ async function staticAnswer(request, env, manifest, path, host, aliased) {
   if (request.method !== "GET" && request.method !== "HEAD") return null;
   if (manifest.origin_prefixes.some((prefix) => path.startsWith(prefix)) || manifest.origin_addresses.includes(path)) return null;
   const root = manifest.roots[host] ?? "/";
-  const address = path === "/" ? root : path;
+  const sectionFile = root !== "/" && (path === "/robots.txt" || path === "/sitemap.xml" || path === "/llms.txt")
+    && manifest.files[root + path] ? root + path : null;
+  const address = path === "/" ? root : (sectionFile || path);
   const entry = manifest.files[address];
   if (!entry) return null;
   // Source-feed query parameters are refused by the origin, even with a

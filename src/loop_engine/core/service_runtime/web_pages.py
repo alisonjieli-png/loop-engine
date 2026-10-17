@@ -232,6 +232,13 @@ WEB_ASSETS = {
     "/assets/share-card-feeds.png": ("share-card-feeds.png", "image/png"),
     "/assets/share-card-harness-files.png": ("share-card-harness-files.png", "image/png"),
     "/assets/share-card-gallery.png": ("share-card-gallery.png", "image/png"),
+    # The library sites of October 16, 2026 (library_site_pages.py): their one stylesheet, the script of their bottom bar,
+    # and the picture a shared link to each hostname shows.
+    "/assets/library-sites.css": ("library-sites.css", "text/css"),
+    "/assets/library-sites.js": ("library-sites.js", "text/javascript"),
+    "/assets/share-card-deterministic-skills.png": ("share-card-deterministic-skills.png", "image/png"),
+    "/assets/share-card-tools.png": ("share-card-tools.png", "image/png"),
+    "/assets/share-card-corner-cases.png": ("share-card-corner-cases.png", "image/png"),
 }
 
 
@@ -265,7 +272,7 @@ ROBOTS_DISALLOWED_PREFIXES = ("/api/", "/mcp", "/.well-known/", "/out/")
 CRAWLABLE_UNLISTED_PAGES = frozenset({"/dot-context", "/dot-feedback"})
 #: Site map files written elsewhere that robots.txt names beside /sitemap.xml: the model directory's list of its model
 #: and endpoint pages, which are rendered from records rather than listed in the site map record.
-EXTRA_SITEMAPS = ("/models/sitemap.xml", "/gallery/sitemap.xml")
+EXTRA_SITEMAPS = ("/models/sitemap.xml", "/gallery/sitemap.xml", "/components/sitemap.xml")
 # Only declared non-page files, packaged or generated, are public cache
 # entries. Browser account pages and every API response retain the transport's
 # no-store rule.

@@ -193,8 +193,8 @@ def _served(site_map=None):
     """Serve an address as the service does: its page table first, then the pages the model directory renders, then
     the library page, rendered here from a view that serves nothing because no catalogue runs in a check, and the
     support page last."""
-    from . import (catalogue_feed, dot_pages, gallery_page, library_page, offering_guides, red_team_page, status_pages,
-                   support_page, public_good_page)
+    from . import (catalogue_feed, dot_pages, gallery_page, library_page, offering_guides, red_team_page, library_site_pages,
+                   status_pages, support_page, public_good_page)
     from .model_directory_pages import rendered_page
 
     def serve(address, host):
@@ -219,6 +219,8 @@ def _served(site_map=None):
             answer = offering_guides.rendered(address, "GET", DISPLAY_NAME, host, library_page.empty_view())
         if answer is None:
             answer = gallery_page.rendered(address, "GET", DISPLAY_NAME, host)
+        if answer is None:
+            answer = library_site_pages.rendered(address, "GET", DISPLAY_NAME, host)
         return answer
     return serve
 
@@ -311,7 +313,7 @@ def _real_socket(check, site_map):
             roots = {name: read_head(fetch("GET", "/", name).content)["canonical"] for name in names}
             loopback = read_head(fetch("GET", "/").content)["canonical"]
             check("hostname_roots_answer_over_a_real_socket",
-                  all(roots[surface.hostname] == [site_map.canonical_origin + surface.address]
+                  all(roots[surface.hostname] == [site_map.canonical_url(surface.address)]
                       for surface in site_map.hostnames) and loopback == [site_map.canonical_origin + "/"])
             paths = ("/", "/status", "/demo", "/robots.txt", "/sitemap.xml", "/assets/service.css")
             pairs = [(fetch("GET", path, "docs.baltor.ai"), fetch("HEAD", path, "docs.baltor.ai")) for path in paths]

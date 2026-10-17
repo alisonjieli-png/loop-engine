@@ -80,7 +80,7 @@ def page_headers(identity_origin="", *, creative_preview=False):
 def static_addresses(*, include_model_details=True):
     """Every address the export renders, in a stable order."""
     from . import (catalogue_feed, dot_pages, feed_source_collections, gallery_page, model_directory_pages, offering_guides,
-                   public_good_page, red_team_page, status_pages)
+                   library_site_pages, public_good_page, red_team_page, status_pages)
     from .web_pages import GENERATED_WEB_FILES, WEB_ASSETS
     addresses = list(WEB_ASSETS) + list(GENERATED_WEB_FILES)
     addresses += list(model_directory_pages.PAGES) + [model_directory_pages.SITEMAP_ADDRESS]
@@ -97,6 +97,8 @@ def static_addresses(*, include_model_details=True):
     addresses += [offering_guides.FEEDS_SETUP, gallery_page.INDEX, gallery_page.SITEMAP, *gallery_page.RANDOM_ROUTES,
                   *(gallery_page.PREFIX + item["slug"] for item in gallery_page.public_items())]
     addresses += list(feed_source_collections.formats())
+    # The library sites' pages, Markdown versions and own root files, and the component pages (October 16, 2026).
+    addresses += list(library_site_pages.addresses())
     seen, ordered = set(), []
     for address in addresses:
         # The OAuth consent page and the sign-in callbacks stay with the origin, beside the routes they call.
@@ -109,7 +111,7 @@ def static_addresses(*, include_model_details=True):
 def render(address, host, display_name, library_population=None):
     """(bytes, media type) as the service's web route renders `address` for `host`, or None; the same order."""
     from . import (catalogue_feed, dot_pages, feed_source_collections, gallery_page, offering_guides, public_good_page,
-                   red_team_page, status_pages)
+                   red_team_page, library_site_pages, status_pages)
     from .model_directory_pages import rendered_page
     from .web_pages import packaged_site_map, served_asset
     if address in feed_source_collections.formats():
@@ -117,7 +119,8 @@ def render(address, host, display_name, library_population=None):
         return feed_source_collections.render(address, canonical(packaged_site_map(), ""))
     asset = served_asset(address, "GET", display_name, host, library_population=library_population)
     for renderer in (rendered_page, public_good_page.rendered, dot_pages.rendered, red_team_page.rendered,
-                     status_pages.rendered, catalogue_feed.rendered_page, offering_guides.rendered, gallery_page.rendered):
+                     status_pages.rendered, catalogue_feed.rendered_page, offering_guides.rendered, gallery_page.rendered,
+                     library_site_pages.rendered):
         if asset is not None:
             break
         asset = renderer(address, "GET", display_name, host)
@@ -132,7 +135,7 @@ def wire_content_type(media_type):
 
 
 def header_class(address, media_type):
-    from . import dot_pages, feed_source_collections
+    from . import dot_pages, feed_source_collections, library_site_pages
     from .web_pages import CACHEABLE_WEB_ASSETS, CREATIVE_PREVIEW_PATH, HTML_MEDIA_TYPE
     if address == CREATIVE_PREVIEW_PATH:
         return "creative_preview"
@@ -140,9 +143,11 @@ def header_class(address, media_type):
         return "page_private"
     if address in feed_source_collections.formats():
         return "feed_source"
+    if library_site_pages.is_alternate(address):
+        return "markdown_alternate"
     if media_type == HTML_MEDIA_TYPE and address.startswith("/assets/"):
         return "page_fragment"
-    if address in CACHEABLE_WEB_ASSETS:
+    if address in CACHEABLE_WEB_ASSETS or library_site_pages.is_section_file(address):
         return "asset"
     return "page"
 
@@ -155,6 +160,8 @@ def header_classes(identity_origin):
     return {"page": {"headers": page, "etag": False},
             "page_fragment": {"headers": {**page, "X-Robots-Tag": "noindex"}, "etag": False},
             "page_private": {"headers": {**page, "X-Robots-Tag": "noindex, nofollow, noarchive"}, "etag": True},
+            # A library site page's Markdown version, for agents: the page itself is what a search engine lists.
+            "markdown_alternate": {"headers": {**page, "X-Robots-Tag": "noindex"}, "etag": False},
             "feed_source": {"headers": {**page, "Cache-Control": SOURCE_CACHE_CONTROL}, "etag": True},
             # The creative preview is an HTML file under /assets/, so it also carries the fragment's robots rule.
             "creative_preview": {"headers": {**page_headers(identity_origin, creative_preview=True),

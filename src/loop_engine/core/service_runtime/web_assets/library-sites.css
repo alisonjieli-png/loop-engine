@@ -1,0 +1,56 @@
+/* The library sites (deterministicskills.baltor.ai, tools.baltor.ai, cornercases.baltor.ai) and the component pages
+   their lists link to, October 16, 2026. They sit inside the standalone page frame of model-directory.css beside
+   offering-pages.css and use only the tokens of service.css, so light, dark and system appearance follow the site. */
+
+.ls-facts{margin:.75rem 0 0;color:var(--muted)}
+.ls-row-name{margin:.25rem 0 0;color:var(--muted);font-size:var(--text-small);overflow-wrap:anywhere}
+
+/* The groups of a hub */
+.ls-cards{list-style:none;margin:1.25rem 0 0;padding:0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1rem}
+.ls-card a{display:flex;flex-direction:column;gap:.5rem;height:100%;min-width:0;padding:1.25rem;background:var(--paper);
+  border:1px solid var(--border);border-radius:var(--radius-card);color:var(--ink);text-decoration:none}
+.ls-card a:hover{border-color:var(--accent)}
+.ls-card-title{font-size:var(--text-h3);font-weight:650;line-height:1.3}
+.ls-card-text{color:var(--muted);line-height:1.55}
+.ls-card-meta{margin-top:auto;font-family:var(--font-mono);font-size:var(--text-small);color:var(--ink)}
+
+/* Steps, things to watch for and links onward */
+.ls-steps{margin:1rem 0 0;padding-left:1.25rem;display:grid;gap:.5rem;max-width:48rem;line-height:1.6}
+.ls-watch{display:grid;gap:.5rem;max-width:48rem;line-height:1.6}
+.ls-watch li{padding-left:1rem;border-left:3px solid var(--accent)}
+.ls-links{list-style:none;margin:1rem 0 0;padding:0;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.75rem 2rem}
+.ls-links li{display:flex;flex-direction:column;min-width:0}
+.ls-links a{display:inline-flex;align-items:center;min-height:44px;font-weight:600}
+.ls-links span{color:var(--muted);font-size:var(--text-small);line-height:1.5}
+
+/* The list of a category */
+.ls-list{list-style:none;margin:1rem 0 0;padding:0;display:grid;gap:.75rem}
+.ls-row{min-width:0;padding:1rem 1.25rem;background:var(--paper);border:1px solid var(--border);border-radius:var(--radius-card)}
+.ls-row-title{margin:0;font-size:var(--text-h3);line-height:1.35}
+.ls-row-title a{display:inline-flex;align-items:center;min-height:44px}
+.ls-row-text{margin:.25rem 0 0;line-height:1.55}
+.ls-row-facts{display:flex;flex-wrap:wrap;gap:.25rem 1.5rem;margin:.5rem 0 0;font-size:var(--text-small)}
+.ls-row-facts div{display:flex;gap:.5rem;min-width:0}
+.ls-row-facts dt{color:var(--muted)}
+.ls-row-facts dd{margin:0;overflow-wrap:anywhere}
+.ls-row-meta{display:flex;flex-wrap:wrap;gap:.25rem 1rem;margin:.5rem 0 0;color:var(--muted);font-size:var(--text-small)}
+.ls-files,.ls-cases,.ls-related{display:grid;gap:.375rem;line-height:1.55;overflow-wrap:anywhere}
+.ls-files span{color:var(--muted);font-size:var(--text-small)}
+
+/* The one bottom bar: the library's update feed, shown after the first screen until the reader dismisses it */
+.ls-bar{position:fixed;left:50%;bottom:1rem;z-index:20;display:flex;align-items:center;gap:1rem;
+  width:min(46rem,calc(100% - 2rem));transform:translateX(-50%);padding:.625rem 1rem;background:var(--paper);
+  border:1px solid var(--line-strong);border-radius:var(--radius-card);box-shadow:0 8px 24px rgba(0,0,0,.12)}
+.ls-bar[hidden]{display:none}
+.ls-bar p{margin:0;flex:1;line-height:1.45;font-size:var(--text-small)}
+.ls-bar a{font-weight:600}
+.ls-bar button{min-height:44px;flex:none}
+
+@media (max-width:860px){
+  .ls-cards{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media (max-width:600px){
+  .ls-cards,.ls-links{grid-template-columns:minmax(0,1fr)}
+  .ls-bar{bottom:.5rem;gap:.5rem;padding:.5rem .75rem}
+}
+@media print{.ls-bar{display:none}}

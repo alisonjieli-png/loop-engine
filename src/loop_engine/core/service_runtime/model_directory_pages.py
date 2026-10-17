@@ -15,6 +15,7 @@ the shared word rules of the browser checks leave out of Baltor's own copy.
 from __future__ import annotations
 
 import json
+import re
 from dataclasses import dataclass
 from datetime import date
 from functools import lru_cache
@@ -83,13 +84,19 @@ class Page:
     body: str
     structured: dict
     labelled_by: str
+    #: The whole canonical address, when the page's canonical hostname is not the canonical hostname of the site.
+    canonical_url: str = ""
 
 
-def frame(site_map, name: str, page: Page) -> str:
-    """One whole page: its own title, description, canonical and structured data; the header; the view; the footer."""
+def frame(site_map, name: str, page: Page, chrome_origin: str = "") -> str:
+    """One whole page: its own title, description, canonical and structured data; the header; the view; the footer.
+
+    `chrome_origin`, for a page of a canonical section, makes every header and footer link to a page a whole address on
+    that origin, so the reader leaves the section's hostname for the site's own pages; packaged files under /assets/
+    stay on the hostname that serves the page."""
     address, view, title, description = page.address, page.view, page.title, page.description
     body, structured, labelled_by = page.body, page.structured, page.labelled_by
-    address_text = escape(canonical(site_map, address))
+    address_text = escape(page.canonical_url or canonical(site_map, address))
     head = (f'<meta name="description" content="{escape(description)}">\n<title>{escape(name)} | {escape(title)}</title>\n'
             f'<link rel="canonical" href="{address_text}">\n<meta property="og:title" content="{escape(name)} | {escape(title)}">\n'
             f'<meta property="og:description" content="{escape(description)}">\n<meta property="og:url" content="{address_text}">\n'
@@ -97,6 +104,8 @@ def frame(site_map, name: str, page: Page) -> str:
     view_markup = (f'<section data-view="{view}" class="md-page" aria-labelledby="{labelled_by}" '
                    f'data-search-index="{SEARCH_INDEX}" data-fit-index="{FIT_INDEX}">' + body + "</section>")
     header, footer = shared_chrome(name)
+    if chrome_origin:
+        header, footer = (re.sub(r'href="/(?!assets/)', f'href="{chrome_origin}/', part) for part in (header, footer))
     return (_template().replace("{{HEAD}}", head).replace("{{HEADER}}", header)
             .replace("{{VIEW}}", view_markup).replace("{{FOOTER}}", footer))
 
