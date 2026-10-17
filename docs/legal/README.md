@@ -20,7 +20,7 @@ shown before subscription instead of fixing one plan at one dollar amount.
 It permits prospective changes, protects paid periods, requires advance
 notice and any legally required consent for changes to existing subscription
 prices, preserves cancellation, and requires explicit opt-in from free access.
-Changing the terms alone changes no subscription price. Sections 1–5 and 7–9,
+Changing the terms alone changes no subscription price. Sections 1 to 5 and 7 to 9,
 the operator and the privacy notice are unchanged. The last-changed date is
 October 8, 2026; verify the current deployment before treating this edit as live.
 
@@ -30,6 +30,7 @@ October 8, 2026; verify the current deployment before treating this edit as live
 | [Terms of service](TERMS-OF-SERVICE.md) | Owner-approved text, including the October 8 flexible pricing amendment. The website must serve the same text at `/terms`, linked from every footer and signup. Last changed: October 8, 2026. |
 | [Beta terms draft](BETA-TERMS-DRAFT.md) | History. The draft that engineering wrote and the owner read and approved. It keeps its original words and is not the published text. |
 | [ChatGPT app notice changes](CHATGPT-APP-NOTICE-CHANGES-DRAFT.md) | Draft, October 5, 2026. Retention timelines, OpenAI as a recipient when a person connects Baltor to ChatGPT or Codex, and the support page in the contact section, as OpenAI's directory asks. Not published; it waits for the owner. |
+| [Saved feeds notice changes](CUSTOMER-FEEDS-NOTICE-CHANGES-DRAFT.md) | Draft, October 16, 2026. A row for saved feed settings, key assignments and feed delivery history, and self-service deletion of saved feeds. Not published; it waits for the owner. Until the served notice carries it, the service refuses a host file that switches saved feeds on. |
 
 ## The published terms and the approved draft
 
